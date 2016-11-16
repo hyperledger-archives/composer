@@ -1,0 +1,12 @@
+instrumentation:
+    excludes:
+        - dist/**
+        - go/**
+        - out/**
+        - scripts/**
+check:
+    global:
+        statements: 91
+        branches: 92
+        lines: 91
+        functions: 91
