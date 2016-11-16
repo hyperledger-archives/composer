@@ -14,6 +14,7 @@ const FileWriter = require('../../lib/codegen/filewriter');
 const fs = require('fs');
 const LoopbackVisitor = require('../../lib/codegen/fromcto/loopback/loopbackvisitor');
 const ModelManager = require('../../lib/modelmanager');
+const path = require('path');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -29,7 +30,7 @@ describe('LoopbackVisitor', () => {
     beforeEach(() => {
         mockFileWriter = sinon.createStubInstance(FileWriter);
         modelManager = new ModelManager();
-        modelManager.addModelFile(fs.readFileSync('./test/data/model/model-base.cto', 'utf8'));
+        modelManager.addModelFile(fs.readFileSync(path.resolve(__dirname, '../data/model/model-base.cto'), 'utf8'));
         visitor = new LoopbackVisitor();
         sandbox = sinon.sandbox.create();
     });

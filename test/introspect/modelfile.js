@@ -18,13 +18,14 @@ const ModelManager = require('../../lib/modelmanager');
 const ParseException = require('../../lib/introspect/parseexception');
 const parser = require('../../lib/introspect/parser');
 const fs = require('fs');
+const path = require('path');
 
 const should = require('chai').should();
 const sinon = require('sinon');
 
 describe('ModelFile', () => {
 
-    const carLeaseModel = fs.readFileSync('./test/data/model/carlease.cto', 'utf8');
+    const carLeaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
 
     let mockModelManager;
     let sandbox;
@@ -43,7 +44,7 @@ describe('ModelFile', () => {
         it('should round trip the model file', () => {
             let modelFile1 = new ModelFile(mockModelManager, carLeaseModel);
             let json = JSON.stringify(modelFile1);
-            let modelFile2 = ModelFile.fromJSON(mockModelManager, json);
+            let modelFile2 = ModelFile.fromJSON(mockModelManager, JSON.parse(json));
             modelFile2.should.deep.equal(modelFile1);
         });
 

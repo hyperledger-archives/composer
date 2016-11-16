@@ -11,7 +11,6 @@
 'use strict';
 
 const Factory = require('../lib/factory');
-const JSON2 = require('JSON2');
 const ModelManager = require('../lib/modelmanager');
 const Resource = require('../lib/model/resource');
 const ResourceValidator = require('../lib/serializer/resourcevalidator');
@@ -120,7 +119,7 @@ describe('Serializer', () => {
             sandbox.spy(mockClassDeclaration, 'accept');
             mockModelManager.getType.returns(mockClassDeclaration);
             serializer.toJSON(mockResource);
-            sandbox.stub(JSON2, 'parse').throws();
+            sandbox.stub(JSON, 'parse').throws();
             (() => {
                 serializer.toJSON(mockResource);
             }).should.throw(/Generated invalid JSON/);

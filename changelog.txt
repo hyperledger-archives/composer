@@ -12,7 +12,7 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.1.0 {12eab413883d1a0eeb5a5a8c40aee78e} 2016-11-16
+Version 0.1.0 {041dc335e313ba61ef2b31c27118e237} 2016-11-16
 - Refactor the APIs
 
 Version 0.0.16 {d3b0dfc754c6b95c59849cf547bf9486} 2016-11-05

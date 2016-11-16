@@ -7,23 +7,6 @@ class Factory {
    + Relationship newRelationship(string,string,string) throws ModelException
    + Resource newTransaction(string,string) 
 }
-class ModelManager {
-   + void constructor() 
-   + Object addModelFile(string) throws InvalidModelException
-   + {Object updateModelFile(string) throws InvalidModelException
-   + void deleteModelFile(string) 
-   + {Object[] addModelFiles(string[]) 
-   + void clearModelFiles() 
-   + string[] getNamespaces() 
-}
-class SecurityException extends BaseException {
-   + void constructor(string) 
-}
-class Serializer {
-   + void constructor(Factory,ModelManager) 
-   + Object toJSON(Resource,Object,boolean) throws Error
-   + Resource fromJSON(Object,Object) 
-}
 class IllegalModelException extends BaseException {
    + void constructor(string) 
 }
@@ -51,6 +34,27 @@ class ValidatedResource extends Resource {
    + void setPropertyValue(string,string) throws Error
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
+}
+class ModelManager {
+   + void constructor() 
+   + Object addModelFile(string) throws InvalidModelException
+   + {Object updateModelFile(string) throws InvalidModelException
+   + void deleteModelFile(string) 
+   + {Object[] addModelFiles(string[]) 
+   + void clearModelFiles() 
+   + string[] getNamespaces() 
+   + AssetDeclaration[] getAssetDeclarations() 
+   + TransactionDeclaration[] getTransactionDeclarations() 
+   + ParticipantDeclaration[] getParticipantDeclarations() 
+   + EnumDeclaration[] getEnumDeclarations() 
+}
+class SecurityException extends BaseException {
+   + void constructor(string) 
+}
+class Serializer {
+   + void constructor(Factory,ModelManager) 
+   + Object toJSON(Resource,Object,boolean) throws Error
+   + Resource fromJSON(Object,Object) 
 }
 class ValidationException extends BaseException {
    + void constructor(string) 

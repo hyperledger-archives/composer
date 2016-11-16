@@ -26,7 +26,7 @@ describe('Globalization', function() {
     beforeEach(function() {
     });
 
-    describe('#check globalization library works', function() {
+    describe.skip('#check globalization library works', function() {
         it('check formatters', function() {
             // Use Globalize to format a message with plural inflection.
             let like = Globalize.messageFormatter('like');

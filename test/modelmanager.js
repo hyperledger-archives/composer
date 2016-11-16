@@ -10,8 +10,12 @@
 
 'use strict';
 
+const AssetDeclaration = require('../lib/introspect/assetdeclaration');
+const EnumDeclaration = require('../lib/introspect/enumdeclaration');
 const ModelFile = require('../lib/introspect/modelfile');
 const ModelManager = require('../lib/modelmanager');
+const ParticipantDeclaration = require('../lib/introspect/participantdeclaration');
+const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
 const fs = require('fs');
 
 const chai = require('chai');
@@ -306,6 +310,54 @@ describe('ModelManager', () => {
             mf2.getNamespace.returns('org.such');
             mm.addModelFile(mf2);
             mm.getNamespaces().should.include.members(['org.wow', 'org.such']);
+        });
+
+    });
+
+    describe('#getAssetDeclarations', () => {
+
+        it('should return all of the asset declarations', () => {
+            let mm = new ModelManager();
+            let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
+            mm.addModelFile(modelBase);
+            let decls = mm.getAssetDeclarations();
+            decls.should.all.be.an.instanceOf(AssetDeclaration);
+        });
+
+    });
+
+    describe('#getEnumDeclarations', () => {
+
+        it('should return all of the enum declarations', () => {
+            let mm = new ModelManager();
+            let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
+            mm.addModelFile(modelBase);
+            let decls = mm.getEnumDeclarations();
+            decls.should.all.be.an.instanceOf(EnumDeclaration);
+        });
+
+    });
+
+    describe('#getParticipantDeclarations', () => {
+
+        it('should return all of the participant declarations', () => {
+            let mm = new ModelManager();
+            let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
+            mm.addModelFile(modelBase);
+            let decls = mm.getParticipantDeclarations();
+            decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+        });
+
+    });
+
+    describe('#getTransactionDeclarations', () => {
+
+        it('should return all of the transaction declarations', () => {
+            let mm = new ModelManager();
+            let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
+            mm.addModelFile(modelBase);
+            let decls = mm.getTransactionDeclarations();
+            decls.should.all.be.an.instanceOf(TransactionDeclaration);
         });
 
     });
