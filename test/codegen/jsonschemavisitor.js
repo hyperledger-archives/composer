@@ -15,6 +15,7 @@ const FileWriter = require('../../lib/codegen/filewriter');
 const fs = require('fs');
 const JSONSchemaVisitor = require('../../lib/codegen/fromcto/jsonschema/jsonschemavisitor');
 const ModelManager = require('../../lib/modelmanager');
+const path = require('path');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -32,7 +33,7 @@ describe('JSONSchemaVisitor', () => {
         ajv = new Ajv();
         mockFileWriter = sinon.createStubInstance(FileWriter);
         modelManager = new ModelManager();
-        modelManager.addModelFile(fs.readFileSync('./test/data/model/model-base.cto', 'utf8'));
+        modelManager.addModelFile(fs.readFileSync(path.resolve(__dirname, '../data/model/model-base.cto'), 'utf8'));
         visitor = new JSONSchemaVisitor();
         sandbox = sinon.sandbox.create();
     });

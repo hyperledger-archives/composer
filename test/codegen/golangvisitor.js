@@ -16,39 +16,37 @@ const GoLangVisitor = require('../../lib/codegen/fromcto/golang/golangvisitor');
 const FileWriter = require('../../lib/codegen/filewriter');
 
 const fs = require('fs');
+const path = require('path');
+const sinon = require('sinon');
 
 describe('GoLangVisitor', function(){
+
+    let mockFileWriter;
+
+    beforeEach(() => {
+        mockFileWriter = sinon.createStubInstance(FileWriter);
+    });
+
     describe('#visit', function() {
         it('should generate Go code', function() {
 
-            // delete the files in case they already exist
-            fs.unlink('./temp/concerto.go');
-            fs.unlink('./temp/main.go');
-            fs.unlink('./temp/orgacme.go');
-
-            const carleaseModel = fs.readFileSync('./test/data/model/carlease.cto', 'utf8');
-            const concertoModel = fs.readFileSync('./test/data/model/concerto.cto', 'utf8');
+            const carleaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
+            const concertoModel = fs.readFileSync(path.resolve(__dirname, '../data/model/concerto.cto'), 'utf8');
 
             // create and populate the ModelManager with a model file
-            const modelManager = new ModelManager();
+            let modelManager = new ModelManager();
             modelManager.should.not.be.null;
             modelManager.clearModelFiles();
             modelManager.addModelFiles([carleaseModel,concertoModel]);
 
             let visitor = new GoLangVisitor();
             let parameters = {};
-            parameters.fileWriter = new FileWriter('./temp');
+            parameters.fileWriter = mockFileWriter;
             modelManager.accept(visitor, parameters);
 
-            // check 3 files where generated
-            fs.statSync('./temp/concerto.go');
-            fs.statSync('./temp/main.go');
-            fs.statSync('./temp/orgacme.go');
-
-            // cleanup
-            fs.unlink('./temp/concerto.go');
-            fs.unlink('./temp/main.go');
-            fs.unlink('./temp/orgacme.go');
+            sinon.assert.calledWith(mockFileWriter.openFile, 'concerto.go');
+            sinon.assert.calledWith(mockFileWriter.openFile, 'main.go');
+            sinon.assert.calledWith(mockFileWriter.openFile, 'orgacme.go');
         });
     });
 });
