@@ -35,3 +35,12 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# JSDoc
+out
+
+dist
+go/bin
+go/pkg
+go/src/*
+!go/src/concerto

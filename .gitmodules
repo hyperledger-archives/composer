@@ -1,0 +1,10 @@
+[submodule "go/src/concerto/vendor/github.com/hyperledger/fabric"]
+	path = go/src/concerto/vendor/github.com/hyperledger/fabric
+	url = https://github.com/hyperledger/fabric.git
+	branch = v0.6
+[submodule "go/src/concerto/vendor/github.com/robertkrimen/otto"]
+	path = go/src/concerto/vendor/github.com/robertkrimen/otto
+	url = https://github.com/robertkrimen/otto.git
+[submodule "go/src/concerto/vendor/gopkg.in/sourcemap.v1"]
+	path = go/src/concerto/vendor/gopkg.in/sourcemap.v1
+	url = https://gopkg.in/sourcemap.v1.git
