@@ -1,0 +1,9 @@
+namespace com.ibm.testing
+
+asset TestTransaction identified by transactionId {
+    o String transactionId
+}
+
+function onTestTransaction(testTransaction, param1, param2) {
+    while (0) { }
+}

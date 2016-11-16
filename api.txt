@@ -1,0 +1,57 @@
+class BaseException extends Error {
+   + void constructor(string) 
+}
+class Factory {
+   + void constructor(ModelManager) 
+   + Resource newInstance(string,string,string,boolean) throws ModelException
+   + Relationship newRelationship(string,string,string) throws ModelException
+   + Resource newTransaction(string,string) 
+}
+class ModelManager {
+   + void constructor() 
+   + Object addModelFile(string) throws InvalidModelException
+   + {Object updateModelFile(string) throws InvalidModelException
+   + void deleteModelFile(string) 
+   + {Object[] addModelFiles(string[]) 
+   + void clearModelFiles() 
+   + string[] getNamespaces() 
+}
+class SecurityException extends BaseException {
+   + void constructor(string) 
+}
+class Serializer {
+   + void constructor(Factory,ModelManager) 
+   + Object toJSON(Resource,Object,boolean) throws Error
+   + Resource fromJSON(Object,Object) 
+}
+class IllegalModelException extends BaseException {
+   + void constructor(string) 
+}
+class ParseException extends BaseException {
+   + void constructor(string) 
+}
+class Identifiable {
+   + string getIdentifier() 
+   + void setIdentifier(string) 
+   + string getFullyQualifiedIdentifier() 
+   + string getType() 
+   + string getFullyQualifiedType() 
+   + string getNamespace() 
+   + String toString() 
+}
+class Relationship extends Identifiable {
+   + String toString() 
+}
+class Resource extends Identifiable {
+   + void setPropertyValue(string,string) 
+   + void addArrayValue(string,string) 
+   + String toString() 
+}
+class ValidatedResource extends Resource {
+   + void setPropertyValue(string,string) throws Error
+   + void addArrayValue(string,string) throws Error
+   + void validate() throws Error
+}
+class ValidationException extends BaseException {
+   + void constructor(string) 
+}

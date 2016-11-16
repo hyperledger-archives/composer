@@ -1,0 +1,43 @@
+language: node_js
+node_js:
+    - '4'
+    - '6'
+addons:
+    apt:
+        packages:
+            - graphviz
+dist: trusty
+before_install: |
+    set -ev
+    npm install -g npm
+    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
+    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
+install: ./scripts/install-deps.sh
+script: |
+    set -ev
+    ./scripts/run-all-tests.sh
+    ./scripts/generate-uml.sh
+after_success: ./scripts/push-docs.sh
+deploy:
+    provider: script
+    script: ./scripts/deploy.sh
+    skip_cleanup: true
+    on:
+        all_branches: true
+env:
+    - TEST_SUITE=unit
+matrix:
+    fast_finish: true
+    include:
+        - node_js: 4
+          dist: trusty
+          sudo: required
+          services:
+              - docker
+          env: TEST_SUITE=system_hlf
+        - node_js: 4
+          dist: trusty
+          sudo: required
+          services:
+              - docker
+          env: TEST_SUITE=system_ibm

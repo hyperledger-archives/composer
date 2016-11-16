@@ -1,0 +1,5 @@
+namespace com.ibm.testing
+
+asset TestAsset identified by assetId {
+    o String assetId
+}

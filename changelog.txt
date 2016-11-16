@@ -1,0 +1,41 @@
+#
+# This is the changelog for IBM Concerto. It lists all significant changes to
+# functionality and public API.
+#
+# The most recent entry in the changelog should be at the top of this file
+# and must follow the format: Version <number> {public api digest} <date>. The version
+# number must match that specified in package.json. The public api digest is computed
+# and validated using ./scripts/api-changelog.sh
+#
+# Any changes to the public API must have an associated changelog entry.
+#
+# Note that the latest public API is documented using JSDocs and is available in api.txt.
+#
+
+Version 0.1.0 {12eab413883d1a0eeb5a5a8c40aee78e} 2016-11-16
+- Refactor the APIs
+
+Version 0.0.16 {d3b0dfc754c6b95c59849cf547bf9486} 2016-11-05
+- Added find() and query() methods to AssetRegistry
+
+Version 0.0.15 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-31
+- Added an automatic 'timestamp' property to transactions
+
+Version 0.0.14 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-27
+- Modified Concerto to extend EventEmitter
+
+Version 0.0.13 {1ff98116f0b834387a85d49d50debc69} 2016-10-27
+- Added ping() method to Concerto
+
+Version 0.0.12 {d3861b7bd41ea2eae871d2783ab259e2} 2016-10-27
+- Added setIdentifier method to Identifiable.
+
+Version 0.0.11 {097696ed79f18ca03d16975f4a257635} 2016-10-27
+- Added bulk addAll(), updateAll(), and removeAll() methods to AssetRegistry
+
+Version 0.0.10 {332e7e48d4d49d1ec0dee3dd1355b689} 2016-10-24
+- API signature of Registry.getAll and Registry.get changed
+
+Version 0.0.9 {09e645fa8244c6acdfac427a178584bb} 2016-10-22
+- Basic public API is defined and useable from both command line and Express applications
+- Start to enforce a change log entry for API changes
