@@ -40,6 +40,14 @@ class ValidatedResource extends Resource {
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
 }
+class SecurityException extends BaseException {
+   + void constructor(string) 
+}
+class Serializer {
+   + void constructor(Factory,ModelManager) 
+   + Object toJSON(Resource,Object,boolean) throws Error
+   + Resource fromJSON(Object,Object) 
+}
 class ValidationException extends BaseException {
    + void constructor(string) 
 }
