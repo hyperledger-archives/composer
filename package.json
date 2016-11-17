@@ -4,8 +4,7 @@
   "description": "The runtime execution environment for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
-    "prepublish": "NODE_PATH=node_modules node ./scripts/build.js",
-    "pretest": "npm run prepublish && npm run licchk",
+    "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template",
@@ -50,7 +49,6 @@
   "license-check-config": {
     "src": [
       "**/*.js",
-      "**/*.go",
       "!./coverage/**/*",
       "!./node_modules/**/*",
       "!./out/**/*"
