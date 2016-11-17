@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.1.2 {ec8cb98ca41a011d5b595cdc24abfbfc} 2016-11-17
+- Added connection manager APIs
+
 Version 0.1.1 {882ad35d7b7f29f4d910d0100406f852} 2016-11-17
 - Added the Introspector
 
