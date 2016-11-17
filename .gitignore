@@ -39,7 +39,6 @@ jspm_packages
 # JSDoc
 out
 
-dist
 go/bin
 go/pkg
 go/src/*
