@@ -1,6 +1,5 @@
 instrumentation:
     excludes:
-        - dist/**
         - go/**
         - out/**
         - scripts/**

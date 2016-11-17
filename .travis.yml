@@ -1,4 +1,15 @@
 language: node_js
 node_js:
- - "4"
- - "6"
+    - '4'
+    - '6'
+before_install: |
+    set -ev
+    npm install -g npm
+    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
+    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
+deploy:
+    provider: script
+    script: ./scripts/deploy.sh
+    skip_cleanup: true
+    on:
+        all_branches: true
