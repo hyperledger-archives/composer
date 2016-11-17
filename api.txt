@@ -1,6 +1,19 @@
 class BaseException extends Error {
    + void constructor(string) 
 }
+class Connection {
+   + void constructor(ConnectionManager) 
+   + ConnectionManager getConnectionManager() 
+   + Promise disconnect() 
+   + Promise login(string,string) 
+   + Promise deploy(SecurityContext,boolean) 
+   + Promise ping(SecurityContext) 
+   + Promise queryChainCode(SecurityContext,string,string[]) 
+   + Promise invokeChainCode(SecurityContext,string,string[]) 
+}
+class ConnectionManager {
+   + Promise connect(Object) 
+}
 class Factory {
    + void constructor(ModelManager) 
    + Resource newInstance(string,string,string,boolean) throws ModelException
@@ -39,6 +52,11 @@ class ValidatedResource extends Resource {
    + void setPropertyValue(string,string) throws Error
    + void addArrayValue(string,string) throws Error
    + void validate() throws Error
+}
+class SecurityContext {
+   + void constructor(Connection,string) 
+   + Connection getConnection() 
+   + string getUser() 
 }
 class SecurityException extends BaseException {
    + void constructor(string) 
