@@ -6,19 +6,11 @@ set -ev
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# Check for the system tests.
-case ${TEST_SUITE} in
-system*)
-    echo Not executing as running system tests.
+# Check that this is the right node.js version.
+if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
+    echo Not executing as not running primary node.js version.
     exit 0
-    ;;
-unit*)
-    if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
-        echo Not executing as not running primary node.js version.
-        exit 0
-    fi
-    ;;
-esac
+fi
 
 # Check that this is the main repository.
 if [ "${TRAVIS_REPO_SLUG}" != "Blockchain-WW-Labs/Concerto" ]; then
