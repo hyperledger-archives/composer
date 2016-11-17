@@ -44,3 +44,5 @@ go/bin
 go/pkg
 go/src/*
 !go/src/concerto
+go/src/concerto/concerto
+go/src/concerto/concerto.js.go
