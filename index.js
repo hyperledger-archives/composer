@@ -14,12 +14,7 @@
  * IBM Concerto module. IBM Concerto is a framework for creating
  * blockchain backed digital networks and exchanging assets between participants
  * via processing transactions.
- * <p>
- * Applications interact with the framework by instantiating the {@link Concerto}
- * class.
- * </p>
- * <p><a href="diagrams/concerto.svg"><img src="diagrams/concerto.svg" style="width:100%;"/></a></p>
- * @module ibm-concerto
+ * @module ibm-concerto-common
  */
 
 module.exports.Serializer = require('./lib/serializer');
@@ -27,3 +22,4 @@ module.exports.ModelManager = require('./lib/modelmanager');
 module.exports.Factory = require('./lib/factory');
 module.exports.Resource = require('./lib/model/resource');
 module.exports.Relationship = require('./lib/model/relationship');
+module.exports.Introspector = require('./lib/introspect/introspector');

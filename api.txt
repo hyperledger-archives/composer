@@ -7,15 +7,6 @@ class Factory {
    + Relationship newRelationship(string,string,string) throws ModelException
    + Resource newTransaction(string,string) 
 }
-class ModelManager {
-   + void constructor() 
-   + Object addModelFile(string) throws InvalidModelException
-   + {Object updateModelFile(string) throws InvalidModelException
-   + void deleteModelFile(string) 
-   + {Object[] addModelFiles(string[]) 
-   + void clearModelFiles() 
-   + string[] getNamespaces() 
-}
 class SecurityException extends BaseException {
    + void constructor(string) 
 }
@@ -26,6 +17,11 @@ class Serializer {
 }
 class IllegalModelException extends BaseException {
    + void constructor(string) 
+}
+class Introspector {
+   + void constructor(ModelManager) 
+   + ClassDeclaration[] getClassDeclarations() 
+   + ClassDeclaration getClassDeclaration(String) throws Error
 }
 class ParseException extends BaseException {
    + void constructor(string) 
