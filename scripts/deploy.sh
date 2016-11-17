@@ -34,6 +34,9 @@ for PROJ in Concerto-Runtime; do
     rm -rf temp
     git clone ${THISREPO} temp
     cd temp
+    git config user.email "noreply@ibm.com"
+    git config user.name "Blockchain WW Labs - Solutions"
+    git config push.default simple
     git commit -m "Automated commit to trigger downstream build" --allow-empty
     git push
 done
