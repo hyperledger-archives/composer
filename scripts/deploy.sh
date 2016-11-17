@@ -13,7 +13,7 @@ if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
 fi
 
 # Check that this is the main repository.
-if [ "${TRAVIS_REPO_SLUG}" != "Blockchain-WW-Labs/Concerto" ]; then
+if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
     echo "Skipping deploy; wrong repository slug."
     exit 0
 fi
