@@ -1,0 +1,10 @@
+[submodule "vendor/github.com/hyperledger/fabric"]
+	path = vendor/github.com/hyperledger/fabric
+	url = https://github.com/hyperledger/fabric.git
+	branch = v0.6
+[submodule "vendor/github.com/robertkrimen/otto"]
+	path = vendor/github.com/robertkrimen/otto
+	url = https://github.com/robertkrimen/otto.git
+[submodule "vendor/gopkg.in/sourcemap.v1"]
+	path = vendor/gopkg.in/sourcemap.v1
+	url = https://gopkg.in/sourcemap.v1.git
