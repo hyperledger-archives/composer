@@ -18,6 +18,7 @@
  */
 
 module.exports.Serializer = require('./lib/serializer');
+module.exports.ModelFile = require('./lib/introspect/modelfile');
 module.exports.ModelManager = require('./lib/modelmanager');
 module.exports.Factory = require('./lib/factory');
 module.exports.Resource = require('./lib/model/resource');

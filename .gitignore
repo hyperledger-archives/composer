@@ -43,3 +43,5 @@ jspm_packages
 **/.DS_Store
 
 *.swp
+
+lib/introspect/parser.js
