@@ -17,6 +17,7 @@
  * A transaction processor for AnimalMovementDeparture
  * @param  {com.ibm.concerto.mozart.AnimalMovementDeparture} movementDeparture
  * - the transaction to be processed
+ * @transaction
  */
 function onAnimalMovementDeparture(movementDeparture) {
     console.log('onAnimalMovementDeparture');
@@ -49,6 +50,7 @@ function onAnimalMovementDeparture(movementDeparture) {
  * A transaction processor for AnimalMovementArrival
  * @param  {com.ibm.concerto.mozart.AnimalMovementArrival} movementArrival
  * - the transaction to be processed
+ * @transaction
  */
 function onAnimalMovementArrival(movementArrival) {
     console.log('onAnimalMovementArrival');

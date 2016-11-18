@@ -65,7 +65,7 @@ describe('Script', () => {
         });
 
         it('should throw for a TX processor function that does not have 1 parameter', () => {
-            const FUNC_TEXT = 'function onMyTransaction() {return 0;}';
+            const FUNC_TEXT = '/*@transaction*/ function onMyTransaction() {return 0;}';
             (() => {
                 new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
             }).should.throw(/must have 1 function argument/);

@@ -14,6 +14,7 @@
  * This is a transaction processor function
  *
  * @param  {org.acme.TestTransactionLulz} testTransaction - this is a sample transaction
+ * @transaction
  */
 function onTestTransactionLulz(testTransaction) {
     console.log('onTestTransactionLulz');

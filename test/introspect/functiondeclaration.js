@@ -22,12 +22,14 @@ describe('FunctionDeclaration', () => {
 
     const modelManager = new ModelManager();
     modelManager.addModelFile('namespace org.acme transaction TestTransaction identified by id {o String id}');
+    let mozartModel = fs.readFileSync('test/data/model/mozart.cto', 'utf8');
+    modelManager.addModelFile(mozartModel);
 
     let loadFunctionDeclaration = (scriptFileName) => {
         let scriptText = fs.readFileSync(scriptFileName, 'utf8');
         let script = new Script(modelManager, 'TEST_SCRIPT', 'JS', scriptText);
         let functions = script.getFunctionDeclarations();
-        functions.should.have.lengthOf(1);
+        (functions.length > 0).should.be.true;
         return functions[0];
     };
 
@@ -72,6 +74,15 @@ describe('FunctionDeclaration', () => {
 
     });
 
+    describe('#getDecorators', () => {
+
+        it('should return the function decorators', () => {
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
+            func.getDecorators().should.deep.equal(['param', 'transaction']);
+        });
+
+    });
+
     describe('#getParameters', () => {
 
         it('should return the function parameters', () => {
@@ -99,6 +110,14 @@ describe('FunctionDeclaration', () => {
 
     });
 
+    describe('#getDecorators', () => {
+
+        it('should grab all decorators', () => {
+            let func = loadFunctionDeclaration('test/data/model/mozart.cto.js');
+            func.getDecorators().should.deep.equal(['param', 'transaction']);
+        });
+    });
+
     describe('#validate', () => {
 
         it('should throw if the function refers to a transaction that does not exist', () => {
@@ -113,6 +132,13 @@ describe('FunctionDeclaration', () => {
                 let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.notatx.js');
                 func.validate();
             }).should.throw(/is not a transaction/);
+        });
+
+        it('should throw if the function is decorated with both @transaction and @query', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.queryandtransaction.js');
+                func.validate();
+            }).should.throw(/cannot be decorated with both/);
         });
     });
 
