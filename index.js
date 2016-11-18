@@ -17,6 +17,7 @@
  * @module ibm-concerto-common
  */
 
+module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
 module.exports.BusinessNetwork = require('./lib/businessnetwork');
 module.exports.Connection = require('./lib/connection');
@@ -31,4 +32,5 @@ module.exports.Resource = require('./lib/model/resource');
 module.exports.SecurityContext = require('./lib/securitycontext');
 module.exports.SecurityException = require('./lib/securityexception');
 module.exports.Serializer = require('./lib/serializer');
+module.exports.TransactionDeclaration = require('./lib/introspect/transactiondeclaration');
 module.exports.Util = require('./lib/util');
