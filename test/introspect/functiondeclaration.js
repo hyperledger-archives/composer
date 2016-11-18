@@ -133,6 +133,13 @@ describe('FunctionDeclaration', () => {
                 func.validate();
             }).should.throw(/is not a transaction/);
         });
+
+        it('should throw if the function is decorated with both @transaction and @query', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.queryandtransaction.js');
+                func.validate();
+            }).should.throw(/cannot be decorated with both/);
+        });
     });
 
     describe('#toJSON', () => {

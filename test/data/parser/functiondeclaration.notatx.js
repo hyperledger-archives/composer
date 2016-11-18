@@ -14,6 +14,7 @@
  * This is a transaction processor function
  *
  * @param  {String} testTransaction - this is a sample transaction
+ * @transaction
  */
 function onTestTransaction(testTransaction) {
     console.log('');

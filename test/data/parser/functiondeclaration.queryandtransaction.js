@@ -11,12 +11,13 @@
 
 /*eslint-disable no-unused-vars*/
 /**
- * [onTestTransaction description]
- * @param  {Object} testTransaction [description]
- * @param  {Object} param1          [description]
- * @param  {Object} param2          [description]
+ * This is a transaction processor function
+ *
+ * @param  {org.acme.TestTransaction} testTransaction - this is a sample transaction
+ * @transaction
+ * @query // illegal to have both query and transaction!
  */
-function onTestTransaction(testTransaction, param1, param2) {
-    console.log('');
+function onTestTransaction(testTransaction) {
+    console.log('onTestTransaction');
 }
 /*eslint-enable no-unused-vars*/
