@@ -6,22 +6,14 @@ set -ev
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# Check for the system tests.
-case ${TEST_SUITE} in
-system*)
-    echo Not executing as running system tests.
+# Check that this is the right node.js version.
+if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
+    echo Not executing as not running primary node.js version.
     exit 0
-    ;;
-unit*)
-    if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
-        echo Not executing as not running primary node.js version.
-        exit 0
-    fi
-    ;;
-esac
+fi
 
 # Check that this is the main repository.
-if [ "${TRAVIS_REPO_SLUG}" != "Blockchain-WW-Labs/Concerto-Common" ]; then
+if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
     echo "Skipping deploy; wrong repository slug."
     exit 0
 fi
@@ -33,3 +25,18 @@ fi
 
 # Push the code to npm.
 npm publish --scope=@ibm
+
+# Push empty commits to downstream projects to trigger builds.
+REPO=`git config remote.origin.url`
+for PROJ in Concerto-Runtime; do
+    cd ${DIR}
+    THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
+    rm -rf temp
+    git clone ${THISREPO} temp
+    cd temp
+    git config user.email "noreply@ibm.com"
+    git config user.name "Blockchain WW Labs - Solutions"
+    git config push.default simple
+    git commit -m "Automated commit to trigger downstream build" --allow-empty
+    git push
+done

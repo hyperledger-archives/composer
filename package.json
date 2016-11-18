@@ -13,7 +13,8 @@
         "postlicchk": "npm run doc",
         "doc": "npm run docpub && npm run docpriv",
         "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public .",
-        "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private ."
+        "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private .",
+        "systest": "mocha -t 0 systest && cucumber-js systest"
     },
     "repository": {
         "type": "git",
