@@ -11,7 +11,7 @@
 'use strict';
 
 require('chai').should();
-const ModelManager = require('../../lib/modelmanager');
+const BusinessNetwork = require('../../lib/businessnetwork');
 const PlantUMLVisitor = require('../../lib/codegen/fromcto/plantuml/plantumlvisitor');
 const FileWriter = require('../../lib/codegen/filewriter');
 
@@ -33,15 +33,14 @@ describe('PlantUMLVisitor', function(){
             const mozart = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto'), 'utf8');
 
             // create and populate the ModelManager with a model file
-            let modelManager = new ModelManager();
-            modelManager.should.not.be.null;
-            modelManager.clearModelFiles();
-            modelManager.addModelFile(mozart);
+
+            const businessNetwork = new BusinessNetwork('TEST');
+            businessNetwork.getModelManager().addModelFile(mozart);
 
             let visitor = new PlantUMLVisitor();
             let parameters = {};
             parameters.fileWriter = mockFileWriter;
-            modelManager.accept(visitor, parameters);
+            businessNetwork.accept(visitor, parameters);
 
             sinon.assert.calledWith(mockFileWriter.openFile, 'model.uml');
         });

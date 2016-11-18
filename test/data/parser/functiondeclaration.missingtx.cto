@@ -1,9 +1,0 @@
-namespace com.ibm.testing
-
-transaction TestTransaction identified by transactionId {
-    o String transactionId
-}
-
-function onTestTransactionMissingLulz(testTransaction, param1, param2) {
-    while (0) { }
-}

@@ -205,7 +205,6 @@ describe('ModelFile', () => {
             // parsed.ast.should.be.an('object');
             parsed.namespace.should.equal('org.acme');
             parsed.imports.should.be.an('array');
-            parsed.functions.should.be.an('array');
             parsed.assets.should.be.an('array');
             parsed.participants.should.be.an('array');
             parsed.transactions.should.be.an('array');

@@ -30,4 +30,4 @@ module.exports.Resource = require('./lib/model/resource');
 module.exports.SecurityContext = require('./lib/securitycontext');
 module.exports.SecurityException = require('./lib/securityexception');
 module.exports.Serializer = require('./lib/serializer');
-module.exports.Util = require('./lib/util');
+module.exports.BusinessNetwork = require('./lib/businessnetwork');

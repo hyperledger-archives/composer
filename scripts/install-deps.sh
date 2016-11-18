@@ -15,21 +15,3 @@ esac
 
 # Install the node.js dependencies.
 npm install
-
-# Install gimme for installing Go.
-mkdir -p ~/bin
-export PATH=~/bin:${PATH}
-curl -sL -o ~/bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
-chmod +x ~/bin/gimme
-
-# Install and use the latest version of Go.
-eval "$(gimme 1.7)"
-
-# Copy the chaincode into the Go path.
-export GOPATH=${DIR}/chaincode
-export PATH=${GOPATH}/bin:${PATH}
-
-# Install the Go dependencies.
-cd ${GOPATH}/src
-go get $(go list ./... | grep -v /vendor/)
-go get github.com/golang/lint/golint
