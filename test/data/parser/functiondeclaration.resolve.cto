@@ -1,7 +1,0 @@
-namespace com.ibm.testing
-
-import com.ibm.elsewhere.TestTransaction
-
-function onTestTransaction(testTransaction, param1, param2) {
-    while (0) { }
-}

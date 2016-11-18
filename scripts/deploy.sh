@@ -21,7 +21,7 @@ unit*)
 esac
 
 # Check that this is the main repository.
-if [ "${TRAVIS_REPO_SLUG}" != "Blockchain-WW-Labs/Concerto" ]; then
+if [ "${TRAVIS_REPO_SLUG}" != "Blockchain-WW-Labs/Concerto-Common" ]; then
     echo "Skipping deploy; wrong repository slug."
     exit 0
 fi

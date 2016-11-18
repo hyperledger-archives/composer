@@ -34,32 +34,6 @@ describe('Model Tests', function(){
             // check functions can be retrieved
             const modelFile = modelManager.getModelFile('org.acme.base');
             modelFile.should.not.be.null;
-            const functions = modelFile.getFunctions();
-            functions.length.should.equal(3);
-
-            // check first function
-            functions[0].getName().should.equal('onMyTransaction');
-            functions[0].getFullyQualifiedName().should.equal('org.acme.base.onMyTransaction');
-            functions[0].getTransactionDeclarationName().should.equal('MyTransaction');
-            functions[0].getParameters().length.should.equal(1);
-            functions[0].getParameters()[0].should.equal('foo');
-            functions[0].getFunctionText().should.contain('Hello');
-
-            // check second function
-            functions[1].getName().should.equal('onMyTransactionEx');
-            functions[1].getFullyQualifiedName().should.equal('org.acme.base.onMyTransactionEx');
-            functions[1].getTransactionDeclarationName().should.equal('MyTransactionEx');
-            functions[1].getParameters().length.should.equal(1);
-            functions[1].getParameters()[0].should.equal('bar');
-            functions[1].getFunctionText().should.contain('World');
-
-            // check third function
-            functions[2].getName().should.equal('log');
-            functions[2].getFullyQualifiedName().should.equal('org.acme.base.log');
-            (functions[2].getTransactionDeclarationName() === null).should.be.true;
-            functions[2].getParameters().length.should.equal(1);
-            functions[2].getParameters()[0].should.equal('text');
-            functions[2].getFunctionText().should.contain('console.log');
 
             // check abstract classes are marked as abstract
             const abstractAsset = modelManager.getType('org.acme.base.AbstractAsset');

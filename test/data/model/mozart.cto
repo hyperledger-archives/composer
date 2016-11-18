@@ -112,6 +112,7 @@ transaction AnimalMovementArrival extends AnimalMovement {
 /**
  * A transaction processor for AnimalMovementDeparture
  */
+/*
  function onAnimalMovementDeparture(json) {
 
    // test calling a native Go function
@@ -147,10 +148,12 @@ transaction AnimalMovementArrival extends AnimalMovement {
      throw new Error('Cannot move an animal that is not IN_FIELD');
    }
  }
+ */
 
 /**
  * A transaction processor for AnimalMovementArrival
  */
+/*
 function onAnimalMovementArrival(movementArrival) {
   // mark the animal as IN_FIELD
   movementArrival.animal.movementStatus = MovementStatus.IN_FIELD;
@@ -164,3 +167,4 @@ function onAnimalMovementArrival(movementArrival) {
   // set the new animal location
   movementArrival.animal.location = movementArrival.location;
 }
+*/

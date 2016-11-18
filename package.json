@@ -1,7 +1,7 @@
 {
     "name": "@ibm/ibm-concerto-common",
-    "version": "0.1.1",
-    "description": "IBM Concerto, code that is common across client, admin and runtime.",
+    "version": "0.1.2",
+    "description": "IBM Concerto Common, code that is common across client, admin and runtime.",
     "main": "index.js",
     "scripts": {
         "pretest": "pegjs ./lib/introspect/parser.pegjs && npm run lint",
@@ -13,8 +13,7 @@
         "postlicchk": "npm run doc",
         "doc": "npm run docpub && npm run docpriv",
         "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public .",
-        "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private .",
-        "systest": "mocha -t 0 systest && cucumber-js systest"
+        "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private ."
     },
     "repository": {
         "type": "git",

@@ -27,6 +27,8 @@ transaction MySuperTransaction extends MyTransaction {
   o Truck[] arrayOfTrucks
 }
 
+/*
 function onMySuperTransaction(foo) {
     log('Hello');
 }
+*/

@@ -1,6 +1,15 @@
 class BaseException extends Error {
    + void constructor(string) 
 }
+class BusinessNetwork {
+   + void constructor(String) 
+   + String getIdentifier() 
+   + BusinessNetwork fromArchive(Buffer) 
+   + void toArchive(Buffer) 
+   + Introspector getIntrospector() 
+   + Factory getFactory() 
+   + Serializer getSerializer() 
+}
 class Factory {
    + void constructor(ModelManager) 
    + Resource newInstance(string,string,string,boolean) throws ModelException
