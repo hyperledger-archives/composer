@@ -18,6 +18,7 @@
  */
 
 module.exports.BaseException = require('./lib/baseexception');
+module.exports.BusinessNetwork = require('./lib/businessnetwork');
 module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
 module.exports.Factory = require('./lib/factory');
@@ -30,4 +31,4 @@ module.exports.Resource = require('./lib/model/resource');
 module.exports.SecurityContext = require('./lib/securitycontext');
 module.exports.SecurityException = require('./lib/securityexception');
 module.exports.Serializer = require('./lib/serializer');
-module.exports.BusinessNetwork = require('./lib/businessnetwork');
+module.exports.Util = require('./lib/util');
