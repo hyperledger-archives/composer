@@ -42,14 +42,27 @@ enum ProductionType {
 /**
  * A Farmer participant
  */
-participant Farmer identified by farmerId {
-    o String farmerId
-    o String firstName
-    o String lastName
+abstract participant User identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+/**
+ * A Farmer participant
+ */
+participant Farmer extends User {
     o String address1
     o String address2
     o String county
     o String postcode
+    --> Business business
+}
+
+/**
+ * A Regulator participant
+ */
+participant Regulator extends User {
 }
 
 /**
@@ -69,7 +82,8 @@ asset Animal identified by animalId {
     o AnimalType species
     o MovementStatus movementStatus
     o ProductionType productionType
-    --> Field location
+    --> Field location optional
+    --> Farmer owner
 }
 
 /**
@@ -91,6 +105,7 @@ asset Business identified by sbi {
  */
 abstract transaction AnimalMovement identified by transactionId {
   o String transactionId
+  o String[] logs optional
     --> Animal animal
     --> Business from
     --> Business to
@@ -100,71 +115,12 @@ abstract transaction AnimalMovement identified by transactionId {
  * A transaction type for an animal leaving a farm
  */
 transaction AnimalMovementDeparture extends AnimalMovement {
+  --> Field fromField
 }
 
 /**
  * A transaction type for an animal arriving at a field
  */
 transaction AnimalMovementArrival extends AnimalMovement {
-  --> Field location
+  --> Field arrivalField
 }
-
-/**
- * A transaction processor for AnimalMovementDeparture
- */
-/*
- function onAnimalMovementDeparture(json) {
-
-   // test calling a native Go function
-   log( 'onAnimalMovementDeparture: ' + json );
-
-   // convert the JSON to a JS object
-   movementDeparture = JSON.parse(json);
-
-   // mark the animal as IN_TRANSIT
-   if(movementDeparture.animal.movementStatus === 'IN_FIELD') {
-     log('Animal is in field');
-
-     // mark the animal as IN_TRANSIT
-     movementDeparture.animal.movementStatus = 'IN_TRANSIT';
-
-     // add the animal to the list of incoming animals for the destination field
-     // TODO (DCS) -- handle duplicates!
-     movementDeparture.to.incoming.push(movementDeparture.animal);
-
-     // remove the animal from its current field
-     // TODO (DCS) too ugly!
-     movementDeparture.animal.location =
-       movementDeparture.animal.location.animals.filter
-         (function(animal) { return animal.id !== movementDeparture.animal.id; });
-
-     // clear the animal's location
-     movementDeparture.animal.location = null;
-
-     // return the transaction as a string
-     return JSON.stringify(movementDeparture);
-   }
-   else {
-     throw new Error('Cannot move an animal that is not IN_FIELD');
-   }
- }
- */
-
-/**
- * A transaction processor for AnimalMovementArrival
- */
-/*
-function onAnimalMovementArrival(movementArrival) {
-  // mark the animal as IN_FIELD
-  movementArrival.animal.movementStatus = MovementStatus.IN_FIELD;
-
-  // remove the animal from the 'to' Holder's incoming set
-  movementArrival.to.incoming.remove(animalMovement.animal);
-
-  // add the animal to a field
-  movementArrival.location.add(movementArrival.animal);
-
-  // set the new animal location
-  movementArrival.animal.location = movementArrival.location;
-}
-*/
