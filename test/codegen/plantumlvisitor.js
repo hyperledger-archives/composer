@@ -36,6 +36,9 @@ describe('PlantUMLVisitor', function(){
             let parameters = {};
             parameters.fileWriter = new FileWriter('./out/mozart');
             businessNetwork.accept(visitor, parameters);
+
+            // check the file exists
+            fs.accessSync('./out/mozart/model.uml', fs.F_OK);
         });
     });
 });
