@@ -2,8 +2,9 @@ class BaseException extends Error {
    + void constructor(string) 
 }
 class BusinessNetwork {
-   + void constructor(String) 
+   + void constructor(String,String) 
    + String getIdentifier() 
+   + String getDescription() 
    + BusinessNetwork fromArchive(Buffer) 
    + void toArchive(Buffer) 
    + Introspector getIntrospector() 

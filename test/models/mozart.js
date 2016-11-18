@@ -54,7 +54,7 @@ describe('Mozart Model', function(){
             // check the Participant Farmer
             const farmer = modelFile.getType('com.ibm.concerto.mozart.Farmer');
             farmer.should.not.be.null;
-            farmer.getOwnProperties().length.should.equal(7);
+            farmer.getOwnProperties().length.should.equal(5);
 
             // check the asset Field
             const fieldAsset = modelFile.getType('com.ibm.concerto.mozart.Field');
@@ -93,6 +93,7 @@ describe('Mozart Model', function(){
             myAnimal.productionType = 'MEAT';
             myAnimal.should.not.be.null;
             myAnimal.location = factory.newRelationship('com.ibm.concerto.mozart', 'Field', 'MY_FIELD');
+            myAnimal.owner = factory.newRelationship('com.ibm.concerto.mozart', 'Farmer', 'FARMER_001');
 
             // check that we can serialize
             const jsonAnimal = serializer.toJSON(myAnimal);
