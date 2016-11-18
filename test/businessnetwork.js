@@ -16,7 +16,7 @@ describe('BusinessNetwork', () => {
     let businessNetwork;
 
     beforeEach(() => {
-        businessNetwork = new BusinessNetwork();
+        businessNetwork = new BusinessNetwork('id', 'description');
     });
 
     afterEach(() => {
@@ -42,6 +42,14 @@ describe('BusinessNetwork', () => {
 
         it('should be able to retrieve model manager', () => {
             businessNetwork.getModelManager().should.not.be.null;
+        });
+
+        it('should be able to retrieve identifier', () => {
+            businessNetwork.getIdentifier().should.not.be.null;
+        });
+
+        it('should be able to retrieve description', () => {
+            businessNetwork.getDescription().should.not.be.null;
         });
     });
 
