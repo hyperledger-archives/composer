@@ -1,6 +1,5 @@
 instrumentation:
     excludes:
-        - go/**
         - out/**
         - scripts/**
 check:
