@@ -28,6 +28,7 @@
     "browserify": "^13.1.1",
     "browserify-istanbul": "^2.0.0",
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "eslint": "^3.10.2",
     "ink-docstrap": "^1.3.0",
     "jsdoc": "^3.4.3",
@@ -37,8 +38,12 @@
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
     "karma-mocha": "^1.3.0",
+    "karma-spec-reporter": "0.0.26",
     "license-check": "^1.1.5",
     "mocha": "^3.1.2",
+    "moment": "^2.16.0",
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2",
     "watchify": "^3.7.0"
   },
   "publishConfig": {
