@@ -11,39 +11,34 @@
 'use strict';
 
 require('chai').should();
-const ModelManager = require('../../lib/modelmanager');
+const BusinessNetwork = require('../../lib/businessnetwork');
 const PlantUMLVisitor = require('../../lib/codegen/fromcto/plantuml/plantumlvisitor');
 const FileWriter = require('../../lib/codegen/filewriter');
 
 const fs = require('fs');
 const path = require('path');
-const sinon = require('sinon');
 
 describe('PlantUMLVisitor', function(){
 
-    let mockFileWriter;
-
-    beforeEach(() => {
-        mockFileWriter = sinon.createStubInstance(FileWriter);
-    });
-
     describe('#visit', function() {
-        it('should generate PlantUML code', function() {
+        it('should generate PlantUML code from Mozart BusinessNetwork', function() {
 
-            const mozart = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto'), 'utf8');
+            const mozartModel = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto'), 'utf8');
+            const mozartScript = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto.js'), 'utf8');
 
             // create and populate the ModelManager with a model file
-            let modelManager = new ModelManager();
-            modelManager.should.not.be.null;
-            modelManager.clearModelFiles();
-            modelManager.addModelFile(mozart);
+            const businessNetwork = new BusinessNetwork('com.ibm.concerto.mozart.DefraNetwork', 'DEFRA Animal Tracking Network');
+            businessNetwork.getModelManager().addModelFile(mozartModel);
+            const script = businessNetwork.getScriptManager().createScript('mozart.cto.js', 'JS', mozartScript);
+            businessNetwork.getScriptManager().addScript(script);
 
             let visitor = new PlantUMLVisitor();
             let parameters = {};
-            parameters.fileWriter = mockFileWriter;
-            modelManager.accept(visitor, parameters);
+            parameters.fileWriter = new FileWriter('./out/mozart');
+            businessNetwork.accept(visitor, parameters);
 
-            sinon.assert.calledWith(mockFileWriter.openFile, 'model.uml');
+            // check the file exists
+            fs.accessSync('./out/mozart/model.uml', fs.F_OK);
         });
     });
 });

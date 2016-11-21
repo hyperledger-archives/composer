@@ -76,6 +76,7 @@ transaction MyTransactionEx extends MyTransaction {
   o BaseAsset[] arrayOfBaseAssets
 }
 
+/*
 function onMyTransaction(foo) {
     log('Hello');
 }
@@ -87,3 +88,4 @@ function onMyTransactionEx(bar) {
 function log(text) {
     console.log(text);
 }
+*/

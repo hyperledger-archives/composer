@@ -12,6 +12,15 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.1.4 {07e701400cc255fbc1413490405af162} 2016-11-18
+- Added description to BusinessNetwork
+
+Version 0.1.3 {a10f96f1abd8236e7e414b85228243fe} 2016-11-17
+- Added BusinessNetwork APIs
+
+Version 0.1.2 {ec8cb98ca41a011d5b595cdc24abfbfc} 2016-11-17
+- Added connection manager APIs
+
 Version 0.1.1 {882ad35d7b7f29f4d910d0100406f852} 2016-11-17
 - Added the Introspector
 

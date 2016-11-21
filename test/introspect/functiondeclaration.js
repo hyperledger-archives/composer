@@ -11,9 +11,8 @@
 'use strict';
 
 const FunctionDeclaration = require('../../lib/introspect/functiondeclaration');
-const ModelFile = require('../../lib/introspect/modelfile');
+const Script = require('../../lib/introspect/script');
 const ModelManager = require('../../lib/modelmanager');
-const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const fs = require('fs');
 
 require('chai').should();
@@ -21,41 +20,32 @@ const sinon = require('sinon');
 
 describe('FunctionDeclaration', () => {
 
-    let mockModelManager;
+    const modelManager = new ModelManager();
+    modelManager.addModelFile('namespace org.acme transaction TestTransaction identified by id {o String id}');
+    let mozartModel = fs.readFileSync('test/data/model/mozart.cto', 'utf8');
+    modelManager.addModelFile(mozartModel);
 
-    beforeEach(() => {
-        mockModelManager = sinon.createStubInstance(ModelManager);
-    });
-
-    let loadFunctionDeclaration = (modelFileName) => {
-        let modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
-        let modelFile = new ModelFile(mockModelManager, modelDefinitions);
-        let functions = modelFile.getFunctions();
-        functions.should.have.lengthOf(1);
+    let loadFunctionDeclaration = (scriptFileName) => {
+        let scriptText = fs.readFileSync(scriptFileName, 'utf8');
+        let script = new Script(modelManager, 'TEST_SCRIPT', 'JS', scriptText);
+        let functions = script.getFunctionDeclarations();
+        (functions.length > 0).should.be.true;
         return functions[0];
     };
 
     describe('#constructor', () => {
 
-        it('should throw if modelFile not specified', () => {
+        it('should throw if modelManager not specified', () => {
             (() => {
                 new FunctionDeclaration(null, {});
             }).should.throw(/required/);
         });
-
-        it('should throw if ast not specified', () => {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            (() => {
-                new FunctionDeclaration(mockModelFile, null);
-            }).should.throw(/required/);
-        });
-
     });
 
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
             let visitor = {
                 visit: sinon.stub()
             };
@@ -69,17 +59,8 @@ describe('FunctionDeclaration', () => {
     describe('#getName', () => {
 
         it('should return the function name', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
             func.getName().should.equal('onTestTransaction');
-        });
-
-    });
-
-    describe('#getModelFile', () => {
-
-        it('should return the model file', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
-            func.getModelFile().should.be.an.instanceOf(ModelFile);
         });
 
     });
@@ -87,8 +68,17 @@ describe('FunctionDeclaration', () => {
     describe('#getFunctionText', () => {
 
         it('should return the function text', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
-            func.getFunctionText().should.match(/^function onTestTransaction\(testTransaction, param1, param2\)/);
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
+            func.getFunctionText().should.match(/^function onTestTransaction\(testTransaction\)/);
+        });
+
+    });
+
+    describe('#getDecorators', () => {
+
+        it('should return the function decorators', () => {
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
+            func.getDecorators().should.deep.equal(['param', 'transaction']);
         });
 
     });
@@ -96,8 +86,8 @@ describe('FunctionDeclaration', () => {
     describe('#getParameters', () => {
 
         it('should return the function parameters', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
-            func.getParameters().should.deep.equal(['testTransaction', 'param1', 'param2']);
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
+            func.getParameterNames().should.deep.equal(['testTransaction']);
         });
 
     });
@@ -105,7 +95,7 @@ describe('FunctionDeclaration', () => {
     describe('#getTransactionDeclarationName', () => {
 
         it('should return the transaction name', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
             func.getTransactionDeclarationName().should.equal('TestTransaction');
         });
 
@@ -114,48 +104,53 @@ describe('FunctionDeclaration', () => {
     describe('#getFullyQualifiedName', () => {
 
         it('should return the fully qualified name if function is in a namespace', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
-            func.getFullyQualifiedName().should.equal('com.ibm.testing.onTestTransaction');
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
+            func.getName().should.equal('onTestTransaction');
         });
 
+    });
+
+    describe('#getDecorators', () => {
+
+        it('should grab all decorators', () => {
+            let func = loadFunctionDeclaration('test/data/model/mozart.cto.js');
+            func.getDecorators().should.deep.equal(['param', 'transaction']);
+        });
     });
 
     describe('#validate', () => {
 
         it('should throw if the function refers to a transaction that does not exist', () => {
             (() => {
-                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.missingtx.cto');
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.missingtx.js');
                 func.validate();
-            }).should.throw(/Could not find transaction/);
+            }).should.throw(/No type org.acme.TestTransactionLulz/);
         });
 
         it('should throw if the function refers to a transaction that is not a transaction', () => {
             (() => {
-                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.notatx.cto');
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.notatx.js');
                 func.validate();
             }).should.throw(/is not a transaction/);
         });
 
-        it('should resolve an imported transaction', () => {
-            let mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
-            mockModelManager.getType.returns(mockTransactionDeclaration);
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.resolve.cto');
-            func.validate();
-            sinon.assert.calledOnce(mockModelManager.getType);
-            sinon.assert.calledWith(mockModelManager.getType, 'com.ibm.elsewhere.TestTransaction');
+        it('should throw if the function is decorated with both @transaction and @query', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.queryandtransaction.js');
+                func.validate();
+            }).should.throw(/cannot be decorated with both/);
         });
-
     });
 
     describe('#toJSON', () => {
 
         it('should return a JSON object suitable for serialization', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.cto');
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
             let jsonObject = func.toJSON();
             jsonObject.should.be.an('object');
             jsonObject.name.should.equal('onTestTransaction');
-            jsonObject.params.should.deep.equal(['testTransaction', 'param1', 'param2']);
-            jsonObject.functionText.should.match(/^function onTestTransaction\(testTransaction, param1, param2\)/);
+            jsonObject.params.should.deep.equal(['testTransaction']);
+            jsonObject.functionText.should.match(/^function onTestTransaction\(testTransaction\)/);
         });
 
     });

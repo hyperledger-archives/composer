@@ -28,12 +28,15 @@ npm publish --scope=@ibm
 
 # Push empty commits to downstream projects to trigger builds.
 REPO=`git config remote.origin.url`
-for PROJ in Concerto-Runtime; do
+for PROJ in Concerto-Client Concerto-Connector-Hyperledger-Fabric Concerto-Runtime; do
     cd ${DIR}
     THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
     rm -rf temp
     git clone ${THISREPO} temp
     cd temp
+    git config user.email "noreply@ibm.com"
+    git config user.name "Blockchain WW Labs - Solutions"
+    git config push.default simple
     git commit -m "Automated commit to trigger downstream build" --allow-empty
     git push
 done

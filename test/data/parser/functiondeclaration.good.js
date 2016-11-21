@@ -7,17 +7,16 @@
  * divested of its trade secrets, irrespective of what has
  * been deposited with the U.S. Copyright Office.
  */
-
 'use strict';
 
-const common = require('..');
-
-const businessNetwork = common.BusinessNetwork;
-
-describe('Module', () => {
-    describe('#instances', function() {
-        it('check can get instances', function() {
-            businessNetwork.should.not.be.null;
-        });
-    });
-});
+/*eslint-disable no-unused-vars*/
+/**
+ * This is a transaction processor function
+ *
+ * @param  {org.acme.TestTransaction} testTransaction - this is a sample transaction
+ * @transaction
+ */
+function onTestTransaction(testTransaction) {
+    console.log('onTestTransaction');
+}
+/*eslint-enable no-unused-vars*/
