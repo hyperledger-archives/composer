@@ -1,0 +1,66 @@
+{
+	"en": {
+		"like": [
+				"{0, plural, offset:1",
+				"     =0 {Be the first to like this}",
+				"     =1 {You liked this}",
+				"    one {You and someone else liked this}",
+				"  other {You and # others liked this}",
+				"}"
+			],
+        "hello": "Hello, {0} {1} {2}",
+        "hey": "Hey, {first} {middle} {last}",
+
+        "classdeclaration-constructor-modelastreq": "ModelFile and AST are required to create a ClassDecl.",
+        "classdeclaration-process-unrecmodelelem": "Unrecognised model element {type}",
+        "classdeclaration-getfield-notfindsupertype": "Could not find super type {type}",
+        "classdeclaration-validate-identifiernotproperty": "Class {class} is identified by field ({idField}) but does not contain this property.",
+        "classdeclaration-validate-identifiernotstring": "Class {class} is identified by field ({idField}) but the type of the field is not String.",
+				"classdeclaration-validate-duplicatefieldname": "Class {class} has more than one field named ({fieldName}).",
+
+        "modelfile-constructor-unrecmodelelem": "Unrecognised model element {type}",
+        "modelfile-resolvetype-undecltype": "Undeclared type {type} in {context}",
+        "modelfile-resolveimport-failfindimp": "Failed to find {type} in list of imports [{imports}] for namespace {namespace}",
+
+        "transactiondeclaration-getidentifierfieldname-noidentifyingfield": "Transactions do not have an identifying field.",
+
+        "concerto-connect-noconopts": "connectOptions not specified",
+        "concerto-connect-nokeyvalstore": "connectOptions.keyValStore not specified",
+        "concerto-connect-nomembersrvcurl": "connectOptions.membershipServicesURL not specified",
+        "concerto-connect-nopeerurl": "connectOptions.peerURL not specified",
+        "concerto-connect-noeventhuburl": "connectOptions.eventHubURL not specified",
+        "concerto-login-noenrollmentid": "enrollmentID not specified",
+        "concerto-login-noenrollmentsecret": "enrollmentSecret not specified",
+        "concerto-deploy-nosecuritycontext": "securityContext not specified",
+
+        "factory-newinstance-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
+        "factory-newinstance-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
+
+        "factory-newrelationship-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
+        "factory-newrelationship-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
+
+        "modelmanager-resolvetype-nonsfortype": "No registered namespace for type {type} in {context}",
+        "modelmanager-resolvetype-notypeinnsforcontext": "No type {type} in namespace {namespace} for {context}",
+
+        "modelmanager-gettype-noregisteredns": "No registered namespace for type {type}",
+        "modelmanager-gettype-notypeinns": "No type {type} in namespace {namespace}",
+
+        "serializer-constructor-factorynull": "Factory cannot be null",
+        "serializer-constructor-modelmanagernull": "ModelManager cannot be null",
+        "serializer-tojson-notcobject": "Serializer.toJSON only accepts instances of Resource.",
+
+        "util-securitycheck-novalidcontext": "A valid SecurityContext must be specified.",
+
+        "modelutil-getnamespace-nofnq": "FQN is invalid.",
+
+
+				"resourcevalidator-notresource" : "Model violation in instance {resourceId} class {classFQN} has value {invalidValue} expected a Resource.",
+				"resourcevalidator-notrelationship" : "Model violation in instance {resourceId} class {classFQN} has value {invalidValue} expected a Relationship.",
+				"resourcevalidator-fieldtypeviolation" : "Model violation in instance {resourceId} field {propertyName} has value {value} ({typeOfValue}) expected type {fieldType}",
+				"resourcevalidator-missingrequiredproperty" : "Instance {resourceId} missing required field {fieldName}",
+				"resourcevalidator-invalidenumvalue" : "Instance {resourceId} invalid enum value {value} for field {fieldName}",
+				"resourcevalidator-abstractclass" : "The class {className} is abstract. Should not have an instance!",
+				"resourcevalidator-undeclaredfield" : "Instance {resourceId} has a property named {propertyName} which is not declared in {fullyQualifiedTypeName}",
+				"resourcevalidator-invalidfieldassignment" : "Instance {resourceId} has property {propertyName} with type {objectType} that is not derived from {fieldType}"
+	}
+}
