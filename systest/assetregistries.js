@@ -1,0 +1,691 @@
+/*
+ * IBM Confidential
+ * OCO Source Materials
+ * IBM Concerto - Blockchain Solution Framework
+ * Copyright IBM Corp. 2016
+ * The source code for this program is not published or otherwise
+ * divested of its trade secrets, irrespective of what has
+ * been deposited with the U.S. Copyright Office.
+ */
+
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const TestUtil = require('./testutil');
+
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-subset'));
+
+describe('Asset registry system tests', function () {
+
+    let modelFiles;
+    let concerto;
+    let securityContext;
+
+    let createAsset = (assetId) => {
+        let factory = concerto.getFactory(securityContext);
+        let asset = factory.newInstance('systest.assetregistries', 'SimpleAsset', assetId);
+        asset.stringValue = 'hello world';
+        asset.stringValues = [ 'hello', 'world' ];
+        asset.doubleValue = 3.142;
+        asset.doubleValues = [ 4.567, 8.901 ];
+        asset.integerValue = 1024;
+        asset.integerValues = [ 32768, -4096 ];
+        asset.longValue = 131072;
+        asset.longValues = [ 999999999, -1234567890 ];
+        asset.dateTimeValue = new Date('1994-11-05T08:15:30-05:00');
+        asset.dateTimeValues = [ new Date('2016-11-05T13:15:30Z'), new Date('2063-11-05T13:15:30Z') ];
+        asset.booleanValue = true;
+        asset.booleanValues = [ false, true ];
+        asset.enumValue = 'WOW';
+        asset.enumValues = [ 'SUCH', 'MANY', 'MUCH' ];
+        return asset;
+    };
+
+    let createAssetContainer = () => {
+        let factory = concerto.getFactory(securityContext);
+        let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetContainer', 'dogeAssetContainer');
+        return asset;
+    };
+
+    let createAssetRelationshipContainer = () => {
+        let factory = concerto.getFactory(securityContext);
+        let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetRelationshipContainer', 'dogeAssetRelationshipContainer');
+        return asset;
+    };
+
+    let validateAsset = (asset, assetId) => {
+        asset.getIdentifier().should.equal(assetId);
+        asset.stringValue.should.equal('hello world');
+        asset.stringValues.should.deep.equal([ 'hello', 'world' ]);
+        asset.doubleValue.should.equal(3.142);
+        asset.doubleValues.should.deep.equal([ 4.567, 8.901 ]);
+        asset.integerValue.should.equal(1024);
+        asset.integerValues.should.deep.equal([ 32768, -4096 ]);
+        asset.longValue.should.equal(131072);
+        asset.longValues.should.deep.equal([ 999999999, -1234567890 ]);
+        let expectedDate = new Date('1994-11-05T08:15:30-05:00');
+        asset.dateTimeValue.getTime().should.equal(expectedDate.getTime());
+        let expectedDates = [ new Date('2016-11-05T13:15:30Z'), new Date('2063-11-05T13:15:30Z') ];
+        asset.dateTimeValues[0].getTime().should.equal(expectedDates[0].getTime());
+        asset.dateTimeValues[1].getTime().should.equal(expectedDates[1].getTime());
+        asset.booleanValue.should.equal(true);
+        asset.booleanValues.should.deep.equal([ false, true ]);
+        asset.enumValue.should.equal('WOW');
+        asset.enumValues.should.deep.equal([ 'SUCH', 'MANY', 'MUCH' ]);
+    };
+
+    let validateAssetContainer = (assetContainer, assetId) => {
+        assetContainer.getIdentifier().should.equal(assetId);
+        validateAsset(assetContainer.simpleAsset, 'dogeAsset1');
+        assetContainer.simpleAssets.length.should.equal(2);
+        validateAsset(assetContainer.simpleAssets[0], 'dogeAsset2');
+        validateAsset(assetContainer.simpleAssets[1], 'dogeAsset3');
+    };
+
+    let validateAssetRelationshipContainer = (assetContainer, assetId) => {
+        assetContainer.getIdentifier().should.equal(assetId);
+        assetContainer.simpleAsset.$class.should.equal('Relationship');
+        assetContainer.simpleAsset.getFullyQualifiedIdentifier().should.equal('systest.assetregistries.SimpleAsset#dogeAsset1');
+        assetContainer.simpleAssets.length.should.equal(2);
+        assetContainer.simpleAssets[0].$class.should.equal('Relationship');
+        assetContainer.simpleAssets[0].getFullyQualifiedIdentifier().should.equal('systest.assetregistries.SimpleAsset#dogeAsset2');
+        assetContainer.simpleAssets[1].$class.should.equal('Relationship');
+        assetContainer.simpleAssets[1].getFullyQualifiedIdentifier().should.equal('systest.assetregistries.SimpleAsset#dogeAsset3');
+    };
+
+    let validateResolvedAsset = (asset, assetId) => {
+        asset.assetId.should.equal(assetId);
+        asset.stringValue.should.equal('hello world');
+        asset.stringValues.should.deep.equal([ 'hello', 'world' ]);
+        asset.doubleValue.should.equal(3.142);
+        asset.doubleValues.should.deep.equal([ 4.567, 8.901 ]);
+        asset.integerValue.should.equal(1024);
+        asset.integerValues.should.deep.equal([ 32768, -4096 ]);
+        asset.longValue.should.equal(131072);
+        asset.longValues.should.deep.equal([ 999999999, -1234567890 ]);
+        let expectedDate = new Date('1994-11-05T08:15:30-05:00');
+        (new Date(asset.dateTimeValue)).getTime().should.equal(expectedDate.getTime());
+        let expectedDates = [ new Date('2016-11-05T13:15:30Z'), new Date('2063-11-05T13:15:30Z') ];
+        (new Date(asset.dateTimeValues[0])).getTime().should.equal(expectedDates[0].getTime());
+        (new Date(asset.dateTimeValues[1])).getTime().should.equal(expectedDates[1].getTime());
+        asset.booleanValue.should.equal(true);
+        asset.booleanValues.should.deep.equal([ false, true ]);
+        asset.enumValue.should.equal('WOW');
+        asset.enumValues.should.deep.equal([ 'SUCH', 'MANY', 'MUCH' ]);
+    };
+
+    let validateResolvedAssetContainer = (assetContainer, assetId) => {
+        assetContainer.assetId.should.equal(assetId);
+        validateResolvedAsset(assetContainer.simpleAsset, 'dogeAsset1');
+        assetContainer.simpleAssets.length.should.equal(2);
+        validateResolvedAsset(assetContainer.simpleAssets[0], 'dogeAsset2');
+        validateResolvedAsset(assetContainer.simpleAssets[1], 'dogeAsset3');
+    };
+
+    before(function () {
+        modelFiles = [
+            fs.readFileSync(path.resolve(__dirname, 'data/assetregistries.cto'), 'utf8')
+        ];
+        concerto = TestUtil.getConcerto();
+        securityContext = TestUtil.getSecurityContext();
+    });
+
+    beforeEach(function () {
+        let modelManager = concerto.getModelManager(securityContext);
+        modelManager.clearModelFiles();
+        modelFiles.forEach(function (modelFile) {
+            modelManager.addModelFile(modelFile);
+        });
+        return concerto.saveModels(securityContext);
+    });
+
+    it('should get all the asset registries', function () {
+        return concerto
+            .getAllAssetRegistries(securityContext)
+            .then(function (assetRegistries) {
+                assetRegistries.length.should.equal(4);
+                assetRegistries.should.containSubset([
+                    {'id': 'systest.assetregistries.SimpleAsset', 'name': 'Asset registry for systest.assetregistries.SimpleAsset'},
+                    {'id': 'systest.assetregistries.SimpleAssetContainer', 'name': 'Asset registry for systest.assetregistries.SimpleAssetContainer'},
+                    {'id': 'systest.assetregistries.SimpleAssetRelationshipContainer', 'name': 'Asset registry for systest.assetregistries.SimpleAssetRelationshipContainer'},
+                    {'id': 'systest.assetregistries.SimpleAssetCircle', 'name': 'Asset registry for systest.assetregistries.SimpleAssetCircle'}
+                ]);
+            });
+    });
+
+    it('should get an asset registry', function () {
+        return concerto
+            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+            .then(function (assetRegistry) {
+                assetRegistry.should.containSubset({'id': 'systest.assetregistries.SimpleAsset', 'name': 'Asset registry for systest.assetregistries.SimpleAsset'});
+            });
+    });
+
+    it('should throw when getting a non-existent asset registry', function () {
+        return concerto
+            .getAssetRegistry(securityContext, 'e92074d3-935b-4c75-98e5-5dc2505aa971')
+            .then(function (assetRegistry) {
+                throw new Error('should not get here');
+            }).catch(function (error) {
+                error.should.match(/Object with ID 'Asset:e92074d3-935b-4c75-98e5-5dc2505aa971' in collection with ID '\$sysregistries' does not exist/);
+            });
+    });
+
+    it('should add an asset registry', function () {
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function () {
+                return concerto.getAllAssetRegistries(securityContext);
+            })
+            .then(function (assetRegistries) {
+                assetRegistries.should.have.length.of.at.least(4);
+                assetRegistries.should.containSubset([{'id': 'myregistry', 'name': 'my new asset registry'}]);
+                return concerto.getAssetRegistry(securityContext, 'myregistry');
+            })
+            .then(function (assetRegistry) {
+                assetRegistry.should.containSubset({'id': 'myregistry', 'name': 'my new asset registry'});
+            });
+    });
+
+    it('should add an asset to an asset registry', function () {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                return assetRegistry.getAll(securityContext);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(1);
+                validateAsset(assets[0], 'dogeAsset1');
+                return assetRegistry.get(securityContext, 'dogeAsset1');
+            })
+            .then(function (asset) {
+                asset.getIdentifier().should.equal('dogeAsset1');
+            });
+    });
+
+    it('should bulk add assets to an asset registry', function () {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset1 = createAsset('dogeAsset1');
+                let asset2 = createAsset('dogeAsset2');
+                return assetRegistry.addAll(securityContext, [asset1, asset2]);
+            })
+            .then(function () {
+                return assetRegistry.getAll(securityContext);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(2);
+                assets.sort((a, b) => {
+                    return a.getIdentifier().localeCompare(b.getIdentifier());
+                });
+                validateAsset(assets[0], 'dogeAsset1');
+                validateAsset(assets[1], 'dogeAsset2');
+            });
+    });
+
+    it('should update an asset in an asset registry', () => {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function (asset) {
+                return assetRegistry.get(securityContext, 'dogeAsset1');
+            })
+            .then(function (asset) {
+                validateAsset(asset, 'dogeAsset1');
+                asset.stringValue = 'ciao mondo';
+                asset.stringValues = [ 'ciao', 'mondo' ];
+                return assetRegistry.update(securityContext, asset);
+            })
+            .then(function () {
+                return assetRegistry.get(securityContext, 'dogeAsset1');
+            })
+            .then(function (asset) {
+                asset.stringValue.should.equal('ciao mondo');
+                asset.stringValues.should.deep.equal([ 'ciao', 'mondo' ]);
+            });
+    });
+
+    it('should bulk update assets in an asset registry', function () {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset1 = createAsset('dogeAsset1');
+                let asset2 = createAsset('dogeAsset2');
+                return assetRegistry.addAll(securityContext, [asset1, asset2]);
+            })
+            .then(function () {
+                return assetRegistry.getAll(securityContext);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(2);
+                assets.sort((a, b) => {
+                    return a.getIdentifier().localeCompare(b.getIdentifier());
+                });
+                validateAsset(assets[0], 'dogeAsset1');
+                assets[0].stringValue = 'ciao mondo';
+                assets[0].stringValues = [ 'ciao', 'mondo' ];
+                validateAsset(assets[1], 'dogeAsset2');
+                assets[1].stringValue = 'hei maailma';
+                assets[1].stringValues = [ 'hei', 'maailma' ];
+                return assetRegistry.updateAll(securityContext, assets);
+            })
+            .then(function () {
+                return assetRegistry.getAll(securityContext);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(2);
+                assets.sort((a, b) => {
+                    return a.getIdentifier().localeCompare(b.getIdentifier());
+                });
+                assets[0].stringValue.should.equal('ciao mondo');
+                assets[0].stringValues.should.deep.equal([ 'ciao', 'mondo' ]);
+                assets[1].stringValue.should.equal('hei maailma');
+                assets[1].stringValues.should.deep.equal([ 'hei', 'maailma' ]);
+            });
+    });
+
+    it('should remove an asset from an asset registry', () => {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function (asset) {
+                return assetRegistry.get(securityContext, 'dogeAsset1');
+            })
+            .then(function (asset) {
+                validateAsset(asset, 'dogeAsset1');
+                return assetRegistry.remove(securityContext, 'dogeAsset1');
+            })
+            .then(function (asset) {
+                return assetRegistry.get(securityContext, 'dogeAsset1');
+            })
+            .then(function () {
+                throw new Error('should not get here');
+            })
+            .catch(function (error) {
+                error.should.match(/does not exist/);
+            });
+    });
+
+    it('should bulk remove assets from an asset registry', () => {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset1 = createAsset('dogeAsset1');
+                let asset2 = createAsset('dogeAsset2');
+                return assetRegistry.addAll(securityContext, [asset1, asset2]);
+            })
+            .then(function (asset) {
+                return assetRegistry.getAll(securityContext);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(2);
+                assets.sort((a, b) => {
+                    return a.getIdentifier().localeCompare(b.getIdentifier());
+                });
+                validateAsset(assets[0], 'dogeAsset1');
+                validateAsset(assets[1], 'dogeAsset2');
+                return assetRegistry.removeAll(securityContext, ['dogeAsset1', assets[1]]);
+            })
+            .then(function (asset) {
+                return assetRegistry.getAll(securityContext);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(0);
+            });
+    });
+
+    it('should store assets containing assets in an asset registry', () => {
+        let assetRegistry;
+        let assetContainerRegistry;
+        return concerto
+            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset2');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset3');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                return concerto.getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetContainer');
+            })
+            .then(function (result) {
+                assetContainerRegistry = result;
+                let assetContainer = createAssetContainer();
+                assetContainer.simpleAsset = createAsset('dogeAsset1');
+                assetContainer.simpleAssets = [
+                    createAsset('dogeAsset2'),
+                    createAsset('dogeAsset3')
+                ];
+                return assetContainerRegistry.add(securityContext, assetContainer);
+            })
+            .then(function () {
+                return assetContainerRegistry.getAll(securityContext);
+            })
+            .then(function (assetContainers) {
+                assetContainers.length.should.equal(1);
+                validateAssetContainer(assetContainers[0], 'dogeAssetContainer');
+                return assetContainerRegistry.get(securityContext, 'dogeAssetContainer');
+            })
+            .then(function (assetContainer) {
+                validateAssetContainer(assetContainer, 'dogeAssetContainer');
+            });
+    });
+
+    it('should store assets containing asset relationships in an asset registry', () => {
+        let assetRegistry;
+        let assetContainerRegistry;
+        return concerto
+            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset2');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset3');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                return concerto.getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetRelationshipContainer');
+            })
+            .then(function (result) {
+                assetContainerRegistry = result;
+                let assetContainer = createAssetRelationshipContainer();
+                let factory = concerto.getFactory(securityContext);
+                assetContainer.simpleAsset = factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset1');
+                assetContainer.simpleAssets = [
+                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset2'),
+                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset3')
+                ];
+                return assetContainerRegistry.add(securityContext, assetContainer);
+            })
+            .then(function () {
+                return assetContainerRegistry.getAll(securityContext);
+            })
+            .then(function (assetContainers) {
+                assetContainers.length.should.equal(1);
+                validateAssetRelationshipContainer(assetContainers[0], 'dogeAssetRelationshipContainer');
+                return assetContainerRegistry.get(securityContext, 'dogeAssetRelationshipContainer');
+            })
+            .then(function (assetContainer) {
+                validateAssetRelationshipContainer(assetContainer, 'dogeAssetRelationshipContainer');
+            });
+    });
+
+    it.skip('should resolve assets containing asset relationships from an asset registry', () => {
+        let assetRegistry;
+        let assetContainerRegistry;
+        return concerto
+            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = createAsset('dogeAsset1');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset2');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = createAsset('dogeAsset3');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                return concerto.getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetRelationshipContainer');
+            })
+            .then(function (result) {
+                assetContainerRegistry = result;
+                let assetContainer = createAssetRelationshipContainer();
+                let factory = concerto.getFactory(securityContext);
+                assetContainer.simpleAsset = factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset1');
+                assetContainer.simpleAssets = [
+                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset2'),
+                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset3')
+                ];
+                return assetContainerRegistry.add(securityContext, assetContainer);
+            })
+            .then(function () {
+                return assetContainerRegistry.resolveAll(securityContext);
+            })
+            .then(function (assetContainers) {
+                assetContainers.length.should.equal(1);
+                validateResolvedAssetContainer(assetContainers[0], 'dogeAssetRelationshipContainer');
+                return assetContainerRegistry.resolve(securityContext, 'dogeAssetRelationshipContainer');
+            })
+            .then(function (assetContainer) {
+                validateResolvedAssetContainer(assetContainer, 'dogeAssetRelationshipContainer');
+            });
+    });
+
+    it.skip('should resolve assets containing circular relationships from an asset registry', () => {
+        let factory = concerto.getFactory(securityContext);
+        let assetRegistry;
+        return concerto
+            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetCircle')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
+                asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
+                asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                return assetRegistry.add(securityContext, asset);
+            })
+            .then(function () {
+                return assetRegistry.resolveAll(securityContext);
+            })
+            .then(function (assets) {
+                assets.sort((a, b) => {
+                    return a.assetId.localeCompare(b.assetId);
+                });
+                assets.length.should.equal(3);
+                assets[0].next.next.assetId.should.equal('circle3');
+                assets[1].next.next.assetId.should.equal('circle1');
+                assets[2].next.next.assetId.should.equal('circle2');
+                return assetRegistry.resolve(securityContext, 'circle1');
+            })
+            .then(function (asset) {
+                asset.next.next.assetId.should.equal('circle3');
+            });
+    });
+
+    it.skip('should find assets in an asset registry', function () {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset1 = createAsset('dogeAsset1');
+                let asset2 = createAsset('dogeAsset2');
+                let asset3 = createAsset('dogeAsset3');
+                let asset4 = createAsset('dogeAsset4');
+                let asset5 = createAsset('dogeAsset5');
+                return assetRegistry.addAll(securityContext, [asset1, asset2, asset3, asset4, asset5]);
+            })
+            .then(function () {
+                return assetRegistry.find(securityContext, `
+                    (assetId = 'dogeAsset1') or
+                    (assetId = 'dogeAsset3') or
+                    (assetId = 'dogeAsset5')
+                `);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(3);
+                assets.sort((a, b) => {
+                    return a.getIdentifier().localeCompare(b.getIdentifier());
+                });
+                validateAsset(assets[0], 'dogeAsset1');
+                validateAsset(assets[1], 'dogeAsset3');
+                validateAsset(assets[2], 'dogeAsset5');
+            });
+    });
+
+    it.skip('should find assets in an asset registry using expressions that access related assets', function () {
+        let factory = concerto.getFactory(securityContext);
+        let assetRegistry;
+        return concerto
+            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetCircle')
+            .then(function (result) {
+                assetRegistry = result;
+                let circle1 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                circle1.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
+                let circle2 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
+                circle2.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
+                let circle3 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
+                circle3.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                return assetRegistry.addAll(securityContext, [circle1, circle2, circle3]);
+            })
+            .then(function () {
+                return assetRegistry.find(securityContext, `
+                    (assetId = 'circle1') and
+                    (next.assetId = 'circle2') and
+                    (next.next.assetId = 'circle3') and
+                    (next.next.next.assetId = 'circle1')
+                `);
+            })
+            .then(function (assets) {
+                assets.length.should.equal(1);
+                assets[0].assetId.should.equal('circle1');
+            });
+    });
+
+    it.skip('should query assets in an asset registry', function () {
+        let assetRegistry;
+        return concerto
+            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+            .then(function (result) {
+                assetRegistry = result;
+                let asset1 = createAsset('dogeAsset1');
+                let asset2 = createAsset('dogeAsset2');
+                let asset3 = createAsset('dogeAsset3');
+                let asset4 = createAsset('dogeAsset4');
+                let asset5 = createAsset('dogeAsset5');
+                return assetRegistry.addAll(securityContext, [asset1, asset2, asset3, asset4, asset5]);
+            })
+            .then(function () {
+                return assetRegistry.query(securityContext, `
+                    (assetId = 'dogeAsset1') or
+                    (assetId = 'dogeAsset3') or
+                    (assetId = 'dogeAsset5')
+                    ?
+                    {
+                        'myAssetId': assetId,
+                        'combinedValue': stringValue & ':' & enumValue,
+                        'someMaths': longValue - integerValue
+                    }
+                    :
+                    null
+                `);
+            })
+            .then(function (assets) {
+                assets.sort((a, b) => {
+                    return a.myAssetId.localeCompare(b.myAssetId);
+                });
+                assets.should.deep.equal([
+                    {
+                        myAssetId: 'dogeAsset1',
+                        combinedValue: 'hello world:WOW',
+                        someMaths: 130048
+                    },
+                    {
+                        myAssetId: 'dogeAsset3',
+                        combinedValue: 'hello world:WOW',
+                        someMaths: 130048
+                    },
+                    {
+                        myAssetId: 'dogeAsset5',
+                        combinedValue: 'hello world:WOW',
+                        someMaths: 130048
+                    }
+                ]);
+            });
+    });
+
+    it.skip('should query assets in an asset registry using expressions that access related assets', function () {
+        let factory = concerto.getFactory(securityContext);
+        let assetRegistry;
+        return concerto
+            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetCircle')
+            .then(function (result) {
+                assetRegistry = result;
+                let circle1 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                circle1.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
+                let circle2 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
+                circle2.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
+                let circle3 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
+                circle3.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                return assetRegistry.addAll(securityContext, [circle1, circle2, circle3]);
+            })
+            .then(function () {
+                return assetRegistry.query(securityContext, `
+                    (assetId = 'circle1') and
+                    (next.assetId = 'circle2') and
+                    (next.next.assetId = 'circle3') and
+                    (next.next.next.assetId = 'circle1')
+                    ?
+                    {
+                        'myAssetId': assetId,
+                        'nextAssetId': next.assetId,
+                        'nextNextAssetId': next.next.assetId,
+                        'backToTheAssetId': next.next.next.assetId
+                    }
+                    :
+                    null
+                `);
+            })
+            .then(function (assets) {
+                assets.should.deep.equal([{
+                    myAssetId: 'circle1',
+                    nextAssetId: 'circle2',
+                    nextNextAssetId: 'circle3',
+                    backToTheAssetId: 'circle1'
+                }]);
+            });
+    });
+
+});
