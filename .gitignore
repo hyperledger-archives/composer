@@ -38,3 +38,10 @@ jspm_packages
 
 # JSDoc
 out
+
+# Mac files.
+**/.DS_Store
+
+*.swp
+
+# Build generated files should be ignored by git, but not by npm.
