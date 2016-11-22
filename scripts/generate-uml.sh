@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Exit on first error, print all commands.
+set -ev
+
+# Grab the Concerto directory.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+echo $(date) Generating PlantUML source files for public and private APIs...
+node ./lib/codegen/parsejs.js --format PlantUML --inputDir "$DIR/lib" --outputDir "$DIR/out/uml"
+node ./lib/codegen/parsejs.js --format PlantUML --private --inputDir "$DIR/lib" --outputDir "$DIR/out/uml-private"
+
+echo $(date) Generating images for public and private APIs...
+node ./lib/tools/plantumltoimage.js --inputDir "$DIR/out/uml" --outputDir "$DIR/out/diagrams"
+node ./lib/tools/plantumltoimage.js --inputDir "$DIR/out/uml-private" --outputDir "$DIR/out/diagrams-private"
+echo $(date) Processed UML files

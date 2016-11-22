@@ -1,0 +1,8 @@
+chaincode/src/*
+!chaincode/src/concerto
+chaincode/bin
+chaincode/pkg
+coverage
+node_modules
+out
+scripts
