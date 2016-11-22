@@ -28,7 +28,7 @@ npm publish --scope=@ibm
 
 # Push empty commits to downstream projects to trigger builds.
 REPO=`git config remote.origin.url`
-for PROJ in Concerto-Client Concerto-Connector-Hyperledger-Fabric Concerto-Runtime; do
+for PROJ in Concerto-Runtime; do
     cd ${DIR}
     THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
     rm -rf temp
