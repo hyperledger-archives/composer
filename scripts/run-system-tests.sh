@@ -29,6 +29,11 @@ systest_hlf|systest_ibm)
         exit 1
     fi
 
+    # Replace the Dockerfile with the node.js version we want.
+    if [ "${TRAVIS_NODE_VERSION}" != "" ]; then
+        perl -pi -e "s/FROM node.*/FROM node:${TRAVIS_NODE_VERSION}/" ${DIR}/Dockerfile
+    fi
+
     # Pull and tag the latest Hyperledger Fabric images.
     if [ "${TEST_SUITE}" = "systest_hlf" ]; then
         DOCKER_FILE=${DIR}/hlf-docker-compose.yml
