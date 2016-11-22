@@ -59,4 +59,13 @@ describe('SecurityContext', function () {
 
     });
 
+    describe('#toJSON', () => {
+
+        it('should return an empty object', () => {
+            let securityContext = new SecurityContext(mockConnection);
+            securityContext.toJSON().should.deep.equal({});
+        });
+
+    });
+
 });

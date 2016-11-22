@@ -31,4 +31,13 @@ describe('ConnectionManager', () => {
 
     });
 
+    describe('#toJSON', () => {
+
+        it('should return an empty object', () => {
+            let cm = new ConnectionManager();
+            cm.toJSON().should.deep.equal({});
+        });
+
+    });
+
 });
