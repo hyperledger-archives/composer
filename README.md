@@ -1,5 +1,12 @@
 # Concerto-CLI
 
+Set up the Concerto command with
+
+```
+npm install
+npm link
+```
+
 ## Overview
 Concerto-Admin contains the Concerto administrative command line interfaces (CLIs) and APIs.
 
