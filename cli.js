@@ -12,11 +12,9 @@
 'use strict';
 
 require('yargs')
-    .commandDir('lib/cmds')
+    .commandDir('cmds')
     .demand(1)
-    .help('help')
+    .help()
     .strict()
-    .usage('Usage: $0 <command> [options]')
     .wrap(null)
-    .version()
     .argv;

@@ -12,7 +12,7 @@
 
 
 const concertoAdmin = require('@ibm/ibm-concerto-admin');
-const cmdUtil = require('../cmdutils');
+const cmdUtil = require('./utils/cmdutils');
 
 module.exports.command = 'network [options]';
 module.exports.describe = 'Concerto network administration subcommand';
@@ -74,54 +74,3 @@ module.exports.handler = (argv) => {
         process.exit(1);
     });
 };
-
-/*
-//const admin = require('@ibm/ibm-concerto-client');
-
-let enrollId = 'WebAppAdmin';
-let enrollSecret = 'DJY27pEnl16d';
-let networkName = 'biz.net.digtalTestNet';
-let businessNetworkRegistry;
-
-concertoAdmin.connect(networkName, enrollId, enrollSecret)
-.then((result) => {
-    businessNetworkRegistry = result;
-    console.log('Connected to Business Network Registry',JSON.stringify(businessNetworkRegistry,null,2));
-})
-.catch(function (error) {
-    throw error;
-});
-
-if (!concerto.networkExists(businessNetworkName)) {
-    createNetwork = true;
-    resolve(concerto.create(businessNetworkName, this.getConnectOptions()));
-}  else {
-    createNetwork = false;
-    resolve(concerto.connect(businessNetworkName));
-}
-})
-.then (() => {
-return concerto.login(enrollId, enrollSecret);
-})
-// Then deploy the Concerto framework.
-.then((result) => {
-// Save the security context returned by login().
-securityContext = result;
-if (createNetwork === true) {
-   // Deploy the Concerto framework.
-    return concerto.deploy(securityContext);
-} else {
-   // Just set the chaincode ID as framework is already deployed
-    securityContext.setChaincodeID(concerto.getChaincodeId(businessNetworkName));
-}
-})
-// Concerto is now deployed and ready for use.
-// Now we need to load the Concerto models.
-.then(() => {
-let modelManager = concerto.getModelManager(securityContext);
-modelManager.clearModelFiles();
-modelManager.addModelFiles(this.getModels());
-
-// Update the models in the Blockchain.
-return concerto.updateModels(securityContext);
-*/

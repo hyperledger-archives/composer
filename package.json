@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "IBM Concerto blockchain framework administrative command line interfaces (CLIs)",
   "bin": {
-  "concerto": "cmdIndex.js"
+  "concerto": "cli.js"
 },
   "main": "index.js",
   "scripts": {
