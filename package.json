@@ -1,0 +1,28 @@
+{
+  "name": "concerto-admin",
+  "version": "0.0.1",
+  "description": "Concerto admin API code",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "chai": "^3.5.0",
+    "sinon": "^1.17.6"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-things": "^0.2.0",
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.6"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.ibm.com:Liam-Grace/Concerto-Admin.git"
+  },
+  "author": "IBM",
+  "license": "ISC"
+}
