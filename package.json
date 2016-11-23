@@ -1,7 +1,7 @@
 {
   "name": "@ibm/ibm-concerto-connector-hlf",
   "version": "0.1.1",
-  "description": "The Hyperledger Ledger client connector for IBM Concerto, the Blockchain Solution Framework",
+  "description": "The Hyperledger Fabric Client connector for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
