@@ -22,7 +22,11 @@ class Connection {
    + Promise invokeChainCode(SecurityContext,string,string[]) 
 }
 class ConnectionManager {
-   + Promise connect(Object) 
+   + void constructor(fs) 
+   + Promise connect(string,Object) 
+   + Promise loadConnectionProfile(string) 
+   + Promise saveConnectionProfile(string,Object) 
+   + Promise saveBusinessNetworkRuntimeIdentifier(string,string,string) 
 }
 class Factory {
    + void constructor(ModelManager) 
