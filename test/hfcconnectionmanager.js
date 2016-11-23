@@ -15,6 +15,7 @@ const hfcChain = hfc.Chain;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCConnectionManager = require('..');
 const sinon = require('sinon');
+const fs = require('fs');
 
 require('chai').should();
 
@@ -26,7 +27,7 @@ describe('HFCConnectionManager', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        connectionManager = new HFCConnectionManager();
+        connectionManager = new HFCConnectionManager(fs);
         mockHFC = sandbox.stub(hfc);
     });
 
@@ -48,37 +49,79 @@ describe('HFCConnectionManager', () => {
         });
 
         it('should throw when connectOptions not specified', function () {
-            (function () {
-                connectionManager.connect();
-            }).should.throw(/connectOptions not specified/);
+            return connectionManager.connect( 'missing', 'testnetwork' )
+            .then(() => {
+                false.should.be.true;
+                return false;
+            })
+            .catch((err) => {
+                err.message.should.match(/connectOptions not specified/);
+                return true;
+            });
         });
 
         it('should throw when connectOptions.keyValStore not specified', function () {
-            (function () {
-                delete connectOptions.keyValStore;
-                connectionManager.connect(connectOptions);
-            }).should.throw(/connectOptions\.keyValStore not specified/);
+            delete connectOptions.keyValStore;
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            .then(() => {
+                return connectionManager.connect( 'test', 'testnetwork' );
+            })
+            .then(() => {
+                false.should.be.true;
+                return false;
+            })
+            .catch((err) => {
+                err.message.should.match(/.+keyValStore not specified/);
+                return true;
+            });
         });
 
         it('should throw when connectOptions.membershipServicesURL not specified', function () {
-            (function () {
-                delete connectOptions.membershipServicesURL;
-                connectionManager.connect(connectOptions);
-            }).should.throw(/connectOptions\.membershipServicesURL not specified/);
+            delete connectOptions.membershipServicesURL;
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+              .then(() => {
+                  return connectionManager.connect( 'test', 'testnetwork' );
+              })
+              .then(() => {
+                  false.should.be.true;
+                  return false;
+              })
+              .catch((err) => {
+                  err.message.should.match(/connectOptions\.membershipServicesURL not specified/);
+                  return true;
+              });
         });
 
         it('should throw when connectOptions.peerURL not specified', function () {
-            (function () {
-                delete connectOptions.peerURL;
-                connectionManager.connect(connectOptions);
-            }).should.throw(/connectOptions\.peerURL not specified/);
+            delete connectOptions.peerURL;
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+                .then(() => {
+                    return connectionManager.connect( 'test', 'testnetwork' );
+                })
+                .then(() => {
+                    false.should.be.true;
+                    return false;
+                })
+                .catch((err) => {
+                    err.message.should.match(/connectOptions\.peerURL not specified/);
+                    return true;
+                });
         });
 
         it('should throw when connectOptions.eventHubURL not specified', function () {
-            (function () {
-                delete connectOptions.eventHubURL;
-                connectionManager.connect(connectOptions);
-            }).should.throw(/connectOptions\.eventHubURL not specified/);
+            delete connectOptions.eventHubURL;
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+                .then(() => {
+                    return connectionManager.connect( 'test', 'testnetwork' );
+                })
+                .then(() => {
+                    false.should.be.true;
+                    return false;
+                })
+                .catch((err) => {
+                    err.message.should.match(/connectOptions\.eventHubURL not specified/);
+                    return true;
+                });
         });
 
         it('should create and configure a new connection', function () {
@@ -90,10 +133,11 @@ describe('HFCConnectionManager', () => {
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
-            return connectionManager
-                .connect(connectOptions)
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            .then(() => {
+                return connectionManager
+                .connect( 'test', 'testnetwork' )
                 .then(function (connection) {
-
                     // Check for the correct interactions with hfc.
                     sinon.assert.calledOnce(mockHFC.getChain);
                     sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
@@ -104,9 +148,9 @@ describe('HFCConnectionManager', () => {
                     sinon.assert.calledOnce(mockChain.addPeer);
                     connection.should.be.an.instanceOf(HFCConnection);
                     connection.chain.should.equal(mockChain);
-
+                    return true;
                 });
-
+            });
         });
 
         it('should optionally configure the deployWaitTime', function () {
@@ -119,16 +163,17 @@ describe('HFCConnectionManager', () => {
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             connectOptions.deployWaitTime = 60;
-            return connectionManager
-                .connect(connectOptions)
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            .then(() => {
+                return connectionManager
+                .connect( 'test', 'testnetwork' )
                 .then(function () {
-
                     // Check for the correct interactions with hfc.
                     sinon.assert.calledOnce(mockChain.setDeployWaitTime);
                     sinon.assert.calledWith(mockChain.setDeployWaitTime, 60);
-
+                    return true;
                 });
-
+            });
         });
 
         it('should optionally configure the invokeWaitTime', function () {
@@ -141,16 +186,18 @@ describe('HFCConnectionManager', () => {
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             connectOptions.invokeWaitTime = 99;
-            return connectionManager
-                .connect(connectOptions)
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            .then(() => {
+                return connectionManager
+                .connect( 'test', 'testnetwork' )
                 .then(function () {
 
                     // Check for the correct interactions with hfc.
                     sinon.assert.calledOnce(mockChain.setInvokeWaitTime);
                     sinon.assert.calledWith(mockChain.setInvokeWaitTime, 99);
-
+                    return true;
                 });
-
+            });
         });
 
         it('should configure and connect the EventHub', function () {
@@ -164,8 +211,10 @@ describe('HFCConnectionManager', () => {
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             connectOptions.invokeWaitTime = 99;
-            return connectionManager
-                .connect(connectOptions)
+            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            .then(() => {
+                return connectionManager
+                .connect( 'test', 'testnetwork' )
                 .then(function () {
 
                     // Check for the correct interactions with hfc.
@@ -182,11 +231,8 @@ describe('HFCConnectionManager', () => {
                         sinon.assert.calledOnce(mockChain.eventHubDisconnect);
                         return true;
                     }));
-
                 });
-
+            });
         });
-
     });
-
 });

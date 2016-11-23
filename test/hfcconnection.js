@@ -42,7 +42,7 @@ describe('HFCConnection', () => {
         mockChain.getEventHub.returns(mockEventHub);
         mockChain.enroll.callsArgWith(2, null, mockMember);
         mockSecurityContext = sinon.createStubInstance(HFCSecurityContext);
-        connection = new HFCConnection(mockConnectionManager, mockChain);
+        connection = new HFCConnection(mockConnectionManager, 'test', 'testnetwork', mockChain);
     });
 
     afterEach(function () {
@@ -155,7 +155,7 @@ describe('HFCConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(HFCUtil.deployChainCode);
-                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', []);
+                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', [0x1deadbeef]);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledWith(connection.ping, mockSecurityContext);
 
