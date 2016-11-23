@@ -40,6 +40,14 @@ describe('ConnectionManager', () => {
         });
     });
 
+    describe('#toJSON', () => {
+
+        it('should return an empty object', () => {
+            let cm = new ConnectionManager(fs);
+            cm.toJSON().should.deep.equal({});
+        });
+    });
+
     describe('#lifecycle', () => {
 
         const cm = new ConnectionManager(fs);

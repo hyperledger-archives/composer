@@ -28,6 +28,7 @@ class ConnectionManager {
    + Promise loadConnectionProfile(string) 
    + Promise saveConnectionProfile(string,Object) 
    + Promise saveBusinessNetworkRuntimeIdentifier(string,string,string) 
+   + Object toJSON() 
 }
 class Factory {
    + void constructor(ModelManager) 

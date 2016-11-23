@@ -12,8 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.1.5 {5a8cde61682299c6e01d8c7647cf2432} 2016-11-22
+Version 0.1.5 {44348565a0cc6b97e7d4d87fea166945} 2016-11-22
 - Modified ConnectionManager to introduce connection profiles
+- Stop serialization of connection manager interfaces
 
 Version 0.1.4 {07e701400cc255fbc1413490405af162} 2016-11-18
 - Added description to BusinessNetwork
