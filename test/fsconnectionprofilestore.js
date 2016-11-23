@@ -65,7 +65,7 @@ describe('FSConnectionProfileStore', () => {
                   false.should.be.true;
               })
               .catch((err) => {
-                  err.message.should.equal('my fs read error');
+                  err.message.should.equal('Failed to load connection profile test');
               });
             });
 
@@ -75,7 +75,7 @@ describe('FSConnectionProfileStore', () => {
                   false.should.be.true;
               })
               .catch((err) => {
-                  err.message.should.equal('my fs write error');
+                  err.message.should.equal('Failed to save connection profile test');
               });
             });
 
