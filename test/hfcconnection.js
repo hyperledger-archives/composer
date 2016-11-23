@@ -10,6 +10,10 @@
 
 'use strict';
 
+const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
+const ConnectionProfileStore = require('@ibm/ibm-concerto-common').ConnectionProfileStore;
+
 const ConnectionManager = require('../lib/hfcconnectionmanager');
 const hfc = require('hfc');
 const hfcChain = hfc.Chain;
@@ -32,17 +36,28 @@ describe('HFCConnection', () => {
     let mockMember;
     let mockSecurityContext;
     let connection;
+    let mockConnectionProfileManager;
+    let mockConnectionProfileStore;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
+        mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
+        mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
+
+        mockConnectionProfileStore.load.withArgs('testprofile').onFirstCall().returns( Promise.resolve({type : 'hfc'}));
+        mockConnectionProfileStore.load.withArgs('testprofile').onSecondCall().returns( Promise.resolve({type : 'hfc', networks : { foo : '123' }}));
+        mockConnectionProfileStore.save.returns(Promise.resolve());
+        mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
+
+        mockConnectionManager.getConnectionProfileManager.returns(mockConnectionProfileManager);
         mockEventHub = sinon.createStubInstance(hfcEventHub);
         mockMember = sinon.createStubInstance(hfcMember);
         mockChain = sinon.createStubInstance(hfcChain);
         mockChain.getEventHub.returns(mockEventHub);
         mockChain.enroll.callsArgWith(2, null, mockMember);
         mockSecurityContext = sinon.createStubInstance(HFCSecurityContext);
-        connection = new HFCConnection(mockConnectionManager, mockChain);
+        connection = new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', mockChain);
     });
 
     afterEach(function () {
@@ -131,8 +146,9 @@ describe('HFCConnection', () => {
                     chaincodeID: 'muchchaincodeID'
                 });
             });
+            const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
             sandbox.stub(connection, 'ping').returns(Promise.resolve());
-            return connection.deploy(mockSecurityContext)
+            return connection.deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
                 });
@@ -147,21 +163,69 @@ describe('HFCConnection', () => {
                 });
             });
             sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
 
-            // Invoke the getAllAssetRegistries function.
             return connection
-                .deploy(mockSecurityContext)
+                .deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(function () {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(HFCUtil.deployChainCode);
-                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', []);
+                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', [0x1deadbeef]);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledWith(connection.ping, mockSecurityContext);
 
                     // Check that the security context was updated correctly.
                     sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
                     sinon.assert.calledWith(mockSecurityContext.setChaincodeID, 'muchchaincodeID');
+
+                })
+                .then(function () {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(HFCUtil.deployChainCode);
+                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', [0x1deadbeef]);
+                    sinon.assert.calledOnce(connection.ping);
+                    sinon.assert.calledWith(connection.ping, mockSecurityContext);
+
+                    // Check that the security context was updated correctly.
+                    sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
+                    sinon.assert.calledWith(mockSecurityContext.setChaincodeID, 'muchchaincodeID');
+                })
+                .then(function () {
+                  // second deploy to make sure the networks list gets modified if it already exists
+                    return connection.deploy(mockSecurityContext, true, businessNetworkStub);
+                })
+                .then(function () {
+                    // Check that the query was made successfully.
+                    sinon.assert.calledTwice(HFCUtil.deployChainCode);
+                });
+        });
+
+        it('should deploy a second time the Concerto chain-code to the Hyperledger Fabric', function () {
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(HFCUtil, 'deployChainCode', function () {
+                return Promise.resolve({
+                    chaincodeID: 'secondChaincodeID'
+                });
+            });
+            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
+
+            return connection
+                .deploy(mockSecurityContext, true, businessNetworkStub)
+                .then(function () {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(HFCUtil.deployChainCode);
+                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', [0x1deadbeef]);
+                    sinon.assert.calledOnce(connection.ping);
+                    sinon.assert.calledWith(connection.ping, mockSecurityContext);
+
+                    // Check that the security context was updated correctly.
+                    sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
+                    sinon.assert.calledWith(mockSecurityContext.setChaincodeID, 'secondChaincodeID');
 
                 });
 
@@ -176,9 +240,10 @@ describe('HFCConnection', () => {
                 );
             });
 
-            // Invoke the getAllAssetRegistries function.
+            const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
+
             return connection
-                .deploy(mockSecurityContext)
+                .deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(function (assetRegistries) {
                     throw new Error('should not get here');
                 }).catch(function (error) {
