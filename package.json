@@ -30,6 +30,7 @@
   "devDependencies": {
     "acorn": "^4.0.3",
     "ajv": "^4.8.2",
+    "browserfs": "^1.1.0",
     "chai": "^3.5.0",
     "chai-things": "^0.2.0",
     "eslint": "^3.5.0",
@@ -47,6 +48,9 @@
     "config": "^1.24.0",
     "debug": "^2.2.0",
     "fs-extra": "^0.30.0",
+    "fs-promise": "^1.0.0",
+    "homedir": "^0.6.0",
+    "mkdirp": "^0.5.1",
     "node-plantuml": "^0.5.0",
     "node-uuid": "^1.4.7",
     "temp": "^0.8.3",
