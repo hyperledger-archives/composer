@@ -11,6 +11,8 @@
 'use strict';
 
 const BusinessNetwork = require('../lib/businessnetwork');
+const fs = require('fs');
+require('chai').should();
 
 describe('BusinessNetwork', () => {
     let businessNetwork;
@@ -55,12 +57,37 @@ describe('BusinessNetwork', () => {
 
     describe('#archives', () => {
 
-        it('should be able to create business network', () => {
-            BusinessNetwork.fromArchive(null).should.not.be.null;
+
+
+        // it('should be able to create a business network from a directory', () => {
+        //
+        //     return businessNetwork.fromDirectory(__dirname+'/data/zip/AnimalTracking-Network').then(result => {
+        //         result.should.be.Buffer;
+        //     });
+        //
+        //
+        // });
+
+        it('should be able to create business network from a ZIP archive', () => {
+            let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
+
+
+            return BusinessNetwork.fromArchive(readFile).then((businessNetwork) => {
+                console.log('What is the final businessNetwork',businessNetwork);
+                businessNetwork.should.not.be.null;
+            });
         });
 
-        it('should be able to store business network', () => {
-            businessNetwork.toArchive(null);
-        });
+        // it('should be able to store business network as a ZIP', () => {
+        //     let readFile = fs.readFileSync(__dirname+'/data/zip/AnimalTracking-Network.zip');
+        //     return BusinessNetwork.fromArchive(readFile).then((businessNetwork) => {
+        //         businessNetwork.should.not.be.null;
+        //         console.log('What is the business network?',businessNetwork);
+        //         return businessNetwork.toArchive().then(result => {
+        //             result.should.be.Buffer;
+        //             return fs.writeFileSync(__dirname+'/data/zip/toArchive_AnimalTracking-Network.zip',result);
+        //         });
+        //     });
+        // });
     });
 });
