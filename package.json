@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
+    "@ibm/ibm-concerto-runtime-hlf": "latest",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",
     "node-uuid": "^1.4.7",
