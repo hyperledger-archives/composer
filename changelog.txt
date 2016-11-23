@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.1.11 {4220e2570af565a664f8ea087d3ab9e3} 2016-11-23
+- Added BusinessNetwork.toArchive
+
 Version 0.1.10 {05dafaf99a431dc4f4b774525fccf69f} 2016-11-23
 - Added test-archive (and zip)
 

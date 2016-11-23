@@ -78,16 +78,21 @@ describe('BusinessNetwork', () => {
             });
         });
 
-        // it('should be able to store business network as a ZIP', () => {
-        //     let readFile = fs.readFileSync(__dirname+'/data/zip/AnimalTracking-Network.zip');
-        //     return BusinessNetwork.fromArchive(readFile).then((businessNetwork) => {
-        //         businessNetwork.should.not.be.null;
-        //         console.log('What is the business network?',businessNetwork);
-        //         return businessNetwork.toArchive().then(result => {
-        //             result.should.be.Buffer;
-        //             return fs.writeFileSync(__dirname+'/data/zip/toArchive_AnimalTracking-Network.zip',result);
-        //         });
-        //     });
-        // });
+        it('should be able to store business network as a ZIP', () => {
+            /*
+             We first need to read a ZIP and create a business network.
+             After we have done this, we'll be able to create a new ZIP with the contents of the business network.
+            */
+            let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
+            return BusinessNetwork.fromArchive(readFile).then((businessNetwork) => {
+                businessNetwork.should.not.be.null;
+                console.log('What is the final businessNetwork',businessNetwork);
+
+                return businessNetwork.toArchive().then(result => {
+                    result.should.be.Buffer;
+                    return fs.writeFileSync(__dirname+'/data/zip/genereatedZip-test-archive.zip',result);
+                });
+            });
+        });
     });
 });

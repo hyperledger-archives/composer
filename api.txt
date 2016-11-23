@@ -6,6 +6,7 @@ class BusinessNetwork {
    + String getIdentifier() 
    + String getDescription() 
    + Promise fromArchive(Buffer) 
+   + Buffer toArchive() 
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
