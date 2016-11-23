@@ -132,4 +132,13 @@ describe('Connection', () => {
 
     });
 
+    describe('#toJSON', () => {
+
+        it('should return an empty object', () => {
+            let c = new Connection(mockConnectionManager);
+            c.toJSON().should.deep.equal({});
+        });
+
+    });
+
 });

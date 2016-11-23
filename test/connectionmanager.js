@@ -12,23 +12,59 @@
 
 const ConnectionManager = require('../lib/connectionmanager');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+const expect = require('chai').expect;
+chai.use(require('chai-things'));
 
 describe('ConnectionManager', () => {
 
-    describe('#connect', () => {
+    describe('#constructor', () => {
 
-        it('should throw as abstract method', () => {
-            let cm = new ConnectionManager();
-            return cm.connect({})
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+        it('should throw if no connection profile manager', () => {
+
+            expect(() => {
+                let cm = new ConnectionManager(null);
+                cm.should.be.null;
+            })
+          .to.throw(/Must create ConnectionManager with a ConnectionProfileManager/);
         });
 
     });
 
+    describe('#getConnectionProfileManager', () => {
+
+        it('should get connection profile manager', () => {
+            const dummy = {};
+            let cm = new ConnectionManager(dummy);
+            cm.should.not.be.null;
+            cm.getConnectionProfileManager().should.equal(dummy);
+        });
+
+    });
+
+    describe('#connect', () => {
+
+        it('should throw as abstract', () => {
+
+            let cm = new ConnectionManager('dummy');
+            cm.should.not.be.null;
+            return cm.connect('profile', 'network')
+                  .then(() => {
+                      true.should.be.false;
+                  })
+                  .catch((err) => {
+                      err.message.should.match(/abstract function called/);
+                  });
+        });
+    });
+
+    describe('#toJSON', () => {
+
+        it('should not be able to serialize', () => {
+            let cm = new ConnectionManager('dummy');
+            cm.should.not.be.null;
+            cm.toJSON().should.deep.equal({});
+        });
+    });
 });
