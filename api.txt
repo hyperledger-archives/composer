@@ -24,7 +24,8 @@ class Connection {
 }
 class ConnectionManager {
    + void constructor(ConnectionProfileManager) 
-   + Promise connect(string,string) 
+   + ConnectionProfileManager getConnectionProfileManager() 
+   + Promise connect(string,string,object) 
    + Object toJSON() 
 }
 class ConnectionProfileManager {
@@ -32,6 +33,7 @@ class ConnectionProfileManager {
    + ConnectionProfileStore getConnectionProfileStore() 
    + void addConnectionManager(string,ConnectionManager) 
    + Promise getConnectionManager(string) 
+   + Promise connect(string,string,object) 
    + Object toJSON() 
 }
 class ConnectionProfileStore {

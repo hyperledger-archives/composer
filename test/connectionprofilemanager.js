@@ -13,6 +13,7 @@
 const ConnectionProfileManager = require('../lib/connectionprofilemanager');
 const ConnectionProfileStore = require('../lib/connectionprofilestore');
 const ConnectionManager = require('../lib/connectionmanager');
+const Connection = require('../lib/connection');
 
 const chai = require('chai');
 chai.should();
@@ -58,6 +59,46 @@ describe('ConnectionProfileManager', () => {
             });
         });
     });
+
+    describe('#getConnectionManager', () => {
+
+        it('should throw if no connection manager added', () => {
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            const connectionManager = sinon.createStubInstance(ConnectionManager);
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            cpm.addConnectionManager( 'bar', connectionManager);
+            return cpm.getConnectionManager( 'baz' )
+            .then(() => {
+                false.should.be.true;
+            })
+            .catch((err) => {
+                err.message.should.match(/Failed to find a connection profile/);
+            });
+        });
+    });
+
+    describe('#connect', () => {
+
+        it('should call connect on connection manager', () => {
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            const connectionManager = sinon.createStubInstance(ConnectionManager);
+            const stubConnection = sinon.createStubInstance(Connection);
+            connectionManager.connect.returns(stubConnection);
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            cpm.addConnectionManager( 'foo', connectionManager);
+            return cpm.connect( 'foo', 'myNetwork' )
+            .then((connection) => {
+                connection.should.equal(stubConnection);
+            });
+        });
+    });
+
 
     describe('#toJSON', () => {
 

@@ -32,6 +32,17 @@ describe('ConnectionManager', () => {
 
     });
 
+    describe('#getConnectionProfileManager', () => {
+
+        it('should get connection profile manager', () => {
+            const dummy = {};
+            let cm = new ConnectionManager(dummy);
+            cm.should.not.be.null;
+            cm.getConnectionProfileManager().should.equal(dummy);
+        });
+
+    });
+
     describe('#connect', () => {
 
         it('should throw as abstract', () => {
