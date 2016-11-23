@@ -12,8 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.1.7 {f34700b0fbfb3bf7988c08235071ffbf} 2016-11-23
+Version 0.1.7 {0f3620c2f2458a3d2123fe6c810ed5c2} 2016-11-23
 - Added ConnectionManager.deploy with a BusinessNetwork
+- Added ConnectionProfileManager, ConnectionProfileStore
 
 Version 0.1.6 {2fa60fd22886a5a44e1bbb9f966bfbe1} 2016-11-23
 - Modified ConnectionManager.connect to take connection profile name

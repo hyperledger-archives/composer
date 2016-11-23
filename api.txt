@@ -23,12 +23,20 @@ class Connection {
    + Object toJSON() 
 }
 class ConnectionManager {
-   + void constructor(fs) 
+   + void constructor(ConnectionProfileManager) 
    + Promise connect(string,string) 
-   + Promise loadConnectionProfile(string) 
-   + Promise saveConnectionProfile(string,Object) 
-   + Promise saveBusinessNetworkRuntimeIdentifier(string,string,string) 
    + Object toJSON() 
+}
+class ConnectionProfileManager {
+   + void constructor(ConnectionProfileStore) 
+   + ConnectionProfileStore getConnectionProfileStore() 
+   + void addConnectionManager(string,ConnectionManager) 
+   + Promise getConnectionManager(string) 
+   + Object toJSON() 
+}
+class ConnectionProfileStore {
+   + Promise load(string) 
+   + Promise save(string,Object) 
 }
 class Factory {
    + void constructor(ModelManager) 
