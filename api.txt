@@ -20,6 +20,7 @@ class Connection {
    + Promise ping(SecurityContext) 
    + Promise queryChainCode(SecurityContext,string,string[]) 
    + Promise invokeChainCode(SecurityContext,string,string[]) 
+   + Object toJSON() 
 }
 class ConnectionManager {
    + void constructor(fs) 
@@ -71,6 +72,7 @@ class SecurityContext {
    + void constructor(Connection,string) 
    + Connection getConnection() 
    + string getUser() 
+   + Object toJSON() 
 }
 class SecurityException extends BaseException {
    + void constructor(string) 
