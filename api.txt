@@ -12,11 +12,11 @@ class BusinessNetwork {
    + Serializer getSerializer() 
 }
 class Connection {
-   + void constructor(ConnectionManager) 
+   + void constructor(ConnectionManager,string,string) 
    + ConnectionManager getConnectionManager() 
    + Promise disconnect() 
    + Promise login(string,string) 
-   + Promise deploy(SecurityContext,boolean) 
+   + Promise deploy(SecurityContext,boolean,BusinessNetwork) 
    + Promise ping(SecurityContext) 
    + Promise queryChainCode(SecurityContext,string,string[]) 
    + Promise invokeChainCode(SecurityContext,string,string[]) 
