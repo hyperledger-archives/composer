@@ -30,7 +30,7 @@ describe('ConnectionManager', () => {
             // let mfs = new BrowserFS.FileSystem.MountableFileSystem();
             // mfs.mount('/concerto-connections/', new BrowserFS.FileSystem.InMemory());
             let cm = new ConnectionManager(fs);
-            return cm.connect({})
+            return cm.connect('profile', 'network')
                 .then(() => {
                     throw new Error('should not get here');
                 })
@@ -91,7 +91,7 @@ describe('ConnectionManager', () => {
                       MyOtherBusinessNetwork : '456'
                   };
                   profile.should.deep.equals(connectionOptions);
-                  return cm.connect( 'test', connectionOptions);
+                  return cm.connect( 'test', 'MyBusinessNetwork');
               });
         });
 
