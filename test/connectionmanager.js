@@ -11,138 +11,60 @@
 'use strict';
 
 const ConnectionManager = require('../lib/connectionmanager');
-//const BrowserFS = require('../node_modules/browserfs/dist/node');
-//const BrowserFS = require('browserfs');
-const fs = require('fs');
-const homedir = require('homedir');
 
 const chai = require('chai');
 chai.should();
+const expect = require('chai').expect;
 chai.use(require('chai-things'));
-const sinon = require('sinon');
 
 describe('ConnectionManager', () => {
 
+    describe('#constructor', () => {
+
+        it('should throw if no connection profile manager', () => {
+
+            expect(() => {
+                let cm = new ConnectionManager(null);
+                cm.should.be.null;
+            })
+          .to.throw(/Must create ConnectionManager with a ConnectionProfileManager/);
+        });
+
+    });
+
+    describe('#getConnectionProfileManager', () => {
+
+        it('should get connection profile manager', () => {
+            const dummy = {};
+            let cm = new ConnectionManager(dummy);
+            cm.should.not.be.null;
+            cm.getConnectionProfileManager().should.equal(dummy);
+        });
+
+    });
+
     describe('#connect', () => {
 
-        it('should throw as abstract method', () => {
+        it('should throw as abstract', () => {
 
-            // let mfs = new BrowserFS.FileSystem.MountableFileSystem();
-            // mfs.mount('/concerto-connections/', new BrowserFS.FileSystem.InMemory());
-            let cm = new ConnectionManager(fs);
+            let cm = new ConnectionManager('dummy');
+            cm.should.not.be.null;
             return cm.connect('profile', 'network')
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                  .then(() => {
+                      true.should.be.false;
+                  })
+                  .catch((err) => {
+                      err.message.should.match(/abstract function called/);
+                  });
         });
     });
 
     describe('#toJSON', () => {
 
-        it('should return an empty object', () => {
-            let cm = new ConnectionManager(fs);
+        it('should not be able to serialize', () => {
+            let cm = new ConnectionManager('dummy');
+            cm.should.not.be.null;
             cm.toJSON().should.deep.equal({});
-        });
-    });
-
-    describe('#lifecycle', () => {
-
-        const cm = new ConnectionManager(fs);
-        let connectStub;
-        const connectionOptions = {one: 'foo'};
-
-        beforeEach(function() {
-            connectStub = sinon.stub(cm, 'connect');
-            connectStub.returns(null);
-        });
-
-        afterEach(function() {
-            connectStub.restore();
-        });
-
-        it('should update connection profile file for business network', () => {
-            return cm.saveConnectionProfile( 'test', connectionOptions )
-              .then(() => {
-                  fs.statSync( homedir() + '/concerto-connection-profiles/test/connection.json');
-                  return cm.loadConnectionProfile( 'test' );
-              })
-              .then((profile) => {
-                  profile.should.deep.equals(connectionOptions);
-                  return cm.connect( 'test', connectionOptions);
-              })
-              .then(() => {
-                  return connectStub.calledOnce.should.be.true;
-              })
-              .then(() => {
-                  return cm.saveBusinessNetworkRuntimeIdentifier('test', 'MyBusinessNetwork', '123');
-              })
-              .then(() => {
-                  return cm.saveBusinessNetworkRuntimeIdentifier('test', 'MyOtherBusinessNetwork', '456');
-              })
-              .then(() => {
-                  return cm.loadConnectionProfile( 'test' );
-              })
-              .then((profile) => {
-                  connectionOptions.networks =
-                  { MyBusinessNetwork : '123',
-                      MyOtherBusinessNetwork : '456'
-                  };
-                  profile.should.deep.equals(connectionOptions);
-                  return cm.connect( 'test', 'MyBusinessNetwork');
-              });
-        });
-
-        describe('#fs errors', () => {
-
-            const cm = new ConnectionManager(fs);
-            //const connectionOptions = {one: 'foo'};
-            let connectStub;
-            let readfileStub;
-            let writefileStub;
-
-            beforeEach(function() {
-                connectStub = sinon.stub(cm, 'connect');
-                connectStub.returns(null);
-
-                readfileStub = sinon.stub(fs, 'readFile');
-                readfileStub.yields( new Error('my fs error') );
-
-                writefileStub = sinon.stub(fs, 'writeFile');
-                writefileStub.yields( new Error('my fs error') );
-            });
-
-            afterEach(function() {
-                connectStub.restore();
-                readfileStub.restore();
-                writefileStub.restore();
-            });
-
-
-            it('should handle fs read errors', () => {
-                return cm.loadConnectionProfile( 'test' )
-              .then(() => {
-                  false.should.be.true;
-              })
-              .catch((err) => {
-                  err.message.should.equal('my fs error');
-              });
-            });
-
-            /*
-            it('should handle fs write errors', () => {
-                return cm.saveConnectionProfile( 'test', connectionOptions )
-              .then(() => {
-                  false.should.be.true;
-              })
-              .catch((err) => {
-                  err.message.should.equal('my fs error');
-              });
-            });
-            */
-
         });
     });
 });
