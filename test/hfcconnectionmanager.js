@@ -15,6 +15,8 @@ const hfcChain = hfc.Chain;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCConnectionManager = require('..');
 const sinon = require('sinon');
+const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
+const FSConnectionProfileStore = require('@ibm/ibm-concerto-common').FSConnectionProfileStore;
 const fs = require('fs');
 
 require('chai').should();
@@ -24,10 +26,13 @@ describe('HFCConnectionManager', () => {
     let sandbox;
     let connectionManager;
     let mockHFC;
+    const store = new FSConnectionProfileStore(fs);
+    const profileManager = new ConnectionProfileManager(store);
+    connectionManager = new HFCConnectionManager(profileManager);
+    profileManager.addConnectionManager('hfc', connectionManager);
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        connectionManager = new HFCConnectionManager(fs);
         mockHFC = sandbox.stub(hfc);
     });
 
@@ -41,6 +46,7 @@ describe('HFCConnectionManager', () => {
 
         beforeEach(function () {
             connectOptions = {
+                type: 'hfc',
                 keyValStore: '/tmp/keyValStore',
                 membershipServicesURL: 'grpc://membersrvc',
                 peerURL: 'grpc://vp0',
@@ -48,23 +54,23 @@ describe('HFCConnectionManager', () => {
             };
         });
 
-        it('should throw when connectOptions not specified', function () {
-            return connectionManager.connect( 'missing', 'testnetwork' )
+        it('should throw when referencing a missing connection profile', function () {
+            return profileManager.connect( 'missing', 'testnetwork' )
             .then(() => {
                 false.should.be.true;
                 return false;
             })
             .catch((err) => {
-                err.message.should.match(/connectOptions not specified/);
+                err.message.should.match(/Failed to load connection profile missing/);
                 return true;
             });
         });
 
         it('should throw when connectOptions.keyValStore not specified', function () {
             delete connectOptions.keyValStore;
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
             .then(() => {
-                return connectionManager.connect( 'test', 'testnetwork' );
+                return profileManager.connect( 'test', 'testnetwork' );
             })
             .then(() => {
                 false.should.be.true;
@@ -78,9 +84,9 @@ describe('HFCConnectionManager', () => {
 
         it('should throw when connectOptions.membershipServicesURL not specified', function () {
             delete connectOptions.membershipServicesURL;
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
               .then(() => {
-                  return connectionManager.connect( 'test', 'testnetwork' );
+                  return profileManager.connect( 'test', 'testnetwork' );
               })
               .then(() => {
                   false.should.be.true;
@@ -94,9 +100,9 @@ describe('HFCConnectionManager', () => {
 
         it('should throw when connectOptions.peerURL not specified', function () {
             delete connectOptions.peerURL;
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
                 .then(() => {
-                    return connectionManager.connect( 'test', 'testnetwork' );
+                    return profileManager.connect( 'test', 'testnetwork' );
                 })
                 .then(() => {
                     false.should.be.true;
@@ -110,9 +116,9 @@ describe('HFCConnectionManager', () => {
 
         it('should throw when connectOptions.eventHubURL not specified', function () {
             delete connectOptions.eventHubURL;
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
                 .then(() => {
-                    return connectionManager.connect( 'test', 'testnetwork' );
+                    return profileManager.connect( 'test', 'testnetwork' );
                 })
                 .then(() => {
                     false.should.be.true;
@@ -133,9 +139,9 @@ describe('HFCConnectionManager', () => {
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
             .then(() => {
-                return connectionManager
+                return profileManager
                 .connect( 'test', 'testnetwork' )
                 .then(function (connection) {
                     // Check for the correct interactions with hfc.
@@ -163,9 +169,9 @@ describe('HFCConnectionManager', () => {
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             connectOptions.deployWaitTime = 60;
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
             .then(() => {
-                return connectionManager
+                return profileManager
                 .connect( 'test', 'testnetwork' )
                 .then(function () {
                     // Check for the correct interactions with hfc.
@@ -186,9 +192,9 @@ describe('HFCConnectionManager', () => {
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             connectOptions.invokeWaitTime = 99;
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
             .then(() => {
-                return connectionManager
+                return profileManager
                 .connect( 'test', 'testnetwork' )
                 .then(function () {
 
@@ -211,9 +217,9 @@ describe('HFCConnectionManager', () => {
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             connectOptions.invokeWaitTime = 99;
-            return connectionManager.saveConnectionProfile( 'test', connectOptions )
+            return store.save( 'test', connectOptions )
             .then(() => {
-                return connectionManager
+                return profileManager
                 .connect( 'test', 'testnetwork' )
                 .then(function () {
 
