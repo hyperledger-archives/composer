@@ -12,5 +12,5 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.1.0 {bee45ce8e1acaebaa36eed05d59b9fb3} 2016-11-21
+Version 0.1.0 {d3d62fb8852ab9030a9c98bdefffc06a} 2016-11-21
 - Initial admin API

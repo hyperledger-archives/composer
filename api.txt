@@ -8,9 +8,9 @@ class BusinessNetworkRegistry {
    + boolean exists(string) 
 }
 class ManagementConnection {
-   + void constructor(string,string,object) 
-   + Promise connect() 
+   + void constructor(Object,Object,boolean) 
+   + Promise connect(Object,string,string) 
    + Promise disconnect() 
    + Promise deploy(boolean) 
-   + boolean isConnected() 
+   + Promise ping() 
 }
