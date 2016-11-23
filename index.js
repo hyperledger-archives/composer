@@ -18,3 +18,8 @@
  */
 module.exports.BusinessNetworkRegistry = require('./lib/businessnetworkregistry');
 module.exports.ManagementConnection = require('./lib/managementconnection');
+
+/**
+ * Expose key concerto-common classes to make simplify client application dependencies
+ */
+module.exports.BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
