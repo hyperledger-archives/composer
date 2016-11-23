@@ -1,6 +1,3 @@
-# JSDoc
-out
-
 # Logs
 logs
 *.log
@@ -39,9 +36,12 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# JSDoc
+out
+
 # Mac files.
 **/.DS_Store
 
 *.swp
 
-lib/introspect/parser.js
+# Build generated files should be ignored by git, but not by npm.

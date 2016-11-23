@@ -11,14 +11,12 @@
 'use strict';
 
 require('chai').should();
-const admin = require('..');
-
-const managementConnection = admin.ManagementConnection;
+const admin = require('..').Admin;
 
 describe('Module', () => {
     describe('#instances', function() {
         it('check can get instances', function() {
-            managementConnection.should.not.be.null;
+            admin.should.not.be.null;
         });
     });
 });

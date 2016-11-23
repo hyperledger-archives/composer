@@ -1,16 +1,8 @@
-class BusinessNetworkRegistry {
-   + void constructor(ManagementConnection) 
-   + void addBusinessNetwork(BusinessNetwork) throws Error
-   + void updateBusinessNetwork(BusinessNetwork) throws Error
-   + void removeBusinessNetwork(string) throws Error
-   + void resetBusinessNetwork(string) throws Error
-   + Promise getBusinessNetwork(string) throws Error
-   + boolean exists(string) 
-}
-class ManagementConnection {
+class Admin {
    + void constructor(Object,Object,boolean) 
-   + Promise connect(Object,string,string) 
+   + Promise connect(string,string,string,string) 
+   + Promise createConnectionProfile(string,Object) 
    + Promise disconnect() 
-   + Promise deploy(boolean) 
+   + Promise deploy(BusinessNetwork,boolean) 
    + Promise ping() 
 }

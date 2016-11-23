@@ -16,5 +16,4 @@
  * via processing transactions.
  * @module ibm-concerto-admin
  */
-module.exports.BusinessNetworkRegistry = require('./lib/businessnetworkregistry');
-module.exports.ManagementConnection = require('./lib/managementconnection');
+module.exports.Admin = require('./lib/admin');

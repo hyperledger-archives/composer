@@ -40,10 +40,13 @@
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
-    "@ibm/ibm-concerto-connector-hlf": "0.1.0-20161121174154",
+    "@ibm/ibm-concerto-runtime-hlf": "latest",
     "cldr-data": "latest",
+    "fs-extra": "latest",
     "globalize": "^1.1.2",
-    "hfc": "^0.6.5"
+    "hfc": "^0.6.5",
+    "node-uuid": "latest",
+    "temp": "latest"
   },
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
