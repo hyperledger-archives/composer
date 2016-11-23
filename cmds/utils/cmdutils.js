@@ -10,6 +10,8 @@
 
 'use strict';
 
+const prompt = require('prompt');
+
 /**
  * Internal Utility Class
  * <p><a href="diagrams/util.svg"><img src="diagrams/util.svg" style="width:100%;"/></a></p>

@@ -22,9 +22,10 @@
   "author": "IBM",
   "license": "ISC",
   "dependencies": {
-     "cli-table": "^0.3.1",
+    "cli-table": "^0.3.1",
     "config": "^1.21.0",
     "jsonfile": "^2.4.0",
+    "prompt": "^1.0.0",
     "winston": "^2.2.0",
     "yargs": "^6.2.0"
   }
