@@ -10,6 +10,7 @@
 
 'use strict';
 
+const FSConnectionProfileStore = require('@ibm/ibm-concerto-common').FSConnectionProfileStore;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 const Factory = require('@ibm/ibm-concerto-common').Factory;
 const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
@@ -25,6 +26,7 @@ const TransactionRegistry = require('../lib/transactionregistry');
 const Util = require('@ibm/ibm-concerto-common').Util;
 const uuid = require('node-uuid');
 const version = require('../package.json').version;
+const fs = require('fs');
 
 const chai = require('chai');
 const should = chai.should();
@@ -34,6 +36,15 @@ require('sinon-as-promised');
 
 describe('Concerto', function () {
 
+    const config =
+        {
+            type: 'hfc',
+            keyValStore: '/tmp/keyValStore',
+            membershipServicesURL : 'grpc://localhost:7054',
+            peerURL : 'grpc://localhost:7051',
+            eventHubURL: 'grpc://localhost:7053'
+        };
+
     let sandbox;
     let concerto;
     let securityContext;
@@ -42,6 +53,7 @@ describe('Concerto', function () {
     let mockBusinessNetwork;
     let mockFactory;
     let mockSerializer;
+    const store = new FSConnectionProfileStore(fs);
 
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
@@ -86,13 +98,15 @@ describe('Concerto', function () {
         it('should create a connection', () => {
             mockConnectionManager.connect.returns(Promise.resolve(mockConnection));
 
-            return concerto.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnectionManager.connect);
-                    concerto.connection.should.equal(mockConnection);
-                });
+            return store.save('testprofile', config )
+            .then(() => {
+                return concerto.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret');
+            })
+            .then(() => {
+                sinon.assert.calledOnce(mockConnectionManager.connect);
+                concerto.connection.should.equal(mockConnection);
+            });
         });
-
     });
 
     describe('#disconnect', function () {
