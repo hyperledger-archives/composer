@@ -12,18 +12,22 @@
 
 const Connection = require('@ibm/ibm-concerto-common').Connection;
 const ConnectionManager = require('@ibm/ibm-concerto-common').ConnectionManager;
+const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
 const WebConnectionManager = require('..');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
+const sinon = require('sinon');
 
 describe('WebConnectionManager', () => {
 
+    let mockConnectionProfileManager;
     let connectionManager;
 
     beforeEach(() => {
-        connectionManager = new WebConnectionManager();
+        mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
+        connectionManager = new WebConnectionManager(mockConnectionProfileManager);
     });
 
     describe('#constructor', () => {
@@ -37,7 +41,7 @@ describe('WebConnectionManager', () => {
     describe('#connect', () => {
 
         it('should return a new connection', () => {
-            return connectionManager.connect({})
+            return connectionManager.connect('devFabric1', 'org.acme.Business', {})
                 .should.eventually.be.an.instanceOf(Connection);
         });
 
