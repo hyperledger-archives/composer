@@ -4,7 +4,7 @@
 	branch = v0.6
 [submodule "vendor/github.com/robertkrimen/otto"]
 	path = vendor/github.com/robertkrimen/otto
-	url = https://github.com/robertkrimen/otto.git
+	url = https://github.com/sstone1/otto.git
 [submodule "vendor/gopkg.in/sourcemap.v1"]
 	path = vendor/gopkg.in/sourcemap.v1
 	url = https://gopkg.in/sourcemap.v1.git
