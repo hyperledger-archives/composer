@@ -10,22 +10,27 @@
 
 'use strict';
 
+const Module = require('../');
 const Admin = require('../lib/admin');
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const ConcertoCommon = require('@ibm/ibm-concerto-common');
+const BusinessNetwork = ConcertoCommon.BusinessNetwork;
+const ConcertoHLFConnectionManager = require('@ibm/ibm-concerto-connector-hlf');
+const HFCConnection = require('@ibm/ibm-concerto-connector-hlf/lib/hfcconnection');
+const SecurityContext = ConcertoCommon.SecurityContext;
 const fs = require('fs');
+
 const chai = require('chai');
+const sinon = require('sinon');
 chai.should();
-//const expect = require('chai').expect;
+const expect = require('chai').expect;
 chai.use(require('chai-things'));
 
 describe('Admin', () => {
 
-    describe('#constructor', () => {
-        let admin = new Admin();
-        admin.should.not.be.null;
-    });
+    let mockConcertoConnectionManager;
+    let mockHFCConnection;
+    let admin;
 
-    const admin = new Admin();
     const config =
         {
             type: 'hfc',
@@ -33,10 +38,41 @@ describe('Admin', () => {
             membershipServicesURL : 'grpc://localhost:7054',
             peerURL : 'grpc://localhost:7051',
             eventHubURL: 'grpc://localhost:7053',
-            enrollmentID: 'WebAppAdmin',
-            enrollmentSecret : 'DJY27pEnl16d',
-            chaincodeID : 'adcc3aee85db589003b93445ef03eb42900da44b716c8bc96b0d4e1e6b6b7b36'
         };
+
+    mockConcertoConnectionManager = sinon.createStubInstance(ConcertoHLFConnectionManager);
+    mockHFCConnection = sinon.createStubInstance(HFCConnection);
+
+    mockHFCConnection.getConnectionManager.returns(ConcertoHLFConnectionManager);
+    mockHFCConnection.getIdentifier.returns('BNI@CP');
+    mockHFCConnection.disconnect.returns(Promise.resolve());
+    mockHFCConnection.login.returns(Promise.resolve(new SecurityContext(mockHFCConnection)));
+    mockHFCConnection.deploy.returns(Promise.resolve({'chaincodeID': '<ChaincodeID>'}));
+    mockHFCConnection.ping.returns(Promise.resolve('TXID'));
+
+    mockConcertoConnectionManager.connect.returns(Promise.resolve(mockHFCConnection));
+    mockConcertoConnectionManager.onDisconnect.returns();
+    admin = new Admin({'connectionManager': mockConcertoConnectionManager});
+
+    describe('#module', () => {
+        it('should give access to Admin', () => {
+            Module.Admin.should.not.be.null;
+        });
+        it('should give access to BusinessNetwork', () => {
+            Module.BusinessNetwork.should.not.be.null;
+        });
+    });
+
+    describe('#constructor', () => {
+        it('should create a new Admin instance', () => {
+            let admin = new Admin({'connectionManager': mockConcertoConnectionManager});
+            admin.should.not.be.null;
+        });
+        it('should not fail if no connectionManager is provided', () => {
+            let admin = new Admin();
+            admin.connectionProfileManager.should.not.be.null;
+        });
+    });
 
     describe('#connect', () => {
 
@@ -52,6 +88,13 @@ describe('Admin', () => {
         });
     });
 
+    describe('#disconnect', () => {
+        it('should not fail when no connection is set', () => {
+            let admin = new Admin({'connectionManager': mockConcertoConnectionManager});
+            expect(admin.disconnect()).not.to.throw;
+        });
+    });
+
     describe('#deploy', () => {
 
         it('should be able to deploy a business network', () => {
@@ -59,7 +102,7 @@ describe('Admin', () => {
             .then(() => {
                 return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
             })
-            .then((connection) => {
+            .then(() => {
                 let readFile = fs.readFileSync(__dirname+'/data/businessnetwork.zip');
                 return BusinessNetwork.fromArchive(readFile);
             })
@@ -69,6 +112,28 @@ describe('Admin', () => {
             .then(() => {
                 return admin.disconnect();
             });
-        }).timeout(50000);
+        });
+    });
+
+    describe('#ping', () => {
+        it('should not fail', () => {
+            return admin.createConnectionProfile('testprofile', config)
+            .then(() => {
+                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
+            })
+            .then(() => {
+                let readFile = fs.readFileSync(__dirname+'/data/businessnetwork.zip');
+                return BusinessNetwork.fromArchive(readFile);
+            })
+            .then((businessNetwork) => {
+                return admin.deploy( businessNetwork, true );
+            })
+            .then(() => {
+                return admin.ping();
+            })
+            .then(() => {
+                return admin.disconnect();
+            });
+        });
     });
 });
