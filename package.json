@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
+    "@ibm/ibm-concerto-connector-hlf": "latest",
     "@ibm/ibm-concerto-runtime-hlf": "latest",
     "cldr-data": "latest",
     "fs-extra": "latest",

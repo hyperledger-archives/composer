@@ -25,6 +25,7 @@ describe('Admin', () => {
         admin.should.not.be.null;
     });
 
+    const admin = new Admin();
     const config =
         {
             type: 'hfc',
@@ -40,7 +41,6 @@ describe('Admin', () => {
     describe('#connect', () => {
 
         it('should get a connection', () => {
-            let admin = new Admin();
             return admin.createConnectionProfile('testprofile', config)
             .then(() => {
                 return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
@@ -55,7 +55,6 @@ describe('Admin', () => {
     describe('#deploy', () => {
 
         it('should be able to deploy a business network', () => {
-            let admin = new Admin();
             return admin.createConnectionProfile('testprofile', config)
             .then(() => {
                 return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
@@ -70,6 +69,6 @@ describe('Admin', () => {
             .then(() => {
                 return admin.disconnect();
             });
-        });
+        }).timeout(50000);
     });
 });
