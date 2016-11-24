@@ -23,6 +23,10 @@ const wstream = fs.createWriteStream(targetFile);
 wstream.setDefaultEncoding('utf8');
 wstream.write('package main\n\nconst babelPolyfillJavaScript = `\n');
 
+RegExp.escape = function(s) {
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 return Promise.resolve()
 .then(() => {
     return new Promise((resolve, reject) => {
@@ -36,6 +40,11 @@ return Promise.resolve()
     return new Promise((resolve, reject) => {
         wstream.write('`\n\nconst concertoJavaScript = `\n');
         const rstream = browserify(sourceFile, { standalone: 'concerto' })
+            // This ugly hack changes a JavaScript only regex used by Acorn into something safe for Go.
+            .transform('browserify-replace', { replace: {
+              from: RegExp.escape('[^]'),
+              to: '[^\\x{FFFF}]'
+            }, global: true })
             .transform('babelify', { presets: [ 'es2015' ], global: true })
             .transform('uglifyify', { global: true })
             .bundle();
