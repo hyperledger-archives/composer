@@ -1,6 +1,6 @@
 class Admin {
    + void constructor(Object,Object,boolean) 
-   + Promise connect(string,string,string,string) 
+   + Promise connect(string,string,string) 
    + Promise createConnectionProfile(string,Object) 
    + Promise disconnect() 
    + Promise deploy(BusinessNetwork,boolean) 

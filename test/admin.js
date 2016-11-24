@@ -25,6 +25,10 @@ describe('Admin', () => {
         admin.should.not.be.null;
     });
 
+    // enrollmentID: 'WebAppAdmin',
+    // enrollmentSecret : 'DJY27pEnl16d',
+    // chaincodeID : 'adcc3aee85db589003b93445ef03eb42900da44b716c8bc96b0d4e1e6b6b7b36'
+
     const admin = new Admin();
     const config =
         {
@@ -32,10 +36,7 @@ describe('Admin', () => {
             keyValStore: '/tmp/keyValStore',
             membershipServicesURL : 'grpc://localhost:7054',
             peerURL : 'grpc://localhost:7051',
-            eventHubURL: 'grpc://localhost:7053',
-            enrollmentID: 'WebAppAdmin',
-            enrollmentSecret : 'DJY27pEnl16d',
-            chaincodeID : 'adcc3aee85db589003b93445ef03eb42900da44b716c8bc96b0d4e1e6b6b7b36'
+            eventHubURL: 'grpc://localhost:7053'
         };
 
     describe('#connect', () => {
@@ -43,7 +44,7 @@ describe('Admin', () => {
         it('should get a connection', () => {
             return admin.createConnectionProfile('testprofile', config)
             .then(() => {
-                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
+                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then((connection) => {
                 connection.should.not.be.null;
@@ -57,7 +58,7 @@ describe('Admin', () => {
         it('should be able to deploy a business network', () => {
             return admin.createConnectionProfile('testprofile', config)
             .then(() => {
-                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
+                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then((connection) => {
                 let readFile = fs.readFileSync(__dirname+'/data/businessnetwork.zip');
