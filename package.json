@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-common",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "IBM Concerto Common, code that is common across client, admin and runtime.",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,6 @@
   "author": "IBM",
   "license": "ISC",
   "devDependencies": {
-    "acorn": "^4.0.3",
     "ajv": "^4.8.2",
     "browserfs": "^1.1.0",
     "chai": "^3.5.0",
@@ -46,6 +45,7 @@
     "sinon": "^1.17.6"
   },
   "dependencies": {
+    "acorn": "^4.0.3",
     "commander": "^2.9.0",
     "config": "^1.24.0",
     "debug": "^2.2.0",
