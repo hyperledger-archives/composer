@@ -172,6 +172,8 @@ describe('Context', () => {
         it('should return a new registry manager', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             sinon.stub(context, 'getDataService').returns(mockDataService);
+            let mockIntrospector = sinon.createStubInstance(Introspector);
+            sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
             let mockSerializer = sinon.createStubInstance(Serializer);
             sinon.stub(context, 'getSerializer').returns(mockSerializer);
             context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
