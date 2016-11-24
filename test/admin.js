@@ -21,6 +21,7 @@ const fs = require('fs');
 
 const chai = require('chai');
 const sinon = require('sinon');
+require('sinon-as-promised');
 chai.should();
 const expect = require('chai').expect;
 chai.use(require('chai-things'));
@@ -33,7 +34,7 @@ describe('Admin', () => {
 
     const config =
         {
-            type: 'hfc',
+            type: 'hlf',
             keyValStore: '/tmp/keyValStore',
             membershipServicesURL : 'grpc://localhost:7054',
             peerURL : 'grpc://localhost:7051',
@@ -52,7 +53,8 @@ describe('Admin', () => {
 
     mockConcertoConnectionManager.connect.returns(Promise.resolve(mockHFCConnection));
     mockConcertoConnectionManager.onDisconnect.returns();
-    admin = new Admin({'connectionManager': mockConcertoConnectionManager});
+    admin = new Admin();
+    sinon.stub(admin.connectionProfileManager, 'connect').resolves(mockHFCConnection);
 
     describe('#module', () => {
         it('should give access to Admin', () => {
@@ -65,7 +67,7 @@ describe('Admin', () => {
 
     describe('#constructor', () => {
         it('should create a new Admin instance', () => {
-            let admin = new Admin({'connectionManager': mockConcertoConnectionManager});
+            let admin = new Admin();
             admin.should.not.be.null;
         });
         it('should not fail if no connectionManager is provided', () => {
@@ -90,7 +92,7 @@ describe('Admin', () => {
 
     describe('#disconnect', () => {
         it('should not fail when no connection is set', () => {
-            let admin = new Admin({'connectionManager': mockConcertoConnectionManager});
+            let admin = new Admin();
             expect(admin.disconnect()).not.to.throw;
         });
     });

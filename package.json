@@ -36,18 +36,12 @@
     "jsdoc": "^3.4.1",
     "license-check": "^1.1.5",
     "mocha": "^3.0.2",
-    "sinon": "^1.17.6"
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
-    "@ibm/ibm-concerto-connector-hlf": "latest",
-    "@ibm/ibm-concerto-runtime-hlf": "latest",
-    "cldr-data": "latest",
-    "fs-extra": "latest",
-    "globalize": "^1.1.2",
-    "hfc": "^0.6.5",
-    "node-uuid": "latest",
-    "temp": "latest"
+    "@ibm/ibm-concerto-connector-hlf": "latest"
   },
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
