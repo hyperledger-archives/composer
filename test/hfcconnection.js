@@ -64,6 +64,7 @@ describe('HFCConnection', () => {
         sandbox.restore();
     });
 
+    /*
     describe('#disconnect', function () {
 
         it('should do nothing if not connected', () => {
@@ -85,6 +86,7 @@ describe('HFCConnection', () => {
         });
 
     });
+    */
 
     describe('#login', function () {
 
@@ -147,6 +149,7 @@ describe('HFCConnection', () => {
                 });
             });
             const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
+            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
             sandbox.stub(connection, 'ping').returns(Promise.resolve());
             return connection.deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(() => {
@@ -164,6 +167,7 @@ describe('HFCConnection', () => {
             });
             sandbox.stub(connection, 'ping').returns(Promise.resolve());
             const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
+            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
@@ -171,7 +175,7 @@ describe('HFCConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(HFCUtil.deployChainCode);
-                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', [0x1deadbeef]);
+                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', ['AAEC']);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledWith(connection.ping, mockSecurityContext);
 
@@ -184,7 +188,7 @@ describe('HFCConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(HFCUtil.deployChainCode);
-                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', [0x1deadbeef]);
+                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', ['AAEC']);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledWith(connection.ping, mockSecurityContext);
 
@@ -212,6 +216,7 @@ describe('HFCConnection', () => {
             });
             sandbox.stub(connection, 'ping').returns(Promise.resolve());
             const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
+            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
@@ -219,7 +224,7 @@ describe('HFCConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(HFCUtil.deployChainCode);
-                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', [0x1deadbeef]);
+                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', ['AAEC']);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledWith(connection.ping, mockSecurityContext);
 
@@ -241,6 +246,7 @@ describe('HFCConnection', () => {
             });
 
             const businessNetworkStub = sinon.createStubInstance(BusinessNetwork);
+            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
