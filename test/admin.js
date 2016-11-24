@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Admin = require('../lib/Admin');
+const Admin = require('../lib/admin');
 const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
 const fs = require('fs');
 const chai = require('chai');
