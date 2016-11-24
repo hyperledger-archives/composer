@@ -17,3 +17,8 @@
  * @module ibm-concerto-admin
  */
 module.exports.Admin = require('./lib/admin');
+
+/**
+ * Expose key concerto-common classes to make simplify client application dependencies
+ */
+module.exports.BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
