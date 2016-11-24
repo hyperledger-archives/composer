@@ -38,12 +38,6 @@ describe('Connection', () => {
             }).should.throw(/connectionProfile not specified/);
         });
 
-        it('should throw if business network identifier not specified', () => {
-            (() => {
-                new Connection(mockConnectionManager, 'debFabric1', null);
-            }).should.throw(/businessNetworkIdentifier not specified/);
-        });
-
         it('should set the connection manager', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             c.connectionManager.should.equal(mockConnectionManager);
