@@ -11,35 +11,6 @@ class BusinessNetwork {
    + Factory getFactory() 
    + Serializer getSerializer() 
 }
-class Connection {
-   + void constructor(ConnectionManager,string,string) 
-   + ConnectionManager getConnectionManager() 
-   + Promise disconnect() 
-   + Promise login(string,string) 
-   + Promise deploy(SecurityContext,boolean,BusinessNetwork) 
-   + Promise ping(SecurityContext) 
-   + Promise queryChainCode(SecurityContext,string,string[]) 
-   + Promise invokeChainCode(SecurityContext,string,string[]) 
-   + Object toJSON() 
-}
-class ConnectionManager {
-   + void constructor(ConnectionProfileManager) 
-   + ConnectionProfileManager getConnectionProfileManager() 
-   + Promise connect(string,string,object) 
-   + Object toJSON() 
-}
-class ConnectionProfileManager {
-   + void constructor(ConnectionProfileStore) 
-   + ConnectionProfileStore getConnectionProfileStore() 
-   + void addConnectionManager(string,ConnectionManager) 
-   + Promise getConnectionManager(string) 
-   + Promise connect(string,string,object) 
-   + Object toJSON() 
-}
-class ConnectionProfileStore {
-   + Promise load(string) 
-   + Promise save(string,Object) 
-}
 class Factory {
    + void constructor(ModelManager) 
    + Resource newInstance(string,string,string,boolean) throws ModelException
