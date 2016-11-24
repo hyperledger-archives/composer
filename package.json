@@ -9,6 +9,7 @@
     "posttest": "istanbul check-coverage",
     "lint": "eslint .",
     "postlint": "npm run licchk",
+    "postinstall": "pegjs ./lib/introspect/parser.pegjs",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
     "doc": "npm run docpub && npm run docpriv",
@@ -28,7 +29,6 @@
   "author": "IBM",
   "license": "ISC",
   "devDependencies": {
-    "acorn": "^4.0.3",
     "ajv": "^4.8.2",
     "browserfs": "^1.1.0",
     "chai": "^3.5.0",
@@ -44,6 +44,7 @@
     "sinon": "^1.17.6"
   },
   "dependencies": {
+    "acorn": "^4.0.3",
     "commander": "^2.9.0",
     "config": "^1.24.0",
     "debug": "^2.2.0",
@@ -54,6 +55,7 @@
     "mkdirp": "^0.5.1",
     "node-plantuml": "^0.5.0",
     "node-uuid": "^1.4.7",
+    "sprintf-js": "^1.0.3",
     "temp": "^0.8.3",
     "winston": "^2.3.0"
   },
