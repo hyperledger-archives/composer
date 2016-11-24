@@ -28,7 +28,7 @@ describe('Admin', () => {
     const admin = new Admin();
     const config =
         {
-            type: 'hfc',
+            type: 'hlf',
             keyValStore: '/tmp/keyValStore',
             membershipServicesURL : 'grpc://localhost:7054',
             peerURL : 'grpc://localhost:7051',
