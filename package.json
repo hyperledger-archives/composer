@@ -10,6 +10,8 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template",
     "postdoc": "npm run lint",
     "lint": "eslint .",
+    "postlint": "npm run browserify",
+    "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/concerto-runtime.js",
     "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage"
   },

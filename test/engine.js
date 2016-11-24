@@ -10,11 +10,13 @@
 
 'use strict';
 
+const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
+const RegistryManager = require('../lib/registrymanager');
 const version = require('../package.json').version;
 
 const chai = require('chai');
@@ -28,7 +30,9 @@ describe('Engine', () => {
     let mockContainer;
     let mockContext;
     let mockDataService;
+    let mockRegistryManager;
     let engine;
+    let sandbox;
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
@@ -36,8 +40,16 @@ describe('Engine', () => {
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
         mockDataService = sinon.createStubInstance(DataService);
+        mockRegistryManager = sinon.createStubInstance(RegistryManager);
+        mockContext.initialize.resolves();
         mockContext.getDataService.returns(mockDataService);
+        mockContext.getRegistryManager.returns(mockRegistryManager);
         engine = new Engine(mockContainer);
+        sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
     });
 
     describe('#init', () => {
@@ -51,81 +63,80 @@ describe('Engine', () => {
         it('should throw for invalid arguments', () => {
             (() => {
                 engine.init(mockContext, 'init', ['no', 'args', 'supported']);
-            }).should.throw(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\]"/);
+            }).should.throw(/Invalid arguments "\["no","args","supported"\]" to function "init", expecting "\[\"businessNetworkArchive\"\]"/);
         });
 
         it('should create system collections and default registries', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
             let sysregistries = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').rejects();
+            mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.getCollection.withArgs('$sysregistries').rejects();
             mockDataService.createCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockDataService.getCollection.withArgs('$sysmodels').rejects();
-            mockDataService.createCollection.withArgs('$sysmodels').resolves(sysregistries);
-            sinon.stub(engine, 'getRegistry');
-            engine.getRegistry.withArgs(sinon.match.any, ['Model', 'default']).rejects();
-            sinon.stub(engine, 'addRegistry');
-            engine.addRegistry.withArgs(sinon.match.any, ['Model', 'default', 'Default Model Registry']).resolves();
-            engine.getRegistry.withArgs(sinon.match.any, ['Transaction', 'default']).rejects();
-            engine.addRegistry.withArgs(sinon.match.any, ['Transaction', 'default', 'Default Transaction Registry']).resolves();
-            return engine.init(mockContext, 'init', [])
+            mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
+            mockRegistryManager.add.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.calledTwice(mockDataService.createCollection);
+                    sinon.assert.calledWith(mockDataService.createCollection, '$sysdata');
+                    sinon.assert.calledOnce(BusinessNetwork.fromArchive);
+                    sinon.assert.calledWith(BusinessNetwork.fromArchive, sinon.match((archive) => {
+                        return archive.compare(Buffer.from('hello world')) === 0;
+                    }));
+                    sinon.assert.calledOnce(sysdata.add);
+                    sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=' });
                     sinon.assert.calledWith(mockDataService.createCollection, '$sysregistries');
-                    sinon.assert.calledWith(mockDataService.createCollection, '$sysmodels');
-                    sinon.assert.calledTwice(engine.addRegistry);
-                    sinon.assert.calledWith(engine.addRegistry, sinon.match.any, ['Model', 'default', 'Default Model Registry']);
-                    sinon.assert.calledWith(engine.addRegistry, sinon.match.any, ['Transaction', 'default', 'Default Transaction Registry']);
+                    sinon.assert.calledOnce(mockRegistryManager.add);
+                    sinon.assert.calledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
+                });
+        });
+
+        it('should ignore existing system data collection', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
+            mockDataService.getCollection.withArgs('$sysregistries').rejects();
+            mockDataService.createCollection.withArgs('$sysregistries').resolves();
+            mockRegistryManager.get.rejects();
+            mockRegistryManager.add.resolves();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
+                .then(() => {
+                    sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysdata');
                 });
         });
 
         it('should ignore existing system registries collection', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').rejects();
+            mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             let sysregistries = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockDataService.getCollection.withArgs('$sysmodels').rejects();
-            mockDataService.createCollection.withArgs('$sysmodels').resolves();
-            sinon.stub(engine, 'getRegistry').rejects();
-            sinon.stub(engine, 'addRegistry').resolves();
-            return engine.init(mockContext, 'init', [])
+            mockRegistryManager.get.rejects();
+            mockRegistryManager.add.resolves();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysregistries');
                 });
         });
 
-        it('should ignore existing system models collection', () => {
-            mockDataService.getCollection.withArgs('$sysregistries').rejects();
-            mockDataService.createCollection.withArgs('$sysregistries').resolves();
-            let sysregistries = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysmodels').resolves(sysregistries);
-            sinon.stub(engine, 'getRegistry').rejects();
-            sinon.stub(engine, 'addRegistry').resolves();
-            return engine.init(mockContext, 'init', [])
-                .then(() => {
-                    sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysmodels');
-                });
-        });
-
-        it('should ignore existing default model registry', () => {
-            mockDataService.getCollection.rejects();
-            mockDataService.createCollection.resolves();
-            sinon.stub(engine, 'getRegistry');
-            engine.getRegistry.withArgs(sinon.match.any, ['Model', 'default']).resolves();
-            engine.getRegistry.rejects();
-            sinon.stub(engine, 'addRegistry').resolves();
-            return engine.init(mockContext, 'init', [])
-                .then(() => {
-                    sinon.assert.neverCalledWith(engine.addRegistry, sinon.match.any, ['Model', 'default', 'Default Model Registry']);
-                });
-        });
-
         it('should ignore existing default transaction registry', () => {
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.rejects();
-            mockDataService.createCollection.resolves();
-            sinon.stub(engine, 'getRegistry');
-            engine.getRegistry.withArgs(sinon.match.any, ['Transaction', 'default']).resolves();
-            engine.getRegistry.rejects();
-            sinon.stub(engine, 'addRegistry').resolves();
-            return engine.init(mockContext, 'init', [])
+            mockDataService.createCollection.resolves(mockDataCollection);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            mockRegistryManager.get.withArgs('Transaction', 'default').resolves();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
-                    sinon.assert.neverCalledWith(engine.addRegistry, sinon.match.any, ['Transaction', 'default', 'Default Transaction Registry']);
+                    sinon.assert.neverCalledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
                 });
         });
 
@@ -270,38 +281,6 @@ describe('Engine', () => {
                     result.should.deep.equal({
                         version: version
                     });
-                });
-        });
-
-    });
-
-    describe('#clearWorldState', () => {
-
-        it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'clearWorldState', ['no', 'args', 'supported']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "clearWorldState", expecting "\[\]"/);
-        });
-
-        it('should delete all world state', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.getAll.resolves([{
-                type: 'Asset',
-                id: 'sheeps'
-            }, {
-                type: 'Participants',
-                id: 'farmers'
-            }]);
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
-            mockDataService.deleteCollection.resolves();
-            sinon.stub(engine, 'init').resolves();
-            return engine.invoke(mockContext, 'clearWorldState', [])
-                .then(() => {
-                    sinon.assert.calledWith(mockDataService.deleteCollection, 'Asset:sheeps');
-                    sinon.assert.calledWith(mockDataService.deleteCollection, 'Participants:farmers');
-                    sinon.assert.calledWith(mockDataService.deleteCollection, '$sysregistries');
-                    sinon.assert.calledWith(mockDataService.deleteCollection, '$sysmodels');
-                    sinon.assert.calledOnce(engine.init);
-                    sinon.assert.calledWith(engine.init, sinon.match.any, 'init', []);
                 });
         });
 
