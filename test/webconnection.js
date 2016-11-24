@@ -10,6 +10,7 @@
 
 'use strict';
 
+const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
 const Connection = require('@ibm/ibm-concerto-common').Connection;
 const ConnectionManager = require('@ibm/ibm-concerto-common').ConnectionManager;
 const Container = require('@ibm/ibm-concerto-runtime').Container;
@@ -33,7 +34,7 @@ describe('WebConnection', () => {
     beforeEach(() => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
-        connection = new WebConnection(mockConnectionManager);
+        connection = new WebConnection(mockConnectionManager, 'devFabric1', 'org.acme.Business');
     });
 
     describe('#constructor', () => {
@@ -70,12 +71,14 @@ describe('WebConnection', () => {
     describe('#deploy', () => {
 
         it('should call the init engine method and ping', () => {
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
             sinon.stub(connection.engine, 'init').resolves();
             sinon.stub(connection, 'ping').resolves();
-            return connection.deploy(mockSecurityContext)
+            return connection.deploy(mockSecurityContext, true, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(connection.engine.init);
-                    sinon.assert.calledWith(connection.engine.init, sinon.match.instanceOf(Context), 'init', []);
+                    sinon.assert.calledWith(connection.engine.init, sinon.match.instanceOf(Context), 'init', ['aGVsbG8gd29ybGQ=']);
                     sinon.assert.calledOnce(connection.ping);
                 });
         });
