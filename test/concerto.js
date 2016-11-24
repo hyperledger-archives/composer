@@ -10,18 +10,16 @@
 
 'use strict';
 
+const Serializer = require('@ibm/ibm-concerto-common').Serializer;
+const Factory = require('@ibm/ibm-concerto-common').Factory;
+const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
 const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
 const AssetRegistry = require('../lib/assetregistry');
 const Concerto = require('..').Concerto;
 const Connection = require('@ibm/ibm-concerto-common').Connection;
 const ConnectionManager = require('@ibm/ibm-concerto-common').ConnectionManager;
-const Factory = require('@ibm/ibm-concerto-common').Factory;
-const ModelFile = require('@ibm/ibm-concerto-common').ModelFile;
-const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
-const ModelRegistry = require('../lib/modelregistry');
 const Resource = require('@ibm/ibm-concerto-common').Resource;
 const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
-const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
 const TransactionRegistry = require('../lib/transactionregistry');
 const Util = require('@ibm/ibm-concerto-common').Util;
@@ -41,16 +39,23 @@ describe('Concerto', function () {
     let securityContext;
     let mockConnection;
     let mockConnectionManager;
-    let mockSecurityContext;
+    let mockBusinessNetwork;
+    let mockFactory;
+    let mockSerializer;
 
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
-        concerto = new Concerto();
         securityContext = new SecurityContext('doge', 'suchsecret');
         mockConnection = sinon.createStubInstance(Connection);
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
-        mockSecurityContext = sinon.createStubInstance(SecurityContext);
-        concerto.connectionManager = mockConnectionManager;
+        mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+        concerto = new Concerto( {connectionManager: mockConnectionManager});
+        concerto.businessNetwork = mockBusinessNetwork;
+        mockFactory = sinon.createStubInstance(Factory);
+        concerto.businessNetwork.factory = mockFactory;
+        mockSerializer = sinon.createStubInstance(Serializer);
+        concerto.businessNetwork.getSerializer.returns(mockSerializer);
+        concerto.securityContext = securityContext;
     });
 
     afterEach(function () {
@@ -61,17 +66,7 @@ describe('Concerto', function () {
 
         it('should create a new instance', function () {
             concerto = new Concerto();
-            concerto.modelManager.should.be.an.instanceOf(ModelManager);
-            concerto.factory.should.be.an.instanceOf(Factory);
-            concerto.serializer.should.be.an.instanceOf(Serializer);
             should.equal(concerto.connection, null);
-        });
-
-        it('should allow development mode to be enabled', function () {
-            concerto = new Concerto({
-                developmentMode: true
-            });
-            concerto.developmentMode.should.equal(true);
         });
 
         it('should allow a custom connection manager to be specified', function () {
@@ -88,19 +83,12 @@ describe('Concerto', function () {
 
     describe('#connect', function () {
 
-        it('should throw when connectOptions not specified', function () {
-            (function () {
-                concerto.connect();
-            }).should.throw(/connectOptions not specified/);
-        });
-
         it('should create a connection', () => {
-            let options = { option: 'one' };
             mockConnectionManager.connect.returns(Promise.resolve(mockConnection));
-            return concerto.connect(options)
+
+            return concerto.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionManager.connect);
-                    sinon.assert.calledWith(mockConnectionManager.connect, options);
                     concerto.connection.should.equal(mockConnection);
                 });
         });
@@ -129,64 +117,6 @@ describe('Concerto', function () {
 
     });
 
-    describe('#login', function () {
-
-        it('should throw when enrollmentID not specified', function () {
-            (function () {
-                concerto.login(null, 'suchsecret');
-            }).should.throw(/enrollmentID not specified/);
-        });
-
-        it('should throw when enrollmentSecret not specified', function () {
-            (function () {
-                concerto.login('doge', null);
-            }).should.throw(/enrollmentSecret not specified/);
-        });
-
-        it('should login using the connection', () => {
-            mockConnection.login.returns(Promise.resolve(mockSecurityContext));
-            concerto.connection = mockConnection;
-            return concerto.login('doge', 'suchsecret')
-                .then(() => {
-                    sinon.assert.calledOnce(mockConnection.login);
-                    sinon.assert.calledWith(mockConnection.login, 'doge', 'suchsecret');
-                });
-        });
-
-    });
-
-    describe('#deploy', function () {
-
-        it('should perform a security check', () => {
-            sandbox.stub(Util, 'securityCheck').throws(new Error('fake error'));
-            try {
-                concerto.deploy(mockSecurityContext);
-            } catch (e) {
-                e.should.match(/fake error/);
-                sinon.assert.calledOnce(Util.securityCheck);
-            }
-        });
-
-        it('should deploy the Concerto chain-code to the Hyperledger Fabric', function () {
-
-            // Set up the responses from the chain-code.
-            mockConnection.deploy.returns(Promise.resolve());
-            concerto.connection = mockConnection;
-
-            // Invoke the getAllAssetRegistries function.
-            return concerto
-                .deploy(securityContext)
-                .then(function () {
-
-                    // Check that the query was made successfully.
-                    sinon.assert.calledOnce(mockConnection.deploy);
-
-                });
-
-        });
-
-    });
-
     describe('#getAllAssetRegistries', function () {
 
         it('should perform a security check', function () {
@@ -199,7 +129,7 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .getAllAssetRegistries(securityContext)
+                .getAllAssetRegistries()
                 .then(function () {
                     sinon.assert.calledOnce(stub);
                 });
@@ -215,7 +145,7 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .getAllAssetRegistries(securityContext)
+                .getAllAssetRegistries()
                 .then(function () {
                     sinon.assert.calledOnce(stub);
                 });
@@ -236,7 +166,7 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .getAssetRegistry(securityContext, 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'wowsuchregistry')
+                .getAssetRegistry('ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'wowsuchregistry')
                 .then(function () {
                     sinon.assert.calledOnce(stub);
                 });
@@ -252,7 +182,7 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .getAssetRegistry(securityContext, 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'wowsuchregistry')
+                .getAssetRegistry('ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'wowsuchregistry')
                 .then(function () {
                     sinon.assert.calledOnce(stub);
                 });
@@ -272,9 +202,11 @@ describe('Concerto', function () {
                 return Promise.resolve(assetRegistry);
             });
 
+            concerto.securityContext = securityContext;
+
             // Invoke the function.
             return concerto
-                .addAssetRegistry(securityContext, 'suchid', 'wowsuchregistry')
+                .addAssetRegistry('suchid', 'wowsuchregistry')
                 .then(function (result) {
                     sinon.assert.calledOnce(stub);
                     result.should.be.an.instanceOf(AssetRegistry);
@@ -292,38 +224,9 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .addAssetRegistry(securityContext, 'suchid', 'wowsuchregistry')
+                .addAssetRegistry('suchid', 'wowsuchregistry')
                 .then(function () {
                     sinon.assert.calledOnce(stub);
-                });
-
-        });
-
-    });
-
-    describe('#getModelRegistry', function () {
-
-        it('should perform a security check', function () {
-
-            // Set up the mock.
-            let stub = sandbox. stub(Util, 'securityCheck');
-
-            // Invoke the function.
-            return concerto
-                .getModelRegistry(securityContext)
-                .then(function () {
-                    sinon.assert.calledOnce(stub);
-                });
-
-        });
-
-        it('should call the static helper method', function () {
-
-            // Invoke the function.
-            return concerto
-                .getModelRegistry(securityContext)
-                .then(function (modelRegistry) {
-                    modelRegistry.should.be.an.instanceOf(ModelRegistry);
                 });
 
         });
@@ -342,7 +245,7 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .getTransactionRegistry(securityContext)
+                .getTransactionRegistry()
                 .then(function () {
                     sinon.assert.calledOnce(stub);
                 });
@@ -359,7 +262,7 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .getTransactionRegistry(securityContext)
+                .getTransactionRegistry()
                 .then(function (transactionRegistry) {
                     transactionRegistry.should.be.an.instanceOf(TransactionRegistry);
                 });
@@ -375,7 +278,7 @@ describe('Concerto', function () {
 
             // Invoke the function.
             return concerto
-                .getTransactionRegistry(securityContext)
+                .getTransactionRegistry()
                 .then(function () {
                     throw new Error('should not get here');
                 })
@@ -387,137 +290,11 @@ describe('Concerto', function () {
 
     });
 
-    describe('#getFactory', function () {
-
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            concerto.getFactory(securityContext);
-            sinon.assert.calledOnce(stub);
-        });
-
-        it('should return a valid factory', function () {
-            let factory = concerto.getFactory(securityContext);
-            factory.should.be.an.instanceOf(Factory);
-        });
-
-    });
-
-    describe('#getModelManager', function () {
-
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            concerto.getModelManager(securityContext);
-            sinon.assert.calledOnce(stub);
-        });
-
-        it('should return a valid factory', function () {
-            let factory = concerto.getModelManager(securityContext);
-            factory.should.be.an.instanceOf(ModelManager);
-        });
-
-    });
-
-    describe('#getSerializer', function () {
-
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            concerto.getSerializer(securityContext);
-            sinon.assert.calledOnce(stub);
-        });
-
-        it('should return a valid factory', function () {
-            let factory = concerto.getSerializer(securityContext);
-            factory.should.be.an.instanceOf(Serializer);
-        });
-
-    });
-
-    describe('#loadModels', function () {
-
-        it('should add all of the models in the model registry to the model manager', () => {
-            let modelFile1 = sinon.createStubInstance(ModelFile);
-            let modelFile2 = sinon.createStubInstance(ModelFile);
-            let modelRegistry = sinon.createStubInstance(ModelRegistry);
-            let modelManager = concerto.getModelManager(securityContext);
-            sandbox.stub(modelManager, 'clearModelFiles');
-            sandbox.stub(modelManager, 'addModelFiles');
-            sandbox.stub(concerto, 'getModelRegistry').returns(Promise.resolve(modelRegistry));
-            modelRegistry.getAll.returns(Promise.resolve([modelFile1, modelFile2]));
-            return concerto
-                .loadModels(securityContext)
-                .then(() => {
-                    sinon.assert.calledOnce(modelManager.clearModelFiles);
-                    sinon.assert.calledOnce(modelManager.addModelFiles);
-                    sinon.assert.calledWith(modelManager.addModelFiles, [modelFile1, modelFile2]);
-                });
-        });
-
-    });
-
-    describe('#saveModels', function () {
-
-        it('should add all of the models in the model manager to the model registry', () => {
-            let modelFile1 = sinon.createStubInstance(ModelFile);
-            let modelFile2 = sinon.createStubInstance(ModelFile);
-            let modelRegistry = sinon.createStubInstance(ModelRegistry);
-            let modelManager = concerto.getModelManager(securityContext);
-            sandbox.stub(modelManager, 'getModelFiles').returns([modelFile1, modelFile2]);
-            sandbox.stub(concerto, 'getModelRegistry').returns(Promise.resolve(modelRegistry));
-            modelRegistry.add.returns(Promise.resolve());
-            return concerto
-                .saveModels(securityContext)
-                .then(() => {
-                    sinon.assert.calledOnce(modelManager.getModelFiles);
-                    sinon.assert.calledTwice(modelRegistry.add);
-                    sinon.assert.calledWith(modelRegistry.add, securityContext, modelFile1);
-                    sinon.assert.calledWith(modelRegistry.add, securityContext, modelFile2);
-                });
-        });
-
-    });
-
-    describe('#createTransation', function () {
-
-        it('should create a new transaction instance', function () {
-            let txDecl = sinon.createStubInstance(TransactionDeclaration);
-            let tx = sinon.createStubInstance(Resource);
-            tx.getClassDeclaration.returns(txDecl);
-            sandbox.stub(concerto.factory, 'newInstance').returns(tx);
-            let result = concerto.getFactory(securityContext).newTransaction(securityContext, 'such.ns', 'suchType');
-            result.should.be.an.instanceOf(Resource);
-            result.should.equal(tx);
-        });
-
-        it('should throw when ns not specified', function () {
-            (function () {
-                concerto.getFactory(securityContext).newTransaction(null, 'suchType');
-            }).should.throw(/ns not specified/);
-        });
-
-        it('should throw when type not specified', function () {
-            (function () {
-                concerto.getFactory(securityContext).newTransaction('such.ns', null);
-            }).should.throw(/type not specified/);
-        });
-
-        it('should throw when type is not a transaction', function () {
-            let assetDecl = sinon.createStubInstance(AssetDeclaration);
-            let asset = sinon.createStubInstance(Resource);
-            assetDecl.getFullyQualifiedName.returns('such.ns.suchType');
-            asset.getClassDeclaration.returns(assetDecl);
-            sandbox.stub(concerto.factory, 'newInstance').returns(asset);
-            (function () {
-                concerto.getFactory(securityContext).newTransaction('such.ns', 'suchType');
-            }).should.throw(/such\.ns\.suchType is not a transaction/);
-        });
-
-    });
-
     describe('#submitTransaction', function () {
 
         it('should throw when transaction not specified', function () {
             (function () {
-                concerto.submitTransaction(securityContext, null);
+                concerto.submitTransaction(null);
             }).should.throw(/transaction not specified/);
         });
 
@@ -526,9 +303,9 @@ describe('Concerto', function () {
             let asset = sinon.createStubInstance(Resource);
             assetDecl.getFullyQualifiedName.returns('such.ns.suchType');
             asset.getClassDeclaration.returns(assetDecl);
-            sandbox.stub(concerto.factory, 'newInstance').returns(asset);
+            mockFactory.newInstance.returns(asset);
             (function () {
-                concerto.submitTransaction(securityContext, asset);
+                concerto.submitTransaction(asset);
             }).should.throw(/such\.ns\.suchType is not a transaction/);
         });
 
@@ -549,23 +326,21 @@ describe('Concerto', function () {
 
             // Force the transaction to be serialized as some fake JSON.
             const json = '{"fake":"json for the test"}';
-            let serializer = concerto.getSerializer(securityContext);
-            sandbox.stub(serializer, 'toJSON').returns({fake: 'json for the test'});
+            mockSerializer.toJSON.returns(JSON.parse(json));
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode', function () {
                 return Promise.resolve();
             });
 
-            // Invoke the add function.
+            // Invoke the submitTransaction function.
             return concerto
-                .submitTransaction(securityContext, tx)
+                .submitTransaction(tx)
                 .then(function () {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
                     sinon.assert.calledWith(Util.invokeChainCode, securityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'c89291eb-969f-4b04-b653-82deb5ee0ba1', json]);
-
                 });
 
         });
@@ -588,8 +363,7 @@ describe('Concerto', function () {
 
             // Force the transaction to be serialized as some fake JSON.
             const json = '{"fake":"json for the test"}';
-            let serializer = concerto.getSerializer(securityContext);
-            sandbox.stub(serializer, 'toJSON').returns({fake: 'json for the test'});
+            mockSerializer.toJSON.returns(JSON.parse(json));
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode', function () {
@@ -598,7 +372,7 @@ describe('Concerto', function () {
 
             // Invoke the add function.
             return concerto
-                .submitTransaction(securityContext, tx)
+                .submitTransaction(tx)
                 .then(function () {
 
                     // Check that the query was made successfully.
@@ -627,8 +401,7 @@ describe('Concerto', function () {
 
             // Force the transaction to be serialized as some fake JSON.
             const json = '{"fake":"json for the test"}';
-            let serializer = concerto.getSerializer(securityContext);
-            sandbox.stub(serializer, 'toJSON').returns({fake: 'json for the test'});
+            mockSerializer.toJSON.returns(JSON.parse(json));
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode', function () {
@@ -637,11 +410,11 @@ describe('Concerto', function () {
 
             // Invoke the add function.
             return concerto
-                .submitTransaction(securityContext, tx)
+                .submitTransaction(tx)
                 .then(function () {
 
                     // Check the timestamp was added.
-                    sinon.assert.calledWith(serializer.toJSON, sinon.match((tx) => {
+                    sinon.assert.calledWith(mockSerializer.toJSON, sinon.match((tx) => {
                         tx.timestamp.should.be.an.instanceOf(Date);
                         return true;
                     }));
@@ -670,8 +443,7 @@ describe('Concerto', function () {
 
             // Force the transaction to be serialized as some fake JSON.
             const json = '{"fake":"json for the test"}';
-            let serializer = concerto.getSerializer(securityContext);
-            sandbox.stub(serializer, 'toJSON').returns(json);
+            mockSerializer.toJSON.returns(json);
 
             // Set up the responses from the chain-code.
             sandbox.stub(Util, 'invokeChainCode', function () {
@@ -682,7 +454,7 @@ describe('Concerto', function () {
 
             // Invoke the add function.
             return concerto
-                .submitTransaction(securityContext, tx)
+                .submitTransaction(tx)
                 .then(function () {
                     throw new Error('should not get here');
                 }).catch(function (error) {
@@ -701,7 +473,7 @@ describe('Concerto', function () {
                 version: version
             }))));
             concerto.connection = mockConnection;
-            return concerto.ping(mockSecurityContext)
+            return concerto.ping()
                 .then(() => {
                     sinon.assert.calledOnce(Util.securityCheck);
                 });
@@ -712,7 +484,7 @@ describe('Concerto', function () {
                 version: version
             }))));
             concerto.connection = mockConnection;
-            return concerto.ping(mockSecurityContext)
+            return concerto.ping()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.ping);
                 });
