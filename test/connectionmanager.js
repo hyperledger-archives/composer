@@ -11,13 +11,21 @@
 'use strict';
 
 const ConnectionManager = require('../lib/connectionmanager');
+const ConnectionProfileManager = require('../lib/connectionprofilemanager');
 
 const chai = require('chai');
 chai.should();
 const expect = require('chai').expect;
 chai.use(require('chai-things'));
+const sinon = require('sinon');
 
 describe('ConnectionManager', () => {
+
+    let mockConnectionProfileManager;
+
+    beforeEach(() => {
+        mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
+    });
 
     describe('#constructor', () => {
 
@@ -35,10 +43,9 @@ describe('ConnectionManager', () => {
     describe('#getConnectionProfileManager', () => {
 
         it('should get connection profile manager', () => {
-            const dummy = {};
-            let cm = new ConnectionManager(dummy);
+            let cm = new ConnectionManager(mockConnectionProfileManager);
             cm.should.not.be.null;
-            cm.getConnectionProfileManager().should.equal(dummy);
+            cm.getConnectionProfileManager().should.equal(mockConnectionProfileManager);
         });
 
     });
@@ -47,7 +54,7 @@ describe('ConnectionManager', () => {
 
         it('should throw as abstract', () => {
 
-            let cm = new ConnectionManager('dummy');
+            let cm = new ConnectionManager(mockConnectionProfileManager);
             cm.should.not.be.null;
             return cm.connect('profile', 'network')
                   .then(() => {
@@ -62,7 +69,7 @@ describe('ConnectionManager', () => {
     describe('#toJSON', () => {
 
         it('should not be able to serialize', () => {
-            let cm = new ConnectionManager('dummy');
+            let cm = new ConnectionManager(mockConnectionProfileManager);
             cm.should.not.be.null;
             cm.toJSON().should.deep.equal({});
         });
