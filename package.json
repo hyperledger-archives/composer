@@ -40,10 +40,12 @@
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
-    "globalize": "^1.1.2",
+    "@ibm/ibm-concerto-connector-hlf": "latest",
+    "@ibm/ibm-concerto-runtime-hlf": "latest",
     "cldr-data": "latest",
-    "hfc": "^0.6.5",
     "fs-extra": "latest",
+    "globalize": "^1.1.2",
+    "hfc": "^0.6.5",
     "node-uuid": "latest",
     "temp": "latest"
   },
