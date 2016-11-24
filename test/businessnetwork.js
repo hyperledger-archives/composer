@@ -90,7 +90,6 @@ describe('BusinessNetwork', () => {
 
                 return businessNetwork.toArchive().then(result => {
                     result.should.be.Buffer;
-                    return fs.writeFileSync(__dirname+'/data/zip/genereatedZip-test-archive.zip',result);
                 });
             });
         });
