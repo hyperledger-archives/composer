@@ -78,6 +78,7 @@ describe('Engine', () => {
             mockDataService.createCollection.withArgs('$sysregistries').resolves(sysregistries);
             mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
             mockRegistryManager.add.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+            mockRegistryManager.createDefaults.resolves();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.calledTwice(mockDataService.createCollection);
@@ -91,6 +92,7 @@ describe('Engine', () => {
                     sinon.assert.calledWith(mockDataService.createCollection, '$sysregistries');
                     sinon.assert.calledOnce(mockRegistryManager.add);
                     sinon.assert.calledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
+                    sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
         });
 

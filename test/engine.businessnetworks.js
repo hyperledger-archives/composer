@@ -10,11 +10,13 @@
 
 'use strict';
 
+const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
+const RegistryManager = require('../lib/registrymanager');
 const version = require('../package.json').version;
 
 const chai = require('chai');
@@ -28,6 +30,7 @@ describe('Engine', () => {
     let mockContainer;
     let mockContext;
     let mockDataService;
+    let mockRegistryManager;
     let engine;
     let sandbox;
 
@@ -37,7 +40,9 @@ describe('Engine', () => {
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
         mockDataService = sinon.createStubInstance(DataService);
+        mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getDataService.returns(mockDataService);
+        mockContext.getRegistryManager.returns(mockRegistryManager);
         engine = new Engine(mockContainer);
         sandbox = sinon.sandbox.create();
     });
@@ -65,6 +70,31 @@ describe('Engine', () => {
 
     });
 
+    describe('#updateBusinessNetwork', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.invoke(mockContext, 'updateBusinessNetwork', ['no', 'args', 'supported']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "updateBusinessNetwork", expecting "\[\"businessNetworkArchive\"\]"/);
+        });
+
+        it('should update the business network archive and create default registries', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
+            sysdata.update.withArgs('businessnetwork', { data: 'aGVsbG8gd29ybGQ=' }).resolves();
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            mockRegistryManager.createDefaults.resolves();
+            return engine.invoke(mockContext, 'updateBusinessNetwork', ['aGVsbG8gd29ybGQ='])
+                .then((result) => {
+                    sinon.assert.calledOnce(sysdata.update);
+                    sinon.assert.calledWith(sysdata.update, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=' });
+                    sinon.assert.calledTwice(mockContext.initialize);
+                    sinon.assert.calledOnce(mockRegistryManager.createDefaults);
+                });
+        });
+
+    });
+
     describe('#resetBusinessNetwork', () => {
 
         it('should throw for invalid arguments', () => {
@@ -72,7 +102,7 @@ describe('Engine', () => {
             return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "resetBusinessNetwork", expecting "\[\]"/);
         });
 
-        it('should delete all world state', () => {
+        it('should delete all registries and resources', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataCollection.getAll.resolves([{
                 type: 'Asset',
@@ -83,14 +113,14 @@ describe('Engine', () => {
             }]);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             mockDataService.deleteCollection.resolves();
-            sinon.stub(engine, 'init').resolves();
+            mockRegistryManager.createDefaults.resolves();
             return engine.invoke(mockContext, 'resetBusinessNetwork', [])
                 .then(() => {
                     sinon.assert.calledWith(mockDataService.deleteCollection, 'Asset:sheeps');
                     sinon.assert.calledWith(mockDataService.deleteCollection, 'Participants:farmers');
-                    sinon.assert.calledWith(mockDataService.deleteCollection, '$sysregistries');
-                    sinon.assert.calledOnce(engine.init);
-                    sinon.assert.calledWith(engine.init, sinon.match.any, 'init', []);
+                    sinon.assert.calledWith(mockDataCollection.remove, 'Asset:sheeps');
+                    sinon.assert.calledWith(mockDataCollection.remove, 'Participants:farmers');
+                    sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
         });
 
