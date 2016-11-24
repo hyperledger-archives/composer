@@ -45,8 +45,7 @@ describe('HFCConnection', () => {
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
 
-        mockConnectionProfileStore.load.withArgs('testprofile').onFirstCall().returns( Promise.resolve({type : 'hfc'}));
-        mockConnectionProfileStore.load.withArgs('testprofile').onSecondCall().returns( Promise.resolve({type : 'hfc', networks : { foo : '123' }}));
+        mockConnectionProfileStore.load.withArgs('testprofile').returns( Promise.resolve({type : 'hlf', networks : { testnetwork : '123' }}));
         mockConnectionProfileStore.save.returns(Promise.resolve());
         mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
 
@@ -64,14 +63,23 @@ describe('HFCConnection', () => {
         sandbox.restore();
     });
 
-    /*
+    describe('#constructor', () => {
+
+        it('should throw if chain not specified', () => {
+            (() => {
+                new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', null);
+            }).should.throw(/chain must be set/);
+        });
+
+    });
+
     describe('#disconnect', function () {
 
         it('should do nothing if not connected', () => {
             return connection.disconnect();
         });
 
-        it('should disconnect the event hub if connected', () => {
+        it.skip('should disconnect the event hub if connected', () => {
 
             // Set up the hfc mock.
             return connection.disconnect()
@@ -86,7 +94,6 @@ describe('HFCConnection', () => {
         });
 
     });
-    */
 
     describe('#login', function () {
 
@@ -133,6 +140,19 @@ describe('HFCConnection', () => {
                     throw new Error('should not get here');
                 }).catch(function (error) {
                     error.should.match(/failed to login/);
+                });
+
+        });
+
+        it('should look for an existing chaincode ID', function () {
+
+            // Login to the Hyperledger Fabric using the mock hfc.
+            let enrollmentID = 'doge';
+            let enrollmentSecret = 'suchsecret';
+            return connection
+                .login(enrollmentID, enrollmentSecret)
+                .then(function (securityContext) {
+                    securityContext.getChaincodeID().should.equal('123');
                 });
 
         });
