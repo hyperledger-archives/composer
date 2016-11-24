@@ -46,6 +46,25 @@ describe('Engine', () => {
         sandbox.restore();
     });
 
+    describe('#getBusinessNetwork', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.invoke(mockContext, 'getBusinessNetwork', ['no', 'args', 'supported']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "getBusinessNetwork", expecting "\[\]"/);
+        });
+
+        it('should return the business network archive', () => {
+            let sysdata = sinon.createStubInstance(DataCollection);
+            sysdata.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=' });
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            return engine.query(mockContext, 'getBusinessNetwork', [])
+                .then((result) => {
+                    result.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=' });
+                });
+        });
+
+    });
+
     describe('#resetBusinessNetwork', () => {
 
         it('should throw for invalid arguments', () => {
