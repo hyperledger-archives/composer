@@ -36,7 +36,8 @@
     "jsdoc": "^3.4.1",
     "license-check": "^1.1.5",
     "mocha": "^3.0.2",
-    "sinon": "^1.17.6"
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
