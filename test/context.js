@@ -10,14 +10,17 @@
 
 'use strict';
 
+const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
 const Context = require('../lib/context');
+const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const Factory = require('@ibm/ibm-concerto-common').Factory;
-const ModelFile = require('@ibm/ibm-concerto-common').ModelFile;
+const Introspector = require('@ibm/ibm-concerto-common').Introspector;
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
-const ModelRegistry = require('../lib/modelregistry');
 const RegistryManager = require('../lib/registrymanager');
+const Resolver = require('../lib/resolver');
+const ScriptManager = require('@ibm/ibm-concerto-common').ScriptManager;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 
 require('chai').should();
@@ -28,10 +31,16 @@ describe('Context', () => {
 
     let mockEngine;
     let context;
+    let sandbox;
 
     beforeEach(() => {
         mockEngine = sinon.createStubInstance(Engine);
         context = new Context(mockEngine);
+        sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
     });
 
     describe('#constructor', () => {
@@ -44,19 +53,20 @@ describe('Context', () => {
 
     describe('#initialize', () => {
 
-        it('should load all of the model files from the model registry into the model manager', () => {
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            let mockModelRegistry = sinon.createStubInstance(ModelRegistry);
-            sinon.stub(context, 'getModelManager').returns(mockModelManager);
-            sinon.stub(context, 'getModelRegistry').returns(mockModelRegistry);
-            let mockModelFile1 = sinon.createStubInstance(ModelFile);
-            let mockModelFile2 = sinon.createStubInstance(ModelFile);
-            mockModelRegistry.getAll.resolves([mockModelFile1, mockModelFile2]);
+        it('should load the business network', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=' });
+            sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
             return context.initialize()
                 .then(() => {
-                    sinon.assert.calledTwice(mockModelManager.addModelFile);
-                    sinon.assert.calledWith(mockModelManager.addModelFile, mockModelFile1);
-                    sinon.assert.calledWith(mockModelManager.addModelFile, mockModelFile2);
+                    sinon.assert.calledOnce(BusinessNetwork.fromArchive);
+                    sinon.assert.calledWith(BusinessNetwork.fromArchive, sinon.match((archive) => {
+                        return archive.compare(Buffer.from('hello world')) === 0;
+                    }));
                 });
         });
 
@@ -74,43 +84,50 @@ describe('Context', () => {
 
     describe('#getModelManager', () => {
 
-        it('should return a new model manager', () => {
-            context.getModelManager().should.be.an.instanceOf(ModelManager);
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getModelManager();
+            }).should.throw(/must call initialize before calling this function/);
         });
 
-        it('should return an existing model manager', () => {
+        it('should return the business networks model manager', () => {
             let mockModelManager = sinon.createStubInstance(ModelManager);
-            context.modelManager = mockModelManager;
+            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
+            context.businessNetwork.getModelManager.returns(mockModelManager);
             context.getModelManager().should.equal(mockModelManager);
         });
 
     });
 
-    describe('#getModelRegistry', () => {
+    describe('#getScriptManager', () => {
 
-        it('should return a new model registry', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            sinon.stub(context, 'getDataService').returns(mockDataService);
-            context.getModelRegistry().should.be.an.instanceOf(ModelRegistry);
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getScriptManager();
+            }).should.throw(/must call initialize before calling this function/);
         });
 
-        it('should return an existing model manager', () => {
-            let mockModelRegistry = sinon.createStubInstance(ModelRegistry);
-            context.modelRegistry = mockModelRegistry;
-            context.getModelRegistry().should.equal(mockModelRegistry);
+        it('should return the business networks model manager', () => {
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
+            context.businessNetwork.getScriptManager.returns(mockScriptManager);
+            context.getScriptManager().should.equal(mockScriptManager);
         });
 
     });
 
     describe('#getFactory', () => {
 
-        it('should return a new factory', () => {
-            context.getFactory().should.be.an.instanceOf(Factory);
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getFactory();
+            }).should.throw(/must call initialize before calling this function/);
         });
 
-        it('should return an existing factory', () => {
+        it('should return the business networks model manager', () => {
             let mockFactory = sinon.createStubInstance(Factory);
-            context.factory = mockFactory;
+            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
+            context.businessNetwork.getFactory.returns(mockFactory);
             context.getFactory().should.equal(mockFactory);
         });
 
@@ -118,14 +135,34 @@ describe('Context', () => {
 
     describe('#getSerializer', () => {
 
-        it('should return a new serializer', () => {
-            context.getSerializer().should.be.an.instanceOf(Serializer);
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getSerializer();
+            }).should.throw(/must call initialize before calling this function/);
         });
 
-        it('should return an existing serializer', () => {
+        it('should return the business networks model manager', () => {
             let mockSerializer = sinon.createStubInstance(Serializer);
-            context.serializer = mockSerializer;
+            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
+            context.businessNetwork.getSerializer.returns(mockSerializer);
             context.getSerializer().should.equal(mockSerializer);
+        });
+
+    });
+
+    describe('#getIntrospector', () => {
+
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getIntrospector();
+            }).should.throw(/must call initialize before calling this function/);
+        });
+
+        it('should return the business networks model manager', () => {
+            let mockIntrospector = sinon.createStubInstance(Introspector);
+            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
+            context.businessNetwork.getIntrospector.returns(mockIntrospector);
+            context.getIntrospector().should.equal(mockIntrospector);
         });
 
     });
@@ -135,6 +172,8 @@ describe('Context', () => {
         it('should return a new registry manager', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             sinon.stub(context, 'getDataService').returns(mockDataService);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
             context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
         });
 
@@ -142,6 +181,22 @@ describe('Context', () => {
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
             context.registryManager = mockRegistryManager;
             context.getRegistryManager().should.equal(mockRegistryManager);
+        });
+
+    });
+
+    describe('#getResolver', () => {
+
+        it('should return a new registry manager', () => {
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            context.getResolver().should.be.an.instanceOf(Resolver);
+        });
+
+        it('should return an existing registry manager', () => {
+            let mockResolver = sinon.createStubInstance(Resolver);
+            context.resolver = mockResolver;
+            context.getResolver().should.equal(mockResolver);
         });
 
     });
