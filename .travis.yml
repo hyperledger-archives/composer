@@ -7,6 +7,9 @@ before_install: |
     npm install -g npm
     npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
     npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
+install: ./scripts/install-deps.sh
+script: |
+    set -ev
 deploy:
     provider: script
     script: ./scripts/deploy.sh
