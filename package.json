@@ -1,16 +1,12 @@
 {
   "name": "ibm-concerto-cli",
   "version": "1.0.0",
-  "description": "IBM Concerto blockchain framework administrative command line interfaces (CLIs)",
+  "description": "IBM Concerto command line interfaces (CLIs)",
   "bin": {
   "concerto": "cli.js"
 },
   "main": "index.js",
-  "scripts": {
-    "setup": "scripts/setup.sh",
-    "teardown": "scripts/teardown.sh"
-  },
-  "repository": {
+    "repository": {
     "type": "git",
     "url": "https://github.ibm.com/Blockchain-WW-Labs/Concerto-CLI.git"
   },
@@ -23,11 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@ibm/ibm-concerto-admin": "latest",
-    "cli-table": "^0.3.1",
-    "config": "^1.21.0",
-    "jsonfile": "^2.4.0",
     "prompt": "^1.0.0",
-    "winston": "^2.2.0",
     "yargs": "^6.2.0"
   }
 }
