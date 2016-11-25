@@ -8,7 +8,9 @@ npm link
 ```
 
 ## Overview
-Concerto-Admin contains the Concerto administrative command line interfaces (CLIs) and APIs.
+Contains the Concerto CLIs for administering business networks.
+
+Type `concerto --help` to list the available commands.
 
 ## Usage
 
