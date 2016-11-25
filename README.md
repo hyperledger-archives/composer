@@ -13,13 +13,11 @@ Concerto-Admin contains the Concerto administrative command line interfaces (CLI
 ## Usage
 
 ```bash  
-concerto deploy [options]
+concerto network deploy [options]
 
 Options:
   --help              Show help  [boolean]
-  --version           Show version number  [boolean]
-  --networkFile, -n   The business network archive file [string]
-  --enrollid, -i      The enrollment ID of the user  [string] [required]
-  --enrollsecret, -s  The enrollment secret of the user  [string]
-
+  --archiveFile, -a   The business network archive file name  [string] [required]
+  --enrollId, -i      The enrollment ID of the user  [string] [required]
+  --enrollSecret, -s  The enrollment secret of the user  [string]
 ```
