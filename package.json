@@ -24,6 +24,7 @@
     "solutions"
   ],
   "devDependencies": {
+    "@ibm/ibm-concerto-admin": "latest",
     "@ibm/ibm-concerto-client": "latest",
     "@ibm/ibm-concerto-common": "latest",
     "@ibm/ibm-concerto-connector-web": "latest",

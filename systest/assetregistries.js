@@ -10,6 +10,8 @@
 
 'use strict';
 
+const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+
 const fs = require('fs');
 const path = require('path');
 
@@ -19,14 +21,32 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-subset'));
 
-describe('Asset registry system tests', function () {
+describe.only('Asset registry system tests', function () {
 
-    let modelFiles;
-    let concerto;
-    let securityContext;
+    let businessNetwork;
+    let admin;
+    let client;
+
+    before(function () {
+        const modelFiles = [
+            fs.readFileSync(path.resolve(__dirname, 'data/assetregistries.cto'), 'utf8')
+        ];
+        businessNetwork = new BusinessNetwork('systest.assetregistries', 'The network for the asset registry system tests');
+        modelFiles.forEach((modelFile) => {
+            businessNetwork.getModelManager().addModelFile(modelFile);
+        });
+        admin = TestUtil.getAdmin();
+        return admin.deploy(businessNetwork)
+            .then(() => {
+                return TestUtil.getClient('systest.assetregistries')
+                    .then((result) => {
+                        client = result;
+                    });
+            });
+    });
 
     let createAsset = (assetId) => {
-        let factory = concerto.getFactory(securityContext);
+        let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.assetregistries', 'SimpleAsset', assetId);
         asset.stringValue = 'hello world';
         asset.stringValues = [ 'hello', 'world' ];
@@ -46,13 +66,13 @@ describe('Asset registry system tests', function () {
     };
 
     let createAssetContainer = () => {
-        let factory = concerto.getFactory(securityContext);
+        let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetContainer', 'dogeAssetContainer');
         return asset;
     };
 
     let createAssetRelationshipContainer = () => {
-        let factory = concerto.getFactory(securityContext);
+        let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetRelationshipContainer', 'dogeAssetRelationshipContainer');
         return asset;
     };
@@ -126,26 +146,9 @@ describe('Asset registry system tests', function () {
         validateResolvedAsset(assetContainer.simpleAssets[1], 'dogeAsset3');
     };
 
-    before(function () {
-        modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/assetregistries.cto'), 'utf8')
-        ];
-        concerto = TestUtil.getConcerto();
-        securityContext = TestUtil.getSecurityContext();
-    });
-
-    beforeEach(function () {
-        let modelManager = concerto.getModelManager(securityContext);
-        modelManager.clearModelFiles();
-        modelFiles.forEach(function (modelFile) {
-            modelManager.addModelFile(modelFile);
-        });
-        return concerto.saveModels(securityContext);
-    });
-
     it('should get all the asset registries', function () {
-        return concerto
-            .getAllAssetRegistries(securityContext)
+        return client
+            .getAllAssetRegistries()
             .then(function (assetRegistries) {
                 assetRegistries.length.should.equal(4);
                 assetRegistries.should.containSubset([
@@ -158,33 +161,33 @@ describe('Asset registry system tests', function () {
     });
 
     it('should get an asset registry', function () {
-        return concerto
-            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+        return client
+            .getAssetRegistry('systest.assetregistries.SimpleAsset')
             .then(function (assetRegistry) {
                 assetRegistry.should.containSubset({'id': 'systest.assetregistries.SimpleAsset', 'name': 'Asset registry for systest.assetregistries.SimpleAsset'});
             });
     });
 
     it('should throw when getting a non-existent asset registry', function () {
-        return concerto
-            .getAssetRegistry(securityContext, 'e92074d3-935b-4c75-98e5-5dc2505aa971')
+        return client
+            .getAssetRegistry('e92074d3-935b-4c75-98e5-5dc2505aa971')
             .then(function (assetRegistry) {
                 throw new Error('should not get here');
             }).catch(function (error) {
-                error.should.match(/Object with ID 'Asset:e92074d3-935b-4c75-98e5-5dc2505aa971' in collection with ID '\$sysregistries' does not exist/);
+                error.should.match(/No row found with id/);
             });
     });
 
     it('should add an asset registry', function () {
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function () {
-                return concerto.getAllAssetRegistries(securityContext);
+                return client.getAllAssetRegistries();
             })
             .then(function (assetRegistries) {
                 assetRegistries.should.have.length.of.at.least(4);
                 assetRegistries.should.containSubset([{'id': 'myregistry', 'name': 'my new asset registry'}]);
-                return concerto.getAssetRegistry(securityContext, 'myregistry');
+                return client.getAssetRegistry('myregistry');
             })
             .then(function (assetRegistry) {
                 assetRegistry.should.containSubset({'id': 'myregistry', 'name': 'my new asset registry'});
@@ -193,20 +196,20 @@ describe('Asset registry system tests', function () {
 
     it('should add an asset to an asset registry', function () {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
-                return assetRegistry.getAll(securityContext);
+                return assetRegistry.getAll();
             })
             .then(function (assets) {
                 assets.length.should.equal(1);
                 validateAsset(assets[0], 'dogeAsset1');
-                return assetRegistry.get(securityContext, 'dogeAsset1');
+                return assetRegistry.get('dogeAsset1');
             })
             .then(function (asset) {
                 asset.getIdentifier().should.equal('dogeAsset1');
@@ -215,16 +218,16 @@ describe('Asset registry system tests', function () {
 
     it('should bulk add assets to an asset registry', function () {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset1 = createAsset('dogeAsset1');
                 let asset2 = createAsset('dogeAsset2');
-                return assetRegistry.addAll(securityContext, [asset1, asset2]);
+                return assetRegistry.addAll([asset1, asset2]);
             })
             .then(function () {
-                return assetRegistry.getAll(securityContext);
+                return assetRegistry.getAll();
             })
             .then(function (assets) {
                 assets.length.should.equal(2);
@@ -238,24 +241,24 @@ describe('Asset registry system tests', function () {
 
     it('should update an asset in an asset registry', () => {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function (asset) {
-                return assetRegistry.get(securityContext, 'dogeAsset1');
+                return assetRegistry.get('dogeAsset1');
             })
             .then(function (asset) {
                 validateAsset(asset, 'dogeAsset1');
                 asset.stringValue = 'ciao mondo';
                 asset.stringValues = [ 'ciao', 'mondo' ];
-                return assetRegistry.update(securityContext, asset);
+                return assetRegistry.update(asset);
             })
             .then(function () {
-                return assetRegistry.get(securityContext, 'dogeAsset1');
+                return assetRegistry.get('dogeAsset1');
             })
             .then(function (asset) {
                 asset.stringValue.should.equal('ciao mondo');
@@ -265,16 +268,16 @@ describe('Asset registry system tests', function () {
 
     it('should bulk update assets in an asset registry', function () {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset1 = createAsset('dogeAsset1');
                 let asset2 = createAsset('dogeAsset2');
-                return assetRegistry.addAll(securityContext, [asset1, asset2]);
+                return assetRegistry.addAll([asset1, asset2]);
             })
             .then(function () {
-                return assetRegistry.getAll(securityContext);
+                return assetRegistry.getAll();
             })
             .then(function (assets) {
                 assets.length.should.equal(2);
@@ -287,10 +290,10 @@ describe('Asset registry system tests', function () {
                 validateAsset(assets[1], 'dogeAsset2');
                 assets[1].stringValue = 'hei maailma';
                 assets[1].stringValues = [ 'hei', 'maailma' ];
-                return assetRegistry.updateAll(securityContext, assets);
+                return assetRegistry.updateAll(assets);
             })
             .then(function () {
-                return assetRegistry.getAll(securityContext);
+                return assetRegistry.getAll();
             })
             .then(function (assets) {
                 assets.length.should.equal(2);
@@ -306,43 +309,43 @@ describe('Asset registry system tests', function () {
 
     it('should remove an asset from an asset registry', () => {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function (asset) {
-                return assetRegistry.get(securityContext, 'dogeAsset1');
+                return assetRegistry.get('dogeAsset1');
             })
             .then(function (asset) {
                 validateAsset(asset, 'dogeAsset1');
-                return assetRegistry.remove(securityContext, 'dogeAsset1');
+                return assetRegistry.remove('dogeAsset1');
             })
             .then(function (asset) {
-                return assetRegistry.get(securityContext, 'dogeAsset1');
+                return assetRegistry.get('dogeAsset1');
             })
             .then(function () {
                 throw new Error('should not get here');
             })
             .catch(function (error) {
-                error.should.match(/does not exist/);
+                error.should.match(/No row found with id/);
             });
     });
 
     it('should bulk remove assets from an asset registry', () => {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset1 = createAsset('dogeAsset1');
                 let asset2 = createAsset('dogeAsset2');
-                return assetRegistry.addAll(securityContext, [asset1, asset2]);
+                return assetRegistry.addAll([asset1, asset2]);
             })
             .then(function (asset) {
-                return assetRegistry.getAll(securityContext);
+                return assetRegistry.getAll();
             })
             .then(function (assets) {
                 assets.length.should.equal(2);
@@ -351,10 +354,10 @@ describe('Asset registry system tests', function () {
                 });
                 validateAsset(assets[0], 'dogeAsset1');
                 validateAsset(assets[1], 'dogeAsset2');
-                return assetRegistry.removeAll(securityContext, ['dogeAsset1', assets[1]]);
+                return assetRegistry.removeAll(['dogeAsset1', assets[1]]);
             })
             .then(function (asset) {
-                return assetRegistry.getAll(securityContext);
+                return assetRegistry.getAll();
             })
             .then(function (assets) {
                 assets.length.should.equal(0);
@@ -364,23 +367,23 @@ describe('Asset registry system tests', function () {
     it('should store assets containing assets in an asset registry', () => {
         let assetRegistry;
         let assetContainerRegistry;
-        return concerto
-            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+        return client
+            .getAssetRegistry('systest.assetregistries.SimpleAsset')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = createAsset('dogeAsset2');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = createAsset('dogeAsset3');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
-                return concerto.getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetContainer');
+                return client.getAssetRegistry('systest.assetregistries.SimpleAssetContainer');
             })
             .then(function (result) {
                 assetContainerRegistry = result;
@@ -390,15 +393,15 @@ describe('Asset registry system tests', function () {
                     createAsset('dogeAsset2'),
                     createAsset('dogeAsset3')
                 ];
-                return assetContainerRegistry.add(securityContext, assetContainer);
+                return assetContainerRegistry.add(assetContainer);
             })
             .then(function () {
-                return assetContainerRegistry.getAll(securityContext);
+                return assetContainerRegistry.getAll();
             })
             .then(function (assetContainers) {
                 assetContainers.length.should.equal(1);
                 validateAssetContainer(assetContainers[0], 'dogeAssetContainer');
-                return assetContainerRegistry.get(securityContext, 'dogeAssetContainer');
+                return assetContainerRegistry.get('dogeAssetContainer');
             })
             .then(function (assetContainer) {
                 validateAssetContainer(assetContainer, 'dogeAssetContainer');
@@ -408,42 +411,42 @@ describe('Asset registry system tests', function () {
     it('should store assets containing asset relationships in an asset registry', () => {
         let assetRegistry;
         let assetContainerRegistry;
-        return concerto
-            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+        return client
+            .getAssetRegistry('systest.assetregistries.SimpleAsset')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = createAsset('dogeAsset2');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = createAsset('dogeAsset3');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
-                return concerto.getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetRelationshipContainer');
+                return client.getAssetRegistry('systest.assetregistries.SimpleAssetRelationshipContainer');
             })
             .then(function (result) {
                 assetContainerRegistry = result;
                 let assetContainer = createAssetRelationshipContainer();
-                let factory = concerto.getFactory(securityContext);
+                let factory = client.getBusinessNetwork().getFactory();
                 assetContainer.simpleAsset = factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset1');
                 assetContainer.simpleAssets = [
                     factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset2'),
                     factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset3')
                 ];
-                return assetContainerRegistry.add(securityContext, assetContainer);
+                return assetContainerRegistry.add(assetContainer);
             })
             .then(function () {
-                return assetContainerRegistry.getAll(securityContext);
+                return assetContainerRegistry.getAll();
             })
             .then(function (assetContainers) {
                 assetContainers.length.should.equal(1);
                 validateAssetRelationshipContainer(assetContainers[0], 'dogeAssetRelationshipContainer');
-                return assetContainerRegistry.get(securityContext, 'dogeAssetRelationshipContainer');
+                return assetContainerRegistry.get('dogeAssetRelationshipContainer');
             })
             .then(function (assetContainer) {
                 validateAssetRelationshipContainer(assetContainer, 'dogeAssetRelationshipContainer');
@@ -453,42 +456,42 @@ describe('Asset registry system tests', function () {
     it.skip('should resolve assets containing asset relationships from an asset registry', () => {
         let assetRegistry;
         let assetContainerRegistry;
-        return concerto
-            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAsset')
+        return client
+            .getAssetRegistry('systest.assetregistries.SimpleAsset')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = createAsset('dogeAsset2');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = createAsset('dogeAsset3');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
-                return concerto.getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetRelationshipContainer');
+                return client.getAssetRegistry('systest.assetregistries.SimpleAssetRelationshipContainer');
             })
             .then(function (result) {
                 assetContainerRegistry = result;
                 let assetContainer = createAssetRelationshipContainer();
-                let factory = concerto.getFactory(securityContext);
+                let factory = client.getBusinessNetwork().getFactory();
                 assetContainer.simpleAsset = factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset1');
                 assetContainer.simpleAssets = [
                     factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset2'),
                     factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset3')
                 ];
-                return assetContainerRegistry.add(securityContext, assetContainer);
+                return assetContainerRegistry.add(assetContainer);
             })
             .then(function () {
-                return assetContainerRegistry.resolveAll(securityContext);
+                return assetContainerRegistry.resolveAll();
             })
             .then(function (assetContainers) {
                 assetContainers.length.should.equal(1);
                 validateResolvedAssetContainer(assetContainers[0], 'dogeAssetRelationshipContainer');
-                return assetContainerRegistry.resolve(securityContext, 'dogeAssetRelationshipContainer');
+                return assetContainerRegistry.resolve('dogeAssetRelationshipContainer');
             })
             .then(function (assetContainer) {
                 validateResolvedAssetContainer(assetContainer, 'dogeAssetRelationshipContainer');
@@ -496,28 +499,28 @@ describe('Asset registry system tests', function () {
     });
 
     it.skip('should resolve assets containing circular relationships from an asset registry', () => {
-        let factory = concerto.getFactory(securityContext);
+        let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
-        return concerto
-            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetCircle')
+        return client
+            .getAssetRegistry('systest.assetregistries.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
                 asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
                 asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
                 let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
                 asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
-                return assetRegistry.add(securityContext, asset);
+                return assetRegistry.add(asset);
             })
             .then(function () {
-                return assetRegistry.resolveAll(securityContext);
+                return assetRegistry.resolveAll();
             })
             .then(function (assets) {
                 assets.sort((a, b) => {
@@ -527,7 +530,7 @@ describe('Asset registry system tests', function () {
                 assets[0].next.next.assetId.should.equal('circle3');
                 assets[1].next.next.assetId.should.equal('circle1');
                 assets[2].next.next.assetId.should.equal('circle2');
-                return assetRegistry.resolve(securityContext, 'circle1');
+                return assetRegistry.resolve('circle1');
             })
             .then(function (asset) {
                 asset.next.next.assetId.should.equal('circle3');
@@ -536,8 +539,8 @@ describe('Asset registry system tests', function () {
 
     it.skip('should find assets in an asset registry', function () {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset1 = createAsset('dogeAsset1');
@@ -545,10 +548,10 @@ describe('Asset registry system tests', function () {
                 let asset3 = createAsset('dogeAsset3');
                 let asset4 = createAsset('dogeAsset4');
                 let asset5 = createAsset('dogeAsset5');
-                return assetRegistry.addAll(securityContext, [asset1, asset2, asset3, asset4, asset5]);
+                return assetRegistry.addAll([asset1, asset2, asset3, asset4, asset5]);
             })
             .then(function () {
-                return assetRegistry.find(securityContext, `
+                return assetRegistry.find(`
                     (assetId = 'dogeAsset1') or
                     (assetId = 'dogeAsset3') or
                     (assetId = 'dogeAsset5')
@@ -566,10 +569,10 @@ describe('Asset registry system tests', function () {
     });
 
     it.skip('should find assets in an asset registry using expressions that access related assets', function () {
-        let factory = concerto.getFactory(securityContext);
+        let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
-        return concerto
-            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetCircle')
+        return client
+            .getAssetRegistry('systest.assetregistries.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
                 let circle1 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
@@ -578,10 +581,10 @@ describe('Asset registry system tests', function () {
                 circle2.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
                 let circle3 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
                 circle3.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
-                return assetRegistry.addAll(securityContext, [circle1, circle2, circle3]);
+                return assetRegistry.addAll([circle1, circle2, circle3]);
             })
             .then(function () {
-                return assetRegistry.find(securityContext, `
+                return assetRegistry.find(`
                     (assetId = 'circle1') and
                     (next.assetId = 'circle2') and
                     (next.next.assetId = 'circle3') and
@@ -596,8 +599,8 @@ describe('Asset registry system tests', function () {
 
     it.skip('should query assets in an asset registry', function () {
         let assetRegistry;
-        return concerto
-            .addAssetRegistry(securityContext, 'myregistry', 'my new asset registry')
+        return client
+            .addAssetRegistry('myregistry', 'my new asset registry')
             .then(function (result) {
                 assetRegistry = result;
                 let asset1 = createAsset('dogeAsset1');
@@ -605,10 +608,10 @@ describe('Asset registry system tests', function () {
                 let asset3 = createAsset('dogeAsset3');
                 let asset4 = createAsset('dogeAsset4');
                 let asset5 = createAsset('dogeAsset5');
-                return assetRegistry.addAll(securityContext, [asset1, asset2, asset3, asset4, asset5]);
+                return assetRegistry.addAll([asset1, asset2, asset3, asset4, asset5]);
             })
             .then(function () {
-                return assetRegistry.query(securityContext, `
+                return assetRegistry.query(`
                     (assetId = 'dogeAsset1') or
                     (assetId = 'dogeAsset3') or
                     (assetId = 'dogeAsset5')
@@ -647,10 +650,10 @@ describe('Asset registry system tests', function () {
     });
 
     it.skip('should query assets in an asset registry using expressions that access related assets', function () {
-        let factory = concerto.getFactory(securityContext);
+        let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
-        return concerto
-            .getAssetRegistry(securityContext, 'systest.assetregistries.SimpleAssetCircle')
+        return client
+            .getAssetRegistry('systest.assetregistries.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
                 let circle1 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
@@ -659,10 +662,10 @@ describe('Asset registry system tests', function () {
                 circle2.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
                 let circle3 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
                 circle3.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
-                return assetRegistry.addAll(securityContext, [circle1, circle2, circle3]);
+                return assetRegistry.addAll([circle1, circle2, circle3]);
             })
             .then(function () {
-                return assetRegistry.query(securityContext, `
+                return assetRegistry.query(`
                     (assetId = 'circle1') and
                     (next.assetId = 'circle2') and
                     (next.next.assetId = 'circle3') and

@@ -10,14 +10,20 @@
 
 'use strict';
 
+const Logger = require('@ibm/ibm-concerto-common').Logger;
 const TestUtil = require('./testutil');
 
 before(() => {
+    Logger.setFunctionalLogger({
+        log: () => {
+
+        }
+    });
     return TestUtil.setUp();
 });
 
 beforeEach(() => {
-    return TestUtil.clearWorldState();
+    return TestUtil.resetBusinessNetwork();
 });
 
 after(() => {

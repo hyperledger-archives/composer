@@ -10,13 +10,13 @@
 
 'use strict';
 
+const Admin = require('@ibm/ibm-concerto-admin').Admin;
 const Concerto = require('@ibm/ibm-concerto-client').Concerto;
 const net = require('net');
 const Util = require('@ibm/ibm-concerto-common').Util;
-const WebConnectionManager = require('@ibm/ibm-concerto-connector-web');
 
-let concerto;
-let securityContext;
+let admin;
+let client;
 
 /**
  * A class containing test utilities for use in Concerto system tests.
@@ -99,45 +99,41 @@ class TestUtil {
     static setUp() {
         return TestUtil.waitForPorts()
             .then(function () {
-                console.log('Calling Concerto.connect() ...');
-                let concertoOptions = {
-                    developmentMode: true
-                };
+                admin = new Admin();
+                let adminOptions;
                 if (TestUtil.isKarma()) {
-                    concertoOptions.connectionManager = new WebConnectionManager();
+                    adminOptions = {
+                        type: 'web'
+                    };
+                } else {
+                    adminOptions = {
+                        type: 'hlf',
+                        keyValStore: '/tmp/keyValStore',
+                        membershipServicesURL: 'grpc://membersrvc:7054',
+                        peerURL: 'grpc://vp0:7051',
+                        eventHubURL: 'grpc://vp0:7053'
+                    };
                 }
-                concerto = new Concerto(concertoOptions);
-                let options = {
-                    keyValStore: '/tmp/keyValStore',
-                    membershipServicesURL: 'grpc://membersrvc:7054',
-                    peerURL: 'grpc://vp0:7051',
-                    eventHubURL: 'grpc://vp0:7053'
-                };
                 if (process.env.CONCERTO_DEPLOY_WAIT_SECS) {
-                    options.deployWaitTime = parseInt(process.env.CONCERTO_DEPLOY_WAIT_SECS);
-                    console.log('CONCERTO_DEPLOY_WAIT_SECS set, using: ', options.deployWaitTime);
+                    adminOptions.deployWaitTime = parseInt(process.env.CONCERTO_DEPLOY_WAIT_SECS);
+                    console.log('CONCERTO_DEPLOY_WAIT_SECS set, using: ', adminOptions.deployWaitTime);
                 }
                 if (process.env.CONCERTO_INVOKE_WAIT_SECS) {
-                    options.invokeWaitTime = parseInt(process.env.CONCERTO_INVOKE_WAIT_SECS);
-                    console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', options.invokeWaitTime);
+                    adminOptions.invokeWaitTime = parseInt(process.env.CONCERTO_INVOKE_WAIT_SECS);
+                    console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
-                return concerto.connect(options);
+                console.log('Calling Admin.createConnectionProfile() ...');
+                return admin.createConnectionProfile('testprofile', adminOptions);
             })
             .then(function () {
-                console.log('Called Concerto.connect()');
-                console.log('Calling Concerto.login() ...');
-                return concerto.login('WebAppAdmin', 'DJY27pEnl16d');
-            })
-            .then(function (result) {
-                console.log('Called Concerto.login()');
-                securityContext = result;
-                console.log('Calling Concerto.deploy() ...');
-                return concerto.deploy(securityContext);
+                console.log('Called Admin.createConnectionProfile()');
+                console.log('Calling Admin.connect() ...');
+                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then(function () {
-                console.log('Called Concerto.deploy()');
+                console.log('Called Admin.connect()');
                 console.log('');
-                return Promise.resolve(concerto);
+                return Promise.resolve();
             });
     }
 
@@ -147,49 +143,56 @@ class TestUtil {
      * connected instance of Concerto.
      */
     static tearDown() {
-        if (!concerto) {
+        if (!admin) {
             throw new Error('Must call setUp successfully before calling tearDown');
         }
         console.log('Calling Concerto.disconnect() ...');
-        return concerto.disconnect()
+        return admin.disconnect()
             .then(function () {
                 console.log('Called Concerto.disconnect()');
             });
     }
 
     /**
+     * Get a configured and connected instance of Admin.
+     * @return {Admin} - a configured and connected instance of Admin.
+     */
+    static getAdmin() {
+        if (!admin) {
+            throw new Error('Must call setUp successfully before calling getAdmin');
+        }
+        return admin;
+    }
+
+    /**
      * Get a configured and connected instance of Concerto.
-     * @return {Concerto} - a configured and connected instance of Concerto.
+     * @param {string} network - the identifier of the network to connect to.
+     * @return {Promise} - a promise that will be resolved with a configured and
+     * connected instance of {@link Concerto}.
      */
-    static getConcerto() {
-        if (!concerto) {
-            throw new Error('Must call setUp successfully before calling getConcerto');
-        }
-        return concerto;
+    static getClient(network) {
+        client = new Concerto();
+        console.log('Calling Client.connect() ...');
+        return client.connect('testprofile', network, 'WebAppAdmin', 'DJY27pEnl16d')
+            .then(() => {
+                return client;
+            });
     }
 
     /**
-     * Get a logged in security context for interacting with Concerto.
-     * @return {SecurityContext} - a logged in security context for interacting with Concerto.
+     * Reset the business network to its initial state.
+     * @return {Promise} - a promise that will be resolved when complete.
      */
-    static getSecurityContext() {
-        if (!concerto || !securityContext) {
-            throw new Error('Must call getConcerto successfully before calling getSecurityContext');
+    static resetBusinessNetwork() {
+        if (!client) {
+            return Promise.resolve();
         }
-        return securityContext;
-    }
-
-    /**
-     * Invoke the chain-code to clear all of the world state so that any test
-     * data is removed. Call in-between tests.
-     * @return {Promise} - a promise that will be resolved once the chain-code
-     * has been invoked.
-     */
-    static clearWorldState() {
-        if (!concerto || !securityContext) {
-            return Promise.reject(new Error('Must call getConcerto successfully before calling clearWorldState'));
+        // TODO: hack hack hack, this should be in the admin API.
+        let securityContext = client.securityContext;
+        if (!securityContext) {
+            return Promise.resolve();
         }
-        return Util.invokeChainCode(securityContext, 'clearWorldState', []);
+        return Util.invokeChainCode(client.securityContext, 'resetBusinessNetwork', []);
     }
 
 }
