@@ -14,7 +14,6 @@ const Factory = require('@ibm/ibm-concerto-common').Factory;
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
 const TransactionRegistry = require('../lib/transactionregistry');
 const Registry = require('../lib/registry');
-const Resource = require('@ibm/ibm-concerto-common').Resource;
 const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 const Util = require('@ibm/ibm-concerto-common').Util;
@@ -24,65 +23,53 @@ chai.should();
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
-describe('TransactionRegistry', function () {
+describe('TransactionRegistry', () => {
 
-    let securityContext;
     let sandbox;
-    let modelManager;
-    let factory;
-    let serializer;
+    let mockSecurityContext;
+    let mockModelManager;
+    let mockFactory;
+    let mockSerializer;
+    let registry;
 
-    before(function () {
-        securityContext = new SecurityContext('suchuser', 'suchpassword');
-    });
-
-    beforeEach(function () {
+    beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        modelManager = sinon.createStubInstance(ModelManager);
-        factory = sinon.createStubInstance(Factory);
-        serializer = sinon.createStubInstance(Serializer);
+        mockSecurityContext = sinon.createStubInstance(SecurityContext);
+        mockModelManager = sinon.createStubInstance(ModelManager);
+        mockFactory = sinon.createStubInstance(Factory);
+        mockSerializer = sinon.createStubInstance(Serializer);
+        registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', mockSecurityContext, mockModelManager, mockFactory, mockSerializer);
+        sandbox.stub(Util, 'securityCheck');
     });
 
-    afterEach(function () {
+    afterEach(() => {
         sandbox.restore();
     });
 
-    describe('#getAllTransactionRegistries', function () {
+    describe('#getAllTransactionRegistries', () => {
 
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            sandbox.stub(Registry, 'getAllRegistries', function () {
-                return Promise.resolve([]);
-            });
-            return TransactionRegistry
-                .getAllTransactionRegistries(securityContext, modelManager, factory, serializer)
-                .then(function () {
-                    sinon.assert.calledWith(stub, securityContext);
-                });
-        });
-
-        it('should throw when modelManager not specified', function () {
+        it('should throw when modelManager not specified', () => {
             (function () {
-                TransactionRegistry.getAllTransactionRegistries(securityContext, null, factory, serializer);
+                TransactionRegistry.getAllTransactionRegistries(mockSecurityContext, null, mockFactory, mockSerializer);
             }).should.throw(/modelManager not specified/);
         });
 
-        it('should throw when factory not specified', function () {
+        it('should throw when factory not specified', () => {
             (function () {
-                TransactionRegistry.getAllTransactionRegistries(securityContext, modelManager, null, serializer);
+                TransactionRegistry.getAllTransactionRegistries(mockSecurityContext, mockModelManager, null, mockSerializer);
             }).should.throw(/factory not specified/);
         });
 
-        it('should throw when serializer not specified', function () {
+        it('should throw when serializer not specified', () => {
             (function () {
-                TransactionRegistry.getAllTransactionRegistries(securityContext, modelManager, factory, null);
+                TransactionRegistry.getAllTransactionRegistries(mockSecurityContext, mockModelManager, mockFactory, null);
             }).should.throw(/serializer not specified/);
         });
 
-        it('should invoke the chain-code and return the list of transaction registries', function () {
+        it('should invoke the chain-code and return the list of transaction registries', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getAllRegistries', function () {
+            sandbox.stub(Registry, 'getAllRegistries', () => {
                 return Promise.resolve(
                     [
                         {id: 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', name: 'doge registry'},
@@ -93,12 +80,13 @@ describe('TransactionRegistry', function () {
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
-                .getAllTransactionRegistries(securityContext, modelManager, factory, serializer)
-                .then(function (transactionRegistries) {
+                .getAllTransactionRegistries(mockSecurityContext, mockModelManager, mockFactory, mockSerializer)
+                .then((transactionRegistries) => {
 
                     // Check that the registry was requested correctly.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Registry.getAllRegistries);
-                    sinon.assert.calledWith(Registry.getAllRegistries, securityContext, 'Transaction');
+                    sinon.assert.calledWith(Registry.getAllRegistries, mockSecurityContext, 'Transaction');
 
                     // Check that the transaction registries were returned correctly.
                     transactionRegistries.should.be.an('array');
@@ -113,10 +101,10 @@ describe('TransactionRegistry', function () {
 
         });
 
-        it('should handle an error from the chain-code', function () {
+        it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getAllRegistries', function () {
+            sandbox.stub(Registry, 'getAllRegistries', () => {
                 return Promise.reject(
                     new Error('failed to invoke chain-code')
                 );
@@ -124,10 +112,10 @@ describe('TransactionRegistry', function () {
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
-                .getAllTransactionRegistries(securityContext, modelManager, factory, serializer)
-                .then(function (transactionRegistries) {
+                .getAllTransactionRegistries(mockSecurityContext, mockModelManager, mockFactory, mockSerializer)
+                .then((transactionRegistries) => {
                     throw new Error('should not get here');
-                }).catch(function (error) {
+                }).catch((error) => {
                     error.should.match(/failed to invoke chain-code/);
                 });
 
@@ -135,51 +123,36 @@ describe('TransactionRegistry', function () {
 
     });
 
-    describe('#getTransactionRegistry', function () {
+    describe('#getTransactionRegistry', () => {
 
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            sandbox.stub(Registry, 'getRegistry', function () {
-                return Promise.reject(new Error('fake error'));
-            });
-            return TransactionRegistry
-                .getTransactionRegistry(securityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, serializer)
-                .catch(function () {
-
-                })
-                .then(function () {
-                    sinon.assert.calledWith(stub, securityContext);
-                });
-        });
-
-        it('should throw when id not specified', function () {
+        it('should throw when id not specified', () => {
             (function () {
-                TransactionRegistry.getTransactionRegistry(securityContext, null, modelManager, factory, serializer);
+                TransactionRegistry.getTransactionRegistry(mockSecurityContext, null, mockModelManager, mockFactory, mockSerializer);
             }).should.throw(/id not specified/);
         });
 
-        it('should throw when modelManager not specified', function () {
+        it('should throw when modelManager not specified', () => {
             (function () {
-                TransactionRegistry.getTransactionRegistry(securityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', null, factory, serializer);
+                TransactionRegistry.getTransactionRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', null, mockFactory, mockSerializer);
             }).should.throw(/modelManager not specified/);
         });
 
-        it('should throw when factory not specified', function () {
+        it('should throw when factory not specified', () => {
             (function () {
-                TransactionRegistry.getTransactionRegistry(securityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, null, serializer);
+                TransactionRegistry.getTransactionRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, null, mockSerializer);
             }).should.throw(/factory not specified/);
         });
 
-        it('should throw when serializer not specified', function () {
+        it('should throw when serializer not specified', () => {
             (function () {
-                TransactionRegistry.getTransactionRegistry(securityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, null);
+                TransactionRegistry.getTransactionRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, mockFactory, null);
             }).should.throw(/serializer not specified/);
         });
 
-        it('should invoke the chain-code and return the transaction registry', function () {
+        it('should invoke the chain-code and return the transaction registry', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', function () {
+            sandbox.stub(Registry, 'getRegistry', () => {
                 return Promise.resolve(
                     {id: 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', name: 'doge registry'}
                 );
@@ -187,12 +160,13 @@ describe('TransactionRegistry', function () {
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
-                .getTransactionRegistry(securityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, serializer)
-                .then(function (transactionRegistry) {
+                .getTransactionRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, mockFactory, mockSerializer)
+                .then((transactionRegistry) => {
 
                     // Check that the registry was requested correctly.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Registry.getRegistry);
-                    sinon.assert.calledWith(Registry.getRegistry, securityContext, 'Transaction', 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d');
+                    sinon.assert.calledWith(Registry.getRegistry, mockSecurityContext, 'Transaction', 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d');
 
                     // Check that the transaction registries were returned correctly.
                     transactionRegistry.should.be.an.instanceOf(TransactionRegistry);
@@ -203,10 +177,10 @@ describe('TransactionRegistry', function () {
 
         });
 
-        it('should handle an error from the chain-code', function () {
+        it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'getRegistry', function () {
+            sandbox.stub(Registry, 'getRegistry', () => {
                 return Promise.reject(
                     new Error('failed to invoke chain-code')
                 );
@@ -214,10 +188,10 @@ describe('TransactionRegistry', function () {
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
-                .getTransactionRegistry(securityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, serializer)
-                .then(function (transactionRegistries) {
+                .getTransactionRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', mockModelManager, mockFactory, mockSerializer)
+                .then((transactionRegistries) => {
                     throw new Error('should not get here');
-                }).catch(function (error) {
+                }).catch((error) => {
                     error.should.match(/failed to invoke chain-code/);
                 });
 
@@ -225,65 +199,54 @@ describe('TransactionRegistry', function () {
 
     });
 
-    describe('#addTransactionRegistry', function () {
+    describe('#addTransactionRegistry', () => {
 
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            sandbox.stub(Registry, 'addRegistry', function () {
-                return Promise.resolve();
-            });
-            return TransactionRegistry
-                .addTransactionRegistry(securityContext, 'suchid', 'doge registry', modelManager, factory, serializer)
-                .then(function () {
-                    sinon.assert.calledWith(stub, securityContext);
-                });
-        });
-
-        it('should throw when id not specified', function () {
+        it('should throw when id not specified', () => {
             (function () {
-                TransactionRegistry.addTransactionRegistry(securityContext, null, 'doge registry', modelManager, factory, serializer);
+                TransactionRegistry.addTransactionRegistry(mockSecurityContext, null, 'doge registry', mockModelManager, mockFactory, mockSerializer);
             }).should.throw(/id not specified/);
         });
 
-        it('should throw when name not specified', function () {
+        it('should throw when name not specified', () => {
             (function () {
-                TransactionRegistry.addTransactionRegistry(securityContext, 'suchid', null, modelManager, factory, serializer);
+                TransactionRegistry.addTransactionRegistry(mockSecurityContext, 'suchid', null, mockModelManager, mockFactory, mockSerializer);
             }).should.throw(/name not specified/);
         });
 
-        it('should throw when modelManager not specified', function () {
+        it('should throw when modelManager not specified', () => {
             (function () {
-                TransactionRegistry.addTransactionRegistry(securityContext, 'suchid', 'doge registry', null, factory, serializer);
+                TransactionRegistry.addTransactionRegistry(mockSecurityContext, 'suchid', 'doge registry', null, mockFactory, mockSerializer);
             }).should.throw(/modelManager not specified/);
         });
 
-        it('should throw when factory not specified', function () {
+        it('should throw when factory not specified', () => {
             (function () {
-                TransactionRegistry.addTransactionRegistry(securityContext, 'suchid', 'doge registry', modelManager, null, serializer);
+                TransactionRegistry.addTransactionRegistry(mockSecurityContext, 'suchid', 'doge registry', mockModelManager, null, mockSerializer);
             }).should.throw(/factory not specified/);
         });
 
-        it('should throw when serializer not specified', function () {
+        it('should throw when serializer not specified', () => {
             (function () {
-                TransactionRegistry.addTransactionRegistry(securityContext, 'suchid', 'doge registry', modelManager, factory, null);
+                TransactionRegistry.addTransactionRegistry(mockSecurityContext, 'suchid', 'doge registry', mockModelManager, mockFactory, null);
             }).should.throw(/serializer not specified/);
         });
 
-        it('should invoke the chain-code and return the transaction registry', function () {
+        it('should invoke the chain-code and return the transaction registry', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'addRegistry', function () {
+            sandbox.stub(Registry, 'addRegistry', () => {
                 return Promise.resolve();
             });
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
-                .addTransactionRegistry(securityContext, 'suchid', 'doge registry', modelManager, factory, serializer)
-                .then(function (transactionRegistry) {
+                .addTransactionRegistry(mockSecurityContext, 'suchid', 'doge registry', mockModelManager, mockFactory, mockSerializer)
+                .then((transactionRegistry) => {
 
                     // Check that the registry was requested correctly.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Registry.addRegistry);
-                    sinon.assert.calledWith(Registry.addRegistry, securityContext, 'Transaction', 'suchid', 'doge registry');
+                    sinon.assert.calledWith(Registry.addRegistry, mockSecurityContext, 'Transaction', 'suchid', 'doge registry');
 
                     // Check that the transaction registry was returned successfully.
                     transactionRegistry.should.be.an.instanceOf(TransactionRegistry);
@@ -294,10 +257,10 @@ describe('TransactionRegistry', function () {
 
         });
 
-        it('should handle an error from the chain-code', function () {
+        it('should handle an error from the chain-code', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Registry, 'addRegistry', function () {
+            sandbox.stub(Registry, 'addRegistry', () => {
                 return Promise.reject(
                     new Error('failed to invoke chain-code')
                 );
@@ -305,10 +268,10 @@ describe('TransactionRegistry', function () {
 
             // Invoke the getAllTransactionRegistries function.
             return TransactionRegistry
-                .addTransactionRegistry(securityContext, 'suchid', 'doge registry', modelManager, factory, serializer)
-                .then(function () {
+                .addTransactionRegistry(mockSecurityContext, 'suchid', 'doge registry', mockModelManager, mockFactory, mockSerializer)
+                .then(() => {
                     throw new Error('should not get here');
-                }).catch(function (error) {
+                }).catch((error) => {
                     error.should.match(/failed to invoke chain-code/);
                 });
 
@@ -316,253 +279,62 @@ describe('TransactionRegistry', function () {
 
     });
 
-    describe('#constructor', function () {
+    describe('#add', () => {
 
-        it('should throw when modelManager not specified', function () {
-            (function () {
-                new TransactionRegistry('suchid', 'wowsuchregistry', null, factory, serializer);
-            }).should.throw(/modelManager not specified/);
-        });
-
-        it('should throw when factory not specified', function () {
-            (function () {
-                new TransactionRegistry('suchid', 'wowsuchregistry', modelManager, null, serializer);
-            }).should.throw(/factory not specified/);
-        });
-
-        it('should throw when serializer not specified', function () {
-            (function () {
-                new TransactionRegistry('suchid', 'wowsuchregistry', modelManager, factory, null);
-            }).should.throw(/serializer not specified/);
-        });
-
-        it('should create a new transaction registry', function () {
-            let registry = new TransactionRegistry('suchid', 'wowsuchregistry', modelManager, factory, serializer);
-            registry.id.should.equal('suchid');
-            registry.name.should.equal('wowsuchregistry');
-        });
-
-    });
-
-    describe('#add', function () {
-
-        it('should throw an unsupported operation when called', function () {
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
+        it('should throw an unsupported operation when called', () => {
             (() => {
-                registry.add(securityContext, null);
+                registry.add(null);
             }).should.throw(/cannot add transactions to a transaction registry/);
         });
 
     });
 
-    describe('#addAll', function () {
+    describe('#addAll', () => {
 
-        it('should throw an unsupported operation when called', function () {
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
+        it('should throw an unsupported operation when called', () => {
             (() => {
-                registry.addAll(securityContext, null);
+                registry.addAll(null);
             }).should.throw(/cannot add transactions to a transaction registry/);
         });
 
     });
 
-    describe('#update', function () {
+    describe('#update', () => {
 
-        it('should throw an unsupported operation when called', function () {
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
+        it('should throw an unsupported operation when called', () => {
             (() => {
-                registry.update(securityContext, null);
+                registry.update(null);
             }).should.throw(/cannot update transactions in a transaction registry/);
         });
 
     });
 
-    describe('#updateAll', function () {
+    describe('#updateAll', () => {
 
-        it('should throw an unsupported operation when called', function () {
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
+        it('should throw an unsupported operation when called', () => {
             (() => {
-                registry.updateAll(securityContext, null);
+                registry.updateAll(null);
             }).should.throw(/cannot update transactions in a transaction registry/);
         });
 
     });
 
-    describe('#remove', function () {
+    describe('#remove', () => {
 
-        it('should throw an unsupported operation when called', function () {
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
+        it('should throw an unsupported operation when called', () => {
             (() => {
-                registry.remove(securityContext, 'dogecar1');
+                registry.remove('dogecar1');
             }).should.throw(/cannot remove transactions from a transaction registry/);
         });
 
     });
 
-    describe('#removeAll', function () {
+    describe('#removeAll', () => {
 
-        it('should throw an unsupported operation when called', function () {
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
+        it('should throw an unsupported operation when called', () => {
             (() => {
-                registry.removeAll(securityContext, null);
+                registry.removeAll(null);
             }).should.throw(/cannot remove transactions from a transaction registry/);
-        });
-
-    });
-
-    describe('#getAll', function () {
-
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
-            sandbox.stub(Util, 'queryChainCode', function () {
-                return Promise.reject(new Error('fake error'));
-            });
-            return registry
-                .getAll(securityContext)
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((err) => {
-                    sinon.assert.called(stub);
-                    err.should.match(/fake error/);
-                });
-        });
-
-        it('should query the chain-code', function () {
-
-            // Create the transaction registry and other test data.
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
-            let tx1 = sinon.createStubInstance(Resource);
-            tx1.getIdentifier.returns('716e25ad-1b6f-4413-b216-6a965b3b0a82');
-            let tx2 = sinon.createStubInstance(Resource);
-            tx2.getIdentifier.returns('e3db0f84-8335-4f67-bd93-1a1de582a750');
-            serializer.fromJSON.onFirstCall().returns(tx1);
-            serializer.fromJSON.onSecondCall().returns(tx2);
-
-            // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'queryChainCode', function () {
-                return Promise.resolve(
-                    Buffer.from(JSON.stringify(
-                        [
-                            {id: 'id1', data: '{}'},
-                            {id: 'id2', data: '{}'}
-                        ]
-                    ))
-                );
-            });
-
-            // Invoke the add function.
-            return registry
-                .getAll(securityContext)
-                .then(function (transactions) {
-
-                    // Check that the transactions were returned successfully.
-                    transactions.should.be.an('array');
-                    transactions.should.have.lengthOf(2);
-                    transactions.should.all.be.an.instanceOf(Resource);
-                    transactions[0].getIdentifier().should.equal('716e25ad-1b6f-4413-b216-6a965b3b0a82');
-                    transactions[1].getIdentifier().should.equal('e3db0f84-8335-4f67-bd93-1a1de582a750');
-
-                });
-
-        });
-
-        it('should handle an error from the chain-code', function () {
-
-            // Create the transaction registry and other test data.
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
-
-            // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'queryChainCode', function () {
-                return Promise.reject(
-                    new Error('failed to query chain-code')
-                );
-            });
-
-            // Invoke the add function.
-            return registry
-                .getAll(securityContext)
-                .then(function () {
-                    throw new Error('should not get here');
-                }).catch(function (error) {
-                    error.should.match(/failed to query chain-code/);
-                });
-
-        });
-
-    });
-
-    describe('#get', function () {
-
-        it('should perform a security check', function () {
-            let stub = sandbox.stub(Util, 'securityCheck');
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
-            sandbox.stub(Util, 'queryChainCode', function () {
-                return Promise.reject(new Error('fake error'));
-            });
-            return registry
-                .get(securityContext, 'dogecar1')
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((err) => {
-                    sinon.assert.called(stub);
-                    err.should.match(/fake error/);
-                });
-        });
-
-        it('should query the chain-code', function () {
-
-            // Create the transaction registry and other test data.
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
-            let tx = sinon.createStubInstance(Resource);
-            tx.getIdentifier.returns('dogetx1');
-            serializer.fromJSON.onFirstCall().returns(tx);
-
-            // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'queryChainCode', function () {
-                return Promise.resolve(
-                    Buffer.from(JSON.stringify(
-                        {id: 'id1', data: '{}'}
-                    ))
-                );
-            });
-
-            // Invoke the add function.
-            return registry
-                .get(securityContext, 'dogecar1')
-                .then(function (transaction) {
-
-                    // Check that the transaction was returned successfully.
-                    transaction.should.be.an.instanceOf(Resource);
-                    transaction.getIdentifier().should.equal('dogetx1');
-
-                });
-
-        });
-
-        it('should handle an error from the chain-code', function () {
-
-            // Create the transaction registry and other test data.
-            let registry = new TransactionRegistry('d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'wowsuchregistry', modelManager, factory, serializer);
-
-            // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'queryChainCode', function () {
-                return Promise.reject(
-                    new Error('failed to query chain-code')
-                );
-            });
-
-            // Invoke the add function.
-            return registry
-                .get(securityContext, 'dogecar1')
-                .then(function () {
-                    throw new Error('should not get here');
-                }).catch(function (error) {
-                    error.should.match(/failed to query chain-code/);
-                });
-
         });
 
     });
