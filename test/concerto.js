@@ -32,7 +32,7 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
 
-describe('Concerto', function () {
+describe('Concerto', () => {
 
     let sandbox;
     let concerto;
@@ -43,7 +43,7 @@ describe('Concerto', function () {
     let mockFactory;
     let mockSerializer;
 
-    beforeEach(function () {
+    beforeEach(() => {
         sandbox = sinon.sandbox.create();
         securityContext = new SecurityContext('doge', 'suchsecret');
         mockConnection = sinon.createStubInstance(Connection);
@@ -59,20 +59,20 @@ describe('Concerto', function () {
         concerto.securityContext = securityContext;
     });
 
-    afterEach(function () {
+    afterEach(() => {
         sandbox.restore();
     });
 
-    describe('#constructor', function () {
+    describe('#constructor', () => {
 
-        it('should create a new instance', function () {
+        it('should create a new instance', () => {
             concerto = new Concerto();
             should.equal(concerto.connection, null);
         });
 
     });
 
-    describe('#connect', function () {
+    describe('#connect', () => {
 
         it('should create a connection and download the business network archive', () => {
             sandbox.stub(concerto.connectionProfileManager, 'connect').resolves(mockConnection);
@@ -98,7 +98,7 @@ describe('Concerto', function () {
         });
     });
 
-    describe('#disconnect', function () {
+    describe('#disconnect', () => {
 
         it('should do nothing if not connected', () => {
             return concerto.disconnect();
@@ -120,9 +120,9 @@ describe('Concerto', function () {
 
     });
 
-    describe('#getAllAssetRegistries', function () {
+    describe('#getAllAssetRegistries', () => {
 
-        it('should perform a security check', function () {
+        it('should perform a security check', () => {
 
             // Set up the mock.
             let stub = sandbox. stub(Util, 'securityCheck');
@@ -131,13 +131,13 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .getAllAssetRegistries()
-                .then(function () {
+                .then(() => {
                     sinon.assert.calledOnce(stub);
                 });
 
         });
 
-        it('should call the static helper method', function () {
+        it('should call the static helper method', () => {
 
             // Set up the mock.
             let assetRegistry1 = sinon.createStubInstance(AssetRegistry);
@@ -147,7 +147,7 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .getAllAssetRegistries()
-                .then(function (result) {
+                .then((result) => {
                     sinon.assert.calledOnce(stub);
                     sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.have.lengthOf(2);
@@ -159,9 +159,9 @@ describe('Concerto', function () {
 
     });
 
-    describe('#getAssetRegistry', function () {
+    describe('#getAssetRegistry', () => {
 
-        it('should perform a security check', function () {
+        it('should perform a security check', () => {
 
             // Set up the mock.
             let stub = sandbox. stub(Util, 'securityCheck');
@@ -170,13 +170,13 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .getAssetRegistry('wowsuchregistry')
-                .then(function () {
+                .then(() => {
                     sinon.assert.calledOnce(stub);
                 });
 
         });
 
-        it('should call the static helper method', function () {
+        it('should call the static helper method', () => {
 
             // Set up the mock.
             let assetRegistry = sinon.createStubInstance(AssetRegistry);
@@ -185,7 +185,7 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .getAssetRegistry('wowsuchregistry')
-                .then(function (result) {
+                .then((result) => {
                     sinon.assert.calledOnce(stub);
                     sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.equal(assetRegistry);
@@ -195,9 +195,9 @@ describe('Concerto', function () {
 
     });
 
-    describe('#addAssetRegistry', function () {
+    describe('#addAssetRegistry', () => {
 
-        it('should perform a security check', function () {
+        it('should perform a security check', () => {
 
             // Set up the mock.
             let stub = sandbox. stub(Util, 'securityCheck');
@@ -208,13 +208,13 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .addAssetRegistry('wowsuchregistry', 'much assets are here')
-                .then(function (result) {
+                .then((result) => {
                     sinon.assert.calledOnce(stub);
                 });
 
         });
 
-        it('should call the static helper method', function () {
+        it('should call the static helper method', () => {
 
             // Set up the mock.
             let assetRegistry = sinon.createStubInstance(AssetRegistry);
@@ -223,7 +223,7 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .addAssetRegistry('wowsuchregistry', 'much assets are here')
-                .then(function (result) {
+                .then((result) => {
                     sinon.assert.calledOnce(stub);
                     sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', 'much assets are here', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.equal(assetRegistry);
@@ -233,9 +233,9 @@ describe('Concerto', function () {
 
     });
 
-    describe('#getTransactionRegistry', function () {
+    describe('#getTransactionRegistry', () => {
 
-        it('should perform a security check', function () {
+        it('should perform a security check', () => {
 
             // Set up the mock.
             let stub = sandbox. stub(Util, 'securityCheck');
@@ -245,13 +245,13 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .getTransactionRegistry()
-                .then(function () {
+                .then(() => {
                     sinon.assert.calledOnce(stub);
                 });
 
         });
 
-        it('should call the static helper method', function () {
+        it('should call the static helper method', () => {
 
             // Set up the mock.
             let mockTransactionRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -260,7 +260,7 @@ describe('Concerto', function () {
             // Invoke the function.
             return concerto
                 .getTransactionRegistry()
-                .then(function (result) {
+                .then((result) => {
                     sinon.assert.calledOnce(stub);
                     sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.equal(mockTransactionRegistry);
@@ -268,7 +268,7 @@ describe('Concerto', function () {
 
         });
 
-        it('should throw when the default transaction registry does not exist', function () {
+        it('should throw when the default transaction registry does not exist', () => {
 
             // Set up the mock.
             sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([]);
@@ -282,15 +282,15 @@ describe('Concerto', function () {
 
     });
 
-    describe('#submitTransaction', function () {
+    describe('#submitTransaction', () => {
 
-        it('should throw when transaction not specified', function () {
+        it('should throw when transaction not specified', () => {
             (function () {
                 concerto.submitTransaction(null);
             }).should.throw(/transaction not specified/);
         });
 
-        it('should throw when type is not a transaction', function () {
+        it('should throw when type is not a transaction', () => {
             let assetDecl = sinon.createStubInstance(AssetDeclaration);
             let asset = sinon.createStubInstance(Resource);
             assetDecl.getFullyQualifiedName.returns('such.ns.suchType');
@@ -301,7 +301,7 @@ describe('Concerto', function () {
             }).should.throw(/such\.ns\.suchType is not a transaction/);
         });
 
-        it('should invoke the chain-code', function () {
+        it('should invoke the chain-code', () => {
 
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -321,14 +321,14 @@ describe('Concerto', function () {
             mockSerializer.toJSON.returns(JSON.parse(json));
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', function () {
+            sandbox.stub(Util, 'invokeChainCode', () => {
                 return Promise.resolve();
             });
 
             // Invoke the submitTransaction function.
             return concerto
                 .submitTransaction(tx)
-                .then(function () {
+                .then(() => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
@@ -337,7 +337,7 @@ describe('Concerto', function () {
 
         });
 
-        it('should generate a transaction ID if one not specified', function () {
+        it('should generate a transaction ID if one not specified', () => {
 
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -358,14 +358,14 @@ describe('Concerto', function () {
             mockSerializer.toJSON.returns(JSON.parse(json));
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', function () {
+            sandbox.stub(Util, 'invokeChainCode', () => {
                 return Promise.resolve();
             });
 
             // Invoke the add function.
             return concerto
                 .submitTransaction(tx)
-                .then(function () {
+                .then(() => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
@@ -375,7 +375,7 @@ describe('Concerto', function () {
 
         });
 
-        it('should generate a transaction timestamp if one not specified', function () {
+        it('should generate a transaction timestamp if one not specified', () => {
 
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -396,14 +396,14 @@ describe('Concerto', function () {
             mockSerializer.toJSON.returns(JSON.parse(json));
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', function () {
+            sandbox.stub(Util, 'invokeChainCode', () => {
                 return Promise.resolve();
             });
 
             // Invoke the add function.
             return concerto
                 .submitTransaction(tx)
-                .then(function () {
+                .then(() => {
 
                     // Check the timestamp was added.
                     sinon.assert.calledWith(mockSerializer.toJSON, sinon.match((tx) => {
@@ -419,7 +419,7 @@ describe('Concerto', function () {
 
         });
 
-        it('should handle an error from the chain-code', function () {
+        it('should handle an error from the chain-code', () => {
 
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
@@ -438,7 +438,7 @@ describe('Concerto', function () {
             mockSerializer.toJSON.returns(json);
 
             // Set up the responses from the chain-code.
-            sandbox.stub(Util, 'invokeChainCode', function () {
+            sandbox.stub(Util, 'invokeChainCode', () => {
                 return Promise.reject(
                     new Error('failed to invoke chain-code')
                 );
@@ -447,9 +447,9 @@ describe('Concerto', function () {
             // Invoke the add function.
             return concerto
                 .submitTransaction(tx)
-                .then(function () {
+                .then(() => {
                     throw new Error('should not get here');
-                }).catch(function (error) {
+                }).catch((error) => {
                     error.should.match(/failed to invoke chain-code/);
                 });
 
