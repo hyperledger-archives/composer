@@ -26,8 +26,20 @@ describe('Connection', () => {
 
     describe('#constructor', () => {
 
+        it('should throw if connection manager not specified', () => {
+            (() => {
+                new Connection(null, 'debFabric1', 'org.acme.Business');
+            }).should.throw(/connectionManager not specified/);
+        });
+
+        it('should throw if connection profile not specified', () => {
+            (() => {
+                new Connection(mockConnectionManager, null, 'org.acme.Business');
+            }).should.throw(/connectionProfile not specified/);
+        });
+
         it('should set the connection manager', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             c.connectionManager.should.equal(mockConnectionManager);
         });
 
@@ -36,7 +48,7 @@ describe('Connection', () => {
     describe('#getConnectionManager', () => {
 
         it('should return the connection manager', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             c.getConnectionManager().should.equal(mockConnectionManager);
         });
 
@@ -45,7 +57,7 @@ describe('Connection', () => {
     describe('#disconnect', () => {
 
         it('should throw as abstract method', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.disconnect()
                 .then(() => {
                     throw new Error('should not get here');
@@ -60,7 +72,7 @@ describe('Connection', () => {
     describe('#login', () => {
 
         it('should throw as abstract method', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.login()
                 .then(() => {
                     throw new Error('should not get here');
@@ -75,7 +87,7 @@ describe('Connection', () => {
     describe('#deploy', () => {
 
         it('should throw as abstract method', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.deploy()
                 .then(() => {
                     throw new Error('should not get here');
@@ -90,7 +102,7 @@ describe('Connection', () => {
     describe('#ping', () => {
 
         it('should throw as abstract method', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.ping()
                 .then(() => {
                     throw new Error('should not get here');
@@ -105,7 +117,7 @@ describe('Connection', () => {
     describe('#queryChainCode', () => {
 
         it('should throw as abstract method', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.queryChainCode()
                 .then(() => {
                     throw new Error('should not get here');
@@ -120,7 +132,7 @@ describe('Connection', () => {
     describe('#invokeChainCode', () => {
 
         it('should throw as abstract method', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.invokeChainCode()
                 .then(() => {
                     throw new Error('should not get here');
@@ -135,7 +147,7 @@ describe('Connection', () => {
     describe('#toJSON', () => {
 
         it('should return an empty object', () => {
-            let c = new Connection(mockConnectionManager);
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             c.toJSON().should.deep.equal({});
         });
 

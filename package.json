@@ -1,12 +1,11 @@
 {
   "name": "@ibm/ibm-concerto-common",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "IBM Concerto Common, code that is common across client, admin and runtime.",
   "main": "index.js",
   "scripts": {
-    "pretest": "pegjs ./lib/introspect/parser.pegjs && npm run lint",
-    "test": "./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
-    "posttest": "istanbul check-coverage",
+    "prepublish": "pegjs ./lib/introspect/parser.pegjs",
+    "pretest": "npm run prepublish && npm run lint",
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
@@ -14,6 +13,10 @@
     "doc": "npm run docpub && npm run docpriv",
     "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public .",
     "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private .",
+    "postdoc": "npm run browserify",
+    "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/concerto-common.js",
+    "test": "./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
+    "posttest": "istanbul check-coverage",
     "systest": "mocha -t 0 systest && cucumber-js systest"
   },
   "repository": {
@@ -28,10 +31,13 @@
   "author": "IBM",
   "license": "ISC",
   "devDependencies": {
-    "acorn": "^4.0.3",
     "ajv": "^4.8.2",
+    "babel-preset-es2015": "^6.18.0",
+    "babelify": "^7.3.0",
     "browserfs": "^1.1.0",
+    "browserify": "^13.1.1",
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
     "eslint": "^3.5.0",
     "ink-docstrap": "^1.3.0",
@@ -39,11 +45,13 @@
     "jsdoc": "^3.4.1",
     "license-check": "^1.1.5",
     "mocha": "^3.0.2",
+    "mockery": "^2.0.0",
     "moment": "^2.15.1",
     "pegjs": "^0.9.0",
     "sinon": "^1.17.6"
   },
   "dependencies": {
+    "acorn": "^4.0.3",
     "commander": "^2.9.0",
     "config": "^1.24.0",
     "debug": "^2.2.0",
@@ -54,6 +62,7 @@
     "mkdirp": "^0.5.1",
     "node-plantuml": "^0.5.0",
     "node-uuid": "^1.4.7",
+    "sprintf-js": "^1.0.3",
     "temp": "^0.8.3",
     "winston": "^2.3.0"
   },

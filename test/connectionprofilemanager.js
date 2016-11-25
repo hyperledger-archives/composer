@@ -17,22 +17,29 @@ const Connection = require('../lib/connection');
 
 const chai = require('chai');
 chai.should();
-const expect = require('chai').expect;
-
+chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
+const mockery = require('mockery');
 const sinon = require('sinon');
 
 describe('ConnectionProfileManager', () => {
+
+    beforeEach(() => {
+        mockery.enable();
+    });
+
+    afterEach(() => {
+        mockery.deregisterAll();
+    });
 
     describe('#construct', () => {
 
         it('should throw if no connection profile store', () => {
 
-            expect(() => {
+            (() => {
                 let cpm = new ConnectionProfileManager(null);
                 cpm.should.be.null;
-            })
-            .to.throw(/Must create ConnectionProfileManager/);
+            }).should.throw(/Must create ConnectionProfileManager/);
         });
 
         it('should be able to get connection profile store', () => {
@@ -62,22 +69,27 @@ describe('ConnectionProfileManager', () => {
 
     describe('#getConnectionManager', () => {
 
-        it('should throw if no connection manager added', () => {
+        it('should throw if no connection manager available', () => {
             const store = sinon.createStubInstance(ConnectionProfileStore);
             const profile = {type: 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );
-            const connectionManager = sinon.createStubInstance(ConnectionManager);
             let cpm = new ConnectionProfileManager(store);
             cpm.should.not.be.null;
-            cpm.addConnectionManager( 'bar', connectionManager);
-            return cpm.getConnectionManager( 'baz' )
-            .then(() => {
-                false.should.be.true;
-            })
-            .catch((err) => {
-                err.message.should.match(/Failed to find a connection profile/);
-            });
+            return cpm.getConnectionManager( 'baz' ).should.be.rejectedWith(/Failed to load connector module/);
         });
+
+        it('should dynamically load the connection manager', () => {
+            /** test class */
+            class TestConnectionManager extends ConnectionManager { }
+            mockery.registerMock('@ibm/ibm-concerto-connector-foo', TestConnectionManager);
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            return cpm.getConnectionManager( 'baz' ).should.eventually.be.an.instanceOf(TestConnectionManager);
+        });
+
     });
 
     describe('#connect', () => {
