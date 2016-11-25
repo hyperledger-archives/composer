@@ -30,6 +30,7 @@
     "istanbul": "^0.4.5",
     "license-check": "^1.1.5",
     "mocha": "^3.0.2",
+    "moment": "^2.15.1",
     "prompt": "^1.0.0",
     "yargs": "^6.2.0"
   },
