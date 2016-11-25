@@ -1,5 +1,3 @@
-coverage
-dist
-go
 node_modules
 out
+scripts

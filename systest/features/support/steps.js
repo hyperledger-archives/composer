@@ -9,3 +9,19 @@
  */
 
 'use strict';
+
+module.exports = function () {
+
+    this.Given(/I have an empty asset registry/, function () {
+
+    });
+
+    this.When(/I add the following asset(|s) to the asset registry/, function (uri, data) {
+
+    });
+
+    this.Then(/the asset registry contains the following asset(|s)/, function (uri, data) {
+
+    });
+
+};

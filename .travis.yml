@@ -1,15 +1,25 @@
 language: node_js
 node_js:
     - '4'
-    - '6'
+    # - '6'
+dist: trusty
+sudo: required
+services:
+    - docker
+env:
+    # - TEST_SUITE=systest_web
+    - TEST_SUITE=systest_hlf
+    - TEST_SUITE=systest_ibm
 before_install: |
     set -ev
     npm install -g npm
     npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
     npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
-deploy:
-    provider: script
-    script: ./scripts/deploy.sh
-    skip_cleanup: true
-    on:
-        all_branches: true
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo dpkg -i google-chrome*.deb
+script: |
+    set -ev
+    export DISPLAY=:99.0
+    sh -e /etc/init.d/xvfb start
+    npm test
+    ./scripts/run-system-tests.sh
