@@ -286,7 +286,7 @@ describe('HFCUtil', function () {
     describe('#deployChainCode', function () {
 
         beforeEach(() => {
-            sandbox.stub(fs, 'copy').callsArgWith(2, null);
+            sandbox.stub(fs, 'copy').callsArgWith(3, null);
             sandbox.stub(fs, 'remove').callsArgWith(1, null);
             sandbox.stub(temp, 'mkdir').callsArgWith(1, null, '/tmp/concerto');
             sandbox.stub(fs, 'outputFile').callsArgWith(2, null);
@@ -369,7 +369,7 @@ describe('HFCUtil', function () {
         });
 
         it('should throw when chaincode cannot be copied into temporary directory due to error', function () {
-            fs.copy.onFirstCall().callsArgWith(2, new Error('cannot copy chaincode into temporary directory'));
+            fs.copy.onFirstCall().callsArgWith(3, new Error('cannot copy chaincode into temporary directory'));
             return HFCUtil
                 .deployChainCode(securityContext, 'chaincode', 'function', [])
                 .then(() => {
