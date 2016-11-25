@@ -128,7 +128,7 @@ class TestUtil {
             .then(function () {
                 console.log('Called Admin.createConnectionProfile()');
                 console.log('Calling Admin.connect() ...');
-                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
+                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then(function () {
                 console.log('Called Admin.connect()');
