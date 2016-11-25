@@ -1,0 +1,11 @@
+instrumentation:
+    excludes:
+        - "out/**"
+        - "scripts/**"
+        - "systest/**"
+check:
+    global:
+        statements: 97
+        branches: 95
+        functions: 99
+        lines: 97

@@ -7,13 +7,3 @@
  * divested of its trade secrets, irrespective of what has
  * been deposited with the U.S. Copyright Office.
  */
-
-'use strict';
-
-require('yargs')
-    .command(require('./lib/deploy.js'))
-    .demand(1)
-    .help()
-    .strict()
-    .wrap(null)
-    .argv;

@@ -9,11 +9,3 @@
  */
 
 'use strict';
-
-require('yargs')
-    .command(require('./lib/deploy.js'))
-    .demand(1)
-    .help()
-    .strict()
-    .wrap(null)
-    .argv;
