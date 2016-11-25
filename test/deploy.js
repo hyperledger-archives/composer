@@ -10,10 +10,13 @@
 
 'use strict';
 
-require('yargs')
-    .command(require('./lib/deploy.js'))
-    .demand(1)
-    .help()
-    .strict()
-    .wrap(null)
-    .argv;
+require('chai').should();
+
+describe('CLI test', function () {
+
+    it('should have a stack trace', function () {
+        let a = 'test';
+        a.should.be.equal('test');
+    });
+
+});
