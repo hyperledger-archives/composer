@@ -22,6 +22,7 @@
   "author": "IBM",
   "license": "ISC",
   "dependencies": {
+    "@ibm/ibm-concerto-admin": "latest",
     "cli-table": "^0.3.1",
     "config": "^1.21.0",
     "jsonfile": "^2.4.0",
