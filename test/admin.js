@@ -38,7 +38,7 @@ describe('Admin', () => {
             keyValStore: '/tmp/keyValStore',
             membershipServicesURL : 'grpc://localhost:7054',
             peerURL : 'grpc://localhost:7051',
-            eventHubURL: 'grpc://localhost:7053',
+            eventHubURL: 'grpc://localhost:7053'
         };
 
     mockConcertoConnectionManager = sinon.createStubInstance(ConcertoHLFConnectionManager);
@@ -81,7 +81,7 @@ describe('Admin', () => {
         it('should get a connection', () => {
             return admin.createConnectionProfile('testprofile', config)
             .then(() => {
-                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
+                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then((connection) => {
                 connection.should.not.be.null;
@@ -121,7 +121,7 @@ describe('Admin', () => {
         it('should not fail', () => {
             return admin.createConnectionProfile('testprofile', config)
             .then(() => {
-                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
+                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then(() => {
                 let readFile = fs.readFileSync(__dirname+'/data/businessnetwork.zip');
