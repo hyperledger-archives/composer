@@ -1,20 +1,15 @@
 language: node_js
 node_js:
     - '4'
-addons:
-    apt:
-        packages:
-            - graphviz
-dist: trusty
-sudo: required
-services:
-    - docker
+    - '6'
 before_install: |
     set -ev
     npm install -g npm
     npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
     npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
-install: ./scripts/install-deps.sh
-after_success: 
-script: |
-    set -ev
+deploy:
+    provider: script
+    script: ./scripts/deploy.sh
+    skip_cleanup: true
+    on:
+        all_branches: true
