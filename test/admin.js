@@ -17,13 +17,12 @@ const BusinessNetwork = ConcertoCommon.BusinessNetwork;
 const ConcertoHLFConnectionManager = require('@ibm/ibm-concerto-connector-hlf');
 const HFCConnection = require('@ibm/ibm-concerto-connector-hlf/lib/hfcconnection');
 const SecurityContext = ConcertoCommon.SecurityContext;
-const fs = require('fs');
 
 const chai = require('chai');
 const sinon = require('sinon');
 require('sinon-as-promised');
 chai.should();
-const expect = require('chai').expect;
+const expect = chai.expect;
 chai.use(require('chai-things'));
 
 describe('Admin', () => {
@@ -78,19 +77,42 @@ describe('Admin', () => {
 
     describe('#connect', () => {
 
-        it('should get a connection', () => {
-            return admin.createConnectionProfile('testprofile', config)
-            .then(() => {
-                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
+        it('should return connected connection', () => {
+            admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d')
+            .then((res) => {
+                res.should.equal('connected');
             })
-            .then((connection) => {
-                connection.should.not.be.null;
-                return admin.disconnect();
+            .catch(() => {
+                // Should not get here
+            });
+        });
+
+    });
+
+    describe('#createConnectionProfile', () => {
+        it('should return a resolved promise', () => {
+            admin.createConnectionProfile('testprofile', config)
+            .then((res) => {
+                res.should.be.undefined;
+            })
+            .catch(() => {
+                // Should not get here
             });
         });
     });
 
     describe('#disconnect', () => {
+        it('should set connection and security context to null', () => {
+            let admin = new Admin();
+            sinon.stub(admin.connectionProfileManager, 'connect').resolves(mockHFCConnection);
+            admin.connect()
+            .then(() => {
+                admin.disconnect();
+                expect(admin.connection).should.be.true;
+                expect(admin.securityContext).to.be.null;
+            });
+        });
+
         it('should not fail when no connection is set', () => {
             let admin = new Admin();
             expect(admin.disconnect()).not.to.throw;
@@ -100,41 +122,19 @@ describe('Admin', () => {
     describe('#deploy', () => {
 
         it('should be able to deploy a business network', () => {
-            return admin.createConnectionProfile('testprofile', config)
-            .then(() => {
-                return admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d');
-            })
-            .then(() => {
-                let readFile = fs.readFileSync(__dirname+'/data/businessnetwork.zip');
-                return BusinessNetwork.fromArchive(readFile);
-            })
-            .then((businessNetwork) => {
-                return admin.deploy( businessNetwork, true );
-            })
-            .then(() => {
-                return admin.disconnect();
+            let businessNetwork = new BusinessNetwork();
+            admin.deploy(businessNetwork)
+            .then((res) => {
+                res.should.equal({ chaincodeID: '<ChaincodeID>'});
             });
         });
     });
 
     describe('#ping', () => {
         it('should not fail', () => {
-            return admin.createConnectionProfile('testprofile', config)
-            .then(() => {
-                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
-            })
-            .then(() => {
-                let readFile = fs.readFileSync(__dirname+'/data/businessnetwork.zip');
-                return BusinessNetwork.fromArchive(readFile);
-            })
-            .then((businessNetwork) => {
-                return admin.deploy( businessNetwork, true );
-            })
-            .then(() => {
-                return admin.ping();
-            })
-            .then(() => {
-                return admin.disconnect();
+            admin.ping()
+            .then((res) => {
+                res.should.equal('TXID');
             });
         });
     });
