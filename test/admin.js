@@ -37,7 +37,7 @@ describe('Admin', () => {
             keyValStore: '/tmp/keyValStore',
             membershipServicesURL : 'grpc://localhost:7054',
             peerURL : 'grpc://localhost:7051',
-            eventHubURL: 'grpc://localhost:7053',
+            eventHubURL: 'grpc://localhost:7053'
         };
 
     mockConcertoConnectionManager = sinon.createStubInstance(ConcertoHLFConnectionManager);
