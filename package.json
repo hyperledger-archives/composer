@@ -1,0 +1,58 @@
+{
+  "name": "@ibm/ibm-concerto-systest",
+  "version": "0.1.12",
+  "description": "IBM Concerto System Tests, system and integration tests.",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "postlint": "npm run licchk",
+    "licchk": "license-check",
+    "systest": "node ./systest/deploysubmit.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.ibm.com/Blockchain-WW-Labs/Concerto-System-Tests.git"
+  },
+  "keywords": [
+    "blockchain",
+    "hyperledger",
+    "solutions"
+  ],
+  "author": "IBM",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "chai-things": "^0.2.0",
+    "eslint": "^3.5.0",
+    "ink-docstrap": "^1.3.0",
+    "istanbul": "^0.4.5",
+    "jsdoc": "^3.4.1",
+    "license-check": "^1.1.5",
+    "mocha": "^3.0.2",
+    "mockery": "^2.0.0",
+    "moment": "^2.15.1",
+    "sinon": "^1.17.6"
+  },
+  "dependencies": {
+    "@ibm/ibm-concerto-admin": "latest",
+    "@ibm/ibm-concerto-client": "latest",
+    "@ibm/ibm-concerto-common": "^0.1.12-20161124223500"
+  },
+  "publishConfig": {
+    "registry": "https://npm-registry.whitewater.ibm.com"
+  },
+  "license-check-config": {
+    "src": [
+      "**/*.js",
+      "!./coverage/**/*",
+      "!./node_modules/**/*",
+      "!./out/**/*"
+    ],
+    "path": "header.txt",
+    "blocking": true,
+    "logInfo": false,
+    "logError": true
+  }
+}
