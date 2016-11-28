@@ -12,7 +12,7 @@
 
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 const Factory = require('@ibm/ibm-concerto-common').Factory;
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
@@ -38,7 +38,7 @@ describe('BusinessNetworkConnection', () => {
     let businessNetworkConnection;
     let securityContext;
     let mockConnection;
-    let mockBusinessNetwork;
+    let mockBusinessNetworkDefinition;
     let mockModelManager;
     let mockFactory;
     let mockSerializer;
@@ -47,9 +47,9 @@ describe('BusinessNetworkConnection', () => {
         sandbox = sinon.sandbox.create();
         securityContext = new SecurityContext('doge', 'suchsecret');
         mockConnection = sinon.createStubInstance(Connection);
-        mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         businessNetworkConnection = new BusinessNetworkConnection();
-        businessNetworkConnection.businessNetwork = mockBusinessNetwork;
+        businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
         mockModelManager = sinon.createStubInstance(ModelManager);
         businessNetworkConnection.businessNetwork.getModelManager.returns(mockModelManager);
         mockFactory = sinon.createStubInstance(Factory);
@@ -81,7 +81,7 @@ describe('BusinessNetworkConnection', () => {
                 data: 'aGVsbG8='
             }));
             sandbox.stub(Util, 'queryChainCode').withArgs(securityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
             return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
             .then(() => {
@@ -91,8 +91,8 @@ describe('BusinessNetworkConnection', () => {
                 sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
                 sinon.assert.calledOnce(Util.queryChainCode);
                 sinon.assert.calledWith(Util.queryChainCode, securityContext, 'getBusinessNetwork', []);
-                sinon.assert.calledOnce(BusinessNetwork.fromArchive);
-                sinon.assert.calledWith(BusinessNetwork.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
                 businessNetworkConnection.connection.should.equal(mockConnection);
             });
         });
