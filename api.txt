@@ -1,8 +1,8 @@
-class Admin {
+class AdminConnection {
    + void constructor(Object,Object,boolean) 
    + Promise connect(string,string,string) 
-   + Promise createConnectionProfile(string,Object) 
+   + Promise createProfile(string,Object) 
    + Promise disconnect() 
-   + Promise deploy(BusinessNetwork,boolean) 
+   + Promise deploy(BusinessNetworkDefinition,boolean) 
    + Promise ping() 
 }

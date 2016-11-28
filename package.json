@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-admin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "IBM Concerto admin, code that manages business networks",
   "main": "index.js",
   "scripts": {

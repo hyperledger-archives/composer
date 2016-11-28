@@ -11,9 +11,9 @@
 'use strict';
 
 const Module = require('../');
-const Admin = require('../lib/admin');
+const AdminConnection = require('../lib/adminconnection');
 const ConcertoCommon = require('@ibm/ibm-concerto-common');
-const BusinessNetwork = ConcertoCommon.BusinessNetwork;
+const BusinessNetworkDefinition = ConcertoCommon.BusinessNetworkDefinition;
 const ConcertoHLFConnectionManager = require('@ibm/ibm-concerto-connector-hlf');
 const HFCConnection = require('@ibm/ibm-concerto-connector-hlf/lib/hfcconnection');
 const SecurityContext = ConcertoCommon.SecurityContext;
@@ -25,11 +25,11 @@ chai.should();
 const expect = chai.expect;
 chai.use(require('chai-things'));
 
-describe('Admin', () => {
+describe('AdminConnection', () => {
 
     let mockConcertoConnectionManager;
     let mockHFCConnection;
-    let admin;
+    let adminConnection;
 
     const config =
         {
@@ -52,33 +52,33 @@ describe('Admin', () => {
 
     mockConcertoConnectionManager.connect.returns(Promise.resolve(mockHFCConnection));
     mockConcertoConnectionManager.onDisconnect.returns();
-    admin = new Admin();
-    sinon.stub(admin.connectionProfileManager, 'connect').resolves(mockHFCConnection);
+    adminConnection = new AdminConnection();
+    sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockHFCConnection);
 
     describe('#module', () => {
-        it('should give access to Admin', () => {
-            Module.Admin.should.not.be.null;
+        it('should give access to AdminConnection', () => {
+            Module.AdminConnection.should.not.be.null;
         });
-        it('should give access to BusinessNetwork', () => {
-            Module.BusinessNetwork.should.not.be.null;
+        it('should give access to BusinessNetworkDefinition', () => {
+            Module.BusinessNetworkDefinition.should.not.be.null;
         });
     });
 
     describe('#constructor', () => {
-        it('should create a new Admin instance', () => {
-            let admin = new Admin();
-            admin.should.not.be.null;
+        it('should create a new AdminConnection instance', () => {
+            let adminConnection = new AdminConnection();
+            adminConnection.should.not.be.null;
         });
         it('should not fail if no connectionManager is provided', () => {
-            let admin = new Admin();
-            admin.connectionProfileManager.should.not.be.null;
+            let adminConnection = new AdminConnection();
+            adminConnection.connectionProfileManager.should.not.be.null;
         });
     });
 
     describe('#connect', () => {
 
         it('should return connected connection', () => {
-            admin.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d')
+            adminConnection.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d')
             .then((res) => {
                 res.should.equal('connected');
             })
@@ -89,9 +89,9 @@ describe('Admin', () => {
 
     });
 
-    describe('#createConnectionProfile', () => {
+    describe('#createProfile', () => {
         it('should return a resolved promise', () => {
-            admin.createConnectionProfile('testprofile', config)
+            adminConnection.createProfile('testprofile', config)
             .then((res) => {
                 res.should.be.undefined;
             })
@@ -103,27 +103,27 @@ describe('Admin', () => {
 
     describe('#disconnect', () => {
         it('should set connection and security context to null', () => {
-            let admin = new Admin();
-            sinon.stub(admin.connectionProfileManager, 'connect').resolves(mockHFCConnection);
-            admin.connect()
+            let adminConnection = new AdminConnection();
+            sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockHFCConnection);
+            adminConnection.connect()
             .then(() => {
-                admin.disconnect();
-                expect(admin.connection).should.be.true;
-                expect(admin.securityContext).to.be.null;
+                adminConnection.disconnect();
+                expect(adminConnection.connection).should.be.true;
+                expect(adminConnection.securityContext).to.be.null;
             });
         });
 
         it('should not fail when no connection is set', () => {
-            let admin = new Admin();
-            expect(admin.disconnect()).not.to.throw;
+            let adminConnection = new AdminConnection();
+            expect(adminConnection.disconnect()).not.to.throw;
         });
     });
 
     describe('#deploy', () => {
 
-        it('should be able to deploy a business network', () => {
-            let businessNetwork = new BusinessNetwork();
-            admin.deploy(businessNetwork)
+        it('should be able to deploy a business network definition', () => {
+            let businessNetworkDefinition = new BusinessNetworkDefinition();
+            adminConnection.deploy(businessNetworkDefinition)
             .then((res) => {
                 res.should.equal({ chaincodeID: '<ChaincodeID>'});
             });
@@ -132,7 +132,7 @@ describe('Admin', () => {
 
     describe('#ping', () => {
         it('should not fail', () => {
-            admin.ping()
+            adminConnection.ping()
             .then((res) => {
                 res.should.equal('TXID');
             });

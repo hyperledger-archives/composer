@@ -16,9 +16,9 @@
  * via processing transactions.
  * @module ibm-concerto-admin
  */
-module.exports.Admin = require('./lib/admin');
+module.exports.AdminConnection = require('./lib/adminconnection');
 
 /**
  * Expose key concerto-common classes to make simplify client application dependencies
  */
-module.exports.BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+module.exports.BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
