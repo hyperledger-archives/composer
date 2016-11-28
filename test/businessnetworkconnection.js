@@ -12,10 +12,10 @@
 
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 const Factory = require('@ibm/ibm-concerto-common').Factory;
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
 const AssetRegistry = require('../lib/assetregistry');
-const Concerto = require('..').Concerto;
+const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
 const Connection = require('@ibm/ibm-concerto-common').Connection;
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
 const Resource = require('@ibm/ibm-concerto-common').Resource;
@@ -32,13 +32,13 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
 
-describe('Concerto', () => {
+describe('BusinessNetworkConnection', () => {
 
     let sandbox;
-    let concerto;
+    let businessNetworkConnection;
     let securityContext;
     let mockConnection;
-    let mockBusinessNetwork;
+    let mockBusinessNetworkDefinition;
     let mockModelManager;
     let mockFactory;
     let mockSerializer;
@@ -47,16 +47,16 @@ describe('Concerto', () => {
         sandbox = sinon.sandbox.create();
         securityContext = new SecurityContext('doge', 'suchsecret');
         mockConnection = sinon.createStubInstance(Connection);
-        mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
-        concerto = new Concerto();
-        concerto.businessNetwork = mockBusinessNetwork;
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        businessNetworkConnection = new BusinessNetworkConnection();
+        businessNetworkConnection.businessNetwork = mockBusinessNetworkDefinition;
         mockModelManager = sinon.createStubInstance(ModelManager);
-        concerto.businessNetwork.getModelManager.returns(mockModelManager);
+        businessNetworkConnection.businessNetwork.getModelManager.returns(mockModelManager);
         mockFactory = sinon.createStubInstance(Factory);
-        concerto.businessNetwork.getFactory.returns(mockFactory);
+        businessNetworkConnection.businessNetwork.getFactory.returns(mockFactory);
         mockSerializer = sinon.createStubInstance(Serializer);
-        concerto.businessNetwork.getSerializer.returns(mockSerializer);
-        concerto.securityContext = securityContext;
+        businessNetworkConnection.businessNetwork.getSerializer.returns(mockSerializer);
+        businessNetworkConnection.securityContext = securityContext;
     });
 
     afterEach(() => {
@@ -66,8 +66,8 @@ describe('Concerto', () => {
     describe('#constructor', () => {
 
         it('should create a new instance', () => {
-            concerto = new Concerto();
-            should.equal(concerto.connection, null);
+            businessNetworkConnection = new BusinessNetworkConnection();
+            should.equal(businessNetworkConnection.connection, null);
         });
 
     });
@@ -75,25 +75,25 @@ describe('Concerto', () => {
     describe('#connect', () => {
 
         it('should create a connection and download the business network archive', () => {
-            sandbox.stub(concerto.connectionProfileManager, 'connect').resolves(mockConnection);
+            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
             mockConnection.login.resolves(securityContext);
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
             sandbox.stub(Util, 'queryChainCode').withArgs(securityContext, 'getBusinessNetwork', []).resolves(buffer);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
-            return concerto.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
+            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
             .then(() => {
-                sinon.assert.calledOnce(concerto.connectionProfileManager.connect);
-                sinon.assert.calledWith(concerto.connectionProfileManager.connect, 'testprofile', 'testnetwork');
+                sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
+                sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork');
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
                 sinon.assert.calledOnce(Util.queryChainCode);
                 sinon.assert.calledWith(Util.queryChainCode, securityContext, 'getBusinessNetwork', []);
-                sinon.assert.calledOnce(BusinessNetwork.fromArchive);
-                sinon.assert.calledWith(BusinessNetwork.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
-                concerto.connection.should.equal(mockConnection);
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
+                businessNetworkConnection.connection.should.equal(mockConnection);
             });
         });
     });
@@ -101,19 +101,19 @@ describe('Concerto', () => {
     describe('#disconnect', () => {
 
         it('should do nothing if not connected', () => {
-            return concerto.disconnect();
+            return businessNetworkConnection.disconnect();
         });
 
         it('should disconnect the connection if connected', () => {
             mockConnection.disconnect.returns(Promise.resolve());
-            concerto.connection = mockConnection;
-            return concerto.disconnect()
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.disconnect()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.disconnect);
-                    return concerto.disconnect();
+                    return businessNetworkConnection.disconnect();
                 })
                 .then(() => {
-                    should.equal(concerto.connection, null);
+                    should.equal(businessNetworkConnection.connection, null);
                     sinon.assert.calledOnce(mockConnection.disconnect);
                 });
         });
@@ -129,7 +129,7 @@ describe('Concerto', () => {
             sandbox.stub(AssetRegistry, 'getAllAssetRegistries').resolves([]);
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .getAllAssetRegistries()
                 .then(() => {
                     sinon.assert.calledOnce(stub);
@@ -145,7 +145,7 @@ describe('Concerto', () => {
             let stub = sandbox.stub(AssetRegistry, 'getAllAssetRegistries').resolves([assetRegistry1, assetRegistry2]);
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .getAllAssetRegistries()
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
@@ -168,7 +168,7 @@ describe('Concerto', () => {
             sandbox.stub(AssetRegistry, 'getAssetRegistry').resolves({});
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .getAssetRegistry('wowsuchregistry')
                 .then(() => {
                     sinon.assert.calledOnce(stub);
@@ -183,7 +183,7 @@ describe('Concerto', () => {
             let stub = sandbox.stub(AssetRegistry, 'getAssetRegistry').resolves(assetRegistry);
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .getAssetRegistry('wowsuchregistry')
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
@@ -203,10 +203,10 @@ describe('Concerto', () => {
             let stub = sandbox. stub(Util, 'securityCheck');
             sandbox.stub(AssetRegistry, 'addAssetRegistry').resolves();
 
-            concerto.securityContext = securityContext;
+            businessNetworkConnection.securityContext = securityContext;
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .addAssetRegistry('wowsuchregistry', 'much assets are here')
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
@@ -221,7 +221,7 @@ describe('Concerto', () => {
             let stub = sandbox.stub(AssetRegistry, 'addAssetRegistry').resolves(assetRegistry);
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .addAssetRegistry('wowsuchregistry', 'much assets are here')
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
@@ -243,7 +243,7 @@ describe('Concerto', () => {
             sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([transactionRegistry]);
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .getTransactionRegistry()
                 .then(() => {
                     sinon.assert.calledOnce(stub);
@@ -258,7 +258,7 @@ describe('Concerto', () => {
             let stub = sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([mockTransactionRegistry]);
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .getTransactionRegistry()
                 .then((result) => {
                     sinon.assert.calledOnce(stub);
@@ -274,7 +274,7 @@ describe('Concerto', () => {
             sandbox.stub(TransactionRegistry, 'getAllTransactionRegistries').resolves([]);
 
             // Invoke the function.
-            return concerto
+            return businessNetworkConnection
                 .getTransactionRegistry()
                 .should.be.rejectedWith(/default transaction registry/);
 
@@ -286,7 +286,7 @@ describe('Concerto', () => {
 
         it('should throw when transaction not specified', () => {
             (function () {
-                concerto.submitTransaction(null);
+                businessNetworkConnection.submitTransaction(null);
             }).should.throw(/transaction not specified/);
         });
 
@@ -297,7 +297,7 @@ describe('Concerto', () => {
             asset.getClassDeclaration.returns(assetDecl);
             mockFactory.newInstance.returns(asset);
             (function () {
-                concerto.submitTransaction(asset);
+                businessNetworkConnection.submitTransaction(asset);
             }).should.throw(/such\.ns\.suchType is not a transaction/);
         });
 
@@ -306,7 +306,7 @@ describe('Concerto', () => {
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(concerto, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
 
             // Create the transaction.
             let txDecl = sinon.createStubInstance(TransactionDeclaration);
@@ -326,7 +326,7 @@ describe('Concerto', () => {
             });
 
             // Invoke the submitTransaction function.
-            return concerto
+            return businessNetworkConnection
                 .submitTransaction(tx)
                 .then(() => {
 
@@ -342,7 +342,7 @@ describe('Concerto', () => {
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(concerto, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
 
             // Create the transaction.
             let txDecl = sinon.createStubInstance(TransactionDeclaration);
@@ -363,7 +363,7 @@ describe('Concerto', () => {
             });
 
             // Invoke the add function.
-            return concerto
+            return businessNetworkConnection
                 .submitTransaction(tx)
                 .then(() => {
 
@@ -380,7 +380,7 @@ describe('Concerto', () => {
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(concerto, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
 
             // Create the transaction.
             let txDecl = sinon.createStubInstance(TransactionDeclaration);
@@ -401,7 +401,7 @@ describe('Concerto', () => {
             });
 
             // Invoke the add function.
-            return concerto
+            return businessNetworkConnection
                 .submitTransaction(tx)
                 .then(() => {
 
@@ -424,7 +424,7 @@ describe('Concerto', () => {
             // Fake the transaction registry.
             let txRegistry = sinon.createStubInstance(TransactionRegistry);
             txRegistry.id = 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d';
-            sandbox.stub(concerto, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
+            sandbox.stub(businessNetworkConnection, 'getTransactionRegistry').returns(Promise.resolve(txRegistry));
 
             // Create the transaction.
             let txDecl = sinon.createStubInstance(TransactionDeclaration);
@@ -445,7 +445,7 @@ describe('Concerto', () => {
             });
 
             // Invoke the add function.
-            return concerto
+            return businessNetworkConnection
                 .submitTransaction(tx)
                 .then(() => {
                     throw new Error('should not get here');
@@ -464,8 +464,8 @@ describe('Concerto', () => {
             mockConnection.ping.returns(Promise.resolve(Buffer.from(JSON.stringify({
                 version: version
             }))));
-            concerto.connection = mockConnection;
-            return concerto.ping()
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.ping()
                 .then(() => {
                     sinon.assert.calledOnce(Util.securityCheck);
                 });
@@ -475,8 +475,8 @@ describe('Concerto', () => {
             mockConnection.ping.returns(Promise.resolve(Buffer.from(JSON.stringify({
                 version: version
             }))));
-            concerto.connection = mockConnection;
-            return concerto.ping()
+            businessNetworkConnection.connection = mockConnection;
+            return businessNetworkConnection.ping()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.ping);
                 });
