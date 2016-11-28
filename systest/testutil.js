@@ -10,12 +10,12 @@
 
 'use strict';
 
-const Admin = require('@ibm/ibm-concerto-admin').Admin;
+const AdminConnection = require('@ibm/ibm-concerto-admin').AdminConnection;
 const Concerto = require('@ibm/ibm-concerto-client').Concerto;
 const net = require('net');
 const Util = require('@ibm/ibm-concerto-common').Util;
 
-let admin;
+let adminConnection;
 let client;
 
 /**
@@ -99,7 +99,7 @@ class TestUtil {
     static setUp() {
         return TestUtil.waitForPorts()
             .then(function () {
-                admin = new Admin();
+                adminConnection = new AdminConnection();
                 let adminOptions;
                 if (TestUtil.isKarma()) {
                     adminOptions = {
@@ -122,16 +122,16 @@ class TestUtil {
                     adminOptions.invokeWaitTime = parseInt(process.env.CONCERTO_INVOKE_WAIT_SECS);
                     console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
-                console.log('Calling Admin.createConnectionProfile() ...');
-                return admin.createConnectionProfile('testprofile', adminOptions);
+                console.log('Calling AdminConnection.createConnectionProfile() ...');
+                return adminConnection.createConnectionProfile('testprofile', adminOptions);
             })
             .then(function () {
-                console.log('Called Admin.createConnectionProfile()');
-                console.log('Calling Admin.connect() ...');
-                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
+                console.log('Called AdminConnection.createConnectionProfile()');
+                console.log('Calling AdminConnection.connect() ...');
+                return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then(function () {
-                console.log('Called Admin.connect()');
+                console.log('Called AdminConnection.connect()');
                 console.log('');
                 return Promise.resolve();
             });
@@ -143,25 +143,25 @@ class TestUtil {
      * connected instance of Concerto.
      */
     static tearDown() {
-        if (!admin) {
+        if (!adminConnection) {
             throw new Error('Must call setUp successfully before calling tearDown');
         }
         console.log('Calling Concerto.disconnect() ...');
-        return admin.disconnect()
+        return adminConnection.disconnect()
             .then(function () {
                 console.log('Called Concerto.disconnect()');
             });
     }
 
     /**
-     * Get a configured and connected instance of Admin.
-     * @return {Admin} - a configured and connected instance of Admin.
+     * Get a configured and connected instance of AdminConnection.
+     * @return {AdminConnection} - a configured and connected instance of AdminConnection.
      */
     static getAdmin() {
-        if (!admin) {
+        if (!adminConnection) {
             throw new Error('Must call setUp successfully before calling getAdmin');
         }
-        return admin;
+        return adminConnection;
     }
 
     /**
