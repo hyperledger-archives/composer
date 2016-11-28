@@ -10,15 +10,15 @@
 
 'use strict';
 
-const BusinessNetwork = require('../lib/businessnetwork');
+const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const fs = require('fs');
 require('chai').should();
 
-describe('BusinessNetwork', () => {
-    let businessNetwork;
+describe('BusinessNetworkDefinition', () => {
+    let businessNetworkDefinition;
 
     beforeEach(() => {
-        businessNetwork = new BusinessNetwork('id', 'description');
+        businessNetworkDefinition = new BusinessNetworkDefinition('id', 'description');
     });
 
     afterEach(() => {
@@ -27,31 +27,31 @@ describe('BusinessNetwork', () => {
     describe('#accessors', () => {
 
         it('should be able to retrieve factory', () => {
-            businessNetwork.getFactory().should.not.be.null;
+            businessNetworkDefinition.getFactory().should.not.be.null;
         });
 
         it('should be able to retrieve introspector', () => {
-            businessNetwork.getIntrospector().should.not.be.null;
+            businessNetworkDefinition.getIntrospector().should.not.be.null;
         });
 
         it('should be able to retrieve serializer', () => {
-            businessNetwork.getSerializer().should.not.be.null;
+            businessNetworkDefinition.getSerializer().should.not.be.null;
         });
 
         it('should be able to retrieve script manager', () => {
-            businessNetwork.getScriptManager().should.not.be.null;
+            businessNetworkDefinition.getScriptManager().should.not.be.null;
         });
 
         it('should be able to retrieve model manager', () => {
-            businessNetwork.getModelManager().should.not.be.null;
+            businessNetworkDefinition.getModelManager().should.not.be.null;
         });
 
         it('should be able to retrieve identifier', () => {
-            businessNetwork.getIdentifier().should.not.be.null;
+            businessNetworkDefinition.getIdentifier().should.not.be.null;
         });
 
         it('should be able to retrieve description', () => {
-            businessNetwork.getDescription().should.not.be.null;
+            businessNetworkDefinition.getDescription().should.not.be.null;
         });
     });
 
@@ -61,7 +61,7 @@ describe('BusinessNetwork', () => {
 
         // it('should be able to create a business network from a directory', () => {
         //
-        //     return businessNetwork.fromDirectory(__dirname+'/data/zip/AnimalTracking-Network').then(result => {
+        //     return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/AnimalTracking-Network').then(result => {
         //         result.should.be.Buffer;
         //     });
         //
@@ -72,9 +72,9 @@ describe('BusinessNetwork', () => {
             let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
 
 
-            return BusinessNetwork.fromArchive(readFile).then((businessNetwork) => {
-                console.log('What is the final businessNetwork',businessNetwork);
-                businessNetwork.should.not.be.null;
+            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetworkDefinition) => {
+                console.log('What is the final businessNetworkDefinition',businessNetworkDefinition);
+                businessNetworkDefinition.should.not.be.null;
             });
         });
 
@@ -84,11 +84,11 @@ describe('BusinessNetwork', () => {
              After we have done this, we'll be able to create a new ZIP with the contents of the business network.
             */
             let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
-            return BusinessNetwork.fromArchive(readFile).then((businessNetwork) => {
-                businessNetwork.should.not.be.null;
-                console.log('What is the final businessNetwork',businessNetwork);
+            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetworkDefinition) => {
+                businessNetworkDefinition.should.not.be.null;
+                console.log('What is the final businessNetworkDefinition definition',businessNetworkDefinition);
 
-                return businessNetwork.toArchive().then(result => {
+                return businessNetworkDefinition.toArchive().then(result => {
                     result.should.be.Buffer;
                 });
             });

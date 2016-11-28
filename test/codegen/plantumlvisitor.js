@@ -11,7 +11,7 @@
 'use strict';
 
 require('chai').should();
-const BusinessNetwork = require('../../lib/businessnetwork');
+const BusinessNetworkDefinition = require('../../lib/businessnetworkdefinition');
 const PlantUMLVisitor = require('../../lib/codegen/fromcto/plantuml/plantumlvisitor');
 const FileWriter = require('../../lib/codegen/filewriter');
 
@@ -21,21 +21,21 @@ const path = require('path');
 describe('PlantUMLVisitor', function(){
 
     describe('#visit', function() {
-        it('should generate PlantUML code from Mozart BusinessNetwork', function() {
+        it('should generate PlantUML code from Mozart BusinessNetworkDefinition', function() {
 
             const mozartModel = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto'), 'utf8');
             const mozartScript = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto.js'), 'utf8');
 
             // create and populate the ModelManager with a model file
-            const businessNetwork = new BusinessNetwork('com.ibm.concerto.mozart.DefraNetwork', 'DEFRA Animal Tracking Network');
-            businessNetwork.getModelManager().addModelFile(mozartModel);
-            const script = businessNetwork.getScriptManager().createScript('mozart.cto.js', 'JS', mozartScript);
-            businessNetwork.getScriptManager().addScript(script);
+            const businessNetworkDefinition = new BusinessNetworkDefinition('com.ibm.concerto.mozart.DefraNetwork', 'DEFRA Animal Tracking Network');
+            businessNetworkDefinition.getModelManager().addModelFile(mozartModel);
+            const script = businessNetworkDefinition.getScriptManager().createScript('mozart.cto.js', 'JS', mozartScript);
+            businessNetworkDefinition.getScriptManager().addScript(script);
 
             let visitor = new PlantUMLVisitor();
             let parameters = {};
             parameters.fileWriter = new FileWriter('./out/mozart');
-            businessNetwork.accept(visitor, parameters);
+            businessNetworkDefinition.accept(visitor, parameters);
 
             // check the file exists
             fs.accessSync('./out/mozart/model.uml', fs.F_OK);

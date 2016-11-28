@@ -19,7 +19,7 @@
 
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
-module.exports.BusinessNetwork = require('./lib/businessnetwork');
+module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
 module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
