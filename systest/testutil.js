@@ -1,7 +1,7 @@
 /*
  * IBM Confidential
  * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
+ * IBM BusinessNetworkConnection - Blockchain Solution Framework
  * Copyright IBM Corp. 2016
  * The source code for this program is not published or otherwise
  * divested of its trade secrets, irrespective of what has
@@ -11,7 +11,7 @@
 'use strict';
 
 const AdminConnection = require('@ibm/ibm-concerto-admin').AdminConnection;
-const Concerto = require('@ibm/ibm-concerto-client').Concerto;
+const BusinessNetworkConnection = require('@ibm/ibm-concerto-client').BusinessNetworkConnection;
 const net = require('net');
 const Util = require('@ibm/ibm-concerto-common').Util;
 
@@ -19,7 +19,7 @@ let adminConnection;
 let client;
 
 /**
- * A class containing test utilities for use in Concerto system tests.
+ * A class containing test utilities for use in BusinessNetworkConnection system tests.
  *
  * @private
  */
@@ -92,9 +92,9 @@ class TestUtil {
     }
 
     /**
-     * Create a new Concerto object, connect, and deploy the chain-code.
+     * Create a new BusinessNetworkConnection object, connect, and deploy the chain-code.
      * @return {Promise} - a promise that wil be resolved with a configured and
-     * connected instance of Concerto.
+     * connected instance of BusinessNetworkConnection.
      */
     static setUp() {
         return TestUtil.waitForPorts()
@@ -122,11 +122,11 @@ class TestUtil {
                     adminOptions.invokeWaitTime = parseInt(process.env.CONCERTO_INVOKE_WAIT_SECS);
                     console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
-                console.log('Calling AdminConnection.createConnectionProfile() ...');
-                return adminConnection.createConnectionProfile('testprofile', adminOptions);
+                console.log('Calling AdminConnection.createProfile() ...');
+                return adminConnection.createProfile('testprofile', adminOptions);
             })
             .then(function () {
-                console.log('Called AdminConnection.createConnectionProfile()');
+                console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
                 return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
@@ -138,18 +138,18 @@ class TestUtil {
     }
 
     /**
-     * Disconnect the Concerto object.
+     * Disconnect the BusinessNetworkConnection object.
      * @return {Promise} - a promise that wil be resolved with a configured and
-     * connected instance of Concerto.
+     * connected instance of BusinessNetworkConnection.
      */
     static tearDown() {
         if (!adminConnection) {
             throw new Error('Must call setUp successfully before calling tearDown');
         }
-        console.log('Calling Concerto.disconnect() ...');
+        console.log('Calling BusinessNetworkConnection.disconnect() ...');
         return adminConnection.disconnect()
             .then(function () {
-                console.log('Called Concerto.disconnect()');
+                console.log('Called BusinessNetworkConnection.disconnect()');
             });
     }
 
@@ -165,13 +165,13 @@ class TestUtil {
     }
 
     /**
-     * Get a configured and connected instance of Concerto.
+     * Get a configured and connected instance of BusinessNetworkConnection.
      * @param {string} network - the identifier of the network to connect to.
      * @return {Promise} - a promise that will be resolved with a configured and
-     * connected instance of {@link Concerto}.
+     * connected instance of {@link BusinessNetworkConnection}.
      */
     static getClient(network) {
-        client = new Concerto();
+        client = new BusinessNetworkConnection();
         console.log('Calling Client.connect() ...');
         return client.connect('testprofile', network, 'WebAppAdmin', 'DJY27pEnl16d')
             .then(() => {
