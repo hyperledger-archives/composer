@@ -15,11 +15,11 @@
  * blockchain backed digital networks and exchanging assets between participants
  * via processing transactions.
  * <p>
- * Applications interact with the framework by instantiating the {@link Concerto}
+ * Applications interact with the framework by instantiating the {@link BusinessNetworkConnection}
  * class.
  * </p>
  * <p><a href="diagrams/concerto.svg"><img src="diagrams/concerto.svg" style="width:100%;"/></a></p>
  * @module ibm-concerto
  */
 
-module.exports.Concerto = require('./lib/concerto');
+module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
