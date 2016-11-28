@@ -11,6 +11,8 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.2.0 {f9dcdecdc5b3fe404d06330086d8ef7c} 2016-11-28
+- Renamed Admin class to AdminConnection and AdminConnection.createConnectionProfile to AdminConnection.createProfile
 
 Version 0.1.0 {381a30441aab8066ed57615f174388a2} 2016-11-24
 - Initial admin API
