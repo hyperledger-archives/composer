@@ -21,6 +21,10 @@ const sinon = require('sinon');
 
 describe('FSConnectionProfileStore', () => {
 
+    it('should handle missing fs', () => {
+        (function(){new FSConnectionProfileStore();}).should.throw(Error,'Must create FSConnectionProfileStore with an fs implementation.');
+    });
+
     describe('#loadConnectionProfile', () => {
 
         it('should save and load data', () => {

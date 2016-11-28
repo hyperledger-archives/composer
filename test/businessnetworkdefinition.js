@@ -59,21 +59,23 @@ describe('BusinessNetworkDefinition', () => {
 
 
 
-        // it('should be able to create a business network from a directory', () => {
-        //
-        //     return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/AnimalTracking-Network').then(result => {
-        //         result.should.be.Buffer;
-        //     });
-        //
-        //
-        // });
+        it('should be able to create a business network from a directory', () => {
+
+            return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/test-archive').then(test => {
+                return test.toArchive().then(result => {
+                    result.should.be.Buffer;
+                    // fs.writeFileSync('./test/data/zip/test-archive.zip',result);
+                });
+            });
+
+
+        });
 
         it('should be able to create business network from a ZIP archive', () => {
             let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
 
 
             return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetworkDefinition) => {
-                console.log('What is the final businessNetworkDefinition',businessNetworkDefinition);
                 businessNetworkDefinition.should.not.be.null;
             });
         });
@@ -86,7 +88,6 @@ describe('BusinessNetworkDefinition', () => {
             let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
             return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetworkDefinition) => {
                 businessNetworkDefinition.should.not.be.null;
-                console.log('What is the final businessNetworkDefinition definition',businessNetworkDefinition);
 
                 return businessNetworkDefinition.toArchive().then(result => {
                     result.should.be.Buffer;
