@@ -27,7 +27,7 @@ module.exports.ConnectionManager = require('./lib/connectionmanager');
 module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanager');
 module.exports.ConnectionProfileStore = require('./lib/connectionprofilestore');
 module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestore');
-module.exports.MemoryConnectionProfileStore = require('./lib/memoryconnectionprofilestore');
+// module.exports.MemoryConnectionProfileStore = require('./lib/memoryconnectionprofilestore');
 
 module.exports.Factory = require('./lib/factory');
 module.exports.Globalize = require('./lib/globalize');
