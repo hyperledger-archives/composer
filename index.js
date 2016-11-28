@@ -23,9 +23,12 @@ module.exports.BusinessNetwork = require('./lib/businessnetwork');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
 module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
+
 module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanager');
 module.exports.ConnectionProfileStore = require('./lib/connectionprofilestore');
 module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestore');
+module.exports.MemoryConnectionProfileStore = require('./lib/memoryconnectionprofilestore');
+
 module.exports.Factory = require('./lib/factory');
 module.exports.Globalize = require('./lib/globalize');
 module.exports.Introspector = require('./lib/introspect/introspector');
