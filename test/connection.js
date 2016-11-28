@@ -99,6 +99,36 @@ describe('Connection', () => {
 
     });
 
+    describe('#undeploy', () => {
+
+        it('should throw as abstract method', () => {
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
+            return c.undeploy()
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.match(/abstract function called/);
+                });
+        });
+
+    });
+
+    describe('#update', () => {
+
+        it('should throw as abstract method', () => {
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
+            return c.update()
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.match(/abstract function called/);
+                });
+        });
+
+    });
+
     describe('#ping', () => {
 
         it('should throw as abstract method', () => {
@@ -142,6 +172,19 @@ describe('Connection', () => {
                 });
         });
 
+    });
+
+    describe('#getIdentifier', () => {
+
+        it('should work with both profile and network', () => {
+            let c = new Connection(mockConnectionManager, 'profile', 'network');
+            c.getIdentifier().should.equal('network@profile');
+        });
+
+        it('should work with just profile', () => {
+            let c = new Connection(mockConnectionManager, 'profile', null );
+            c.getIdentifier().should.equal('profile');
+        });
     });
 
     describe('#toJSON', () => {
