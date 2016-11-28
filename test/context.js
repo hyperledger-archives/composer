@@ -10,7 +10,7 @@
 
 'use strict';
 
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
@@ -59,12 +59,12 @@ describe('Context', () => {
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
             mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=' });
             sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             return context.initialize()
                 .then(() => {
-                    sinon.assert.calledOnce(BusinessNetwork.fromArchive);
-                    sinon.assert.calledWith(BusinessNetwork.fromArchive, sinon.match((archive) => {
+                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                    sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
                         return archive.compare(Buffer.from('hello world')) === 0;
                     }));
                 });
@@ -92,8 +92,8 @@ describe('Context', () => {
 
         it('should return the business networks model manager', () => {
             let mockModelManager = sinon.createStubInstance(ModelManager);
-            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
-            context.businessNetwork.getModelManager.returns(mockModelManager);
+            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            context.businessNetworkDefinition.getModelManager.returns(mockModelManager);
             context.getModelManager().should.equal(mockModelManager);
         });
 
@@ -109,8 +109,8 @@ describe('Context', () => {
 
         it('should return the business networks model manager', () => {
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
-            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
-            context.businessNetwork.getScriptManager.returns(mockScriptManager);
+            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            context.businessNetworkDefinition.getScriptManager.returns(mockScriptManager);
             context.getScriptManager().should.equal(mockScriptManager);
         });
 
@@ -126,8 +126,8 @@ describe('Context', () => {
 
         it('should return the business networks model manager', () => {
             let mockFactory = sinon.createStubInstance(Factory);
-            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
-            context.businessNetwork.getFactory.returns(mockFactory);
+            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            context.businessNetworkDefinition.getFactory.returns(mockFactory);
             context.getFactory().should.equal(mockFactory);
         });
 
@@ -143,8 +143,8 @@ describe('Context', () => {
 
         it('should return the business networks model manager', () => {
             let mockSerializer = sinon.createStubInstance(Serializer);
-            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
-            context.businessNetwork.getSerializer.returns(mockSerializer);
+            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            context.businessNetworkDefinition.getSerializer.returns(mockSerializer);
             context.getSerializer().should.equal(mockSerializer);
         });
 
@@ -160,8 +160,8 @@ describe('Context', () => {
 
         it('should return the business networks model manager', () => {
             let mockIntrospector = sinon.createStubInstance(Introspector);
-            context.businessNetwork = sinon.createStubInstance(BusinessNetwork);
-            context.businessNetwork.getIntrospector.returns(mockIntrospector);
+            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            context.businessNetworkDefinition.getIntrospector.returns(mockIntrospector);
             context.getIntrospector().should.equal(mockIntrospector);
         });
 
