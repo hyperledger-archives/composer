@@ -10,7 +10,7 @@
 
 'use strict';
 
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
@@ -71,8 +71,8 @@ describe('Engine', () => {
             let sysregistries = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').rejects();
             mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.getCollection.withArgs('$sysregistries').rejects();
             mockDataService.createCollection.withArgs('$sysregistries').resolves(sysregistries);
@@ -83,8 +83,8 @@ describe('Engine', () => {
                 .then(() => {
                     sinon.assert.calledTwice(mockDataService.createCollection);
                     sinon.assert.calledWith(mockDataService.createCollection, '$sysdata');
-                    sinon.assert.calledOnce(BusinessNetwork.fromArchive);
-                    sinon.assert.calledWith(BusinessNetwork.fromArchive, sinon.match((archive) => {
+                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                    sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
                         return archive.compare(Buffer.from('hello world')) === 0;
                     }));
                     sinon.assert.calledOnce(sysdata.add);
@@ -99,8 +99,8 @@ describe('Engine', () => {
         it('should ignore existing system data collection', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.getCollection.withArgs('$sysregistries').rejects();
             mockDataService.createCollection.withArgs('$sysregistries').resolves();
@@ -116,8 +116,8 @@ describe('Engine', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').rejects();
             mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             let sysregistries = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(sysregistries);
@@ -133,8 +133,8 @@ describe('Engine', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.rejects();
             mockDataService.createCollection.resolves(mockDataCollection);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             mockRegistryManager.get.withArgs('Transaction', 'default').resolves();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {

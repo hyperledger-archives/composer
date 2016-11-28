@@ -10,7 +10,7 @@
 
 'use strict';
 
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
@@ -81,8 +81,8 @@ describe('Engine', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             sysdata.update.withArgs('businessnetwork', { data: 'aGVsbG8gd29ybGQ=' }).resolves();
             mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
-            sandbox.stub(BusinessNetwork, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             mockRegistryManager.createDefaults.resolves();
             return engine.invoke(mockContext, 'updateBusinessNetwork', ['aGVsbG8gd29ybGQ='])
                 .then((result) => {
