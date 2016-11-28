@@ -1,7 +1,7 @@
 class BaseException extends Error {
    + void constructor(string) 
 }
-class BusinessNetwork {
+class BusinessNetworkDefinition {
    + void constructor(String,String) 
    + String getIdentifier() 
    + String getDescription() 

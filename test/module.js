@@ -12,12 +12,12 @@
 
 const common = require('..');
 
-const businessNetwork = common.BusinessNetwork;
+const businessNetworkDefinition = common.BusinessNetworkDefinition;
 
 describe('Module', () => {
     describe('#instances', function() {
         it('check can get instances', function() {
-            businessNetwork.should.not.be.null;
+            businessNetworkDefinition.should.not.be.null;
         });
     });
 });
