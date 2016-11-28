@@ -10,7 +10,7 @@
 
 'use strict';
 
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 
 const fs = require('fs');
 const path = require('path');
@@ -23,7 +23,7 @@ chai.use(require('chai-subset'));
 
 describe.only('Asset registry system tests', function () {
 
-    let businessNetwork;
+    let businessNetworkDefinition;
     let admin;
     let client;
 
@@ -31,12 +31,12 @@ describe.only('Asset registry system tests', function () {
         const modelFiles = [
             fs.readFileSync(path.resolve(__dirname, 'data/assetregistries.cto'), 'utf8')
         ];
-        businessNetwork = new BusinessNetwork('systest.assetregistries', 'The network for the asset registry system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest.assetregistries', 'The network for the asset registry system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetwork.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
         });
         admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetwork)
+        return admin.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest.assetregistries')
                     .then((result) => {

@@ -10,16 +10,16 @@
 
 'use strict';
 
-const Admin = require('@ibm/ibm-concerto-admin').Admin;
-const Concerto = require('@ibm/ibm-concerto-client').Concerto;
+const AdminConnection = require('@ibm/ibm-concerto-admin').AdminConnection;
+const BusinessNetworkConnection = require('@ibm/ibm-concerto-client').BusinessNetworkConnection;
 const net = require('net');
 const Util = require('@ibm/ibm-concerto-common').Util;
 
-let admin;
+let adminConnection;
 let client;
 
 /**
- * A class containing test utilities for use in Concerto system tests.
+ * A class containing test utilities for use in BusinessNetworkConnection system tests.
  *
  * @private
  */
@@ -92,14 +92,14 @@ class TestUtil {
     }
 
     /**
-     * Create a new Concerto object, connect, and deploy the chain-code.
+     * Create a new BusinessNetworkConnection object, connect, and deploy the chain-code.
      * @return {Promise} - a promise that wil be resolved with a configured and
-     * connected instance of Concerto.
+     * connected instance of BusinessNetworkConnection.
      */
     static setUp() {
         return TestUtil.waitForPorts()
             .then(function () {
-                admin = new Admin();
+                adminConnection = new AdminConnection();
                 let adminOptions;
                 if (TestUtil.isKarma()) {
                     adminOptions = {
@@ -122,56 +122,56 @@ class TestUtil {
                     adminOptions.invokeWaitTime = parseInt(process.env.CONCERTO_INVOKE_WAIT_SECS);
                     console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
-                console.log('Calling Admin.createConnectionProfile() ...');
-                return admin.createConnectionProfile('testprofile', adminOptions);
+                console.log('Calling AdminConnection.createProfile() ...');
+                return adminConnection.createProfile('testprofile', adminOptions);
             })
             .then(function () {
-                console.log('Called Admin.createConnectionProfile()');
-                console.log('Calling Admin.connect() ...');
-                return admin.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
+                console.log('Called AdminConnection.createProfile()');
+                console.log('Calling AdminConnection.connect() ...');
+                return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then(function () {
-                console.log('Called Admin.connect()');
+                console.log('Called AdminConnection.connect()');
                 console.log('');
                 return Promise.resolve();
             });
     }
 
     /**
-     * Disconnect the Concerto object.
+     * Disconnect the BusinessNetworkConnection object.
      * @return {Promise} - a promise that wil be resolved with a configured and
-     * connected instance of Concerto.
+     * connected instance of BusinessNetworkConnection.
      */
     static tearDown() {
-        if (!admin) {
+        if (!adminConnection) {
             throw new Error('Must call setUp successfully before calling tearDown');
         }
-        console.log('Calling Concerto.disconnect() ...');
-        return admin.disconnect()
+        console.log('Calling BusinessNetworkConnection.disconnect() ...');
+        return adminConnection.disconnect()
             .then(function () {
-                console.log('Called Concerto.disconnect()');
+                console.log('Called BusinessNetworkConnection.disconnect()');
             });
     }
 
     /**
-     * Get a configured and connected instance of Admin.
-     * @return {Admin} - a configured and connected instance of Admin.
+     * Get a configured and connected instance of AdminConnection.
+     * @return {AdminConnection} - a configured and connected instance of AdminConnection.
      */
     static getAdmin() {
-        if (!admin) {
+        if (!adminConnection) {
             throw new Error('Must call setUp successfully before calling getAdmin');
         }
-        return admin;
+        return adminConnection;
     }
 
     /**
-     * Get a configured and connected instance of Concerto.
+     * Get a configured and connected instance of BusinessNetworkConnection.
      * @param {string} network - the identifier of the network to connect to.
      * @return {Promise} - a promise that will be resolved with a configured and
-     * connected instance of {@link Concerto}.
+     * connected instance of {@link BusinessNetworkConnection}.
      */
     static getClient(network) {
-        client = new Concerto();
+        client = new BusinessNetworkConnection();
         console.log('Calling Client.connect() ...');
         return client.connect('testprofile', network, 'WebAppAdmin', 'DJY27pEnl16d')
             .then(() => {
