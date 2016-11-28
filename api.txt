@@ -7,6 +7,7 @@ class BusinessNetworkDefinition {
    + String getDescription() 
    + Promise fromArchive(Buffer) 
    + Buffer toArchive() 
+   + Buffer fromDirectory(String) 
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
