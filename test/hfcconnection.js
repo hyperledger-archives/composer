@@ -280,6 +280,59 @@ describe('HFCConnection', () => {
 
     });
 
+    describe('#undeploy', function () {
+
+        it('should perform a security check', () => {
+            sandbox.stub(HFCUtil, 'securityCheck');
+            sandbox.stub(HFCUtil, 'undeployBusinessNetworkDefinition', function () {
+                return Promise.resolve();
+            });
+            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            return connection.undeploy(mockSecurityContext, 'testnetwork')
+                .then(() => {
+                    sinon.assert.calledOnce(HFCUtil.securityCheck);
+                });
+        });
+
+        it('should undeploy the a BusinessNetworkDefinition', function () {
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(HFCUtil, 'undeployBusinessNetworkDefinition', function () {
+                return Promise.resolve();
+            });
+            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+
+            return connection
+                .undeploy(mockSecurityContext, 'testnetwork')
+                .then(function () {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(HFCUtil.undeployBusinessNetworkDefinition);
+                    sinon.assert.calledWith(HFCUtil.undeployBusinessNetworkDefinition, mockSecurityContext, 'undeployBusinessNetworkDefinition', ['testnetwork']);
+                    sinon.assert.calledOnce(connection.ping);
+                    sinon.assert.calledWith(connection.ping, mockSecurityContext);
+                });
+        });
+
+        it('should handle an error undeploying a business network definition', function () {
+
+            // Set up the responses from the chain-code.
+            sandbox.stub(HFCUtil, 'undeployBusinessNetworkDefinition', function () {
+                return Promise.reject(
+                    new Error('failed to update business network definition')
+                );
+            });
+
+            return connection
+                .undeploy(mockSecurityContext, 'testnetwork')
+                .then(function (assetRegistries) {
+                    throw new Error('should not get here');
+                }).catch(function (error) {
+                    error.should.match(/failed to update/);
+                });
+        });
+    });
+
     describe('#ping', () => {
 
         it('should perform a security check', () => {
