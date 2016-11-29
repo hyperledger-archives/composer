@@ -12,7 +12,7 @@
 'use strict';
 
 require('yargs')
-    .command(require('./lib/deploy.js'))
+    .command(require('./lib/deployCommand.js'))
     .demand(1)
     .help()
     .strict()

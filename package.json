@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
-    "test": "echo 'tests to be added'"
+    "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
+    "posttest": "istanbul check-coverage"
   },
   "repository": {
     "type": "git",
@@ -26,12 +27,16 @@
   "license": "ISC",
   "dependencies": {
     "@ibm/ibm-concerto-admin": "latest",
+    "chai": "^3.5.0",
+    "chai-things": "^0.2.0",
     "eslint": "^3.5.0",
     "istanbul": "^0.4.5",
     "license-check": "^1.1.5",
     "mocha": "^3.0.2",
     "moment": "^2.15.1",
     "prompt": "^1.0.0",
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2",
     "yargs": "^6.2.0"
   },
   "publishConfig": {
@@ -40,6 +45,7 @@
   "license-check-config": {
     "src": [
       "**/*.js",
+      "!./cli.js",
       "!./coverage/**/*",
       "!./node_modules/**/*",
       "!./out/**/*"
