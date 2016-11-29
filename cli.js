@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * IBM Confidential
  * OCO Source Materials
