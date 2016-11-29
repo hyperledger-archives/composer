@@ -11,6 +11,10 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.1.2 {65d463428565e7b1a2662b77b9611c1f} 2016-11-29
+- Added update and undeploy methods. Removed force parameter from deploy.
+
 Version 0.1.1 {f9dcdecdc5b3fe404d06330086d8ef7c} 2016-11-28
 - Renamed Admin class to AdminConnection and AdminConnection.createConnectionProfile to AdminConnection.createProfile
 
