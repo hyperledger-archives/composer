@@ -13,7 +13,6 @@
 const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const fs = require('fs');
 require('chai').should();
-
 describe('BusinessNetworkDefinition', () => {
     let businessNetworkDefinition;
 
@@ -59,38 +58,55 @@ describe('BusinessNetworkDefinition', () => {
 
 
 
-        it('should be able to create a business network from a directory', () => {
+        it('should be able to correctly create a business network from a directory', () => {
 
-            return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/test-archive').then(test => {
-                return test.toArchive().then(result => {
-                    result.should.be.Buffer;
-                    // fs.writeFileSync('./test/data/zip/test-archive.zip',result);
+            return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/test-archive').then(businessNetwork => {
+                businessNetwork.should.be.BusinessNetworkDefinition;
+                businessNetwork.identifier.should.equal('@ibm/test-archive-0.0.1');
+                businessNetwork.description.should.equal('A test business network.');
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
+            });
+        });
+
+        it('should be able to create a ZIP archive from a directory (using fromDirectory and toArchive)', () => {
+
+            return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/test-archive').then(businessNetwork => {
+                return businessNetwork.toArchive().then(buffer => {
+                    buffer.should.be.Buffer;
+                    fs.writeFileSync(__dirname+'/data/zip/test-archive.zip',buffer);
                 });
             });
-
-
         });
 
-        it('should be able to create business network from a ZIP archive', () => {
+
+        it('should be able to correctly create business network from a ZIP archive', () => {
             let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
-
-
-            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetworkDefinition) => {
-                businessNetworkDefinition.should.not.be.null;
+            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
+                businessNetwork.should.be.BusinessNetworkDefinition;
+                businessNetwork.identifier.should.equal('@ibm/test-archive-0.0.1');
+                businessNetwork.description.should.equal('A test business network.');
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
             });
         });
 
-        it('should be able to store business network as a ZIP', () => {
+        it('should be able to store business network as a ZIP archive (using fromArchive and toArchive)', () => {
             /*
              We first need to read a ZIP and create a business network.
              After we have done this, we'll be able to create a new ZIP with the contents of the business network.
             */
             let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
-            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetworkDefinition) => {
-                businessNetworkDefinition.should.not.be.null;
+            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
+                businessNetwork.should.be.BusinessNetworkDefinition;
+                businessNetwork.identifier.should.equal('@ibm/test-archive-0.0.1');
+                businessNetwork.description.should.equal('A test business network.');
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
-                return businessNetworkDefinition.toArchive().then(result => {
-                    result.should.be.Buffer;
+                return businessNetwork.toArchive().then(buffer => {
+                    buffer.should.be.Buffer;
+                    fs.writeFileSync(__dirname+'/data/zip/new-test-archive.zip',buffer);
                 });
             });
         });
