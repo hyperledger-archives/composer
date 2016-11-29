@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * IBM Confidential
  * OCO Source Materials
@@ -11,7 +12,7 @@
 'use strict';
 
 require('yargs')
-    .command(require('./lib/deploy.js'))
+    .command(require('./lib/deployCommand.js'))
     .demand(1)
     .help()
     .strict()
