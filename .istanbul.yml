@@ -1,5 +1,9 @@
 instrumentation:
     excludes:
+        - "cli.js"
+        - "index.js"
+        - "lib/utils/*.js"
+        - "lib/deployCommand.js"
         - "out/**"
         - "scripts/**"
         - "systest/**"
