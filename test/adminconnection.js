@@ -49,6 +49,8 @@ describe('AdminConnection', () => {
     mockHFCConnection.login.returns(Promise.resolve(new SecurityContext(mockHFCConnection)));
     mockHFCConnection.deploy.returns(Promise.resolve({'chaincodeID': '<ChaincodeID>'}));
     mockHFCConnection.ping.returns(Promise.resolve('TXID'));
+    mockHFCConnection.undeploy.returns(Promise.resolve(true));
+    mockHFCConnection.update.returns(Promise.resolve(true));
 
     mockConcertoConnectionManager.connect.returns(Promise.resolve(mockHFCConnection));
     mockConcertoConnectionManager.onDisconnect.returns();
@@ -129,6 +131,28 @@ describe('AdminConnection', () => {
             });
         });
     });
+
+    describe('#undeploy', () => {
+
+        it('should be able to undeploy a business network', () => {
+            adminConnection.undeploy('testnetwork')
+            .then((res) => {
+                res.should.equal(true);
+            });
+        });
+    });
+
+    describe('#update', () => {
+
+        it('should be able to update a business network', () => {
+            let businessNetworkDefinition = new BusinessNetworkDefinition();
+            adminConnection.update(businessNetworkDefinition)
+            .then((res) => {
+                res.should.equal(true);
+            });
+        });
+    });
+
 
     describe('#ping', () => {
         it('should not fail', () => {
