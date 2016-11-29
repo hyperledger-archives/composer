@@ -13,7 +13,8 @@
 const Admin = require('@ibm/ibm-concerto-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const fs = require('fs');
-const DeployCommand = ('../lib/deploy.js');
+const Deploy = require('../lib/deploy.js');
+const CmdUtil = require('../lib/utils/cmdutils.js');
 
 require('../lib/deploy.js');
 require('chai').should();
@@ -24,23 +25,21 @@ require('sinon-as-promised');
 chai.should();
 chai.use(require('chai-things'));
 
-let mockBusinessNetworkDefinition;
-let mockAdminConnection;
-
 let testBusinessNetworkArchive = {bna: 'TBNA'};
-let testBusinessNetworkDefinition = {bnd: 'TBND'};
-//let testAdminConnection = {anc: 'TANC'};
 let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
+let testEnrollmentSecret = 'DJY27pEnl16d';
 
+let mockBusinessNetworkDefinition;
 mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
 mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
 mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
 
+let mockAdminConnection;
 mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-mockAdminConnection.createProfile.returns(Promise.resolve());
-mockAdminConnection.connect.returns(Promise.resolve());
-mockAdminConnection.deploy.returns(Promise.resolve());
+mockAdminConnection.createProfile.resolves();
+mockAdminConnection.connect.resolves();
+mockAdminConnection.deploy.resolves();
 
 describe('concerto deploy network CLI unit tests', function () {
 
@@ -48,9 +47,10 @@ describe('concerto deploy network CLI unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        sandbox.stub(fs,'existsSync').returns(true);
         sandbox.stub(fs,'readFileSync').returns(testBusinessNetworkArchive);
-        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(testBusinessNetworkDefinition);
+        sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(mockBusinessNetworkDefinition);
+        sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
+
     });
 
     afterEach(() => {
@@ -58,15 +58,59 @@ describe('concerto deploy network CLI unit tests', function () {
     });
 
     it('Good path, all parms correctly specified.', function () {
+        sandbox.stub(fs,'existsSync').returns(true);
 
         let argv = {enrollId: 'WebAppAdmin'
                    ,enrollSecret: 'DJY27pEnl16d'
-                   ,archiveFile: ''
+                   ,archiveFile: 'testArchiveFile.zip'
         };
-        let promises = [];
-        promises.push = DeployCommand.handler(argv);
-        // use asserts to check correct values being passed between functions...
-//        deployPromise.should.be.equal('test');
+
+        return Deploy.handler(argv)
+        .then ((result) => {
+            sinon.assert.calledOnce(fs.existsSync);
+            sinon.assert.calledWith(fs.existsSync, argv.archiveFile);
+            sinon.assert.calledOnce(fs.readFileSync);
+            sinon.assert.calledWith(fs.readFileSync, argv.archiveFile);
+//            mockBusinessNetworkDefinition.fromArchive.should.return(testBusinessNetworkArchive);
+//            sinon.assert.calledWith(mockBusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+//            sinon.assert.calledOnce(mockBusinessNetworkDefinition.getIdentifier);
+//            sinon.assert.calledOnce(mockBusinessNetworkDefinition.getDescription);
+        });
     });
+
+    it('Archive file does not exist.', function () {
+        sandbox.stub(fs,'existsSync').returns(false);
+
+        let argv = {enrollId: 'WebAppAdmin'
+                   ,enrollSecret: 'DJY27pEnl16d'
+                   ,archiveFile: 'testArchiveFile.zip'
+        };
+
+        return Deploy.handler(argv)
+        .then ((result) => {
+
+        })
+        .catch(() => {
+
+        });
+    });
+
+    it('Enrollment secret provided via prompt.', function () {
+        sandbox.stub(fs,'existsSync').returns(true);
+        sandbox.stub(CmdUtil, 'prompt').resolves(testEnrollmentSecret);
+
+        let argv = {enrollId: 'WebAppAdmin'
+                   ,archiveFile: 'testArchiveFile.zip'
+        };
+
+        return Deploy.handler(argv)
+        .then ((result) => {
+
+        })
+        .catch(() => {
+
+        });
+    });
+
 
 });
