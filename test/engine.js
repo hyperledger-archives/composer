@@ -16,6 +16,8 @@ const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
+const Logger = require('@ibm/ibm-concerto-common').Logger;
+const LoggingService = require('../lib/loggingservice');
 const RegistryManager = require('../lib/registrymanager');
 const version = require('../package.json').version;
 
@@ -25,9 +27,12 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
 
+const LOG = Logger.getLog('Engine');
+
 describe('Engine', () => {
 
     let mockContainer;
+    let mockLoggingService;
     let mockContext;
     let mockDataService;
     let mockRegistryManager;
@@ -36,6 +41,8 @@ describe('Engine', () => {
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
+        mockLoggingService = sinon.createStubInstance(LoggingService);
+        mockContainer.getLoggingService.returns(mockLoggingService);
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
@@ -50,6 +57,54 @@ describe('Engine', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('#installLogger', () => {
+
+        it('should install a logger for debug level logging', () => {
+            LOG.debug('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for warn level logging', () => {
+            LOG.warn('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logWarning, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for info level logging', () => {
+            LOG.info('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logInfo, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for verbose level logging', () => {
+            LOG.verbose('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/hello.*world/));
+        });
+
+        it('should install a logger for error level logging', () => {
+            LOG.error('installLogger', 'hello', 'world');
+            sinon.assert.calledWith(mockLoggingService.logError, sinon.match(/hello.*world/));
+        });
+
+        it('should format multiple arguments into a comma separated list', () => {
+            LOG.debug('installLogger', 'hello', 'world', 'i', 'am', 'simon');
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/world, i, am, simon/));
+        });
+
+        it('should format object arguments into JSON', () => {
+            LOG.debug('installLogger', 'hello', { hi: 'there' });
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/{"hi":"there"}/));
+        });
+
+        it('should cope with object arguments that cannot be formatted into JSON', () => {
+            let object = {
+                hi: 'there'
+            };
+            object.object = object;
+            LOG.debug('installLogger', 'hello', object);
+            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/\[object Object\]/));
+        });
+
     });
 
     describe('#init', () => {
@@ -88,7 +143,7 @@ describe('Engine', () => {
                         return archive.compare(Buffer.from('hello world')) === 0;
                     }));
                     sinon.assert.calledOnce(sysdata.add);
-                    sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=' });
+                    sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
                     sinon.assert.calledWith(mockDataService.createCollection, '$sysregistries');
                     sinon.assert.calledOnce(mockRegistryManager.add);
                     sinon.assert.calledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
@@ -140,6 +195,18 @@ describe('Engine', () => {
                 .then(() => {
                     sinon.assert.neverCalledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
                 });
+        });
+
+        it('should throw if an error occurs', () => {
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.rejects();
+            mockDataService.createCollection.resolves(mockDataCollection);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
+            mockRegistryManager.add.withArgs('Transaction', 'default').rejects();
+            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
+                .should.be.rejected;
         });
 
     });

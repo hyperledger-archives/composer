@@ -62,6 +62,8 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/ibm-concerto-common": "latest"
+    "@ibm/ibm-concerto-common": "latest",
+    "lru-cache": "^4.0.2",
+    "sha.js": "^2.4.8"
   }
 }

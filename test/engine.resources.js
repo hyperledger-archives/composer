@@ -13,6 +13,7 @@
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const Engine = require('../lib/engine');
+const LoggingService = require('../lib/loggingservice');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('@ibm/ibm-concerto-common').Resource;
@@ -27,6 +28,7 @@ require('sinon-as-promised');
 describe('EngineResources', () => {
 
     let mockContainer;
+    let mockLoggingService;
     let mockContext;
     let mockRegistry;
     let mockRegistryManager;
@@ -35,6 +37,8 @@ describe('EngineResources', () => {
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
+        mockLoggingService = sinon.createStubInstance(LoggingService);
+        mockContainer.getLoggingService.returns(mockLoggingService);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
@@ -49,7 +53,7 @@ describe('EngineResources', () => {
     describe('#getAllResourcesInRegistry', () => {
 
         it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'getAllResourcesInRegistry', ['no', 'args', 'supported']);
+            let result = engine.query(mockContext, 'getAllResourcesInRegistry', ['no', 'args', 'supported']);
             return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "getAllResourcesInRegistry", expecting "\["registryType","registryId"\]"/);
         });
 
@@ -65,7 +69,7 @@ describe('EngineResources', () => {
                 $class: 'org.doge.Doge',
                 assetId: 'doge2'
             });
-            return engine.invoke(mockContext, 'getAllResourcesInRegistry', ['Asset', 'doges'])
+            return engine.query(mockContext, 'getAllResourcesInRegistry', ['Asset', 'doges'])
                 .then((resources) => {
                     resources.should.deep.equal([{
                         $class: 'org.doge.Doge',
@@ -82,7 +86,7 @@ describe('EngineResources', () => {
     describe('#getResourceInRegistry', () => {
 
         it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'getResourceInRegistry', ['no', 'args', 'supported', 'here']);
+            let result = engine.query(mockContext, 'getResourceInRegistry', ['no', 'args', 'supported', 'here']);
             return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "getResourceInRegistry", expecting "\["registryType","registryId","resourceId"\]"/);
         });
 
@@ -93,7 +97,7 @@ describe('EngineResources', () => {
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             });
-            return engine.invoke(mockContext, 'getResourceInRegistry', ['Asset', 'doges', 'doge1'])
+            return engine.query(mockContext, 'getResourceInRegistry', ['Asset', 'doges', 'doge1'])
                 .then((resource) => {
                     resource.should.deep.equal({
                         $class: 'org.doge.Doge',

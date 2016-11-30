@@ -16,6 +16,7 @@ const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
+const LoggingService = require('../lib/loggingservice');
 const RegistryManager = require('../lib/registrymanager');
 const version = require('../package.json').version;
 
@@ -25,9 +26,10 @@ chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
 
-describe('Engine', () => {
+describe('EngineBusinessNetworks', () => {
 
     let mockContainer;
+    let mockLoggingService;
     let mockContext;
     let mockDataService;
     let mockRegistryManager;
@@ -36,6 +38,8 @@ describe('Engine', () => {
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
+        mockLoggingService = sinon.createStubInstance(LoggingService);
+        mockContainer.getLoggingService.returns(mockLoggingService);
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
@@ -60,11 +64,11 @@ describe('Engine', () => {
 
         it('should return the business network archive', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
-            sysdata.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=' });
+            sysdata.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
             mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
             return engine.query(mockContext, 'getBusinessNetwork', [])
                 .then((result) => {
-                    result.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=' });
+                    result.should.deep.equal({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
                 });
         });
 
@@ -83,11 +87,14 @@ describe('Engine', () => {
             mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            sandbox.stub(Context, 'cacheBusinessNetwork');
             mockRegistryManager.createDefaults.resolves();
             return engine.invoke(mockContext, 'updateBusinessNetwork', ['aGVsbG8gd29ybGQ='])
                 .then((result) => {
                     sinon.assert.calledOnce(sysdata.update);
-                    sinon.assert.calledWith(sysdata.update, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=' });
+                    sinon.assert.calledWith(sysdata.update, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledOnce(Context.cacheBusinessNetwork);
+                    sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetwork);
                     sinon.assert.calledTwice(mockContext.initialize);
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
@@ -113,6 +120,8 @@ describe('Engine', () => {
             }]);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             mockDataService.deleteCollection.resolves();
+            mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
+            mockRegistryManager.add.withArgs('Transaction', 'default').resolves();
             mockRegistryManager.createDefaults.resolves();
             return engine.invoke(mockContext, 'resetBusinessNetwork', [])
                 .then(() => {
@@ -120,6 +129,8 @@ describe('Engine', () => {
                     sinon.assert.calledWith(mockDataService.deleteCollection, 'Participants:farmers');
                     sinon.assert.calledWith(mockDataCollection.remove, 'Asset:sheeps');
                     sinon.assert.calledWith(mockDataCollection.remove, 'Participants:farmers');
+                    sinon.assert.calledOnce(mockRegistryManager.add);
+                    sinon.assert.calledWith(mockRegistryManager.add, 'Transaction', 'default');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
         });
