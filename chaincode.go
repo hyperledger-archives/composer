@@ -10,16 +10,12 @@
 
 package main
 
-import (
-	"sync"
-
-	"github.com/hyperledger/fabric/core/chaincode/shim"
-)
+import "github.com/hyperledger/fabric/core/chaincode/shim"
 
 // Chaincode is the chaincode class. It is an implementation of the
 // Chaincode interface.
 type Chaincode struct {
-	ConcertoPool sync.Pool
+	ConcertoPool *ConcertoPool
 }
 
 // NewChaincode creates a new instance of the Chaincode chaincode class.
@@ -27,11 +23,9 @@ func NewChaincode() (result *Chaincode) {
 	logger.Debug("Entering NewChaincode")
 	defer func() { logger.Debug("Exiting NewChaincode", result) }()
 
-	result = &Chaincode{}
-	result.ConcertoPool.New = func() interface{} {
-		return NewConcerto()
+	return &Chaincode{
+		ConcertoPool: NewConcertoPool(8),
 	}
-	return result
 }
 
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
@@ -40,9 +34,8 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface, function stri
 	logger.Debug("Entering Chaincode.Init", stub, function, arguments)
 	defer func() { logger.Debug("Exiting Chaincode.Init", string(result), err) }()
 
-	temp := chaincode.ConcertoPool.Get()
-	defer chaincode.ConcertoPool.Put(temp)
-	concerto := temp.(*Concerto)
+	concerto := chaincode.ConcertoPool.Get()
+	defer chaincode.ConcertoPool.Put(concerto)
 	return concerto.Init(stub, function, arguments)
 }
 
@@ -52,9 +45,8 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function st
 	logger.Debug("Entering Chaincode.Invoke", stub, function, arguments)
 	defer func() { logger.Debug("Exiting Chaincode.Invoke", string(result), err) }()
 
-	temp := chaincode.ConcertoPool.Get()
-	defer chaincode.ConcertoPool.Put(temp)
-	concerto := temp.(*Concerto)
+	concerto := chaincode.ConcertoPool.Get()
+	defer chaincode.ConcertoPool.Put(concerto)
 	return concerto.Invoke(stub, function, arguments)
 }
 
@@ -64,8 +56,7 @@ func (chaincode *Chaincode) Query(stub shim.ChaincodeStubInterface, function str
 	logger.Debug("Entering Chaincode.Query", stub, function, arguments)
 	defer func() { logger.Debug("Exiting Chaincode.Query", string(result), err) }()
 
-	temp := chaincode.ConcertoPool.Get()
-	defer chaincode.ConcertoPool.Put(temp)
-	concerto := temp.(*Concerto)
+	concerto := chaincode.ConcertoPool.Get()
+	defer chaincode.ConcertoPool.Put(concerto)
 	return concerto.Query(stub, function, arguments)
 }
