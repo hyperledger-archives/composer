@@ -28,6 +28,7 @@
   "dependencies": {
     "@ibm/ibm-concerto-admin": "latest",
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
     "eslint": "^3.5.0",
     "istanbul": "^0.4.5",
