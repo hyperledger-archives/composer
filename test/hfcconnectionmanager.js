@@ -316,7 +316,7 @@ describe('HFCConnectionManager', () => {
             };
         });
 
-        it('should call onDisconnect when connection is disconnected', function() {
+        it('should call onDisconnect when client connection is disconnected', function() {
 
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
@@ -346,6 +346,50 @@ describe('HFCConnectionManager', () => {
                 })
                 .then((con) => {
                     connectionId = con.getIdentifier();
+                    connectionId.should.equal('testnetwork@test');
+                    connectionManager.chainPool[connectionId].count.should.equal(1);
+                    return con;
+                })
+                .then((con) => {
+                    con.disconnect();
+                })
+                .then(() => {
+                    connectionManager.chainPool[connectionId].count.should.equal(0);
+                    return true;
+                });
+        });
+
+        it('should call onDisconnect when admin connection is disconnected', function() {
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            let mockKeyValStore = {};
+            mockHFC.getChain.returns(mockChain);
+            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
+            let connectionId = null;
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', null)
+                        .then(function(connection) {
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockHFC.getChain);
+                            sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
+                            sinon.assert.calledOnce(mockChain.setKeyValStore);
+                            sinon.assert.calledWith(mockChain.setKeyValStore, mockKeyValStore);
+                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
+                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
+                            sinon.assert.calledOnce(mockChain.addPeer);
+                            connection.should.be.an.instanceOf(HFCConnection);
+                            connection.chain.should.equal(mockChain);
+                            return connection;
+                        });
+                })
+                .then((con) => {
+                    connectionId = con.getIdentifier();
+                    connectionId.should.equal('test');
                     connectionManager.chainPool[connectionId].count.should.equal(1);
                     return con;
                 })
