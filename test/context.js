@@ -20,6 +20,7 @@ const Introspector = require('@ibm/ibm-concerto-common').Introspector;
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
+const Resource = require('@ibm/ibm-concerto-common').Resource;
 const ScriptManager = require('@ibm/ibm-concerto-common').ScriptManager;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 
@@ -53,11 +54,11 @@ describe('Context', () => {
 
     describe('#initialize', () => {
 
-        it('should load the business network', () => {
+        it('should load the business network if it is not already in the cache', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=' });
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
             sandbox.stub(context, 'getDataService').returns(mockDataService);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
@@ -67,6 +68,21 @@ describe('Context', () => {
                     sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
                         return archive.compare(Buffer.from('hello world')) === 0;
                     }));
+                });
+        });
+
+        it('should not load the business network if it is already in the cache', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+            sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetwork);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects();
+            return context.initialize()
+                .then(() => {
+                    sinon.assert.notCalled(BusinessNetworkDefinition.fromArchive);
                 });
         });
 
@@ -199,6 +215,26 @@ describe('Context', () => {
             let mockResolver = sinon.createStubInstance(Resolver);
             context.resolver = mockResolver;
             context.getResolver().should.equal(mockResolver);
+        });
+
+    });
+
+    describe('#getTransaction', () => {
+
+        it('should return the current transaction', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            context.transaction = mockTransaction;
+            context.getTransaction().should.equal(mockTransaction);
+        });
+
+    });
+
+    describe('#setTransaction', () => {
+
+        it('should set the current transaction', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            context.setTransaction(mockTransaction);
+            context.transaction.should.equal(mockTransaction);
         });
 
     });

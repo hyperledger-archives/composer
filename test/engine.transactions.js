@@ -14,6 +14,7 @@ const Container = require('../lib/container');
 const Context = require('../lib/context');
 const Engine = require('../lib/engine');
 const Factory = require('@ibm/ibm-concerto-common').Factory;
+const LoggingService = require('../lib/loggingservice');
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
 const Resolver = require('../lib/resolver');
 const ScriptManager = require('@ibm/ibm-concerto-common').ScriptManager;
@@ -34,6 +35,7 @@ describe('EngineTransactions', () => {
     const mozartScript = fs.readFileSync(path.resolve(__dirname, 'data', 'mozart.cto.js'), 'utf8');
 
     let mockContainer;
+    let mockLoggingService;
     let mockContext;
     let engine;
     let modelManager;
@@ -44,6 +46,8 @@ describe('EngineTransactions', () => {
 
     beforeEach(() => {
         mockContainer = sinon.createStubInstance(Container);
+        mockLoggingService = sinon.createStubInstance(LoggingService);
+        mockContainer.getLoggingService.returns(mockLoggingService);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
         engine = new Engine(mockContainer);
