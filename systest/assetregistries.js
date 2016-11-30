@@ -21,7 +21,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-subset'));
 
-describe.only('Asset registry system tests', function () {
+describe('Asset registry system tests', function () {
 
     let businessNetworkDefinition;
     let admin;
