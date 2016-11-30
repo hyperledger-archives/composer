@@ -111,9 +111,7 @@ class TestUtil {
                         keyValStore: '/tmp/keyValStore',
                         membershipServicesURL: 'grpc://membersrvc:7054',
                         peerURL: 'grpc://vp0:7051',
-                        eventHubURL: 'grpc://vp0:7053',
-                        deployWaitTime: 60,
-                        invokeWaitTime: 20
+                        eventHubURL: 'grpc://vp0:7053'
                     };
                 }
                 if (process.env.CONCERTO_DEPLOY_WAIT_SECS) {

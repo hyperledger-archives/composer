@@ -1,7 +1,7 @@
 'use strict';
 
 function onSimpleTransactionWithPrimitiveTypes(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
@@ -23,7 +23,7 @@ function onSimpleTransactionWithPrimitiveTypes(transaction) {
 }
 
 function onSimpleTransactionWithPrimitiveTypeArrays(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var assertArraysEqual = function (property, actuals, expecteds) {
         if (actuals.length !== expecteds.length) {
             throw new Error('assertArraysEqual(' + property + ', ' + actuals + ', ' + expecteds + ') lengths not equal');
@@ -52,7 +52,7 @@ function onSimpleTransactionWithPrimitiveTypeArrays(transaction) {
 }
 
 function onSimpleTransactionWithAssets(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
@@ -71,7 +71,7 @@ function onSimpleTransactionWithAssets(transaction) {
 }
 
 function onSimpleTransactionWithAssetArrays(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
@@ -96,7 +96,7 @@ function onSimpleTransactionWithAssetArrays(transaction) {
 }
 
 function onSimpleTransactionWithAssetRelationships(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
@@ -115,7 +115,7 @@ function onSimpleTransactionWithAssetRelationships(transaction) {
 }
 
 function onSimpleTransactionWithAssetRelationshipArrays(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
@@ -140,12 +140,12 @@ function onSimpleTransactionWithAssetRelationshipArrays(transaction) {
 }
 
 function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     var as = ar.getAll().sort(function (a, b) {
         return a.assetId.localeCompare(b.assetId);
     });
-    console.log(JSON.stringify(as));
+    // console.log(JSON.stringify(as));
     if (as.length !== 2) { throw new Error('length does not match'); }
     if (typeof as[0] !== 'object') { throw new Error('first asset is not an object'); }
     if (typeof as[1] !== 'object') { throw new Error('second asset is not an object'); }
@@ -156,29 +156,29 @@ function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
 }
 
 function onGetAssetFromAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     var a = ar.get('stringAsset1');
-    console.log(JSON.stringify(a));
+    // console.log(JSON.stringify(a));
     if (typeof a !== 'object') { throw new Error('asset is not an object'); }
     if (a.assetId !== 'stringAsset1') { throw new Error('asset has invalid value'); }
     if (a.stringValue !== 'party parrot in hursley') { throw new Error('asset has invalid value'); }
 }
 
 function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     ar.add(transaction.stringAsset);
 }
 
 function onAddAssetWithRelationshipInTransactionToAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
     ar.add(transaction.relationshipAsset);
 }
 
 function onAddNewAssetToAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     var f = getFactory();
     var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -187,7 +187,7 @@ function onAddNewAssetToAssetRegistryTransaction(transaction) {
 }
 
 function onAddNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
     var f = getFactory();
     var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
@@ -196,19 +196,19 @@ function onAddNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
 }
 
 function onUpdateAssetInTransactionInAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     ar.update(transaction.stringAsset);
 }
 
 function onUpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
     ar.update(transaction.relationshipAsset);
 }
 
 function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     var f = getFactory();
     var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -217,7 +217,7 @@ function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
 }
 
 function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
     var f = getFactory();
     var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
@@ -226,19 +226,19 @@ function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction(transaction)
 }
 
 function onRemoveAssetInTransactionInAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     ar.remove(transaction.stringAsset);
 }
 
 function onRemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
     ar.remove(transaction.relationshipAsset);
 }
 
 function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
     var f = getFactory();
     var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -247,7 +247,7 @@ function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
 }
 
 function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction) {
-    console.log(JSON.stringify(transaction));
+    // console.log(JSON.stringify(transaction));
     var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
     var f = getFactory();
     var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
