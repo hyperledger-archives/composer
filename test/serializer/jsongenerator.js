@@ -13,10 +13,11 @@
 // const Factory = require('../../lib/factory');
 // const Field = require('../../lib/introspect/field');
 const JSONGenerator = require('../../lib/serializer/jsongenerator');
+const JSONWriter = require('../../lib/codegen/jsonwriter');
 const ModelManager = require('../../lib/modelmanager');
 const Relationship = require('../../lib/model/relationship');
 const Resource = require('../../lib/model/resource');
-// const TypedStack = require('../../lib/serializer/typedstack');
+const TypedStack = require('../../lib/serializer/typedstack');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -26,10 +27,11 @@ describe('JSONGenerator', () => {
     let modelManager;
     // let mockFactory;
     let jsonGenerator;
+    let mockJSONWriter;
     let sandbox;
     // let assetDeclaration1;
     let relationshipDeclaration1;
-    // let relationshipDeclaration2;
+    let relationshipDeclaration2;
 
     before(() => {
         modelManager = new ModelManager();
@@ -61,13 +63,14 @@ describe('JSONGenerator', () => {
         `);
         // assetDeclaration1 = modelManager.getType('org.acme.MyContainerAsset1').getProperty('myAsset');
         relationshipDeclaration1 = modelManager.getType('org.acme.MyTx1').getProperty('myAsset');
-        // relationshipDeclaration2 = modelManager.getType('org.acme.MyTx2').getProperty('myAssets');
+        relationshipDeclaration2 = modelManager.getType('org.acme.MyTx2').getProperty('myAssets');
     });
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         // mockFactory = sinon.createStubInstance(Factory);
         jsonGenerator = new JSONGenerator();
+        mockJSONWriter = sinon.createStubInstance(JSONWriter);
     });
 
     afterEach(() => {
@@ -80,6 +83,117 @@ describe('JSONGenerator', () => {
             (() => {
                 jsonGenerator.visit(3.142, {});
             }).should.throw(/Unrecognised/);
+        });
+
+    });
+
+    describe('#visitRelationshipDeclaration', () => {
+
+        it('should serialize a relationship', () => {
+            let mockRelationship = sinon.createStubInstance(Relationship);
+            mockRelationship.getIdentifier.returns('DOGE_1');
+            mockRelationship.getNamespace.returns('org.acme');
+            let options = {
+                stack: new TypedStack({}),
+                writer: mockJSONWriter,
+                modelManager: modelManager
+            };
+            options.stack.push(mockRelationship);
+            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration1, options);
+            sinon.assert.calledOnce(mockJSONWriter.writeStringValue);
+            sinon.assert.calledWith(mockJSONWriter.writeStringValue, 'DOGE_1');
+        });
+
+        it('should throw when serializing a resource by default', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getIdentifier.returns('DOGE_1');
+            mockResource.getNamespace.returns('org.acme');
+            let options = {
+                stack: new TypedStack({}),
+                writer: mockJSONWriter,
+                modelManager: modelManager
+            };
+            options.stack.push(mockResource);
+            (() => {
+                jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration1, options);
+            }).should.throw(/Did not find a relationship/);
+        });
+
+        it('should serialize a resource if option is specified', () => {
+            jsonGenerator = new JSONGenerator(false, true);
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getIdentifier.returns('DOGE_1');
+            mockResource.getNamespace.returns('org.acme');
+            let options = {
+                stack: new TypedStack({}),
+                writer: mockJSONWriter,
+                modelManager: modelManager
+            };
+            options.stack.push(mockResource);
+            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration1, options);
+            sinon.assert.calledOnce(mockJSONWriter.openObject);
+            sinon.assert.calledOnce(mockJSONWriter.closeObject);
+        });
+
+        it('should serialize an array of relationships', () => {
+            let mockRelationship1 = sinon.createStubInstance(Relationship);
+            let mockRelationship2 = sinon.createStubInstance(Relationship);
+            mockRelationship1.getIdentifier.returns('DOGE_1');
+            mockRelationship1.getNamespace.returns('org.acme');
+            mockRelationship2.getIdentifier.returns('DOGE_2');
+            mockRelationship2.getNamespace.returns('org.acme');
+            let options = {
+                stack: new TypedStack({}),
+                writer: mockJSONWriter,
+                modelManager: modelManager
+            };
+            options.stack.push([mockRelationship1, mockRelationship2]);
+            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration2, options);
+            sinon.assert.calledOnce(mockJSONWriter.openArray);
+            sinon.assert.calledTwice(mockJSONWriter.writeArrayStringValue);
+            sinon.assert.calledWith(mockJSONWriter.writeArrayStringValue, 'DOGE_1');
+            sinon.assert.calledWith(mockJSONWriter.writeArrayStringValue, 'DOGE_2');
+            sinon.assert.calledOnce(mockJSONWriter.closeArray);
+        });
+
+        it('should throw when serializing an array of resources by default', () => {
+            let mockResource1 = sinon.createStubInstance(Resource);
+            let mockResource2 = sinon.createStubInstance(Resource);
+            mockResource1.getIdentifier.returns('DOGE_1');
+            mockResource1.getNamespace.returns('org.acme');
+            mockResource2.getIdentifier.returns('DOGE_2');
+            mockResource2.getNamespace.returns('org.acme');
+            let options = {
+                stack: new TypedStack({}),
+                writer: mockJSONWriter,
+                modelManager: modelManager
+            };
+            options.stack.push([mockResource1, mockResource2]);
+            (() => {
+                jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration2, options);
+            }).should.throw(/Did not find a relationship/);
+        });
+
+        it('should serialize an array of resources if option is specified', () => {
+            jsonGenerator = new JSONGenerator(false, true);
+            let mockResource1 = sinon.createStubInstance(Resource);
+            let mockResource2 = sinon.createStubInstance(Resource);
+            mockResource1.getIdentifier.returns('DOGE_1');
+            mockResource1.getNamespace.returns('org.acme');
+            mockResource2.getIdentifier.returns('DOGE_2');
+            mockResource2.getNamespace.returns('org.acme');
+            let options = {
+                stack: new TypedStack({}),
+                writer: mockJSONWriter,
+                modelManager: modelManager
+            };
+            options.stack.push([mockResource1, mockResource2]);
+            jsonGenerator.visitRelationshipDeclaration(relationshipDeclaration2, options);
+            sinon.assert.calledOnce(mockJSONWriter.openArray);
+            sinon.assert.calledTwice(mockJSONWriter.writeComma);
+            sinon.assert.calledTwice(mockJSONWriter.openObject);
+            sinon.assert.calledTwice(mockJSONWriter.closeObject);
+            sinon.assert.calledOnce(mockJSONWriter.closeArray);
         });
 
     });
