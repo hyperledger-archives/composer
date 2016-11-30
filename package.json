@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "eslint": "^3.10.2",
     "ink-docstrap": "^1.3.0",
     "istanbul": "^0.4.5",
@@ -57,6 +58,7 @@
     "license-check": "^1.1.5",
     "mocha": "^3.1.2",
     "moment": "^2.16.0",
-    "sinon": "^1.17.6"
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2"
   }
 }

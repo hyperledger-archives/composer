@@ -13,7 +13,6 @@
 const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
 const ConnectionProfileStore = require('@ibm/ibm-concerto-common').ConnectionProfileStore;
-
 const ConnectionManager = require('../lib/hfcconnectionmanager');
 const hfc = require('hfc');
 const hfcChain = hfc.Chain;
@@ -22,10 +21,13 @@ const hfcMember = hfc.Member;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCSecurityContext = require('../lib/hfcsecuritycontext');
 const HFCUtil = require('../lib/hfcutil');
-const sinon = require('sinon');
 const version = require('../package.json').version;
 
-require('chai').should();
+const chai = require('chai');
+const should = chai.should();
+chai.use(require('chai-as-promised'));
+const sinon = require('sinon');
+require('sinon-as-promised');
 
 describe('HFCConnection', () => {
 
@@ -42,12 +44,12 @@ describe('HFCConnection', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
-        mockConnectionManager.onDisconnect.returns(Promise.resolve());
+        mockConnectionManager.onDisconnect.resolves();
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
 
-        mockConnectionProfileStore.load.withArgs('testprofile').returns( Promise.resolve({type : 'hlf', networks : { testnetwork : '123' }}));
-        mockConnectionProfileStore.save.returns(Promise.resolve());
+        mockConnectionProfileStore.load.withArgs('testprofile').resolves({type : 'hlf', networks : { testnetwork : '123' }});
+        mockConnectionProfileStore.save.resolves();
         mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
 
         mockConnectionManager.getConnectionProfileManager.returns(mockConnectionProfileManager);
@@ -158,20 +160,44 @@ describe('HFCConnection', () => {
 
         });
 
+        it('should throw if the chaincode ID does not exist', function () {
+
+            // Login to the Hyperledger Fabric using the mock hfc.
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({type : 'hlf', networks : { someothernetwork : '123' }});
+            let enrollmentID = 'doge';
+            let enrollmentSecret = 'suchsecret';
+            return connection
+                .login(enrollmentID, enrollmentSecret)
+                .should.be.rejectedWith(/Failed to set chaincode id on security context/);
+
+        });
+
+        it('should not look for an existing chaincode ID if no business network is specified', () => {
+
+            // Login to the Hyperledger Fabric using the mock hfc.
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
+            let enrollmentID = 'doge';
+            let enrollmentSecret = 'suchsecret';
+            return connection
+                .login(enrollmentID, enrollmentSecret)
+                .then(function (securityContext) {
+                    should.equal(securityContext.getChaincodeID(), null);
+                });
+
+        });
+
     });
 
     describe('#deploy', function () {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'deployChainCode', function () {
-                return Promise.resolve({
-                    chaincodeID: 'muchchaincodeID'
-                });
+            sandbox.stub(HFCUtil, 'deployChainCode').resolves({
+                chaincodeID: 'muchchaincodeID'
             });
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
-            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            sandbox.stub(connection, 'ping').resolves();
             return connection.deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
@@ -181,14 +207,12 @@ describe('HFCConnection', () => {
         it('should deploy the Concerto chain-code to the Hyperledger Fabric', function () {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'deployChainCode', function () {
-                return Promise.resolve({
-                    chaincodeID: 'muchchaincodeID'
-                });
+            sandbox.stub(HFCUtil, 'deployChainCode').resolves({
+                chaincodeID: 'muchchaincodeID'
             });
-            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            sandbox.stub(connection, 'ping').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
@@ -230,14 +254,12 @@ describe('HFCConnection', () => {
         it('should deploy a second time the Concerto chain-code to the Hyperledger Fabric', function () {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'deployChainCode', function () {
-                return Promise.resolve({
-                    chaincodeID: 'secondChaincodeID'
-                });
+            sandbox.stub(HFCUtil, 'deployChainCode').resolves({
+                chaincodeID: 'secondChaincodeID'
             });
-            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            sandbox.stub(connection, 'ping').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
@@ -260,14 +282,12 @@ describe('HFCConnection', () => {
         it('should handle an error deploying the Concerto chain-code the Hyperledger Fabric', function () {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'deployChainCode', function () {
-                return Promise.reject(
-                    new Error('failed to deploy chain-code')
-                );
-            });
+            sandbox.stub(HFCUtil, 'deployChainCode').rejects(
+                new Error('failed to deploy chain-code')
+            );
 
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
@@ -285,10 +305,8 @@ describe('HFCConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'invokeChainCode', function () {
-                return Promise.resolve();
-            });
-            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
+            sandbox.stub(connection, 'ping').resolves();
             return connection.undeploy(mockSecurityContext, 'testnetwork')
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
@@ -298,10 +316,8 @@ describe('HFCConnection', () => {
         it('should undeploy the a BusinessNetworkDefinition', function () {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'invokeChainCode', function () {
-                return Promise.resolve();
-            });
-            sandbox.stub(connection, 'ping').returns(Promise.resolve());
+            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
+            sandbox.stub(connection, 'ping').resolves();
 
             return connection
                 .undeploy(mockSecurityContext, 'testnetwork')
@@ -316,11 +332,9 @@ describe('HFCConnection', () => {
         it('should handle an error undeploying a business network definition', function () {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'invokeChainCode', function () {
-                return Promise.reject(
-                    new Error('failed to update business network definition')
-                );
-            });
+            sandbox.stub(HFCUtil, 'invokeChainCode').rejects(
+                new Error('failed to update business network definition')
+            );
 
             return connection
                 .undeploy(mockSecurityContext, 'testnetwork')
@@ -336,11 +350,9 @@ describe('HFCConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'invokeChainCode', function () {
-                return Promise.resolve();
-            });
+            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
 
             return connection.update(mockSecurityContext, businessNetworkStub)
                 .then(() => {
@@ -351,11 +363,9 @@ describe('HFCConnection', () => {
         it('should update a BusinessNetworkDefinition', function () {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'invokeChainCode', function () {
-                return Promise.resolve();
-            });
+            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
 
             return connection
                 .update(mockSecurityContext, businessNetworkStub)
@@ -370,13 +380,11 @@ describe('HFCConnection', () => {
         it('should handle an error updating a business network definition', function () {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'invokeChainCode', function () {
-                return Promise.reject(
-                    new Error('failed to update business network definition')
-                );
-            });
+            sandbox.stub(HFCUtil, 'invokeChainCode').rejects(
+                new Error('failed to update business network definition')
+            );
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.returns(Promise.resolve(new Buffer([0x00,0x01,0x02])));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
 
             return connection
                 .update(mockSecurityContext, businessNetworkStub)
@@ -392,11 +400,9 @@ describe('HFCConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'queryChainCode', function () {
-                return Promise.resolve(Buffer.from(JSON.stringify({
-                    version: version
-                })));
-            });
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
@@ -406,11 +412,9 @@ describe('HFCConnection', () => {
         it('should resolve if the package and chaincode version match', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'queryChainCode', function () {
-                return Promise.resolve(Buffer.from(JSON.stringify({
-                    version: version
-                })));
-            });
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
+                version: version
+            })));
 
             // Invoke the ping function.
             return connection
@@ -428,11 +432,9 @@ describe('HFCConnection', () => {
         it('should throw an error if the package and chaincode version do not match', () => {
 
             // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'queryChainCode', function () {
-                return Promise.resolve(Buffer.from(JSON.stringify({
-                    version: '2016.12.25'
-                })));
-            });
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
+                version: '2016.12.25'
+            })));
 
             // Invoke the ping function.
             return connection
@@ -451,7 +453,7 @@ describe('HFCConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'queryChainCode').returns(Promise.resolve());
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves();
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
@@ -460,7 +462,7 @@ describe('HFCConnection', () => {
 
         it('should query the chain code', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'queryChainCode').returns(Promise.resolve());
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves();
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.queryChainCode);
@@ -474,7 +476,7 @@ describe('HFCConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'invokeChainCode').returns(Promise.resolve());
+            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
@@ -483,7 +485,7 @@ describe('HFCConnection', () => {
 
         it('should query the chain code', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'invokeChainCode').returns(Promise.resolve());
+            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.invokeChainCode);
