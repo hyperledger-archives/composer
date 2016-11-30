@@ -10,13 +10,13 @@
 
 'use strict';
 
-const assert = require('assert');
-require('chai').should();
 const Factory = require('../../lib/factory');
 const ModelManager = require('../../lib/modelmanager');
 const RelationshipDeclaration = require('../../lib/introspect/relationshipdeclaration');
 const Serializer = require('../../lib/serializer');
 const fs = require('fs');
+
+require('chai').should();
 
 describe('Test Model', function(){
 
@@ -51,10 +51,10 @@ describe('Test Model', function(){
             cObject.model.should.equal('CAPRI');
 
             // now try some invalid values
-            assert.throws( function() {cObject.setPropertyValue('model', 1);}, /.+expected type String/, 'did not throw with expected message');
-            assert.throws( function() {cObject.setPropertyValue('model', true);}, /.+expected type String/, 'did not throw with expected message');
-            assert.throws( function() {cObject.setPropertyValue('model', new Date());}, /.+expected type String/, 'did not throw with expected message');
-            assert.throws( function() {cObject.setPropertyValue('model', [1,2,3]);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {cObject.setPropertyValue('model', 1);}).should.throw(/.+expected type String/);
+            ( function() {cObject.setPropertyValue('model', true);}).should.throw(/.+expected type String/);
+            ( function() {cObject.setPropertyValue('model', new Date());}).should.throw(/.+expected type String/);
+            ( function() {cObject.setPropertyValue('model', [1,2,3]);}).should.throw(/.+expected type String/);
         });
     });
 
@@ -172,35 +172,35 @@ describe('Test Model', function(){
             // model is defined as a string
             // set model to a number
             cObject.model = 1;
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+expected type String/);
 
             // set model to a double
             cObject.model = 42.05;
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+expected type String/);
 
             // set model to a Boolean
             cObject.model = true;
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+expected type String/);
 
             // set model to a Date
             cObject.model = new Date();
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+expected type String/);
 
             // set model to an object
             cObject.model = { 'foo' : 'bar' };
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+expected type String/);
 
             // set model to null
             cObject.model = null;
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+missing required field model/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+missing required field model/);
 
             // set model to an array
             cObject.model = ['1','2'];
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+expected type String/);
 
             // set model to a function
             cObject.model = function() {throw new Error('OOps');};
-            assert.throws( function() {serializer.toJSON(cObject);}, /.+expected type String/, 'did not throw with expected message');
+            ( function() {serializer.toJSON(cObject);}).should.throw(/.+expected type String/);
         });
     });
 

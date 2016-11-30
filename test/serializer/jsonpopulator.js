@@ -74,6 +74,16 @@ describe('JSONPopulator', () => {
         sandbox.restore();
     });
 
+    describe('#visit', () => {
+
+        it('should throw an error for an unrecognized type', () => {
+            (() => {
+                jsonPopulator.visit(3.142, {});
+            }).should.throw(/Unrecognised/);
+        });
+
+    });
+
     describe('#convertToObject', () => {
 
         it('should convert to dates from ISO8601 strings', () => {
@@ -157,6 +167,23 @@ describe('JSONPopulator', () => {
 
     describe('#convertItem', () => {
 
+        it('should throw an error if the $class value does not match a class defined in the model', () => {
+            let options = {
+                jsonStack: new TypedStack({}),
+                resourceStack: new TypedStack({}),
+                factory: mockFactory,
+                modelManager: modelManager
+            };
+            let mockResource = sinon.createStubInstance(Resource);
+            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
+            (() => {
+                jsonPopulator.convertItem(assetDeclaration1, {
+                    $class: 'org.acme.NOTAREALTYPE',
+                    assetId: 'asset1'
+                }, options);
+            }).should.throw(/No type/);
+        });
+
         it('should create a new resource from an object using a $class value that matches the model', () => {
             let options = {
                 jsonStack: new TypedStack({}),
@@ -239,7 +266,25 @@ describe('JSONPopulator', () => {
             relationship.should.be.an.instanceOf(Relationship);
         });
 
-        it('should create a new relationship from an object', () => {
+        it('should not create a new relationship from an object if not permitted', () => {
+            let options = {
+                jsonStack: new TypedStack({
+                    $class: 'org.acme.MyAsset1',
+                    assetId: 'asset1'
+                }),
+                resourceStack: new TypedStack({}),
+                factory: mockFactory,
+                modelManager: modelManager
+            };
+            let mockResource = sinon.createStubInstance(Resource);
+            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
+            (() => {
+                jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration1, options);
+            }).should.throw(/Invalid JSON data/);
+        });
+
+        it('should create a new relationship from an object if permitted', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack({
                     $class: 'org.acme.MyAsset1',
@@ -268,6 +313,7 @@ describe('JSONPopulator', () => {
         });
 
         it('should throw if the JSON data is an object without a class', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack({}),
                 resourceStack: new TypedStack({}),
@@ -280,6 +326,7 @@ describe('JSONPopulator', () => {
         });
 
         it('should throw if the JSON data is an object with a class that causes an error to be thrown', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack({
                     $class: 'org.acme.NoSuchClass'
@@ -294,6 +341,7 @@ describe('JSONPopulator', () => {
         });
 
         it('should throw if the JSON data is an object with a class that does not exist', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack({
                     $class: 'org.acme.NoSuchClass'
@@ -325,7 +373,30 @@ describe('JSONPopulator', () => {
             relationships[1].should.be.an.instanceOf(Relationship);
         });
 
-        it('should create a new relationship from an array of objects', () => {
+        it('should not create a new relationship from an array of objects if not permitted', () => {
+            let options = {
+                jsonStack: new TypedStack([{
+                    $class: 'org.acme.MyAsset1',
+                    assetId: 'asset1'
+                }, {
+                    $class: 'org.acme.MyAsset1',
+                    assetId: 'asset2'
+                }]),
+                resourceStack: new TypedStack({}),
+                factory: mockFactory,
+                modelManager: modelManager
+            };
+            let mockResource1 = sinon.createStubInstance(Resource);
+            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource1);
+            let mockResource2 = sinon.createStubInstance(Resource);
+            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset2').returns(mockResource2);
+            (() => {
+                jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration2, options);
+            }).should.throw(/Invalid JSON data/);
+        });
+
+        it('should create a new relationship from an array of objects if permitted', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack([{
                     $class: 'org.acme.MyAsset1',
@@ -361,6 +432,7 @@ describe('JSONPopulator', () => {
         });
 
         it('should throw if the JSON data in the array is an object without a class', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack([{}]),
                 resourceStack: new TypedStack({}),
@@ -373,6 +445,7 @@ describe('JSONPopulator', () => {
         });
 
         it('should throw if the JSON data in the array is an object with a class that causes an error to be thrown', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack([{
                     $class: 'org.acme.NoSuchClass'
@@ -387,6 +460,7 @@ describe('JSONPopulator', () => {
         });
 
         it('should throw if the JSON data in the array is an object with a class that does not exist', () => {
+            jsonPopulator = new JSONPopulator(true); // true to enable acceptResourcesForRelationships
             let options = {
                 jsonStack: new TypedStack([{
                     $class: 'org.acme.NoSuchClass'
