@@ -84,7 +84,7 @@ describe('BusinessNetworkConnection', () => {
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
             return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
-            .then(() => {
+            .then((result) => {
                 sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
                 sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork');
                 sinon.assert.calledOnce(mockConnection.login);
@@ -94,6 +94,7 @@ describe('BusinessNetworkConnection', () => {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
                 businessNetworkConnection.connection.should.equal(mockConnection);
+                result.should.be.an.instanceOf(BusinessNetworkDefinition);
             });
         });
     });
