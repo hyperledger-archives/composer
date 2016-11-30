@@ -48,7 +48,12 @@ describe('HFCConnection', () => {
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
 
-        mockConnectionProfileStore.load.withArgs('testprofile').resolves({type : 'hlf', networks : { testnetwork : '123' }});
+        mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+            type: 'hlf',
+            networks: {
+                testnetwork: '123'
+            }
+        });
         mockConnectionProfileStore.save.resolves();
         mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
 
@@ -62,7 +67,7 @@ describe('HFCConnection', () => {
         connection = new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', mockChain);
     });
 
-    afterEach(function () {
+    afterEach(function() {
         sandbox.restore();
     });
 
@@ -76,50 +81,42 @@ describe('HFCConnection', () => {
 
     });
 
-    describe('#disconnect', function () {
+    describe('#disconnect', function() {
 
         it('should do nothing if not connected', () => {
             return connection.disconnect();
         });
 
-        it.skip('should disconnect the event hub if connected', () => {
-
-            // Set up the hfc mock.
+        it('should notify connection manager', () => {
             return connection.disconnect()
                 .then(() => {
-                    sinon.assert.calledOnce(mockChain.eventHubDisconnect);
-                    return connection.disconnect();
-                })
-                .then(() => {
-                    sinon.assert.calledOnce(mockChain.eventHubDisconnect);
+                    sinon.assert.calledOnce(mockConnectionManager.onDisconnect);
                 });
-
         });
-
     });
 
-    describe('#login', function () {
+    describe('#login', function() {
 
-        it('should throw when enrollmentID not specified', function () {
-            (function () {
+        it('should throw when enrollmentID not specified', function() {
+            (function() {
                 connection.login(null, 'suchsecret');
             }).should.throw(/enrollmentID not specified/);
         });
 
-        it('should throw when enrollmentSecret not specified', function () {
-            (function () {
+        it('should throw when enrollmentSecret not specified', function() {
+            (function() {
                 connection.login('doge', null);
             }).should.throw(/enrollmentSecret not specified/);
         });
 
-        it('should enroll against the Hyperledger Fabric', function () {
+        it('should enroll against the Hyperledger Fabric', function() {
 
             // Login to the Hyperledger Fabric using the mock hfc.
             let enrollmentID = 'doge';
             let enrollmentSecret = 'suchsecret';
             return connection
                 .login('doge', 'suchsecret')
-                .then(function (securityContext) {
+                .then(function(securityContext) {
                     sinon.assert.calledOnce(mockChain.enroll);
                     sinon.assert.calledWith(mockChain.enroll, enrollmentID, enrollmentSecret);
                     securityContext.should.be.a.instanceOf(HFCSecurityContext);
@@ -129,7 +126,7 @@ describe('HFCConnection', () => {
 
         });
 
-        it('should handle an error from enrolling against the Hyperledger Fabric', function () {
+        it('should handle an error from enrolling against the Hyperledger Fabric', function() {
 
             // Set up the hfc mock.
             mockChain.enroll.onFirstCall().callsArgWith(2, new Error('failed to login'), null);
@@ -139,31 +136,36 @@ describe('HFCConnection', () => {
             let enrollmentSecret = 'suchsecret';
             return connection
                 .login(enrollmentID, enrollmentSecret)
-                .then(function (securityContext) {
+                .then(function(securityContext) {
                     throw new Error('should not get here');
-                }).catch(function (error) {
+                }).catch(function(error) {
                     error.should.match(/failed to login/);
                 });
 
         });
 
-        it('should look for an existing chaincode ID', function () {
+        it('should look for an existing chaincode ID', function() {
 
             // Login to the Hyperledger Fabric using the mock hfc.
             let enrollmentID = 'doge';
             let enrollmentSecret = 'suchsecret';
             return connection
                 .login(enrollmentID, enrollmentSecret)
-                .then(function (securityContext) {
+                .then(function(securityContext) {
                     securityContext.getChaincodeID().should.equal('123');
                 });
 
         });
 
-        it('should throw if the chaincode ID does not exist', function () {
+        it('should throw if the chaincode ID does not exist', function() {
 
             // Login to the Hyperledger Fabric using the mock hfc.
-            mockConnectionProfileStore.load.withArgs('testprofile').resolves({type : 'hlf', networks : { someothernetwork : '123' }});
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf',
+                networks: {
+                    someothernetwork: '123'
+                }
+            });
             let enrollmentID = 'doge';
             let enrollmentSecret = 'suchsecret';
             return connection
@@ -180,7 +182,7 @@ describe('HFCConnection', () => {
             let enrollmentSecret = 'suchsecret';
             return connection
                 .login(enrollmentID, enrollmentSecret)
-                .then(function (securityContext) {
+                .then(function(securityContext) {
                     should.equal(securityContext.getChaincodeID(), null);
                 });
 
@@ -188,7 +190,7 @@ describe('HFCConnection', () => {
 
     });
 
-    describe('#deploy', function () {
+    describe('#deploy', function() {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
@@ -196,15 +198,16 @@ describe('HFCConnection', () => {
                 chaincodeID: 'muchchaincodeID'
             });
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
             sandbox.stub(connection, 'ping').resolves();
             return connection.deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
+                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
                 });
         });
 
-        it('should deploy the Concerto chain-code to the Hyperledger Fabric', function () {
+        it('should deploy the Concerto chain-code to the Hyperledger Fabric', function() {
 
             // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'deployChainCode').resolves({
@@ -212,11 +215,14 @@ describe('HFCConnection', () => {
             });
             sandbox.stub(connection, 'ping').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf'
+            });
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
-                .then(function () {
+                .then(function() {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(HFCUtil.deployChainCode);
@@ -228,30 +234,23 @@ describe('HFCConnection', () => {
                     sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
                     sinon.assert.calledWith(mockSecurityContext.setChaincodeID, 'muchchaincodeID');
 
+                    // check the profile store was updated
+                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
                 })
-                .then(function () {
-
-                    // Check that the query was made successfully.
-                    sinon.assert.calledOnce(HFCUtil.deployChainCode);
-                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', ['AAEC']);
-                    sinon.assert.calledOnce(connection.ping);
-                    sinon.assert.calledWith(connection.ping, mockSecurityContext);
-
-                    // Check that the security context was updated correctly.
-                    sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
-                    sinon.assert.calledWith(mockSecurityContext.setChaincodeID, 'muchchaincodeID');
-                })
-                .then(function () {
-                  // second deploy to make sure the networks list gets modified if it already exists
+                .then(function() {
+                    // second deploy to make sure the networks list gets modified if it already exists
                     return connection.deploy(mockSecurityContext, true, businessNetworkStub);
                 })
-                .then(function () {
+                .then(function() {
                     // Check that the query was made successfully.
                     sinon.assert.calledTwice(HFCUtil.deployChainCode);
+
+                    // check that the profile store was updated
+                    sinon.assert.calledTwice(mockConnectionProfileStore.save);
                 });
         });
 
-        it('should deploy a second time the Concerto chain-code to the Hyperledger Fabric', function () {
+        it('should deploy a second time the Concerto chain-code to the Hyperledger Fabric', function() {
 
             // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'deployChainCode').resolves({
@@ -259,11 +258,11 @@ describe('HFCConnection', () => {
             });
             sandbox.stub(connection, 'ping').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
-                .then(function () {
+                .then(function() {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(HFCUtil.deployChainCode);
@@ -275,11 +274,13 @@ describe('HFCConnection', () => {
                     sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
                     sinon.assert.calledWith(mockSecurityContext.setChaincodeID, 'secondChaincodeID');
 
+                    // check the profile store was updated
+                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
                 });
 
         });
 
-        it('should handle an error deploying the Concerto chain-code the Hyperledger Fabric', function () {
+        it('should handle an error deploying the Concerto chain-code the Hyperledger Fabric', function() {
 
             // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'deployChainCode').rejects(
@@ -287,13 +288,13 @@ describe('HFCConnection', () => {
             );
 
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
-                .then(function (assetRegistries) {
+                .then(function(assetRegistries) {
                     throw new Error('should not get here');
-                }).catch(function (error) {
+                }).catch(function(error) {
                     error.should.match(/failed to deploy chain-code/);
                 });
 
@@ -301,98 +302,133 @@ describe('HFCConnection', () => {
 
     });
 
-    describe('#undeploy', function () {
+    describe('#undeploy', function() {
 
-        it('should perform a security check', () => {
+        it('should be able to undeploy without deploying', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
+            sandbox.stub(HFCUtil, 'deployChainCode').resolves({
+                chaincodeID: 'muchchaincodeID'
+            });
             sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf'
+            });
+
+            const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
             sandbox.stub(connection, 'ping').resolves();
+
             return connection.undeploy(mockSecurityContext, 'testnetwork')
+              .then(() => {
+                  sinon.assert.calledOnce(HFCUtil.securityCheck);
+                  sinon.assert.notCalled(mockConnectionProfileStore.save);
+              });
+        });
+
+        it('should be able to deploy followed by undeploy', () => {
+            sandbox.stub(HFCUtil, 'securityCheck');
+            sandbox.stub(HFCUtil, 'deployChainCode').resolves({
+                chaincodeID: 'muchchaincodeID'
+            });
+            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
+
+            const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
+            sandbox.stub(connection, 'ping').resolves();
+
+            return connection.deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
+                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
+                })
+                .then(() => {
+                    return connection.undeploy(mockSecurityContext, 'testnetwork');
+                })
+                .then(() => {
+                    sinon.assert.calledTwice(HFCUtil.securityCheck);
+                    sinon.assert.calledTwice(mockConnectionProfileStore.save);
                 });
         });
 
-        it('should undeploy the a BusinessNetworkDefinition', function () {
+        it('should handle an error undeploying a business network definition', function() {
 
-            // Set up the responses from the chain-code.
-            sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
-            sandbox.stub(connection, 'ping').resolves();
-
-            return connection
-                .undeploy(mockSecurityContext, 'testnetwork')
-                .then(function () {
-
-                    // Check that the query was made successfully.
-                    sinon.assert.calledOnce(HFCUtil.invokeChainCode);
-                    sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'undeploy', ['testnetwork']);
-                });
-        });
-
-        it('should handle an error undeploying a business network definition', function () {
-
-            // Set up the responses from the chain-code.
+        // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'invokeChainCode').rejects(
-                new Error('failed to update business network definition')
-            );
+            new Error('failed to update business network definition')
+        );
 
             return connection
-                .undeploy(mockSecurityContext, 'testnetwork')
-                .then(function (assetRegistries) {
+            .undeploy(mockSecurityContext, 'testnetwork')
+            .then(function(assetRegistries) {
+                throw new Error('should not get here');
+            }).catch(function(error) {
+                error.should.match(/failed to update/);
+            });
+        });
+
+        it('should require a business network id', function() {
+
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
+
+            (function() {
+                return connection
+                .undeploy(mockSecurityContext, null)
+                .then(() => {
                     throw new Error('should not get here');
-                }).catch(function (error) {
-                    error.should.match(/failed to update/);
                 });
+            }).should.throw(/Business network id must be specified/);
         });
     });
 
-    describe('#update', function () {
+    describe('#update', function() {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection.update(mockSecurityContext, businessNetworkStub)
-                .then(() => {
-                    sinon.assert.calledOnce(HFCUtil.securityCheck);
-                });
+            .then(() => {
+                sinon.assert.calledOnce(HFCUtil.securityCheck);
+            });
         });
 
-        it('should update a BusinessNetworkDefinition', function () {
+        it('should update a BusinessNetworkDefinition', function() {
 
-            // Set up the responses from the chain-code.
+        // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
-                .update(mockSecurityContext, businessNetworkStub)
-                .then(function () {
+            .update(mockSecurityContext, businessNetworkStub)
+            .then(function() {
 
-                    // Check that the query was made successfully.
-                    sinon.assert.calledOnce(HFCUtil.invokeChainCode);
-                    sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'update', ['AAEC']);
-                });
+                // Check that the query was made successfully.
+                sinon.assert.calledOnce(HFCUtil.invokeChainCode);
+                sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'update', ['AAEC']);
+            });
         });
 
-        it('should handle an error updating a business network definition', function () {
+        it('should handle an error updating a business network definition', function() {
 
-            // Set up the responses from the chain-code.
+        // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'invokeChainCode').rejects(
-                new Error('failed to update business network definition')
-            );
+            new Error('failed to update business network definition')
+        );
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
-            businessNetworkStub.toArchive.resolves(new Buffer([0x00,0x01,0x02]));
+            businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
-                .update(mockSecurityContext, businessNetworkStub)
-                .then(function () {
-                    throw new Error('should not get here');
-                }).catch(function (error) {
-                    error.should.match(/failed to update/);
-                });
+            .update(mockSecurityContext, businessNetworkStub)
+            .then(function() {
+                throw new Error('should not get here');
+            }).catch(function(error) {
+                error.should.match(/failed to update/);
+            });
         });
     });
 
@@ -404,46 +440,46 @@ describe('HFCConnection', () => {
                 version: version
             })));
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .then(() => {
-                    sinon.assert.calledOnce(HFCUtil.securityCheck);
-                });
+            .then(() => {
+                sinon.assert.calledOnce(HFCUtil.securityCheck);
+            });
         });
 
         it('should resolve if the package and chaincode version match', () => {
 
-            // Set up the responses from the chain-code.
+        // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
 
-            // Invoke the ping function.
+        // Invoke the ping function.
             return connection
-                .ping(mockSecurityContext)
-                .then(function () {
+            .ping(mockSecurityContext)
+            .then(function() {
 
-                    // Check that the query was made successfully.
-                    sinon.assert.calledOnce(HFCUtil.queryChainCode);
-                    sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'ping', []);
+                // Check that the query was made successfully.
+                sinon.assert.calledOnce(HFCUtil.queryChainCode);
+                sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'ping', []);
 
-                });
+            });
 
         });
 
         it('should throw an error if the package and chaincode version do not match', () => {
 
-            // Set up the responses from the chain-code.
+        // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
                 version: '2016.12.25'
             })));
 
-            // Invoke the ping function.
+        // Invoke the ping function.
             return connection
-                .ping(mockSecurityContext)
-                .then(function () {
-                    throw new Error('should not get here');
-                }).catch(function (error) {
-                    error.should.match(/Deployed chain-code \(2016.12.25\) is incompatible with client \(.+?\)/);
-                });
+            .ping(mockSecurityContext)
+            .then(function() {
+                throw new Error('should not get here');
+            }).catch(function(error) {
+                error.should.match(/Deployed chain-code \(2016.12.25\) is incompatible with client \(.+?\)/);
+            });
 
         });
 
@@ -455,19 +491,19 @@ describe('HFCConnection', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'queryChainCode').resolves();
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .then(() => {
-                    sinon.assert.calledOnce(HFCUtil.securityCheck);
-                });
+            .then(() => {
+                sinon.assert.calledOnce(HFCUtil.securityCheck);
+            });
         });
 
         it('should query the chain code', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'queryChainCode').resolves();
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .then(() => {
-                    sinon.assert.calledOnce(HFCUtil.queryChainCode);
-                    sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
-                });
+            .then(() => {
+                sinon.assert.calledOnce(HFCUtil.queryChainCode);
+                sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+            });
         });
 
     });
@@ -478,19 +514,19 @@ describe('HFCConnection', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .then(() => {
-                    sinon.assert.calledOnce(HFCUtil.securityCheck);
-                });
+        .then(() => {
+            sinon.assert.calledOnce(HFCUtil.securityCheck);
+        });
         });
 
         it('should query the chain code', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .then(() => {
-                    sinon.assert.calledOnce(HFCUtil.invokeChainCode);
-                    sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
-                });
+        .then(() => {
+            sinon.assert.calledOnce(HFCUtil.invokeChainCode);
+            sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+        });
         });
 
     });
