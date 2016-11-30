@@ -74,7 +74,6 @@ describe('BusinessNetworkDefinition', () => {
             return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/test-archive').then(businessNetwork => {
                 return businessNetwork.toArchive().then(buffer => {
                     buffer.should.be.Buffer;
-                    fs.writeFileSync(__dirname+'/data/zip/test-archive.zip',buffer);
                 });
             });
         });
@@ -106,7 +105,6 @@ describe('BusinessNetworkDefinition', () => {
 
                 return businessNetwork.toArchive().then(buffer => {
                     buffer.should.be.Buffer;
-                    fs.writeFileSync(__dirname+'/data/zip/new-test-archive.zip',buffer);
                 });
             });
         });
