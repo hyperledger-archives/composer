@@ -68,8 +68,14 @@ func (concerto *Concerto) createJavaScript() {
 	// Register event loop functions.
 	concerto.registerEventLoop()
 
+	// Register the global object (which Otto does not have ...)
+	_, err := vm.Run(`var global = Function('return this')();`)
+	if err != nil {
+		panic(err)
+	}
+
 	// Execute the Babel Polyfill JavaScript source inside the JavaScript virtual machine.
-	_, err := vm.Run(babelPolyfillJavaScript)
+	_, err = vm.Run(babelPolyfillJavaScript)
 	if err != nil {
 		panic(err)
 	}
