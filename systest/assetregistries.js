@@ -453,7 +453,7 @@ describe('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should resolve assets containing asset relationships from an asset registry', () => {
+    it('should resolve assets containing asset relationships from an asset registry', () => {
         let assetRegistry;
         let assetContainerRegistry;
         return client
@@ -498,7 +498,7 @@ describe('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should resolve assets containing circular relationships from an asset registry', () => {
+    it('should resolve assets containing circular relationships from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
         return client
