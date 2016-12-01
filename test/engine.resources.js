@@ -117,7 +117,7 @@ describe('EngineResources', () => {
 
         it('should throw for invalid arguments', () => {
             let result = engine.invoke(mockContext, 'addAllResourcesToRegistry', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "addAllResourcesToRegistry", expecting "\["registryType","registryId","resources"\]"/);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "addAllResourcesToRegistry", expecting "\["registryType","registryId","serializedResources"\]"/);
         });
 
         it('should add the specified resources', () => {
@@ -132,19 +132,16 @@ describe('EngineResources', () => {
                 $class: 'org.doge.Doge',
                 assetId: 'doge2'
             }).returns(mockResource2);
-            return engine.invoke(mockContext, 'addAllResourcesToRegistry', ['Asset', 'doges', JSON.stringify([{
-                id: 'doge1',
-                data: JSON.stringify({
+            return engine.invoke(mockContext, 'addAllResourcesToRegistry', ['Asset', 'doges', JSON.stringify([
+                {
                     $class: 'org.doge.Doge',
                     assetId: 'doge1'
-                })
-            }, {
-                id: 'doge2',
-                data: JSON.stringify({
+                },
+                {
                     $class: 'org.doge.Doge',
                     assetId: 'doge2'
-                })
-            }])])
+                }
+            ])])
                 .then(() => {
                     sinon.assert.calledOnce(mockRegistry.addAll);
                 });
@@ -155,8 +152,8 @@ describe('EngineResources', () => {
     describe('#addResourceToRegistry', () => {
 
         it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'addResourceToRegistry', ['no', 'args', 'supported']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "addResourceToRegistry", expecting "\["registryType","registryId","resourceId","resourceData"\]"/);
+            let result = engine.invoke(mockContext, 'addResourceToRegistry', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "addResourceToRegistry", expecting "\["registryType","registryId","serializedResource"\]"/);
         });
 
         it('should add the specified resource', () => {
@@ -166,7 +163,7 @@ describe('EngineResources', () => {
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             }).returns(mockResource);
-            return engine.invoke(mockContext, 'addResourceToRegistry', ['Asset', 'doges', 'doge1', JSON.stringify({
+            return engine.invoke(mockContext, 'addResourceToRegistry', ['Asset', 'doges', JSON.stringify({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             })])
@@ -181,7 +178,7 @@ describe('EngineResources', () => {
 
         it('should throw for invalid arguments', () => {
             let result = engine.invoke(mockContext, 'updateAllResourcesInRegistry', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "updateAllResourcesInRegistry", expecting "\["registryType","registryId","resources"\]"/);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "updateAllResourcesInRegistry", expecting "\["registryType","registryId","serializedResources"\]"/);
         });
 
         it('should update the specified resources', () => {
@@ -197,17 +194,11 @@ describe('EngineResources', () => {
                 assetId: 'doge2'
             }).returns(mockResource2);
             return engine.invoke(mockContext, 'updateAllResourcesInRegistry', ['Asset', 'doges', JSON.stringify([{
-                id: 'doge1',
-                data: JSON.stringify({
-                    $class: 'org.doge.Doge',
-                    assetId: 'doge1'
-                })
+                $class: 'org.doge.Doge',
+                assetId: 'doge1'
             }, {
-                id: 'doge2',
-                data: JSON.stringify({
-                    $class: 'org.doge.Doge',
-                    assetId: 'doge2'
-                })
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
             }])])
                 .then(() => {
                     sinon.assert.calledOnce(mockRegistry.updateAll);
@@ -219,8 +210,8 @@ describe('EngineResources', () => {
     describe('#updateResourceInRegistry', () => {
 
         it('should throw for invalid arguments', () => {
-            let result = engine.invoke(mockContext, 'updateResourceInRegistry', ['no', 'args', 'supported']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "updateResourceInRegistry", expecting "\["registryType","registryId","resourceId","resourceData"\]"/);
+            let result = engine.invoke(mockContext, 'updateResourceInRegistry', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "updateResourceInRegistry", expecting "\["registryType","registryId","serializedResource"\]"/);
         });
 
         it('should update the specified resource', () => {
@@ -230,7 +221,7 @@ describe('EngineResources', () => {
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             }).returns(mockResource);
-            return engine.invoke(mockContext, 'updateResourceInRegistry', ['Asset', 'doges', 'doge1', JSON.stringify({
+            return engine.invoke(mockContext, 'updateResourceInRegistry', ['Asset', 'doges', JSON.stringify({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             })])
