@@ -23,3 +23,4 @@ script: |
     sh -e /etc/init.d/xvfb start
     npm test
     ./scripts/run-system-tests.sh
+    ./scripts/deploy.sh
