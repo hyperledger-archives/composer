@@ -141,116 +141,148 @@ function onSimpleTransactionWithAssetRelationshipArrays(transaction) {
 
 function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    var as = ar.getAll().sort(function (a, b) {
-        return a.assetId.localeCompare(b.assetId);
-    });
-    // console.log(JSON.stringify(as));
-    if (as.length !== 2) { throw new Error('length does not match'); }
-    if (typeof as[0] !== 'object') { throw new Error('first asset is not an object'); }
-    if (typeof as[1] !== 'object') { throw new Error('second asset is not an object'); }
-    if (as[0].assetId !== 'stringAsset1') { throw new Error('first asset has invalid value'); }
-    if (as[0].stringValue !== 'party parrot in hursley') { throw new Error('first asset has invalid value'); }
-    if (as[1].assetId !== 'stringAsset2') { throw new Error('second asset has invalid value'); }
-    if (as[1].stringValue !== 'party parrot in san francisco') { throw new Error('second asset has invalid value'); }
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            return ar.getAll();
+        })
+        .then(function (as) {
+            as.sort(function (a, b) {
+                return a.assetId.localeCompare(b.assetId);
+            });
+            // console.log(JSON.stringify(as));
+            if (as.length !== 2) { throw new Error('length does not match'); }
+            if (typeof as[0] !== 'object') { throw new Error('first asset is not an object'); }
+            if (typeof as[1] !== 'object') { throw new Error('second asset is not an object'); }
+            if (as[0].assetId !== 'stringAsset1') { throw new Error('first asset has invalid value'); }
+            if (as[0].stringValue !== 'party parrot in hursley') { throw new Error('first asset has invalid value'); }
+            if (as[1].assetId !== 'stringAsset2') { throw new Error('second asset has invalid value'); }
+            if (as[1].stringValue !== 'party parrot in san francisco') { throw new Error('second asset has invalid value'); }
+        });
 }
 
 function onGetAssetFromAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    var a = ar.get('stringAsset1');
-    // console.log(JSON.stringify(a));
-    if (typeof a !== 'object') { throw new Error('asset is not an object'); }
-    if (a.assetId !== 'stringAsset1') { throw new Error('asset has invalid value'); }
-    if (a.stringValue !== 'party parrot in hursley') { throw new Error('asset has invalid value'); }
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            return ar.get('stringAsset1');
+        })
+        .then(function (a) {
+            if (typeof a !== 'object') { return new Error('asset is not an object'); }
+            if (a.assetId !== 'stringAsset1') { return new Error('asset has invalid value'); }
+            if (a.stringValue !== 'party parrot in hursley') { return new Error('asset has invalid value'); }
+        });
 }
 
 function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    ar.add(transaction.stringAsset);
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            return ar.add(transaction.stringAsset);
+        });
 }
 
 function onAddAssetWithRelationshipInTransactionToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
-    ar.add(transaction.relationshipAsset);
+    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+        .then(function (ar) {
+            return ar.add(transaction.relationshipAsset);
+        });
 }
 
 function onAddNewAssetToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    var f = getFactory();
-    var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
-    a.stringValue = 'party parrot in hursley';
-    ar.add(a);
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            a.stringValue = 'party parrot in hursley';
+            return ar.add(a);
+        });
 }
 
 function onAddNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
-    var f = getFactory();
-    var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
-    a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
-    ar.add(a);
+    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            return ar.add(a);
+        });
 }
 
 function onUpdateAssetInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    ar.update(transaction.stringAsset);
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            return ar.update(transaction.stringAsset);
+        });
 }
 
 function onUpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
-    ar.update(transaction.relationshipAsset);
+    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+        .then(function (ar) {
+            return ar.update(transaction.relationshipAsset);
+        });
 }
 
 function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    var f = getFactory();
-    var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
-    a.stringValue = 'party parrot in san francisco';
-    ar.update(a);
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            a.stringValue = 'party parrot in san francisco';
+            return ar.update(a);
+        });
 }
 
 function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
-    var f = getFactory();
-    var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
-    a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
-    ar.update(a);
+    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
+            return ar.update(a);
+        });
 }
 
 function onRemoveAssetInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    ar.remove(transaction.stringAsset);
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            return ar.remove(transaction.stringAsset);
+        });
 }
 
 function onRemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
-    ar.remove(transaction.relationshipAsset);
+    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+        .then(function (ar) {
+            return ar.remove(transaction.relationshipAsset);
+        });
 }
 
 function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleStringAsset');
-    var f = getFactory();
-    var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
-    a.stringValue = 'party parrot in san francisco';
-    ar.remove(a);
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            a.stringValue = 'party parrot in san francisco';
+            return ar.remove(a);
+        });
 }
 
 function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    var ar = getAssetRegistry('systest.transactions.SimpleRelationshipAsset');
-    var f = getFactory();
-    var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
-    a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
-    ar.remove(a);
+    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            return ar.remove(a);
+        });
 }

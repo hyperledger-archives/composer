@@ -198,7 +198,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that gets all assets from an asset registry', () => {
+    it('should submit and execute a transaction that gets all assets from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let asset1 = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
         asset1.stringValue = 'party parrot in hursley';
@@ -221,7 +221,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that gets an asset from an asset registry', () => {
+    it('should submit and execute a transaction that gets an asset from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
@@ -236,7 +236,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that adds an asset in the transaction to an asset registry', () => {
+    it('should submit and execute a transaction that adds an asset in the transaction to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'AddAssetInTransactionToAssetRegistryTransaction');
         transaction.stringAsset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -283,7 +283,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that adds a new asset to an asset registry', () => {
+    it('should submit and execute a transaction that adds a new asset to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'AddNewAssetToAssetRegistryTransaction');
         return client
@@ -300,7 +300,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that adds a new asset with a relationship to an asset registry', () => {
+    it('should submit and execute a transaction that adds a new asset with a relationship to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'AddNewAssetWithRelationshipToAssetRegistryTransaction');
         let stringAsset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -325,7 +325,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that updates an asset in the transaction in an asset registry', () => {
+    it('should submit and execute a transaction that updates an asset in the transaction in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
@@ -390,7 +390,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that updates a new asset in an asset registry', () => {
+    it('should submit and execute a transaction that updates a new asset in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
@@ -415,7 +415,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that updates a new asset with a relationship in an asset registry', () => {
+    it('should submit and execute a transaction that updates a new asset with a relationship in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'UpdateNewAssetWithRelationshipToAssetRegistryTransaction');
         let stringAsset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -448,7 +448,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that removes an asset in the transaction from an asset registry', () => {
+    it('should submit and execute a transaction that removes an asset in the transaction from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
@@ -473,11 +473,11 @@ describe('Transaction system tests', () => {
                 throw new Error('should not get here');
             })
             .catch((err) => {
-                err.should.match(/does not exist/);
+                err.should.match(/No row found with id/);
             });
     });
 
-    it.skip('should submit and execute a transaction that removes an asset with a relationship in the transaction from an asset registry', () => {
+    it('should submit and execute a transaction that removes an asset with a relationship in the transaction from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'RemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction');
         let stringAsset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -509,7 +509,7 @@ describe('Transaction system tests', () => {
                 throw new Error('should not get here');
             })
             .catch((err) => {
-                err.should.match(/does not exist/);
+                err.should.match(/No row found with id/);
             })
             .then(() => {
                 return client.getAssetRegistry('systest.transactions.SimpleStringAsset');
@@ -519,7 +519,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that removes a new asset from an asset registry', () => {
+    it('should submit and execute a transaction that removes a new asset from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let asset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
@@ -542,11 +542,11 @@ describe('Transaction system tests', () => {
                 throw new Error('should not get here');
             })
             .catch((err) => {
-                err.should.match(/does not exist/);
+                err.should.match(/No row found with id/);
             });
     });
 
-    it.skip('should submit and execute a transaction that removes a new asset with a relationship from an asset registry', () => {
+    it('should submit and execute a transaction that removes a new asset with a relationship from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'RemoveNewAssetWithRelationshipInAssetRegistryTransaction');
         let stringAsset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -577,7 +577,7 @@ describe('Transaction system tests', () => {
                 throw new Error('should not get here');
             })
             .catch((err) => {
-                err.should.match(/does not exist/);
+                err.should.match(/No row found with id/);
             })
             .then(() => {
                 return client.getAssetRegistry('systest.transactions.SimpleStringAsset');
