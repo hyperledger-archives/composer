@@ -18,13 +18,6 @@ if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
     exit 0
 fi
 
-# If this is not for a tagged (release) build, set the prerelease version.
-if [ -z "${TRAVIS_TAG}" ]; then
-    node ${DIR}/scripts/timestamp.js ${DIR}/package.json
-fi
-
-# Push the code to npm.
-npm publish --scope=@ibm
 
 # Push empty commits to downstream projects to trigger builds.
 REPO=`git config remote.origin.url`
