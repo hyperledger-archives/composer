@@ -208,6 +208,8 @@ describe('Context', () => {
         it('should return a new registry manager', () => {
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockIntrospector = sinon.createStubInstance(Introspector);
+            sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
             context.getResolver().should.be.an.instanceOf(Resolver);
         });
 
