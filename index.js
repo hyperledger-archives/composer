@@ -19,7 +19,7 @@
  * class.
  * </p>
  * <p><a href="diagrams/concerto.svg"><img src="diagrams/concerto.svg" style="width:100%;"/></a></p>
- * @module ibm-concerto
+ * @module ibm-concerto-client
  */
 
 module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
