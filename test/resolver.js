@@ -37,7 +37,7 @@ describe('Resolver', () => {
     beforeEach(() => {
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockIntrospector = sinon.createStubInstance(Introspector);
-        resolver = new Resolver(mockRegistryManager, mockIntrospector);
+        resolver = new Resolver(mockIntrospector, mockRegistryManager);
     });
 
     describe('#resolve', () => {
