@@ -257,39 +257,6 @@ describe('Registry', () => {
 
     });
 
-    describe('#add', () => {
-
-        it('should throw when resource not specified', () => {
-            (() => {
-                registry.add(null);
-            }).should.throw(/resource not specified/);
-        });
-
-        it('should invoke the chaincode', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            return registry.add(mockResource)
-                .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addResourceToRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1', JSON.stringify(data)]);
-                });
-        });
-
-        it('should handle an error from the chaincode', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.getIdentifier.returns('DOGE_1');
-            let data = { $class: 'org.acme.Doge' };
-            mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            Util.invokeChainCode.rejects(new Error('such error'));
-            return registry.add(mockResource)
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
-
     describe('#addAll', () => {
 
         it('should throw when resources not specified', () => {
@@ -309,7 +276,7 @@ describe('Registry', () => {
             mockSerializer.toJSON.withArgs(sinon.match.same(mockResource2)).returns(data2);
             return registry.addAll([mockResource1, mockResource2])
                 .then(() => {
-                    const data = [{ id: 'DOGE_1', data: JSON.stringify(data1) }, { id: 'DOGE_2', data: JSON.stringify(data2) }];
+                    const data = [data1, data2];
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Util.invokeChainCode);
                     sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addAllResourcesToRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
@@ -328,11 +295,11 @@ describe('Registry', () => {
 
     });
 
-    describe('#update', () => {
+    describe('#add', () => {
 
         it('should throw when resource not specified', () => {
             (() => {
-                registry.update(null);
+                registry.add(null);
             }).should.throw(/resource not specified/);
         });
 
@@ -341,11 +308,11 @@ describe('Registry', () => {
             mockResource.getIdentifier.returns('DOGE_1');
             let data = { $class: 'org.acme.Doge' };
             mockSerializer.toJSON.withArgs(mockResource).returns(data);
-            return registry.update(mockResource)
+            return registry.add(mockResource)
                 .then(() => {
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'updateResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1', JSON.stringify(data)]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addResourceToRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
                 });
         });
 
@@ -355,7 +322,7 @@ describe('Registry', () => {
             let data = { $class: 'org.acme.Doge' };
             mockSerializer.toJSON.withArgs(mockResource).returns(data);
             Util.invokeChainCode.rejects(new Error('such error'));
-            return registry.update(mockResource)
+            return registry.add(mockResource)
                 .should.be.rejectedWith(/such error/);
         });
 
@@ -380,7 +347,7 @@ describe('Registry', () => {
             mockSerializer.toJSON.withArgs(sinon.match.same(mockResource2)).returns(data2);
             return registry.updateAll([mockResource1, mockResource2])
                 .then(() => {
-                    const data = [{ id: 'DOGE_1', data: JSON.stringify(data1) }, { id: 'DOGE_2', data: JSON.stringify(data2) }];
+                    const data = [data1, data2];
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Util.invokeChainCode);
                     sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'updateAllResourcesInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
@@ -399,31 +366,24 @@ describe('Registry', () => {
 
     });
 
-    describe('#remove', () => {
+    describe('#update', () => {
 
         it('should throw when resource not specified', () => {
             (() => {
-                registry.remove(null);
+                registry.update(null);
             }).should.throw(/resource not specified/);
         });
 
-        it('should invoke the chaincode with a resource', () => {
+        it('should invoke the chaincode', () => {
             let mockResource = sinon.createStubInstance(Resource);
             mockResource.getIdentifier.returns('DOGE_1');
-            return registry.remove(mockResource)
+            let data = { $class: 'org.acme.Doge' };
+            mockSerializer.toJSON.withArgs(mockResource).returns(data);
+            return registry.update(mockResource)
                 .then(() => {
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeResourceFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1']);
-                });
-        });
-
-        it('should invoke the chaincode with an identifier', () => {
-            return registry.remove('DOGE_1')
-                .then(() => {
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeResourceFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1']);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'updateResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', JSON.stringify(data)]);
                 });
         });
 
@@ -481,54 +441,42 @@ describe('Registry', () => {
 
     });
 
-    describe('#get', () => {
+    describe('#remove', () => {
 
-        it('should throw when id not specified', () => {
-            (function () {
-                registry.get(null);
-            }).should.throw(/id not specified/);
+        it('should throw when resource not specified', () => {
+            (() => {
+                registry.remove(null);
+            }).should.throw(/resource not specified/);
         });
 
-        it('should query the chain-code', () => {
-
-            // Create the asset registry and other test data.
-            let asset1 = sinon.createStubInstance(Resource);
-            asset1.getIdentifier.returns('dogecar1');
-            mockSerializer.fromJSON.onFirstCall().returns(asset1);
-
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(
-                {'id':'fake id','data' : '{}'}
-            )));
-
-            // Invoke the add function.
-            return registry
-                .get('dogecar1')
-                .then((asset) => {
-
-                    // Check that the query was made successfully.
+        it('should invoke the chaincode with a resource', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getIdentifier.returns('DOGE_1');
+            return registry.remove(mockResource)
+                .then(() => {
                     sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.queryChainCode);
-                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'dogecar1']);
-
-                    // Check that the assets were returned successfully.
-                    asset.should.be.an.instanceOf(Resource);
-                    asset.getIdentifier().should.equal('dogecar1');
-
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeResourceFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1']);
                 });
-
         });
 
-        it('should handle an error from the chain-code', () => {
+        it('should invoke the chaincode with an identifier', () => {
+            return registry.remove('DOGE_1')
+                .then(() => {
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeResourceFromRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'DOGE_1']);
+                });
+        });
 
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.rejects(new Error('such error'));
-
-            // Invoke the add function.
-            return registry
-                .get('dogecar1')
+        it('should handle an error from the chaincode', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getIdentifier.returns('DOGE_1');
+            let data = { $class: 'org.acme.Doge' };
+            mockSerializer.toJSON.withArgs(mockResource).returns(data);
+            Util.invokeChainCode.rejects(new Error('such error'));
+            return registry.update(mockResource)
                 .should.be.rejectedWith(/such error/);
-
         });
 
     });
@@ -588,6 +536,58 @@ describe('Registry', () => {
             // Invoke the add function.
             return registry
                 .getAll()
+                .should.be.rejectedWith(/such error/);
+
+        });
+
+    });
+
+    describe('#get', () => {
+
+        it('should throw when id not specified', () => {
+            (function () {
+                registry.get(null);
+            }).should.throw(/id not specified/);
+        });
+
+        it('should query the chain-code', () => {
+
+            // Create the asset registry and other test data.
+            let asset1 = sinon.createStubInstance(Resource);
+            asset1.getIdentifier.returns('dogecar1');
+            mockSerializer.fromJSON.onFirstCall().returns(asset1);
+
+            // Set up the responses from the chain-code.
+            let data = { $class: 'org.acme.Doge', assetId: 'dogecar1' };
+            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(data)));
+
+            // Invoke the add function.
+            return registry
+                .get('dogecar1')
+                .then((asset) => {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
+                    sinon.assert.calledOnce(Util.queryChainCode);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'dogecar1']);
+
+                    // Check that the assets were returned successfully.
+                    asset.should.be.an.instanceOf(Resource);
+                    asset.getIdentifier().should.equal('dogecar1');
+                    sinon.assert.calledWith(mockSerializer.fromJSON, data);
+
+                });
+
+        });
+
+        it('should handle an error from the chain-code', () => {
+
+            // Set up the responses from the chain-code.
+            Util.queryChainCode.rejects(new Error('such error'));
+
+            // Invoke the add function.
+            return registry
+                .get('dogecar1')
                 .should.be.rejectedWith(/such error/);
 
         });
@@ -722,54 +722,6 @@ describe('Registry', () => {
 
     });
 
-    describe('#resolve', () => {
-
-        it('should throw when id not specified', () => {
-            (() => {
-                registry.resolve(null);
-            }).should.throw(/id not specified/);
-        });
-
-        it('should query the chain-code', () => {
-
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(
-                {'$class':'org.doge.Doge', 'assetId':'dogecar1'}
-            )));
-
-            // Invoke the add function.
-            return registry
-                .resolve('dogecar1')
-                .then((asset) => {
-
-                    // Check that the query was made successfully.
-                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
-                    sinon.assert.calledOnce(Util.queryChainCode);
-                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'resolveResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'dogecar1']);
-
-                    // Check that the assets were returned successfully.
-                    asset.should.not.be.an.instanceOf(Resource);
-                    asset.should.be.an('object');
-                    asset.assetId.should.equal('dogecar1');
-
-                });
-
-        });
-
-        it('should handle an error from the chain-code', () => {
-
-            // Set up the responses from the chain-code.
-            Util.queryChainCode.rejects(new Error('such error'));
-
-            // Invoke the add function.
-            return registry
-                .resolve('dogecar1')
-                .should.be.rejectedWith(/such error/);
-
-        });
-
-    });
-
     describe('#resolveAll', () => {
 
         it('should query the chain-code', () => {
@@ -813,6 +765,54 @@ describe('Registry', () => {
             // Invoke the add function.
             return registry
                 .resolveAll()
+                .should.be.rejectedWith(/such error/);
+
+        });
+
+    });
+
+    describe('#resolve', () => {
+
+        it('should throw when id not specified', () => {
+            (() => {
+                registry.resolve(null);
+            }).should.throw(/id not specified/);
+        });
+
+        it('should query the chain-code', () => {
+
+            // Set up the responses from the chain-code.
+            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(
+                {'$class':'org.doge.Doge', 'assetId':'dogecar1'}
+            )));
+
+            // Invoke the add function.
+            return registry
+                .resolve('dogecar1')
+                .then((asset) => {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
+                    sinon.assert.calledOnce(Util.queryChainCode);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'resolveResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'dogecar1']);
+
+                    // Check that the assets were returned successfully.
+                    asset.should.not.be.an.instanceOf(Resource);
+                    asset.should.be.an('object');
+                    asset.assetId.should.equal('dogecar1');
+
+                });
+
+        });
+
+        it('should handle an error from the chain-code', () => {
+
+            // Set up the responses from the chain-code.
+            Util.queryChainCode.rejects(new Error('such error'));
+
+            // Invoke the add function.
+            return registry
+                .resolve('dogecar1')
                 .should.be.rejectedWith(/such error/);
 
         });
