@@ -18,7 +18,6 @@ if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
     exit 0
 fi
 
-
 # Push empty commits to downstream projects to trigger builds.
 REPO=`git config remote.origin.url`
 for PROJ in Concerto; do
