@@ -734,7 +734,7 @@ describe('Registry', () => {
 
             // Set up the responses from the chain-code.
             Util.queryChainCode.resolves(Buffer.from(JSON.stringify(
-                {'id':'dogecar1','data' : '{"$class":"org.doge.Doge", "assetId":"dogecar1"}'}
+                {'$class':'org.doge.Doge', 'assetId':'dogecar1'}
             )));
 
             // Invoke the add function.
@@ -777,14 +777,8 @@ describe('Registry', () => {
             // Set up the responses from the chain-code.
             Util.queryChainCode.resolves(Buffer.from(JSON.stringify(
                 [
-                    {
-                        'id':'dogecar1',
-                        'data' : '{"$class":"org.doge.Doge", "assetId":"dogecar1"}'
-                    },
-                    {
-                        'id':'dogecar2',
-                        'data' : '{"$class":"org.doge.Doge", "assetId":"dogecar2"}'
-                    }
+                    {'$class':'org.doge.Doge', 'assetId':'dogecar1'},
+                    {'$class':'org.doge.Doge', 'assetId':'dogecar2'}
                 ]
             )));
 
