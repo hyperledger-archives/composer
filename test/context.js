@@ -10,6 +10,7 @@
 
 'use strict';
 
+const Api = require('../lib/api');
 const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
@@ -217,6 +218,24 @@ describe('Context', () => {
             let mockResolver = sinon.createStubInstance(Resolver);
             context.resolver = mockResolver;
             context.getResolver().should.equal(mockResolver);
+        });
+
+    });
+
+    describe('#getApi', () => {
+
+        it('should return a new Api', () => {
+            let mockFactory = sinon.createStubInstance(Factory);
+            sinon.stub(context, 'getFactory').returns(mockFactory);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            context.getApi().should.be.an.instanceOf(Api);
+        });
+
+        it('should return an existing Api', () => {
+            let mockApi = sinon.createStubInstance(Api);
+            context.api = mockApi;
+            context.getApi().should.equal(mockApi);
         });
 
     });
