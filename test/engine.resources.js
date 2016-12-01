@@ -16,11 +16,13 @@ const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
+const Resolver = require('../lib/resolver');
 const Resource = require('@ibm/ibm-concerto-common').Resource;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 
 const chai = require('chai');
 chai.should();
+chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 require('sinon-as-promised');
@@ -32,6 +34,7 @@ describe('EngineResources', () => {
     let mockContext;
     let mockRegistry;
     let mockRegistryManager;
+    let mockResolver;
     let mockSerializer;
     let engine;
 
@@ -47,6 +50,8 @@ describe('EngineResources', () => {
         mockContext.getRegistryManager.returns(mockRegistryManager);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockContext.getSerializer.returns(mockSerializer);
+        mockResolver = sinon.createStubInstance(Resolver);
+        mockContext.getResolver.returns(mockResolver);
         engine = new Engine(mockContainer);
     });
 
@@ -265,6 +270,72 @@ describe('EngineResources', () => {
             return engine.invoke(mockContext, 'removeResourceFromRegistry', ['Asset', 'doges', 'doge1'])
                 .then(() => {
                     sinon.assert.calledOnce(mockRegistry.remove);
+                });
+        });
+
+    });
+
+    describe('#resolveAllResourcesInRegistry', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.query(mockContext, 'resolveAllResourcesInRegistry', ['no', 'args', 'supported']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "resolveAllResourcesInRegistry", expecting "\["registryType","registryId"\]"/);
+        });
+
+        it('should resolve and return all of the resources', () => {
+            let mockResource1 = sinon.createStubInstance(Resource);
+            let mockResource2 = sinon.createStubInstance(Resource);
+            mockRegistry.getAll.withArgs().resolves([mockResource1, mockResource2]);
+            mockResolver.resolve.withArgs(mockResource1).resolves(mockResource1);
+            mockResolver.resolve.withArgs(mockResource2).resolves(mockResource2);
+            mockSerializer.toJSON.withArgs(mockResource1, { permitResourcesForRelationships: true }).onFirstCall().returns({
+                $class: 'org.doge.Doge',
+                assetId: 'doge1'
+            });
+            mockSerializer.toJSON.withArgs(mockResource2, { permitResourcesForRelationships: true }).onSecondCall().returns({
+                $class: 'org.doge.Doge',
+                assetId: 'doge2'
+            });
+            return engine.query(mockContext, 'resolveAllResourcesInRegistry', ['Asset', 'doges'])
+                .then((resources) => {
+                    sinon.assert.calledTwice(mockResolver.resolve);
+                    sinon.assert.calledWith(mockResolver.resolve, mockResource1);
+                    sinon.assert.calledWith(mockResolver.resolve, mockResource2);
+                    resources.should.deep.equal([{
+                        $class: 'org.doge.Doge',
+                        assetId: 'doge1'
+                    }, {
+                        $class: 'org.doge.Doge',
+                        assetId: 'doge2'
+                    }]);
+                });
+        });
+
+    });
+
+    describe('#resolveResourceInRegistry', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.query(mockContext, 'resolveResourceInRegistry', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "resolveResourceInRegistry", expecting "\["registryType","registryId","resourceId"\]"/);
+        });
+
+        it('should resolve and return the specified resources', () => {
+            let mockResource = sinon.createStubInstance(Resource);
+            mockRegistry.get.withArgs('doge1').resolves(mockResource);
+            mockResolver.resolve.withArgs(mockResource).resolves(mockResource);
+            mockSerializer.toJSON.withArgs(mockResource, { permitResourcesForRelationships: true }).onFirstCall().returns({
+                $class: 'org.doge.Doge',
+                assetId: 'doge1'
+            });
+            return engine.query(mockContext, 'resolveResourceInRegistry', ['Asset', 'doges', 'doge1'])
+                .then((resource) => {
+                    sinon.assert.calledOnce(mockResolver.resolve);
+                    sinon.assert.calledWith(mockResolver.resolve, mockResource);
+                    resource.should.deep.equal({
+                        $class: 'org.doge.Doge',
+                        assetId: 'doge1'
+                    });
                 });
         });
 
