@@ -10,7 +10,7 @@
 
 'use strict';
 
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 
 const fs = require('fs');
 const path = require('path');
@@ -21,9 +21,9 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-subset'));
 
-describe.only('Asset registry system tests', function () {
+describe('Asset registry system tests', function () {
 
-    let businessNetwork;
+    let businessNetworkDefinition;
     let admin;
     let client;
 
@@ -31,12 +31,12 @@ describe.only('Asset registry system tests', function () {
         const modelFiles = [
             fs.readFileSync(path.resolve(__dirname, 'data/assetregistries.cto'), 'utf8')
         ];
-        businessNetwork = new BusinessNetwork('systest.assetregistries', 'The network for the asset registry system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest.assetregistries', 'The network for the asset registry system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetwork.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
         });
         admin = TestUtil.getAdmin();
-        return admin.deploy(businessNetwork)
+        return admin.deploy(businessNetworkDefinition)
             .then(() => {
                 return TestUtil.getClient('systest.assetregistries')
                     .then((result) => {
@@ -453,7 +453,7 @@ describe.only('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should resolve assets containing asset relationships from an asset registry', () => {
+    it('should resolve assets containing asset relationships from an asset registry', () => {
         let assetRegistry;
         let assetContainerRegistry;
         return client
@@ -498,7 +498,7 @@ describe.only('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should resolve assets containing circular relationships from an asset registry', () => {
+    it('should resolve assets containing circular relationships from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
         return client
