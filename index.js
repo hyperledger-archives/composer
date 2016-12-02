@@ -11,8 +11,10 @@
 'use strict';
 
 /**
-* @module ibm-concerto-runtime
-*/
+ * The runtime module provides the API that is made available to transaction
+ * processing functions.
+ * @module ibm-concerto-runtime
+ */
 
 module.exports.Container = require('./lib/container');
 module.exports.Context = require('./lib/context');
