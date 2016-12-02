@@ -537,7 +537,7 @@ describe('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should find assets in an asset registry', function () {
+    it('should find assets in an asset registry', function () {
         let assetRegistry;
         return client
             .addAssetRegistry('myregistry', 'my new asset registry')
@@ -568,7 +568,7 @@ describe('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should find assets in an asset registry using expressions that access related assets', function () {
+    it('should find assets in an asset registry using expressions that access related assets', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
         return client
@@ -597,7 +597,7 @@ describe('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should query assets in an asset registry', function () {
+    it('should query assets in an asset registry', function () {
         let assetRegistry;
         return client
             .addAssetRegistry('myregistry', 'my new asset registry')
@@ -649,7 +649,7 @@ describe('Asset registry system tests', function () {
             });
     });
 
-    it.skip('should query assets in an asset registry using expressions that access related assets', function () {
+    it('should query assets in an asset registry using expressions that access related assets', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
         return client
