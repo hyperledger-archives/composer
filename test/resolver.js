@@ -342,6 +342,34 @@ describe('Resolver', () => {
                 });
         });
 
+        it('should not resolve the resource if option is specified', () => {
+            // Create the parent relationship.
+            let mockRelationship = sinon.createStubInstance(Relationship);
+            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
+            mockRelationship.getIdentifier.returns('DOGE_1');
+            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockAssetDeclaration);
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistryManager.get.withArgs('Asset', 'org.doge.Doge').resolves(mockRegistry);
+            // Create the resource it points to.
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.$identifier = 'DOGE_1';
+            mockRegistry.get.withArgs('DOGE_1').resolves(mockResource);
+            // Stub the resolveResource call.
+            sinon.stub(resolver, 'resolveResource').rejects();
+            let resolveState = {
+                cachedResources: new Map(),
+                skipRecursion: true
+            };
+            return resolver.resolveRelationship(mockRelationship, resolveState)
+                .then((mockRelationship) => {
+                    mockRelationship.should.equal(mockResource);
+                    sinon.assert.notCalled(resolver.resolveResource);
+                    resolveState.cachedResources.get('org.doge.Doge#DOGE_1').should.equal(mockResource);
+                });
+        });
+
     });
 
     describe('#toJSON', () => {

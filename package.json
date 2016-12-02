@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
+    "jsonata": "^1.0.10",
     "lru-cache": "^4.0.2",
     "sha.js": "^2.4.8"
   }
