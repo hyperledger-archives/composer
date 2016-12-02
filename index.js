@@ -10,6 +10,10 @@
 
 'use strict';
 
+/**
+* @module ibm-concerto-runtime
+*/
+
 module.exports.Container = require('./lib/container');
 module.exports.Context = require('./lib/context');
 module.exports.DataCollection = require('./lib/datacollection');
