@@ -18,7 +18,6 @@
  * Applications interact with the framework by instantiating the {@link BusinessNetworkConnection}
  * class.
  * </p>
- * <p><a href="diagrams/concerto.svg"><img src="diagrams/concerto.svg" style="width:100%;"/></a></p>
  * @module ibm-concerto-client
  */
 
