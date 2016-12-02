@@ -11,13 +11,16 @@
 'use strict';
 
 const Api = require('../lib/api');
-const Factory = require('@ibm/ibm-concerto-common').Factory;
+const AssetRegistry = require('../lib/api/assetregistry');
+const Factory = require('../lib/api/factory');
+const realFactory = require('@ibm/ibm-concerto-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-things'));
 const sinon = require('sinon');
 require('sinon-as-promised');
 
@@ -28,15 +31,27 @@ describe('Api', () => {
     let api;
 
     beforeEach(() => {
-        mockFactory = sinon.createStubInstance(Factory);
+        mockFactory = sinon.createStubInstance(realFactory);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         api = new Api(mockFactory, mockRegistryManager);
+    });
+
+    describe('#constructor', () => {
+
+        it('should obscure any implementation details', () => {
+            Object.isFrozen(api).should.be.true;
+            Object.getOwnPropertyNames(api).forEach((prop) => {
+                api[prop].should.be.a('function');
+            });
+            Object.getOwnPropertySymbols(api).should.have.lengthOf(0);
+        });
+
     });
 
     describe('#getFactory', () => {
 
         it('should return the factory', () => {
-            api.getFactory().should.equal(mockFactory);
+            api.getFactory().should.be.an.instanceOf(Factory);
         });
 
     });
@@ -47,7 +62,7 @@ describe('Api', () => {
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistryManager.get.withArgs('Asset', 'org.doge.Doge').resolves(mockRegistry);
             return api.getAssetRegistry('org.doge.Doge')
-                .should.eventually.be.equal(mockRegistry);
+                .should.eventually.be.an.instanceOf(AssetRegistry);
         });
 
         it('should handle any errors', () => {

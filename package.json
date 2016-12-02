@@ -7,7 +7,7 @@
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public",
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "postlint": "npm run browserify",
