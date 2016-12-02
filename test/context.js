@@ -19,6 +19,7 @@ const Engine = require('../lib/engine');
 const Factory = require('@ibm/ibm-concerto-common').Factory;
 const Introspector = require('@ibm/ibm-concerto-common').Introspector;
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
+const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
 const Resource = require('@ibm/ibm-concerto-common').Resource;
@@ -224,7 +225,7 @@ describe('Context', () => {
 
     describe('#getApi', () => {
 
-        it('should return a new Api', () => {
+        it('should return a new API', () => {
             let mockFactory = sinon.createStubInstance(Factory);
             sinon.stub(context, 'getFactory').returns(mockFactory);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
@@ -232,10 +233,26 @@ describe('Context', () => {
             context.getApi().should.be.an.instanceOf(Api);
         });
 
-        it('should return an existing Api', () => {
+        it('should return an existing API', () => {
             let mockApi = sinon.createStubInstance(Api);
             context.api = mockApi;
             context.getApi().should.equal(mockApi);
+        });
+
+    });
+
+    describe('#getQueryExecutor', () => {
+
+        it('should return a new query executor', () => {
+            let mockResolver = sinon.createStubInstance(Resolver);
+            sinon.stub(context, 'getResolver').returns(mockResolver);
+            context.getQueryExecutor().should.be.an.instanceOf(QueryExecutor);
+        });
+
+        it('should return an existing query executor', () => {
+            let mockQueryExecutor = sinon.createStubInstance(QueryExecutor);
+            context.queryExecutor = mockQueryExecutor;
+            context.getQueryExecutor().should.equal(mockQueryExecutor);
         });
 
     });
