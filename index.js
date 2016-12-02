@@ -11,15 +11,19 @@
 'use strict';
 
 /**
- * IBM Concerto module. IBM Concerto is a framework for creating
- * blockchain backed digital networks and exchanging assets between participants
- * via processing transactions.
+ * <p>
+ * The ibm-concerto-admin module. Defines the administration API for Concerto.
+ * </p>
+ * <p>
+ * Concerto is a framework for creating blockchain backed digital networks and
+ * exchanging assets between participants via processing transactions.
+ * </p>
  * @module ibm-concerto-admin
  */
 module.exports.AdminConnection = require('./lib/adminconnection');
 
 /**
- * Expose key concerto-common classes to make simplify client application dependencies
+ * Expose key concerto-common classes to simplify client application dependencies
  * @ignore
  */
 module.exports.BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
