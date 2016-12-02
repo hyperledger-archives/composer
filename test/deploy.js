@@ -12,6 +12,7 @@
 
 const Admin = require('@ibm/ibm-concerto-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+const homedir = require('homedir');
 const fs = require('fs');
 const Deploy = require('../lib/deploy.js');
 const CmdUtil = require('../lib/utils/cmdutils.js');
@@ -22,7 +23,6 @@ require('chai').should();
 const chai = require('chai');
 const sinon = require('sinon');
 require('sinon-as-promised');
-require('sinon-as-promised');
 chai.should();
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
@@ -30,27 +30,14 @@ chai.use(require('chai-as-promised'));
 let testBusinessNetworkArchive = {bna: 'TBNA'};
 let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
-let testEnrollmentSecret = 'DJY27pEnl16d';
 
-let testConnectOptions = {type: 'hlf'
-                         ,membershipServicesURL: 'grpc://localhost:7054'
-                         ,peerURL: 'grpc://localhost:7051'
-                         ,eventHubURL: 'grpc://localhost:7053'
-                         ,keyValStore: '/tmp/keyValStore'
-                         ,deployWaitTime: '300'
-                         ,invokeWaitTime: '100'};
-
+//const DEFAULT_PROFILE_NAME = 'defaultProfile';
+const CREDENTIALS_ROOT = homedir() + '/.concerto-credentials';
 
 let mockBusinessNetworkDefinition;
-mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
-mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
+const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 let mockAdminConnection;
-mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
-mockAdminConnection.createProfile.resolves();
-mockAdminConnection.connect.resolves();
-mockAdminConnection.deploy.resolves();
 
 describe('concerto deploy network CLI unit tests', function () {
 
@@ -58,7 +45,16 @@ describe('concerto deploy network CLI unit tests', function () {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        sandbox.stub(fs,'readFileSync').returns(testBusinessNetworkArchive);
+
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+        mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
+        mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
+
+        mockAdminConnection = sinon.createStubInstance(Admin.AdminConnection);
+        mockAdminConnection.createProfile.resolves();
+        mockAdminConnection.connect.resolves();
+        mockAdminConnection.deploy.resolves();
+
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
 
@@ -68,66 +64,175 @@ describe('concerto deploy network CLI unit tests', function () {
         sandbox.restore();
     });
 
-    it('Good path, all parms correctly specified.', function () {
-        sandbox.stub(fs,'existsSync').returns(true);
+    describe('Deploy handler() method tests', function () {
 
-        let argv = {enrollId: 'WebAppAdmin'
-                   ,enrollSecret: 'DJY27pEnl16d'
-                   ,archiveFile: 'testArchiveFile.zip'
-        };
+        it('Good path, all parms correctly specified.', function () {
 
-        return Deploy.handler(argv)
-        .then ((result) => {
-            sinon.assert.calledOnce(fs.existsSync);
-            sinon.assert.calledWith(fs.existsSync, argv.archiveFile);
-            sinon.assert.calledOnce(fs.readFileSync);
-            sinon.assert.calledWith(fs.readFileSync, argv.archiveFile);
-            sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-            sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
-            sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'testProfile'};
+            let connectionProfileName = argv.connectionProfileName;
+            let keyValStore = CREDENTIALS_ROOT;
 
-            sinon.assert.calledOnce(mockBusinessNetworkDefinition.getIdentifier);
-            sinon.assert.calledOnce(mockBusinessNetworkDefinition.getDescription);
+            let connectionProfileData = {type: 'hlf'
+                                        ,membershipServicesURL: 'grpc://localhost:7054'
+                                        ,peerURL: 'grpc://localhost:7051'
+                                        ,eventHubURL: 'grpc://localhost:7053'
+                                        ,keyValStore: keyValStore
+                                        ,deployWaitTime: '300'
+                                        ,invokeWaitTime: '100'};
+            let connectOptions = JSON.stringify(connectionProfileData);
 
-            sinon.assert.calledOnce(mockAdminConnection.createProfile);
-            sinon.assert.calledWith(mockAdminConnection.createProfile, 'cliDeploy', testConnectOptions);
-            sinon.assert.calledOnce(mockAdminConnection.connect);
-            sinon.assert.calledWith(mockAdminConnection.connect, 'cliDeploy', argv.enrollId, argv.enrollSecret);
-            sinon.assert.calledOnce(mockAdminConnection.deploy);
-            sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(Deploy, 'getConnectOptions');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
+
+            return Deploy.handler(argv)
+            .then ((result) => {
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.createProfile);
+                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
+            });
+        });
+
+        it('Good path, default connection profile, all other parms correctly specified.', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'};
+            let connectionProfileName = DEFAULT_PROFILE_NAME;
+            let keyValStore = CREDENTIALS_ROOT;
+
+            let connectionProfileData = {type: 'hlf'
+                                        ,membershipServicesURL: 'grpc://localhost:7054'
+                                        ,peerURL: 'grpc://localhost:7051'
+                                        ,eventHubURL: 'grpc://localhost:7053'
+                                        ,keyValStore: keyValStore
+                                        ,deployWaitTime: '300'
+                                        ,invokeWaitTime: '100'};
+            let connectOptions = JSON.stringify(connectionProfileData);
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(Deploy, 'getConnectOptions');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
+
+            return Deploy.handler(argv)
+            .then ((result) => {
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.createProfile);
+                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, argv.enrollSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
+            });
+        });
+
+        it('Good path, no enrollment secret, all other parms correctly specified.', function () {
+
+            let enrollmentSecret = 'DJY27pEnl16d';
+            sandbox.stub(CmdUtil, 'prompt').resolves(enrollmentSecret);
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'testProfile'};
+            let connectionProfileName = argv.connectionProfileName;
+            let keyValStore = CREDENTIALS_ROOT;
+
+            let connectionProfileData = {type: 'hlf'
+                                        ,membershipServicesURL: 'grpc://localhost:7054'
+                                        ,peerURL: 'grpc://localhost:7051'
+                                        ,eventHubURL: 'grpc://localhost:7053'
+                                        ,keyValStore: keyValStore
+                                        ,deployWaitTime: '300'
+                                        ,invokeWaitTime: '100'};
+            let connectOptions = JSON.stringify(connectionProfileData);
+
+            sandbox.stub(Deploy, 'getArchiveFileContents');
+            sandbox.stub(Deploy, 'getConnectOptions');
+
+            Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
+            Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
+
+            return Deploy.handler(argv)
+            .then ((result) => {
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);
+                sinon.assert.calledOnce(CmdUtil.createAdminConnection);
+
+                sinon.assert.calledOnce(mockAdminConnection.createProfile);
+                sinon.assert.calledWith(mockAdminConnection.createProfile, connectionProfileName, connectOptions);
+                sinon.assert.calledOnce(mockAdminConnection.connect);
+                sinon.assert.calledWith(mockAdminConnection.connect, connectionProfileName, argv.enrollId, enrollmentSecret);
+                sinon.assert.calledOnce(mockAdminConnection.deploy);
+                sinon.assert.calledWith(mockAdminConnection.deploy, mockBusinessNetworkDefinition);
+            });
         });
     });
 
-    it('Archive file does not exist.', function () {
-        sandbox.stub(fs,'existsSync').returns(false);
+    describe('Deploy getConnectOption() method tests', function () {
 
-        let argv = {enrollId: 'WebAppAdmin'
-                   ,enrollSecret: 'DJY27pEnl16d'
-                   ,archiveFile: 'testArchiveFile.zip'
-        };
+        it('Connection profile exists', function () {
 
-        return Deploy.handler(argv)
-        .should.be.rejected
-        .then (() => {
-            sinon.assert.calledOnce(fs.existsSync);
-            sinon.assert.calledWith(fs.existsSync, argv.archiveFile);
+            sandbox.stub(fs, 'existsSync').returns(true);
+            let keyValStore = CREDENTIALS_ROOT;
+            let testConnectOptions = {type: 'hlf'
+                                     ,membershipServicesURL: 'grpc://localhost:7054'
+                                     ,peerURL: 'grpc://localhost:7051'
+                                     ,eventHubURL: 'grpc://localhost:7053'
+                                     ,keyValStore: keyValStore
+                                     ,deployWaitTime: '300'
+                                     ,invokeWaitTime: '100'};
+            let connectionProfileContents = JSON.stringify(testConnectOptions);
+            sandbox.stub(fs, 'readFileSync').returns(connectionProfileContents);
+
+            let connectionProfileName = 'testProfile';
+            let connectOptions = Deploy.getConnectOptions(connectionProfileName);
+            console.log('Test:'+JSON.stringify(connectOptions,null,2));
+            console.log('Test:'+JSON.stringify(testConnectOptions,null,2));
+
+//            connectOptions.should.equal(testConnectOptions);
+
         });
+
+        it('Connection profile does not exist', function () {
+        });
+
     });
 
-    it('Enrollment secret provided via prompt.', function () {
-        sandbox.stub(fs,'existsSync').returns(true);
-        sandbox.stub(CmdUtil, 'prompt').resolves(testEnrollmentSecret);
+    describe('Deploy getArchiveFileContents() method tests', function () {
 
-        let argv = {enrollId: 'WebAppAdmin'
-                   ,archiveFile: 'testArchiveFile.zip'
-        };
-
-        return Deploy.handler(argv)
-        .then ((result) => {
-            // Given first test works, we only need to check prompt is called
-            sinon.assert.calledOnce(CmdUtil.prompt);
+        it('Archive file exists', function () {
         });
+
+        it('Archive file does not exist', function () {
+        });
+
     });
 
+    describe('Deploy getDefaultProfileName() method tests', function () {
+
+        it('profile name specified in argv', function () {
+        });
+
+        it('Profile name not specified in argv', function () {
+        });
+
+    });
 
 });
