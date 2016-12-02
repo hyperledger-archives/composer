@@ -11,7 +11,7 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.1.15 {308dd5602ca367af6bafb5374d7a8fce} 2016-11-30
+Version 0.1.15 {6a358e14976153039246fc1c466b7cf7} 2016-11-30
 - Added options to Serializer fromJSON/toJSON APIs
 
 Version 0.1.14 {ecb5f554bbfbfe92dd7c4f05a3491882} 2016-11-28
