@@ -255,7 +255,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that adds an asset with a relationship in the transaction to an asset registry', () => {
+    it('should submit and execute a transaction that adds an asset with a relationship in the transaction to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'AddAssetWithRelationshipInTransactionToAssetRegistryTransaction');
         let stringAsset = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
@@ -352,7 +352,7 @@ describe('Transaction system tests', () => {
             });
     });
 
-    it.skip('should submit and execute a transaction that updates an asset with a relationship in the transaction in an asset registry', () => {
+    it('should submit and execute a transaction that updates an asset with a relationship in the transaction in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions', 'UpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction');
         let stringAsset1 = factory.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
