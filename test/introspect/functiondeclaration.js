@@ -140,6 +140,63 @@ describe('FunctionDeclaration', () => {
                 func.validate();
             }).should.throw(/cannot be decorated with both/);
         });
+
+        it('should throw if first brace around param type is missing', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.missingfirstbrace.js');
+                func.validate();
+            }).should.throw(/Malformed JSDoc comment/);
+        });
+
+        it('should throw if second brace around param type is missing', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.missingsecondbrace.js');
+                func.validate();
+            }).should.throw(/Malformed JSDoc comment/);
+        });
+
+        it('should throw if second brace around param type is missing', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.typenametogether.js');
+                func.validate();
+            }).should.throw(/Malformed JSDoc comment/);
+        });
+
+        it('should throw if both braces around param type are missing', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.bracesmissing.js');
+                func.validate();
+            }).should.throw(/Malformed JSDoc comment/);
+        });
+
+        it('should throw if param name is missing', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.missingname.js');
+                func.validate();
+            }).should.throw(/Malformed JSDoc comment/);
+        });
+
+        it('should throw if param type is missing', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.missingtype.js');
+                func.validate();
+            }).should.throw(/Malformed JSDoc comment/);
+        });
+
+        it('should throw if @throws and @exception are both specified', () => {
+            (() => {
+                let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.throwsexception.js');
+                func.validate();
+            }).should.throw(/Malformed JSDoc comment/);
+        });
+
+        it('should not throw if spaces are placed in front of the param type', () => {
+            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.spaces.js');
+            func.getDecorators().should.deep.equal(['param', 'transaction']);
+            func.parameterTypes.should.deep.equal(['org.acme.TestTransaction']);
+        });
+
+        it('should throw if @transaction isn\'t specified and the function is a transaction function');
     });
 
     describe('#toJSON', () => {
