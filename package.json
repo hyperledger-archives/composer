@@ -31,6 +31,7 @@
     "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
     "eslint": "^3.5.0",
+    "homedir": "^0.6.0",
     "istanbul": "^0.4.5",
     "license-check": "^1.1.5",
     "mocha": "^3.0.2",
