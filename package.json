@@ -48,9 +48,7 @@
     "mockery": "^2.0.0",
     "moment": "^2.15.1",
     "pegjs": "^0.9.0",
-    "sinon": "^1.17.6",
-    "doctrine": "^2.0.0",
-    "esprima": "^3.1.2"
+    "sinon": "^1.17.6"
   },
   "dependencies": {
     "acorn": "^4.0.3",
@@ -68,7 +66,10 @@
     "node-uuid": "^1.4.7",
     "sprintf-js": "^1.0.3",
     "temp": "^0.8.3",
-    "winston": "^2.3.0"
+    "winston": "^2.3.0",
+    "doctrine": "^2.0.0",
+    "esprima": "^3.1.2"
+
   },
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
