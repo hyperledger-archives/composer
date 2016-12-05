@@ -33,7 +33,7 @@ describe('FSConnectionProfileStore', () => {
             const profileData = { one : 'one', two: 'two'};
             return cps.save('test', profileData )
                 .then(() => {
-                    fs.statSync( homedir() + '/concerto-connection-profiles/test/connection.json');
+                    fs.statSync( homedir() + '/.concerto-connection-profiles/test/connection.json');
                     return cps.load('test');
                 })
                 .then((loadedProfile) => {
