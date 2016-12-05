@@ -203,14 +203,40 @@ describe('concerto deploy network CLI unit tests', function () {
 
             let connectionProfileName = 'testProfile';
             let connectOptions = Deploy.getConnectOptions(connectionProfileName);
-            console.log('Test:'+JSON.stringify(connectOptions,null,2));
-            console.log('Test:'+JSON.stringify(testConnectOptions,null,2));
 
-//            connectOptions.should.equal(testConnectOptions);
+            connectOptions.should.deep.equal(testConnectOptions);
 
         });
 
         it('Connection profile does not exist', function () {
+
+            sandbox.stub(fs, 'existsSync').returns(false);
+            let keyValStore = CREDENTIALS_ROOT;
+            let testConnectOptions = {type: 'hlf'
+                                     ,membershipServicesURL: 'grpc://localhost:7054'
+                                     ,peerURL: 'grpc://localhost:7051'
+                                     ,eventHubURL: 'grpc://localhost:7053'
+                                     ,keyValStore: keyValStore
+                                     ,deployWaitTime: '300'
+                                     ,invokeWaitTime: '100'};
+
+            let connectionProfileName = 'testProfile';
+            // set up some bad options, to ensure file contents are not read...
+            let badConnectOptions = {type: 'bad'
+                                    ,membershipServicesURL: 'grpc://localhost:7054'
+                                    ,peerURL: 'grpc://localhost:7051'
+                                    ,eventHubURL: 'grpc://localhost:7053'
+                                    ,keyValStore: keyValStore
+                                    ,deployWaitTime: '300'
+                                    ,invokeWaitTime: '100'};
+            let connectionProfileContents = JSON.stringify(badConnectOptions);
+            sandbox.stub(fs, 'readFileSync').returns(connectionProfileContents);
+
+            let connectOptions = Deploy.getConnectOptions(connectionProfileName);
+
+            connectOptions.should.deep.equal(testConnectOptions);
+            connectOptions.should.not.deep.equal(badConnectOptions);
+
         });
 
     });
@@ -218,9 +244,27 @@ describe('concerto deploy network CLI unit tests', function () {
     describe('Deploy getArchiveFileContents() method tests', function () {
 
         it('Archive file exists', function () {
+
+            sandbox.stub(fs, 'existsSync').returns(true);
+            let testArchiveFileContents = JSON.stringify(testBusinessNetworkArchive);
+            sandbox.stub(fs, 'readFileSync').returns(testArchiveFileContents);
+
+            let testArchiveFile = 'testfile.zip';
+            let archiveFileContents = Deploy.getArchiveFileContents(testArchiveFile);
+
+            archiveFileContents.should.deep.equal(testArchiveFileContents);
+
         });
 
         it('Archive file does not exist', function () {
+
+            sandbox.stub(fs, 'existsSync').returns(false);
+            let testArchiveFileContents = JSON.stringify(testBusinessNetworkArchive);
+            sandbox.stub(fs, 'readFileSync').returns(testArchiveFileContents);
+
+            let testArchiveFile = 'testfile.zip';
+            (() => {Deploy.getArchiveFileContents(testArchiveFile);}).should.throw('Archive file '+testArchiveFile+' does not exist.');
+
         });
 
     });
@@ -228,9 +272,26 @@ describe('concerto deploy network CLI unit tests', function () {
     describe('Deploy getDefaultProfileName() method tests', function () {
 
         it('profile name specified in argv', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'testProfile'};
+
+            let connectionProfileName = Deploy.getDefaultProfileName(argv);
+            connectionProfileName.should.equal(argv.connectionProfileName);
+
         });
 
         it('Profile name not specified in argv', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'};
+
+            let connectionProfileName = Deploy.getDefaultProfileName(argv);
+            connectionProfileName.should.equal(DEFAULT_PROFILE_NAME);
+
         });
 
     });
