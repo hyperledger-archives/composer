@@ -28,7 +28,7 @@ describe('MemoryConnectionProfileStore', () => {
             const profileData = { one : 'one', two: 'two'};
             return cps.save('test', profileData )
                 .then(() => {
-                    cps.fileSystem.statSync( homedir() + '/concerto-connection-profiles/test/connection.json');
+                    cps.fileSystem.statSync( homedir() + '/.concerto-connection-profiles/test/connection.json');
                     return cps.load('test');
                 })
                 .then((loadedProfile) => {
