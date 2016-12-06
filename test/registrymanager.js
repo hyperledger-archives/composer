@@ -13,6 +13,7 @@
 const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
+const EventEmitter = require('events');
 const Introspector = require('@ibm/ibm-concerto-common').Introspector;
 const ParticipantDeclaration = require('@ibm/ibm-concerto-common').ParticipantDeclaration;
 const Registry = require('../lib/registry');
@@ -23,6 +24,7 @@ const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDe
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
+chai.use(require('chai-subset'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 require('sinon-as-promised');
@@ -39,6 +41,30 @@ describe('RegistryManager', () => {
         mockIntrospector = sinon.createStubInstance(Introspector);
         mockSerializer = sinon.createStubInstance(Serializer);
         registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer);
+    });
+
+    describe('#constructor', () => {
+
+        it('should be an event emitter', () => {
+            registryManager.should.be.an.instanceOf(EventEmitter);
+        });
+
+    });
+
+    describe('#createRegistry', () => {
+
+        it('should create a new registry and subscribe to its events', () => {
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            let registry = registryManager.createRegistry(mockDataCollection, mockSerializer, 'Asset', 'doges', 'The doges registry');
+            ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
+                let stub = sinon.stub();
+                registryManager.once(event, stub);
+                registry.emit(event, { test: 'data' });
+                sinon.assert.calledOnce(stub);
+                sinon.assert.calledWith(stub, { test: 'data' });
+            });
+        });
+
     });
 
     describe('#createDefaults', () => {
@@ -167,15 +193,11 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(2);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.deep.equal([{
-                        dataCollection: mockCatsCollection,
-                        serializer: mockSerializer,
+                    registries.should.containSubset([{
                         type: 'Asset',
                         id: 'cats',
                         name: 'The cats registry'
                     }, {
-                        dataCollection: mockDogesCollection,
-                        serializer: mockSerializer,
                         type: 'Asset',
                         id: 'doges',
                         name: 'The doges registry'
@@ -208,9 +230,7 @@ describe('RegistryManager', () => {
                 .then((registries) => {
                     registries.should.have.lengthOf(1);
                     registries.should.all.be.an.instanceOf(Registry);
-                    registries.should.deep.equal([{
-                        dataCollection: mockCatsCollection,
-                        serializer: mockSerializer,
+                    registries.should.containSubset([{
                         type: 'Asset',
                         id: 'cats',
                         name: 'The cats registry'
@@ -235,9 +255,7 @@ describe('RegistryManager', () => {
             return registryManager.get('Asset', 'doges')
                 .then((registry) => {
                     registry.should.be.an.instanceOf(Registry);
-                    registry.should.deep.equal({
-                        dataCollection: mockDogesCollection,
-                        serializer: mockSerializer,
+                    registry.should.containSubset({
                         type: 'Asset',
                         id: 'doges',
                         name: 'The doges registry'
@@ -266,6 +284,8 @@ describe('RegistryManager', () => {
             mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.createCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
+            let mockEventHandler = sinon.stub();
+            registryManager.on('registryadded', mockEventHandler);
             return registryManager.add('Asset', 'doges', 'The doges registry')
                 .then((registry) => {
                     sinon.assert.calledOnce(mockDataCollection.add);
@@ -276,13 +296,18 @@ describe('RegistryManager', () => {
                     });
                     sinon.assert.calledOnce(mockDataService.createCollection);
                     sinon.assert.calledWith(mockDataService.createCollection, 'Asset:doges');
-                    registry.should.deep.equal({
-                        dataCollection: mockDogesCollection,
-                        serializer: mockSerializer,
+                    registry.should.containSubset({
                         type: 'Asset',
                         id: 'doges',
                         name: 'The doges registry'
                     });
+                    sinon.assert.calledOnce(mockEventHandler);
+                    sinon.assert.calledWith(mockEventHandler, sinon.match({
+                        registry: sinon.match.instanceOf(Registry),
+                        registryType: 'Asset',
+                        registryID: 'doges',
+                        registryName: 'The doges registry'
+                    }));
                 });
         });
 

@@ -25,6 +25,7 @@ const Resolver = require('../lib/resolver');
 const Resource = require('@ibm/ibm-concerto-common').Resource;
 const ScriptManager = require('@ibm/ibm-concerto-common').ScriptManager;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
+const TransactionLogger = require('../lib/transactionlogger');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -269,10 +270,27 @@ describe('Context', () => {
 
     describe('#setTransaction', () => {
 
-        it('should set the current transaction', () => {
+        it('should set the current transaction and create a transaction logger', () => {
             let mockTransaction = sinon.createStubInstance(Resource);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
             context.setTransaction(mockTransaction);
             context.transaction.should.equal(mockTransaction);
+            context.transactionLogger.should.be.an.instanceOf(TransactionLogger);
+        });
+
+        it('should throw if a transaction has already been set', () => {
+            let mockTransaction = sinon.createStubInstance(Resource);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockSerializer = sinon.createStubInstance(Serializer);
+            sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            context.setTransaction(mockTransaction);
+            (() => {
+                context.setTransaction(mockTransaction);
+            }).should.throw(/A current transaction has already been specified/);
         });
 
     });
