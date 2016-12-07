@@ -13,7 +13,10 @@
 const Connection = require('../lib/connection');
 const ConnectionManager = require('../lib/connectionmanager');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
+
 const sinon = require('sinon');
 
 describe('Connection', () => {
@@ -59,12 +62,7 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.disconnect()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -74,12 +72,7 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.login()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -89,12 +82,7 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.deploy()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -104,12 +92,7 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.undeploy()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -119,12 +102,7 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.update()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -134,12 +112,7 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.ping()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -149,12 +122,7 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.queryChainCode()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });
@@ -164,12 +132,17 @@ describe('Connection', () => {
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
             return c.invokeChainCode()
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/abstract function called/);
-                });
+                .should.be.rejectedWith(/abstract function called/);
+        });
+
+    });
+
+    describe('#registerUser', () => {
+
+        it('should throw as abstract method', () => {
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
+            return c.registerUser()
+                .should.be.rejectedWith(/abstract function called/);
         });
 
     });

@@ -2,3 +2,4 @@ coverage
 node_modules
 out
 lib/introspect/parser.js
+test/data

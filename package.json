@@ -54,6 +54,7 @@
     "acorn": "^4.0.3",
     "browserfs": "^1.1.0",
     "commander": "^2.9.0",
+    "comment-parser": "^0.4.0",
     "config": "^1.24.0",
     "debug": "^2.2.0",
     "fs-extra": "^0.30.0",
@@ -65,7 +66,10 @@
     "node-uuid": "^1.4.7",
     "sprintf-js": "^1.0.3",
     "temp": "^0.8.3",
-    "winston": "^2.3.0"
+    "winston": "^2.3.0",
+    "doctrine": "^2.0.0",
+    "esprima": "^3.1.2"
+
   },
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
