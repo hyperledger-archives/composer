@@ -4,6 +4,8 @@ services:
     image: ibmblockchain/fabric-membersrvc:latest
     ports:
       - '7054:7054'
+    environment:
+      - MEMBERSRVC_CA_ACA_ENABLED=true
     command: membersrvc
   vp0:
     image: ibmblockchain/fabric-peer:latest
