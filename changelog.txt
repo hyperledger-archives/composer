@@ -12,8 +12,11 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.1.3 {5a867b98bf3e38ab77202bd53e801e44} 2016-12-06
+Version 0.1.4 {3c171e68f06729b2ceada25d43667b4f} 2016-12-06
 - Added registerUser method.
+
+Version 0.1.3 {cf91d9289c591bbc9a70bb69edae3f7b} 2016-12-01
+- Removed unimplemented parameter
 
 Version 0.1.2 {65d463428565e7b1a2662b77b9611c1f} 2016-11-29
 - Added update and undeploy methods. Removed force parameter from deploy.
