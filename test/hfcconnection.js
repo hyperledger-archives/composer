@@ -119,6 +119,8 @@ describe('HFCConnection', () => {
                 .then(function(securityContext) {
                     sinon.assert.calledOnce(mockChain.enroll);
                     sinon.assert.calledWith(mockChain.enroll, enrollmentID, enrollmentSecret);
+                    sinon.assert.calledOnce(mockChain.setRegistrar);
+                    sinon.assert.calledWith(mockChain.setRegistrar, mockMember);
                     securityContext.should.be.a.instanceOf(HFCSecurityContext);
                     securityContext.getEnrolledMember().should.equal(mockMember);
                     securityContext.getEventHub().should.equal(mockEventHub);
@@ -514,19 +516,42 @@ describe('HFCConnection', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-        .then(() => {
-            sinon.assert.calledOnce(HFCUtil.securityCheck);
-        });
+                .then(() => {
+                    sinon.assert.calledOnce(HFCUtil.securityCheck);
+                });
         });
 
         it('should query the chain code', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'invokeChainCode').resolves();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-        .then(() => {
-            sinon.assert.calledOnce(HFCUtil.invokeChainCode);
-            sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+                .then(() => {
+                    sinon.assert.calledOnce(HFCUtil.invokeChainCode);
+                    sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'myfunc', ['arg1', 'arg2']);
+                });
         });
+
+    });
+
+    describe('#registerUser', () => {
+
+        it('should perform a security check', () => {
+            sandbox.stub(HFCUtil, 'securityCheck');
+            sandbox.stub(HFCUtil, 'registerUser').resolves('suchsecret');
+            return connection.registerUser(mockSecurityContext, 'doge')
+                .then(() => {
+                    sinon.assert.calledOnce(HFCUtil.securityCheck);
+                });
+        });
+
+        it('should query the chain code', () => {
+            sandbox.stub(HFCUtil, 'securityCheck');
+            sandbox.stub(HFCUtil, 'registerUser').resolves('suchsecret');
+            return connection.registerUser(mockSecurityContext, 'doge')
+                .then(() => {
+                    sinon.assert.calledOnce(HFCUtil.registerUser);
+                    sinon.assert.calledWith(HFCUtil.registerUser, mockSecurityContext, 'doge');
+                });
         });
 
     });

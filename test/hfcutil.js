@@ -22,7 +22,9 @@ const temp = require('temp').track();
 const uuid = require('node-uuid');
 const version = require('../package.json').version;
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
 const runtimeModulePath = path.dirname(require.resolve('@ibm/ibm-concerto-runtime-hlf'));
@@ -32,6 +34,7 @@ describe('HFCUtil', function () {
     let mockConnection;
     let securityContext;
     let enrolledMember;
+    let chain;
     let sandbox;
 
     beforeEach(function () {
@@ -39,6 +42,8 @@ describe('HFCUtil', function () {
         mockConnection = sinon.createStubInstance(Connection);
         securityContext = new HFCSecurityContext(mockConnection);
         enrolledMember = sinon.createStubInstance(hfc.Member);
+        chain = sinon.createStubInstance(hfc.Chain);
+        enrolledMember.getChain.returns(chain);
         securityContext.setEnrolledMember(enrolledMember);
         securityContext.setChaincodeID('wowsuchchaincodeID');
     });
@@ -128,6 +133,7 @@ describe('HFCUtil', function () {
                         queryRequest.chaincodeID.should.equal('wowsuchchaincodeID');
                         queryRequest.fcn.should.equal('dogeFunction');
                         queryRequest.args.should.deep.equal(['wow', 'such', 'args']);
+                        queryRequest.attrs.should.deep.equal(['enrollmentID']);
                         return true;
                     }));
 
@@ -234,6 +240,7 @@ describe('HFCUtil', function () {
                         invokeRequest.chaincodeID.should.equal('wowsuchchaincodeID');
                         invokeRequest.fcn.should.equal('dogeFunction');
                         invokeRequest.args.should.deep.equal(['wow', 'such', 'args']);
+                        invokeRequest.attrs.should.deep.equal(['enrollmentID']);
                         return true;
                     }));
 
@@ -700,6 +707,40 @@ describe('HFCUtil', function () {
                     error.should.match(/failed to create unique chaincode ID file/);
                 });
 
+        });
+
+    });
+
+    describe('#registerUser', () => {
+
+        it('shoud throw if enrollment ID not specified', () => {
+            (() => {
+                HFCUtil.registerUser(securityContext, null);
+            }).should.throw(/enrollmentID not specified/);
+        });
+
+        it('should register a new user and return the enrollment secret', () => {
+            let registerRequest = {
+                enrollmentID: 'doge',
+                affiliation: 'institution_a',
+                attributes: [{
+                    name: 'enrollmentID',
+                    value: 'doge'
+                }]
+            };
+            chain.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
+            return HFCUtil.registerUser(securityContext, 'doge')
+                .then((enrollmentSecret) => {
+                    sinon.assert.calledOnce(chain.register);
+                    sinon.assert.calledWith(chain.register, registerRequest);
+                    enrollmentSecret.should.equal('suchpassword');
+                });
+        });
+
+        it('should handle an error from registering a new user', () => {
+            chain.register.yields(new Error('such error'));
+            return HFCUtil.registerUser(securityContext, 'doge')
+                .should.be.rejectedWith(/such error/);
         });
 
     });
