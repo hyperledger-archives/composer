@@ -13,8 +13,9 @@
 
 require('yargs')
     .command(require('./lib/deployCommand.js'))
-    .demand(1)
-    .help()
-    .strict()
-    .wrap(null)
-    .argv;
+    .command(require('./lib/submitCommand.js'))
+      .demand(1)
+      .help()
+      .strict()
+      .wrap(null)
+      .argv;
