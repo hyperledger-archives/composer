@@ -7,4 +7,5 @@ class AdminConnection {
    + Promise undeploy(string) 
    + Promise update(BusinessNetworkDefinition) 
    + Promise ping() 
+   + Promise registerUser(string) 
 }
