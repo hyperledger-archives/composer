@@ -78,6 +78,7 @@ describe('BusinessNetworkConnection', () => {
         it('should create a connection and download the business network archive', () => {
             sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
             mockConnection.login.resolves(mockSecurityContext);
+            mockConnection.ping.resolves();
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
@@ -90,6 +91,8 @@ describe('BusinessNetworkConnection', () => {
                 sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork');
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
+                sinon.assert.calledOnce(mockConnection.ping);
+                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
                 sinon.assert.calledOnce(Util.queryChainCode);
                 sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
