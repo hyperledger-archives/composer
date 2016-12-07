@@ -10,11 +10,20 @@ class BusinesNetworkConnection extends EventEmitter {
    + Promise getAllAssetRegistries(SecurityContext) 
    + Promise getAssetRegistry(string) 
    + Promise addAssetRegistry(string,string) 
+   + Promise getAllParticipantRegistries(SecurityContext) 
+   + Promise getParticipantRegistry(string) 
+   + Promise addParticipantRegistry(string,string) 
    + Promise getTransactionRegistry() 
    + Promise connect(string,string,string,string) 
    + Promise disconnect() 
    + Promise submitTransaction(Resource) 
    + Promise ping() 
+}
+class ParticipantRegistry extends Registry {
+   + Promise getAllParticipantRegistries(SecurityContext,ModelManager,Factory,Serializer) 
+   + Promise getParticipantRegistry(SecurityContext,string,ModelManager,Factory,Serializer) 
+   + Promise addParticipantRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
+   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer) 
 }
 class Registry {
    + Promise getAllRegistries(SecurityContext,string) 

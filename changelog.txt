@@ -12,5 +12,5 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.1.2 {177575441c6e828351bdc33f4ab0fd0c} 2016-12-07
+Version 0.1.2 {b3d636cd0e101d349ce183b8ae34c6e5} 2016-12-07
 - Start changelog tracking
