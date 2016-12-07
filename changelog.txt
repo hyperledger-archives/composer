@@ -11,6 +11,8 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.1.3 {bd8615dff6cd1d794a6584f1d905b3e9} 2016-12-07
+- Renamed BusinesNetworkConnection to BusinessNetworkConnection
 
 Version 0.1.2 {b3d636cd0e101d349ce183b8ae34c6e5} 2016-12-07
 - Start changelog tracking

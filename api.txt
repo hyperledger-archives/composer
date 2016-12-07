@@ -4,7 +4,7 @@ class AssetRegistry extends Registry {
    + Promise addAssetRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
    + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer) 
 }
-class BusinesNetworkConnection extends EventEmitter {
+class BusinessNetworkConnection extends EventEmitter {
    + void constructor(Object,Object,boolean) 
    + BusinessNetworkDefinition getBusinessNetwork() 
    + Promise getAllAssetRegistries(SecurityContext) 
@@ -34,8 +34,8 @@ class Registry {
    + Promise add(Resource) 
    + Promise updateAll(Resource[]) 
    + Promise update(Resource) 
-   + Promise removeAll() 
-   + Promise remove() 
+   + Promise removeAll((Resource[]|string[])) 
+   + Promise remove((Resource|string)) 
    + Promise getAll() 
    + Promise get(string) 
    + Promise find(string) 
@@ -52,6 +52,6 @@ class TransactionRegistry extends Registry {
    + void addAll(Resource[]) 
    + void update(Resource) 
    + void updateAll(Resource[]) 
-   + void remove() 
-   + void removeAll() 
+   + void remove((Resource|string)) 
+   + void removeAll((Resource[]|string[])) 
 }
