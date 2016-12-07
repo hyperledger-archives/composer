@@ -14,21 +14,22 @@ const Module = require('../');
 const AdminConnection = require('../lib/adminconnection');
 const ConcertoCommon = require('@ibm/ibm-concerto-common');
 const BusinessNetworkDefinition = ConcertoCommon.BusinessNetworkDefinition;
-const ConcertoHLFConnectionManager = require('@ibm/ibm-concerto-connector-hlf');
-const HFCConnection = require('@ibm/ibm-concerto-connector-hlf/lib/hfcconnection');
+const Connection = ConcertoCommon.Connection;
+const ConnectionManager = ConcertoCommon.ConnectionManager;
 const SecurityContext = ConcertoCommon.SecurityContext;
 
 const chai = require('chai');
+const should = chai.should();
+chai.use(require('chai-as-promised'));
+chai.use(require('chai-things'));
 const sinon = require('sinon');
 require('sinon-as-promised');
-chai.should();
-const expect = chai.expect;
-chai.use(require('chai-things'));
 
 describe('AdminConnection', () => {
 
-    let mockConcertoConnectionManager;
-    let mockHFCConnection;
+    let mockConnectionManager;
+    let mockConnection;
+    let mockSecurityContext;
     let adminConnection;
 
     const config =
@@ -40,22 +41,25 @@ describe('AdminConnection', () => {
             eventHubURL: 'grpc://localhost:7053'
         };
 
-    mockConcertoConnectionManager = sinon.createStubInstance(ConcertoHLFConnectionManager);
-    mockHFCConnection = sinon.createStubInstance(HFCConnection);
+    beforeEach(() => {
+        mockConnectionManager = sinon.createStubInstance(ConnectionManager);
+        mockConnection = sinon.createStubInstance(Connection);
+        mockSecurityContext = sinon.createStubInstance(SecurityContext);
 
-    mockHFCConnection.getConnectionManager.returns(ConcertoHLFConnectionManager);
-    mockHFCConnection.getIdentifier.returns('BNI@CP');
-    mockHFCConnection.disconnect.returns(Promise.resolve());
-    mockHFCConnection.login.returns(Promise.resolve(new SecurityContext(mockHFCConnection)));
-    mockHFCConnection.deploy.returns(Promise.resolve({'chaincodeID': '<ChaincodeID>'}));
-    mockHFCConnection.ping.returns(Promise.resolve('TXID'));
-    mockHFCConnection.undeploy.returns(Promise.resolve(true));
-    mockHFCConnection.update.returns(Promise.resolve(true));
+        mockConnection.getConnectionManager.returns(mockConnectionManager);
+        mockConnection.getIdentifier.returns('BNI@CP');
+        mockConnection.disconnect.resolves();
+        mockConnection.login.resolves(mockSecurityContext);
+        mockConnection.deploy.resolves();
+        mockConnection.ping.resolves();
+        mockConnection.undeploy.resolves();
+        mockConnection.update.resolves();
+        mockConnection.registerUser.resolves('suchsecret');
 
-    mockConcertoConnectionManager.connect.returns(Promise.resolve(mockHFCConnection));
-    mockConcertoConnectionManager.onDisconnect.returns();
-    adminConnection = new AdminConnection();
-    sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockHFCConnection);
+        mockConnectionManager.connect.resolves(mockConnection);
+        adminConnection = new AdminConnection();
+        sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+    });
 
     describe('#module', () => {
         it('should give access to AdminConnection', () => {
@@ -80,12 +84,9 @@ describe('AdminConnection', () => {
     describe('#connect', () => {
 
         it('should return connected connection', () => {
-            adminConnection.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d')
+            return adminConnection.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d')
             .then((res) => {
                 res.should.equal('connected');
-            })
-            .catch(() => {
-                // Should not get here
             });
         });
 
@@ -93,41 +94,41 @@ describe('AdminConnection', () => {
 
     describe('#createProfile', () => {
         it('should return a resolved promise', () => {
-            adminConnection.createProfile('testprofile', config)
-            .then((res) => {
-                res.should.be.undefined;
-            })
-            .catch(() => {
-                // Should not get here
-            });
+            return adminConnection.createProfile('testprofile', config)
+                .should.be.fulfilled;
         });
     });
 
     describe('#disconnect', () => {
         it('should set connection and security context to null', () => {
             let adminConnection = new AdminConnection();
-            sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockHFCConnection);
-            adminConnection.connect()
+            sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+            return adminConnection.connect()
             .then(() => {
-                adminConnection.disconnect();
-                expect(adminConnection.connection).should.be.true;
-                expect(adminConnection.securityContext).to.be.null;
+                return adminConnection.disconnect();
+            })
+            .then(() => {
+                should.equal(adminConnection.connection, null);
+                should.equal(adminConnection.securityContext, null);
             });
         });
 
         it('should not fail when no connection is set', () => {
             let adminConnection = new AdminConnection();
-            expect(adminConnection.disconnect()).not.to.throw;
+            return adminConnection.disconnect();
         });
     });
 
     describe('#deploy', () => {
 
         it('should be able to deploy a business network definition', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition();
-            adminConnection.deploy(businessNetworkDefinition)
-            .then((res) => {
-                res.should.equal({ chaincodeID: '<ChaincodeID>'});
+            return adminConnection.deploy(businessNetworkDefinition)
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.deploy);
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext,  true, businessNetworkDefinition);
             });
         });
     });
@@ -135,9 +136,12 @@ describe('AdminConnection', () => {
     describe('#undeploy', () => {
 
         it('should be able to undeploy a business network', () => {
-            adminConnection.undeploy('testnetwork')
-            .then((res) => {
-                res.should.equal(true);
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.undeploy('testnetwork')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.undeploy);
+                sinon.assert.calledWith(mockConnection.undeploy, mockSecurityContext, 'testnetwork');
             });
         });
     });
@@ -145,21 +149,42 @@ describe('AdminConnection', () => {
     describe('#update', () => {
 
         it('should be able to update a business network', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
             let businessNetworkDefinition = new BusinessNetworkDefinition();
-            adminConnection.update(businessNetworkDefinition)
-            .then((res) => {
-                res.should.equal(true);
+            return adminConnection.update(businessNetworkDefinition)
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.update);
+                sinon.assert.calledWith(mockConnection.update, mockSecurityContext, businessNetworkDefinition);
             });
         });
     });
-
 
     describe('#ping', () => {
         it('should not fail', () => {
-            adminConnection.ping()
-            .then((res) => {
-                res.should.equal('TXID');
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.ping()
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.ping);
+                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
             });
         });
     });
+
+    describe('#registerUser', () => {
+
+        it('should register a new identity', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.registerUser('doge')
+            .then((res) => {
+                sinon.assert.calledOnce(mockConnection.registerUser);
+                sinon.assert.calledWith(mockConnection.registerUser, mockSecurityContext, 'doge');
+                res.should.equal('suchsecret');
+            });
+        });
+
+    });
+
 });
