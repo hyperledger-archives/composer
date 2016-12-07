@@ -69,7 +69,7 @@ describe('EngineTransactions', () => {
 
         it('should throw for invalid arguments', () => {
             let result = engine.invoke(mockContext, 'submitTransaction', ['no', 'args', 'supported', 'here']);
-            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "submitTransaction", expecting "\["registryId","resourceId","resourceData"\]"/);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "submitTransaction", expecting "\["registryId","serializedResource"\]"/);
         });
 
     });
