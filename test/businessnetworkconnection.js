@@ -18,6 +18,7 @@ const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
 const Connection = require('@ibm/ibm-concerto-common').Connection;
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
+const ParticipantRegistry = require('../lib/participantregistry');
 const Resource = require('@ibm/ibm-concerto-common').Resource;
 const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
 const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
@@ -36,7 +37,7 @@ describe('BusinessNetworkConnection', () => {
 
     let sandbox;
     let businessNetworkConnection;
-    let securityContext;
+    let mockSecurityContext;
     let mockConnection;
     let mockBusinessNetworkDefinition;
     let mockModelManager;
@@ -45,7 +46,7 @@ describe('BusinessNetworkConnection', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        securityContext = new SecurityContext('doge', 'suchsecret');
+        mockSecurityContext = sinon.createStubInstance(SecurityContext);
         mockConnection = sinon.createStubInstance(Connection);
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         businessNetworkConnection = new BusinessNetworkConnection();
@@ -56,7 +57,7 @@ describe('BusinessNetworkConnection', () => {
         businessNetworkConnection.businessNetwork.getFactory.returns(mockFactory);
         mockSerializer = sinon.createStubInstance(Serializer);
         businessNetworkConnection.businessNetwork.getSerializer.returns(mockSerializer);
-        businessNetworkConnection.securityContext = securityContext;
+        businessNetworkConnection.securityContext = mockSecurityContext;
     });
 
     afterEach(() => {
@@ -76,11 +77,11 @@ describe('BusinessNetworkConnection', () => {
 
         it('should create a connection and download the business network archive', () => {
             sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
-            mockConnection.login.resolves(securityContext);
+            mockConnection.login.resolves(mockSecurityContext);
             const buffer = Buffer.from(JSON.stringify({
                 data: 'aGVsbG8='
             }));
-            sandbox.stub(Util, 'queryChainCode').withArgs(securityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
 
             return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret')
@@ -90,7 +91,7 @@ describe('BusinessNetworkConnection', () => {
                 sinon.assert.calledOnce(mockConnection.login);
                 sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
                 sinon.assert.calledOnce(Util.queryChainCode);
-                sinon.assert.calledWith(Util.queryChainCode, securityContext, 'getBusinessNetwork', []);
+                sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
                 businessNetworkConnection.connection.should.equal(mockConnection);
@@ -204,7 +205,7 @@ describe('BusinessNetworkConnection', () => {
             let stub = sandbox. stub(Util, 'securityCheck');
             sandbox.stub(AssetRegistry, 'addAssetRegistry').resolves();
 
-            businessNetworkConnection.securityContext = securityContext;
+            businessNetworkConnection.mockSecurityContext = mockSecurityContext;
 
             // Invoke the function.
             return businessNetworkConnection
@@ -228,6 +229,119 @@ describe('BusinessNetworkConnection', () => {
                     sinon.assert.calledOnce(stub);
                     sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', 'much assets are here', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
                     result.should.equal(assetRegistry);
+                });
+
+        });
+
+    });
+
+    describe('#getAllParticipantRegistries', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(ParticipantRegistry, 'getAllParticipantRegistries').resolves([]);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getAllParticipantRegistries()
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let participantRegistry1 = sinon.createStubInstance(ParticipantRegistry);
+            let participantRegistry2 = sinon.createStubInstance(ParticipantRegistry);
+            let stub = sandbox.stub(ParticipantRegistry, 'getAllParticipantRegistries').resolves([participantRegistry1, participantRegistry2]);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getAllParticipantRegistries()
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    result.should.have.lengthOf(2);
+                    result[0].should.equal(participantRegistry1);
+                    result[1].should.equal(participantRegistry2);
+                });
+
+        });
+
+    });
+
+    describe('#getParticipantRegistry', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(ParticipantRegistry, 'getParticipantRegistry').resolves({});
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getParticipantRegistry('wowsuchregistry')
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let participantRegistry = sinon.createStubInstance(ParticipantRegistry);
+            let stub = sandbox.stub(ParticipantRegistry, 'getParticipantRegistry').resolves(participantRegistry);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .getParticipantRegistry('wowsuchregistry')
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    result.should.equal(participantRegistry);
+                });
+
+        });
+
+    });
+
+    describe('#addParticipantRegistry', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(ParticipantRegistry, 'addParticipantRegistry').resolves();
+
+            businessNetworkConnection.mockSecurityContext = mockSecurityContext;
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .addParticipantRegistry('wowsuchregistry', 'much participants are here')
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let participantRegistry = sinon.createStubInstance(ParticipantRegistry);
+            let stub = sandbox.stub(ParticipantRegistry, 'addParticipantRegistry').resolves(participantRegistry);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .addParticipantRegistry('wowsuchregistry', 'much participants are here')
+                .then((result) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', 'much participants are here', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    result.should.equal(participantRegistry);
                 });
 
         });
@@ -333,7 +447,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, securityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'c89291eb-969f-4b04-b653-82deb5ee0ba1', json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', json]);
                 });
 
         });
@@ -370,7 +484,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, securityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'c89291eb-969f-4b04-b653-82deb5ee0ba1', json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', json]);
 
                 });
 
@@ -414,7 +528,7 @@ describe('BusinessNetworkConnection', () => {
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(Util.invokeChainCode);
-                    sinon.assert.calledWith(Util.invokeChainCode, securityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', 'c89291eb-969f-4b04-b653-82deb5ee0ba1', json]);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'submitTransaction', ['d2d210a3-5f11-433b-aa48-f74d25bb0f0d', json]);
 
                 });
 
@@ -462,9 +576,9 @@ describe('BusinessNetworkConnection', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(Util, 'securityCheck');
-            mockConnection.ping.returns(Promise.resolve(Buffer.from(JSON.stringify({
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
                 version: version
-            }))));
+            })));
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .then(() => {
@@ -473,9 +587,9 @@ describe('BusinessNetworkConnection', () => {
         });
 
         it('should ping the connection', () => {
-            mockConnection.ping.returns(Promise.resolve(Buffer.from(JSON.stringify({
+            mockConnection.ping.resolves(Buffer.from(JSON.stringify({
                 version: version
-            }))));
+            })));
             businessNetworkConnection.connection = mockConnection;
             return businessNetworkConnection.ping()
                 .then(() => {
