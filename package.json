@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-client",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The node.js client library for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
+    "test": "./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage"
   },
   "repository": {

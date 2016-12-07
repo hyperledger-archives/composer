@@ -1,0 +1,16 @@
+#
+# This is the changelog for IBM Concerto. It lists all significant changes to
+# functionality and public API.
+#
+# The most recent entry in the changelog should be at the top of this file
+# and must follow the format: Version <number> {public api digest} <date>. The version
+# number must match that specified in package.json. The public api digest is computed
+# and validated using ./scripts/api-changelog.sh
+#
+# Any changes to the public API must have an associated changelog entry.
+#
+# Note that the latest public API is documented using JSDocs and is available in api.txt.
+#
+
+Version 0.1.2 {177575441c6e828351bdc33f4ab0fd0c} 2016-12-07
+- Start changelog tracking
