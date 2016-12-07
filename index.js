@@ -11,9 +11,13 @@
 'use strict';
 
 /**
- * IBM Concerto module. IBM Concerto is a framework for creating
- * blockchain backed digital networks and exchanging assets between participants
- * via processing transactions.
+* <p>
+* The ibm-concerto-client module. Defines the client API for Concerto.
+* </p>
+* <p>
+* Concerto is a framework for creating blockchain backed digital networks and
+* exchanging assets between participants via processing transactions.
+* </p>
  * <p>
  * Applications interact with the framework by instantiating the {@link BusinessNetworkConnection}
  * class.
