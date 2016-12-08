@@ -48,6 +48,7 @@ func NewDataCollection(vm *otto.Otto, dataService *DataService, stub shim.Chainc
 	// Bind the methods into the JavaScript object.
 	result.This.Set("_getAll", result.getAll)
 	result.This.Set("_get", result.get)
+	result.This.Set("_exists", result.exists)
 	result.This.Set("_add", result.add)
 	result.This.Set("_update", result.update)
 	result.This.Set("_remove", result.remove)
@@ -129,6 +130,38 @@ func (dataCollection *DataCollection) get(call otto.FunctionCall) (result otto.V
 		return otto.UndefinedValue()
 	}
 	_, err = callback.Call(callback, nil, object)
+	if err != nil {
+		panic(err)
+	}
+	return otto.UndefinedValue()
+}
+
+// exists ...
+func (dataCollection *DataCollection) exists(call otto.FunctionCall) (result otto.Value) {
+	logger.Debug("Entering DataCollection.exists", call)
+	defer func() { logger.Debug("Exiting DataCollection.exists", result) }()
+
+	id, callback := call.Argument(0), call.Argument(1)
+	if !id.IsString() {
+		panic(fmt.Errorf("id not specified or is not a string"))
+	} else if !callback.IsFunction() {
+		panic(fmt.Errorf("callback not specified or is not a string"))
+	}
+	row, err := dataCollection.Stub.GetRow(dataCollection.TableName, []shim.Column{{Value: &shim.Column_String_{String_: id.String()}}})
+	if err != nil {
+		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
+		if err != nil {
+			panic(err)
+		}
+		return otto.UndefinedValue()
+	} else if len(row.GetColumns()) == 0 {
+		_, err = callback.Call(callback, nil, false)
+		if err != nil {
+			panic(err)
+		}
+		return otto.UndefinedValue()
+	}
+	_, err = callback.Call(callback, nil, true)
 	if err != nil {
 		panic(err)
 	}
