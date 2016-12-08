@@ -16,11 +16,10 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 const yargs = require('yargs');
 
 yargs
-    .commandDir('./lib/network')
-//    .usage('Usage: $0 <subcommand> [options]')
+    .commandDir('./lib/cmds')
     .help()
-//    .help('Usage: $0 network <subcommand> [options]')
-    .example('concerto network deploy')
+    .example('concerto network deploy\nconcerto transaction submit')
     .demand(1)
     .wrap(null)
+    .epilogue('For more information: https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/reference')
     .argv;

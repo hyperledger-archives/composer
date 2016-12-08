@@ -28,6 +28,7 @@
   "dependencies": {
     "@ibm/ibm-concerto-admin": "latest",
     "@ibm/ibm-concerto-client": "latest",
+    "@ibm/ibm-concerto-common": "latest",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
@@ -49,6 +50,9 @@
     "src": [
       "**/*.js",
       "!./cli.js",
+      "!./lib/cmds/network/network_cmds/deployCommand.js",
+      "!./lib/cmds/network/network_cmds/deployCommand.js",
+      "!./lib/cmds/network/network_cmds/deployCommand.js",
       "!./coverage/**/*",
       "!./node_modules/**/*",
       "!./out/**/*"
