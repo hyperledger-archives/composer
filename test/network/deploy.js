@@ -14,8 +14,8 @@ const Admin = require('@ibm/ibm-concerto-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const homedir = require('homedir');
 const fs = require('fs');
-const Deploy = require('../lib/cmds/network/network_cmds/lib/deploy.js');
-const CmdUtil = require('../lib/cmds/utils/cmdutils.js');
+const Deploy = require('../../lib/cmds/network/lib/deploy.js');
+const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 //require('../lib/deploy.js');
 require('chai').should();
