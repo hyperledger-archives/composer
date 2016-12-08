@@ -137,11 +137,11 @@ describe('Connection', () => {
 
     });
 
-    describe('#registerUser', () => {
+    describe('#createIdentity', () => {
 
         it('should throw as abstract method', () => {
             let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
-            return c.registerUser()
+            return c.createIdentity()
                 .should.be.rejectedWith(/abstract function called/);
         });
 
