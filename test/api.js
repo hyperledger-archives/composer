@@ -13,6 +13,7 @@
 const Api = require('../lib/api');
 const AssetRegistry = require('../lib/api/assetregistry');
 const Factory = require('../lib/api/factory');
+const ParticipantRegistry = require('../lib/api/participantregistry');
 const realFactory = require('@ibm/ibm-concerto-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
@@ -68,6 +69,23 @@ describe('Api', () => {
         it('should handle any errors', () => {
             mockRegistryManager.get.withArgs('Asset', 'org.doge.Doge').rejects(new Error('wow such error'));
             return api.getAssetRegistry('org.doge.Doge')
+                .should.be.rejectedWith(/wow such error/);
+        });
+
+    });
+
+    describe('#getParticipantRegistry', () => {
+
+        it('should return the specified participant registry', () => {
+            let mockRegistry = sinon.createStubInstance(Registry);
+            mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').resolves(mockRegistry);
+            return api.getParticipantRegistry('org.doge.Doge')
+                .should.eventually.be.an.instanceOf(ParticipantRegistry);
+        });
+
+        it('should handle any errors', () => {
+            mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').rejects(new Error('wow such error'));
+            return api.getParticipantRegistry('org.doge.Doge')
                 .should.be.rejectedWith(/wow such error/);
         });
 

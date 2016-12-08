@@ -17,6 +17,8 @@ const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const Factory = require('@ibm/ibm-concerto-common').Factory;
+const IdentityManager = require('../lib/identitymanager');
+const IdentityService = require('../lib/identityservice');
 const Introspector = require('@ibm/ibm-concerto-common').Introspector;
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
 const QueryExecutor = require('../lib/queryexecutor');
@@ -63,6 +65,8 @@ describe('Context', () => {
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
             mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
             sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             return context.initialize()
@@ -80,6 +84,8 @@ describe('Context', () => {
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
             mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
             sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetwork);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects();
@@ -96,6 +102,16 @@ describe('Context', () => {
         it('should throw as abstract method', () => {
             (() => {
                 context.getDataService();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#getIdentityService', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getIdentityService();
             }).should.throw(/abstract function called/);
         });
 
@@ -254,6 +270,24 @@ describe('Context', () => {
             let mockQueryExecutor = sinon.createStubInstance(QueryExecutor);
             context.queryExecutor = mockQueryExecutor;
             context.getQueryExecutor().should.equal(mockQueryExecutor);
+        });
+
+    });
+
+    describe('#getIdentityManager', () => {
+
+        it('should return a new identity manager', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            context.getIdentityManager().should.be.an.instanceOf(IdentityManager);
+        });
+
+        it('should return an existing registry manager', () => {
+            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            context.identityManager = mockIdentityManager;
+            context.getIdentityManager().should.equal(mockIdentityManager);
         });
 
     });

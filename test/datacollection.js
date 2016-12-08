@@ -94,6 +94,41 @@ describe('DataCollection', () => {
 
     });
 
+    describe('#exists', () => {
+
+        it('should call _exists and handle no error', () => {
+            sinon.stub(dataCollection, '_exists').yields(null, true);
+            return dataCollection.exists('id')
+                .then((result) => {
+                    sinon.assert.calledWith(dataCollection._exists, 'id');
+                    result.should.be.true;
+                });
+        });
+
+        it('should call _exists and handle an error', () => {
+            sinon.stub(dataCollection, '_exists').yields(new Error('error'), null);
+            return dataCollection.exists('id')
+                .then((result) => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    sinon.assert.calledWith(dataCollection._exists, 'id');
+                    error.should.match(/error/);
+                });
+        });
+
+    });
+
+    describe('#_exists', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                dataCollection._exists('id');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
     describe('#add', () => {
 
         it('should call _add and handle no error', () => {
