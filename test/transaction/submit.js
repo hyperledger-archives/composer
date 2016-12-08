@@ -18,8 +18,8 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const Serializer = Common.Serializer;
 const Resource = Common.Resource;
 
-const Submit = require('../lib/cmds/transaction/transaction_cmds/lib/submit.js');
-const CmdUtil = require('../lib/cmds/utils/cmdutils.js');
+const Submit = require('../../lib/cmds/transaction/submitCommand.js');
+const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 const chai = require('chai');
 const sinon = require('sinon');
@@ -40,7 +40,7 @@ const ENROLL_SECRET = 'SuccessKidWin';
 // const CREDENTIALS_ROOT = homedir() + '/.concerto-credentials';
 
 
-describe('#concerto transaction submit', () => {
+describe('concerto transaction submit CLI unit tests', () => {
     let sandbox;
     let mockBusinessNetworkConnection;
     let mockBusinessNetwork;
@@ -54,11 +54,13 @@ describe('#concerto transaction submit', () => {
         mockSerializer = sinon.createStubInstance(Serializer);
         mockResource = sinon.createStubInstance(Resource);
         mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetwork);
+        mockBusinessNetworkConnection.connect.resolves();
         mockBusinessNetwork.getSerializer.returns(mockSerializer);
         mockSerializer.fromJSON.returns(mockResource);
         mockResource.getIdentifier.returns('SuccessKid');
 
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
+        sandbox.stub(process, 'exit');
     });
 
     afterEach(() => {
@@ -83,6 +85,7 @@ describe('#concerto transaction submit', () => {
                 sinon.assert.calledOnce(mockBusinessNetwork.getSerializer);
                 sinon.assert.calledOnce(mockSerializer.fromJSON);
                 sinon.assert.calledWith(mockSerializer.fromJSON, JSON.parse(argv.args));
+                sinon.assert.calledWith(process.exit, 0);
             });
         });
 
@@ -103,6 +106,7 @@ describe('#concerto transaction submit', () => {
                 sinon.assert.calledOnce(mockBusinessNetwork.getSerializer);
                 sinon.assert.calledOnce(mockSerializer.fromJSON);
                 sinon.assert.calledWith(mockSerializer.fromJSON, JSON.parse(argv.args));
+                sinon.assert.calledWith(process.exit, 0);
             });
         });
 
@@ -119,7 +123,25 @@ describe('#concerto transaction submit', () => {
             return Submit.handler(argv)
             .then((res) => {
                 sinon.assert.calledWith(CmdUtil.prompt);
+                sinon.assert.calledWith(process.exit, 0);
             });
+        });
+
+        it('should error when the transaction fails to submit', () => {
+            let argv = {
+                connectionProfileName: DEFAULT_PROFILE_NAME,
+                businessNetworkName: BUSINESS_NETWORK_NAME,
+                enrollId: ENROLL_ID,
+                enrollSecret: ENROLL_SECRET,
+                args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+            };
+
+            mockBusinessNetworkConnection.submitTransaction.rejects(new Error('some error'));
+
+            return Submit.handler(argv)
+                .then((res) => {
+                    sinon.assert.calledWith(process.exit, 1);
+                });
         });
     });
 });
