@@ -27,6 +27,7 @@
   "license": "ISC",
   "dependencies": {
     "@ibm/ibm-concerto-admin": "latest",
+    "@ibm/ibm-concerto-client": "latest",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
