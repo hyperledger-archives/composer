@@ -54,7 +54,6 @@ describe('AdminConnection', () => {
         mockConnection.ping.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
-        mockConnection.registerUser.resolves('suchsecret');
 
         mockConnectionManager.connect.resolves(mockConnection);
         adminConnection = new AdminConnection();
@@ -170,21 +169,6 @@ describe('AdminConnection', () => {
                 sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
             });
         });
-    });
-
-    describe('#registerUser', () => {
-
-        it('should register a new identity', () => {
-            adminConnection.connection = mockConnection;
-            adminConnection.securityContext = mockSecurityContext;
-            return adminConnection.registerUser('doge')
-            .then((res) => {
-                sinon.assert.calledOnce(mockConnection.registerUser);
-                sinon.assert.calledWith(mockConnection.registerUser, mockSecurityContext, 'doge');
-                res.should.equal('suchsecret');
-            });
-        });
-
     });
 
 });
