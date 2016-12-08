@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-client",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "The node.js client library for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
