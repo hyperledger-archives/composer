@@ -21,4 +21,5 @@ module.exports.Context = require('./lib/context');
 module.exports.DataCollection = require('./lib/datacollection');
 module.exports.DataService = require('./lib/dataservice');
 module.exports.Engine = require('./lib/engine');
+module.exports.IdentityService = require('./lib/identityservice');
 module.exports.LoggingService = require('./lib/loggingservice');

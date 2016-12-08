@@ -89,6 +89,16 @@ describe('IdentityManager', () => {
                 .should.be.rejectedWith(/does not exist/);
         });
 
+        it('should throw if the specified participant ID is invalid', () => {
+            // The participant does not exist.
+            mockRegistry.get.withArgs('DOGE_1').rejects(new Error('does not exist'));
+            // An existing mapping for this user ID does not exist.
+            mockDataCollection.exists.withArgs('dogeid1').resolves(false);
+            (() => {
+                identityManager.addIdentityMapping('org.doge.Doge$DOGE_1', 'dogeid1');
+            }).should.throw(/Invalid fully qualified participant identifier/);
+        });
+
         it('should throw if the specified user ID is already mapped', () => {
             // The participant exists.
             mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
