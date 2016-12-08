@@ -602,4 +602,98 @@ describe('BusinessNetworkConnection', () => {
 
     });
 
+    describe('#issueIdentity', () => {
+
+        beforeEach(() => {
+            businessNetworkConnection.connection = mockConnection;
+            mockConnection.createIdentity.withArgs(mockSecurityContext, 'dogeid1').resolves({
+                userID: 'dogeid1',
+                userSecret: 'suchsecret'
+            });
+        });
+
+        it('should throw if participant not specified', () => {
+            (() => {
+                businessNetworkConnection.issueIdentity(null, 'ZLBYrYMQve2vp74m');
+            }).should.throw(/participant not specified/);
+        });
+
+        it('should throw if userID not specified', () => {
+            (() => {
+                let mockResource = sinon.createStubInstance(Resource);
+                mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+                businessNetworkConnection.issueIdentity(mockResource, null);
+            }).should.throw(/userID not specified/);
+        });
+
+        it('should submit a request to the chaincode for a resource', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            return businessNetworkConnection.issueIdentity(mockResource, 'dogeid1')
+                .then((result) => {
+                    sinon.assert.calledOnce(mockConnection.createIdentity);
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addParticipantIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    result.should.deep.equal({
+                        userID: 'dogeid1',
+                        userSecret: 'suchsecret'
+                    });
+                });
+        });
+
+        it('should submit a request to the chaincode for a fully qualified identifier', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            return businessNetworkConnection.issueIdentity('org.doge.Doge#DOGE_1', 'dogeid1')
+                .then((result) => {
+                    sinon.assert.calledOnce(mockConnection.createIdentity);
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1');
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addParticipantIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    result.should.deep.equal({
+                        userID: 'dogeid1',
+                        userSecret: 'suchsecret'
+                    });
+                });
+        });
+
+        it('should submit a request to the chaincode with additional options', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            return businessNetworkConnection.issueIdentity('org.doge.Doge#DOGE_1', 'dogeid1', { issuer: true })
+                .then((result) => {
+                    sinon.assert.calledOnce(mockConnection.createIdentity);
+                    sinon.assert.calledWith(mockConnection.createIdentity, mockSecurityContext, 'dogeid1', { issuer: true });
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'addParticipantIdentity', ['org.doge.Doge#DOGE_1', 'dogeid1']);
+                    result.should.deep.equal({
+                        userID: 'dogeid1',
+                        userSecret: 'suchsecret'
+                    });
+                });
+        });
+
+    });
+
+    describe('#revokeIdentity', () => {
+
+        it('should throw if identity not specified', () => {
+            (() => {
+                let mockResource = sinon.createStubInstance(Resource);
+                mockResource.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+                businessNetworkConnection.revokeIdentity(null);
+            }).should.throw(/identity not specified/);
+        });
+
+        it('should submit a request to the chaincode', () => {
+            sandbox.stub(Util, 'invokeChainCode').resolves();
+            return businessNetworkConnection.revokeIdentity('dogeid1')
+                .then(() => {
+                    sinon.assert.calledOnce(Util.invokeChainCode);
+                    sinon.assert.calledWith(Util.invokeChainCode, mockSecurityContext, 'removeIdentity', ['dogeid1']);
+                });
+        });
+
+    });
+
 });
