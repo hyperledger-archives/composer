@@ -18,10 +18,9 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const Serializer = Common.Serializer;
 const Resource = Common.Resource;
 
+const Submit = require('../lib/cmds/transaction/transaction_cmds/lib/submit.js');
+const CmdUtil = require('../lib/cmds/utils/cmdutils.js');
 
-const CmdUtil = require('./../lib/utils/cmdutils');
-
-const Submit = require('./../lib/submit');
 const chai = require('chai');
 const sinon = require('sinon');
 

@@ -11,11 +11,15 @@
 
 'use strict';
 
-require('yargs')
-    .command(require('./lib/deployCommand.js'))
-    .command(require('./lib/submitCommand.js'))
-      .demand(1)
-      .help()
-      .strict()
-      .wrap(null)
-      .argv;
+process.env.SUPPRESS_NO_CONFIG_WARNING = true;
+
+const yargs = require('yargs');
+
+yargs
+    .commandDir('./lib/cmds')
+    .help()
+    .example('concerto network deploy\nconcerto transaction submit')
+    .demand(1)
+    .wrap(null)
+    .epilogue('For more information: https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/reference')
+    .argv;

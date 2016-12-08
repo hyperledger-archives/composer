@@ -14,10 +14,10 @@ const Admin = require('@ibm/ibm-concerto-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const homedir = require('homedir');
 const fs = require('fs');
-const Deploy = require('../lib/deploy.js');
-const CmdUtil = require('../lib/utils/cmdutils.js');
+const Deploy = require('../lib/cmds/network/network_cmds/lib/deploy.js');
+const CmdUtil = require('../lib/cmds/utils/cmdutils.js');
 
-require('../lib/deploy.js');
+//require('../lib/deploy.js');
 require('chai').should();
 
 const chai = require('chai');
