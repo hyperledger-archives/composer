@@ -19,7 +19,7 @@ const hfc = require('hfc');
 const path = require('path');
 const SecurityException = require('@ibm/ibm-concerto-common').SecurityException;
 const temp = require('temp').track();
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const version = require('../package.json').version;
 
 const chai = require('chai');
