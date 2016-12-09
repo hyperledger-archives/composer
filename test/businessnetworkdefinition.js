@@ -17,13 +17,20 @@ describe('BusinessNetworkDefinition', () => {
     let businessNetworkDefinition;
 
     beforeEach(() => {
-        businessNetworkDefinition = new BusinessNetworkDefinition('id', 'description');
+        businessNetworkDefinition = new BusinessNetworkDefinition('id-1.0.0', 'description');
     });
 
-    afterEach(() => {
-    });
+    afterEach(() => {});
 
     describe('#accessors', () => {
+
+        it('should be able to get name', () => {
+            businessNetworkDefinition.getName().should.equal('id');
+        });
+
+        it('should be able to get version', () => {
+            businessNetworkDefinition.getVersion().should.equal('1.0.0');
+        });
 
         it('should be able to retrieve factory', () => {
             businessNetworkDefinition.getFactory().should.not.be.null;
@@ -58,35 +65,43 @@ describe('BusinessNetworkDefinition', () => {
 
 
 
-        it('should be able to correctly create a business network from a directory', () => {
+        it('should be able to correctly create a business network from a plain directory', () => {
 
-            return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/test-archive').then(businessNetwork => {
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                businessNetwork.identifier.should.equal('@ibm/test-archive-0.0.1');
-                businessNetwork.description.should.equal('A test business network.');
+                businessNetwork.getName().should.equal('@ibm/test-archive');
+                businessNetwork.getVersion().should.equal('0.0.1');
+                businessNetwork.getDescription().should.equal('A test business network.');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
+
+                const intro = businessNetwork.getIntrospector();
+                intro.getClassDeclarations().length.should.equal(25);
+                const sm = businessNetwork.getScriptManager();
+                sm.getScripts().length.should.equal(2);
             });
         });
 
-        it('should be able to create a ZIP archive from a directory (using fromDirectory and toArchive)', () => {
+        it('should be able to correctly create a business network from a directory using npm dependencies', () => {
 
-            return businessNetworkDefinition.fromDirectory(__dirname+'/data/zip/test-archive').then(businessNetwork => {
-                return businessNetwork.toArchive().then(buffer => {
-                    buffer.should.be.Buffer;
-                });
-            });
-        });
+            // we force an 'npm install' on the package.json
+            let execSync = require('child_process').execSync;
+            execSync('cd ' + __dirname + '/data/zip/test-npm-archive' + ' && npm install',
+              function(error, stdout, stderr) {} );
 
-
-        it('should be able to correctly create business network from a ZIP archive', () => {
-            let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
-            return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-npm-archive').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                businessNetwork.identifier.should.equal('@ibm/test-archive-0.0.1');
-                businessNetwork.description.should.equal('A test business network.');
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                businessNetwork.getName().should.equal('@ibm/test-npm-archive');
+                businessNetwork.getVersion().should.equal('0.0.1');
+                businessNetwork.getDescription().should.equal('A test business network using npm model dependencies.');
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(2);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
+
+                const intro = businessNetwork.getIntrospector();
+                intro.getClassDeclarations().length.should.equal(13);
+                businessNetwork.getModelManager().getModelFiles().length.should.equal(2);
+                const sm = businessNetwork.getScriptManager();
+                sm.getScripts().length.should.equal(2);
             });
         });
 
@@ -95,7 +110,7 @@ describe('BusinessNetworkDefinition', () => {
              We first need to read a ZIP and create a business network.
              After we have done this, we'll be able to create a new ZIP with the contents of the business network.
             */
-            let readFile = fs.readFileSync(__dirname+'/data/zip/test-archive.zip');
+            let readFile = fs.readFileSync(__dirname + '/data/zip/test-archive.zip');
             return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
                 businessNetwork.identifier.should.equal('@ibm/test-archive-0.0.1');
