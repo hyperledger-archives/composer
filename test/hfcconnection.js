@@ -54,6 +54,7 @@ describe('HFCConnection', () => {
                 testnetwork: '123'
             }
         });
+
         mockConnectionProfileStore.save.resolves();
         mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
 
@@ -201,7 +202,13 @@ describe('HFCConnection', () => {
             });
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
+            businessNetworkStub.getName.returns('testnetwork');
             sandbox.stub(connection, 'ping').resolves();
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf',
+                networks: {
+                }
+            });
             return connection.deploy(mockSecurityContext, true, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
@@ -218,6 +225,7 @@ describe('HFCConnection', () => {
             sandbox.stub(connection, 'ping').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
+            businessNetworkStub.getName.returns('testnetwork');
             mockConnectionProfileStore.load.withArgs('testprofile').resolves({
                 type: 'hlf'
             });
@@ -238,21 +246,10 @@ describe('HFCConnection', () => {
 
                     // check the profile store was updated
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
-                })
-                .then(function() {
-                    // second deploy to make sure the networks list gets modified if it already exists
-                    return connection.deploy(mockSecurityContext, true, businessNetworkStub);
-                })
-                .then(function() {
-                    // Check that the query was made successfully.
-                    sinon.assert.calledTwice(HFCUtil.deployChainCode);
-
-                    // check that the profile store was updated
-                    sinon.assert.calledTwice(mockConnectionProfileStore.save);
                 });
         });
 
-        it('should deploy a second time the Concerto chain-code to the Hyperledger Fabric', function() {
+        it('should not deploy a second time the Concerto chain-code to the Hyperledger Fabric', function() {
 
             // Set up the responses from the chain-code.
             sandbox.stub(HFCUtil, 'deployChainCode').resolves({
@@ -260,26 +257,16 @@ describe('HFCConnection', () => {
             });
             sandbox.stub(connection, 'ping').resolves();
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
+            businessNetworkStub.getName.returns('testnetwork');
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
                 .deploy(mockSecurityContext, true, businessNetworkStub)
-                .then(function() {
-
-                    // Check that the query was made successfully.
-                    sinon.assert.calledOnce(HFCUtil.deployChainCode);
-                    sinon.assert.calledWith(HFCUtil.deployChainCode, mockSecurityContext, 'concerto', 'init', ['AAEC']);
-                    sinon.assert.calledOnce(connection.ping);
-                    sinon.assert.calledWith(connection.ping, mockSecurityContext);
-
-                    // Check that the security context was updated correctly.
-                    sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
-                    sinon.assert.calledWith(mockSecurityContext.setChaincodeID, 'secondChaincodeID');
-
-                    // check the profile store was updated
-                    sinon.assert.calledOnce(mockConnectionProfileStore.save);
+                .then(function(assetRegistries) {
+                    throw new Error('should not get here');
+                }).catch(function(error) {
+                    error.should.match(/already contains the deployed network testnetwork/);
                 });
-
         });
 
         it('should handle an error deploying the Concerto chain-code the Hyperledger Fabric', function() {
