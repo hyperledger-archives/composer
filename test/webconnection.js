@@ -10,7 +10,7 @@
 
 'use strict';
 
-const BusinessNetwork = require('@ibm/ibm-concerto-common').BusinessNetwork;
+const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
 const Connection = require('@ibm/ibm-concerto-common').Connection;
 const ConnectionManager = require('@ibm/ibm-concerto-common').ConnectionManager;
 const Container = require('@ibm/ibm-concerto-runtime').Container;
@@ -71,8 +71,9 @@ describe('WebConnection', () => {
     describe('#deploy', () => {
 
         it('should call the init engine method and ping', () => {
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetwork);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
+            mockBusinessNetwork.getName.returns('testnetwork');
             sinon.stub(connection.engine, 'init').resolves();
             sinon.stub(connection, 'ping').resolves();
             return connection.deploy(mockSecurityContext, true, mockBusinessNetwork)
