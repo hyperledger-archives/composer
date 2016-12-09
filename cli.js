@@ -18,8 +18,9 @@ const yargs = require('yargs');
 yargs
     .commandDir('./lib/cmds')
     .help()
-    .example('concerto network deploy\nconcerto transaction submit')
+    .example('concerto identity issue\nconcerto network deploy\nconcerto participant add\nconcerto transaction submit')
     .demand(1)
     .wrap(null)
+    .strict()
     .epilogue('For more information: https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/reference')
     .argv;
