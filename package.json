@@ -65,7 +65,7 @@
     "minimatch": "^3.0.3",
     "mkdirp": "^0.5.1",
     "node-plantuml": "^0.5.0",
-    "node-uuid": "^1.4.7",
+    "uuid": "^3.0.0",
     "semver": "^5.3.0",
     "sprintf-js": "^1.0.3",
     "temp": "^0.8.3",
