@@ -31,7 +31,7 @@ describe('Asset registry system tests', function () {
         const modelFiles = [
             fs.readFileSync(path.resolve(__dirname, 'data/assetregistries.cto'), 'utf8')
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.assetregistries', 'The network for the asset registry system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest.assetregistries-0.0.1', 'The network for the asset registry system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile);
         });
