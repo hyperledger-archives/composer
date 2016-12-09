@@ -42,7 +42,7 @@
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
     "@ibm/ibm-concerto-connector-hlf": "latest",
-    "node-uuid": "^1.4.7"
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
