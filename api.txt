@@ -4,10 +4,12 @@ class BaseException extends Error {
 class BusinessNetworkDefinition {
    + void constructor(String,String) 
    + String getIdentifier() 
+   + String getName() 
+   + String getVersion() 
    + String getDescription() 
    + Promise fromArchive(Buffer) 
    + Buffer toArchive() 
-   + Buffer fromDirectory(String) 
+   + Promise fromDirectory(String,Object,Object,boolean,boolean) 
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
