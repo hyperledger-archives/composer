@@ -3,7 +3,7 @@ instrumentation:
         - "cli.js"
         - "index.js"
         - "lib/utils/*.js"
-        - "lib/*Command.js"
+        - "**/*/lib/*Command.js"
         - "out/**"
         - "scripts/**"
         - "systest/**"
