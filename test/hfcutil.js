@@ -133,7 +133,7 @@ describe('HFCUtil', function () {
                         queryRequest.chaincodeID.should.equal('wowsuchchaincodeID');
                         queryRequest.fcn.should.equal('dogeFunction');
                         queryRequest.args.should.deep.equal(['wow', 'such', 'args']);
-                        queryRequest.attrs.should.deep.equal(['enrollmentID']);
+                        queryRequest.attrs.should.deep.equal(['userID']);
                         return true;
                     }));
 
@@ -240,7 +240,7 @@ describe('HFCUtil', function () {
                         invokeRequest.chaincodeID.should.equal('wowsuchchaincodeID');
                         invokeRequest.fcn.should.equal('dogeFunction');
                         invokeRequest.args.should.deep.equal(['wow', 'such', 'args']);
-                        invokeRequest.attrs.should.deep.equal(['enrollmentID']);
+                        invokeRequest.attrs.should.deep.equal(['userID']);
                         return true;
                     }));
 
@@ -490,6 +490,12 @@ describe('HFCUtil', function () {
                     sinon.assert.calledOnce(fs.copy);
                     sinon.assert.calledWith(fs.copy, path.resolve(runtimeModulePath), '/tmp/concerto/src/concerto');
 
+                    // Check the filter ignores any relevant node modules files.
+                    fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
+                    fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
+                    fs.copy.firstCall.args[2].filter('ibm-concerto-runtime-hlf/node_modules/here').should.be.false;
+                    fs.copy.firstCall.args[2].filter('Concerto-Runtime-Hyperledger-Fabric/node_modules/here').should.be.false;
+
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(enrolledMember.deploy);
                     sinon.assert.calledWith(enrolledMember.deploy, sinon.match(function (deployRequest) {
@@ -711,35 +717,63 @@ describe('HFCUtil', function () {
 
     });
 
-    describe('#registerUser', () => {
+    describe('#createIdentity', () => {
 
         it('shoud throw if enrollment ID not specified', () => {
             (() => {
-                HFCUtil.registerUser(securityContext, null);
-            }).should.throw(/enrollmentID not specified/);
+                HFCUtil.createIdentity(securityContext, null);
+            }).should.throw(/userID not specified/);
         });
 
-        it('should register a new user and return the enrollment secret', () => {
+        it('should register a new user and return the user secret', () => {
             let registerRequest = {
                 enrollmentID: 'doge',
                 affiliation: 'institution_a',
                 attributes: [{
-                    name: 'enrollmentID',
+                    name: 'userID',
                     value: 'doge'
                 }]
             };
             chain.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
-            return HFCUtil.registerUser(securityContext, 'doge')
-                .then((enrollmentSecret) => {
+            return HFCUtil.createIdentity(securityContext, 'doge')
+                .then((identity) => {
                     sinon.assert.calledOnce(chain.register);
                     sinon.assert.calledWith(chain.register, registerRequest);
-                    enrollmentSecret.should.equal('suchpassword');
+                    identity.should.deep.equal({
+                        userID: 'doge',
+                        userSecret: 'suchpassword'
+                    });
+                });
+        });
+
+        it('should register a new user who can issue new identities and return the enrollment secret', () => {
+            let registerRequest = {
+                enrollmentID: 'doge',
+                affiliation: 'institution_a',
+                attributes: [{
+                    name: 'userID',
+                    value: 'doge'
+                }],
+                registrar: {
+                    roles: ['client'],
+                    delegateRoles: ['client']
+                }
+            };
+            chain.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
+            return HFCUtil.createIdentity(securityContext, 'doge', { issuer: true })
+                .then((identity) => {
+                    sinon.assert.calledOnce(chain.register);
+                    sinon.assert.calledWith(chain.register, registerRequest);
+                    identity.should.deep.equal({
+                        userID: 'doge',
+                        userSecret: 'suchpassword'
+                    });
                 });
         });
 
         it('should handle an error from registering a new user', () => {
             chain.register.yields(new Error('such error'));
-            return HFCUtil.registerUser(securityContext, 'doge')
+            return HFCUtil.createIdentity(securityContext, 'doge')
                 .should.be.rejectedWith(/such error/);
         });
 

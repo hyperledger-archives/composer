@@ -520,12 +520,12 @@ describe('HFCConnection', () => {
 
     });
 
-    describe('#registerUser', () => {
+    describe('#createIdentity', () => {
 
         it('should perform a security check', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'registerUser').resolves('suchsecret');
-            return connection.registerUser(mockSecurityContext, 'doge')
+            sandbox.stub(HFCUtil, 'createIdentity').resolves('suchsecret');
+            return connection.createIdentity(mockSecurityContext, 'doge')
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
                 });
@@ -533,11 +533,11 @@ describe('HFCConnection', () => {
 
         it('should query the chain code', () => {
             sandbox.stub(HFCUtil, 'securityCheck');
-            sandbox.stub(HFCUtil, 'registerUser').resolves('suchsecret');
-            return connection.registerUser(mockSecurityContext, 'doge')
+            sandbox.stub(HFCUtil, 'createIdentity').resolves('suchsecret');
+            return connection.createIdentity(mockSecurityContext, 'doge')
                 .then(() => {
-                    sinon.assert.calledOnce(HFCUtil.registerUser);
-                    sinon.assert.calledWith(HFCUtil.registerUser, mockSecurityContext, 'doge');
+                    sinon.assert.calledOnce(HFCUtil.createIdentity);
+                    sinon.assert.calledWith(HFCUtil.createIdentity, mockSecurityContext, 'doge');
                 });
         });
 
