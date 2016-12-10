@@ -19,6 +19,7 @@ const Engine = require('../lib/engine');
 const Logger = require('@ibm/ibm-concerto-common').Logger;
 const LoggingService = require('../lib/loggingservice');
 const RegistryManager = require('../lib/registrymanager');
+const Resource = require('@ibm/ibm-concerto-common').Resource;
 const version = require('../package.json').version;
 
 const chai = require('chai');
@@ -373,7 +374,21 @@ describe('Engine', () => {
             return engine.query(mockContext, 'ping', [])
                 .then((result) => {
                     result.should.deep.equal({
-                        version: version
+                        version: version,
+                        participant: null
+                    });
+                });
+        });
+
+        it('should return an object containing the current participant', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            mockContext.getParticipant.returns(mockParticipant);
+            return engine.query(mockContext, 'ping', [])
+                .then((result) => {
+                    result.should.deep.equal({
+                        version: version,
+                        participant: 'org.doge.Doge#DOGE_1'
                     });
                 });
         });
