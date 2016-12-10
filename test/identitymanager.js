@@ -130,4 +130,52 @@ describe('IdentityManager', () => {
 
     });
 
+    describe('#getParticipant', () => {
+
+        it('should resolve to a participant for an existing mapping and participant', () => {
+            // An existing mapping for this user ID does exist.
+            mockDataCollection.get.withArgs('dogeid1').resolves({
+                participant: 'org.doge.Doge#DOGE_1'
+            });
+            // The participant exists.
+            mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
+            return identityManager.getParticipant('dogeid1')
+                .then((participant) => {
+                    participant.should.equal(mockParticipant);
+                });
+        });
+
+        it('should throw an error for a missing mapping', () => {
+            // An existing mapping for this user ID does not exist.
+            mockDataCollection.get.withArgs('dogeid1').rejects(new Error('no such mapping'));
+            // The participant exists.
+            mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
+            return identityManager.getParticipant('dogeid1')
+                .should.be.rejectedWith(/no such mapping/);
+        });
+
+        it('should throw an error for an invalid mapping', () => {
+            // An existing mapping for this user ID does not exist.
+            mockDataCollection.get.withArgs('dogeid1').resolves({
+                participant: 'org.doge.Doge@DOGE_1'
+            });
+            // The participant exists.
+            mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
+            return identityManager.getParticipant('dogeid1')
+                .should.be.rejectedWith(/Invalid fully qualified participant identifier/);
+        });
+
+        it('should throw an error for an existing mapping but missing participant', () => {
+            // An existing mapping for this user ID does exist.
+            mockDataCollection.get.withArgs('dogeid1').resolves({
+                participant: 'org.doge.Doge#DOGE_1'
+            });
+            // The participant does not exist.
+            mockRegistry.get.withArgs('DOGE_1').rejects(new Error('no such participant'));
+            return identityManager.getParticipant('dogeid1')
+                .should.be.rejectedWith(/no such participant/);
+        });
+
+    });
+
 });
