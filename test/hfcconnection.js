@@ -444,11 +444,14 @@ describe('HFCConnection', () => {
         // Invoke the ping function.
             return connection
             .ping(mockSecurityContext)
-            .then(function() {
+            .then((result) => {
 
                 // Check that the query was made successfully.
                 sinon.assert.calledOnce(HFCUtil.queryChainCode);
                 sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'ping', []);
+                result.should.deep.equal({
+                    version: version
+                });
 
             });
 
