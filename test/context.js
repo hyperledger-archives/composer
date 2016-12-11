@@ -286,6 +286,8 @@ describe('Context', () => {
         it('should return a new API', () => {
             let mockFactory = sinon.createStubInstance(Factory);
             sinon.stub(context, 'getFactory').returns(mockFactory);
+            let mockParticipant = sinon.createStubInstance(Resource);
+            sinon.stub(context, 'getParticipant').returns(mockParticipant);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             context.getApi().should.be.an.instanceOf(Api);
