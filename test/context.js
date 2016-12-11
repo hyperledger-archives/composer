@@ -29,7 +29,7 @@ const ScriptManager = require('@ibm/ibm-concerto-common').ScriptManager;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
 const TransactionLogger = require('../lib/transactionlogger');
 
-const should = require('chai').should();
+require('chai').should();
 const sinon = require('sinon');
 require('sinon-as-promised');
 
@@ -96,7 +96,7 @@ describe('Context', () => {
                 });
         });
 
-        it('should load the current participant if it exists', () => {
+        it('should load the current participant if an identity is specified', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
@@ -118,7 +118,7 @@ describe('Context', () => {
                 });
         });
 
-        it('should ignore an error loading the current participant if it does not exist', () => {
+        it('should throw an error if an invalid identity is specified', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
@@ -133,9 +133,7 @@ describe('Context', () => {
             mockIdentityService.getCurrentUserID.returns('dogeid1');
             mockIdentityManager.getParticipant.withArgs('dogeid1').rejects(new Error('no such participant'));
             return context.initialize()
-                .then(() => {
-                    should.equal(context.getParticipant(), null);
-                });
+                .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
         });
 
     });
