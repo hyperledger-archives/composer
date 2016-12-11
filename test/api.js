@@ -17,6 +17,7 @@ const ParticipantRegistry = require('../lib/api/participantregistry');
 const realFactory = require('@ibm/ibm-concerto-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
+const Resource = require('@ibm/ibm-concerto-common').Resource;
 
 const chai = require('chai');
 chai.should();
@@ -28,13 +29,15 @@ require('sinon-as-promised');
 describe('Api', () => {
 
     let mockFactory;
+    let mockParticipant;
     let mockRegistryManager;
     let api;
 
     beforeEach(() => {
         mockFactory = sinon.createStubInstance(realFactory);
+        mockParticipant = sinon.createStubInstance(Resource);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        api = new Api(mockFactory, mockRegistryManager);
+        api = new Api(mockFactory, mockParticipant, mockRegistryManager);
     });
 
     describe('#constructor', () => {
@@ -87,6 +90,14 @@ describe('Api', () => {
             mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').rejects(new Error('wow such error'));
             return api.getParticipantRegistry('org.doge.Doge')
                 .should.be.rejectedWith(/wow such error/);
+        });
+
+    });
+
+    describe('#getCurrentParticipant', () => {
+
+        it('should return the current participant', () => {
+            api.getCurrentParticipant().should.equal(mockParticipant);
         });
 
     });
