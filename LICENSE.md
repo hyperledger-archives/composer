@@ -1,9 +1,6 @@
 IBM Confidential
-
 OCO Source Materials
-
 IBM Concerto - Blockchain Solution Framework
-
 Copyright IBM Corp. 2016
 
 The source code for this program is not published or otherwise
