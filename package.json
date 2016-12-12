@@ -44,7 +44,7 @@
     "@ibm/ibm-concerto-runtime-hlf": "latest",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",
-    "node-uuid": "^1.4.7",
+    "uuid": "^3.0.0",
     "rwlock": "^5.0.0",
     "temp": "^0.8.3"
   },
