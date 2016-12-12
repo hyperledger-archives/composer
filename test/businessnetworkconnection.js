@@ -24,7 +24,7 @@ const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
 const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
 const TransactionRegistry = require('../lib/transactionregistry');
 const Util = require('@ibm/ibm-concerto-common').Util;
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const version = require('../package.json').version;
 
 const chai = require('chai');
