@@ -25,7 +25,7 @@
   ],
   "author": "IBM",
   "license": "ISC",
-  "devDependencies" : {
+  "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
@@ -42,6 +42,7 @@
     "@ibm/ibm-concerto-client": "latest",
     "@ibm/ibm-concerto-common": "latest",
     "homedir": "^0.6.0",
+    "nunjucks": "^3.0.0",
     "prettyjson": "^1.2.1",
     "prompt": "^1.0.0",
     "yargs": "^6.2.0"
