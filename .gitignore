@@ -48,3 +48,5 @@ chaincode/bin
 chaincode/pkg
 
 *.swp
+
+.vscode
