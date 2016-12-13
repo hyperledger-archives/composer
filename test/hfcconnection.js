@@ -65,7 +65,7 @@ describe('HFCConnection', () => {
         mockChain.getEventHub.returns(mockEventHub);
         mockChain.enroll.callsArgWith(2, null, mockMember);
         mockSecurityContext = sinon.createStubInstance(HFCSecurityContext);
-        connection = new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork-1.0.0', mockChain);
+        connection = new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', mockChain);
     });
 
     afterEach(function() {
@@ -76,7 +76,7 @@ describe('HFCConnection', () => {
 
         it('should throw if chain not specified', () => {
             (() => {
-                new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork-1.0.0', null);
+                new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', null);
             }).should.throw(/chain must be set/);
         });
 
