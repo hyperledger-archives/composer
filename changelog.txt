@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.1.6 {8104f3c63cfe1b16b94e32ea3f811012} 2016-12-14
+- Added the ability to optionally connect to a business network
+
 Version 0.1.5 {cf91d9289c591bbc9a70bb69edae3f7b} 2016-12-08
 - Removed registerUser method (method moving to client API).
 
