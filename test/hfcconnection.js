@@ -398,7 +398,7 @@ describe('HFCConnection', () => {
 
                 // Check that the query was made successfully.
                 sinon.assert.calledOnce(HFCUtil.invokeChainCode);
-                sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'update', ['AAEC']);
+                sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'updateBusinessNetwork', ['AAEC']);
             });
         });
 
