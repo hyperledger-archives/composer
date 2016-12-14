@@ -25,12 +25,25 @@
   ],
   "author": "IBM",
   "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "chai-things": "^0.2.0",
+    "eslint": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "license-check": "^1.1.5",
+    "mocha": "^3.0.2",
+    "moment": "^2.15.1",
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2"
+  },
   "dependencies": {
     "@ibm/ibm-concerto-admin": "latest",
     "@ibm/ibm-concerto-client": "latest",
     "@ibm/ibm-concerto-common": "latest",
     "homedir": "^0.6.0",
-    "moment": "^2.15.1",
+    "nunjucks": "^3.0.0",
+    "prettyjson": "^1.2.1",
     "prompt": "^1.0.0",
     "yargs": "^6.2.0"
   },
@@ -41,9 +54,6 @@
     "src": [
       "**/*.js",
       "!./cli.js",
-      "!./lib/cmds/network/network_cmds/deployCommand.js",
-      "!./lib/cmds/network/network_cmds/deployCommand.js",
-      "!./lib/cmds/network/network_cmds/deployCommand.js",
       "!./coverage/**/*",
       "!./node_modules/**/*",
       "!./out/**/*"

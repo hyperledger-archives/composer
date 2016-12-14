@@ -1,0 +1,16 @@
+// TODO: Complete {{description|safe}} unit test
+it('{{description|safe}}'/*, function() {
+    let transaction = {{transaction|safe}};
+
+    let businessNetwork = businessNetworkConnection.getBusinessNetwork();
+    let serializer = businessNetwork.getSerializer();
+
+    let resource = serializer.fromJSON(transaction);
+    return businessNetworkConnection.submitTransaction(resource)
+    .then(() => {
+        console.log('transaction complete');
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+}*/);
