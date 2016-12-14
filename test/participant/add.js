@@ -68,7 +68,7 @@ describe('concerto participant add CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+            data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
         };
         return Add.handler(argv)
             .then((res) => {
@@ -86,7 +86,7 @@ describe('concerto participant add CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+            data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
         };
         return Add.handler(argv)
             .then((res) => {
@@ -103,7 +103,7 @@ describe('concerto participant add CLI unit tests', () => {
         let argv = {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
-            args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+            data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
         };
         return Add.handler(argv)
             .then((res) => {
@@ -121,7 +121,7 @@ describe('concerto participant add CLI unit tests', () => {
             businessNetworkName: BUSINESS_NETWORK_NAME,
             enrollId: ENROLL_ID,
             enrollSecret: ENROLL_SECRET,
-            args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+            data: '{"$class": "'+NAMESPACE+'", "success": "true"}'
         };
         return Add.handler(argv)
             .then((res) => {
