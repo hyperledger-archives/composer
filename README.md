@@ -1,2 +1,2 @@
 # Concerto-Runtime-Web
-Concerto client specific code.
+Concerto runtime implementation that can execute inside a web-browser.
