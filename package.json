@@ -63,7 +63,8 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/ibm-concerto-common": "latest",
+    "@ibm/ibm-concerto-common": "~0.1.0-0",
+    "debug": "^2.4.4",
     "fast-json-patch": "^1.1.2",
     "jsonata": "^1.0.10",
     "lru-cache": "^4.0.2",
