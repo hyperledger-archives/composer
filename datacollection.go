@@ -114,7 +114,7 @@ func (dataCollection *DataCollection) get(call otto.FunctionCall) (result otto.V
 		}
 		return otto.UndefinedValue()
 	} else if len(row.GetColumns()) == 0 {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("No row found with id '%s'", id)))
+		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Object with ID '%s' in collection with ID '%s' does not exist", id, dataCollection.TableName)))
 		if err != nil {
 			panic(err)
 		}
