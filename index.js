@@ -14,4 +14,5 @@ module.exports.WebContainer = require('./lib/webcontainer');
 module.exports.WebContext = require('./lib/webcontext');
 module.exports.WebDataCollection = require('./lib/webdatacollection');
 module.exports.WebDataService = require('./lib/webdataservice');
+module.exports.WebIdentityService = require('./lib/webidentityservice');
 module.exports.WebLoggingService = require('./lib/webloggingservice');
