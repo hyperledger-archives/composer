@@ -34,4 +34,24 @@ describe('EmbeddedSecurityContext', () => {
 
     });
 
+    describe('#getChaincodeID', () => {
+
+        it('should get the chaincode ID', () => {
+            let securityContext = new EmbeddedSecurityContext(mockConnection);
+            securityContext.chaincodeID = 'ed916d6a-21af-4a2a-a9be-a86f69aa641b';
+            securityContext.getChaincodeID().should.equal('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
+        });
+
+    });
+
+    describe('#setChaincodeID', () => {
+
+        it('should set the chaincode ID', () => {
+            let securityContext = new EmbeddedSecurityContext(mockConnection);
+            securityContext.setChaincodeID('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
+            securityContext.chaincodeID.should.equal('ed916d6a-21af-4a2a-a9be-a86f69aa641b');
+        });
+
+    });
+
 });
