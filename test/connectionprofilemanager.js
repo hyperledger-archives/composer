@@ -90,6 +90,18 @@ describe('ConnectionProfileManager', () => {
             return cpm.getConnectionManager( 'baz' ).should.eventually.be.an.instanceOf(TestConnectionManager);
         });
 
+        it('should use a registered connection manager', () => {
+            /** test class */
+            class TestConnectionManager extends ConnectionManager { }
+            ConnectionProfileManager.registerConnectionManager('foo', TestConnectionManager);
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            return cpm.getConnectionManager( 'baz' ).should.eventually.be.an.instanceOf(TestConnectionManager);
+        });
+
     });
 
     describe('#connect', () => {
