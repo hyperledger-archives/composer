@@ -9,3 +9,12 @@
  */
 
 package main
+
+import "testing"
+
+func TestNewConcerto(t *testing.T) {
+	concerto := NewConcerto()
+	if concerto == nil {
+		t.Fatal("NewConcerto returned nil")
+	}
+}
