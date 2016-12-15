@@ -13,17 +13,25 @@
 const Context = require('@ibm/ibm-concerto-runtime').Context;
 const DataService = require('@ibm/ibm-concerto-runtime').DataService;
 const Engine = require('@ibm/ibm-concerto-runtime').Engine;
+const EmbeddedContainer = require('..').EmbeddedContainer;
 const EmbeddedContext = require('..').EmbeddedContext;
+const IdentityService = require('@ibm/ibm-concerto-runtime').IdentityService;
 
 require('chai').should();
 const sinon = require('sinon');
 
 describe('EmbeddedContext', () => {
 
+    let mockEmbeddedContainer;
+    let mockDataService;
     let mockEngine;
 
     beforeEach(() => {
+        mockEmbeddedContainer = sinon.createStubInstance(EmbeddedContainer);
+        mockDataService = sinon.createStubInstance(DataService);
         mockEngine = sinon.createStubInstance(Engine);
+        mockEngine.getContainer.returns(mockEmbeddedContainer);
+        mockEmbeddedContainer.getDataService.returns(mockDataService);
     });
 
     describe('#constructor', () => {
@@ -37,9 +45,18 @@ describe('EmbeddedContext', () => {
 
     describe('#getDataService', () => {
 
-        it('should return the container logging service', () => {
+        it('should return the container data service', () => {
             let context = new EmbeddedContext(mockEngine);
             context.getDataService().should.be.an.instanceOf(DataService);
+        });
+
+    });
+
+    describe('#getIdentityService', () => {
+
+        it('should return the container identity service', () => {
+            let context = new EmbeddedContext(mockEngine);
+            context.getIdentityService().should.be.an.instanceOf(IdentityService);
         });
 
     });
