@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@ibm/ibm-concerto-common": "latest",
-    "@ibm/ibm-concerto-runtime": "latest"
+    "@ibm/ibm-concerto-runtime": "latest",
+    "@ibm/ibm-concerto-runtime-embedded": "latest"
   }
 }
