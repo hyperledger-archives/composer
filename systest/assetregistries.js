@@ -174,7 +174,7 @@ describe('Asset registry system tests', function () {
             .then(function (assetRegistry) {
                 throw new Error('should not get here');
             }).catch(function (error) {
-                error.should.match(/No row found with id/);
+                error.should.match(/Object with ID '.+?' in collection with ID '.+?' does not exist/);
             });
     });
 
@@ -330,7 +330,7 @@ describe('Asset registry system tests', function () {
                 throw new Error('should not get here');
             })
             .catch(function (error) {
-                error.should.match(/No row found with id/);
+                error.should.match(/Object with ID '.+?' in collection with ID '.+?' does not exist/);
             });
     });
 

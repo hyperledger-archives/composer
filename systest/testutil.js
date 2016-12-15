@@ -12,6 +12,7 @@
 
 const AdminConnection = require('@ibm/ibm-concerto-admin').AdminConnection;
 const BusinessNetworkConnection = require('@ibm/ibm-concerto-client').BusinessNetworkConnection;
+const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
 const net = require('net');
 const Util = require('@ibm/ibm-concerto-common').Util;
 
@@ -26,11 +27,19 @@ let client;
 class TestUtil {
 
     /**
-     * Check to see if running under Karma.
+     * Check to see if running under a web browser.
      * @return {boolean} True if running under Karma, false if not.
      */
-    static isKarma() {
+    static isWeb() {
         return global.window && global.window.__karma__;
+    }
+
+    /**
+     * Check to see if running in embedded mode.
+     * @return {boolean} True if running in embedded mode, false if not.
+     */
+    static isEmbedded() {
+        return !!process.env.CONCERTO_EMBEDDED;
     }
 
     /**
@@ -79,7 +88,9 @@ class TestUtil {
      * started listening on the specified port.
      */
     static waitForPorts() {
-        if (TestUtil.isKarma()) {
+        if (TestUtil.isWeb()) {
+            return Promise.resolve();
+        } else if (TestUtil.isEmbedded()) {
             return Promise.resolve();
         }
         return TestUtil.waitForPort('vp0', 7051)
@@ -101,9 +112,16 @@ class TestUtil {
             .then(function () {
                 adminConnection = new AdminConnection();
                 let adminOptions;
-                if (TestUtil.isKarma()) {
+                if (TestUtil.isWeb()) {
+                    const BrowserFS = require('browserfs');
+                    BrowserFS.initialize(new BrowserFS.FileSystem.LocalStorage());
+                    ConnectionProfileManager.registerConnectionManager('web', require('@ibm/ibm-concerto-connector-web'));
                     adminOptions = {
                         type: 'web'
+                    };
+                } else if (TestUtil.isEmbedded()) {
+                    adminOptions = {
+                        type: 'embedded'
                     };
                 } else {
                     adminOptions = {
