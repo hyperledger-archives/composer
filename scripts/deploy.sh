@@ -24,8 +24,7 @@ if [ -z "${TRAVIS_TAG}" ]; then
 fi
 
 # Push the code to npm.
-BRANCH=`git symbolic-ref --short HEAD`
-if [ "${BRANCH}" = "develop" ]; then
+if [ "${TRAVIS_BRANCH}" = "develop" ]; then
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag unstable"
@@ -52,7 +51,7 @@ for PROJ in Concerto-Runtime; do
     THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
     for i in {1..5}; do
         rm -rf temp
-        git clone -b ${BRANCH} ${THISREPO} temp
+        git clone -b ${TRAVIS_BRANCH} ${THISREPO} temp
         cd temp
         git config user.email "noreply@ibm.com"
         git config user.name "Blockchain WW Labs - Solutions"
