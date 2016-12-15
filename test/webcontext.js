@@ -13,6 +13,8 @@
 const Context = require('@ibm/ibm-concerto-runtime').Context;
 const DataService = require('@ibm/ibm-concerto-runtime').DataService;
 const Engine = require('@ibm/ibm-concerto-runtime').Engine;
+const IdentityService = require('@ibm/ibm-concerto-runtime').IdentityService;
+const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
 
 require('chai').should();
@@ -20,10 +22,16 @@ const sinon = require('sinon');
 
 describe('WebContext', () => {
 
+    let mockWebContainer;
+    let mockDataService;
     let mockEngine;
 
     beforeEach(() => {
+        mockWebContainer = sinon.createStubInstance(WebContainer);
+        mockDataService = sinon.createStubInstance(DataService);
         mockEngine = sinon.createStubInstance(Engine);
+        mockEngine.getContainer.returns(mockWebContainer);
+        mockWebContainer.getDataService.returns(mockDataService);
     });
 
     describe('#constructor', () => {
@@ -40,6 +48,15 @@ describe('WebContext', () => {
         it('should return the container logging service', () => {
             let context = new WebContext(mockEngine);
             context.getDataService().should.be.an.instanceOf(DataService);
+        });
+
+    });
+
+    describe('#getIdentityService', () => {
+
+        it('should return the container identity service', () => {
+            let context = new WebContext(mockEngine);
+            context.getIdentityService().should.be.an.instanceOf(IdentityService);
         });
 
     });
