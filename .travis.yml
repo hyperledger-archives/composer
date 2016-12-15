@@ -7,7 +7,7 @@ sudo: required
 services:
     - docker
 env:
-    # - TEST_SUITE=systest_web
+    - TEST_SUITE=systest_web
     - TEST_SUITE=systest_hlf
     - TEST_SUITE=systest_ibm
 before_install: |

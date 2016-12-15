@@ -17,7 +17,10 @@ const path = require('path');
 const Relationship = require('@ibm/ibm-concerto-common').Relationship;
 
 const TestUtil = require('./testutil');
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
+
 
 describe('Transaction system tests', () => {
 
@@ -74,12 +77,7 @@ describe('Transaction system tests', () => {
         transaction.booleanValue = true;
         transaction.enumValue = 'SUCH';
         return client.submitTransaction(transaction)
-            .then(() => {
-                throw new Error('should not get here');
-            })
-            .catch((err) => {
-                err.should.match(/timed out waiting for transaction to complete/);
-            });
+            .should.be.rejected;
     });
 
     it('should submit and execute a transaction that contains arrays of primitive types', () => {
@@ -155,12 +153,7 @@ describe('Transaction system tests', () => {
         transaction.integerAsset = factory.newRelationship('systest.transactions', 'SimpleIntegerAsset', 'I DONT EXIST EITHER');
         return client
             .submitTransaction(transaction)
-            .then(() => {
-                throw new Error('should not get here');
-            })
-            .catch((err) => {
-                err.should.match(/timed out waiting for transaction to complete/);
-            });
+            .should.be.rejected;
     });
 
     it('should submit and execute a transaction that contains arrays of relationships to assets', () => {
@@ -472,8 +465,8 @@ describe('Transaction system tests', () => {
             .then((asset) => {
                 throw new Error('should not get here');
             })
-            .catch((err) => {
-                err.should.match(/No row found with id/);
+            .catch((error) => {
+                error.should.match(/Object with ID '.+?' in collection with ID '.+?' does not exist/);
             });
     });
 
@@ -508,8 +501,8 @@ describe('Transaction system tests', () => {
             .then((asset) => {
                 throw new Error('should not get here');
             })
-            .catch((err) => {
-                err.should.match(/No row found with id/);
+            .catch((error) => {
+                error.should.match(/Object with ID '.+?' in collection with ID '.+?' does not exist/);
             })
             .then(() => {
                 return client.getAssetRegistry('systest.transactions.SimpleStringAsset');
@@ -541,8 +534,8 @@ describe('Transaction system tests', () => {
             .then((asset) => {
                 throw new Error('should not get here');
             })
-            .catch((err) => {
-                err.should.match(/No row found with id/);
+            .catch((error) => {
+                error.should.match(/Object with ID '.+?' in collection with ID '.+?' does not exist/);
             });
     });
 
@@ -576,8 +569,8 @@ describe('Transaction system tests', () => {
             .then((asset) => {
                 throw new Error('should not get here');
             })
-            .catch((err) => {
-                err.should.match(/No row found with id/);
+            .catch((error) => {
+                error.should.match(/Object with ID '.+?' in collection with ID '.+?' does not exist/);
             })
             .then(() => {
                 return client.getAssetRegistry('systest.transactions.SimpleStringAsset');
