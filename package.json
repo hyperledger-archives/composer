@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-systests",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "System tests and automation for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
@@ -25,11 +25,11 @@
     "solutions"
   ],
   "devDependencies": {
-    "@ibm/ibm-concerto-admin": "~0.1.6-0",
-    "@ibm/ibm-concerto-client": "~0.1.4-0",
-    "@ibm/ibm-concerto-common": "~0.1.0-0",
-    "@ibm/ibm-concerto-connector-embedded": "~0.1.0-0",
-    "@ibm/ibm-concerto-connector-web": "~0.1.0-0",
+    "@ibm/ibm-concerto-admin": "~0.2.0-0",
+    "@ibm/ibm-concerto-client": "~0.2.0-0",
+    "@ibm/ibm-concerto-common": "~0.2.0-0",
+    "@ibm/ibm-concerto-connector-embedded": "~0.2.0-0",
+    "@ibm/ibm-concerto-connector-web": "~0.2.0-0",
     "brfs": "^1.4.3",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
