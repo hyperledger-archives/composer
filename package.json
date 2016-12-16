@@ -62,7 +62,7 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/ibm-concerto-runtime": "latest",
+    "@ibm/ibm-concerto-runtime": "~0.1.1-0",
     "dexie": "^1.5.1"
   }
 }
