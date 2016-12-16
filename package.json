@@ -40,8 +40,8 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/ibm-concerto-common": "latest",
-    "@ibm/ibm-concerto-runtime-hlf": "latest",
+    "@ibm/ibm-concerto-common": "~0.1.0-0",
+    "@ibm/ibm-concerto-runtime-hlf": "~0.1.0-0",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",
     "uuid": "^3.0.0",
