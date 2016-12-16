@@ -52,8 +52,8 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "@ibm/ibm-concerto-common": "latest",
-    "@ibm/ibm-concerto-runtime": "latest",
-    "@ibm/ibm-concerto-runtime-embedded": "latest"
+    "@ibm/ibm-concerto-common": "~0.1.0-0",
+    "@ibm/ibm-concerto-runtime": "~0.1.1-0",
+    "@ibm/ibm-concerto-runtime-embedded": "~0.1.0-0"
   }
 }
