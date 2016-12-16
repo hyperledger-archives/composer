@@ -23,4 +23,9 @@ script: |
     sh -e /etc/init.d/xvfb start
     npm test
     ./scripts/run-system-tests.sh
-    ./scripts/deploy.sh
+deploy:
+    provider: script
+    script: ./scripts/deploy.sh
+    skip_cleanup: true
+    on:
+        all_branches: true
