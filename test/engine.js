@@ -60,6 +60,14 @@ describe('Engine', () => {
         sandbox.restore();
     });
 
+    describe('#getContainer', () => {
+
+        it('should return the container', () => {
+            engine.getContainer().should.equal(mockContainer);
+        });
+
+    });
+
     describe('#installLogger', () => {
 
         it('should install a logger for debug level logging', () => {
