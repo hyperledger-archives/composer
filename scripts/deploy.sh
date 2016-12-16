@@ -18,6 +18,7 @@ if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
     exit 0
 fi
 
+# Check that this is the right test suite.
 if [[ "${TEST_SUITE}" != "systest_hlf" ]]; then
     echo "Skipping deploy; wrong test suite."
     exit 0
@@ -28,12 +29,14 @@ REPO=`git config remote.origin.url`
 for PROJ in Concerto; do
     cd ${DIR}
     THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
-    rm -rf temp
-    git clone ${THISREPO} temp
-    cd temp
-    git config user.email "noreply@ibm.com"
-    git config user.name "Blockchain WW Labs - Solutions"
-    git config push.default simple
-    git commit -m "Automated commit to trigger downstream build" --allow-empty
-    git push
+    for i in {1..5}; do
+        rm -rf temp
+        git clone -b ${TRAVIS_BRANCH} ${THISREPO} temp
+        cd temp
+        git config user.email "noreply@ibm.com"
+        git config user.name "Blockchain WW Labs - Solutions"
+        git config push.default simple
+        git commit -m "Automated commit to trigger downstream build" --allow-empty
+        git push && break
+    done
 done
