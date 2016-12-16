@@ -41,8 +41,8 @@
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "@ibm/ibm-concerto-common": "latest",
-    "@ibm/ibm-concerto-connector-hlf": "latest"
+    "@ibm/ibm-concerto-common": "~0.1.0-0",
+    "@ibm/ibm-concerto-connector-hlf": "~0.1.1-0"
   },
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
