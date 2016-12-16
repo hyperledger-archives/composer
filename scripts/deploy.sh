@@ -24,4 +24,41 @@ if [ -z "${TRAVIS_TAG}" ]; then
 fi
 
 # Push the code to npm.
-npm publish --scope=@ibm
+if [ "${TRAVIS_BRANCH}" = "develop" ]; then
+
+    # Publish with unstable tag. These are development builds.
+    echo "Pushing with tag unstable"
+    npm publish --scope=@ibm --tag=unstable
+
+else
+
+    # Publish with latest tag (default). These are release builds.
+    echo "Pushing with tag develop"
+    npm publish --scope=@ibm
+
+fi
+
+# If this is a tagged (release) build, don't go pushing to downstream projects.
+if [ -n "${TRAVIS_TAG}" ]; then
+    echo "Skipping downstream push; build is tagged"
+    exit 0
+fi
+
+# Push empty commits to downstream projects to trigger builds.
+# TODO: remove this 'exit 0' when we need to trigger downstream builds.
+exit 0
+REPO=`git config remote.origin.url`
+for PROJ in Concerto-System-Tests; do
+    cd ${DIR}
+    THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
+    for i in {1..5}; do
+        rm -rf temp
+        git clone -b ${TRAVIS_BRANCH} ${THISREPO} temp
+        cd temp
+        git config user.email "noreply@ibm.com"
+        git config user.name "Blockchain WW Labs - Solutions"
+        git config push.default simple
+        git commit -m "Automated commit to trigger downstream build" --allow-empty
+        git push && break
+    done
+done
