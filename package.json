@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-runtime-embedded",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The embedded runtime container for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
@@ -53,7 +53,7 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/ibm-concerto-runtime": "~0.1.1-0",
+    "@ibm/ibm-concerto-runtime": "~0.2.0-0",
     "dexie": "^1.5.1",
     "fake-indexeddb": "^1.0.8"
   }
