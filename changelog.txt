@@ -11,6 +11,9 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+Version 0.2.0 {fe7b37177e02a0bb9a6091e4d345de1b} 2016-12-16
+- Playback 1
+
 Version 0.1.4 {fe7b37177e02a0bb9a6091e4d345de1b} 2016-12-08
 - Added identity management API
 
