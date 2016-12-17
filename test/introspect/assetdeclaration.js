@@ -158,18 +158,11 @@ describe('AssetDeclaration', () => {
 
     describe('#toJSON', () => {
 
-        it('should return a JSON object suitable for serialization', () => {
+        it('should return an empty object', () => {
             let asset = loadLastAssetDeclaration('test/data/parser/assetdeclaration.json.cto');
             asset.validate();
             let jsonObject = asset.toJSON();
-            jsonObject.should.be.an('object');
-            jsonObject.name.should.equal('TestAsset');
-            jsonObject.idField.should.equal('assetId');
-            jsonObject.superType.should.equal('BaseAsset');
-            jsonObject.abstract.should.equal(false);
-            jsonObject.fields.should.have.lengthOf(3);
-            jsonObject.relationships.should.have.lengthOf(1);
-            jsonObject.enumValues.should.have.lengthOf(0);
+            jsonObject.should.deep.equal({});
         });
 
     });

@@ -79,7 +79,7 @@ describe('Property', () => {
 
     describe('#toJSON', () => {
 
-        it('should return a JSON object suitable for serialization', () => {
+        it('should return an empty object', () => {
             let p = new Property(mockClassDeclaration, {
                 id: {
                     name: 'property',
@@ -90,10 +90,7 @@ describe('Property', () => {
                 array: true
             });
             let object = p.toJSON();
-            object.name.should.equal('property');
-            object.type.should.equal('suchType');
-            object.array.should.equal(true);
-            object.enum.should.equal(false);
+            object.should.deep.equal({});
         });
 
     });

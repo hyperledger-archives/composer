@@ -19,6 +19,7 @@ class Factory {
    + Resource newInstance(string,string,string,boolean) throws ModelException
    + Relationship newRelationship(string,string,string) throws ModelException
    + Resource newTransaction(string,string) 
+   + Object toJSON() 
 }
 class IllegalModelException extends BaseException {
    + void constructor(string) 

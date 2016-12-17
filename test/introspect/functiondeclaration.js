@@ -201,13 +201,10 @@ describe('FunctionDeclaration', () => {
 
     describe('#toJSON', () => {
 
-        it('should return a JSON object suitable for serialization', () => {
+        it('should return an empty object', () => {
             let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
             let jsonObject = func.toJSON();
-            jsonObject.should.be.an('object');
-            jsonObject.name.should.equal('onTestTransaction');
-            jsonObject.params.should.deep.equal(['testTransaction']);
-            jsonObject.functionText.should.match(/^function onTestTransaction\(testTransaction\)/);
+            jsonObject.should.deep.equal({});
         });
 
     });
