@@ -39,14 +39,15 @@ return Promise.resolve()
 .then(() => {
     return new Promise((resolve, reject) => {
         wstream.write('`\n\nconst concertoJavaScript = `\n');
-        const rstream = browserify(sourceFile, { standalone: 'concerto' })
+        const rstream = browserify(sourceFile, { standalone: 'concerto', debug: true })
             // This ugly hack changes a JavaScript only regex used by Acorn into something safe for Go.
             .transform('browserify-replace', { replace: {
               from: RegExp.escape('[^]'),
               to: '[^\\x{FFFF}]'
             }, global: true })
             .transform('babelify', { presets: [ 'es2015' ], global: true })
-            .transform('uglifyify', { global: true })
+            // Can't get uglifyify to include source maps, so disabling for now.
+            // .transform('uglifyify', { global: true })
             .bundle();
         rstream.setEncoding('utf8');
         rstream.on('end', () => {

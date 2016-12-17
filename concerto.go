@@ -12,6 +12,7 @@ package main
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -81,7 +82,8 @@ func (concerto *Concerto) createJavaScript() {
 	}
 
 	// Execute the Concerto JavaScript source inside the JavaScript virtual machine.
-	_, err = vm.Run(concertoJavaScript)
+	// We trim any trailing newlines as this is required for Otto to find the source maps.
+	_, err = vm.Run(strings.TrimRight(concertoJavaScript, "\n"))
 	if err != nil {
 		panic(err)
 	}
