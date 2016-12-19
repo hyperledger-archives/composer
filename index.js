@@ -46,7 +46,7 @@ module.exports.TransactionDeclaration = require('./lib/introspect/transactiondec
 module.exports.Util = require('./lib/util');
 
 module.exports.FileWriter = require('./lib/codegen/filewriter');
-module.exports.TypescriptVisitor = require('./lib/codegen/typescript/typescriptvisitor');
+module.exports.TypescriptVisitor = require('./lib/codegen/fromcto/typescript/typescriptvisitor');
 
 
 module.exports.Logger = require('./lib/log/logger');
