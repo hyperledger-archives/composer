@@ -20,6 +20,7 @@ const Factory = require('@ibm/ibm-concerto-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
 const Introspector = require('@ibm/ibm-concerto-common').Introspector;
+const JSTransactionExecutor = require('../lib/jstransactionexecutor');
 const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
 const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
@@ -27,9 +28,12 @@ const Resolver = require('../lib/resolver');
 const Resource = require('@ibm/ibm-concerto-common').Resource;
 const ScriptManager = require('@ibm/ibm-concerto-common').ScriptManager;
 const Serializer = require('@ibm/ibm-concerto-common').Serializer;
+const TransactionExecutor = require('../lib/transactionexecutor');
 const TransactionLogger = require('../lib/transactionlogger');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
 
@@ -134,6 +138,25 @@ describe('Context', () => {
             mockIdentityManager.getParticipant.withArgs('dogeid1').rejects(new Error('no such participant'));
             return context.initialize()
                 .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
+        });
+
+        it('should add the default JavaScript transaction executor', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+            sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            mockIdentityService.getCurrentUserID.returns('');
+            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            return context.initialize()
+                .then(() => {
+                    let transactionExecutors = context.getTransactionExecutors();
+                    transactionExecutors.should.have.lengthOf(1);
+                    transactionExecutors[0].should.be.an.instanceOf(JSTransactionExecutor);
+                });
         });
 
     });
@@ -396,6 +419,49 @@ describe('Context', () => {
             (() => {
                 context.setTransaction(mockTransaction);
             }).should.throw(/A current transaction has already been specified/);
+        });
+
+    });
+
+    describe('#addTransactionExecutor', () => {
+
+        it('should add a new transaction executor', () => {
+            let mockTransactionExecutor = sinon.createStubInstance(TransactionExecutor);
+            mockTransactionExecutor.getType.returns('JS');
+            context.addTransactionExecutor(mockTransactionExecutor);
+            context.transactionExecutors.should.have.lengthOf(1);
+            context.transactionExecutors[0].should.equal(mockTransactionExecutor);
+        });
+
+        it('should replace an existing transaction executor of the same type', () => {
+            let mockTransactionExecutor1 = sinon.createStubInstance(TransactionExecutor);
+            mockTransactionExecutor1.getType.returns('JS');
+            context.addTransactionExecutor(mockTransactionExecutor1);
+            context.transactionExecutors.should.have.lengthOf(1);
+            context.transactionExecutors[0].should.equal(mockTransactionExecutor1);
+            let mockTransactionExecutor2 = sinon.createStubInstance(TransactionExecutor);
+            mockTransactionExecutor2.getType.returns('JS');
+            context.addTransactionExecutor(mockTransactionExecutor2);
+            context.transactionExecutors.should.have.lengthOf(1);
+            context.transactionExecutors[0].should.equal(mockTransactionExecutor2);
+        });
+
+    });
+
+    describe('#getTransactionExecutors', () => {
+
+        it('should return no transaction executors by default', () => {
+            let transactionExecutors = context.getTransactionExecutors();
+            transactionExecutors.should.have.lengthOf(0);
+        });
+
+        it('should return the transaction executors', () => {
+            let mockTransactionExecutor1 = sinon.createStubInstance(TransactionExecutor);
+            mockTransactionExecutor1.getType.returns('JS');
+            let mockTransactionExecutor2 = sinon.createStubInstance(TransactionExecutor);
+            mockTransactionExecutor2.getType.returns('dogelang');
+            context.transactionExecutors = [mockTransactionExecutor1, mockTransactionExecutor2];
+            context.getTransactionExecutors().should.deep.equal([mockTransactionExecutor1, mockTransactionExecutor2]);
         });
 
     });
