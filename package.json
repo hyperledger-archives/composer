@@ -3,7 +3,9 @@
   "version": "0.2.0",
   "description": "IBM Concerto admin, code that manages business networks",
   "main": "index.js",
+  "typings": "index.d.ts", 
   "scripts": {
+    "prepublish": "node ./scripts/tsgen.js",
     "pretest": "npm run lint",
     "test": "./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage",
