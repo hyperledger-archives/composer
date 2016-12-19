@@ -85,9 +85,11 @@ describe('BusinessNetworkDefinition', () => {
         it('should be able to correctly create a business network from a directory using npm dependencies', () => {
 
             // we force an 'npm install' on the package.json
+            // No we don't - we can't do this in a unit test!
+            /*
             let execSync = require('child_process').execSync;
             execSync('cd ' + __dirname + '/data/zip/test-npm-archive' + ' && npm install',
-              function(error, stdout, stderr) {} );
+              function(error, stdout, stderr) {} ); */
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-npm-archive').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;

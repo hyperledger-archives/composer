@@ -135,4 +135,21 @@ describe('ClassDeclaration', () => {
 
     });
 
+    describe('#toJSON', () => {
+
+        it('should return an empty object', () => {
+            let clz = new ClassDeclaration(mockModelFile, {
+                id: {
+                    name: 'suchName'
+                },
+                body: {
+                    declarations: [
+                    ]
+                }
+            });
+            clz.toJSON().should.deep.equal({});
+        });
+
+    });
+
 });

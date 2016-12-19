@@ -13,7 +13,7 @@ instrumentation:
         - "systest/**"
 check:
     global:
-        statements: 97
-        branches: 90
+        statements: 98
+        branches: 94
         functions: 99
-        lines: 97
+        lines: 98

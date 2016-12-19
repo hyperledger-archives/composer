@@ -66,4 +66,14 @@ describe('Introspector', () => {
             introspector.getClassDeclaration('org.acme.base.Person').should.not.be.null;
         });
     });
+
+    describe('#getModelManager', () => {
+
+        it('should return the model manager', () => {
+            const modelManager = new ModelManager();
+            const introspector = new Introspector(modelManager);
+            introspector.getModelManager().should.equal(modelManager);
+        });
+
+    });
 });

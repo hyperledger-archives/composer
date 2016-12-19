@@ -39,17 +39,6 @@ describe('ModelFile', () => {
         sandbox.restore();
     });
 
-    describe('#fromJSON', () => {
-
-        it('should round trip the model file', () => {
-            let modelFile1 = new ModelFile(mockModelManager, carLeaseModel);
-            let json = JSON.stringify(modelFile1);
-            let modelFile2 = ModelFile.fromJSON(mockModelManager, JSON.parse(json));
-            modelFile2.should.deep.equal(modelFile1);
-        });
-
-    });
-
     describe('#constructor', () => {
 
         it('should throw when null definitions provided', () => {
@@ -196,19 +185,10 @@ describe('ModelFile', () => {
 
     describe('#toJSON', () => {
 
-        it('should return a JSON object suitable for serialization', () => {
+        it('should return an empty object', () => {
             let modelFile = new ModelFile(mockModelManager, carLeaseModel);
             let parsed = modelFile.toJSON();
-            // parsed.declarations.should.be.an('array');
-            // parsed.imports.should.be.an('array');
-            parsed.definitions.should.equal(carLeaseModel);
-            // parsed.ast.should.be.an('object');
-            parsed.namespace.should.equal('org.acme');
-            parsed.imports.should.be.an('array');
-            parsed.assets.should.be.an('array');
-            parsed.participants.should.be.an('array');
-            parsed.transactions.should.be.an('array');
-            parsed.enums.should.be.an('array');
+            parsed.should.deep.equal({});
         });
 
     });
