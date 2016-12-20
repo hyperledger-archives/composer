@@ -3,7 +3,9 @@
   "version": "0.2.0",
   "description": "The web client connector for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
+    "prepublish": "node ./scripts/tsgen.js",
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
