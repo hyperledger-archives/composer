@@ -63,4 +63,19 @@ describe('ConnectionProfileStore', () => {
         });
     });
 
+    describe('#delete', () => {
+
+        it('should throw as abstract method', () => {
+
+            let cps = new ConnectionProfileStore();
+            return cps.delete('profile')
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.match(/abstract function called/);
+                });
+        });
+    });
+
 });

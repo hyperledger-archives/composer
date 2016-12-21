@@ -151,4 +151,46 @@ describe('MemoryConnectionProfileStore', () => {
 
     });
 
+    describe('#delete', () => {
+
+        it('should delete an existing file', () => {
+            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp1 = path.resolve(ccp, 'profile1');
+            mkdirp.sync(ccp1, { fs: bfs_fs });
+            let ccp1f = path.resolve(ccp1, 'connection.json');
+            bfs_fs.writeFileSync(ccp1f, JSON.stringify({
+                profile: 'profile1'
+            }));
+            return cps.delete('profile1')
+                .then(() => {
+                    bfs_fs.existsSync(ccp1).should.be.false;
+                });
+        });
+
+        it('should ignore a missing connection JSON', () => {
+            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp1 = path.resolve(ccp, 'profile1');
+            mkdirp.sync(ccp1, { fs: bfs_fs });
+            // This one was accidentally deleted.
+            // let ccp1f = path.resolve(ccp1, 'connection.json');
+            // bfs_fs.writeFileSync(ccp1f, JSON.stringify({
+            //     profile: 'profile1'
+            // }));
+            return cps.delete('profile1')
+                .then(() => {
+                    bfs_fs.existsSync(ccp1).should.be.false;
+                });
+        });
+
+        it('should ignore a missing connection profiles directory', () => {
+            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp1 = path.resolve(ccp, 'profile1');
+            return cps.delete('profile1')
+                .then(() => {
+                    bfs_fs.existsSync(ccp1).should.be.false;
+                });
+        });
+
+    });
+
 });
