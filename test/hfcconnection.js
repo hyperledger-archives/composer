@@ -546,4 +546,37 @@ describe('HFCConnection', () => {
 
     });
 
+    describe('#list', () => {
+
+        it('should list all deployed business networks', () => {
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf',
+                networks: {
+                    demonetwork: '123',
+                    testnetwork: '456'
+                }
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal(['demonetwork', 'testnetwork']);
+        });
+
+        it('should cope with an empty list of networks', () => {
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf',
+                networks: { }
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal([]);
+        });
+
+        it('should cope with a missing list of networks', () => {
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf'
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal([]);
+        });
+
+    });
+
 });
