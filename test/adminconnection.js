@@ -54,10 +54,13 @@ describe('AdminConnection', () => {
         mockConnection.ping.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
+        mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
         adminConnection = new AdminConnection();
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+        sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
+        sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
     });
 
     describe('#module', () => {
@@ -96,6 +99,15 @@ describe('AdminConnection', () => {
             return adminConnection.createProfile('testprofile', config)
                 .should.be.fulfilled;
         });
+    });
+
+    describe('#getProfile', () => {
+
+        it('should return the specified profile', () => {
+            return adminConnection.getProfile('testprofile')
+                .should.eventually.be.deep.equal(config);
+        });
+
     });
 
     describe('#disconnect', () => {
@@ -169,6 +181,17 @@ describe('AdminConnection', () => {
                 sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
             });
         });
+    });
+
+    describe('#list', () => {
+
+        it('should list all deployed business networks', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.list()
+                .should.eventually.be.deep.equal(['biznet1', 'biznet2']);
+        });
+
     });
 
 });

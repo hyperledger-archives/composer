@@ -12,7 +12,7 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.2.0 {8104f3c63cfe1b16b94e32ea3f811012} 2016-12-16
+Version 0.2.0 {ce55caf42f065418a2d4bf8435318814} 2016-12-16
 - Playback 1
 
 Version 0.1.6 {8104f3c63cfe1b16b94e32ea3f811012} 2016-12-14
