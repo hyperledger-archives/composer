@@ -45,4 +45,8 @@ module.exports.Serializer = require('./lib/serializer');
 module.exports.TransactionDeclaration = require('./lib/introspect/transactiondeclaration');
 module.exports.Util = require('./lib/util');
 
+module.exports.FileWriter = require('./lib/codegen/filewriter');
+module.exports.TypescriptVisitor = require('./lib/codegen/fromcto/typescript/typescriptvisitor');
+
+
 module.exports.Logger = require('./lib/log/logger');

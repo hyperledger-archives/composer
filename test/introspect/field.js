@@ -93,7 +93,7 @@ describe('Field', () => {
 
     describe('#toJSON', () => {
 
-        it('should return a JSON object suitable for serialization', () => {
+        it('should return an empty object', () => {
             let f = new Field(mockClassDeclaration, {
                 id: {
                     name: 'field',
@@ -114,13 +114,7 @@ describe('Field', () => {
                 optional: true
             });
             let object = f.toJSON();
-            object.name.should.equal('field');
-            object.type.should.equal('suchType');
-            object.array.should.equal(true);
-            object.enum.should.equal(false);
-            object.validator.should.equal('suchValidator');
-            object.defaultValue.should.equal('wowSuchDefault');
-            object.optional.should.equal(true);
+            object.should.deep.equal({});
         });
 
     });

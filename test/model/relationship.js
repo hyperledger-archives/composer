@@ -11,14 +11,14 @@
 'use strict';
 
 const ModelManager = require('../../lib/modelmanager');
-const Resource = require('../../lib/model/resource');
+const Relationship = require('../../lib/model/relationship');
 const sinon = require('sinon');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-things'));
 
-describe('Resource', function () {
+describe('Relationship', function () {
 
     const levelOneModel = `namespace org.acme.l1
   participant Person identified by ssn {
@@ -46,19 +46,19 @@ describe('Resource', function () {
 
     describe('#getClassDeclaration', function() {
         it('should throw with no ModelFile', function () {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
+            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
             const stub = sinon.stub(modelManager, 'getModelFile', function(){return null;});
             (function () {
-                resource.getClassDeclaration();
+                relationship.getClassDeclaration();
             }).should.throw(/No model for namespace org.acme.l1 is registered with the ModelManager/);
             stub.restore();
         });
         it('should throw with no type', function () {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
+            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
             const modelFile = modelManager.getModelFile('org.acme.l1');
             const stub = sinon.stub(modelFile, 'getType', function(type){return null;});
             (function () {
-                resource.getClassDeclaration();
+                relationship.getClassDeclaration();
             }).should.throw(/The namespace org.acme.l1 does not contain the type Person/);
             stub.restore();
         });
@@ -66,9 +66,9 @@ describe('Resource', function () {
 
     describe('#toJSON', () => {
         it('should throw is toJSON is called', function () {
-            const resource = new Resource(modelManager, 'org.acme.l1', 'Person', '123' );
+            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
             (function () {
-                resource.toJSON();
+                relationship.toJSON();
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
         });
     });

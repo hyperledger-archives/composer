@@ -3,8 +3,9 @@
   "version": "0.2.0",
   "description": "IBM Concerto Common, code that is common across client, admin and runtime.",
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
-    "prepublish": "pegjs ./lib/introspect/parser.pegjs && pegjs ./lib/acl/parser.pegjs",
+    "prepublish": "pegjs ./lib/introspect/parser.pegjs && pegjs ./lib/acl/parser.pegjs && node ./scripts/tsgen.js",
     "pretest": "npm run prepublish && npm run lint",
     "lint": "eslint .",
     "postlint": "npm run licchk",
@@ -56,7 +57,7 @@
     "commander": "^2.9.0",
     "comment-parser": "^0.4.0",
     "config": "^1.24.0",
-    "debug": "^2.2.0",
+    "debug": "2.3.3",
     "doctrine": "^2.0.0",
     "esprima": "^3.1.2",
     "fs-promise": "^1.0.0",
@@ -65,10 +66,10 @@
     "minimatch": "^3.0.3",
     "mkdirp": "^0.5.1",
     "node-plantuml": "^0.5.0",
-    "uuid": "^3.0.0",
     "semver": "^5.3.0",
     "sprintf-js": "^1.0.3",
     "temp": "^0.8.3",
+    "uuid": "^3.0.0",
     "winston": "^2.3.0"
   },
   "publishConfig": {

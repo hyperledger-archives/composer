@@ -14,7 +14,6 @@ const ModelManager = require('../../lib/modelmanager');
 const Identifiable = require('../../lib/model/identifiable');
 const sinon = require('sinon');
 const chai = require('chai');
-const fs = require('fs');
 chai.should();
 chai.use(require('chai-things'));
 
@@ -36,22 +35,36 @@ describe    ('Identifiable', function () {
             const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
             id.toString().should.equal('Identifiable {id=org.acme.Type#123}');
         });
+    });
 
+    describe('#setIdentifier', () => {
         it('should be able to set identifier', function () {
-            let mozartModel = fs.readFileSync('./test/data/model/mozart.cto', 'utf8');
-            modelManager.addModelFile(mozartModel);
-            // let modelFile = modelManager.getModelFile('com.ibm.concerto.mozart');
+            modelManager.addModelFile(`namespace com.ibm.concerto.mozart
+            participant Farmer identified by farmerId {
+                o String farmerId
+            }`);
             let id = new Identifiable(modelManager, 'com.ibm.concerto.mozart', 'Farmer', '123' );
             id.setIdentifier('321');
             id.getIdentifier().should.equal('321');
-
         });
+    });
+
+    describe('#accept', () => {
         it('should be able to accept visitor', function () {
             const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
-            const visitor = {visit: function(obj,parameters){console.log();}};
+            const visitor = {visit: function(obj,parameters){}};
             const spy = sinon.spy(visitor, 'visit');
             id.accept(visitor, {});
             spy.calledOnce.should.be.true;
+        });
+    });
+
+    describe('#toJSON', () => {
+        it('should throw is toJSON is called', function () {
+            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
+            (function () {
+                id.toJSON();
+            }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
         });
     });
 });
