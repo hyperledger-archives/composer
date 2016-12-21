@@ -67,6 +67,7 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
         sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
+        sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs('testprofile').resolves();
     });
 
     describe('#module', () => {
@@ -103,6 +104,13 @@ describe('AdminConnection', () => {
     describe('#createProfile', () => {
         it('should return a resolved promise', () => {
             return adminConnection.createProfile('testprofile', config)
+                .should.be.fulfilled;
+        });
+    });
+
+    describe('#deleteProfile', () => {
+        it('should return a resolved promise', () => {
+            return adminConnection.deleteProfile('testprofile', config)
                 .should.be.fulfilled;
         });
     });
