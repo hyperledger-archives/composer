@@ -48,4 +48,19 @@ describe('ConnectionProfileStore', () => {
         });
     });
 
+    describe('#loadAll', () => {
+
+        it('should throw as abstract method', () => {
+
+            let cps = new ConnectionProfileStore();
+            return cps.loadAll()
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.match(/abstract function called/);
+                });
+        });
+    });
+
 });
