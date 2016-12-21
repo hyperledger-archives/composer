@@ -8,6 +8,7 @@ instrumentation:
         - "lib/tools/changelog.js"
         - "lib/tools/plantumltoimage.js"
         - "lib/introspect/parser.js"
+        - "lib/acl/parser.js"
         - "out/**"
         - "scripts/**"
         - "systest/**"

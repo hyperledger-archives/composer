@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.2.0 {fea512a10f25b132d4a683a232a4f6e1} 2016-12-21
+- Moved ParseException and added location information
+
 Version 0.1.16 {fea512a10f25b132d4a683a232a4f6e1} 2016-12-09
 - Added getName and getVersion to BusinessNetworkDefinition
 - Added options to BusinessNetworkDefinition.fromDirectory and make static
