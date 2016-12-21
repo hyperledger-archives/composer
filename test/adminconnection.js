@@ -41,6 +41,11 @@ describe('AdminConnection', () => {
             eventHubURL: 'grpc://localhost:7053'
         };
 
+    const config2 =
+        {
+            type: 'embedded'
+        };
+
     beforeEach(() => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnection = sinon.createStubInstance(Connection);
@@ -61,6 +66,7 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
         sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
+        sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
     });
 
     describe('#module', () => {
@@ -106,6 +112,18 @@ describe('AdminConnection', () => {
         it('should return the specified profile', () => {
             return adminConnection.getProfile('testprofile')
                 .should.eventually.be.deep.equal(config);
+        });
+
+    });
+
+    describe('#getAllProfiles', () => {
+
+        it('should return all the profiles', () => {
+            return adminConnection.getAllProfiles()
+                .should.eventually.be.deep.equal({
+                    profile1: config,
+                    profile2: config2
+                });
         });
 
     });
