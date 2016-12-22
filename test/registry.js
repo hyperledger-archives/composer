@@ -151,6 +151,56 @@ describe('Registry', () => {
 
     });
 
+    describe('#existsRegistry', () => {
+
+        it('should throw when registryType not specified', () => {
+            (() => {
+                Registry.existsRegistry(mockSecurityContext, null, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d');
+            }).should.throw(/registryType not specified/);
+        });
+
+        it('should throw when id not specified', () => {
+            (() => {
+                Registry.existsRegistry(mockSecurityContext, 'Doge', null);
+            }).should.throw(/id not specified/);
+        });
+
+        it('should invoke the chain-code and determine whether the asset registry exists', () => {
+
+            // Set up the responses from the chain-code.
+            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(true)));
+
+            // Invoke the getAllAssetRegistries function.
+            return Registry
+                .existsRegistry(mockSecurityContext, 'Doge', 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d')
+                .then((exists) => {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
+                    sinon.assert.calledOnce(Util.queryChainCode);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'existsRegistry', ['Doge', 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d']);
+
+                    // Check that the exists methods returns true value.
+                    exists.should.equal.true;
+
+                });
+
+        });
+
+        it('should handle an error from the chain-code', () => {
+
+            // Set up the responses from the chain-code.
+            Util.queryChainCode.rejects(new Error('failed to invoke chain-code'));
+
+            // Invoke the getAllAssetRegistries function.
+            return Registry
+                .getRegistry(mockSecurityContext, 'Doge', 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d')
+                .should.be.rejectedWith(/failed to invoke chain-code/);
+
+        });
+
+    });
+
     describe('#addRegistry', () => {
 
         it('should throw when registryType not specified', () => {
@@ -588,6 +638,50 @@ describe('Registry', () => {
             // Invoke the add function.
             return registry
                 .get('dogecar1')
+                .should.be.rejectedWith(/such error/);
+
+        });
+
+    });
+
+    describe('#exists', () => {
+
+        it('should throw when id not specified', () => {
+            (function () {
+                registry.exists(null);
+            }).should.throw(/id not specified/);
+        });
+
+        it('should query the chain-code', () => {
+
+            // Set up the responses from the chain-code.
+            Util.queryChainCode.resolves(Buffer.from(JSON.stringify(true)));
+
+            // Invoke the add function.
+            return registry
+                .exists('dogecar1')
+                .then((exists) => {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledWith(Util.securityCheck, mockSecurityContext);
+                    sinon.assert.calledOnce(Util.queryChainCode);
+                    sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'existsResourceInRegistry', ['Doge', 'ad99fcfa-6d3c-4281-b47f-0ccda7998039', 'dogecar1']);
+
+                    // Check that the assets were returned successfully.
+                    exists.should.equal.true;
+
+                });
+
+        });
+
+        it('should handle an error from the chain-code', () => {
+
+            // Set up the responses from the chain-code.
+            Util.queryChainCode.rejects(new Error('such error'));
+
+            // Invoke the add function.
+            return registry
+                .exists('dogecar1')
                 .should.be.rejectedWith(/such error/);
 
         });

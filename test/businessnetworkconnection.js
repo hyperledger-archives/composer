@@ -200,6 +200,42 @@ describe('BusinessNetworkConnection', () => {
 
     });
 
+    describe('#existsAssetRegistry', () => {
+
+        it('should perform a security check', () => {
+
+            // Set up the mock.
+            let stub = sandbox. stub(Util, 'securityCheck');
+            sandbox.stub(AssetRegistry, 'existsAssetRegistry').resolves({});
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .existsAssetRegistry('wowsuchregistry')
+                .then(() => {
+                    sinon.assert.calledOnce(stub);
+                });
+
+        });
+
+        it('should call the static helper method', () => {
+
+            // Set up the mock.
+            let stub = sandbox.stub(AssetRegistry, 'existsAssetRegistry').resolves(true);
+
+            // Invoke the function.
+            return businessNetworkConnection
+                .existsAssetRegistry('wowsuchregistry')
+                .then((exists) => {
+                    sinon.assert.calledOnce(stub);
+                    sinon.assert.calledWith(stub, sinon.match.instanceOf(SecurityContext), 'wowsuchregistry', sinon.match.instanceOf(ModelManager), sinon.match.instanceOf(Factory), sinon.match.instanceOf(Serializer));
+                    exists.should.equal(true);
+                });
+
+        });
+
+    });
+
+
     describe('#addAssetRegistry', () => {
 
         it('should perform a security check', () => {
