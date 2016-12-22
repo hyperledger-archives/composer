@@ -433,6 +433,20 @@ describe('Context', () => {
             context.transactionExecutors[0].should.equal(mockTransactionExecutor);
         });
 
+        it('should ignore an existing transaction executor of a different type', () => {
+            let mockTransactionExecutor1 = sinon.createStubInstance(TransactionExecutor);
+            mockTransactionExecutor1.getType.returns('GO');
+            context.addTransactionExecutor(mockTransactionExecutor1);
+            context.transactionExecutors.should.have.lengthOf(1);
+            context.transactionExecutors[0].should.equal(mockTransactionExecutor1);
+            let mockTransactionExecutor2 = sinon.createStubInstance(TransactionExecutor);
+            mockTransactionExecutor2.getType.returns('JS');
+            context.addTransactionExecutor(mockTransactionExecutor2);
+            context.transactionExecutors.should.have.lengthOf(2);
+            context.transactionExecutors[0].should.equal(mockTransactionExecutor1);
+            context.transactionExecutors[1].should.equal(mockTransactionExecutor2);
+        });
+
         it('should replace an existing transaction executor of the same type', () => {
             let mockTransactionExecutor1 = sinon.createStubInstance(TransactionExecutor);
             mockTransactionExecutor1.getType.returns('JS');
