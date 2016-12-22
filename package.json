@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "IBM Concerto command line interfaces (CLIs)",
   "bin": {
     "concerto": "cli.js"
