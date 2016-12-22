@@ -29,7 +29,7 @@ const fs = require('fs');
 const sinon = require('sinon');
 const chai = require('chai');
 require('sinon-as-promised');
-let expect = chai.expect();
+let expect = chai.expect;
 
 // const BUSINESS_NETWORK_NAME = 'net.biz.TestNetwork-0.0.1';
 // const DEFAULT_PROFILE_NAME = 'defaultProfile';
@@ -124,7 +124,8 @@ describe('concerto generator tests CLI unit tests', () => {
             return Tests.getTransactionItBlock('Test', 'test', 'test', 'test', 'test')
             .then((contents) => {
                 contents.should.equal(
-                    `it('Test'/*, function() {
+                    `// TODO: Complete Test unit test
+it('Test'/*, function() {
     let transaction = "test";
 
     let businessNetwork = businessNetworkConnection.getBusinessNetwork();

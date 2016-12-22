@@ -74,7 +74,7 @@ describe('concerto transaction submit CLI unit tests', () => {
                 businessNetworkName: BUSINESS_NETWORK_NAME,
                 enrollId: ENROLL_ID,
                 enrollSecret: ENROLL_SECRET,
-                args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
             };
 
             return Submit.handler(argv)
@@ -84,7 +84,7 @@ describe('concerto transaction submit CLI unit tests', () => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.getBusinessNetwork);
                 sinon.assert.calledOnce(mockBusinessNetwork.getSerializer);
                 sinon.assert.calledOnce(mockSerializer.fromJSON);
-                sinon.assert.calledWith(mockSerializer.fromJSON, JSON.parse(argv.args));
+                sinon.assert.calledWith(mockSerializer.fromJSON, JSON.parse(argv.data));
                 sinon.assert.calledWith(process.exit, 0);
             });
         });
@@ -95,7 +95,7 @@ describe('concerto transaction submit CLI unit tests', () => {
                 businessNetworkName: BUSINESS_NETWORK_NAME,
                 enrollId: ENROLL_ID,
                 enrollSecret: ENROLL_SECRET,
-                args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
             };
 
             return Submit.handler(argv)
@@ -105,7 +105,7 @@ describe('concerto transaction submit CLI unit tests', () => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.getBusinessNetwork);
                 sinon.assert.calledOnce(mockBusinessNetwork.getSerializer);
                 sinon.assert.calledOnce(mockSerializer.fromJSON);
-                sinon.assert.calledWith(mockSerializer.fromJSON, JSON.parse(argv.args));
+                sinon.assert.calledWith(mockSerializer.fromJSON, JSON.parse(argv.data));
                 sinon.assert.calledWith(process.exit, 0);
             });
         });
@@ -117,7 +117,7 @@ describe('concerto transaction submit CLI unit tests', () => {
                 connectionProfileName: DEFAULT_PROFILE_NAME,
                 businessNetworkName: BUSINESS_NETWORK_NAME,
                 enrollId: ENROLL_ID,
-                args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
             };
 
             return Submit.handler(argv)
@@ -133,7 +133,7 @@ describe('concerto transaction submit CLI unit tests', () => {
                 businessNetworkName: BUSINESS_NETWORK_NAME,
                 enrollId: ENROLL_ID,
                 enrollSecret: ENROLL_SECRET,
-                args: '{"$class": "'+NAMESPACE+'", "success": "true"}'
+                data: '{"$class": "'+NAMESPACE+'", "success": true}'
             };
 
             mockBusinessNetworkConnection.submitTransaction.rejects(new Error('some error'));
