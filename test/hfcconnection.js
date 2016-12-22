@@ -177,6 +177,20 @@ describe('HFCConnection', () => {
 
         });
 
+        it('should throw if the networks section is missing', function() {
+
+            // Login to the Hyperledger Fabric using the mock hfc.
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf'
+            });
+            let enrollmentID = 'doge';
+            let enrollmentSecret = 'suchsecret';
+            return connection
+                .login(enrollmentID, enrollmentSecret)
+                .should.be.rejectedWith(/Failed to set chaincode id on security context/);
+
+        });
+
         it('should not look for an existing chaincode ID if no business network is specified', () => {
 
             // Login to the Hyperledger Fabric using the mock hfc.
