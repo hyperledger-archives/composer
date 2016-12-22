@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-cli",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "IBM Concerto command line interfaces (CLIs)",
   "bin": {
     "concerto": "cli.js"
@@ -38,9 +38,9 @@
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "@ibm/ibm-concerto-admin": "latest",
-    "@ibm/ibm-concerto-client": "latest",
-    "@ibm/ibm-concerto-common": "latest",
+    "@ibm/ibm-concerto-admin": "unstable",
+    "@ibm/ibm-concerto-client": "unstable",
+    "@ibm/ibm-concerto-common": "unstable",
     "homedir": "^0.6.0",
     "prettyjson": "^1.2.1",
     "prompt": "^1.0.0",
