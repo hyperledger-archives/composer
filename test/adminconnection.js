@@ -41,6 +41,11 @@ describe('AdminConnection', () => {
             eventHubURL: 'grpc://localhost:7053'
         };
 
+    const config2 =
+        {
+            type: 'embedded'
+        };
+
     beforeEach(() => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnection = sinon.createStubInstance(Connection);
@@ -54,10 +59,15 @@ describe('AdminConnection', () => {
         mockConnection.ping.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
+        mockConnection.list.resolves(['biznet1', 'biznet2']);
 
         mockConnectionManager.connect.resolves(mockConnection);
         adminConnection = new AdminConnection();
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+        sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
+        sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
+        sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
+        sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs('testprofile').resolves();
     });
 
     describe('#module', () => {
@@ -96,6 +106,34 @@ describe('AdminConnection', () => {
             return adminConnection.createProfile('testprofile', config)
                 .should.be.fulfilled;
         });
+    });
+
+    describe('#deleteProfile', () => {
+        it('should return a resolved promise', () => {
+            return adminConnection.deleteProfile('testprofile', config)
+                .should.be.fulfilled;
+        });
+    });
+
+    describe('#getProfile', () => {
+
+        it('should return the specified profile', () => {
+            return adminConnection.getProfile('testprofile')
+                .should.eventually.be.deep.equal(config);
+        });
+
+    });
+
+    describe('#getAllProfiles', () => {
+
+        it('should return all the profiles', () => {
+            return adminConnection.getAllProfiles()
+                .should.eventually.be.deep.equal({
+                    profile1: config,
+                    profile2: config2
+                });
+        });
+
     });
 
     describe('#disconnect', () => {
@@ -169,6 +207,17 @@ describe('AdminConnection', () => {
                 sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
             });
         });
+    });
+
+    describe('#list', () => {
+
+        it('should list all deployed business networks', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.list()
+                .should.eventually.be.deep.equal(['biznet1', 'biznet2']);
+        });
+
     });
 
 });
