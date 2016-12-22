@@ -177,6 +177,20 @@ describe('HFCConnection', () => {
 
         });
 
+        it('should throw if the networks section is missing', function() {
+
+            // Login to the Hyperledger Fabric using the mock hfc.
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf'
+            });
+            let enrollmentID = 'doge';
+            let enrollmentSecret = 'suchsecret';
+            return connection
+                .login(enrollmentID, enrollmentSecret)
+                .should.be.rejectedWith(/Failed to set chaincode id on security context/);
+
+        });
+
         it('should not look for an existing chaincode ID if no business network is specified', () => {
 
             // Login to the Hyperledger Fabric using the mock hfc.
@@ -542,6 +556,39 @@ describe('HFCConnection', () => {
                     sinon.assert.calledOnce(HFCUtil.createIdentity);
                     sinon.assert.calledWith(HFCUtil.createIdentity, mockSecurityContext, 'doge');
                 });
+        });
+
+    });
+
+    describe('#list', () => {
+
+        it('should list all deployed business networks', () => {
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf',
+                networks: {
+                    demonetwork: '123',
+                    testnetwork: '456'
+                }
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal(['demonetwork', 'testnetwork']);
+        });
+
+        it('should cope with an empty list of networks', () => {
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf',
+                networks: { }
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal([]);
+        });
+
+        it('should cope with a missing list of networks', () => {
+            mockConnectionProfileStore.load.withArgs('testprofile').resolves({
+                type: 'hlf'
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal([]);
         });
 
     });
