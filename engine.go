@@ -75,9 +75,8 @@ func (engine *Engine) handleCallback(channel chan EngineCallback, call otto.Func
 				Error:  errors.New(jsString),
 			}
 		}
-	} else if jsData.IsObject() {
-		jsObject := jsData.Object()
-		jsString, err := call.Otto.Call("JSON.stringify", nil, jsObject)
+	} else if !jsData.IsUndefined() {
+		jsString, err := call.Otto.Call("JSON.stringify", nil, jsData)
 		if err != nil {
 			channel <- EngineCallback{
 				Result: nil,

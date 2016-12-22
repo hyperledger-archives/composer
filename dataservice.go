@@ -48,6 +48,7 @@ func NewDataService(vm *otto.Otto, context *Context, stub shim.ChaincodeStubInte
 	result.This.Set("_createCollection", result.createCollection)
 	result.This.Set("_deleteCollection", result.deleteCollection)
 	result.This.Set("_getCollection", result.getCollection)
+	result.This.Set("_existsCollection", result.existsCollection)
 	return result
 
 }
@@ -141,6 +142,34 @@ func (dataService *DataService) getCollection(call otto.FunctionCall) (result ot
 		panic(err)
 	}
 	return otto.UndefinedValue()
+}
+
+// existsCollection ...
+func (dataService *DataService) existsCollection(call otto.FunctionCall) (result otto.Value) {
+	logger.Debug("Entering DataService.existsCollection", call)
+	defer func() { logger.Debug("Exiting DataService.existsCollection", result) }()
+
+	id, callback := call.Argument(0), call.Argument(1)
+	if !id.IsString() {
+		panic(fmt.Errorf("id not specified or is not a string"))
+	} else if !callback.IsFunction() {
+		panic(fmt.Errorf("callback not specified or is not a string"))
+	}
+	_, err := dataService.Stub.GetTable(id.String())
+
+  if err != nil {
+		_, err = callback.Call(callback, nil, false)
+		if err != nil {
+			panic(err)
+		}
+		return otto.UndefinedValue()
+	}
+	_, err = callback.Call(callback, nil, true)
+	if err != nil {
+		panic(err)
+	}
+	return otto.UndefinedValue()
+
 }
 
 // clearTable is called to clear all rows from a table.
