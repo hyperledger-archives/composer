@@ -117,6 +117,24 @@ describe('EngineResources', () => {
 
     });
 
+    describe('#existsResourceInRegistry', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.query(mockContext, 'existsResourceInRegistry', ['no', 'args', 'supported', 'here']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported","here"\]" to function "existsResourceInRegistry", expecting "\["registryType","registryId","resourceId"\]"/);
+        });
+
+        it('should return the specified resources', () => {
+            mockRegistry.exists.withArgs('doge1').resolves(true);
+            return engine.query(mockContext, 'existsResourceInRegistry', ['Asset', 'doges', 'doge1'])
+                .then((exists) => {
+                    exists.should.equal.true;
+                });
+        });
+
+    });
+
+
     describe('#addAllResourcesToRegistry', () => {
 
         it('should throw for invalid arguments', () => {

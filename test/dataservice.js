@@ -127,6 +127,42 @@ describe('DataService', () => {
 
     });
 
+    describe('#existsCollection', () => {
+
+        it('should call _existsCollection and handle no error', () => {
+            sinon.stub(dataService, '_existsCollection').yields(null, {});
+            return dataService.existsCollection('id')
+                .then((result) => {
+                    sinon.assert.calledWith(dataService._existsCollection, 'id');
+                    result.should.deep.equal({});
+                });
+        });
+
+        it('should call _existsCollection and handle an error', () => {
+            sinon.stub(dataService, '_existsCollection').yields(new Error('error'), null);
+            return dataService.existsCollection('id')
+                .then((result) => {
+                    throw new Error('should not getCollection here');
+                })
+                .catch((error) => {
+                    sinon.assert.calledWith(dataService._existsCollection, 'id');
+                    error.should.match(/error/);
+                });
+        });
+
+    });
+
+    describe('#_existsCollection', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                dataService._existsCollection('id');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+
     describe('#toJSON', () => {
 
         it('should return an empty object', () => {

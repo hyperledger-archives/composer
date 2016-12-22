@@ -80,6 +80,23 @@ describe('EngineRegistries', () => {
 
     });
 
+    describe('#existsRegistry', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.query(mockContext, 'existsRegistry', ['no', 'args', 'supported']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "existsRegistry", expecting "\["registryType","registryId"]"/);
+        });
+
+        it('should determine existence of registry', () => {
+            mockRegistryManager.exists.withArgs('Asset', 'doges').resolves(true);
+            return engine.query(mockContext, 'existsRegistry', ['Asset', 'doges'])
+                .then((exists) => {
+                    exists.should.be.true;
+                });
+        });
+
+    });
+
     describe('#addRegistry', () => {
 
         it('should throw for invalid arguments', () => {

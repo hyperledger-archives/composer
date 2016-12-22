@@ -272,6 +272,27 @@ describe('RegistryManager', () => {
 
     });
 
+    describe('#exists', () => {
+
+        it('should determine the existence of a registry with the specified ID', () => {
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataCollection.exists.withArgs('Asset:doges').returns(true);
+            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            return registryManager.exists('Asset', 'doges')
+                .then((exists) => {
+                    exists.should.equal.true;
+                });
+        });
+
+        it('should return errors from the data service', () => {
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataCollection.exists.rejects();
+            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            return registryManager.exists('Asset', 'doges').should.be.rejected;
+        });
+
+    });
+
     describe('#add', () => {
 
         it('should add a new registry with the specified ID', () => {

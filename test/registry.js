@@ -103,6 +103,23 @@ describe('Registry', () => {
 
     });
 
+    describe('#exists', () => {
+
+        it('should determine whether a specific resource exists in the registry', () => {
+            mockDataCollection.exists.withArgs('doge1').resolves(true);
+            return registry.exists('doge1')
+                .then((exists) => {
+                    exists.should.equal.true;
+                });
+        });
+
+        it('should return errors from the data service', () => {
+            mockDataCollection.exists.rejects();
+            return registry.exists('doge1').should.be.rejected;
+        });
+
+    });
+
     describe('#addAll', () => {
 
         it('should add all of the resources to the registry', () => {
