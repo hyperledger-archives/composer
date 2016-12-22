@@ -34,9 +34,17 @@ describe('WebContainer', () => {
 
     describe('#constructor', () => {
 
-        it('should construct a new container', () => {
+        it('should construct a new container with a new UUID', () => {
+            sandbox.stub(uuid, 'v4').returns('eaaf183b-7d22-4601-be96-833e2b342c7a');
             let container = new WebContainer();
             container.should.be.an.instanceOf(Container);
+            container.uuid.should.equal('eaaf183b-7d22-4601-be96-833e2b342c7a');
+        });
+
+        it('should construct a new container with the specified UUID', () => {
+            let container = new WebContainer('761df21b-f620-434c-ad44-15d66c4d8575');
+            container.should.be.an.instanceOf(Container);
+            container.uuid.should.equal('761df21b-f620-434c-ad44-15d66c4d8575');
         });
 
     });
