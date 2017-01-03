@@ -50,7 +50,9 @@ return Promise.resolve()
                     to: `/(\s)|(bound)./g`
                 }
             ], global: true })
-            .transform('babelify', { presets: [ 'es2015' ], global: true })
+            // The ignore is to workaround these issues:
+            //   https://github.com/Starcounter-Jack/JSON-Patch/issues/140
+            .transform('babelify', { presets: [ 'es2015' ], global: true, ignore: /fast-json-patch/ })
             // Can't get uglifyify to include source maps, so disabling for now.
             // .transform('uglifyify', { global: true })
             .bundle();
