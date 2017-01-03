@@ -22,6 +22,7 @@ const sinon = require('sinon');
 describe('AclFile', () => {
 
     const testAcl = fs.readFileSync(path.resolve(__dirname, './test.acl'), 'utf8');
+    const invalidAcl = fs.readFileSync(path.resolve(__dirname, './invalid.acl'), 'utf8');
     const testModel = fs.readFileSync(path.resolve(__dirname, './model.cto'), 'utf8');
 
     let modelManager;
@@ -40,10 +41,11 @@ describe('AclFile', () => {
     describe('#fromJSON', () => {
 
         it('should round trip the model file', () => {
-            let modelFile1 = new AclFile(modelManager, testAcl);
-            let json = JSON.stringify(modelFile1);
-            let modelFile2 = AclFile.fromJSON(modelManager, JSON.parse(json));
-            modelFile2.should.deep.equal(modelFile1);
+            let aclFile1 = new AclFile( 'test', modelManager, testAcl);
+            let json = JSON.stringify(aclFile1);
+            let aclFile2 = AclFile.fromJSON(modelManager, JSON.parse(json));
+            aclFile2.should.deep.equal(aclFile1);
+            aclFile1.getIdentifier().should.equal(aclFile2.getIdentifier());
         });
 
     });
@@ -58,7 +60,7 @@ describe('AclFile', () => {
 
         it('should throw when invalid definitions provided', () => {
             (() => {
-                new AclFile(modelManager, [{}]);
+                new AclFile( 'test', modelManager, [{}]);
             }).should.throw(/as a string as input/);
         });
 
@@ -67,15 +69,21 @@ describe('AclFile', () => {
                 rules: [ {id: {name: 'fake'}, noun: 'org.acme', verb: 'UPDATE', participant: 'EVERYONE', action: 'ALLOW'} ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new AclFile(modelManager, 'fake definitions');
+            let mf = new AclFile( 'test', modelManager, 'fake definitions');
             mf.ast.should.equal(ast);
+        });
+
+        it('should throw a ParseException on invalid input', () => {
+            (() => {
+                new AclFile('test.acl', modelManager, invalidAcl);
+            }).should.throw(/Line 1/);
         });
     });
 
     describe('#constructor', () => {
 
         it('should parse correctly and preserve order', () => {
-            const aclFile = new AclFile(modelManager, testAcl);
+            const aclFile = new AclFile('test.acl', modelManager, testAcl);
             aclFile.getAclRules().length.should.equal(5);
             aclFile.getDefinitions().should.equal(testAcl);
 
@@ -146,7 +154,7 @@ describe('AclFile', () => {
     describe('#validate', () => {
 
         it('should validate correct contents', () => {
-            const aclFile = new AclFile(modelManager, testAcl);
+            const aclFile = new AclFile( 'test', modelManager, testAcl);
             aclFile.validate();
         });
     });
@@ -154,7 +162,7 @@ describe('AclFile', () => {
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            let aclFile = new AclFile(modelManager, testAcl);
+            let aclFile = new AclFile('test.acl', modelManager, testAcl);
             let visitor = {
                 visit: sinon.stub()
             };
