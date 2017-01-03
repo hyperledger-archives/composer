@@ -147,6 +147,16 @@ describe('Connection', () => {
 
     });
 
+    describe('#list', () => {
+
+        it('should throw as abstract method', () => {
+            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
+            return c.list()
+                .should.be.rejectedWith(/abstract function called/);
+        });
+
+    });
+
     describe('#getIdentifier', () => {
 
         it('should work with both profile and network', () => {
