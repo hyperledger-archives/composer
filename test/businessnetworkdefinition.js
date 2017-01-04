@@ -22,6 +22,22 @@ describe('BusinessNetworkDefinition', () => {
 
     afterEach(() => {});
 
+    describe('#identifier format checking', () => {
+
+        it('should throw when no dash in identifier', () => {
+            (() => {
+                new BusinessNetworkDefinition('id', 'description');
+            }).should.throw(/It must be "name-major.minor.micro"/);
+        });
+
+        it('should throw when invalid version in identifier', () => {
+            (() => {
+                new BusinessNetworkDefinition('id-1.a.b', 'description');
+            }).should.throw(/Should be major.minor.micro/);
+        });
+
+    });
+
     describe('#accessors', () => {
 
         it('should be able to get name', () => {
@@ -74,6 +90,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getDescription().should.equal('A test business network.');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
+                businessNetwork.aclManager.getAclRules().should.have.length(5);
 
                 const intro = businessNetwork.getIntrospector();
                 intro.getClassDeclarations().length.should.equal(25);
