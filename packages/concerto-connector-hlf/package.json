@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/ibm-concerto-connector-hlf",
+  "name": "@ibm/concerto-connector-hlf",
   "version": "0.3.0",
   "description": "The Hyperledger Fabric Client connector for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
@@ -40,8 +40,8 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/ibm-concerto-common": "~0.2.0-0",
-    "@ibm/ibm-concerto-runtime-hlf": "~0.2.0-0",
+    "@ibm/concerto-common": "~0.3.0-0",
+    "@ibm/concerto-runtime-hlf": "~0.3.0-0",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",
     "uuid": "^3.0.0",

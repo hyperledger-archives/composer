@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/ibm-concerto-admin",
+  "name": "@ibm/concerto-admin",
   "version": "0.3.0",
   "description": "IBM Concerto admin, code that manages business networks",
   "main": "index.js",
@@ -43,8 +43,8 @@
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "@ibm/ibm-concerto-common": "~0.2.0-0",
-    "@ibm/ibm-concerto-connector-hlf": "~0.2.0-0"
+    "@ibm/concerto-common": "~0.3.0-0",
+    "@ibm/concerto-connector-hlf": "~0.3.0-0"
   },
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
