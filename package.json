@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "@ibm/ibm-concerto-runtime": "~0.2.0-0",
-    "dexie": "^1.5.1"
+    "dexie": "^1.5.1",
+    "uuid": "^3.0.1"
   }
 }
