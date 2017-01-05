@@ -10,11 +10,11 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 
 const fs = require('fs');
 const path = require('path');
-const Relationship = require('@ibm/ibm-concerto-common').Relationship;
+const Relationship = require('@ibm/concerto-common').Relationship;
 
 const TestUtil = require('./testutil');
 const chai = require('chai');

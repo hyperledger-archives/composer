@@ -13,6 +13,7 @@
 // Karma configuration
 // Generated on Sat Nov 12 2016 22:36:17 GMT+0000 (GMT)
 
+const processGlobal = require.resolve('browserfs/dist/shims/process.js');
 const browserfsPath = require.resolve('browserfs');
 
 module.exports = function(config) {
@@ -91,7 +92,7 @@ module.exports = function(config) {
                 // process, Buffer, and BrowserFS globals.
                 // BrowserFS global is not required if you include browserfs.js
                 // in a script tag.
-                process: function () { return 'require(\'browserfs/dist/shims/process.js\')'; },
+                process: function () { return 'require(\''+processGlobal+'\')'; },
                 Buffer: function () { return 'require(\'buffer\').Buffer'; },
                 BrowserFS: function () { return 'require(\'' + browserfsPath + '\')'; }
             }

@@ -10,11 +10,11 @@
 
 'use strict';
 
-const AdminConnection = require('@ibm/ibm-concerto-admin').AdminConnection;
-const BusinessNetworkConnection = require('@ibm/ibm-concerto-client').BusinessNetworkConnection;
-const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
+const AdminConnection = require('@ibm/concerto-admin').AdminConnection;
+const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
 const net = require('net');
-const Util = require('@ibm/ibm-concerto-common').Util;
+const Util = require('@ibm/concerto-common').Util;
 
 let adminConnection;
 let client;
@@ -39,7 +39,7 @@ class TestUtil {
      * @return {boolean} True if running in embedded mode, false if not.
      */
     static isEmbedded() {
-        return !!process.env.CONCERTO_EMBEDDED;
+        return process.env.npm_lifecycle_event === 'systest:embedded';
     }
 
     /**
@@ -115,7 +115,7 @@ class TestUtil {
                 if (TestUtil.isWeb()) {
                     const BrowserFS = require('browserfs');
                     BrowserFS.initialize(new BrowserFS.FileSystem.LocalStorage());
-                    ConnectionProfileManager.registerConnectionManager('web', require('@ibm/ibm-concerto-connector-web'));
+                    ConnectionProfileManager.registerConnectionManager('web', require('@ibm/concerto-connector-web'));
                     adminOptions = {
                         type: 'web'
                     };
