@@ -1,0 +1,198 @@
+/*
+ * IBM Confidential
+ * OCO Source Materials
+ * IBM Concerto - Blockchain Solution Framework
+ * Copyright IBM Corp. 2016
+ * The source code for this program is not published or otherwise
+ * divested of its trade secrets, irrespective of what has
+ * been deposited with the U.S. Copyright Office.
+ */
+
+'use strict';
+
+const Registry = require('./registry');
+const Util = require('@ibm/ibm-concerto-common').Util;
+
+const REGISTRY_TYPE = 'Transaction';
+
+/**
+ * The TransactionRegistry is used to store a set of transactions on the blockchain.
+ * <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="width:100%;"/></a></p>
+ * @extends Registry
+ * @see See [Registry]{@link module:ibm-concerto-client.Registry}
+ * @class
+ * @memberof module:ibm-concerto-client
+ */
+class TransactionRegistry extends Registry {
+
+    /**
+     * Get a list of all existing transaction registries.
+     *
+     * @protected
+     * @param {SecurityContext} securityContext The user's security context.
+     * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
+     * @param {Factory} factory The factory to use for this transaction registry.
+     * @param {Serializer} serializer The Serializer to use for this transaction registry.
+     * @return {Promise} A promise that will be resolved with a list of {@link TransactionRegistry}
+     * instances representing the transaction registries.
+     */
+    static getAllTransactionRegistries(securityContext, modelManager, factory, serializer) {
+        Util.securityCheck(securityContext);
+        if (!modelManager) {
+            throw new Error('modelManager not specified');
+        } else if (!factory) {
+            throw new Error('factory not specified');
+        } else if (!serializer) {
+            throw new Error('serializer not specified');
+        }
+        return Registry.getAllRegistries(securityContext, REGISTRY_TYPE)
+            .then((transactionRegistries) => {
+                return transactionRegistries.map((transactionRegistry) => {
+                    return new TransactionRegistry(transactionRegistry.id, transactionRegistry.name, securityContext, modelManager, factory, serializer);
+                });
+            });
+    }
+
+    /**
+     * Get an existing transaction registry.
+     *
+     * @protected
+     * @param {SecurityContext} securityContext The user's security context.
+     * @param {string} id The unique identifier of the transaction registry.
+     * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
+     * @param {Factory} factory The factory to use for this transaction registry.
+     * @param {Serializer} serializer The Serializer to use for this transaction registry.
+     * @return {Promise} A promise that will be resolved with a {@link TransactionRegistry}
+     * instance representing the transaction registry.
+     */
+    static getTransactionRegistry(securityContext, id, modelManager, factory, serializer) {
+        Util.securityCheck(securityContext);
+        if (!id) {
+            throw new Error('id not specified');
+        } else if (!modelManager) {
+            throw new Error('modelManager not specified');
+        } else if (!factory) {
+            throw new Error('factory not specified');
+        } else if (!serializer) {
+            throw new Error('serializer not specified');
+        }
+        return Registry.getRegistry(securityContext, REGISTRY_TYPE, id)
+            .then((registry) => {
+                return new TransactionRegistry(registry.id, registry.name, securityContext, modelManager, factory, serializer);
+            });
+    }
+
+    /**
+     * Add a new transaction registry.
+     *
+     * @protected
+     * @param {SecurityContext} securityContext The user's security context.
+     * @param {string} id The unique identifier of the transaction registry.
+     * @param {string} name The name of the transaction registry.
+     * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
+     * @param {Factory} factory The factory to use for this transaction registry.
+     * @param {Serializer} serializer The Serializer to use for this transaction registry.
+     * @return {Promise} A promise that will be resolved with a {@link TransactionRegistry}
+     * instance representing the new transaction registry.
+     */
+    static addTransactionRegistry(securityContext, id, name, modelManager, factory, serializer) {
+        Util.securityCheck(securityContext);
+        if (!id) {
+            throw new Error('id not specified');
+        } else if (!name) {
+            throw new Error('name not specified');
+        } else if (!modelManager) {
+            throw new Error('modelManager not specified');
+        } else if (!factory) {
+            throw new Error('factory not specified');
+        } else if (!serializer) {
+            throw new Error('serializer not specified');
+        }
+        return Registry.addRegistry(securityContext, REGISTRY_TYPE, id, name)
+            .then(() => {
+                return new TransactionRegistry(id, name, securityContext, modelManager, factory, serializer);
+            });
+    }
+
+    /**
+     * Create an transaction registry.
+     * <strong>Note: Only to be called by framework code. Applications should
+     * retrieve instances from {@link BusinessNetworkConnection}</strong>
+     * </p>
+     *
+     * @protected
+     * @param {string} id The unique identifier of the transaction registry.
+     * @param {string} name The display name for the transaction registry.
+     * @param {SecurityContext} securityContext The security context to use for this asset registry.
+     * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
+     * @param {Factory} factory The factory to use for this transaction registry.
+     * @param {Serializer} serializer The Serializer to use for this transaction registry.
+     */
+    constructor(id, name, securityContext, modelManager, factory, serializer) {
+        super(REGISTRY_TYPE, id, name, securityContext, modelManager, factory, serializer);
+    }
+
+    /**
+     * Unsupported operation; you cannot add a transaction to a transaction
+     * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
+     *
+     * @param {Resource} resource The resource to be added to the registry.
+     * @param {string} data The data for the resource.
+     */
+    add(resource) {
+        throw new Error('cannot add transactions to a transaction registry');
+    }
+
+    /**
+     * Unsupported operation; you cannot add a transaction to a transaction
+     * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
+     *
+     * @param {Resource[]} resources The resources to be added to the registry.
+     */
+    addAll(resources) {
+        throw new Error('cannot add transactions to a transaction registry');
+    }
+
+    /**
+     * Unsupported operation; you cannot update a transaction in a transaction
+     * registry. This method will always throw an exception when called.
+     *
+     * @param {Resource} resource The resource to be updated in the registry.
+     */
+    update(resource) {
+        throw new Error('cannot update transactions in a transaction registry');
+    }
+
+    /**
+     * Unsupported operation; you cannot update a transaction in a transaction
+     * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
+     *
+     * @param {Resource[]} resources The resources to be updated in the asset registry.
+     */
+    updateAll(resources) {
+        throw new Error('cannot update transactions in a transaction registry');
+    }
+
+    /**
+     * Unsupported operation; you cannot remove a transaction from a transaction
+     * registry. This method will always throw an exception when called.
+     *
+     * @param {(Resource|string)} resource The resource, or the unique identifier of the resource.
+     */
+    remove(resource) {
+        throw new Error('cannot remove transactions from a transaction registry');
+    }
+
+    /**
+     * Unsupported operation; you cannot remove a transaction from a transaction
+     * registry. This method will always throw an exception when called.
+     *
+     * @param {(Resource[]|string[])} resources The resources, or the unique identifiers of the resources.
+     */
+    removeAll(resources) {
+        throw new Error('cannot remove transactions from a transaction registry');
+    }
+
+}
+
+module.exports = TransactionRegistry;
