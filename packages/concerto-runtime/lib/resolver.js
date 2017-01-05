@@ -1,0 +1,227 @@
+/*
+ * IBM Confidential
+ * OCO Source Materials
+ * IBM Concerto - Blockchain Solution Framework
+ * Copyright IBM Corp. 2016
+ * The source code for this program is not published or otherwise
+ * divested of its trade secrets, irrespective of what has
+ * been deposited with the U.S. Copyright Office.
+ */
+
+'use strict';
+
+const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
+const Logger = require('@ibm/ibm-concerto-common').Logger;
+const ParticipantDeclaration = require('@ibm/ibm-concerto-common').ParticipantDeclaration;
+const Relationship = require('@ibm/ibm-concerto-common').Relationship;
+const Resource = require('@ibm/ibm-concerto-common').Resource;
+const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
+
+const LOG = Logger.getLog('Context');
+
+/**
+ * A class for resolving resources and their relationships to other resources.
+ * @protected
+ * @abstract
+ * @memberof module:ibm-concerto-runtime
+ */
+class Resolver {
+
+    /**
+     * Constructor.
+     * @param {Introspector} introspector The introspector to use.
+     * @param {RegistryManager} registryManager The registry manager to use.
+     */
+    constructor(introspector, registryManager) {
+        const method = 'constructor';
+        LOG.entry(method, registryManager);
+        this.introspector = introspector;
+        this.registryManager = registryManager;
+        LOG.exit(method);
+    }
+
+    /**
+     * Resolve the specified resource or relationship and all of its relationships.
+     * @param {Resource|Relationship} identifiable The identifiable to resolve.
+     * @return {Promise} A promise that is resolved with the resolved {@link Resource}
+     * object when the resource is resolved, or rejected with an error.
+     */
+    resolve(identifiable) {
+        const method = 'resolve';
+        LOG.entry(method, identifiable.toString());
+        let resolveState = {
+            cachedResources: new Map()
+        };
+        if (identifiable instanceof Resource) {
+            resolveState.cachedResources.set(identifiable.getFullyQualifiedIdentifier(), identifiable);
+            return this.resolveResource(identifiable, resolveState)
+                .then((result) => {
+                    LOG.exit(method, result.toString());
+                    return result;
+                });
+        } else if (identifiable instanceof Relationship) {
+            return this.resolveRelationship(identifiable, resolveState)
+                .then((result) => {
+                    LOG.exit(method, result.toString());
+                    return result;
+                });
+        } else {
+            LOG.error(method, 'unsupported type for identifiable');
+            throw new Error('unsupported type for identifiable');
+        }
+    }
+
+    /**
+     * Resolve the specified resource.
+     * @private
+     * @param {Resource} resource The resource to resolve.
+     * @param {Object} resolveState The current resolve state.
+     * @param {Map} resolveState.cachedResources The cache of resolved resources.
+     * @return {Promise} A promise that is resolved with a {@link Resource} object,
+     * or rejected with an error.
+     */
+    resolveResource(resource, resolveState) {
+        const method = 'resolveResource';
+        LOG.entry(method, resource.toString(), resolveState);
+        let classDeclaration = resource.getClassDeclaration();
+        return classDeclaration.getProperties().reduce((result, property) => {
+
+            // Get the property value.
+            LOG.debug(method, 'Looking at property', property.getName());
+            let value = resource[property.getName()];
+            if (value instanceof Resource) {
+
+                // Replace the property value with the resolved resource.
+                LOG.debug(method, 'Property value is a resource, resolving', value.toString());
+                return result.then(() => {
+                    return this.resolveResource(value, resolveState);
+                }).then((newValue) => {
+                    resource[property.getName()] = newValue;
+                });
+
+            } else if (value instanceof Relationship) {
+
+                // Replace the property value with the resolved relationship.
+                LOG.debug(method, 'Property value is a relationship, resolving', value.toString());
+                return result.then(() => {
+                    return this.resolveRelationship(value, resolveState);
+                }).then((newValue) => {
+                    resource[property.getName()] = newValue;
+                });
+
+            } else if (Array.isArray(value)) {
+
+                // Go through each item in the array.
+                LOG.debug(method, 'Property value is an array, iterating over values', value.length);
+                return value.reduce((result, item, index) => {
+
+                    // Handle the array item.
+                    if (item instanceof Resource) {
+
+                        // Replace the property value with the resolved resource.
+                        LOG.debug(method, 'Array item is a resource, resolving', item.toString());
+                        return result.then(() => {
+                            return this.resolveResource(item, resolveState);
+                        }).then((newItem) => {
+                            value[index] = newItem;
+                        });
+
+                    } else if (item instanceof Relationship) {
+
+                        // Replace the property value with the resolved relationship.
+                        LOG.debug(method, 'Property value is a relationship, resolving', item.toString());
+                        return result.then(() => {
+                            return this.resolveRelationship(item, resolveState);
+                        }).then((newItem) => {
+                            value[index] = newItem;
+                        });
+
+                    } else {
+                        LOG.debug(method, 'Array item is neither a resource or a relationship, ignoring', item);
+                        return result;
+                    }
+
+                }, Promise.resolve());
+
+            } else {
+                LOG.debug(method, 'Property value is neither a resource or a relationship, ignoring', value);
+                return result;
+            }
+
+        }, Promise.resolve())
+            .then(() => {
+                LOG.exit(method, resource.toString());
+                return resource;
+            });
+    }
+
+    /**
+     * Resolve the specified relationship.
+     * @private
+     * @param {Relationship} relationship The relationship to resolve.
+     * @param {Object} resolveState The current resolve state.
+     * @param {Map} resolveState.cachedResources The cache of resolved resources.
+     * @param {boolean} [resolveState.skipRecursion] Set to true to skip resolving the resolved resource.
+     * @return {Promise} A promise that is resolved with a {@link Resource} object,
+     * or rejected with an error.
+     */
+    resolveRelationship(relationship, resolveState) {
+        const method = 'resolveRelationship';
+        LOG.entry(method, relationship.toString(), resolveState);
+        let fqi = relationship.getFullyQualifiedIdentifier();
+        if (resolveState.cachedResources.has(fqi)) {
+            LOG.debug(method, 'Target resource is already present in cache', fqi);
+            let resource = resolveState.cachedResources.get(fqi);
+            LOG.exit(method, resource.toString());
+            return Promise.resolve(resource);
+        }
+        let registryId = relationship.getFullyQualifiedType();
+        let classDeclaration = this.introspector.getClassDeclaration(registryId);
+        LOG.debug(method, 'Got class declaration', classDeclaration);
+        let classType;
+        if (classDeclaration instanceof AssetDeclaration) {
+            classType = 'Asset';
+        } else if (classDeclaration instanceof ParticipantDeclaration) {
+            classType = 'Participant';
+        } else if (classDeclaration instanceof TransactionDeclaration) {
+            classType = 'Transaction';
+            // Special case for this one!
+            registryId = 'default';
+        } else {
+            throw new Error('Unsupported class declaration type ' + classDeclaration.toString());
+        }
+        LOG.debug(method, 'Getting registry', registryId);
+        return this.registryManager.get(classType, registryId)
+            .then((registry) => {
+                let resourceId = relationship.getIdentifier();
+                LOG.debug(method, 'Getting resource in registry', resourceId);
+                return registry.get(resourceId);
+            })
+            .then((resource) => {
+                LOG.debug(method, 'Got resource from registry, adding to cache');
+                resolveState.cachedResources.set(fqi, resource);
+                if (resolveState.skipRecursion) {
+                    LOG.debug(method, 'Got resource from registry, but skipping resolve');
+                    return resource;
+                } else {
+                    LOG.debug(method, 'Got resource from registry, resolving');
+                    return this.resolveResource(resource, resolveState);
+                }
+            })
+            .then((resource) => {
+                LOG.exit(method, resource.toString());
+                return resource;
+            });
+    }
+
+    /**
+     * Stop serialization of this object.
+     * @return {Object} An empty object.
+     */
+    toJSON() {
+        return {};
+    }
+
+}
+
+module.exports = Resolver;
