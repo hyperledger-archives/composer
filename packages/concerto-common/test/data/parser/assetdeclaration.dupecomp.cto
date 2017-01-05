@@ -1,0 +1,10 @@
+namespace com.ibm.testing
+
+asset BaseAsset {
+    o String fred
+}
+
+asset TestAsset identified by assetId extends BaseAsset {
+    o String assetId
+    o String fred
+}

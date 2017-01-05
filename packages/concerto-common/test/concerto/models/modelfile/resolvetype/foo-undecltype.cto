@@ -1,0 +1,6 @@
+namespace Bar
+
+asset foo identified by fooID {
+    o String fooID
+    o Person fooProperty
+}

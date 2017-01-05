@@ -1,0 +1,11 @@
+/**
+ * Test model to create the conditions to throw error in the process() function
+ * of the ClassDeclaration class
+ */
+
+namespace bar
+
+//fooID is not a string - Error will be thrown
+asset foo identified by fooID {
+    o Integer fooID
+}

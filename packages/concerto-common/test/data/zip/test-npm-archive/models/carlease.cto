@@ -1,0 +1,17 @@
+/**
+ * Car Lease Scenario
+ * Concerto Language File
+ *
+ * Author: Billy Blockchain
+ * Version: 1.0
+ * Last Updates: 2016-09-22
+ */
+
+// define the namespace for this model
+namespace org.acme
+
+enum State {
+    o CREATED
+    o REGISTERED
+    o SOLD
+}
