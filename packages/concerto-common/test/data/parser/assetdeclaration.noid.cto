@@ -1,0 +1,9 @@
+namespace com.ibm.testing
+
+asset BaseAsset {
+
+}
+
+asset TestAsset extends BaseAsset {
+
+}
