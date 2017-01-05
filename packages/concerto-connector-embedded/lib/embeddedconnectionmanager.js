@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ConnectionManager = require('@ibm/ibm-concerto-common').ConnectionManager;
+const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
 const EmbeddedConnection = require('./embeddedconnection');
 
 /**

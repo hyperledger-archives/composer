@@ -10,17 +10,17 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
-const Connection = require('@ibm/ibm-concerto-common').Connection;
-const ConnectionManager = require('@ibm/ibm-concerto-common').ConnectionManager;
-const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
-const ConnectionProfileStore = require('@ibm/ibm-concerto-common').ConnectionProfileStore;
-const Context = require('@ibm/ibm-concerto-runtime').Context;
-const DataService = require('@ibm/ibm-concerto-runtime').DataService;
-const Engine = require('@ibm/ibm-concerto-runtime').Engine;
-const LoggingService = require('@ibm/ibm-concerto-runtime').LoggingService;
+const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const Connection = require('@ibm/concerto-common').Connection;
+const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const ConnectionProfileStore = require('@ibm/concerto-common').ConnectionProfileStore;
+const Context = require('@ibm/concerto-runtime').Context;
+const DataService = require('@ibm/concerto-runtime').DataService;
+const Engine = require('@ibm/concerto-runtime').Engine;
+const LoggingService = require('@ibm/concerto-runtime').LoggingService;
 const WebConnection = require('../lib/webconnection');
-const WebContainer = require('@ibm/ibm-concerto-runtime-web').WebContainer;
+const WebContainer = require('@ibm/concerto-runtime-web').WebContainer;
 const WebSecurityContext = require('../lib/websecuritycontext');
 
 const chai = require('chai');

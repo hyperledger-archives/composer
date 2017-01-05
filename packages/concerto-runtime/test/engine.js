@@ -10,16 +10,16 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
-const Logger = require('@ibm/ibm-concerto-common').Logger;
+const Logger = require('@ibm/concerto-common').Logger;
 const LoggingService = require('../lib/loggingservice');
 const RegistryManager = require('../lib/registrymanager');
-const Resource = require('@ibm/ibm-concerto-common').Resource;
+const Resource = require('@ibm/concerto-common').Resource;
 const version = require('../package.json').version;
 
 const chai = require('chai');

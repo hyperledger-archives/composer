@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Container = require('@ibm/ibm-concerto-runtime').Container;
+const Container = require('@ibm/concerto-runtime').Container;
 const EmbeddedDataService = require('./embeddeddataservice');
 const EmbeddedLoggingService = require('./embeddedloggingservice');
 const uuid = require('uuid');

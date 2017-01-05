@@ -10,8 +10,8 @@
 
 'use strict';
 
-const Resource = require('@ibm/ibm-concerto-common').Resource;
-const Util = require('@ibm/ibm-concerto-common').Util;
+const Resource = require('@ibm/concerto-common').Resource;
+const Util = require('@ibm/concerto-common').Util;
 
 /**
  * Class representing an Abstract Registry.

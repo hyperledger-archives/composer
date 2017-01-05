@@ -10,9 +10,9 @@
 
 'use strict';
 
-const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
+const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
 const EventEmitter = require('events');
-const ParticipantDeclaration = require('@ibm/ibm-concerto-common').ParticipantDeclaration;
+const ParticipantDeclaration = require('@ibm/concerto-common').ParticipantDeclaration;
 const Registry = require('./registry');
 
 /**

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const DataService = require('@ibm/ibm-concerto-runtime').DataService;
+const DataService = require('@ibm/concerto-runtime').DataService;
 const Dexie = require('dexie');
 const WebDataCollection = require('./webdatacollection');
 

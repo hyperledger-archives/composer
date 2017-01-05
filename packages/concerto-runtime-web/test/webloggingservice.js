@@ -10,7 +10,7 @@
 
 'use strict';
 
-const LoggingService = require('@ibm/ibm-concerto-runtime').LoggingService;
+const LoggingService = require('@ibm/concerto-runtime').LoggingService;
 const WebLoggingService = require('..').WebLoggingService;
 
 require('chai').should();

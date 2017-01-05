@@ -10,12 +10,12 @@
 
 'use strict';
 
-const Context = require('@ibm/ibm-concerto-runtime').Context;
-const DataService = require('@ibm/ibm-concerto-runtime').DataService;
-const Engine = require('@ibm/ibm-concerto-runtime').Engine;
+const Context = require('@ibm/concerto-runtime').Context;
+const DataService = require('@ibm/concerto-runtime').DataService;
+const Engine = require('@ibm/concerto-runtime').Engine;
 const EmbeddedContainer = require('..').EmbeddedContainer;
 const EmbeddedContext = require('..').EmbeddedContext;
-const IdentityService = require('@ibm/ibm-concerto-runtime').IdentityService;
+const IdentityService = require('@ibm/concerto-runtime').IdentityService;
 
 require('chai').should();
 const sinon = require('sinon');

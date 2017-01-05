@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Connection = require('@ibm/ibm-concerto-common').Connection;
+const Connection = require('@ibm/concerto-common').Connection;
 const hfc = require('hfc');
 const hfcEventHub = hfc.EventHub;
 const hfcMember = hfc.Member;

@@ -10,10 +10,10 @@
 
 'use strict';
 
-const Context = require('@ibm/ibm-concerto-runtime').Context;
-const DataService = require('@ibm/ibm-concerto-runtime').DataService;
-const Engine = require('@ibm/ibm-concerto-runtime').Engine;
-const IdentityService = require('@ibm/ibm-concerto-runtime').IdentityService;
+const Context = require('@ibm/concerto-runtime').Context;
+const DataService = require('@ibm/concerto-runtime').DataService;
+const Engine = require('@ibm/concerto-runtime').Engine;
+const IdentityService = require('@ibm/concerto-runtime').IdentityService;
 const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
 

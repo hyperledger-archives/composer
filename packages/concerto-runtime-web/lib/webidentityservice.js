@@ -10,7 +10,7 @@
 
 'use strict';
 
-const IdentityService = require('@ibm/ibm-concerto-runtime').IdentityService;
+const IdentityService = require('@ibm/concerto-runtime').IdentityService;
 
 /**
  * Base class representing the identity service provided by a {@link Container}.

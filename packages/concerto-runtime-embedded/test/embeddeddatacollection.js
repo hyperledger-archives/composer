@@ -10,8 +10,8 @@
 
 'use strict';
 
-const DataCollection = require('@ibm/ibm-concerto-runtime').DataCollection;
-const DataService = require('@ibm/ibm-concerto-runtime').DataService;
+const DataCollection = require('@ibm/concerto-runtime').DataCollection;
+const DataService = require('@ibm/concerto-runtime').DataService;
 const EmbeddedDataCollection = require('..').EmbeddedDataCollection;
 
 const chai = require('chai');

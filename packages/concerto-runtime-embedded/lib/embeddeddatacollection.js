@@ -10,7 +10,7 @@
 
 'use strict';
 
-const DataCollection = require('@ibm/ibm-concerto-runtime').DataCollection;
+const DataCollection = require('@ibm/concerto-runtime').DataCollection;
 
 /**
  * Base class representing a data collection provided by a {@link DataService}.

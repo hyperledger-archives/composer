@@ -10,10 +10,10 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 const Context = require('./context');
 const createHash = require('sha.js');
-const Logger = require('@ibm/ibm-concerto-common').Logger;
+const Logger = require('@ibm/concerto-common').Logger;
 const util = require('util');
 
 const LOG = Logger.getLog('EngineBusinessNetworks');

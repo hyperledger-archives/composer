@@ -10,16 +10,16 @@
 
 'use strict';
 
-const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
+const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const EventEmitter = require('events');
-const Introspector = require('@ibm/ibm-concerto-common').Introspector;
-const ParticipantDeclaration = require('@ibm/ibm-concerto-common').ParticipantDeclaration;
+const Introspector = require('@ibm/concerto-common').Introspector;
+const ParticipantDeclaration = require('@ibm/concerto-common').ParticipantDeclaration;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
-const Serializer = require('@ibm/ibm-concerto-common').Serializer;
-const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
+const Serializer = require('@ibm/concerto-common').Serializer;
+const TransactionDeclaration = require('@ibm/concerto-common').TransactionDeclaration;
 
 const chai = require('chai');
 chai.should();

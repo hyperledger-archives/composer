@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Logger = require('@ibm/ibm-concerto-common').Logger;
+const Logger = require('@ibm/concerto-common').Logger;
 const util = require('util');
 
 const LOG = Logger.getLog('EngineResources');
