@@ -1,0 +1,26 @@
+language: node_js
+node_js:
+    - '4'
+    - '6'
+dist: trusty
+before_install: |
+    set -ev
+    npm install -g npm
+    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
+    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo dpkg -i google-chrome*.deb
+install: |
+    set -ev
+    npm install 2>&1 | tee
+script: |
+    set -ev
+    export DISPLAY=:99.0
+    sh -e /etc/init.d/xvfb start
+    npm test 2>&1 | tee
+deploy:
+    provider: script
+    script: npm run deploy 2>&1 | tee
+    skip_cleanup: true
+    on:
+        all_branches: true
