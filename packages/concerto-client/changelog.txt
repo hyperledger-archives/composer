@@ -11,6 +11,10 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
+
+Version 0.3.0 {8277e3187404794086357f460a95b6c3} 2017-01-05
+- Move to monorepo
+
 Version 0.2.1 {8277e3187404794086357f460a95b6c3} 2016-12-19
 - Added exists() APIs to registries and assets
 
