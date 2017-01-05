@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-connector-embedded",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The embedded client connector for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {

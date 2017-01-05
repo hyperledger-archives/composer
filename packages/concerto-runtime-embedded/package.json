@@ -1,6 +1,6 @@
 {
   "name": "@ibm/ibm-concerto-runtime-embedded",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The embedded runtime container for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
