@@ -55,6 +55,7 @@
   "dependencies": {
     "@ibm/ibm-concerto-runtime": "~0.2.0-0",
     "dexie": "^1.5.1",
-    "fake-indexeddb": "^1.0.8"
+    "fake-indexeddb": "^1.0.8",
+    "uuid": "^3.0.1"
   }
 }
