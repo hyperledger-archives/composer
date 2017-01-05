@@ -13,17 +13,16 @@ if [ -r "/etc/init.d/xvfb" ]; then
     sh -e /etc/init.d/xvfb start
 fi
 
-# Are we running unit tests?
-if [ "${SYSTEST}" = "" ]; then
+# Are we running system tests?
+if [ "${SYSTEST}" != "" ]; then
+
+    # Run the system tests.
+    ${DIR}/packages/concerto-systests/scripts/run-system-tests.sh
+
+# We must be running unit tests.
+else
 
     # Run the unit tests.
     npm test 2>&1 | tee
-
-# No, we must be running system tests.
-else
-
-    # Run the system tests.
-    cd packages/concerto-systests
-    npm run systest:${SYSTEST} 2>&1 | tee
 
 fi

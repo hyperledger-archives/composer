@@ -72,4 +72,18 @@ describe('Relationship', function () {
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
         });
     });
+
+    describe('#isRelationship', () => {
+        it('should be true', () => {
+            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            relationship.isRelationship().should.be.true;
+        });
+    });
+
+    describe('#isResource', () => {
+        it('should be false', () => {
+            const relationship = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            relationship.isResource().should.be.false;
+        });
+    });
 });

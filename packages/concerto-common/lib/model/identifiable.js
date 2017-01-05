@@ -166,6 +166,25 @@ class Identifiable {
     static isSystemProperty(name) {
         return IDENTIFIABLE_SYSTEM_PROPERTIES.indexOf(name) >= 0;
     }
+
+    /**
+     * Determine if this identifiable is a relationship.
+     * @return {boolean} True if this identifiable is a relationship,
+     * false if not.
+     */
+    isRelationship() {
+        return false;
+    }
+
+    /**
+     * Determine if this identifiable is a resource.
+     * @return {boolean} True if this identifiable is a resource,
+     * false if not.
+     */
+    isResource() {
+        return false;
+    }
+
 }
 
 module.exports = Identifiable;

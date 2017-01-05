@@ -40,14 +40,18 @@ class Identifiable {
    + string getFullyQualifiedType() 
    + string getNamespace() 
    + String toString() 
+   + boolean isRelationship() 
+   + boolean isResource() 
 }
 class Relationship extends Identifiable {
    + String toString() 
+   + boolean isRelationship() 
 }
 class Resource extends Identifiable {
    + void setPropertyValue(string,string) 
    + void addArrayValue(string,string) 
    + String toString() 
+   + boolean isResource() 
 }
 class ValidatedResource extends Resource {
    + void setPropertyValue(string,string) throws Error

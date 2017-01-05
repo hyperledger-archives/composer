@@ -27,3 +27,4 @@ module.exports.AdminConnection = require('./lib/adminconnection');
  * @ignore
  */
 module.exports.BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+module.exports.Logger = require('@ibm/concerto-common').Logger;

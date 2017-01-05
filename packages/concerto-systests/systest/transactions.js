@@ -10,11 +10,10 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('@ibm/concerto-admin').BusinessNetworkDefinition;
 
 const fs = require('fs');
 const path = require('path');
-const Relationship = require('@ibm/concerto-common').Relationship;
 
 const TestUtil = require('./testutil');
 const chai = require('chai');
@@ -271,7 +270,7 @@ describe('Transaction system tests', () => {
             })
             .then((asset) => {
                 asset.getIdentifier().should.equal('relationshipAsset1');
-                asset.stringAsset.should.be.an.instanceOf(Relationship);
+                asset.stringAsset.isRelationship().should.be.true;
                 asset.stringAsset.getFullyQualifiedIdentifier().should.equal('systest.transactions.SimpleStringAsset#stringAsset1');
             });
     });
@@ -313,7 +312,7 @@ describe('Transaction system tests', () => {
             })
             .then((asset) => {
                 asset.getIdentifier().should.equal('relationshipAsset1');
-                asset.stringAsset.should.be.an.instanceOf(Relationship);
+                asset.stringAsset.isRelationship().should.be.true;
                 asset.stringAsset.getFullyQualifiedIdentifier().should.equal('systest.transactions.SimpleStringAsset#stringAsset1');
             });
     });
@@ -378,7 +377,7 @@ describe('Transaction system tests', () => {
             })
             .then((asset) => {
                 asset.getIdentifier().should.equal('relationshipAsset1');
-                asset.stringAsset.should.be.an.instanceOf(Relationship);
+                asset.stringAsset.isRelationship().should.be.true;
                 asset.stringAsset.getFullyQualifiedIdentifier().should.equal('systest.transactions.SimpleStringAsset#stringAsset2');
             });
     });
@@ -436,7 +435,7 @@ describe('Transaction system tests', () => {
             })
             .then((asset) => {
                 asset.getIdentifier().should.equal('relationshipAsset1');
-                asset.stringAsset.should.be.an.instanceOf(Relationship);
+                asset.stringAsset.isRelationship().should.be.true;
                 asset.stringAsset.getFullyQualifiedIdentifier().should.equal('systest.transactions.SimpleStringAsset#stringAsset2');
             });
     });

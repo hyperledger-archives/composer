@@ -1,7 +1,8 @@
 {
   "devDependencies": {
     "lerna": "2.0.0-beta.32",
-    "moment": "^2.17.1"
+    "moment": "^2.17.1",
+    "sleep-promise": "^2.0.0"
   },
   "name": "@ibm/concerto",
   "description": "You must install [Lerna](https://lernajs.io) to build this multi-package repository.",

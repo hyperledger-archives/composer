@@ -13,7 +13,11 @@
 const AdminConnection = require('@ibm/concerto-admin').AdminConnection;
 const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
 const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const homedir = require('homedir');
+const mkdirp = require('mkdirp');
 const net = require('net');
+const path = require('path');
+const sleep = require('sleep-promise');
 const Util = require('@ibm/concerto-common').Util;
 
 let adminConnection;
@@ -40,6 +44,14 @@ class TestUtil {
      */
     static isEmbedded() {
         return process.env.npm_lifecycle_event === 'systest:embedded';
+    }
+
+    /**
+     * Check to see if running in Hyperledger Fabric mode.
+     * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
+     */
+    static isHyperledgerFabric() {
+        return !TestUtil.isWeb() && !TestUtil.isEmbedded();
     }
 
     /**
@@ -88,17 +100,24 @@ class TestUtil {
      * started listening on the specified port.
      */
     static waitForPorts() {
-        if (TestUtil.isWeb()) {
-            return Promise.resolve();
-        } else if (TestUtil.isEmbedded()) {
+        if (!TestUtil.isHyperledgerFabric()) {
             return Promise.resolve();
         }
-        return TestUtil.waitForPort('vp0', 7051)
+        return TestUtil.waitForPort('localhost', 7050)
             .then(() => {
-                return TestUtil.waitForPort('vp0', 7053);
+                return TestUtil.waitForPort('localhost', 7051);
             })
             .then(() => {
-                return TestUtil.waitForPort('membersrvc', 7054);
+                return TestUtil.waitForPort('localhost', 7052);
+            })
+            .then(() => {
+                return TestUtil.waitForPort('localhost', 7053);
+            })
+            .then(() => {
+                return TestUtil.waitForPort('localhost', 7054);
+            })
+            .then(() => {
+                return sleep(5000);
             });
     }
 
@@ -124,13 +143,15 @@ class TestUtil {
                         type: 'embedded'
                     };
                 } else {
+                    let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
                     adminOptions = {
                         type: 'hlf',
-                        keyValStore: '/tmp/keyValStore',
-                        membershipServicesURL: 'grpc://membersrvc:7054',
-                        peerURL: 'grpc://vp0:7051',
-                        eventHubURL: 'grpc://vp0:7053'
+                        keyValStore: keyValStore,
+                        membershipServicesURL: 'grpc://localhost:7054',
+                        peerURL: 'grpc://localhost:7051',
+                        eventHubURL: 'grpc://localhost:7053'
                     };
+                    mkdirp.sync(keyValStore);
                 }
                 if (process.env.CONCERTO_DEPLOY_WAIT_SECS) {
                     adminOptions.deployWaitTime = parseInt(process.env.CONCERTO_DEPLOY_WAIT_SECS);
@@ -141,12 +162,12 @@ class TestUtil {
                     console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
                 console.log('Calling AdminConnection.createProfile() ...');
-                return adminConnection.createProfile('testprofile', adminOptions);
+                return adminConnection.createProfile('concerto-systests', adminOptions);
             })
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
-                return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d');
+                return adminConnection.connect('concerto-systests', 'WebAppAdmin', 'DJY27pEnl16d');
             })
             .then(function () {
                 console.log('Called AdminConnection.connect()');
@@ -191,7 +212,7 @@ class TestUtil {
     static getClient(network) {
         client = new BusinessNetworkConnection();
         console.log('Calling Client.connect() ...');
-        return client.connect('testprofile', network, 'WebAppAdmin', 'DJY27pEnl16d')
+        return client.connect('concerto-systests', network, 'WebAppAdmin', 'DJY27pEnl16d')
             .then(() => {
                 return client;
             });

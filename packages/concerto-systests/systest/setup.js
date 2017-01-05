@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Logger = require('@ibm/concerto-common').Logger;
+const Logger = require('@ibm/concerto-client').Logger;
 const TestUtil = require('./testutil');
 
 before(() => {

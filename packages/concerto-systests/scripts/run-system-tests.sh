@@ -2,80 +2,72 @@
 
 # Exit on first error, print all commands.
 set -ev
+set -o pipefail
 
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+# Switch into the system tests directory.
+cd ${DIR}
+
 # Barf if we don't recognize this test suite.
-if [ "${TEST_SUITE}" = "" ]; then
-    echo You must specify which test suite to execute
+if [ "${SYSTEST}" = "" ]; then
+    echo You must set SYSTEST to 'embedded', 'web', or 'hlf'
+    echo For example:
+    echo  export SYSTEST=hlf
     exit 1
 fi
 
-# Check which test suite to run.
-case ${TEST_SUITE} in
-systest_web)
+# If running under Travis, bump up the timeouts.
+if [ "${TRAVIS}" = "true" ]; then
+    export CONCERTO_PORT_WAIT_SECS=30
+    export CONCERTO_DEPLOY_WAIT_SECS=120
+fi
 
-    # Run the system tests.
-    cd ${DIR}
-    npm run systestweb
-    ;;
-
-systest_hlf|systest_ibm)
-
-    # Check to see if NPM_TOKEN is valid.
-    if [ "${NPM_TOKEN}" = "" ]; then
-        echo Cannot proceed unless NPM_TOKEN has been set in the environment
-        exit 1
-    fi
-
-    # Replace the Dockerfile with the node.js version we want.
-    if [ "${TRAVIS_NODE_VERSION}" != "" ]; then
-        perl -pi -e "s/FROM node.*/FROM node:${TRAVIS_NODE_VERSION}/" ${DIR}/Dockerfile
-    fi
-
-    # Pull and tag the latest Hyperledger Fabric images.
-    if [ "${TEST_SUITE}" = "systest_hlf" ]; then
-        DOCKER_FILE=${DIR}/hlf-docker-compose.yml
-        docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
-        docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
-        docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
-        docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
-        docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
-        docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
-    elif [ "${TEST_SUITE}" = "systest_ibm" ]; then
-        DOCKER_FILE=${DIR}/ibm-docker-compose.yml
-        docker pull ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview
-        docker tag ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview ibmblockchain/fabric-membersrvc:latest
-        docker pull ibmblockchain/fabric-peer:x86_64-0.6.1-preview
-        docker tag ibmblockchain/fabric-peer:x86_64-0.6.1-preview ibmblockchain/fabric-peer:latest
-        docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
-        docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
-    fi
-
-    # Shut down the Docker containers for the system tests.
-    cd ${DIR}
-    docker-compose -f ${DOCKER_FILE} kill && docker-compose -f ${DOCKER_FILE} down
-
-    # Start up the Docker containers for the system tests.
-    docker-compose -f ${DOCKER_FILE} build
-
-    # Run the system tests.
-    if [ "${TRAVIS}" = "true" ]; then
-        docker-compose -f ${DOCKER_FILE} run -e CONCERTO_PORT_WAIT_SECS=30 -e CONCERTO_DEPLOY_WAIT_SECS=120 --rm concerto npm run systesthlf
-    else
-        docker-compose -f ${DOCKER_FILE} run --rm concerto npm run systesthlf
-    fi
-
-    # Shut down the Docker containers for the system tests.
-    docker-compose -f ${DOCKER_FILE} kill && docker-compose -f ${DOCKER_FILE} down
-    ;;
-
-*)
-
-    # Barf if we don't recognize this test suite.
-    echo Cannot determine how to execute the tests for this test suite: ${TEST_SUITE}
+# Pull any required Docker images.
+if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
+    DOCKER_FILE=${DIR}/hlf-docker-compose.yml
+    docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
+    docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
+    docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
+    docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
+    docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
+    docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
+elif [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "ibm" ]; then
+    DOCKER_FILE=${DIR}/ibm-docker-compose.yml
+    docker pull ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview
+    docker tag ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview ibmblockchain/fabric-membersrvc:latest
+    docker pull ibmblockchain/fabric-peer:x86_64-0.6.1-preview
+    docker tag ibmblockchain/fabric-peer:x86_64-0.6.1-preview ibmblockchain/fabric-peer:latest
+    docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
+    docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
+elif [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "" ]; then
+    echo You must set SYSTEST_HLF to 'hlf' or 'ibm'
+    echo For example:
+    echo     export SYSTEST_HLF=hlf
     exit 1
-    ;;
+fi
 
-esac
+# Start any required Docker images.
+if [ "${DOCKER_FILE}" != "" ]; then
+    docker-compose -f ${DOCKER_FILE} kill
+    docker-compose -f ${DOCKER_FILE} down
+    docker-compose -f ${DOCKER_FILE} up -d
+fi
+
+# Delete any existing configuration.
+rm -rf ${HOME}/.concerto-connection-profiles/concerto-systests
+rm -rf ${HOME}/.concerto-credentials/concerto-systests
+
+# Run the system tests.
+npm run systest:${SYSTEST} 2>&1 | tee
+
+# Kill and remove any started Docker images.
+if [ "${DOCKER_FILE}" != "" ]; then
+    docker-compose -f ${DOCKER_FILE} kill
+    docker-compose -f ${DOCKER_FILE} down
+fi
+
+# Delete any written configuration.
+rm -rf ${HOME}/.concerto-connection-profiles/concerto-systests
+rm -rf ${HOME}/.concerto-credentials/concerto-systests
