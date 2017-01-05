@@ -12,7 +12,7 @@
 
 const AssetRegistry = require('../../lib/api/assetregistry');
 const Registry = require('../../lib/registry');
-const Resource = require('@ibm/ibm-concerto-common').Resource;
+const Resource = require('@ibm/concerto-common').Resource;
 
 const chai = require('chai');
 chai.should();

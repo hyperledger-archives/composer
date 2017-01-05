@@ -10,10 +10,10 @@
 
 'use strict';
 
-const Factory = require('@ibm/ibm-concerto-common').Factory;
-const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
+const Factory = require('@ibm/concerto-common').Factory;
+const ModelManager = require('@ibm/concerto-common').ModelManager;
 const QueryExecutor = require('../lib/queryexecutor');
-const Relationship = require('@ibm/ibm-concerto-common').Relationship;
+const Relationship = require('@ibm/concerto-common').Relationship;
 const Resolver = require('../lib/resolver');
 
 const chai = require('chai');

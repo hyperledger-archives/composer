@@ -11,17 +11,17 @@
 'use strict';
 
 const AssetRegistry = require('./assetregistry');
-const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
-const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
+const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
 const EventEmitter = require('events');
 const fs = require('fs');
-const FSConnectionProfileStore = require('@ibm/ibm-concerto-common').FSConnectionProfileStore;
-const Logger = require('@ibm/ibm-concerto-common').Logger;
+const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
+const Logger = require('@ibm/concerto-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
-const Resource = require('@ibm/ibm-concerto-common').Resource;
-const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
+const Resource = require('@ibm/concerto-common').Resource;
+const TransactionDeclaration = require('@ibm/concerto-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
-const Util = require('@ibm/ibm-concerto-common').Util;
+const Util = require('@ibm/concerto-common').Util;
 const uuid = require('uuid');
 
 const LOG = Logger.getLog('BusinessNetworkConnection');

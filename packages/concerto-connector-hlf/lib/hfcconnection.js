@@ -10,9 +10,9 @@
 
 'use strict';
 
-const LOG = require('@ibm/ibm-concerto-common').Logger.getLog('HFCConnection');
-const Connection = require('@ibm/ibm-concerto-common').Connection;
-const Globalize = require('@ibm/ibm-concerto-common').Globalize;
+const LOG = require('@ibm/concerto-common').Logger.getLog('HFCConnection');
+const Connection = require('@ibm/concerto-common').Connection;
+const Globalize = require('@ibm/concerto-common').Globalize;
 const HFCSecurityContext = require('./hfcsecuritycontext');
 const HFCUtil = require('./hfcutil');
 const version = require('../package.json').version;

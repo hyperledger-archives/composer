@@ -10,7 +10,7 @@
 
 'use strict';
 
-const IdentityService = require('@ibm/ibm-concerto-runtime').IdentityService;
+const IdentityService = require('@ibm/concerto-runtime').IdentityService;
 const WebIdentityService = require('..').WebIdentityService;
 
 const should = require('chai').should();

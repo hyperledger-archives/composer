@@ -13,8 +13,8 @@
 const DataCollection = require('../lib/datacollection');
 const EventEmitter = require('events');
 const Registry = require('../lib/registry');
-const Resource = require('@ibm/ibm-concerto-common').Resource;
-const Serializer = require('@ibm/ibm-concerto-common').Serializer;
+const Resource = require('@ibm/concerto-common').Resource;
+const Serializer = require('@ibm/concerto-common').Serializer;
 
 const chai = require('chai');
 chai.should();

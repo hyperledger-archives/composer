@@ -81,7 +81,7 @@ describe('ConnectionProfileManager', () => {
         it('should dynamically load the connection manager', () => {
             /** test class */
             class TestConnectionManager extends ConnectionManager { }
-            mockery.registerMock('@ibm/ibm-concerto-connector-foo', TestConnectionManager);
+            mockery.registerMock('@ibm/concerto-connector-foo', TestConnectionManager);
             const store = sinon.createStubInstance(ConnectionProfileStore);
             const profile = {type: 'foo', data : 'data'};
             store.load.returns( Promise.resolve(profile) );

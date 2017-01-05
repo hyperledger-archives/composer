@@ -10,9 +10,9 @@
 
 'use strict';
 
-const Util = require('@ibm/ibm-concerto-common').Util;
-const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
-const FSConnectionProfileStore = require('@ibm/ibm-concerto-common').FSConnectionProfileStore;
+const Util = require('@ibm/concerto-common').Util;
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
 
 const fs = require('fs');
 

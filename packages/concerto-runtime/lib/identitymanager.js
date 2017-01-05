@@ -10,8 +10,8 @@
 
 'use strict';
 
-const Logger = require('@ibm/ibm-concerto-common').Logger;
-const Resource = require('@ibm/ibm-concerto-common').Resource;
+const Logger = require('@ibm/concerto-common').Logger;
+const Resource = require('@ibm/concerto-common').Resource;
 
 const LOG = Logger.getLog('IdentityManager');
 

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
+const SecurityContext = require('@ibm/concerto-common').SecurityContext;
 
 /**
  * Class representing a logged in Hyperledger Fabric user.

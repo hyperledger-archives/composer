@@ -11,7 +11,7 @@
 'use strict';
 
 const Registry = require('./registry');
-const Util = require('@ibm/ibm-concerto-common').Util;
+const Util = require('@ibm/concerto-common').Util;
 
 const REGISTRY_TYPE = 'Participant';
 

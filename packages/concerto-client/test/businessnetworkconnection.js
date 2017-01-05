@@ -10,20 +10,20 @@
 
 'use strict';
 
-const Serializer = require('@ibm/ibm-concerto-common').Serializer;
-const Factory = require('@ibm/ibm-concerto-common').Factory;
-const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
-const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
+const Serializer = require('@ibm/concerto-common').Serializer;
+const Factory = require('@ibm/concerto-common').Factory;
+const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
-const Connection = require('@ibm/ibm-concerto-common').Connection;
-const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
+const Connection = require('@ibm/concerto-common').Connection;
+const ModelManager = require('@ibm/concerto-common').ModelManager;
 const ParticipantRegistry = require('../lib/participantregistry');
-const Resource = require('@ibm/ibm-concerto-common').Resource;
-const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
-const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
+const Resource = require('@ibm/concerto-common').Resource;
+const SecurityContext = require('@ibm/concerto-common').SecurityContext;
+const TransactionDeclaration = require('@ibm/concerto-common').TransactionDeclaration;
 const TransactionRegistry = require('../lib/transactionregistry');
-const Util = require('@ibm/ibm-concerto-common').Util;
+const Util = require('@ibm/concerto-common').Util;
 const uuid = require('uuid');
 const version = require('../package.json').version;
 

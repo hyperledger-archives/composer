@@ -10,9 +10,9 @@
 
 'use strict';
 
-const LOG = require('@ibm/ibm-concerto-common').Logger.getLog('HFCConnectionManager');
-const ConnectionManager = require('@ibm/ibm-concerto-common').ConnectionManager;
-const Globalize = require('@ibm/ibm-concerto-common').Globalize;
+const LOG = require('@ibm/concerto-common').Logger.getLog('HFCConnectionManager');
+const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
+const Globalize = require('@ibm/concerto-common').Globalize;
 const hfc = require('hfc');
 const HFCConnection = require('./hfcconnection');
 

@@ -14,7 +14,7 @@ const browserify = require('browserify');
 const fs = require('fs-extra');
 const path = require('path');
 
-const sourceFile = require.resolve('@ibm/ibm-concerto-runtime');
+const sourceFile = require.resolve('@ibm/concerto-runtime');
 const sourcePolyfill = path.resolve(__dirname, '..', 'node_modules', 'babel-polyfill', 'dist', 'polyfill.min.js');
 const targetFile = path.resolve(__dirname, '..', 'concerto.js.go');
 

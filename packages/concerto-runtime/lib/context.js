@@ -11,10 +11,10 @@
 'use strict';
 
 const Api = require('./api');
-const BusinessNetworkDefinition = require('@ibm/ibm-concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
 const JSTransactionExecutor = require('./jstransactionexecutor');
-const Logger = require('@ibm/ibm-concerto-common').Logger;
+const Logger = require('@ibm/concerto-common').Logger;
 const LRU = require('lru-cache');
 const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');

@@ -10,8 +10,8 @@
 
 'use strict';
 
-const Connection = require('@ibm/ibm-concerto-common').Connection;
-const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
+const Connection = require('@ibm/concerto-common').Connection;
+const SecurityContext = require('@ibm/concerto-common').SecurityContext;
 const EmbeddedSecurityContext = require('../lib/embeddedsecuritycontext');
 
 require('chai').should();

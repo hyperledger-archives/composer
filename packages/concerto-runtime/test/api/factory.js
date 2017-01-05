@@ -11,9 +11,9 @@
 'use strict';
 
 const Factory = require('../../lib/api/factory');
-const realFactory = require('@ibm/ibm-concerto-common').Factory;
-const Relationship = require('@ibm/ibm-concerto-common').Relationship;
-const Resource = require('@ibm/ibm-concerto-common').Resource;
+const realFactory = require('@ibm/concerto-common').Factory;
+const Relationship = require('@ibm/concerto-common').Relationship;
+const Resource = require('@ibm/concerto-common').Resource;
 
 const chai = require('chai');
 chai.should();

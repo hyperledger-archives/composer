@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Context = require('@ibm/ibm-concerto-runtime').Context;
+const Context = require('@ibm/concerto-runtime').Context;
 const WebIdentityService = require('./webidentityservice');
 
 /**

@@ -18,8 +18,8 @@ const QueryExecutor = require('../lib/queryexecutor');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
-const Resource = require('@ibm/ibm-concerto-common').Resource;
-const Serializer = require('@ibm/ibm-concerto-common').Serializer;
+const Resource = require('@ibm/concerto-common').Resource;
+const Serializer = require('@ibm/concerto-common').Serializer;
 
 const chai = require('chai');
 chai.should();

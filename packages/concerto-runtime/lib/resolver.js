@@ -10,12 +10,12 @@
 
 'use strict';
 
-const AssetDeclaration = require('@ibm/ibm-concerto-common').AssetDeclaration;
-const Logger = require('@ibm/ibm-concerto-common').Logger;
-const ParticipantDeclaration = require('@ibm/ibm-concerto-common').ParticipantDeclaration;
-const Relationship = require('@ibm/ibm-concerto-common').Relationship;
-const Resource = require('@ibm/ibm-concerto-common').Resource;
-const TransactionDeclaration = require('@ibm/ibm-concerto-common').TransactionDeclaration;
+const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
+const Logger = require('@ibm/concerto-common').Logger;
+const ParticipantDeclaration = require('@ibm/concerto-common').ParticipantDeclaration;
+const Relationship = require('@ibm/concerto-common').Relationship;
+const Resource = require('@ibm/concerto-common').Resource;
+const TransactionDeclaration = require('@ibm/concerto-common').TransactionDeclaration;
 
 const LOG = Logger.getLog('Context');
 

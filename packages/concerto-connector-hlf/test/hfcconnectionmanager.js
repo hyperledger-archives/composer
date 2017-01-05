@@ -15,8 +15,8 @@ const hfcChain = hfc.Chain;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCConnectionManager = require('..');
 const sinon = require('sinon');
-const ConnectionProfileManager = require('@ibm/ibm-concerto-common').ConnectionProfileManager;
-const FSConnectionProfileStore = require('@ibm/ibm-concerto-common').FSConnectionProfileStore;
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
 const fs = require('fs');
 
 require('chai').should();

@@ -11,12 +11,12 @@
 'use strict';
 
 const AssetRegistry = require('../lib/assetregistry');
-const Factory = require('@ibm/ibm-concerto-common').Factory;
-const ModelManager = require('@ibm/ibm-concerto-common').ModelManager;
+const Factory = require('@ibm/concerto-common').Factory;
+const ModelManager = require('@ibm/concerto-common').ModelManager;
 const Registry = require('../lib/registry');
-const SecurityContext = require('@ibm/ibm-concerto-common').SecurityContext;
-const Serializer = require('@ibm/ibm-concerto-common').Serializer;
-const Util = require('@ibm/ibm-concerto-common').Util;
+const SecurityContext = require('@ibm/concerto-common').SecurityContext;
+const Serializer = require('@ibm/concerto-common').Serializer;
+const Util = require('@ibm/concerto-common').Util;
 
 const chai = require('chai');
 chai.should();
