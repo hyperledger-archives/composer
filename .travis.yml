@@ -23,7 +23,7 @@ script: |
     npm test 2>&1 | tee
 deploy:
     provider: script
-    script: set -ev; set -o pipefail; npm run deploy 2>&1 | tee
+    script: npm run deploy
     skip_cleanup: true
     on:
         all_branches: true

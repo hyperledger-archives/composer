@@ -2,6 +2,7 @@
 
 # Exit on first error, print all commands.
 set -ev
+set -o pipefail
 
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
@@ -20,7 +21,7 @@ fi
 
 # If this is not for a tagged (release) build, set the prerelease version.
 if [ -z "${TRAVIS_TAG}" ]; then
-    lerna exec -- ${DIR}/scripts/timestamp.js package.json
+    lerna exec -- ${DIR}/scripts/timestamp.js package.json 2>&1 | tee
 fi
 
 # Push the code to npm.
@@ -28,12 +29,12 @@ if [ "${TRAVIS_BRANCH}" = "develop" ]; then
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag unstable"
-    lerna exec -- npm publish --scope=@ibm --tag=unstable
+    lerna exec -- npm publish --scope=@ibm --tag=unstable 2>&1 | tee
 
 else
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag develop"
-    lerna exec -- npm publish --scope=@ibm
+    lerna exec -- npm publish --scope=@ibm 2>&1 | tee
 
 fi
