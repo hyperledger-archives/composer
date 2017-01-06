@@ -185,7 +185,7 @@ class HFCUtil {
             return new Promise((resolve, reject) => {
                 let sourceDirectoryPath = path.resolve(runtimeModulePath);
                 let targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', chaincodePath);
-                fs.copy(sourceDirectoryPath, targetDirectoryPath, { filter: (path) => { return !/(Concerto-Runtime-Hyperledger-Fabric|ibm-concerto-runtime-hlf).*node_modules/.test(path); }}, (err) => {
+                fs.copy(sourceDirectoryPath, targetDirectoryPath, { filter: (path) => { return !/(Concerto-Runtime-Hyperledger-Fabric|concerto-runtime-hlf).*node_modules/.test(path); }}, (err) => {
                     if (err) {
                         LOG.error('deployChainCode', 'copy', err);
                         return reject(err);

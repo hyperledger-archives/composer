@@ -1,0 +1,6 @@
+coverage
+dist
+go
+node_modules
+out
+systest/data

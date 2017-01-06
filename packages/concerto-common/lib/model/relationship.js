@@ -49,6 +49,16 @@ class Relationship extends Identifiable {
     toString() {
         return 'Relationship {id=' + this.getFullyQualifiedIdentifier() +'}';
     }
+
+    /**
+     * Determine if this identifiable is a relationship.
+     * @return {boolean} True if this identifiable is a relationship,
+     * false if not.
+     */
+    isRelationship() {
+        return true;
+    }
+
 }
 
 module.exports = Relationship;

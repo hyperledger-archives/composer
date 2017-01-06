@@ -26,3 +26,9 @@
  */
 
 module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
+
+/**
+ * Expose key concerto-common classes to simplify client application dependencies
+ * @ignore
+ */
+module.exports.Logger = require('@ibm/concerto-common').Logger;

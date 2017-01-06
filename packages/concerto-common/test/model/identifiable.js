@@ -67,4 +67,18 @@ describe    ('Identifiable', function () {
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
         });
     });
+
+    describe('#isRelationship', () => {
+        it('should be false', () => {
+            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
+            id.isRelationship().should.be.false;
+        });
+    });
+
+    describe('#isResource', () => {
+        it('should be false', () => {
+            const id = new Identifiable(modelManager, 'org.acme', 'Type', '123' );
+            id.isResource().should.be.false;
+        });
+    });
 });

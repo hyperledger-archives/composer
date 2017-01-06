@@ -21,7 +21,7 @@ fi
 
 # If this is not for a tagged (release) build, set the prerelease version.
 if [ -z "${TRAVIS_TAG}" ]; then
-    lerna exec -- ${DIR}/scripts/timestamp.js package.json 2>&1 | tee
+    lerna exec --ignore '@ibm/concerto-systests' -- ${DIR}/scripts/timestamp.js package.json 2>&1 | tee
 fi
 
 # Push the code to npm.
@@ -29,12 +29,12 @@ if [ "${TRAVIS_BRANCH}" = "develop" ]; then
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag unstable"
-    lerna exec -- npm publish --scope=@ibm --tag=unstable 2>&1 | tee
+    lerna exec --ignore '@ibm/concerto-systests' -- npm publish --scope=@ibm --tag=unstable 2>&1 | tee
 
 else
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag develop"
-    lerna exec -- npm publish --scope=@ibm 2>&1 | tee
+    lerna exec --ignore '@ibm/concerto-systests' -- npm publish --scope=@ibm 2>&1 | tee
 
 fi

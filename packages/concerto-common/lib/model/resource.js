@@ -113,6 +113,16 @@ class Resource extends Identifiable {
     toString() {
         return 'Resource {id=' + this.getFullyQualifiedIdentifier() +'}';
     }
+
+    /**
+     * Determine if this identifiable is a resource.
+     * @return {boolean} True if this identifiable is a resource,
+     * false if not.
+     */
+    isResource() {
+        return true;
+    }
+
 }
 
 module.exports = Resource;
