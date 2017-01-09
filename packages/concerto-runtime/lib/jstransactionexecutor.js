@@ -42,18 +42,22 @@ class JSTransactionExecutor extends TransactionExecutor {
         const method = 'execute';
         LOG.entry(method, api, scriptManager, transaction, resolvedTransaction);
 
-        // Find all of the scripts that contain a function for the supplied transaction.
-        let matchingScripts = this.findScripts(scriptManager, transaction);
+        // Find all of the function names.
+        let functionNames = this.findFunctionNames(scriptManager, transaction);
 
-        // For each script, build a function.
-        let functions = this.compileScripts(matchingScripts, transaction);
+        // If we didn't find any functions to call, then throw an error!
+        if (functionNames.length === 0) {
+            LOG.error(`Could not find any functions to execute for transaction ${transaction.getFullyQualifiedIdentifier()}`);
+            throw new Error(`Could not find any functions to execute for transaction ${transaction.getFullyQualifiedIdentifier()}`);
+        }
+
+        // Find all of the scripts, and build a function for each script function to call.
+        let functions = this.compileScripts(scriptManager, functionNames);
 
         // Bind the API into the global object.
         Object.getOwnPropertyNames(api).forEach((key) => {
-            if (typeof api[key] === 'function') {
-                LOG.debug(method, 'Binding API function', key);
-                global[key] = api[key].bind(api);
-            }
+            LOG.debug(method, 'Binding API function', key);
+            global[key] = api[key].bind(api);
         });
 
         // Execute each function for the transaction.
@@ -77,50 +81,90 @@ class JSTransactionExecutor extends TransactionExecutor {
     }
 
     /**
-     * Find all scripts matching this transaction.
+     * Find all of the function names that should be executed.
      * @param {ScriptManager} scriptManager The script manager to use.
      * @param {Resource} transaction The transaction to execute.
-     * @return {Script[]} All scripts matching this transaction.
+     * @return {string[]} All function names to execute.
      */
-    findScripts(scriptManager, transaction) {
-        const method = 'findScripts';
+    findFunctionNames(scriptManager, transaction) {
+        const method = 'findFunctionNames';
         LOG.entry(method, scriptManager, transaction);
 
-        // Find all of the scripts that contain a function for the supplied transaction.
-        let scripts = scriptManager.getScripts();
-        let matchingScripts = scripts.filter((script) => {
+        // Find all of the scripts.
+        let functionNames = [];
+        scriptManager.getScripts().forEach((script) => {
+
+            // Look at all the functions.
             LOG.debug(method, 'Looking at script', script.getIdentifier());
-            let matchingFunctionDeclaration = script.getFunctionDeclarations().find((functionDeclaration) => {
-                return functionDeclaration.getTransactionDeclarationName() === transaction.getType();
+            script.getFunctionDeclarations().forEach((functionDeclaration) => {
+
+                // Is this function annotated with @transaction?
+                LOG.debug(method, 'Looking at function declaration', functionDeclaration.getName());
+                if (functionDeclaration.getDecorators().indexOf('transaction') !== -1) {
+
+                    // Yes - is the type of the only parameter (validated elsewhere)
+                    // the same type as the transaction?
+                    LOG.debug(method, 'Function is annotated with @transaction');
+                    if (functionDeclaration.getParameterTypes()[0] === transaction.getFullyQualifiedType()) {
+                        LOG.debug(method, 'Function parameter type matches transaction');
+                        functionNames.push(functionDeclaration.getName());
+                    } else {
+                        LOG.debug(method, 'Function parameter type does not match transaction');
+                    }
+
+                // It's not annotated with @transaction, does it start with on<transactionType>?
+                // This is to keep supporting the original transaction processor function format
+                // which went by naming conventions rather than annotations.
+                } else if (functionDeclaration.getTransactionDeclarationName() === transaction.getType()) {
+                    LOG.debug(method, 'Function name matches on<transactionType>');
+                    functionNames.push(functionDeclaration.getName());
+
+                // Must be a query or utility function.
+                } else {
+                    LOG.debug(method, 'Function is query or utility function');
+                }
+
             });
-            LOG.debug(method, 'Found a matching function declaration?', matchingFunctionDeclaration ? matchingFunctionDeclaration.getName() : undefined);
-            return matchingFunctionDeclaration !== undefined;
+
         });
 
-        LOG.exit(method, matchingScripts);
-        return matchingScripts;
+        LOG.exit(method, functionNames);
+        return functionNames;
     }
 
     /**
      * Compile the scripts into functions for execution.
-     * @param {Script[]} scripts All scripts matching this transaction.
-     * @param {Resource} transaction The transaction to execute.
+     * @param {ScriptManager} scriptManager The script manager to use.
+     * @param {string[]} functionNames The function names to execute.
      * @return {Function[]} All functions to execute.
      */
-    compileScripts(scripts, transaction) {
+    compileScripts(scriptManager, functionNames) {
         const method = 'compileScripts';
-        LOG.entry(method, scripts, transaction);
+        LOG.entry(method, scriptManager, functionNames);
 
-        // For each script, build a function.
-        let functions = scripts.map((script) => {
+        // This is the source for all of the scripts.
+        let source = '';
+
+        // Find all of the scripts.
+        scriptManager.getScripts().forEach((script) => {
+
+            // Concatenate the script source.
             LOG.debug(method, 'Looking at script', script.getIdentifier());
-            let source = script.getFunctionDeclarations().reduce((result, functionDeclaration) => {
-                LOG.debug(method, 'Appending function declaration', functionDeclaration.getName());
-                return result + functionDeclaration.getFunctionText() + '\n';
-            }, '');
-            source += `return on${transaction.getType()}(transaction);\n`;
-            LOG.debug(method, 'Creating new function from source', source);
-            return new Function('transaction', source);
+            source += script.getContents() + '\n';
+
+        });
+
+        // For each transaction processor function we found, build a function.
+        let functions = functionNames.map((functionName) => {
+
+            // The source for the function is all of the scripts and a call to execute
+            // the current transaction processor function.
+            LOG.debug(method, 'Building function for transaction processor function', functionName);
+            let functionSource = source;
+            functionSource += `return ${functionName}($transaction);\n`;
+            LOG.debug(method, 'Creating new function from source', functionSource);
+            return new Function('$transaction', functionSource);
+
         });
 
         LOG.exit(method, functions);

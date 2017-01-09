@@ -134,3 +134,19 @@ transaction RemoveNewAssetInAssetRegistryTransaction identified by transactionId
 transaction RemoveNewAssetWithRelationshipInAssetRegistryTransaction identified by transactionId {
     o String transactionId
 }
+
+transaction SingleAnnotatedTransaction identified by transactionId {
+    o String transactionId
+    o String stringValue
+}
+
+transaction MultipleAnnotatedTransaction identified by transactionId {
+    o String transactionId
+    o String stringValue1
+    o String stringValue2
+}
+
+transaction TransactionUsingUtilityFunctions identified by transactionId {
+    o String transactionId
+    o String stringValue
+}

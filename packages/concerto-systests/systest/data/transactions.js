@@ -286,3 +286,79 @@ function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction)
             return ar.remove(a);
         });
 }
+
+/**
+ * Handle the single annotated transaction.
+ * @param {systest.transactions.SingleAnnotatedTransaction} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+function handleTheSingleAnnotatedTransaction(transaction) {
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            a.stringValue = transaction.stringValue;
+            return ar.add(a);
+        });
+}
+
+/**
+ * Handle the first annotated transaction.
+ * @param {systest.transactions.MultipleAnnotatedTransaction} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+function handleMultipleAnnotatedTransactionFirst(transaction) {
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            a.stringValue = transaction.stringValue1;
+            return ar.add(a);
+        });
+}
+
+/**
+ * Handle the second annotated transaction.
+ * @param {systest.transactions.MultipleAnnotatedTransaction} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+function handleMultipleAnnotatedTransactionSecond(transaction) {
+    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
+            a.stringValue = transaction.stringValue2;
+            return ar.add(a);
+        });
+}
+
+/**
+ * Handle the single annotated transaction (1/4).
+ * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+function utilityFunc1(transaction) {
+    return utilityFuncA(transaction);
+}
+
+/**
+ * Handle the single annotated transaction.
+ * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
+ * @transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+function handleTheTransactionUsingUtilityFunctions(transaction) {
+    return utilityFunc1(transaction);
+}
+
+/**
+ * Handle the single annotated transaction (3/4).
+ * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ */
+function utilityFunc2(transaction) {
+    return utilityFuncB(transaction);
+}
