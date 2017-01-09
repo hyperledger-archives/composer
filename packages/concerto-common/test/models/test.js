@@ -84,20 +84,20 @@ describe('Test Model', function(){
 
             // create a new instance
             let cObject =  factory.newInstance(
-                'org.acme', 'Vehicle', 'CAR_123' );
+                'org.acme', 'Vehicle', 'AAAAAAAAXBB123456' );
 
             cObject.make = 'Renault';
 
             // vin is the identifying field for Vehicles, so should have been
             // set during object creation
-            cObject.vin.should.equal('CAR_123');
+            cObject.vin.should.equal('AAAAAAAAXBB123456');
 
             // set all the required fields
             cObject.integerArray = [1,2,3];
             cObject.state = 'CREATED';
             cObject.value = 123.45;
             cObject.colour = 'Red';
-            cObject.V5cID = 'fake';
+            cObject.V5cID = 'AB1234567';
             cObject.LeaseContractID = 'foo';
             cObject.scrapped = false;
             cObject.owner = factory.newRelationship(
@@ -256,10 +256,10 @@ describe('Test Model', function(){
             let vinField = vehicle.getProperty('vin');
             (vinField.getType() === 'String').should.be.true;
             vinField.getName().should.equal('vin');
-            vinField.getValidator().should.not.be.null;
+            (vinField.getValidator() === null).should.be.false;
             (vinField.getDefaultValue() === null).should.be.true;
             vinField.isOptional().should.be.false;
-            vinField.getValidator().startsWith('regex').should.be.true;
+            vinField.getValidator().should.not.be.null;
 
             // array of primitives
             let integerArrayField = vehicle.getProperty('integerArray');

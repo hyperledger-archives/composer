@@ -52,10 +52,8 @@ describe('Farm2Fork Model', function() {
             let identifierField = animal.getProperty('identifier');
             (identifierField.getType() === 'String').should.be.true;
             identifierField.getName().should.equal('identifier');
-            identifierField.getValidator().should.not.be.null;
             (identifierField.getDefaultValue() === null).should.be.true;
             identifierField.isOptional().should.be.false;
-            identifierField.getValidator().startsWith('length').should.be.true;
 
             // flockNumber type
             let flockNumberField = animal.getProperty('flockNumber');

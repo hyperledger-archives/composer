@@ -147,6 +147,13 @@ class Property {
         return result;
     }
 
+    /**
+     * Returns the fully name of a property (ns + class name + property name)
+     * @return {string} the fully qualified name of this property
+     */
+    getFullyQualifiedName() {
+        return this.getNamespace() + '.' + this.getParent().getName() + '.' + this.getName();
+    }
 
     /**
      * Returns the namespace of the parent of this property

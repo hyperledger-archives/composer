@@ -10,9 +10,10 @@
 // define the namespace for this model
 namespace org.acme
 
-// import a type from the system namespace
+// import a type from another namespace
 import concerto.Participant
 
+// define an enumeration
 enum State {
     o CREATED
     o REGISTERED
@@ -20,33 +21,34 @@ enum State {
 }
 
 /**
- * Define an asset base class
+ * Define an asset base class. Because this is an abstract asset
+ * we also declare the name of the field that will identify the instances.
  */
-abstract asset Base  identified by vin {
-    o String vin validator = "regex:/^(?:([A-HJ-NPR-Z]){3}|\d{3})(?1){2}\d{2}(?:(?1)|\d)(?:\d|X)(?:(?1)+\d+|\d+(?1)+)\d{6}$/i"
+abstract asset Base identified by vin {
+    // The identifying field must be a String
+    // Optinally use a regular expression to validate the contents of the field
+    o String vin regex = /^[A-HJ-NPR-Z]{8}[X][A-HJ-NPR-Z]{2}\d{6}$/
 }
 
 /**
  * Vehicle is the definition of an asset that we will be tracking
- * Vehicle extends (augments) the Base asset.
+ * Vehicle extends (augments) the Base asset. The identifying field has already
+ * been declared, so we do not redeclare it here.
  */
-asset Vehicle extends Base { // an asset is the core data type
-
+asset Vehicle extends Base {
   // An asset contains Fields, each of which can have an optional default value
-  // and a validator expression
-  // A Field can be declared 'optional' meaning that it may be missing
   o String model default="F150"
   o String make default="FORD"
   o String reg default="ABC123"
-  o Integer year default="2016" validator="numeric:[2000, 3000]" optional
-  // comment
+  // A numeric field can have a range validation expression
+  o Integer year default=2016 range=[1990,] optional // model year must be 1990 or higher
   o Integer[] integerArray
   o State state
   o Double value
   o String colour
-  o String V5cID validator="regex:^[A-z][A-z][0-9]{7}"
+  o String V5cID regex=/^[A-z][A-z][0-9]{7}/
   o String LeaseContractID
-  o Boolean scrapped default="false"
+  o Boolean scrapped default=false
   o DateTime lastUpdate optional
   --> Participant owner //relationship to a Participant, with the field named 'owner'.
   --> Participant[] previousOwners optional // Nary relationship
@@ -65,76 +67,24 @@ transaction VehicleCreated extends VehicleTransaction {
 }
 
 transaction VehicleTransferredToManufacturer extends VehicleTransaction{
-	--> Participant manufacturer // Participant is a built in type
+	--> Participant manufacturer
 }
 
 transaction VehicleTransferredToDealer extends VehicleTransaction{
-	--> Participant dealer // Participant is a built in type
+	--> Participant dealer
 }
 
 transaction VehicleTransferredToLeaseCompany extends VehicleTransaction{
-	--> Participant leaseCompany // Participant is a built in type
+	--> Participant leaseCompany
 }
 
 transaction VehicleTransferredToLeasee extends VehicleTransaction{
-	--> Participant leasee // Participant is a built in type
+	--> Participant leasee
 }
 
 transaction VehicleTransferredToScrapMerchant extends VehicleTransaction{
-	--> Participant scrapMerchant // Participant is a built in type
+	--> Participant scrapMerchant
 }
 
 transaction VehicleScrapped extends VehicleTransaction{
 }
-
-/*
-*/
-
-
-/*
-permission {
-    Participant 	Permissions
-    Regulator 	Create, Read (All vehicles), Transfer
-    Manufacturer 	Read (Own vehicles), Update (VIN, Make, Model, Colour, Reg), Transfer
-    Dealership 	Read (Own vehicles), Update (Colour, Reg), Transfer
-    Lease Company 	Read (Own vehicles), Update (Colour, Reg), Transfer
-    Leasee 	Read (Own vehicles), Update (Colour, Reg), Transfer
-    Scrap Merchant 	Read (Own vehicles), Scrap
-}
-*/
-
-/*
-on event VehicleCreated(vehicleCreated) {
-    if(vehicleCreated.vehicle.state == 'Template')
-    then {
-        vehicleCreated.vehicle.state = 'Manufacture';
-    }
-}
-
-    state Template {
-        => Manufacture {
-            when (vehicle.owner == caller &&
-                    vehicle.state == 'Template' &&
-                    caller.affilation == 'AUTHORITY' &&
-                    vehicle.scrapped == false)
-            }
-
-    state Manufacture {
-        vehicle.save();
-        => PrivateOwnership
-        => LeasedOut
-    }
-
-    state PrivateOwnership {
-        => BeingScrapped
-    }
-
-    state LeasedOut {
-        => PrivateOwnership
-        => BeingScrapped
-    }
-
-    state BeingScrapped {
-    }
-}
-*/

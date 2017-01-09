@@ -36,16 +36,17 @@ describe('Field', () => {
         });
 
         it('should save the incoming validator', () => {
+
             let f = new Field(mockClassDeclaration, {
                 id: {
                     name: 'field',
-                }, validator: {
-                    text: {
-                        value: 'suchValidator'
-                    }
-                }
+                },
+                propertyType: {
+                    name: 'String'
+                },
+                regex: 'suchValidator'
             });
-            f.validator.should.equal('suchValidator');
+            f.getValidator().validate('id', 'suchValidator');
         });
 
         it('should not have a default value by default', () => {
@@ -61,11 +62,7 @@ describe('Field', () => {
             let f = new Field(mockClassDeclaration, {
                 id: {
                     name: 'field',
-                }, default: {
-                    text: {
-                        value: 'wowSuchDefault'
-                    }
-                }
+                }, default: 'wowSuchDefault'
             });
             f.defaultValue.should.equal('wowSuchDefault');
         });
@@ -99,18 +96,11 @@ describe('Field', () => {
                     name: 'field',
                 },
                 propertyType: {
-                    name: 'suchType'
+                    name: 'String'
                 },
                 array: true,
-                validator: {
-                    text: {
-                        value: 'suchValidator'
-                    }
-                }, default: {
-                    text: {
-                        value: 'wowSuchDefault'
-                    }
-                },
+                regex: 'suchValidator',
+                default: 'wowSuchDefault',
                 optional: true
             });
             let object = f.toJSON();

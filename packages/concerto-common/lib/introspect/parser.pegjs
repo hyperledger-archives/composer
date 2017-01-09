@@ -541,7 +541,6 @@ PrimaryExpression
   / Identifier
   / Literal
   / ArrayLiteral
-  / ObjectLiteral
   / "(" __ expression:Expression __ ")" { return expression; }
 
 ArrayLiteral
@@ -580,54 +579,6 @@ ElementList
 Elision
   = "," commas:(__ ",")* { return filledArray(commas.length + 1, null); }
 
-ObjectLiteral
-  = "{" __ "}" { return { type: "ObjectExpression", properties: [] }; }
-  / "{" __ properties:PropertyNameAndValueList __ "}" {
-       return { type: "ObjectExpression", properties: properties };
-     }
-  / "{" __ properties:PropertyNameAndValueList __ "," __ "}" {
-       return { type: "ObjectExpression", properties: properties };
-     }
-PropertyNameAndValueList
-  = first:PropertyAssignment rest:(__ "," __ PropertyAssignment)* {
-      return buildList(first, rest, 3);
-    }
-
-PropertyAssignment
-  = key:PropertyName __ ":" __ value:AssignmentExpression {
-      return { key: key, value: value, kind: "init" };
-    }
-  / GetToken __ key:PropertyName __
-    "(" __ ")" __
-    "{" __ body:FunctionBody __ "}"
-    {
-      return {
-        key:   key,
-        value: {
-          type:   "FunctionExpression",
-          id:     null,
-          params: [],
-          body:   body
-        },
-        kind:  "get"
-      };
-    }
-  / SetToken __ key:PropertyName __
-    "(" __ params:PropertySetParameterList __ ")" __
-    "{" __ body:FunctionBody __ "}"
-    {
-      return {
-        key:   key,
-        value: {
-          type:   "FunctionExpression",
-          id:     null,
-          params: params,
-          body:   body
-        },
-        kind:  "set"
-      };
-    }
-
 PropertyName
   = IdentifierName
   / StringLiteral
@@ -639,7 +590,6 @@ PropertySetParameterList
 MemberExpression
   = first:(
         PrimaryExpression
-      / FunctionExpression
       / NewToken __ callee:MemberExpression __ args:Arguments {
           return { type: "NewExpression", callee: callee, arguments: args };
         }
@@ -1308,19 +1258,6 @@ DebuggerStatement
 
 /* ----- A.5 Functions and Programs ----- */
 
-FunctionDeclaration
-  = FunctionToken __ id:Identifier __
-    "(" __ params:(FormalParameterList __)? ")" __
-    "{" __ body:FunctionBody __ "}"
-    {
-      return {
-        type:   "FunctionDeclaration",
-        id:     id,
-        params: optionalList(extractOptional(params, 0)),
-        body:   body
-      };
-    }
-
 IdentifiedByField
     = "identified by" __ idField:Identifier {
         return idField
@@ -1377,40 +1314,6 @@ TransactionDeclaration
       };
     }
 
-FunctionExpression
-  = FunctionToken __ id:(Identifier __)?
-    "(" __ params:(FormalParameterList __)? ")" __
-    "{" __ body:FunctionBody __ "}"
-    {
-      return {
-        type:   "FunctionExpression",
-        id:     extractOptional(id, 0),
-        params: optionalList(extractOptional(params, 0)),
-        body:   body
-      };
-    }
-
-FormalParameterList
-  = first:Identifier rest:(__ "," __ Identifier)* {
-      return buildList(first, rest, 3);
-    }
-
-FunctionBody
-  = statementList:StatementList {
-      return {
-        type: "FunctionBody",
-        statementList: statementList
-      };
-    }
-
-Validator
-   = "validator" __ "=" __ validator:StringLiteral {
-      return {
-        type: "Validator",
-        text: validator
-      };
-    }
-
 Optional
    = "optional"{
       return {
@@ -1418,17 +1321,28 @@ Optional
       };
     }
 
-Default
+StringDefault
    = "default" __ "=" __ def:StringLiteral {
-      return {
-        type: "Default",
-        text: def
-      };
+      return def.value;
+    }
+
+NumberDefault
+   = "default" __ "=" __ def:$DecimalLiteral {
+      return def;
+    }
+
+BooleanDefault
+   = "default" __ "=" __ def:$BooleanLiteral {
+      return def;
     }
 
 ClassDeclaration
-  = FieldDeclaration
+  = StringFieldDeclaration
+  / NumberFieldDeclaration
+  / BooleanFieldDeclaration
+  / DateTimeFieldDeclaration
   / RelationshipDeclaration
+  / FieldDeclaration
 
 ClassDeclarationBody
   = decls:ClassDeclaration* {
@@ -1439,13 +1353,78 @@ ClassDeclarationBody
     }
 
 FieldDeclaration
-    = "o" __ propertyType:Identifier __ array:"[]"? __ id:Identifier __  d:Default? __ validator:Validator? __ optional:Optional? __ {
+    = "o" __ propertyType:Identifier __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: propertyType,
     		array: array,
-    		validator: validator,
+        default: d,
+    		optional: optional
+    	}
+    }
+
+BooleanFieldDeclaration
+    = "o" __ "Boolean" __ array:"[]"? __ id:Identifier __  d:BooleanDefault? __ optional:Optional? __ {
+    	return {
+    		type: "FieldDeclaration",
+    		id: id,
+    		propertyType: {name:"Boolean"},
+    		array: array,
+    		default: d,
+    		optional: optional
+    	}
+    }
+
+DateTimeFieldDeclaration
+    = "o" __ "DateTime" __ array:"[]"? __ id:Identifier __  d:StringDefault? __ optional:Optional? __ {
+    	return {
+    		type: "FieldDeclaration",
+    		id: id,
+    		propertyType: {name:"DateTime"},
+    		array: array,
+    		default: d,
+    		optional: optional
+    	}
+    }
+
+StringFieldDeclaration
+    = "o" __ "String" __ array:"[]"? __ id:Identifier __  d:StringDefault? __ regex:StringRegexValidator? __ optional:Optional? __ {
+    	return {
+    		type: "FieldDeclaration",
+    		id: id,
+    		propertyType: {name:"String"},
+    		array: array,
+    		regex: regex,
+    		default: d,
+    		optional: optional
+    	}
+    }
+
+NumberType
+   = "Integer" / "Long" / "Double"
+
+StringRegexValidator
+   = "regex" __ "=" __ regex:$RegularExpressionLiteral {
+   	return regex
+  }
+
+NumericDomainValidator
+   = "range" __ "=" __ "[" __ lower:DecimalLiteral? __ "," __ upper:DecimalLiteral? __ "]" {
+   	return {
+    	lower: lower,
+      upper: upper
+    }
+  }
+
+NumberFieldDeclaration
+    = "o" __ propertyType:NumberType __ array:"[]"? __ id:Identifier __  d:NumberDefault? __ range:NumericDomainValidator? __ optional:Optional? __ {
+    	return {
+    		type: "FieldDeclaration",
+    		id: id,
+    		propertyType: {name:propertyType},
+    		array: array,
+    		range: range,
     		default: d,
     		optional: optional
     	}

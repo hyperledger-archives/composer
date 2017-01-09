@@ -130,6 +130,8 @@ class ResourceValidator {
             }
         }
 
+        this.currentIdentifier = obj.getFullyQualifiedIdentifier();
+
         // now validate each property
         const properties = toBeAssignedClassDeclaration.getProperties();
         for(let n=0; n < properties.length; n++) {
@@ -272,6 +274,11 @@ class ResourceValidator {
             }
             if (invalid) {
                 ResourceValidator.reportFieldTypeViolation(parameters.rootResourceIdentifier, propName, obj, field);
+            }
+            else {
+                if(field.getValidator() !== null) {
+                    field.getValidator().validate(this.currentIdentifier, obj);
+                }
             }
         }
         else {
