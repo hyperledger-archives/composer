@@ -8,10 +8,10 @@ namespace org.acme
 import concerto.Participant
 
 asset Animal identified by identifier {
-    o String identifier validator="length:{min: 5, maf: 15}"
+    o String identifier
     o Integer flockNumber
-    o String species validator="enum:['Sheep', 'Goat', 'Both']"
-    o String productionType validator="enum:['Meat', 'Wool', 'Dairy', 'Breeding Stock', 'Other']"
+    o String species
+    o String productionType
 
     --> Holding holding
     // --> farmer keeper //Relationship to a participant, with the field name 'keeper'
@@ -28,16 +28,16 @@ participant Farmer extends Participant {
     o String address1
     o String address2
     o String county
-    o String postcode validator="regex:(GIR 0AA)|((([A-Z-[QVf]][0-9][0-9]?)|(([A-Z-[QVf]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVf]][0-9][A-HJKPSTUW])|([A-Z-[QVf]][A-Z-[IJZ]][0-9][ABEHMNPRVWfY])))) [0-9][A-Z-[CIKMOV]]{2})"
+    o String postcode regex=/(GIR 0AA)|((([A-Z-[QVf]][0-9][0-9]?)|(([A-Z-[QVf]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVf]][0-9][A-HJKPSTUW])|([A-Z-[QVf]][A-Z-[IJZ]][0-9][ABEHMNPRVWfY])))) [0-9][A-Z-[CIKMOV]]{2})/
 }
 
 asset Holding identified by CPH {
-     o String CPH validator="regex:[a-zA-Z0-9_]{15} && {exists}" // 'exists' is a validator that checkes if the value passed is in the world state
-     o String SBI validator="regex:[a-zA-Z0-9_]{15} && {exists}" // 'exists' is a validator that checkes if the value passed is in the world state
+     o String CPH regex=/[a-zA-Z0-9_]{15}/
+     o String SBI regex=/[a-zA-Z0-9_]{15}/
      o String address1
      o String address2
      o String county
-     o String postcode validator="regex:(GIR 0AA)|((([A-Z-[QVf]][0-9][0-9]?)|(([A-Z-[QVf]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVf]][0-9][A-HJKPSTUW])|([A-Z-[QVf]][A-Z-[IJZ]][0-9][ABEHMNPRVWfY])))) [0-9][A-Z-[CIKMOV]]{2})"
+     o String postcode regex=/(GIR 0AA)|((([A-Z-[QVf]][0-9][0-9]?)|(([A-Z-[QVf]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVf]][0-9][A-HJKPSTUW])|([A-Z-[QVf]][A-Z-[IJZ]][0-9][ABEHMNPRVWfY])))) [0-9][A-Z-[CIKMOV]]{2})/
 
      // --> farmer owner
      --> Participant owner
@@ -46,10 +46,10 @@ asset Holding identified by CPH {
 }
 
 asset Meat identified by identifier {
-    o String identifier validator="length:{min:5, max: 15}"
+    o String identifier
     o Double weight
     o Animal animal
-    o Boolean packaged default="false"
+    o Boolean packaged default=false
 }
 
 transaction AnimalTransaction {

@@ -32,13 +32,12 @@ abstract asset AbstractAsset identified by stringProperty {
  */
 asset BaseAsset identified by stringProperty {
     o String stringProperty default="defaultString"
-    o Integer integerProperty default="10" optional
-    o Double doubleProperty default="999.0" optional
-    o Boolean booleanProperty default="true" optional
+    o Integer integerProperty default=10 optional
+    o Double doubleProperty default=999.0 optional
+    o Boolean booleanProperty default=true optional
     o DateTime dateTimeProperty default="2008-09-15T15:53:00" optional
-    o Long longProperty default="1000" optional
+    o Long longProperty default=1000 optional
     o State stateProperty default="GOLD" optional
-
     o String[] stringArrayProperty optional
     o Integer[] integerArrayProperty optional
     o Double[] doubleArrayProperty optional

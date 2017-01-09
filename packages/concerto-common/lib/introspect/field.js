@@ -11,6 +11,8 @@
 'use strict';
 
 const Property = require('./property');
+const NumberValidator = require('./numbervalidator');
+const StringValidator = require('./stringvalidator');
 
 /**
  * Class representing the definition of a Field. A Field is owned
@@ -42,14 +44,25 @@ class Field extends Property {
     process() {
         super.process();
 
-        if(this.ast.validator) {
-            this.validator = this.ast.validator.text.value;
-        } else {
-            this.validator = null;
+        this.validator = null;
+
+        switch(this.getType()) {
+        case 'Integer':
+        case 'Double':
+        case 'Long':
+            if(this.ast.range) {
+                this.validator = new NumberValidator(this, this.ast.range);
+            }
+            break;
+        case 'String':
+            if(this.ast.regex) {
+                this.validator = new StringValidator(this, this.ast.regex);
+            }
+            break;
         }
 
         if(this.ast.default) {
-            this.defaultValue = this.ast.default.text.value;
+            this.defaultValue = this.ast.default;
         } else {
             this.defaultValue = null;
         }
