@@ -32,7 +32,8 @@ describe('Transaction system tests', () => {
             fs.readFileSync(path.resolve(__dirname, 'data/transactions.cto'), 'utf8')
         ];
         const scriptFiles=  [
-            { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.js'), 'utf8') }
+            { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.js'), 'utf8') },
+            { identifier: 'transactions.utility.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.utility.js'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions-0.0.1', 'The network for the transaction system tests');
         modelFiles.forEach((modelFile) => {
@@ -576,6 +577,63 @@ describe('Transaction system tests', () => {
             })
             .then((assetRegistry) => {
                 return assetRegistry.get('stringAsset1');
+            });
+    });
+
+    it('should submit and execute a single transaction processor function annotated with @transaction', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'SingleAnnotatedTransaction');
+        transaction.stringValue = 'hello from single annotated transaction';
+        return client.submitTransaction(transaction)
+            .then(() => {
+                return client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+            })
+            .then((assetRegistry) => {
+                return assetRegistry.get('stringAsset1');
+            })
+            .then((asset) => {
+                asset.stringValue.should.equal('hello from single annotated transaction');
+            });
+    });
+
+    it('should submit and execute multiple transaction processor functions annotated with @transaction', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'MultipleAnnotatedTransaction');
+        transaction.stringValue1 = 'hello from first annotated transaction';
+        transaction.stringValue2 = 'hello from second annotated transaction';
+        let assetRegistry;
+        return client.submitTransaction(transaction)
+            .then(() => {
+                return client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+            })
+            .then((assetRegistry_) => {
+                assetRegistry = assetRegistry_;
+                return assetRegistry.get('stringAsset1');
+            })
+            .then((asset) => {
+                asset.stringValue.should.equal('hello from first annotated transaction');
+            })
+            .then(() => {
+                return assetRegistry.get('stringAsset2');
+            })
+            .then((asset) => {
+                asset.stringValue.should.equal('hello from second annotated transaction');
+            });
+    });
+
+    it('should submit and execute a transaction processor function that calls utility functions', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions', 'TransactionUsingUtilityFunctions');
+        transaction.stringValue = 'hello from annotated transaction using utility functions';
+        return client.submitTransaction(transaction)
+            .then(() => {
+                return client.getAssetRegistry('systest.transactions.SimpleStringAsset');
+            })
+            .then((assetRegistry) => {
+                return assetRegistry.get('stringAsset1');
+            })
+            .then((asset) => {
+                asset.stringValue.should.equal('hello from annotated transaction using utility functions');
             });
     });
 
