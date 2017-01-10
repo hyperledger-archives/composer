@@ -10,13 +10,13 @@
 
 'use strict';
 
-const Client = require('@ibm/ibm-concerto-client');
-const Admin = require('@ibm/ibm-concerto-admin');
-const Common = require('@ibm/ibm-concerto-common');
+const Client = require('@ibm/concerto-client');
+const Admin = require('@ibm/concerto-admin');
+const Common = require('@ibm/concerto-common');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const Serializer = Common.Serializer;
-const ParticipantRegistry = require('@ibm/ibm-concerto-client/lib/participantregistry');
+const ParticipantRegistry = require('@ibm/concerto-client/lib/participantregistry');
 const Resource = Common.Resource;
 
 const Add = require('../../lib/cmds/participant/addCommand.js');

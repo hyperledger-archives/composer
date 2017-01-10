@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Client = require('@ibm/ibm-concerto-client');
+const Client = require('@ibm/concerto-client');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
 
 const Revoke = require('../../lib/cmds/identity/revokeCommand.js');

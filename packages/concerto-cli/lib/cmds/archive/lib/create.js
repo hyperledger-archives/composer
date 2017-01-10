@@ -36,7 +36,7 @@ class Deploy {
             const path = require('path');
             argv.inputDir = path.dirname(require.resolve(argv.moduleName));
             console.log('Resolving module name '+argv.moduleName);
-        }else if (argv.inputDir=='.'){
+        }else if (argv.inputDir==='.'){
             argv.inputDir = process.cwd();
         }
         console.log('Looking for package.json of Business Network Definition in '+argv.inputDir);

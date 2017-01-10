@@ -10,9 +10,9 @@
 
 'use strict';
 
-const Client = require('@ibm/ibm-concerto-client');
-const Admin = require('@ibm/ibm-concerto-admin');
-const Common = require('@ibm/ibm-concerto-common');
+const Client = require('@ibm/concerto-client');
+const Admin = require('@ibm/concerto-admin');
+const Common = require('@ibm/concerto-common');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const Serializer = Common.Serializer;

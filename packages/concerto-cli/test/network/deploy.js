@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Admin = require('@ibm/ibm-concerto-admin');
+const Admin = require('@ibm/concerto-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const homedir = require('homedir');
 const fs = require('fs');
