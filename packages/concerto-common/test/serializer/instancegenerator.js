@@ -262,6 +262,17 @@ describe('InstanceGenerator', () => {
             resource.theValues[2].theValue.should.be.a('string');
         });
 
+        it('should generate a default value for base class properties', () => {
+            let resource = test(`namespace org.acme.test
+            abstract asset BaseAsset {
+                o String inheritedValue
+            }
+            asset MyAsset identified by assetId extends BaseAsset {
+                o String assetId
+            }`);
+            resource.inheritedValue.should.be.a('string');
+        });
+
     });
 
 });
