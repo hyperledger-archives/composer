@@ -13,6 +13,12 @@ if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
     exit 0
 fi
 
+# Check that this is not the system tests.
+if [ "${SYSTEST}" != "" ]; then
+    echo Not executing as running system tests.
+    exit 0
+fi
+
 # Check that this is the main repository.
 if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
     echo "Skipping deploy; wrong repository slug."
