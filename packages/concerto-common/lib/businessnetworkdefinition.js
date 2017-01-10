@@ -330,10 +330,16 @@ class BusinessNetworkDefinition {
 
             for( let dep of dependencies) {
                 // find all the *.cto files under the npm install dependency path
-                const dependencyPath = fsPath.resolve(path, 'node_modules', dep);
+                let dependencyPath = fsPath.resolve(path, 'node_modules', dep);
                 LOG.debug(method, 'Checking dependency path', dependencyPath);
                 if (!fs.existsSync(dependencyPath)) {
-                    throw new Error('npm dependency path ' + dependencyPath + ' does not exist. Did you run npm install?');
+                    // need to check to see if this is in a peer directory as well
+                    //
+                    LOG.debug(method,'trying different path '+path.replace(packageName,''));
+                    dependencyPath = fsPath.resolve(path.replace(packageName,''),dep);
+                    if(!fs.existsSync(dependencyPath)){
+                        throw new Error('npm dependency path ' + dependencyPath + ' does not exist. Did you run npm install?');
+                    }
                 }
 
                 BusinessNetworkDefinition.processDirectory(dependencyPath, {
