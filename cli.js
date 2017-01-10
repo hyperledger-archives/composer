@@ -14,7 +14,7 @@
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 const yargs = require('yargs');
-
+let _ = require('lodash');
 yargs
     .commandDir('./lib/cmds')
     .help()
@@ -23,4 +23,27 @@ yargs
     .wrap(null)
     .strict()
     .epilogue('For more information: https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/reference')
+    .alias('v', 'version')
+    .version(function() {
+
+
+        return getInfo('@ibm/ibm-concerto-cli')+'\n'+
+          getInfo('@ibm/concerto-admin')+'\n'+getInfo('@ibm/concerto-client')+'\n'+
+          getInfo('@ibm/concerto-common')+'\n'+getInfo('@ibm/concerto-runtime-hlf')+
+          '\n'+getInfo('@ibm/concerto-connector-hlf')+'\n';
+
+
+    })
+    .describe('v', 'show version information')
     .argv;
+
+/**
+ * [getInfo description]
+ * @param  {[type]} moduleName [description]
+ * @return {[type]}            [description]
+ */
+function getInfo(moduleName){
+    let pjson = require(moduleName+'/package.json');
+
+    return _.padEnd(pjson.name,30) + ' v'+pjson.version;
+}
