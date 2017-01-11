@@ -10,6 +10,8 @@
 
 'use strict';
 
+const AccessController = require('../lib/accesscontroller');
+const AclManager = require('@ibm/concerto-common').AclManager;
 const Api = require('../lib/api');
 const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 const Context = require('../lib/context');
@@ -206,11 +208,28 @@ describe('Context', () => {
             }).should.throw(/must call initialize before calling this function/);
         });
 
-        it('should return the business networks model manager', () => {
+        it('should return the business networks script manager', () => {
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
             context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             context.businessNetworkDefinition.getScriptManager.returns(mockScriptManager);
             context.getScriptManager().should.equal(mockScriptManager);
+        });
+
+    });
+
+    describe('#getAclManager', () => {
+
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getAclManager();
+            }).should.throw(/must call initialize before calling this function/);
+        });
+
+        it('should return the business networks ACL manager', () => {
+            let mockAclManager = sinon.createStubInstance(AclManager);
+            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            context.businessNetworkDefinition.getAclManager.returns(mockAclManager);
+            context.getAclManager().should.equal(mockAclManager);
         });
 
     });
@@ -275,6 +294,8 @@ describe('Context', () => {
             sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
             let mockSerializer = sinon.createStubInstance(Serializer);
             sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            sinon.stub(context, 'getAccessController').returns(mockAccessController);
             context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
         });
 
@@ -372,12 +393,18 @@ describe('Context', () => {
 
         it('should set the current participant and create a participant logger', () => {
             let mockParticipant = sinon.createStubInstance(Resource);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
             context.setParticipant(mockParticipant);
             context.participant.should.equal(mockParticipant);
+            sinon.assert.calledOnce(mockAccessController.setParticipant);
+            sinon.assert.calledWith(mockAccessController.setParticipant, mockParticipant);
         });
 
         it('should throw if a participant has already been set', () => {
             let mockParticipant = sinon.createStubInstance(Resource);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
             context.setParticipant(mockParticipant);
             (() => {
                 context.setParticipant(mockParticipant);
@@ -476,6 +503,22 @@ describe('Context', () => {
             mockTransactionExecutor2.getType.returns('dogelang');
             context.transactionExecutors = [mockTransactionExecutor1, mockTransactionExecutor2];
             context.getTransactionExecutors().should.deep.equal([mockTransactionExecutor1, mockTransactionExecutor2]);
+        });
+
+    });
+
+    describe('#getAccessController', () => {
+
+        it('should return a new access controller', () => {
+            let mockAclManager = sinon.createStubInstance(AclManager);
+            sinon.stub(context, 'getAclManager').returns(mockAclManager);
+            context.getAccessController().should.be.an.instanceOf(AccessController);
+        });
+
+        it('should return an existing query executor', () => {
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.getAccessController().should.equal(mockAccessController);
         });
 
     });
