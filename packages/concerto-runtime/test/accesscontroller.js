@@ -66,10 +66,11 @@ describe('AccessController', () => {
             o String participantId
         }`);
         aclManager = new AclManager(modelManager);
-        controller = new AccessController(aclManager);
         factory = new Factory(modelManager);
         asset = factory.newInstance('org.acme.test', 'TestAsset', 'A1234');
         participant = factory.newInstance('org.acme.test', 'TestParticipant', 'P5678');
+        controller = new AccessController(aclManager);
+        controller.setParticipant(participant);
     });
 
     let setAclFile = (contents) => {
@@ -77,18 +78,49 @@ describe('AccessController', () => {
         aclManager.setAclFile(aclFile);
     };
 
+    describe('#getParticipant', () => {
+
+        it('should return the current participant', () => {
+            controller.getParticipant().should.equal(participant);
+        });
+
+    });
+
+    describe('#setParticipant', () => {
+
+        it('should set the current participant', () => {
+            controller.participant = null;
+            controller.setParticipant(participant);
+            controller.participant.should.equal(participant);
+        });
+
+    });
+
     describe('#check', () => {
 
+        it('should do nothing if there is no participant', () => {
+            controller.setParticipant(null);
+            controller.check(asset, 'READ');
+        });
+
+        it('should do nothing if there is no access control file', () => {
+            controller.check(asset, 'READ');
+        });
+
         it('should throw if there are no access control rules', () => {
+            // The language doesn't allow this, but just incase one day it does - we add
+            // an ACL file, and then stub the ACL manager to pretend like no rules exist.
+            setAclFile('R1 | org.acme.test.TestAsset#A1234 | READ | org.acme.test.TestParticipant#P5678 | (true) | ALLOW | Test R1\n');
+            sinon.stub(aclManager, 'getAclRules').returns([]);
             (() => {
-                controller.check(asset, 'READ', participant);
+                controller.check(asset, 'READ');
             }).should.throw(AccessException, /does not have/);
         });
 
         it('should not throw if there is one matching ALLOW access control rule', () => {
             setAclFile('R1 | org.acme.test.TestAsset#A1234 | READ | org.acme.test.TestParticipant#P5678 | (true) | ALLOW | Test R1\n');
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ', participant);
+            controller.check(asset, 'READ');
             sinon.assert.calledOnce(spy);
         });
 
@@ -96,7 +128,7 @@ describe('AccessController', () => {
             setAclFile('R1 | org.acme.test.TestAsset#A1234 | READ | org.acme.test.TestParticipant#P5678 | (true) | DENY | Test R1\n');
             let spy = sinon.spy(controller, 'checkRule');
             (() => {
-                controller.check(asset, 'READ', participant);
+                controller.check(asset, 'READ');
             }).should.throw(AccessException, /does not have/);
             sinon.assert.calledOnce(spy);
         });
@@ -108,7 +140,7 @@ describe('AccessController', () => {
                 'R1 | org.acme.test.TestAsset#A1234 | READ | org.acme.test.TestParticipant#P5678 | (true) | ALLOW | Test R1\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ', participant);
+            controller.check(asset, 'READ');
             sinon.assert.calledThrice(spy);
         });
 
@@ -119,7 +151,7 @@ describe('AccessController', () => {
                 'R1 | org.acme.test.TestAsset#A1234 | READ | org.acme.test.TestParticipant#P5678 | (true) | ALLOW | Test R1\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ', participant);
+            controller.check(asset, 'READ');
             sinon.assert.calledThrice(spy);
         });
 
@@ -131,7 +163,7 @@ describe('AccessController', () => {
             );
             let spy = sinon.spy(controller, 'checkRule');
             (() => {
-                controller.check(asset, 'READ', participant);
+                controller.check(asset, 'READ');
             }).should.throw(AccessException, /does not have/);
             sinon.assert.calledThrice(spy);
         });
@@ -143,7 +175,7 @@ describe('AccessController', () => {
                 'R1 | org.acme.test.TestAsset#A1234 | UPDATE | org.acme.test.TestParticipant#P5678 | (true) | ALLOW | Test R1\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ', participant);
+            controller.check(asset, 'READ');
             sinon.assert.calledOnce(spy);
         });
 
@@ -154,7 +186,7 @@ describe('AccessController', () => {
                 'R1 | org.acme.test.TestAsset#A1234 | UPDATE | org.acme.test.TestParticipant#P5678 | (true) | DENY | Test R1\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
-            controller.check(asset, 'READ', participant);
+            controller.check(asset, 'READ');
             sinon.assert.calledOnce(spy);
         });
 
@@ -166,7 +198,7 @@ describe('AccessController', () => {
             );
             let spy = sinon.spy(controller, 'checkRule');
             (() => {
-                controller.check(asset, 'READ', participant);
+                controller.check(asset, 'READ');
             }).should.throw(AccessException, /does not have/);
             sinon.assert.calledOnce(spy);
         });

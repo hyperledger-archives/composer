@@ -10,6 +10,7 @@
 
 'use strict';
 
+const AccessController = require('./accesscontroller');
 const Api = require('./api');
 const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
@@ -52,8 +53,15 @@ class Context {
     constructor(engine) {
         this.engine = engine;
         this.businessNetworkDefinition = null;
+        this.registryManager = null;
+        this.resolver = null;
+        this.api = null;
+        this.queryExecutor = null;
+        this.identityManager = null;
+        this.participant = null;
         this.transaction = null;
         this.transactionExecutors = [];
+        this.accessController = null;
     }
 
     /**
@@ -159,6 +167,17 @@ class Context {
     }
 
     /**
+     * Get the ACL manager.
+     * @return {AclManager} The ACL manager.
+     */
+    getAclManager() {
+        if (!this.businessNetworkDefinition) {
+            throw new Error('must call initialize before calling this function');
+        }
+        return this.businessNetworkDefinition.getAclManager();
+    }
+
+    /**
      * Get the factory.
      * @return {Factory} The factory.
      */
@@ -197,7 +216,7 @@ class Context {
      */
     getRegistryManager() {
         if (!this.registryManager) {
-            this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer());
+            this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer(), this.getAccessController());
         }
         return this.registryManager;
     }
@@ -263,6 +282,7 @@ class Context {
             throw new Error('A current participant has already been specified');
         }
         this.participant = participant;
+        this.getAccessController().setParticipant(participant);
     }
 
     /**
@@ -314,6 +334,17 @@ class Context {
      */
     getTransactionExecutors() {
         return this.transactionExecutors;
+    }
+
+    /**
+     * Get the access controller.
+     * @return {AccessController} The access controller.
+     */
+    getAccessController() {
+        if (!this.accessController) {
+            this.accessController = new AccessController(this.getAclManager());
+        }
+        return this.accessController;
     }
 
     /**

@@ -32,7 +32,24 @@ class AccessController {
         const method = 'constructor';
         LOG.entry(method, aclManager);
         this.aclManager = aclManager;
+        this.participant = null;
         LOG.exit(method);
+    }
+
+    /**
+     * Get the current participant.
+     * @return {Resource} The current participant.
+     */
+    getParticipant() {
+        return this.participant;
+    }
+
+    /**
+     * Set the current participant.
+     * @param {Resource} participant The current participant.
+     */
+    setParticipant(participant) {
+        this.participant = participant;
     }
 
     /**
@@ -45,16 +62,36 @@ class AccessController {
      * does not have the specified level of access to the specified
      * resource.
      */
-    check(resource, access, participant) {
+    check(resource, access) {
         const method = 'check';
-        LOG.entry(method, resource.getFullyQualifiedIdentifier(), access, participant.getFullyQualifiedIdentifier());
+        LOG.entry(method, resource.getFullyQualifiedIdentifier(), access);
         try {
+
+            // Check to see if a participant has been set. If not, then ACL
+            // enforcement is not enabled.
+            let participant = this.participant;
+            if (!participant) {
+                LOG.debug(method, 'No participant');
+                LOG.exit(method);
+                return;
+            }
+
+            // Check to see if an ACL file was supplied. If not, then ACL
+            // enforcement is not enabled.
+            if (!this.aclManager.getAclFile()) {
+                LOG.debug(method, 'No ACL file');
+                LOG.exit(method);
+                return;
+            }
 
             // Iterate over the ACL rules in order, but stop at the first rule
             // that permits the action.
             let aclRules = this.aclManager.getAclRules();
             let result = aclRules.some((aclRule) => {
-                return this.checkRule(resource, access, participant, aclRule);
+                LOG.debug(method, 'Processing rule', aclRule);
+                let value = this.checkRule(resource, access, participant, aclRule);
+                LOG.debug(method, 'Processed rule', value);
+                return value;
             });
 
             // If a ACL rule permitted the action, return.
