@@ -34,7 +34,27 @@ class Deploy {
         console.log('Creating Business Network Archive');
         if (!argv.inputDir){
             const path = require('path');
-            argv.inputDir = path.dirname(require.resolve(argv.moduleName));
+
+
+
+            console.log(process.env.NODE_PATH);
+            console.log('About to do the required');
+            let moduleIndexjs;
+            try {
+                moduleIndexjs=require.resolve(argv.moduleName);
+
+            } catch (err){
+                if (err.code==='MODULE_NOT_FOUND'){
+                    console.log('Main node_module search path empty - trying cwd');
+                    moduleIndexjs=require.resolve(process.cwd()+'/node_modules/'+argv.moduleName);
+                }else {
+                    console.log('Unable to locate the npm moodule specified');
+                    throw err;
+                }
+
+            }
+
+            argv.inputDir = path.dirname(moduleIndexjs);
             console.log('Resolving module name '+argv.moduleName);
         }else if (argv.inputDir==='.'){
             argv.inputDir = process.cwd();
