@@ -10,16 +10,18 @@
 
 'use strict';
 
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const fs = require('fs');
+const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
 const hfc = require('hfc');
 const hfcChain = hfc.Chain;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCConnectionManager = require('..');
-const sinon = require('sinon');
-const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
-const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
-const fs = require('fs');
+const HFCWalletProxy = require('../lib/hfcwalletproxy');
+const Wallet = require('@ibm/concerto-common').Wallet;
 
 require('chai').should();
+const sinon = require('sinon');
 
 describe('HFCConnectionManager', () => {
 
@@ -35,6 +37,7 @@ describe('HFCConnectionManager', () => {
     });
 
     afterEach(function() {
+        Wallet.setWallet(null);
         sandbox.restore();
     });
 
@@ -135,7 +138,7 @@ describe('HFCConnectionManager', () => {
                 });
         });
 
-        it('should create and configure a new connection', function() {
+        it('should create and configure a new connection using the key value store', function() {
 
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
@@ -160,6 +163,29 @@ describe('HFCConnectionManager', () => {
                             connection.should.be.an.instanceOf(HFCConnection);
                             connection.chain.should.equal(mockChain);
                             return true;
+                        });
+                });
+        });
+
+        it('should create and configure a new connection using the wallet proxy', function() {
+
+            // Set the wallet singleton.
+            let mockWallet = sinon.createStubInstance(Wallet);
+            Wallet.setWallet(mockWallet);
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            mockHFC.getChain.returns(mockChain);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork')
+                        .then(function(connection) {
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockChain.setKeyValStore);
+                            sinon.assert.calledWith(mockChain.setKeyValStore, sinon.match.instanceOf(HFCWalletProxy));
                         });
                 });
         });
