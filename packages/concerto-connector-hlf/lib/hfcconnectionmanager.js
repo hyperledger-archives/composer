@@ -10,11 +10,13 @@
 
 'use strict';
 
-const LOG = require('@ibm/concerto-common').Logger.getLog('HFCConnectionManager');
 const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
 const Globalize = require('@ibm/concerto-common').Globalize;
 const hfc = require('hfc');
 const HFCConnection = require('./hfcconnection');
+const HFCWalletProxy = require('./hfcwalletproxy');
+const LOG = require('@ibm/concerto-common').Logger.getLog('HFCConnectionManager');
+const Wallet = require('@ibm/concerto-common').Wallet;
 
 /**
  * Class representing a connection manager that establishes and manages
@@ -97,7 +99,12 @@ class HFCConnectionManager extends ConnectionManager {
 
             return new Promise((resolve, reject) => {
                 let chain = hfc.getChain(chainIdentifier, true);
-                chain.setKeyValStore(hfc.newFileKeyValStore(connectOptions.keyValStore));
+                let wallet = Wallet.getWallet();
+                if (wallet) {
+                    chain.setKeyValStore(new HFCWalletProxy(wallet));
+                } else {
+                    chain.setKeyValStore(hfc.newFileKeyValStore(connectOptions.keyValStore));
+                }
                 chain.setMemberServicesUrl(connectOptions.membershipServicesURL);
                 chain.addPeer(connectOptions.peerURL);
                 if (connectOptions.deployWaitTime) {

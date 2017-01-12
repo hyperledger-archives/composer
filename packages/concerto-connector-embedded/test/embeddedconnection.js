@@ -92,12 +92,9 @@ describe('EmbeddedConnection', () => {
                 });
         });
 
-        it('should return a new security context with a null chaincode ID if the business network does not exist', () => {
+        it('should throw if the business network was specified but it does not exist', () => {
             return connection.login('doge', 'suchs3cret')
-                .then((securityContext) => {
-                    securityContext.should.be.an.instanceOf(EmbeddedSecurityContext);
-                    should.equal(securityContext.getChaincodeID(), null);
-                });
+                .should.be.rejectedWith(/No chaincode ID found/);
         });
 
         it('should return a new security context with a non-null chaincode ID if the business network does exist', () => {

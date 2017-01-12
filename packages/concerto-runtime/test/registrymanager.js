@@ -10,6 +10,7 @@
 
 'use strict';
 
+const AccessController = require('../lib/accesscontroller');
 const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
@@ -34,13 +35,15 @@ describe('RegistryManager', () => {
     let mockDataService;
     let mockIntrospector;
     let mockSerializer;
+    let mockAccessController;
     let registryManager;
 
     beforeEach(() => {
         mockDataService = sinon.createStubInstance(DataService);
         mockIntrospector = sinon.createStubInstance(Introspector);
         mockSerializer = sinon.createStubInstance(Serializer);
-        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer);
+        mockAccessController = sinon.createStubInstance(AccessController);
+        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer, mockAccessController);
     });
 
     describe('#constructor', () => {
@@ -55,7 +58,7 @@ describe('RegistryManager', () => {
 
         it('should create a new registry and subscribe to its events', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
-            let registry = registryManager.createRegistry(mockDataCollection, mockSerializer, 'Asset', 'doges', 'The doges registry');
+            let registry = registryManager.createRegistry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
             ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
                 let stub = sinon.stub();
                 registryManager.once(event, stub);

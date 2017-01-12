@@ -123,6 +123,7 @@ class BusinessNetworkDefinition {
             const allPromises = [];
             let ctoModelFiles = [];
             let jsScriptFiles = [];
+            let permissionsFiles = [];
             let businessNetworkDefinition;
 
             LOG.debug(method, 'Loading package.json');
@@ -177,23 +178,28 @@ class BusinessNetworkDefinition {
                 allPromises.push(aclPromise);
                 aclPromise.then(contents => {
                     LOG.debug(method, 'Loaded permissions.acl');
-                    businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), contents));
+                    permissionsFiles.push(contents);
                 });
             }
 
             return Promise.all(allPromises)
                 .then(() => {
-                    LOG.debug(method, 'Loaded all model and JavaScript files');
+                    LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
                     LOG.debug(method, 'Adding model files to model manager');
                     businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles); // Adds all cto files to model manager
                     LOG.debug(method, 'Added model files to model manager');
                     // console.log('What are the jsObjectsArray?',jsObjectArray);
-                    LOG.debug(method, 'Adding JavaScript files to model manager');
+                    LOG.debug(method, 'Adding JavaScript files to script manager');
                     jsScriptFiles.forEach(function(obj) {
                         let jsObject = businessNetworkDefinition.scriptManager.createScript(obj.name, 'js', obj.contents);
                         businessNetworkDefinition.scriptManager.addScript(jsObject); // Adds all js files to script manager
                     });
-                    LOG.debug(method, 'Added JavaScript files to model manager');
+                    LOG.debug(method, 'Added JavaScript files to script manager');
+                    LOG.debug(method, 'Adding ACL files to ACL manager');
+                    permissionsFiles.forEach((permissionFile) => {
+                        businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile));
+                    });
+                    LOG.debug(method, 'Added ACL files to ACL manager');
 
                     LOG.exit(method, businessNetworkDefinition.toString());
                     return businessNetworkDefinition; // Returns business network (with model manager and script manager)

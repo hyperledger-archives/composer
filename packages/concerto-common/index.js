@@ -17,6 +17,8 @@
  * @module ibm-concerto-common
  */
 
+module.exports.AclFile = require('./lib/acl/aclfile');
+module.exports.AclManager = require('./lib/aclmanager');
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
@@ -25,13 +27,13 @@ module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
 module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanager');
 module.exports.ConnectionProfileStore = require('./lib/connectionprofilestore');
-module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestore');
-
-// module.exports.MemoryConnectionProfileStore = require('./lib/memoryconnectionprofilestore');
-
 module.exports.Factory = require('./lib/factory');
+module.exports.FileWallet = require('./lib/filewallet');
+module.exports.FileWriter = require('./lib/codegen/filewriter');
+module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestore');
 module.exports.Globalize = require('./lib/globalize');
 module.exports.Introspector = require('./lib/introspect/introspector');
+module.exports.Logger = require('./lib/log/logger');
 module.exports.ModelFile = require('./lib/introspect/modelfile');
 module.exports.ModelManager = require('./lib/modelmanager');
 module.exports.ParticipantDeclaration = require('./lib/introspect/participantdeclaration');
@@ -43,10 +45,6 @@ module.exports.SecurityContext = require('./lib/securitycontext');
 module.exports.SecurityException = require('./lib/securityexception');
 module.exports.Serializer = require('./lib/serializer');
 module.exports.TransactionDeclaration = require('./lib/introspect/transactiondeclaration');
-module.exports.Util = require('./lib/util');
-
-module.exports.FileWriter = require('./lib/codegen/filewriter');
 module.exports.TypescriptVisitor = require('./lib/codegen/fromcto/typescript/typescriptvisitor');
-
-
-module.exports.Logger = require('./lib/log/logger');
+module.exports.Util = require('./lib/util');
+module.exports.Wallet = require('./lib/wallet');
