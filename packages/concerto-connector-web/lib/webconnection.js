@@ -227,7 +227,10 @@ class WebConnection extends Connection {
      * business network has been tested, or rejected with an error.
      */
     ping(securityContext) {
-        return this.queryChainCode(securityContext, 'ping', []);
+        return this.queryChainCode(securityContext, 'ping', [])
+            .then((buffer) => {
+                return JSON.parse(buffer.toString());
+            });
     }
 
     /**
