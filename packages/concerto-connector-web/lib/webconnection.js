@@ -154,6 +154,8 @@ class WebConnection extends Connection {
                             WebConnection.addChaincode(chaincodeID, container, engine);
                         }
                         result.setChaincodeID(chaincodeID);
+                    } else {
+                        throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
                     }
                     return result;
                 });

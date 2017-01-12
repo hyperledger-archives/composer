@@ -146,6 +146,8 @@ class EmbeddedConnection extends Connection {
             let chaincodeUUID = EmbeddedConnection.getBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile);
             if (chaincodeUUID) {
                 result.setChaincodeID(chaincodeUUID);
+            } else {
+                return Promise.reject(new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`));
             }
         }
         return Promise.resolve(result);
