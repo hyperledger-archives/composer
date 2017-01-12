@@ -200,11 +200,14 @@ describe('EmbeddedConnection', () => {
     describe('#ping', () => {
 
         it('should submit a ping query request', () => {
-            sinon.stub(connection, 'queryChainCode').resolves();
+            sinon.stub(connection, 'queryChainCode').resolves(Buffer.from('{"hello":"world"}'));
             return connection.ping(mockSecurityContext)
-                .then(() => {
+                .then((result) => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.should.deep.equal({
+                        hello: 'world'
+                    });
                 });
         });
 
