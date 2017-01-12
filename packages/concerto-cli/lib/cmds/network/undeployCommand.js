@@ -10,12 +10,12 @@
 
 'use strict';
 
-const Deploy = require ('./lib/deploy.js');
+const Undeploy = require ('./lib/undeploy.js');
 
-module.exports.command = 'deploy [options]';
-module.exports.describe = 'Deploys a business network from the fabric';
+module.exports.command = 'undeploy [options]';
+module.exports.describe = 'Undeploys a BusinessNetworkDefinition from the fabric.';
 module.exports.builder = {
-    archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
+    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     connectionProfileName: {alias: 'p', optional: true, describe: 'The connection profile name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
@@ -23,7 +23,7 @@ module.exports.builder = {
 
 module.exports.handler = (argv) => {
 
-    return Deploy.handler(argv)
+    return Undeploy.handler(argv)
     .then(() => {
         console.log ('Command completed successfully.');
         process.exit(0);
