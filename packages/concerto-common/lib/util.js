@@ -19,7 +19,7 @@ const SecurityException = require('./securityexception');
  * <p><a href="./diagrams-private/util.svg"><img src="./diagrams-private/util.svg" style="width:100%;"/></a></p>
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Util {
 

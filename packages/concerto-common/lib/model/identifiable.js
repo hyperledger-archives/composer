@@ -18,7 +18,7 @@ const IDENTIFIABLE_SYSTEM_PROPERTIES = ['$validator', '$class', '$modelManager',
  * This class is abstract.
  * @abstract
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Identifiable {
     /**

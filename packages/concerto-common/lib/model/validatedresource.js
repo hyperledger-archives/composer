@@ -18,9 +18,9 @@ const Resource = require('./resource');
  * changes (or the whole instance) do not violate the structure of
  * the type information associated with the instance.
  * @extends Resource
- * @see See [Resource]{@link module:ibm-concerto-common.Resource}
+ * @see See [Resource]{@link module:concerto-common.Resource}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class ValidatedResource extends Resource {
     /**

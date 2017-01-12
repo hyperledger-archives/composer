@@ -18,7 +18,7 @@ const Util = require('../util');
  * checking on push/pop to make detecting bugs easier.
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class TypedStack {
 

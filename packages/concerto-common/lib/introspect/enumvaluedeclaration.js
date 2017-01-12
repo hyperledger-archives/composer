@@ -16,9 +16,9 @@ const Property = require('./property');
  * Class representing a value from a set of enumerated values
  * @private
  * @extends Property
- * @see See [Property]{@link module:ibm-concerto-common.Property}
+ * @see See [Property]{@link module:concerto-common.Property}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class EnumValueDeclaration extends Property {
 

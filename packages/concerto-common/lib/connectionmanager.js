@@ -20,7 +20,7 @@ const ConnectionProfileManager = require('./connectionprofilemanager');
  * @private
  * @abstract
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class ConnectionManager {
 

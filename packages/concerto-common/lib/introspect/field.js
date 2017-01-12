@@ -20,9 +20,9 @@ const StringValidator = require('./stringvalidator');
  * (see below).
  * @private
  * @extends Property
- * @see See [Property]{@link module:ibm-concerto-common.Property}
+ * @see See [Property]{@link module:concerto-common.Property}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Field extends Property {
 

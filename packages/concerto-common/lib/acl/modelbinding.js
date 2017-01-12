@@ -20,7 +20,7 @@ const ModelUtil = require('../modelutil');
  *
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class ModelBinding {
 

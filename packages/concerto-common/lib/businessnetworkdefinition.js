@@ -34,7 +34,7 @@ const LOG = Logger.getLog('BusinessNetworkDefinition');
  * the network as well as a set of executable scripts.
  * </p>
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class BusinessNetworkDefinition {
 

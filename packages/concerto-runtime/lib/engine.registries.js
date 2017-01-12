@@ -18,7 +18,7 @@ const LOG = Logger.getLog('EngineRegistries');
 /**
  * The JavaScript engine responsible for processing chaincode commands.
  * @protected
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class EngineRegistries {
 

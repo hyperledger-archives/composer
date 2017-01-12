@@ -18,9 +18,9 @@ const Writer = require('./writer');
  * automatically based on context.
  * @private
  * @extends Writer
- * @see See [Writer]{@link module:ibm-concerto-common.Writer}
+ * @see See [Writer]{@link module:concerto-common.Writer}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class JSONWriter extends Writer {
 

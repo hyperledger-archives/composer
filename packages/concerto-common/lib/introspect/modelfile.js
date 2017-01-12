@@ -25,7 +25,7 @@ const Globalize = require('../globalize');
  * and a set of model elements: assets, transactions etc.
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class ModelFile {
 

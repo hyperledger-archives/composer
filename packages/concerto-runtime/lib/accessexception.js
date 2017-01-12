@@ -16,9 +16,9 @@ const BaseException = require('@ibm/concerto-common').BaseException;
 * Class representing an access exception
 * <p><a href="./diagrams/accessexception.svg"><img src="./diagrams/accessexception.svg" style="width:100%;"/></a></p>
 * @extends BaseException
-* @see See [BaseException]{@link module:ibm-concerto-common.BaseException}
+* @see See [BaseException]{@link module:concerto-common.BaseException}
 * @class
-* @memberof module:ibm-concerto-runtime
+* @memberof module:concerto-runtime
 */
 class AccessException extends BaseException {
 

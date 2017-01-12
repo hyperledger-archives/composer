@@ -28,7 +28,7 @@ const debug = require('debug')('concerto:jsonschemavisitor');
  * object to control where the generated code is written to disk.
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class LoopbackVisitor {
 

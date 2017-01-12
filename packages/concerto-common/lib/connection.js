@@ -17,7 +17,7 @@ const ConnectionManager = require('./connectionmanager');
  * @private
  * @abstract
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Connection {
 

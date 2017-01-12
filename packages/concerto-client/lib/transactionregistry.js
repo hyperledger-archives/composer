@@ -19,9 +19,9 @@ const REGISTRY_TYPE = 'Transaction';
  * The TransactionRegistry is used to store a set of transactions on the blockchain.
  * <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="width:100%;"/></a></p>
  * @extends Registry
- * @see See [Registry]{@link module:ibm-concerto-client.Registry}
+ * @see See [Registry]{@link module:concerto-client.Registry}
  * @class
- * @memberof module:ibm-concerto-client
+ * @memberof module:concerto-client
  */
 class TransactionRegistry extends Registry {
 

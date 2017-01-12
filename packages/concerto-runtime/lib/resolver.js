@@ -23,7 +23,7 @@ const LOG = Logger.getLog('Context');
  * A class for resolving resources and their relationships to other resources.
  * @protected
  * @abstract
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class Resolver {
 

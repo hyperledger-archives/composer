@@ -16,7 +16,7 @@
  * <p><a href="./diagrams/securitycontext.svg"><img src="./diagrams/securitycontext.svg" style="width:100%;"/></a></p>
  * @abstract
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class SecurityContext {
 

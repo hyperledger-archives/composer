@@ -19,7 +19,7 @@ const LOG = Logger.getLog('TransactionLogger');
  * A class for logging the changes made by a transaction.
  * @protected
  * @abstract
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class TransactionLogger {
 

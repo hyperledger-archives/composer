@@ -20,7 +20,7 @@ const LOG = Logger.getLog('AccessController');
  * the access control list(s) in a business network definition.
  * @private
  * @class
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class AccessController {
 

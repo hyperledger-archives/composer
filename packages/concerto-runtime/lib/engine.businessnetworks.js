@@ -21,7 +21,7 @@ const LOG = Logger.getLog('EngineBusinessNetworks');
 /**
  * The JavaScript engine responsible for processing chaincode commands.
  * @protected
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class EngineBusinessNetworks {
 

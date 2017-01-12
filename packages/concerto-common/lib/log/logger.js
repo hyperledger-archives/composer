@@ -59,7 +59,7 @@ let _clInstances = {};
  *
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Logger {
 

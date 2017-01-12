@@ -29,7 +29,7 @@ const fs = require('fs');
  * </ul>
  *
  * @class
- * @memberof module:ibm-concerto-admin
+ * @memberof module:concerto-admin
  */
 class AdminConnection {
 

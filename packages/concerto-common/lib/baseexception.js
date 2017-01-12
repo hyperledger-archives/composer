@@ -15,7 +15,7 @@
 * <p><a href="./diagrams/baseexception.svg"><img src="./diagrams/baseexception.svg" style="width:100%;"/></a></p>
 * @extends Error
 * @class
-* @memberof module:ibm-concerto-common
+* @memberof module:concerto-common
 */
 class BaseException extends Error {
 
