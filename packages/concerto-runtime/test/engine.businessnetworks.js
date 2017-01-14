@@ -96,6 +96,10 @@ describe('EngineBusinessNetworks', () => {
                     sinon.assert.calledOnce(Context.cacheBusinessNetwork);
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetwork);
                     sinon.assert.calledTwice(mockContext.initialize);
+                    // Initialize.
+                    sinon.assert.calledWith(mockContext.initialize);
+                    // Reinitialize.
+                    sinon.assert.calledWith(mockContext.initialize, true);
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
         });
