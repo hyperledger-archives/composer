@@ -45,8 +45,8 @@ class BusinessNetworkDefinition {
      * retrieve instances from {@link BusinessNetworkDefinition.fromArchive}</strong>
      * </p>
      * @param {String} identifier  - the identifier of the business network. The
-     * identifier is formed from a business network name + '-' + version. The
-     * version is a major.minor.micro dotted string.
+     * identifier is formed from a business network name + '@' + version. The
+     * version is a semver valid version string.
      * @param {String} description  - the description of the business network
      */
     constructor(identifier, description) {
@@ -54,17 +54,17 @@ class BusinessNetworkDefinition {
         LOG.entry(method, identifier, description);
         this.identifier = identifier;
 
-        const dashIndex = this.identifier.lastIndexOf('-');
+        const atIndex = this.identifier.lastIndexOf('@');
 
-        if (dashIndex >= 0) {
-            this.name = this.identifier.substring(0, dashIndex);
+        if (atIndex >= 0) {
+            this.name = this.identifier.substring(0, atIndex);
         } else {
-            throw new Error('Malformed business network identifier. It must be "name-major.minor.micro"');
+            throw new Error('Malformed business network identifier. It must be "name@major.minor.micro"');
         }
 
-        this.version = this.identifier.substring(dashIndex + 1);
+        this.version = this.identifier.substring(atIndex + 1);
         if (!semver.valid(this.version)) {
-            throw new Error('Version number is invalid. Should be major.minor.micro but found: ' + this.version);
+            throw new Error('Version number is invalid. Should be valid according to semver but found: ' + this.version);
         }
 
         this.description = description;
@@ -139,7 +139,7 @@ class BusinessNetworkDefinition {
                 let packageName = jsonObject.name;
                 let packageVersion = jsonObject.version;
                 let packageDescription = jsonObject.description;
-                businessNetworkDefinition = new BusinessNetworkDefinition(packageName + '-' + packageVersion, packageDescription);
+                businessNetworkDefinition = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription);
             });
 
             LOG.debug(method, 'Looking for model files');
@@ -215,12 +215,11 @@ class BusinessNetworkDefinition {
 
         let zip = new JSZip();
 
-        let bnIdentifier = this.getIdentifier();
-
-        let packageName = bnIdentifier.substring(0, bnIdentifier.lastIndexOf('-'));
-        let packageVersion = bnIdentifier.substring(bnIdentifier.lastIndexOf('-') + 1);
-        let packageDescription = this.getDescription();
-        let packageFileContents = '{"name": "' + packageName + '", "version": "' + packageVersion + '", "description": "' + packageDescription + '"}';
+        let packageFileContents = JSON.stringify({
+            name: this.name,
+            version: this.version,
+            description: this.description
+        });
 
         zip.file('package.json', packageFileContents);
 
@@ -324,7 +323,7 @@ class BusinessNetworkDefinition {
         let packageDescription = jsonObject.description;
 
         // create the business network definition
-        const businessNetwork = new BusinessNetworkDefinition(packageName + '-' + packageVersion, packageDescription);
+        const businessNetwork = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription);
         const modelFiles = [];
 
         // process each module dependency
