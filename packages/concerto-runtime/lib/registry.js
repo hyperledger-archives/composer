@@ -165,7 +165,6 @@ class Registry extends EventEmitter {
      * with an error.
      */
     update(resource, options) {
-        this.accessController.check(resource, 'UPDATE');
         options = options || {};
         let id = resource.getIdentifier();
         let object = this.serializer.toJSON(resource, {
@@ -176,6 +175,8 @@ class Registry extends EventEmitter {
                 return this.serializer.fromJSON(oldResource);
             })
             .then((oldResource) => {
+                // We must perform access control checks on the old version of the resource!
+                this.accessController.check(oldResource, 'UPDATE');
                 return this.dataCollection.update(id, object)
                     .then(() => {
                         this.emit('resourceupdated', {

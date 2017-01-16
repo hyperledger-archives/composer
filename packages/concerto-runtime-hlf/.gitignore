@@ -47,3 +47,6 @@ out
 # Build generated files should be ignored by git, but not by npm.
 concerto
 concerto.js.go
+concerto.js
+concerto.js.map
+concerto.min.js

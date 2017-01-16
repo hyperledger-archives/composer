@@ -89,7 +89,7 @@ class EngineBusinessNetworks {
 
                 // Reinitialize the context to reload the business network.
                 LOG.debug(method, 'Reinitializing context');
-                return context.initialize();
+                return context.initialize(true);
 
             })
             .then(() => {
