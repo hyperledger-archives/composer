@@ -161,7 +161,7 @@ describe('AdminConnection', () => {
         it('should be able to deploy a business network definition', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name-1.0.0');
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             return adminConnection.deploy(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.deploy);
@@ -188,7 +188,7 @@ describe('AdminConnection', () => {
         it('should be able to update a business network', () => {
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
-            let businessNetworkDefinition = new BusinessNetworkDefinition('name-1.0.0');
+            let businessNetworkDefinition = new BusinessNetworkDefinition('name@1.0.0');
             return adminConnection.update(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.update);
