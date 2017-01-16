@@ -17,23 +17,23 @@ describe('BusinessNetworkDefinition', () => {
     let businessNetworkDefinition;
 
     beforeEach(() => {
-        businessNetworkDefinition = new BusinessNetworkDefinition('id-1.0.0', 'description');
+        businessNetworkDefinition = new BusinessNetworkDefinition('id@1.0.0', 'description');
     });
 
     afterEach(() => {});
 
     describe('#identifier format checking', () => {
 
-        it('should throw when no dash in identifier', () => {
+        it('should throw when no @ in identifier', () => {
             (() => {
                 new BusinessNetworkDefinition('id', 'description');
-            }).should.throw(/It must be "name-major.minor.micro"/);
+            }).should.throw(/It must be "name@major.minor.micro"/);
         });
 
         it('should throw when invalid version in identifier', () => {
             (() => {
-                new BusinessNetworkDefinition('id-1.a.b', 'description');
-            }).should.throw(/Should be major.minor.micro/);
+                new BusinessNetworkDefinition('id@1.a.b', 'description');
+            }).should.throw(/Version number is invalid/);
         });
 
     });
@@ -132,7 +132,7 @@ describe('BusinessNetworkDefinition', () => {
             let readFile = fs.readFileSync(__dirname + '/data/zip/test-archive.zip');
             return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                businessNetwork.identifier.should.equal('@ibm/test-archive-0.0.1');
+                businessNetwork.identifier.should.equal('@ibm/test-archive@0.0.1');
                 businessNetwork.description.should.equal('A test business network.');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);

@@ -66,12 +66,14 @@ class Context {
 
     /**
      * Initialize the context for use.
+     * @param {boolean} [reinitialize] Set to true if being reinitialized as a result
+     * of an upgrade to the business network, falsey value if not.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    initialize() {
+    initialize(reinitialize) {
         const method = 'initialize';
-        LOG.entry(method);
+        LOG.entry(method, !!reinitialize);
 
         // Load the business network from the archive.
         LOG.debug(method, 'Getting $sysdata collection');
@@ -104,7 +106,11 @@ class Context {
                     return this.getIdentityManager().getParticipant(currentUserID)
                         .then((participant) => {
                             LOG.debug(method, 'Found current participant', participant.getFullyQualifiedIdentifier());
-                            this.setParticipant(participant);
+                            if (!reinitialize) {
+                                this.setParticipant(participant);
+                            } else {
+                                LOG.debug(method, 'Not setting current participant as we are reinitializing');
+                            }
                         })
                         .catch((error) => {
                             LOG.error(method, 'Could not find current participant', error);

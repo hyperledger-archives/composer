@@ -1,4 +1,4 @@
-namespace systest.assetregistries
+namespace systest.assets
 
 enum SimpleEnum {
     o WOW

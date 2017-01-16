@@ -34,7 +34,7 @@ const TransactionExecutor = require('../lib/transactionexecutor');
 const TransactionLogger = require('../lib/transactionlogger');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
@@ -121,6 +121,28 @@ describe('Context', () => {
             return context.initialize()
                 .then(() => {
                     context.getParticipant().should.equal(mockParticipant);
+                });
+        });
+
+        it('should load but not set the current participant if an identity is specified and reinitialize is specified', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+            sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
+            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            mockIdentityService.getCurrentUserID.returns('dogeid1');
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            mockIdentityManager.getParticipant.withArgs('dogeid1').resolves(mockParticipant);
+            return context.initialize(true)
+                .then(() => {
+                    should.equal(context.getParticipant(), null);
                 });
         });
 
