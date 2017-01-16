@@ -24,7 +24,7 @@
     "solutions"
   ],
   "author": "IBM",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "eslint": "^3.12.1",
     "license-check": "^1.1.5",

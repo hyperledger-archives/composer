@@ -19,7 +19,7 @@
     "url": "git@github.ibm.com:Blockchain-WW-Labs/Concerto-System-Tests.git"
   },
   "author": "IBM",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "keywords": [
     "blockchain",
     "hyperledger",
