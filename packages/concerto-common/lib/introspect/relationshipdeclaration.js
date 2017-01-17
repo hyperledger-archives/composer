@@ -21,10 +21,10 @@ const ModelUtil = require('../modelutil');
 /**
  * Class representing a relationship between model elements
  * @extends Property
- * @see See [Property]{@link module:ibm-concerto-common.Property}
+ * @see See [Property]{@link module:concerto-common.Property}
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class RelationshipDeclaration extends Property {
 

@@ -19,6 +19,7 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const homedir = require('homedir');
 const fs = require('fs');
 const Deploy = require('../../lib/cmds/network/lib/deploy.js');
+const DeployCmd = require('../../lib/cmds/network/deployCommand.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 //require('../lib/deploy.js');
@@ -61,7 +62,7 @@ describe('concerto deploy network CLI unit tests', function () {
 
         sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createAdminConnection').returns(mockAdminConnection);
-
+        sandbox.stub(process, 'exit');
     });
 
     afterEach(() => {
@@ -94,7 +95,7 @@ describe('concerto deploy network CLI unit tests', function () {
             Deploy.getArchiveFileContents.withArgs(argv.archiveFile).returns(testBusinessNetworkArchive);
             Deploy.getConnectOptions.withArgs(connectionProfileName).returns(connectOptions);
 
-            return Deploy.handler(argv)
+            return DeployCmd.handler(argv)
             .then ((result) => {
                 sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                 sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, testBusinessNetworkArchive);

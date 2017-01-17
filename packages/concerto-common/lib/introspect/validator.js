@@ -20,7 +20,7 @@
  * @private
  * @class
  * @abstract
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Validator {
 

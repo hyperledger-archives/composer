@@ -30,7 +30,7 @@ const ModelUtil = require('../modelutil');
  * 'modelManager' - the ModelManager instance to use to resolve classes
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class JSONPopulator {
 

@@ -31,7 +31,7 @@ const Globalize = require('../globalize');
  * @private
  * @abstract
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class ClassDeclaration {
 

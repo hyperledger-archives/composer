@@ -23,7 +23,7 @@ const crypto = require('crypto');
  * with the contents of the changelog.
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class VersionChecker {
 

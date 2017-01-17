@@ -18,7 +18,7 @@
  * Base class representing the logging service provided by a {@link Container}.
  * @protected
  * @abstract
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class LoggingService {
 

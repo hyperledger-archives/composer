@@ -16,7 +16,7 @@
 /** @description Internal class for handling a simple directed tree to support filtering
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Node {
 

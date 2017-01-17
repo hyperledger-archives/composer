@@ -19,9 +19,9 @@ const BaseException = require('../baseexception');
 /**
  * Exception throws when a Concerto file is syntactically invalid
  * @extends BaseException
- * @see See [BaseException]{@link module:ibm-concerto-common.BaseException}
+ * @see See [BaseException]{@link module:concerto-common.BaseException}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class ParseException extends BaseException {
 

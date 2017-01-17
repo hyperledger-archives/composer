@@ -31,9 +31,9 @@ const Field = require('../introspect/field');
  * other domain classes that can be serialized for long-term persistent storage.
  * </p>
  * @extends Identifiable
- * @see See [Resource]{@link module:ibm-concerto-common.Resource}
+ * @see See [Resource]{@link module:concerto-common.Resource}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Resource extends Identifiable {
     /**
