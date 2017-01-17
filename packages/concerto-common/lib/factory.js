@@ -30,7 +30,7 @@ const ValidatedResource = require('./model/validatedresource');
  * and assets.
  * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="width:100%;"/></a></p>
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Factory {
 

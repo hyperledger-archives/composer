@@ -21,7 +21,7 @@ const Globalize = require('./globalize');
  * <p><a href="./diagrams-private/modelutil.svg"><img src="./diagrams-private/modelutil.svg" style="width:100%;"/></a></p>
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class ModelUtil {
 

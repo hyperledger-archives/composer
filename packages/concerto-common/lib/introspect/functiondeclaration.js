@@ -25,7 +25,7 @@ const IllegalModelException = require('./illegalmodelexception');
  * declaration that the function processes.
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class FunctionDeclaration {
 

@@ -20,12 +20,12 @@ const LOG = Logger.getLog('AssetRegistry');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:ibm-concerto-runtime#getAssetRegistry getAssetRegistry}
+ * You must use the {@link module:concerto-runtime#getAssetRegistry getAssetRegistry}
  * method instead.
  *
  * @class AssetRegistry
  * @classdesc An asset registry manages a set of assets.
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  * @public
  */
 
@@ -65,7 +65,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#getAll
+         * @method module:concerto-runtime.AssetRegistry#getAll
          * @return {Promise} A promise. The promise is resolved with an array of
          * {@link Resource} instances representing all of the assets stored in this
          * asset registry. If the asset registry does not exist, or the current
@@ -94,7 +94,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#get
+         * @method module:concerto-runtime.AssetRegistry#get
          * @param {string} id The ID of the asset.
          * @return {Promise} A promise. The promise is resolved with a {@link Resource}
          * instance representing the specified asset in this asset registry. If the
@@ -127,7 +127,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#addAll
+         * @method module:concerto-runtime.AssetRegistry#addAll
          * @param {Resource[]} assets The assets to add to this asset registry.
          * @return {Promise} A promise. The promise is resolved when all of the
          * assets have been added to this asset registry. If the assets cannot be
@@ -157,7 +157,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#add
+         * @method module:concerto-runtime.AssetRegistry#add
          * @param {Resource} asset The assets to add to this asset registry.
          * @return {Promise} A promise. The promise is resolved when the asset has
          * been added to this asset registry. If the asset cannot be added to this
@@ -190,7 +190,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#updateAll
+         * @method module:concerto-runtime.AssetRegistry#updateAll
          * @param {Resource[]} assets The assets to update in this asset registry.
          * @return {Promise} A promise. The promise is resolved when all of the
          * assets have been updated in this asset registry. If the assets cannot be
@@ -221,7 +221,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#update
+         * @method module:concerto-runtime.AssetRegistry#update
          * @param {Resource} asset The asset to update in this asset registry.
          * @return {Promise} A promise. The promise is resolved when the asset
          * have been updated in this asset registry. If the asset cannot be
@@ -252,7 +252,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#removeAll
+         * @method module:concerto-runtime.AssetRegistry#removeAll
          * @param {string[]|Resource[]} assets The assets, or the IDs of the assets,
          * to remove from this asset registry.
          * @return {Promise} A promise. The promise is resolved when all of the
@@ -282,7 +282,7 @@ class AssetRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.AssetRegistry#remove
+         * @method module:concerto-runtime.AssetRegistry#remove
          * @param {string|Resource} asset The asset, or ID of the asset, to remove
          * from this asset registry.
          * @return {Promise} A promise. The promise is resolved when the asset

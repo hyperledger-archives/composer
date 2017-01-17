@@ -23,9 +23,9 @@ const REGISTRY_TYPE = 'Participant';
  * The ParticipantRegistry is used to manage a set of participants stored on the blockchain.
  * <p><a href="./diagrams/participantregistry.svg"><img src="./diagrams/participantregistry.svg" style="width:100%;"/></a></p>
  * @extends Registry
- * @see See [Registry]{@link module:ibm-concerto-client.Registry}
+ * @see See [Registry]{@link module:concerto-client.Registry}
  * @class
- * @memberof module:ibm-concerto-client
+ * @memberof module:concerto-client
  */
 class ParticipantRegistry extends Registry {
 

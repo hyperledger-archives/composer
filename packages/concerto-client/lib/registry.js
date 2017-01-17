@@ -22,7 +22,7 @@ const Util = require('@ibm/concerto-common').Util;
  * <p><a href="./diagrams/registry.svg"><img src="./diagrams/registry.svg" style="width:100%;"/></a></p>
  * @abstract
  * @class
- * @memberof module:ibm-concerto-client
+ * @memberof module:concerto-client
  */
 class Registry {
 

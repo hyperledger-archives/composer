@@ -1,6 +1,15 @@
 # Concerto
 Concerto is the Blockchain Solution Framework: a library of assets/functions for quickly creating blockchain-based applications.
 
+You must run the following commands in order to pull the Chaincode dependencies down from
+their repositories:
+
+    $ git submodule init
+    $ git submodule update
+
+You should see messages indicating that the required git repositories have been cloned into the correct
+vendor subdirectory.
+
 You must install [Lerna](https://lernajs.io) to build this multi-package repository.
 
     $ npm install -g lerna

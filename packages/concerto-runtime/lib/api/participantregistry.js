@@ -20,12 +20,12 @@ const LOG = Logger.getLog('ParticipantRegistry');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:ibm-concerto-runtime#getParticipantRegistry getParticipantRegistry}
+ * You must use the {@link module:concerto-runtime#getParticipantRegistry getParticipantRegistry}
  * method instead.
  *
  * @class ParticipantRegistry
  * @classdesc An participant registry manages a set of participants.
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  * @public
  */
 
@@ -65,7 +65,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#getAll
+         * @method module:concerto-runtime.ParticipantRegistry#getAll
          * @return {Promise} A promise. The promise is resolved with an array of
          * {@link Resource} instances representing all of the participants stored in this
          * participant registry. If the participant registry does not exist, or the current
@@ -94,7 +94,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#get
+         * @method module:concerto-runtime.ParticipantRegistry#get
          * @param {string} id The ID of the participant.
          * @return {Promise} A promise. The promise is resolved with a {@link Resource}
          * instance representing the specified participant in this participant registry. If the
@@ -127,7 +127,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#addAll
+         * @method module:concerto-runtime.ParticipantRegistry#addAll
          * @param {Resource[]} participants The participants to add to this participant registry.
          * @return {Promise} A promise. The promise is resolved when all of the
          * participants have been added to this participant registry. If the participants cannot be
@@ -157,7 +157,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#add
+         * @method module:concerto-runtime.ParticipantRegistry#add
          * @param {Resource} participant The participants to add to this participant registry.
          * @return {Promise} A promise. The promise is resolved when the participant has
          * been added to this participant registry. If the participant cannot be added to this
@@ -190,7 +190,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#updateAll
+         * @method module:concerto-runtime.ParticipantRegistry#updateAll
          * @param {Resource[]} participants The participants to update in this participant registry.
          * @return {Promise} A promise. The promise is resolved when all of the
          * participants have been updated in this participant registry. If the participants cannot be
@@ -221,7 +221,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#update
+         * @method module:concerto-runtime.ParticipantRegistry#update
          * @param {Resource} participant The participant to update in this participant registry.
          * @return {Promise} A promise. The promise is resolved when the participant
          * have been updated in this participant registry. If the participant cannot be
@@ -252,7 +252,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#removeAll
+         * @method module:concerto-runtime.ParticipantRegistry#removeAll
          * @param {string[]|Resource[]} participants The participants, or the IDs of the participants,
          * to remove from this participant registry.
          * @return {Promise} A promise. The promise is resolved when all of the
@@ -282,7 +282,7 @@ class ParticipantRegistry {
          *     // Add optional error handling here.
          *   });
          * @public
-         * @method module:ibm-concerto-runtime.ParticipantRegistry#remove
+         * @method module:concerto-runtime.ParticipantRegistry#remove
          * @param {string|Resource} participant The participant, or ID of the participant, to remove
          * from this participant registry.
          * @return {Promise} A promise. The promise is resolved when the participant

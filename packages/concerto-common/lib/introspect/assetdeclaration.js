@@ -23,9 +23,9 @@ const ClassDeclaration = require('./classdeclaration');
  * identifying field.
  * @private
  * @extends ClassDeclaration
- * @see See [ClassDeclaration]{@link module:ibm-concerto-common.ClassDeclaration}
+ * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class AssetDeclaration extends ClassDeclaration {
 

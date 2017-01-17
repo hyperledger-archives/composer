@@ -27,7 +27,7 @@ const JSONWriter = require('./codegen/jsonwriter');
  * (e.g. on the blockchain).
  * <p><a href="./diagrams/serializer.svg"><img src="./diagrams/serializer.svg" style="width:100%;"/></a></p>
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Serializer {
     /**

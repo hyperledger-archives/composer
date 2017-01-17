@@ -25,7 +25,7 @@ const Predicate = require('./predicate');
  *
  * @private
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class AclRule {
 
