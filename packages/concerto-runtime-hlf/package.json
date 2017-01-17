@@ -17,7 +17,7 @@
     "solutions"
   ],
   "author": "IBM",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
   },
