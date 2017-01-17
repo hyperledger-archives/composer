@@ -22,7 +22,7 @@
     "solutions"
   ],
   "author": "IBM",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "brfs": "^1.4.3",
     "browserify": "^13.1.1",
