@@ -1,0 +1,11 @@
+namespace systest.identities
+
+participant SampleParticipant identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+transaction SampleTransaction identified by transactionId {
+  o String transactionId
+}
