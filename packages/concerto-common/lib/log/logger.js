@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 'use strict';
 // const beautify = require('json-beautify');
 // TODO: Will need to do improvement of the formatting with some module.
