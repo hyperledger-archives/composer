@@ -1,0 +1,855 @@
+Lerna v2.0.0-beta.32
+Independent Versioning Mode
+NpmUtilities.execInDir        ("run test", [], "./packages/concerto-cli")
+Error: Command failed: /bin/sh -c npm run test 
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "lint"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 lint: `eslint .`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 lint script 'eslint .'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     eslint .
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "test"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 pretest: `npm run lint`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 pretest script 'npm run lint'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     npm run lint
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+    at ChildProcess.exithandler (child_process.js:213:12)
+    at emitTwo (events.js:87:13)
+    at ChildProcess.emit (events.js:172:7)
+    at maybeClose (internal/child_process.js:829:16)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+NpmUtilities.runScriptInDir   ("test", [], "./packages/concerto-cli")
+Error: Command failed: /bin/sh -c npm run test 
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "lint"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 lint: `eslint .`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 lint script 'eslint .'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     eslint .
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "test"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 pretest: `npm run lint`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 pretest script 'npm run lint'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     npm run lint
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+    at ChildProcess.exithandler (child_process.js:213:12)
+    at emitTwo (events.js:87:13)
+    at ChildProcess.emit (events.js:172:7)
+    at maybeClose (internal/child_process.js:829:16)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+
+> @ibm/concerto-cli@0.3.0 pretest /home/matthew/git17/Concerto/packages/concerto-cli
+> npm run lint
+
+
+> @ibm/concerto-cli@0.3.0 lint /home/matthew/git17/Concerto/packages/concerto-cli
+> eslint .
+
+
+/home/matthew/git17/Concerto/packages/concerto-cli/test/network/undeploy.js
+  31:5  error  'testBusinessNetworkId' is assigned a value but never used           no-unused-vars
+  32:5  error  'testBusinessNetworkDescription' is assigned a value but never used  no-unused-vars
+
+✖ 2 problems (2 errors, 0 warnings)
+
+
+Errored while running npm script 'test' in '@ibm/concerto-cli'
+Error: Command failed: /bin/sh -c npm run test 
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "lint"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 lint: `eslint .`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 lint script 'eslint .'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     eslint .
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "test"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 pretest: `npm run lint`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 pretest script 'npm run lint'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     npm run lint
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+    at ChildProcess.exithandler (child_process.js:213:12)
+    at emitTwo (events.js:87:13)
+    at ChildProcess.emit (events.js:172:7)
+    at maybeClose (internal/child_process.js:829:16)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+Errored while running RunCommand.execute
+Error: Command failed: /bin/sh -c npm run test 
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "lint"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 lint: `eslint .`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 lint script 'eslint .'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     eslint .
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+npm ERR! Linux 4.4.0-59-generic
+npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "test"
+npm ERR! node v4.6.0
+npm ERR! npm  v4.0.5
+npm ERR! code ELIFECYCLE
+npm ERR! @ibm/concerto-cli@0.3.0 pretest: `npm run lint`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @ibm/concerto-cli@0.3.0 pretest script 'npm run lint'.
+npm ERR! Make sure you have the latest version of node.js and npm installed.
+npm ERR! If you do, this is most likely a problem with the @ibm/concerto-cli package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     npm run lint
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs @ibm/concerto-cli
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!     npm owner ls @ibm/concerto-cli
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     /home/matthew/git17/Concerto/packages/concerto-cli/npm-debug.log
+
+    at ChildProcess.exithandler (child_process.js:213:12)
+    at emitTwo (events.js:87:13)
+    at ChildProcess.emit (events.js:172:7)
+    at maybeClose (internal/child_process.js:829:16)
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+Waiting for 3 child processes to exit. CTRL-C to exit immediately.
+
+> @ibm/concerto-admin@0.3.0 pretest /home/matthew/git17/Concerto/packages/concerto-admin
+> npm run lint
+
+
+> @ibm/concerto-admin@0.3.0 lint /home/matthew/git17/Concerto/packages/concerto-admin
+> eslint .
+
+
+> @ibm/concerto-admin@0.3.0 postlint /home/matthew/git17/Concerto/packages/concerto-admin
+> npm run licchk
+
+
+> @ibm/concerto-admin@0.3.0 licchk /home/matthew/git17/Concerto/packages/concerto-admin
+> license-check
+
+
+> @ibm/concerto-admin@0.3.0 postlicchk /home/matthew/git17/Concerto/packages/concerto-admin
+> npm run doc
+
+
+> @ibm/concerto-admin@0.3.0 doc /home/matthew/git17/Concerto/packages/concerto-admin
+> npm run docpub && npm run docpriv
+
+
+> @ibm/concerto-admin@0.3.0 docpub /home/matthew/git17/Concerto/packages/concerto-admin
+> jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public .
+
+
+> @ibm/concerto-admin@0.3.0 docpriv /home/matthew/git17/Concerto/packages/concerto-admin
+> jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private .
+
+
+> @ibm/concerto-admin@0.3.0 test /home/matthew/git17/Concerto/packages/concerto-admin
+> ./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive
+
+Input dir /home/matthew/git17/Concerto/packages/concerto-admin/lib
+SUCCESS: validated public API against package.json and changelog.txt.
+
+
+  AdminConnection
+    #module
+      ✓ should give access to AdminConnection
+      ✓ should give access to BusinessNetworkDefinition
+    #constructor
+      ✓ should create a new AdminConnection instance
+      ✓ should not fail if no connectionManager is provided
+    #connect
+      ✓ should return connected connection
+    #createProfile
+      ✓ should return a resolved promise
+    #deleteProfile
+      ✓ should return a resolved promise
+    #getProfile
+      ✓ should return the specified profile
+    #getAllProfiles
+      ✓ should return all the profiles
+    #disconnect
+      ✓ should set connection and security context to null
+      ✓ should not fail when no connection is set
+    #deploy
+      ✓ should be able to deploy a business network definition
+    #undeploy
+      ✓ should be able to undeploy a business network
+    #update
+      ✓ should be able to update a business network
+    #ping
+      ✓ should not fail
+    #list
+      ✓ should list all deployed business networks
+
+
+  16 passing (445ms)
+
+
+
+  AdminConnection
+    #module
+      ✓ should give access to AdminConnection
+      ✓ should give access to BusinessNetworkDefinition
+    #constructor
+      ✓ should create a new AdminConnection instance
+      ✓ should not fail if no connectionManager is provided
+    #connect
+      ✓ should return connected connection
+    #createProfile
+      ✓ should return a resolved promise
+    #deleteProfile
+      ✓ should return a resolved promise
+    #getProfile
+      ✓ should return the specified profile
+    #getAllProfiles
+      ✓ should return all the profiles
+    #disconnect
+      ✓ should set connection and security context to null
+      ✓ should not fail when no connection is set
+    #deploy
+      ✓ should be able to deploy a business network definition
+    #undeploy
+      ✓ should be able to undeploy a business network
+    #update
+      ✓ should be able to update a business network
+    #ping
+      ✓ should not fail
+    #list
+      ✓ should list all deployed business networks
+
+
+  16 passing (401ms)
+
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 37/37 )
+Branches     : 100% ( 6/6 )
+Functions    : 100% ( 12/12 )
+Lines        : 100% ( 37/37 )
+================================================================================
+
+> @ibm/concerto-admin@0.3.0 posttest /home/matthew/git17/Concerto/packages/concerto-admin
+> istanbul check-coverage
+
+
+
+> @ibm/concerto-client@0.3.0 pretest /home/matthew/git17/Concerto/packages/concerto-client
+> npm run licchk
+
+
+> @ibm/concerto-client@0.3.0 licchk /home/matthew/git17/Concerto/packages/concerto-client
+> license-check
+
+
+> @ibm/concerto-client@0.3.0 postlicchk /home/matthew/git17/Concerto/packages/concerto-client
+> npm run doc
+
+
+> @ibm/concerto-client@0.3.0 doc /home/matthew/git17/Concerto/packages/concerto-client
+> jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template
+
+
+> @ibm/concerto-client@0.3.0 postdoc /home/matthew/git17/Concerto/packages/concerto-client
+> npm run lint
+
+
+> @ibm/concerto-client@0.3.0 lint /home/matthew/git17/Concerto/packages/concerto-client
+> eslint .
+
+
+> @ibm/concerto-client@0.3.0 test /home/matthew/git17/Concerto/packages/concerto-client
+> ./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive
+
+Input dir /home/matthew/git17/Concerto/packages/concerto-client/lib
+SUCCESS: validated public API against package.json and changelog.txt.
+
+
+  AssetRegistry
+    #getAllAssetRegistries
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the list of asset registries
+      ✓ should handle an error from the chain-code
+    #getAssetRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+    #existsAssetRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return whether an asset registry exists
+      ✓ should handle an error from the chain-code
+    #addAssetRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+
+  BusinessNetworkConnection
+    #constructor
+      ✓ should create a new instance
+    #connect
+      ✓ should create a connection and download the business network archive
+    #disconnect
+      ✓ should do nothing if not connected
+      ✓ should disconnect the connection if connected
+    #getAllAssetRegistries
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getAssetRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #existsAssetRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #addAssetRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getAllParticipantRegistries
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getParticipantRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #addParticipantRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getTransactionRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+      ✓ should throw when the default transaction registry does not exist
+    #submitTransaction
+      ✓ should throw when transaction not specified
+      ✓ should throw when type is not a transaction
+      ✓ should invoke the chain-code
+      ✓ should generate a transaction ID if one not specified
+      ✓ should generate a transaction timestamp if one not specified
+      ✓ should handle an error from the chain-code
+    #ping
+      ✓ should perform a security check
+      ✓ should ping the connection
+    #issueIdentity
+      ✓ should throw if participant not specified
+      ✓ should throw if userID not specified
+      ✓ should submit a request to the chaincode for a resource
+      ✓ should submit a request to the chaincode for a fully qualified identifier
+      ✓ should submit a request to the chaincode with additional options
+    #revokeIdentity
+      ✓ should throw if identity not specified
+      ✓ should submit a request to the chaincode
+
+  ParticipantRegistry
+    #getAllParticipantRegistries
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the list of participant registries
+      ✓ should handle an error from the chain-code
+    #getParticipantRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the participant registry
+      ✓ should handle an error from the chain-code
+    #addParticipantRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the participant registry
+      ✓ should handle an error from the chain-code
+
+  Registry
+    #getAllRegistries
+      ✓ should throw when registryType not specified
+      ✓ should invoke the chain-code and return the list of asset registries
+      ✓ should handle an error from the chain-code
+    #getRegistry
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+    #existsRegistry
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should invoke the chain-code and determine whether the asset registry exists
+      ✓ should handle an error from the chain-code
+    #addRegistry
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+    #constructor
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when securityContext not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+    #addAll
+      ✓ should throw when resources not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #add
+      ✓ should throw when resource not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #updateAll
+      ✓ should throw when resources not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #update
+      ✓ should throw when resource not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #removeAll
+      ✓ should throw when resources not specified
+      ✓ should invoke the chaincode with a resource
+      ✓ should invoke the chaincode with an identifier
+      ✓ should handle an error from the chaincode
+    #remove
+      ✓ should throw when resource not specified
+      ✓ should invoke the chaincode with a resource
+      ✓ should invoke the chaincode with an identifier
+      ✓ should handle an error from the chaincode
+    #getAll
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #get
+      ✓ should throw when id not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #exists
+      ✓ should throw when id not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #find
+      ✓ should throw when expression not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #query
+      ✓ should throw when expression not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #resolveAll
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #resolve
+      ✓ should throw when id not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+
+  TransactionRegistry
+    #getAllTransactionRegistries
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the list of transaction registries
+      ✓ should handle an error from the chain-code
+    #getTransactionRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the transaction registry
+      ✓ should handle an error from the chain-code
+    #addTransactionRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the transaction registry
+      ✓ should handle an error from the chain-code
+    #add
+      ✓ should throw an unsupported operation when called
+    #addAll
+      ✓ should throw an unsupported operation when called
+    #update
+      ✓ should throw an unsupported operation when called
+    #updateAll
+      ✓ should throw an unsupported operation when called
+    #remove
+      ✓ should throw an unsupported operation when called
+    #removeAll
+      ✓ should throw an unsupported operation when called
+
+
+  164 passing (3s)
+
+
+
+  AssetRegistry
+    #getAllAssetRegistries
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the list of asset registries
+      ✓ should handle an error from the chain-code
+    #getAssetRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+    #existsAssetRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return whether an asset registry exists
+      ✓ should handle an error from the chain-code
+    #addAssetRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+
+  BusinessNetworkConnection
+    #constructor
+      ✓ should create a new instance
+    #connect
+      ✓ should create a connection and download the business network archive
+    #disconnect
+      ✓ should do nothing if not connected
+      ✓ should disconnect the connection if connected
+    #getAllAssetRegistries
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getAssetRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #existsAssetRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #addAssetRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getAllParticipantRegistries
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getParticipantRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #addParticipantRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+    #getTransactionRegistry
+      ✓ should perform a security check
+      ✓ should call the static helper method
+      ✓ should throw when the default transaction registry does not exist
+    #submitTransaction
+      ✓ should throw when transaction not specified
+      ✓ should throw when type is not a transaction
+      ✓ should invoke the chain-code
+      ✓ should generate a transaction ID if one not specified
+      ✓ should generate a transaction timestamp if one not specified
+      ✓ should handle an error from the chain-code
+    #ping
+      ✓ should perform a security check
+      ✓ should ping the connection
+    #issueIdentity
+      ✓ should throw if participant not specified
+      ✓ should throw if userID not specified
+      ✓ should submit a request to the chaincode for a resource
+      ✓ should submit a request to the chaincode for a fully qualified identifier
+      ✓ should submit a request to the chaincode with additional options
+    #revokeIdentity
+      ✓ should throw if identity not specified
+      ✓ should submit a request to the chaincode
+
+  ParticipantRegistry
+    #getAllParticipantRegistries
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the list of participant registries
+      ✓ should handle an error from the chain-code
+    #getParticipantRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the participant registry
+      ✓ should handle an error from the chain-code
+    #addParticipantRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the participant registry
+      ✓ should handle an error from the chain-code
+
+  Registry
+    #getAllRegistries
+      ✓ should throw when registryType not specified
+      ✓ should invoke the chain-code and return the list of asset registries
+      ✓ should handle an error from the chain-code
+    #getRegistry
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+    #existsRegistry
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should invoke the chain-code and determine whether the asset registry exists
+      ✓ should handle an error from the chain-code
+    #addRegistry
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should invoke the chain-code and return the asset registry
+      ✓ should handle an error from the chain-code
+    #constructor
+      ✓ should throw when registryType not specified
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when securityContext not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+    #addAll
+      ✓ should throw when resources not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #add
+      ✓ should throw when resource not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #updateAll
+      ✓ should throw when resources not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #update
+      ✓ should throw when resource not specified
+      ✓ should invoke the chaincode
+      ✓ should handle an error from the chaincode
+    #removeAll
+      ✓ should throw when resources not specified
+      ✓ should invoke the chaincode with a resource
+      ✓ should invoke the chaincode with an identifier
+      ✓ should handle an error from the chaincode
+    #remove
+      ✓ should throw when resource not specified
+      ✓ should invoke the chaincode with a resource
+      ✓ should invoke the chaincode with an identifier
+      ✓ should handle an error from the chaincode
+    #getAll
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #get
+      ✓ should throw when id not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #exists
+      ✓ should throw when id not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #find
+      ✓ should throw when expression not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #query
+      ✓ should throw when expression not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #resolveAll
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+    #resolve
+      ✓ should throw when id not specified
+      ✓ should query the chain-code
+      ✓ should handle an error from the chain-code
+
+  TransactionRegistry
+    #getAllTransactionRegistries
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the list of transaction registries
+      ✓ should handle an error from the chain-code
+    #getTransactionRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the transaction registry
+      ✓ should handle an error from the chain-code
+    #addTransactionRegistry
+      ✓ should throw when id not specified
+      ✓ should throw when name not specified
+      ✓ should throw when modelManager not specified
+      ✓ should throw when factory not specified
+      ✓ should throw when serializer not specified
+      ✓ should invoke the chain-code and return the transaction registry
+      ✓ should handle an error from the chain-code
+    #add
+      ✓ should throw an unsupported operation when called
+    #addAll
+      ✓ should throw an unsupported operation when called
+    #update
+      ✓ should throw an unsupported operation when called
+    #updateAll
+      ✓ should throw an unsupported operation when called
+    #remove
+      ✓ should throw an unsupported operation when called
+    #removeAll
+      ✓ should throw an unsupported operation when called
+
+
+  164 passing (3s)
+
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 363/363 )
+Branches     : 100% ( 166/166 )
+Functions    : 100% ( 53/53 )
+Lines        : 100% ( 363/363 )
+================================================================================
+
+> @ibm/concerto-client@0.3.0 posttest /home/matthew/git17/Concerto/packages/concerto-client
+> istanbul check-coverage
+
+

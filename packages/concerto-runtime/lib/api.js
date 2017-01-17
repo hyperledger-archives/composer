@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -24,7 +28,7 @@ const LOG = Logger.getLog('Api');
  * properties or internal methods which could be accessed or misused.
  * @private
  * @class
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class Api {
 
@@ -47,9 +51,9 @@ class Api {
          * @example
          * // Get the factory.
          * var factory = getFactory();
-         * @method module:ibm-concerto-runtime#getFactory
+         * @method module:concerto-runtime#getFactory
          * @public
-         * @return {module:ibm-concerto-runtime.Factory} The factory.
+         * @return {module:concerto-runtime.Factory} The factory.
          */
         this.getFactory = function getFactory() {
             const method = 'getFactory';
@@ -72,11 +76,11 @@ class Api {
          *   .catch(function (error) {
          *     // Add optional error handling here.
          *   });
-         * @method module:ibm-concerto-runtime#getAssetRegistry
+         * @method module:concerto-runtime#getAssetRegistry
          * @public
          * @param {string} id The ID of the asset registry.
          * @return {Promise} A promise. The promise is resolved with an {@link
-         * module:ibm-concerto-runtime.AssetRegistry AssetRegistry} instance
+         * module:concerto-runtime.AssetRegistry AssetRegistry} instance
          * representing the asset registry if it exists. If the asset registry
          * does not exist, or the current user does not have access to the asset
          * registry, then the promise will be rejected with an error that describes
@@ -106,11 +110,11 @@ class Api {
          *   .catch(function (error) {
          *     // Add optional error handling here.
          *   });
-         * @method module:ibm-concerto-runtime#getParticipantRegistry
+         * @method module:concerto-runtime#getParticipantRegistry
          * @public
          * @param {string} id The ID of the participant registry.
          * @return {Promise} A promise. The promise is resolved with an {@link
-         * module:ibm-concerto-runtime.ParticipantRegistry ParticipantRegistry} instance
+         * module:concerto-runtime.ParticipantRegistry ParticipantRegistry} instance
          * representing the participant registry if it exists. If the participant registry
          * does not exist, or the current user does not have access to the participant
          * registry, then the promise will be rejected with an error that describes
@@ -143,9 +147,9 @@ class Api {
          *   // Throw an error as the current participant is not a driver.
          *   throw new Error('Current participant is not the first driver');
          * }
-         * @method module:ibm-concerto-runtime#getCurrentParticipant
+         * @method module:concerto-runtime#getCurrentParticipant
          * @public
-         * @return {module:ibm-concerto-common.Resource} The current participant,
+         * @return {module:concerto-common.Resource} The current participant,
          * or null if the transaction was submitted using an identity that does
          * not map to a participant.
          */
