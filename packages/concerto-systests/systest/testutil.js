@@ -171,7 +171,7 @@ class TestUtil {
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
-                return adminConnection.connect('concerto-systests', 'WebAppAdmin', 'DJY27pEnl16d');
+                return adminConnection.connect('concerto-systests', 'admin', 'Xurw3yU9zI0l');
             })
             .then(function () {
                 console.log('Called AdminConnection.connect()');
@@ -210,16 +210,30 @@ class TestUtil {
     /**
      * Get a configured and connected instance of BusinessNetworkConnection.
      * @param {string} network - the identifier of the network to connect to.
+     * @param {string} [enrollmentID] - the optional enrollment ID to use.
+     * @param {string} [enrollmentSecret] - the optional enrollment secret to use.
      * @return {Promise} - a promise that will be resolved with a configured and
      * connected instance of {@link BusinessNetworkConnection}.
      */
-    static getClient(network) {
-        client = new BusinessNetworkConnection();
-        console.log('Calling Client.connect() ...');
-        return client.connect('concerto-systests', network, 'WebAppAdmin', 'DJY27pEnl16d')
-            .then(() => {
-                return client;
-            });
+    static getClient(network, enrollmentID, enrollmentSecret) {
+        enrollmentID = enrollmentID || 'admin';
+        enrollmentSecret = enrollmentSecret || 'Xurw3yU9zI0l';
+        return Promise.resolve()
+        .then(() => {
+            if (client) {
+                return client.disconnect();
+            } else {
+                client = new BusinessNetworkConnection();
+                return;
+            }
+        })
+        .then(() => {
+            console.log(`Calling Client.connect('concerto-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
+            return client.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
+        })
+        .then(() => {
+            return client;
+        });
     }
 
     /**
