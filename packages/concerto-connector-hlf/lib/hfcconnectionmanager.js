@@ -68,13 +68,15 @@ class HFCConnectionManager extends ConnectionManager {
      * object once the connection is established, or rejected with a connection error.
      */
     connect(connectionProfile, businessNetworkIdentifier, connectOptions) {
-
+        const method = 'connect';
+        LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectOptions);
         const self = this;
         let chainIdentifier = connectionProfile;
 
         if(businessNetworkIdentifier) {
             chainIdentifier = businessNetworkIdentifier + '@' + chainIdentifier;
         }
+        LOG.debug(method, 'Chain identifier', chainIdentifier);
 
         let chainReference = this.chainPool[chainIdentifier];
 
@@ -82,6 +84,7 @@ class HFCConnectionManager extends ConnectionManager {
             LOG.info('connect','Returning connection with pooled HFC chain', chainIdentifier);
             chainReference.count++;
             const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chainReference.chain);
+            LOG.exit(method, connection);
             return Promise.resolve(connection);
         }
         else {
@@ -105,15 +108,25 @@ class HFCConnectionManager extends ConnectionManager {
                 } else {
                     chain.setKeyValStore(hfc.newFileKeyValStore(connectOptions.keyValStore));
                 }
-                chain.setMemberServicesUrl(connectOptions.membershipServicesURL);
-                chain.addPeer(connectOptions.peerURL);
+                let grpcOptions = {};
+                // Check to see if a certificate has been specified.
+                if (connectOptions.certificate) {
+                    // Check to see that the certificate is not just whitespace.
+                    let certificate = connectOptions.certificate.trim();
+                    if (certificate) {
+                        grpcOptions.pem = certificate;
+                    }
+                }
+                LOG.debug(method, 'GRPC options', grpcOptions);
+                chain.setMemberServicesUrl(connectOptions.membershipServicesURL, grpcOptions);
+                chain.addPeer(connectOptions.peerURL, grpcOptions);
                 if (connectOptions.deployWaitTime) {
                     chain.setDeployWaitTime(connectOptions.deployWaitTime);
                 }
                 if (connectOptions.invokeWaitTime) {
                     chain.setInvokeWaitTime(connectOptions.invokeWaitTime);
                 }
-                chain.eventHubConnect(connectOptions.eventHubURL);
+                chain.eventHubConnect(connectOptions.eventHubURL, grpcOptions);
                 process.on('exit', () => {
                     if (chain) {
                         chain.eventHubDisconnect();
@@ -122,6 +135,7 @@ class HFCConnectionManager extends ConnectionManager {
                 });
                 const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chain);
                 this.chainPool[chainIdentifier] = {count: 1, chain: chain};
+                LOG.exit(method, connection);
                 resolve(connection);
             });
         }

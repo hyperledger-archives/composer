@@ -160,6 +160,7 @@ describe('HFCConnectionManager', () => {
                             sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
                             sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
                             sinon.assert.calledOnce(mockChain.addPeer);
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL);
                             connection.should.be.an.instanceOf(HFCConnection);
                             connection.chain.should.equal(mockChain);
                             return true;
@@ -319,6 +320,65 @@ describe('HFCConnectionManager', () => {
                         });
                 });
         });
+
+        it('should optionally configure the certificate', function() {
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            let mockKeyValStore = {};
+            mockHFC.getChain.returns(mockChain);
+            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            connectOptions.certificate = '=== such certificate ===';
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork')
+                        .then(() => {
+
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
+                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL, { pem: '=== such certificate ===' });
+                            sinon.assert.calledOnce(mockChain.addPeer);
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL, { pem: '=== such certificate ===' });
+                            sinon.assert.calledOnce(mockChain.eventHubConnect);
+                            sinon.assert.calledWith(mockChain.eventHubConnect, 'grpc://vp1', { pem: '=== such certificate ===' });
+                            return true;
+
+                        });
+                });
+        });
+
+        it('should ignore a certificate that is just whitespace', function() {
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            let mockKeyValStore = {};
+            mockHFC.getChain.returns(mockChain);
+            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            connectOptions.certificate = '     ';
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork')
+                        .then(() => {
+
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
+                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL, { });
+                            sinon.assert.calledOnce(mockChain.addPeer);
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL, { });
+                            sinon.assert.calledOnce(mockChain.eventHubConnect);
+                            sinon.assert.calledWith(mockChain.eventHubConnect, 'grpc://vp1', { });
+                            return true;
+
+                        });
+                });
+        });
+
     });
 
     describe('#onDisconnect', function() {
