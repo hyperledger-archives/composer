@@ -21,7 +21,7 @@ const sanitize = require('sanitize-filename');
  *
  * @private
  */
-class Deploy {
+class Create {
 
   /**
     * Command process for deploy command
@@ -88,4 +88,4 @@ class Deploy {
     }
 }
 
-module.exports = Deploy;
+module.exports = Create;
