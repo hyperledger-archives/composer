@@ -10,6 +10,9 @@
 
 'use strict';
 
+const Concept = require('./model/concept');
+const ValidatedConcept = require('./model/validatedconcept');
+
 const Resource = require('./model/resource');
 const ResourceValidator = require('./serializer/resourcevalidator');
 const ValidatedResource = require('./model/validatedresource');
@@ -41,6 +44,67 @@ class Factory {
     }
 
     /**
+     * Create a new Instance with a given namespace, type name and id
+     * @param {string} ns - the namespace of the Resource
+     * @param {string} type - the type of the Resource
+     * @param {boolean} disableValidation - pass true if you want the factory to
+     * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
+     * @return {Resource} the new instance
+     * @throws {ModelException} if the type is not registered with the ModelManager
+     */
+    newConcept(ns, type, disableValidation) {
+        let modelFile = this.modelManager.getModelFile(ns);
+        if(!modelFile) {
+            let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
+            throw new Error(formatter({
+                namespace: ns
+            }));
+        }
+
+        if(!modelFile.isDefined(type)) {
+            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
+
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        let classDecl = modelFile.getType(type);
+
+        if(classDecl.isAbstract()) {
+            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+        }
+
+        let newObj = null;
+        if(disableValidation) {
+            newObj = new Concept(this.modelManager,ns,type);
+        }
+        else {
+            newObj = new ValidatedConcept(this.modelManager,ns,type, new ResourceValidator());
+        }
+        newObj.assignFieldDefaults();
+
+        debug('Factory.newInstance created instance with type %s', classDecl.getFullyQualifiedName() );
+        return newObj;
+    }
+
+    /**
+     * Create a new Resource with a given namespace, type name and id
+     * @param {string} ns - the namespace of the Resource
+     * @param {string} type - the type of the Resource
+     * @param {string} id - the identifier
+     * @param {boolean} disableValidation - pass true if you want the factory to
+     * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
+     * @return {Resource} the new instance
+     * @throws {ModelException} if the type is not registered with the ModelManager
+     * @deprecated - use newResource instead
+     */
+    newInstance(ns, type, id, disableValidation) {
+        return this.newResource(ns, type, id, disableValidation);
+    }
+
+    /**
      * Create a new Resource with a given namespace, type name and id
      * @param {string} ns - the namespace of the Resource
      * @param {string} type - the type of the Resource
@@ -50,7 +114,7 @@ class Factory {
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
-    newInstance(ns, type, id, disableValidation) {
+    newResource(ns, type, id, disableValidation) {
         let modelFile = this.modelManager.getModelFile(ns);
         if(!modelFile) {
             let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');

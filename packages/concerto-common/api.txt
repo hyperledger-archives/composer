@@ -16,7 +16,9 @@ class BusinessNetworkDefinition {
 }
 class Factory {
    + void constructor(ModelManager) 
+   + Resource newConcept(string,string,boolean) throws ModelException
    + Resource newInstance(string,string,string,boolean) throws ModelException
+   + Resource newResource(string,string,string,boolean) throws ModelException
    + Relationship newRelationship(string,string,string) throws ModelException
    + Resource newTransaction(string,string) 
    + Object toJSON() 
@@ -32,13 +34,13 @@ class Introspector {
 class ParseException extends BaseException {
    + void constructor(string) 
 }
-class Identifiable {
+class Concept extends Typed {
+   + boolean isConcept() 
+}
+class Identifiable extends Typed {
    + string getIdentifier() 
    + void setIdentifier(string) 
    + string getFullyQualifiedIdentifier() 
-   + string getType() 
-   + string getFullyQualifiedType() 
-   + string getNamespace() 
    + String toString() 
    + boolean isRelationship() 
    + boolean isResource() 
@@ -48,10 +50,20 @@ class Relationship extends Identifiable {
    + boolean isRelationship() 
 }
 class Resource extends Identifiable {
-   + void setPropertyValue(string,string) 
-   + void addArrayValue(string,string) 
    + String toString() 
    + boolean isResource() 
+}
+class Typed {
+   + string getType() 
+   + string getFullyQualifiedType() 
+   + string getNamespace() 
+   + void setPropertyValue(string,string) 
+   + void addArrayValue(string,string) 
+}
+class ValidatedConcept extends Concept {
+   + void setPropertyValue(string,string) throws Error
+   + void addArrayValue(string,string) throws Error
+   + void validate() throws Error
 }
 class ValidatedResource extends Resource {
    + void setPropertyValue(string,string) throws Error

@@ -13,8 +13,8 @@
 const ClassDeclaration = require('./classdeclaration');
 
 /**
- * AssetDeclaration defines the schema (aka model or class) for
- * an Asset. It extends ClassDeclaration which manages a set of
+ * ConceptDeclaration defines the schema (aka model or class) for
+ * an Concept. It extends ClassDeclaration which manages a set of
  * fields, a super-type and the specification of an
  * identifying field.
  * @private
@@ -23,7 +23,7 @@ const ClassDeclaration = require('./classdeclaration');
  * @class
  * @memberof module:ibm-concerto-common
  */
-class AssetDeclaration extends ClassDeclaration {
+class ConceptDeclaration extends ClassDeclaration {
 
     /**
      * Create an AssetDeclaration.
@@ -36,13 +36,13 @@ class AssetDeclaration extends ClassDeclaration {
     }
 
     /**
-     * Returns true if this class can be pointed to by a relationship
+     * Returns true if this class is the definition of a concept.
      *
-     * @return {boolean} true if the class may be pointed to by a relationship
+     * @return {boolean} true if the class is a concept
      */
-    isRelationshipTarget() {
+    isConcept() {
         return true;
     }
 }
 
-module.exports = AssetDeclaration;
+module.exports = ConceptDeclaration;

@@ -86,6 +86,12 @@ describe('Test Model', function(){
             let cObject =  factory.newInstance(
                 'org.acme', 'Vehicle', 'AAAAAAAAXBB123456' );
 
+            const customer = factory.newConcept('org.acme', 'Customer');
+            customer.firstName = 'Dan';
+            customer.lastName = 'Selman';
+            customer.address = factory.newConcept('org.acme', 'Address');
+            cObject.customer = customer;
+
             cObject.make = 'Renault';
 
             // vin is the identifying field for Vehicles, so should have been
@@ -250,7 +256,7 @@ describe('Test Model', function(){
             let vehicle = modelFile.getAssetDeclaration('Vehicle');
             vehicle.getIdentifierFieldName().should.equal('vin');
             vehicle.getName().should.equal('Vehicle');
-            vehicle.getProperties().length.should.equal(15); // 14 from Vehicle, and 1 from Base
+            vehicle.getProperties().length.should.equal(16); // 15 from Vehicle, and 1 from Base
 
             // validator, default
             let vinField = vehicle.getProperty('vin');

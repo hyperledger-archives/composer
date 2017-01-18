@@ -13,6 +13,7 @@ enum State {
 
 participant Person identified by stringProperty {
     o String stringProperty
+    o UnitedStatesAddress address
 }
 
 participant Bloke identified by stringProperty {
@@ -25,6 +26,17 @@ asset SimpleAsset identified by stringProperty {
 
 abstract asset AbstractAsset identified by stringProperty {
   o String stringProperty default="defaultString"
+}
+
+abstract concept Address {
+  o String street
+  o String city default ="Winchester"
+  o String country default = "UK"
+  o Integer[] counts optional
+}
+
+concept UnitedStatesAddress extends Address {
+  o String zipcode
 }
 
 /**
@@ -62,7 +74,6 @@ transaction MyBasicTransaction identified by transactionId {
 
 asset DerivedDerivedAsset extends DerivedAsset {
     o MyBasicTransaction includedTransaction
-    --> MyBasicTransaction originalTransaction
 }
 
 transaction MyTransaction identified by transactionId {
@@ -74,17 +85,3 @@ transaction MyTransactionEx extends MyTransaction {
   o BaseAsset anotherBaseAsset
   o BaseAsset[] arrayOfBaseAssets
 }
-
-/*
-function onMyTransaction(foo) {
-    log('Hello');
-}
-
-function onMyTransactionEx(bar) {
-  log('World');
-}
-
-function log(text) {
-    console.log(text);
-}
-*/

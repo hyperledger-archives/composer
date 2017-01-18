@@ -23,10 +23,9 @@ const Globalize = require('../globalize');
  * A ClassDeclaration is conceptually owned with a ModelFile which
  * defines all the classes that are part of a namespace.
  *
- * This class is abstract and should not be instantiated.
  * @private
- * @abstract
  * @class
+ * @abstract
  * @memberof module:ibm-concerto-common
  */
 class ClassDeclaration {
@@ -213,6 +212,24 @@ class ClassDeclaration {
     }
 
     /**
+     * Returns true if this class is the definition of a concept.
+     *
+     * @return {boolean} true if the class is a concept
+     */
+    isConcept() {
+        return false;
+    }
+
+    /**
+     * Returns true if this class can be pointed to by a relationship
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isRelationshipTarget() {
+        return false;
+    }
+
+    /**
      * Returns the short name of a class. This name does not include the
      * namespace from the owning ModelFile.
      *
@@ -244,8 +261,13 @@ class ClassDeclaration {
             return this.idField;
         }
         else {
-            let classDecl = this.modelFile.getModelManager().getType(this.getSuperType());
-            return classDecl.getIdentifierFieldName();
+            if(this.getSuperType()) {
+                let classDecl = this.modelFile.getModelManager().getType(this.getSuperType());
+                return classDecl.getIdentifierFieldName();
+            }
+            else {
+                return null;
+            }
         }
     }
 

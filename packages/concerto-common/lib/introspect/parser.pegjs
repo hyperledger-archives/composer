@@ -510,6 +510,7 @@ WhileToken      = "while"      !IdentifierPart
 WithToken       = "with"       !IdentifierPart
 NamespaceToken  = "namespace"  !IdentifierPart
 AbstractToken  = "abstract"    !IdentifierPart
+ConceptToken  = "concept"    !IdentifierPart
 
 /* Skipped */
 
@@ -1314,6 +1315,19 @@ TransactionDeclaration
       };
     }
 
+ConceptDeclaration
+      = abstract:AbstractToken? __ ConceptToken __ id:Identifier __ classExtension: ClassExtension? __
+        "{" __ body:ClassDeclarationBody __ "}"
+        {
+          return {
+            type:   "ConceptDeclaration",
+            id:     id,
+            classExtension: classExtension,
+            body:   body,
+            abstract: abstract
+          };
+        }
+
 Optional
    = "optional"{
       return {
@@ -1336,7 +1350,7 @@ BooleanDefault
       return def;
     }
 
-ClassDeclaration
+FieldDeclarations
   = StringFieldDeclaration
   / NumberFieldDeclaration
   / BooleanFieldDeclaration
@@ -1345,7 +1359,7 @@ ClassDeclaration
   / FieldDeclaration
 
 ClassDeclarationBody
-  = decls:ClassDeclaration* {
+  = decls:FieldDeclarations* {
       return {
         type: "ClassDeclarationBody",
         declarations: optionalList(decls)
@@ -1509,6 +1523,7 @@ SourceElement
   / TransactionDeclaration
   / ParticipantDeclaration
   / EnumDeclaration
+  / ConceptDeclaration
 
 /* ----- A.6 Universal Resource Identifier Character Classes ----- */
 

@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.3.1 {051fa74264909d461ee4bbdc8c5f2042} 2017-01-18
+- Added support for concepts
+
 Version 0.3.0 {5e00fefd2800fa40026062a9c0a0b695} 2017-01-05
 - Move to monorepo
 

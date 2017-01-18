@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Identifiable = require('./identifiable');
+const Typed = require('./typed');
 
 /**
  * <p>
@@ -30,7 +30,7 @@ const Identifiable = require('./identifiable');
  * @class
  * @memberof module:ibm-concerto-common
  */
-class Resource extends Identifiable {
+class Concept extends Typed {
     /**
      * This constructor should not be called directly.
      * <p>
@@ -41,30 +41,21 @@ class Resource extends Identifiable {
      * @param {ModelManager} modelManager - The ModelManager for this instance
      * @param {string} ns - The namespace this instance.
      * @param {string} type - The type this instance.
-     * @param {string} id - The identifier of this instance.
      * @private
      */
-    constructor(modelManager, ns, type, id) {
-        super(modelManager, ns, type, id);
+    constructor(modelManager, ns, type) {
+        super(modelManager, ns, type);
     }
 
-    /**
-     * Returns the string representation of this class
-     * @return {String} the string representation of the class
-     */
-    toString() {
-        return 'Resource {id=' + this.getFullyQualifiedIdentifier() +'}';
-    }
 
     /**
-     * Determine if this identifiable is a resource.
-     * @return {boolean} True if this identifiable is a resource,
+     * Determine if this typed is a concept.
+     * @return {boolean} True if this typed is a concept,
      * false if not.
      */
-    isResource() {
+    isConcept() {
         return true;
     }
-
 }
 
-module.exports = Resource;
+module.exports = Concept;

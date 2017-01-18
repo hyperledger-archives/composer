@@ -47,8 +47,30 @@ class RelationshipDeclaration extends Property {
             throw new IllegalModelException('Relationship must have a type');
         }
 
+        let classDeclaration = null;
+
+        // you can't have a relationship with a primitive...
         if(ModelUtil.isPrimitiveType(this.getType())) {
-            throw new IllegalModelException('Relationship cannot be to a primitive type');
+            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType() );
+        }
+        else {
+            // we first try to get the type from our own model file
+            // because during validate we have not yet been added to the model manager
+            if(this.getParent().getModelFile().getNamespace() === ModelUtil.getNamespace(this.getFullyQualifiedTypeName())) {
+                classDeclaration = this.getParent().getModelFile().getType(this.getType());
+            }
+            else {
+              // otherwise we have to use the modelmanager to try to load
+                classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
+            }
+
+            if(classDeclaration === null) {
+                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName());
+            }
+
+            if(classDeclaration.isRelationshipTarget() === false) {
+                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName());
+            }
         }
     }
 

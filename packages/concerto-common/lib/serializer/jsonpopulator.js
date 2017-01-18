@@ -130,8 +130,18 @@ class JSONPopulator {
             const classDeclaration = parameters.modelManager.getType(typeName);
 
             // create a new instance, using the identifier field name as the ID.
-            let subResource = parameters.factory.newInstance(classDeclaration.getModelFile().getNamespace(),
-            classDeclaration.getName(), jsonItem[classDeclaration.getIdentifierFieldName()] );
+            let subResource = null;
+
+            // if this is identifiable, then we create a resource
+            if(!classDeclaration.isConcept()) {
+                subResource = parameters.factory.newInstance(classDeclaration.getModelFile().getNamespace(),
+              classDeclaration.getName(), jsonItem[classDeclaration.getIdentifierFieldName()] );
+            }
+            else {
+              // otherwise we create a concept
+                subResource = parameters.factory.newConcept(classDeclaration.getModelFile().getNamespace(),
+                            classDeclaration.getName() );
+            }
 
             result = subResource;
             parameters.resourceStack.push(subResource);
