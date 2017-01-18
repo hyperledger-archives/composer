@@ -87,7 +87,7 @@ class HFCConnectionManager extends ConnectionManager {
         if(chainReference) {
             LOG.info('connect','Returning connection with pooled HFC chain', chainIdentifier);
             chainReference.count++;
-            const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chainReference.chain);
+            const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chainReference.chain, connectOptions);
             LOG.exit(method, connection);
             return Promise.resolve(connection);
         }
@@ -137,7 +137,7 @@ class HFCConnectionManager extends ConnectionManager {
                         chain = null;
                     }
                 });
-                const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chain);
+                const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chain, connectOptions);
                 this.chainPool[chainIdentifier] = {count: 1, chain: chain};
                 LOG.exit(method, connection);
                 resolve(connection);
