@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Connection = require('@ibm/concerto-common').Connection;
+const HFCConnection = require('../lib/hfcconnection');
 const HFCSecurityContext = require('../lib/hfcsecuritycontext');
 const HFCUtil = require('../lib/hfcutil');
 const EventEmitter = require('events');
@@ -41,9 +41,17 @@ describe('HFCUtil', function () {
     let chain;
     let sandbox;
 
+    let connectOptions = {
+        type: 'hlf',
+        networks: {
+            testnetwork: '123'
+        }
+    };
+
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
-        mockConnection = sinon.createStubInstance(Connection);
+        mockConnection = sinon.createStubInstance(HFCConnection);
+        mockConnection.getConnectionOptions.returns(connectOptions);
         securityContext = new HFCSecurityContext(mockConnection);
         enrolledMember = sinon.createStubInstance(hfc.Member);
         chain = sinon.createStubInstance(hfc.Chain);
@@ -715,6 +723,115 @@ describe('HFCUtil', function () {
                     throw new Error('should not get here');
                 }).catch(function (error) {
                     error.should.match(/failed to create unique chaincode ID file/);
+                });
+
+        });
+
+        it('should write the certificate to the chain-code folder if specified', function () {
+
+            // Set the "certificate".
+            connectOptions.certificate = '==== such certificate, much security ====';
+
+            // Set up the responses from the chain-code.
+            enrolledMember.deploy.restore();
+            sandbox.stub(enrolledMember, 'deploy', () => {
+                let transactionContext = new EventEmitter();
+                process.nextTick(() => transactionContext.emit('submitted'));
+                process.nextTick(() => transactionContext.emit('complete', {chaincodeID: 'muchchaincodeID'}));
+                return transactionContext;
+            });
+
+            // Fake the UUID we'll get.
+            sandbox.stub(uuid, 'v4').returns('cf43e0df-36fa-4223-802e-de68d679b959');
+
+            // Invoke the getAllAssetRegistries function.
+            return HFCUtil.deployChainCode(securityContext, 'concerto', 'init', [], true)
+                .then(function (result) {
+
+                    // Check that the chaincode was copied with an additional file.
+                    sinon.assert.called(fs.outputFile);
+                    sinon.assert.calledWith(fs.outputFile, '/tmp/concerto/src/concerto/certificate.pem', connectOptions.certificate);
+
+                });
+
+        });
+
+        it('should handle a throw writing the certificate to the chain-code folder if specified', function () {
+
+            // Set the "certificate".
+            connectOptions.certificate = '==== such certificate, much security ====';
+            fs.outputFile.withArgs('/tmp/concerto/src/concerto/certificate.pem', connectOptions.certificate).throws(new Error('failed to create certificate file'));
+
+            // Set up the responses from the chain-code.
+            enrolledMember.deploy.restore();
+            sandbox.stub(enrolledMember, 'deploy', () => {
+                let transactionContext = new EventEmitter();
+                process.nextTick(() => transactionContext.emit('submitted'));
+                process.nextTick(() => transactionContext.emit('complete', {chaincodeID: 'muchchaincodeID'}));
+                return transactionContext;
+            });
+
+            // Fake the UUID we'll get.
+            sandbox.stub(uuid, 'v4').returns('cf43e0df-36fa-4223-802e-de68d679b959');
+
+            // Invoke the getAllAssetRegistries function.
+            return HFCUtil.deployChainCode(securityContext, 'concerto', 'init', [], true)
+                .should.be.rejectedWith(/failed to create certificate file/);
+
+        });
+
+        it('should handle an error writing the certificate to the chain-code folder if specified', function () {
+
+            // Set the "certificate".
+            connectOptions.certificate = '==== such certificate, much security ====';
+            fs.outputFile.withArgs('/tmp/concerto/src/concerto/certificate.pem', connectOptions.certificate).callsArgWith(2, new Error('failed to create certificate file'));
+
+            // Set up the responses from the chain-code.
+            enrolledMember.deploy.restore();
+            sandbox.stub(enrolledMember, 'deploy', () => {
+                let transactionContext = new EventEmitter();
+                process.nextTick(() => transactionContext.emit('submitted'));
+                process.nextTick(() => transactionContext.emit('complete', {chaincodeID: 'muchchaincodeID'}));
+                return transactionContext;
+            });
+
+            // Fake the UUID we'll get.
+            sandbox.stub(uuid, 'v4').returns('cf43e0df-36fa-4223-802e-de68d679b959');
+
+            // Invoke the getAllAssetRegistries function.
+            return HFCUtil.deployChainCode(securityContext, 'concerto', 'init', [], true)
+                .should.be.rejectedWith(/failed to create certificate file/);
+
+        });
+
+        it('should set the certificatePath property in the deploy request if specified', function () {
+
+            // Set the "certificate".
+            connectOptions.certificatePath = '/certs/peer/cert.pem';
+
+            // Set up the responses from the chain-code.
+            enrolledMember.deploy.restore();
+            sandbox.stub(enrolledMember, 'deploy', () => {
+                let transactionContext = new EventEmitter();
+                process.nextTick(() => transactionContext.emit('submitted'));
+                process.nextTick(() => transactionContext.emit('complete', {chaincodeID: 'muchchaincodeID'}));
+                return transactionContext;
+            });
+
+            // Fake the UUID we'll get.
+            sandbox.stub(uuid, 'v4').returns('cf43e0df-36fa-4223-802e-de68d679b959');
+
+            // Invoke the getAllAssetRegistries function.
+            return HFCUtil.deployChainCode(securityContext, 'concerto', 'init', [], true)
+                .then(function (result) {
+
+                    // Check that the chaincode was copied with an additional file.
+                    sinon.assert.called(enrolledMember.deploy);
+                    sinon.assert.calledWith(enrolledMember.deploy, sinon.match((deployRequest) => {
+                        deployRequest.certificatePath.should.equal('/certs/peer/cert.pem');
+                        return true;
+                    }));
+
                 });
 
         });

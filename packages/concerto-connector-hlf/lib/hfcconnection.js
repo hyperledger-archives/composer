@@ -35,16 +35,28 @@ class HFCConnection extends Connection {
      * @param {string} businessNetworkIdentifier The identifier of the business network for this connection,
      * or null if this connection if an admin connection
      * @param {hfc.Chain} chain A configured and connected {@link hfc.Chain} object.
+     * @param {object} connectOptions The connection options in use by this connection.
      */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, chain) {
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, chain, connectOptions) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
 
         if (!chain) {
             throw new Error('HFC chain must be set.');
+        } else if (!connectOptions) {
+            throw new Error('connectOptions not specified');
         }
 
         LOG.info('constructor', 'Creating connection', this.getIdentifier());
         this.chain = chain;
+        this.connectOptions = connectOptions;
+    }
+
+    /**
+     * Get the connection options for this connection.
+     * @return {object} The connection options for this connection.
+     */
+    getConnectionOptions() {
+        return this.connectOptions;
     }
 
     /**
