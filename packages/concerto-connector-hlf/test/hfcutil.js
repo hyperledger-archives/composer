@@ -892,6 +892,27 @@ describe('HFCUtil', function () {
                 });
         });
 
+        it('should register a new user with a non default affiliation and return the enrollment secret', () => {
+            let registerRequest = {
+                enrollmentID: 'doge',
+                affiliation: 'dogecorp',
+                attributes: [{
+                    name: 'userID',
+                    value: 'doge'
+                }]
+            };
+            chain.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
+            return HFCUtil.createIdentity(securityContext, 'doge', { affiliation: 'dogecorp' })
+                .then((identity) => {
+                    sinon.assert.calledOnce(chain.register);
+                    sinon.assert.calledWith(chain.register, registerRequest);
+                    identity.should.deep.equal({
+                        userID: 'doge',
+                        userSecret: 'suchpassword'
+                    });
+                });
+        });
+
         it('should handle an error from registering a new user', () => {
             chain.register.yields(new Error('such error'));
             return HFCUtil.createIdentity(securityContext, 'doge')

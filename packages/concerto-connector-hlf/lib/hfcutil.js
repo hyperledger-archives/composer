@@ -331,6 +331,8 @@ class HFCUtil {
      * @param {object} [options] Options for the new identity.
      * @param {boolean} [options.issuer] Whether or not the new identity should have
      * permissions to create additional new identities. False by default.
+     * @param {string} [options.affiliation] Specify the affiliation for the new
+     * identity. Defaults to 'institution_a'.
      * @return {Promise} A promise that is resolved with a generated user
      * secret once the new identity has been created, or rejected with an error.
      */
@@ -350,7 +352,7 @@ class HFCUtil {
             let chain = enrolledMember.getChain();
             let registerRequest = {
                 enrollmentID: userID,
-                affiliation: 'institution_a',
+                affiliation: options.affiliation || 'institution_a',
                 attributes: []
             };
             if (options.issuer) {
