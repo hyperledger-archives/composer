@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Connection = require('@ibm/concerto-common').Connection;
+const HFCConnection = require('../lib/hfcconnection');
 const hfc = require('hfc');
 const hfcEventHub = hfc.EventHub;
 const hfcMember = hfc.Member;
@@ -28,8 +28,16 @@ describe('HFCSecurityContext', function () {
     let mockConnection;
     let sandbox;
 
+    const connectOptions = {
+        type: 'hlf',
+        networks: {
+            testnetwork: '123'
+        }
+    };
+
     beforeEach(() => {
-        mockConnection = sinon.createStubInstance(Connection);
+        mockConnection = sinon.createStubInstance(HFCConnection);
+        mockConnection.getConnectionOptions.returns(connectOptions);
         sandbox = sinon.sandbox.create();
     });
 

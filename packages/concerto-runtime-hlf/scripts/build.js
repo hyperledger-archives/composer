@@ -18,6 +18,7 @@ const browserify = require('browserify');
 const child_process = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
+const zlib = require('zlib');
 
 const sourceFile = require.resolve('@ibm/concerto-runtime');
 const sourcePolyfill = require.resolve('babel-polyfill/dist/polyfill.min.js');
@@ -36,20 +37,30 @@ wstream.write(
 `package main
 
 import (
-    b64 "encoding/base64"
-    "strings"
+	"bytes"
+	"compress/gzip"
+	"encoding/base64"
+	"io/ioutil"
+	"strings"
 )
 
-func parseJavaScriptBase64(data string) string {
-    data = strings.TrimSpace(data)
-    result, err := b64.StdEncoding.DecodeString(data)
-    if err != nil {
-        panic(err)
-    }
-    return string(result)
-}
-
-var babelPolyfillJavaScript = parseJavaScriptBase64(\`\n`);
+func parseEmbeddedData(data string) string {
+	data = strings.TrimSpace(data)
+	gzipped, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		panic(err)
+	}
+	reader := bytes.NewReader(gzipped)
+	gzip, err := gzip.NewReader(reader)
+	if err != nil {
+		panic(err)
+	}
+	result, err := ioutil.ReadAll(gzip)
+	if err != nil {
+		panic(err)
+	}
+	return string(result)
+}`);
 const wstream3 = fs.createWriteStream(targetFile3);
 wstream3.setDefaultEncoding('utf8');
 const wstream4 = fs.createWriteStream(targetFile4);
@@ -58,17 +69,18 @@ wstream4.setDefaultEncoding('utf8');
 return Promise.resolve()
 .then(() => {
     return new Promise((resolve, reject) => {
+        wstream.write('\n\nconst babelPolyfillJavaScriptSource = "');
         const rstream = fs.createReadStream(sourcePolyfill);
-        rstream.setEncoding('base64');
-        rstream.on('end', () => {
-            wstream.write('`)\n\n');
+        const gzip = zlib.createGzip();
+        const cstream = rstream.pipe(gzip);
+        cstream.setEncoding('base64');
+        cstream.on('end', () => {
+            wstream.write('"\n\nvar babelPolyfillJavaScript = parseEmbeddedData(babelPolyfillJavaScriptSource)\n');
             resolve();
         });
-        rstream.on('error', reject);
-        rstream.on('data', (data) => {
-            data.match(/.{1,132}/g).forEach((line) => {
-                wstream.write(line + '\n');
-            });
+        cstream.on('error', reject);
+        cstream.on('data', (data) => {
+            wstream.write(data);
         });
     });
 })
@@ -113,21 +125,26 @@ return Promise.resolve()
 })
 .then(() => {
     return new Promise((resolve, reject) => {
-        wstream.write('var concertoJavaScript = parseJavaScriptBase64(`\n');
+        wstream.write('\nconst concertoJavaScriptSource = "');
         const rstream = fs.createReadStream(targetFile4);
-        rstream.setEncoding('base64');
-        rstream.on('end', () => {
-            wstream.write('`)\n\n');
+        const gzip = zlib.createGzip();
+        const cstream = rstream.pipe(gzip);
+        cstream.setEncoding('base64');
+        cstream.on('end', () => {
+            wstream.write('"\n\nvar concertoJavaScript = parseEmbeddedData(concertoJavaScriptSource)\n');
             wstream.end();
             resolve();
         });
-        rstream.on('error', reject);
-        rstream.on('data', (data) => {
-            data.match(/.{1,132}/g).forEach((line) => {
-                wstream.write(line + '\n');
-            });
+        cstream.on('error', reject);
+        cstream.on('data', (data) => {
+            wstream.write(data);
         });
     });
+})
+.then(() => {
+    fs.unlinkSync(targetFile2)
+    fs.unlinkSync(targetFile3)
+    fs.unlinkSync(targetFile4)
 })
 .catch((err) => {
     console.error(err);

@@ -17,6 +17,7 @@
 let LOG;
 
 const connectionManagerClasses = {};
+const connectionManagers = {};
 
 /**
  * A connection profile manager that manages a set of connection profiles. Each
@@ -52,7 +53,6 @@ class ConnectionProfileManager {
         }
 
         this.connectionProfileStore = connectionProfileStore;
-        this.connectionManagers = {};
     }
 
     /**
@@ -71,7 +71,7 @@ class ConnectionProfileManager {
      */
     addConnectionManager(type, connectionManager) {
         LOG.info('addConnectionManager','Adding a new connection manager', type);
-        this.connectionManagers[type] = connectionManager;
+        connectionManagers[type] = connectionManager;
     }
 
     /**
@@ -86,7 +86,7 @@ class ConnectionProfileManager {
 
         return this.connectionProfileStore.load(connectionProfile)
         .then((data) => {
-            let connectionManager  = this.connectionManagers[data.type];
+            let connectionManager  = connectionManagers[data.type];
             if(!connectionManager) {
                 const mod = `@ibm/concerto-connector-${data.type}`;
                 try {
@@ -119,7 +119,7 @@ class ConnectionProfileManager {
                 } catch (e) {
                     throw new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}"`);
                 }
-                this.connectionManagers[data.type] = connectionManager;
+                connectionManagers[data.type] = connectionManager;
             }
             return connectionManager;
         });
@@ -154,6 +154,15 @@ class ConnectionProfileManager {
      */
     toJSON() {
         return {};
+    }
+
+    /**
+     * Clear the static object containing all the connection managers
+     */
+    static removeAllConnectionManagers() {
+        Object.keys(connectionManagers).forEach((key) => {
+            connectionManagers[key] = null;
+        });
     }
 }
 
