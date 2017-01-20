@@ -76,18 +76,16 @@ class EngineBusinessNetworks {
                // set flag in the sysdata to say that this has been undeployed
                sysdata.undeployed=true;
                // Validate the business network archive and store it.
-               let businessNetworkBase64 =  sysdata.get('businessnetwork').data;
-               let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
-               return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
-
+               return sysdata.get('businessnetwork');
            })
-           .then((businessNetworkDefinition) => {
-
+          .then((object)=> {
+              let businessNetworkArchive = Buffer.from(object.data, 'base64');
+              return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);})
+          .then((businessNetworkDefinition) => {
                // Reinitialize the context to reload the business network.
-               LOG.debug(method, businessNetworkDefinition.getIdentifier()+' has been undeployed');
-               LOG.exit(method);
-
-           });
+              LOG.debug(method, businessNetworkDefinition.getIdentifier()+' has been undeployed');
+              LOG.exit(method);
+          });
     }
 
 
