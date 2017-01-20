@@ -55,6 +55,43 @@ class EngineBusinessNetworks {
     }
 
     /**
+     * Undeploy the business network;
+     * Doesn't actually undeploy the nework but merely puts it beyond use.
+     * @param {Context} context The request context.
+     * @param {string[]} args The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    undeployBusinessNetwork(context, args){
+        const method = 'undeployBusinessNetwork';
+        LOG.entry(method, context, args);
+        if (args.length !== 1) {
+            LOG.error(method, 'Invalid arguments', args);
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'undeployBusinessNetwork', ['businessNetworkArchive']));
+        }
+        let dataService = context.getDataService();
+        return dataService.getCollection('$sysdata')
+           .then((sysdata) => {
+
+               // set flag in the sysdata to say that this has been undeployed
+               sysdata.undeployed=true;
+               // Validate the business network archive and store it.
+               let businessNetworkBase64 =  sysdata.get('businessnetwork').data;
+               let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
+               return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+
+           })
+           .then((businessNetworkDefinition) => {
+
+               // Reinitialize the context to reload the business network.
+               LOG.debug(method, businessNetworkDefinition.getIdentifier()+' has been undeployed');
+               LOG.exit(method);
+
+           });
+    }
+
+
+    /**
      * Update the business network archive.
      * @param {Context} context The request context.
      * @param {string[]} args The arguments to pass to the chaincode function.
