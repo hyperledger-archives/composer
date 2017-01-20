@@ -62,12 +62,12 @@ class EngineBusinessNetworks {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    undeployBusinessNetwork(context, args){
-        const method = 'undeployBusinessNetwork';
+    undeploy(context, args){
+        const method = 'undeploy';
         LOG.entry(method, context, args);
         if (args.length !== 1) {
             LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'undeployBusinessNetwork', ['businessNetworkArchive']));
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'undeploy', ['businessNetworkArchive']));
         }
         let dataService = context.getDataService();
         return dataService.getCollection('$sysdata')

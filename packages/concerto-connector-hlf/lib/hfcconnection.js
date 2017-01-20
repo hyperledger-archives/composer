@@ -211,7 +211,7 @@ class HFCConnection extends Connection {
             })
             .then(() => {
                 return HFCUtil
-                    .invokeChainCode(securityContext, 'undeployBusinessNetwork', [businessNetworkIdentifier]);
+                    .invokeChainCode(securityContext, 'undeploy', [businessNetworkIdentifier]);
             })
             .then(() => {
                 try {

@@ -226,7 +226,7 @@ class Engine {
      * with an error.
      */
     invoke(context, fcn, args) {
-        const method = 'invoke';
+        const method = 'invoke_m';
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
