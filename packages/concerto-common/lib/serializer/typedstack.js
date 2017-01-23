@@ -78,7 +78,7 @@ class TypedStack {
 
         const result = this.stack[this.stack.length-1];
         if(expectedType && !(result instanceof expectedType)) {
-            throw new Error('Did not find expected type ' + expectedType + ' on head of stack. Found: ' + JSON.stringify(result));
+            throw new Error('Did not find expected type ' + expectedType + ' on head of stack. Found: ' + result);
         }
 
         if(Util.isNull(result)) {

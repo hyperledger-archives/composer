@@ -38,6 +38,15 @@ class AssetDeclaration extends ClassDeclaration {
     constructor(modelFile, ast) {
         super(modelFile, ast);
     }
+
+    /**
+     * Returns true if this class can be pointed to by a relationship
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isRelationshipTarget() {
+        return true;
+    }
 }
 
 module.exports = AssetDeclaration;

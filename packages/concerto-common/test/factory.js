@@ -31,6 +31,12 @@ describe('Factory', () => {
         modelManager = new ModelManager();
         modelManager.addModelFile(`
         namespace org.acme.test
+        abstract concept AbstractConcept {
+            o String newValue
+        }
+        concept MyConcept {
+            o String newValue
+        }
         asset MyAsset identified by assetId {
             o String assetId
             o String newValue
@@ -46,6 +52,31 @@ describe('Factory', () => {
 
     afterEach(() => {
         sandbox.restore();
+    });
+
+    describe('#newResource', () => {
+
+        it('should create a new instance with a specified ID', () => {
+            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1');
+            resource.assetId.should.equal('MY_ID_1');
+            should.equal(resource.newValue, undefined);
+            should.not.equal(resource.validate, undefined);
+        });
+
+        it('should create a new non-validating instance with a specified ID', () => {
+            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { disableValidation: true });
+            resource.assetId.should.equal('MY_ID_1');
+            should.equal(resource.newValue, undefined);
+            should.equal(resource.validate, undefined);
+        });
+
+        it('should create a new instance with a specified ID and generated data', () => {
+            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true });
+            resource.assetId.should.equal('MY_ID_1');
+            resource.newValue.should.be.a('string');
+            should.not.equal(resource.validate, undefined);
+        });
+
     });
 
     describe('#newInstance', () => {
@@ -67,6 +98,46 @@ describe('Factory', () => {
         it('should create a new instance with a specified ID and generated data', () => {
             let resource = factory.newInstance('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true });
             resource.assetId.should.equal('MY_ID_1');
+            resource.newValue.should.be.a('string');
+            should.not.equal(resource.validate, undefined);
+        });
+
+    });
+
+    describe('#newConcept', () => {
+
+        it('should throw if namespace missing', () => {
+            (() => {
+                factory.newConcept('org.acme.missing', 'MyConcept');
+            }).should.throw(/ModelFile for namespace org.acme.missing has not been registered with the ModelManager/);
+        });
+
+        it('should throw if Concept missing', () => {
+            (() => {
+                factory.newConcept('org.acme.test', 'MissingConcept');
+            }).should.throw(/Type MissingConcept is not declared in namespace org.acme.test/);
+        });
+
+        it('should throw if concept is abstract', () => {
+            (() => {
+                factory.newConcept('org.acme.test', 'AbstractConcept');
+            }).should.throw(/Cannot create abstract type org.acme.test.AbstractConcept/);
+        });
+
+        it('should create a new concept', () => {
+            let resource = factory.newConcept('org.acme.test', 'MyConcept');
+            should.equal(resource.newValue, undefined);
+            should.not.equal(resource.validate, undefined);
+        });
+
+        it('should create a new non-validating concept', () => {
+            let resource = factory.newConcept('org.acme.test', 'MyConcept', { disableValidation: true });
+            should.equal(resource.newValue, undefined);
+            should.equal(resource.validate, undefined);
+        });
+
+        it('should create a new concept with generated data', () => {
+            let resource = factory.newConcept('org.acme.test', 'MyConcept', { generate: true });
             resource.newValue.should.be.a('string');
             should.not.equal(resource.validate, undefined);
         });

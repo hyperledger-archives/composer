@@ -44,6 +44,19 @@ describe('Model Tests', function(){
             abstractAsset.should.not.be.null;
             abstractAsset.isAbstract().should.be.true;
 
+            // check we can get a concept
+            const addressConcept = modelManager.getType('org.acme.base.Address');
+            addressConcept.should.not.be.null;
+            addressConcept.isAbstract().should.be.true;
+
+            // check we can get a concept
+            const unitedStatesAddressConcept = modelManager.getType('org.acme.base.UnitedStatesAddress');
+            unitedStatesAddressConcept.should.not.be.null;
+            unitedStatesAddressConcept.isAbstract().should.be.false;
+
+            // check both concepts are registered
+            modelManager.getConceptDeclarations().length.should.equal(2);
+
             // and vice-a-versa
             const baseAsset = modelManager.getType('org.acme.base.BaseAsset');
             baseAsset.should.not.be.null;
@@ -53,10 +66,10 @@ describe('Model Tests', function(){
             let factory = new Factory(modelManager);
 
             // attempt to create an abstract asset
-            assert.throws( function() {factory.newInstance('org.acme.base', 'AbstractAsset', '123' );}, /.+Cannot create abstract type org.acme.base.AbstractAsset/, 'did not throw with expected message');
+            assert.throws( function() {factory.newResource('org.acme.base', 'AbstractAsset', '123' );}, /.+Cannot create abstract type org.acme.base.AbstractAsset/, 'did not throw with expected message');
 
             // create a new instance
-            let resource = factory.newInstance(
+            let resource = factory.newResource(
                 'org.acme.base', 'BaseAsset', '123' );
 
             // check the id
@@ -145,14 +158,21 @@ describe('Model Tests', function(){
             assert.throws( function() {resource.setPropertyValue('singlePerson', blokeRelationship );}, /.+not derived from org.acme.base.Person/, 'did not throw with expected message');
 
             // create a Person
-            const person = factory.newInstance('org.acme.base', 'Person', 'P1' );
+            const person = factory.newResource('org.acme.base', 'Person', 'P1' );
+            person.address = factory.newConcept('org.acme.base', 'UnitedStatesAddress');
+            person.address.setPropertyValue('street', 'Test');
+            person.address.zipcode = 'CA';
+            person.address.addArrayValue('counts', 10);
+            person.address.addArrayValue('counts', 20);
+            person.address.validate();
+            delete person.address.counts;
             resource.myPerson = person;
 
             // check the instance validates
             resource.validate();
 
             // create a Bloke
-            const bloke = factory.newInstance('org.acme.base', 'Bloke', 'B1' );
+            const bloke = factory.newResource('org.acme.base', 'Bloke', 'B1' );
             resource.myPerson = bloke;
 
             resource.myPeople = [person,person];
@@ -178,7 +198,7 @@ describe('Model Tests', function(){
             let json = serializer.toJSON(resource);
 
             // assert on the entire format of the JSON serialization
-            JSON.stringify(json).should.be.equal('{"$class":"org.acme.base.BaseAsset","stringProperty":"string","integerProperty":999,"doubleProperty":10,"booleanProperty":true,"dateTimeProperty":"2016-10-11T02:30:26.571Z","longProperty":100,"stateProperty":"GOLD","stringArrayProperty":["string"],"integerArrayProperty":[999],"doubleArrayProperty":[999],"booleanArrayProperty":[true,false],"dateTimeArrayProperty":["2016-10-11T02:30:26.571Z"],"longArrayProperty":[1,2,3],"stateArrayProperty":["GOLD","SILVER"],"singlePerson":"DAN","personArray":["DAN","DAN"],"myPerson":{"$class":"org.acme.base.Person","stringProperty":"P1"},"myPeople":[{"$class":"org.acme.base.Person","stringProperty":"P1"},{"$class":"org.acme.base.Person","stringProperty":"P1"}]}');
+            JSON.stringify(json).should.be.equal('{"$class":"org.acme.base.BaseAsset","stringProperty":"string","integerProperty":999,"doubleProperty":10,"booleanProperty":true,"dateTimeProperty":"2016-10-11T02:30:26.571Z","longProperty":100,"stateProperty":"GOLD","stringArrayProperty":["string"],"integerArrayProperty":[999],"doubleArrayProperty":[999],"booleanArrayProperty":[true,false],"dateTimeArrayProperty":["2016-10-11T02:30:26.571Z"],"longArrayProperty":[1,2,3],"stateArrayProperty":["GOLD","SILVER"],"singlePerson":"DAN","personArray":["DAN","DAN"],"myPerson":{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}},"myPeople":[{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}},{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}}]}');
 
             // check we can convert back to an object
             const newResource = serializer.fromJSON(json);
@@ -218,13 +238,12 @@ describe('Model Tests', function(){
             txEx.myAsset.should.equal(resource);
             assert.throws( function() {txEx.setPropertyValue('myAsset', txEx);}, /.+type org.acme.base.MyTransactionEx that is not derived from org.acme.base.BaseAsset/, 'did not throw with expected message');
 
-            const derivedDerivedAsset = factory.newInstance('org.acme.base', 'DerivedDerivedAsset', 'DERIVED_001' );
+            const derivedDerivedAsset = factory.newResource('org.acme.base', 'DerivedDerivedAsset', 'DERIVED_001' );
 
             derivedDerivedAsset.setPropertyValue('singlePerson', personRelationship );
             derivedDerivedAsset.setPropertyValue('personArray', [personRelationship,personRelationship] );
             const includedTransaction = factory.newTransaction('org.acme.base', 'MyBasicTransaction', 'TRANSACTION_001');
             derivedDerivedAsset.setPropertyValue('includedTransaction',  includedTransaction);
-            derivedDerivedAsset.setPropertyValue('originalTransaction', factory.newRelationship('org.acme.base', 'MyBasicTransaction', 'TRANSACTION_001') );
 
             txEx.setPropertyValue('myAsset', derivedDerivedAsset );
             txEx.myAsset.should.equal(derivedDerivedAsset);

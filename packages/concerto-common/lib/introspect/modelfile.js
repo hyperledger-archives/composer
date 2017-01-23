@@ -17,6 +17,7 @@
 const parser = require('./parser');
 const AssetDeclaration = require('./assetdeclaration');
 const EnumDeclaration = require('./enumdeclaration');
+const ConceptDeclaration = require('./conceptdeclaration');
 const ParticipantDeclaration = require('./participantdeclaration');
 const TransactionDeclaration = require('./transactiondeclaration');
 const IllegalModelException = require('./illegalmodelexception');
@@ -84,6 +85,9 @@ class ModelFile {
             }
             else if(thing.type === 'EnumDeclaration') {
                 this.declarations.push( new EnumDeclaration(this, thing) );
+            }
+            else if(thing.type === 'ConceptDeclaration') {
+                this.declarations.push( new ConceptDeclaration(this, thing) );
             }
             else {
                 let formatter = Globalize('en').messageFormatter('modelfile-constructor-unrecmodelelem');
@@ -390,6 +394,14 @@ class ModelFile {
      */
     getParticipantDeclarations() {
         return this.getDeclarations(ParticipantDeclaration);
+    }
+
+    /**
+     * Get the ConceptDeclarations defined in this ModelFile
+     * @return {ConceptDeclaration[]} the ParticipantDeclaration defined in the model file
+     */
+    getConceptDeclarations() {
+        return this.getDeclarations(ConceptDeclaration);
     }
 
     /**
