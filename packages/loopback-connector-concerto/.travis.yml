@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+    - '4'
+dist: trusty
+sudo: required
+services:
+    - docker
+before_install: |
+    set -ev
+    npm install -g npm
+    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
+    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
