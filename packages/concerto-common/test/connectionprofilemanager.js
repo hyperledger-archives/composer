@@ -34,6 +34,7 @@ describe('ConnectionProfileManager', () => {
 
     afterEach(() => {
         mockery.deregisterAll();
+        ConnectionProfileManager.removeAllConnectionManagers();
     });
 
     describe('#construct', () => {
