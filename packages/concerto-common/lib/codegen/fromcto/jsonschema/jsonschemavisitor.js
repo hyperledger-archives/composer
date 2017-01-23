@@ -17,6 +17,7 @@
 const AssetDeclaration = require('../../../introspect/assetdeclaration');
 const ClassDeclaration = require('../../../introspect/classdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
+const ConceptDeclaration = require('../../../introspect/conceptdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
 const Field = require('../../../introspect/field');
 const ModelFile = require('../../../introspect/modelfile');
@@ -54,6 +55,8 @@ class JSONSchemaVisitor {
             return this.visitTransactionDeclaration(thing, parameters);
         } else if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
+        } else if (thing instanceof ConceptDeclaration) {
+            return this.visitConceptDeclaration(thing, parameters);
         } else if (thing instanceof ClassDeclaration) {
             return this.visitClassDeclaration(thing, parameters);
         } else if (thing instanceof Field) {
@@ -106,6 +109,7 @@ class JSONSchemaVisitor {
         let jsonSchemas = [];
         modelFile.getAssetDeclarations()
             .concat(modelFile.getTransactionDeclarations())
+            .concat(modelFile.getConceptDeclarations())
             .filter((declaration) => {
                 return !declaration.isAbstract();
             })
@@ -163,6 +167,29 @@ class JSONSchemaVisitor {
         // Apply all the common schema elements.
         return this.visitClassDeclarationCommon(transactionDeclaration, parameters, jsonSchema);
 
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {ConceptDeclaration} conceptDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitConceptDeclaration(conceptDeclaration, parameters) {
+        debug('entering visitConceptDeclaration', conceptDeclaration.getName());
+
+        // If this is the first declaration, then we are building a schema for this asset.
+        let jsonSchema = {};
+        if (parameters.first) {
+            jsonSchema.$schema = 'http://json-schema.org/draft-04/schema#';
+            jsonSchema.title = conceptDeclaration.getName();
+            jsonSchema.description = `A concept named ${conceptDeclaration.getName()}`;
+            parameters.first = false;
+        }
+
+        // Apply all the common schema elements.
+        return this.visitClassDeclarationCommon(conceptDeclaration, parameters, jsonSchema);
     }
 
     /**

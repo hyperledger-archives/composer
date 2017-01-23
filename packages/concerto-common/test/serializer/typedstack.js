@@ -42,7 +42,7 @@ describe('TypedStack', function () {
 
         it('check pop with wrong type', function() {
             const ts = new TypedStack('ROOT');
-            assert.throws( function() {ts.pop(Number);}, /.+Found: \"ROOT\"/, 'did not throw with expected message');
+            assert.throws( function() {ts.pop(Number);}, /.+Found: ROOT/, 'did not throw with expected message');
         });
     });
 });

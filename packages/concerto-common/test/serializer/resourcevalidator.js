@@ -65,12 +65,17 @@ describe('ResourceValidator', function () {
     import org.acme.l2.Vehicle
     import org.acme.l1.VehicleType
     import org.acme.l1.Person
+    concept TestConcept {
+      o String name
+    }
     asset Car extends Vehicle  {
       o String model
-      o String[] serviceHistory
-      o VehicleType[] vehicleTypes
-      --> Person owner
-      o Person[] containment
+      o String[] serviceHistory optional
+      o VehicleType[] vehicleTypes optional
+      --> Person owner optional
+      --> Person[] owners optional
+      o Person[] containment optional
+      o Person singlePerson optional
     }`;
 
     const abstractLevelThreeModel = `namespace org.acme.l3
@@ -98,7 +103,7 @@ describe('ResourceValidator', function () {
 
     describe('#visitRelationshipDeclaration', function() {
         it('should detect assigning a resource to a relationship', function () {
-            const employee = factory.newInstance('org.acme.l1', 'Employee', 'DAN');
+            const employee = factory.newResource('org.acme.l1', 'Employee', 'DAN');
             const typedStack = new TypedStack( employee );
             const vehicleDeclaration = modelManager.getType('org.acme.l3.Car');
             const field = vehicleDeclaration.getProperty('owner');
@@ -115,11 +120,37 @@ describe('ResourceValidator', function () {
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'TEST' };
             field.accept(resourceValidator,parameters );
         });
+
+        it('should detect a relationship to a concept', function () {
+            const car = factory.newResource('org.acme.l3', 'Car', '123');
+            car.owner = factory.newRelationship('org.acme.l3', 'TestConcept');
+            car.model = 'FOO';
+
+            const typedStack = new TypedStack( car );
+            const vehicleDeclaration = modelManager.getType('org.acme.l3.Car');
+            const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'TEST' };
+            (function () {
+                vehicleDeclaration.accept(resourceValidator,parameters );
+            }).should.throw(/Cannot have a relationship to a concept. Relationships must be to resources./);
+        });
+
+        it('should detect a relationship to a non array', function () {
+            const car = factory.newResource('org.acme.l3', 'Car', '123');
+            car.owners = factory.newRelationship('org.acme.l1', 'Person', '123');
+            car.model = 'FOO';
+
+            const typedStack = new TypedStack( car );
+            const vehicleDeclaration = modelManager.getType('org.acme.l3.Car');
+            const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'TEST' };
+            (function () {
+                vehicleDeclaration.accept(resourceValidator,parameters );
+            }).should.throw(/has property owners with type/);
+        });
     });
 
     describe('#visitField', function() {
         it('should allow assigning a resource type', function () {
-            const employee = factory.newInstance('org.acme.l1', 'Employee', 'DAN');
+            const employee = factory.newResource('org.acme.l1', 'Employee', 'DAN');
             employee.ssn = 'abc';
             const typedStack = new TypedStack( [employee] );
             const vehicleDeclaration = modelManager.getType('org.acme.l3.Car');
@@ -129,7 +160,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect assigning an incompatible resource type', function () {
-            const base = factory.newInstance('org.acme.l1', 'Base', 'DAN');
+            const base = factory.newResource('org.acme.l1', 'Base', 'DAN');
             const typedStack = new TypedStack( [base] );
             const vehicleDeclaration = modelManager.getType('org.acme.l3.Car');
             const field = vehicleDeclaration.getProperty('containment');

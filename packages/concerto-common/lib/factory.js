@@ -20,11 +20,15 @@ const InstanceGenerator = require('./serializer/instancegenerator');
 const Relationship = require('./model/relationship');
 
 const Resource = require('./model/resource');
+const ValidatedResource = require('./model/validatedresource');
+
+const Concept = require('./model/concept');
+const ValidatedConcept = require('./model/validatedconcept');
+
 const ResourceValidator = require('./serializer/resourcevalidator');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
 const TypedStack = require('./serializer/typedstack');
 const uuid = require('uuid');
-const ValidatedResource = require('./model/validatedresource');
 
 /**
  * Use the Factory to create instances of Resource: transactions, participants
@@ -48,52 +52,6 @@ class Factory {
     }
 
     /**
-     * Create a new Instance with a given namespace, type name and id
-     * @param {string} ns - the namespace of the Resource
-     * @param {string} type - the type of the Resource
-     * @param {boolean} disableValidation - pass true if you want the factory to
-     * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @return {Resource} the new instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
-     */
-    newConcept(ns, type, disableValidation) {
-        let modelFile = this.modelManager.getModelFile(ns);
-        if(!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
-            throw new Error(formatter({
-                namespace: ns
-            }));
-        }
-
-        if(!modelFile.isDefined(type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        let classDecl = modelFile.getType(type);
-
-        if(classDecl.isAbstract()) {
-            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
-        }
-
-        let newObj = null;
-        if(disableValidation) {
-            newObj = new Concept(this.modelManager,ns,type);
-        }
-        else {
-            newObj = new ValidatedConcept(this.modelManager,ns,type, new ResourceValidator());
-        }
-        newObj.assignFieldDefaults();
-
-        debug('Factory.newInstance created instance with type %s', classDecl.getFullyQualifiedName() );
-        return newObj;
-    }
-
-    /**
      * Create a new Resource with a given namespace, type name and id
      * @param {string} ns - the namespace of the Resource
      * @param {string} type - the type of the Resource
@@ -108,7 +66,7 @@ class Factory {
      * @deprecated - use newResource instead
      */
     newInstance(ns, type, id, options) {
-        return this.newResource(ns, type, id, disableValidation);
+        return this.newResource(ns, type, id, options);
     }
 
     /**
@@ -116,12 +74,15 @@ class Factory {
      * @param {string} ns - the namespace of the Resource
      * @param {string} type - the type of the Resource
      * @param {string} id - the identifier
-     * @param {boolean} disableValidation - pass true if you want the factory to
+     * @param {Object} [options] - an optional set of options
+     * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
+     * @param {boolean} [options.generate] - pass true if you want the factory to return a
+     * resource instance with generated sample data.
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
-    newResource(ns, type, id, disableValidation) {
+    newResource(ns, type, id, options) {
         let modelFile = this.modelManager.getModelFile(ns);
         if(!modelFile) {
             let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
@@ -172,6 +133,66 @@ class Factory {
         }
 
         debug('Factory.newInstance created %s', id );
+        return newObj;
+    }
+
+    /**
+     * Create a new Resource with a given namespace, type name and id
+     * @param {string} ns - the namespace of the Resource
+     * @param {string} type - the type of the Resource
+     * @param {Object} [options] - an optional set of options
+     * @param {boolean} [options.disableValidation] - pass true if you want the factory to
+     * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
+     * @param {boolean} [options.generate] - pass true if you want the factory to return a
+     * resource instance with generated sample data.
+     * @return {Resource} the new instance
+     * @throws {ModelException} if the type is not registered with the ModelManager
+     */
+    newConcept(ns, type, options) {
+        let modelFile = this.modelManager.getModelFile(ns);
+        if(!modelFile) {
+            let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
+            throw new Error(formatter({
+                namespace: ns
+            }));
+        }
+
+        if(!modelFile.isDefined(type)) {
+            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
+
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        let classDecl = modelFile.getType(type);
+
+        if(classDecl.isAbstract()) {
+            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+        }
+
+        let newObj = null;
+        options = options || {};
+        if(options.disableValidation) {
+            newObj = new Concept(this.modelManager,ns,type);
+        }
+        else {
+            newObj = new ValidatedConcept(this.modelManager,ns,type, new ResourceValidator());
+        }
+        newObj.assignFieldDefaults();
+
+        if(options.generate) {
+            let visitor = new InstanceGenerator();
+            let parameters = {
+                stack: new TypedStack(newObj),
+                modelManager: this.modelManager,
+                factory: this
+            };
+            classDecl.accept(visitor, parameters);
+        }
+
+        debug('Factory.newInstance created concept %s', classDecl.getFullyQualifiedName() );
         return newObj;
     }
 

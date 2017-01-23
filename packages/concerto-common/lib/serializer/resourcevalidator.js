@@ -529,11 +529,17 @@ class ResourceValidator {
      */
     static reportInvalidFieldAssignment(resourceId, propName, obj, field) {
         let formatter = Globalize.messageFormatter('resourcevalidator-invalidfieldassignment');
+        let typeName = field.getFullyQualifiedTypeName();
+
+        if(field.isArray()) {
+            typeName += '[]';
+        }
+
         throw new ValidationException(formatter({
             resourceId: resourceId,
             propertyName: propName,
             objectType: obj.getFullyQualifiedType(),
-            fieldType: field.getFullyQualifiedTypeName()
+            fieldType: typeName
         }));
     }
 }

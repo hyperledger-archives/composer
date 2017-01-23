@@ -16,9 +16,9 @@ class BusinessNetworkDefinition {
 }
 class Factory {
    + void constructor(ModelManager) 
-   + Resource newConcept(string,string,boolean) throws ModelException
-   + Resource newInstance(string,string,string,boolean) throws ModelException
-   + Resource newResource(string,string,string,boolean) throws ModelException
+   + Resource newInstance(string,string,string,Object,boolean,boolean) throws ModelException
+   + Resource newResource(string,string,string,Object,boolean,boolean) throws ModelException
+   + Resource newConcept(string,string,Object,boolean,boolean) throws ModelException
    + Relationship newRelationship(string,string,string) throws ModelException
    + Resource newTransaction(string,string,string,Object,boolean) 
    + Object toJSON() 
