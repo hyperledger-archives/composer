@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -26,12 +30,14 @@ class RegistryManager extends EventEmitter {
      * @param {DataService} dataService The data service to use.
      * @param {Introspector} introspector The introspector to use.
      * @param {Serializer} serializer The serializer to use.
+     * @param {AccessController} accessController The access controller to use.
      */
-    constructor(dataService, introspector, serializer) {
+    constructor(dataService, introspector, serializer, accessController) {
         super();
         this.dataService = dataService;
         this.introspector = introspector;
         this.serializer = serializer;
+        this.accessController = accessController;
     }
 
     /**
@@ -39,13 +45,14 @@ class RegistryManager extends EventEmitter {
      * @private
      * @param {DataCollection} dataCollection The data collection.
      * @param {Serializer} serializer The serializer.
+     * @param {AccessController} accessController The access controller.
      * @param {string} type The type.
      * @param {string} id The ID.
      * @param {string} name The name.
      * @return {Registry} The new registry instance.
      */
-    createRegistry(dataCollection, serializer, type, id, name) {
-        let registry = new Registry(dataCollection, serializer, type, id, name);
+    createRegistry(dataCollection, serializer, accessController, type, id, name) {
+        let registry = new Registry(dataCollection, serializer, accessController, type, id, name);
         ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
             registry.on(event, (data) => {
                 this.emit(event, data);
@@ -113,7 +120,7 @@ class RegistryManager extends EventEmitter {
                     return prev.then((result) => {
                         return this.dataService.getCollection(collectionID)
                             .then((dataCollection) => {
-                                result.push(this.createRegistry(dataCollection, this.serializer, registry.type, registry.id, registry.name));
+                                result.push(this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name));
                                 return result;
                             });
                     });
@@ -137,7 +144,7 @@ class RegistryManager extends EventEmitter {
             .then((registry) => {
                 return this.dataService.getCollection(collectionID)
                     .then((dataCollection) => {
-                        return this.createRegistry(dataCollection, this.serializer, registry.type, registry.id, registry.name);
+                        return this.createRegistry(dataCollection, this.serializer, this.accessController, registry.type, registry.id, registry.name);
                     });
             });
     }
@@ -193,7 +200,7 @@ class RegistryManager extends EventEmitter {
                 return this.dataService.createCollection(collectionID);
             })
             .then((dataCollection) => {
-                let result = this.createRegistry(dataCollection, this.serializer, type, id, name);
+                let result = this.createRegistry(dataCollection, this.serializer, this.accessController, type, id, name);
                 this.emit('registryadded', {
                     registry: result,
                     registryType: type,

@@ -1,20 +1,26 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
 
-const LOG = require('@ibm/concerto-common').Logger.getLog('HFCConnectionManager');
 const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
 const Globalize = require('@ibm/concerto-common').Globalize;
 const hfc = require('hfc');
 const HFCConnection = require('./hfcconnection');
+const HFCWalletProxy = require('./hfcwalletproxy');
+const LOG = require('@ibm/concerto-common').Logger.getLog('HFCConnectionManager');
+const Wallet = require('@ibm/concerto-common').Wallet;
 
 /**
  * Class representing a connection manager that establishes and manages
@@ -66,20 +72,23 @@ class HFCConnectionManager extends ConnectionManager {
      * object once the connection is established, or rejected with a connection error.
      */
     connect(connectionProfile, businessNetworkIdentifier, connectOptions) {
-
+        const method = 'connect';
+        LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectOptions);
         const self = this;
         let chainIdentifier = connectionProfile;
 
         if(businessNetworkIdentifier) {
             chainIdentifier = businessNetworkIdentifier + '@' + chainIdentifier;
         }
+        LOG.debug(method, 'Chain identifier', chainIdentifier);
 
         let chainReference = this.chainPool[chainIdentifier];
 
         if(chainReference) {
             LOG.info('connect','Returning connection with pooled HFC chain', chainIdentifier);
             chainReference.count++;
-            const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chainReference.chain);
+            const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chainReference.chain, connectOptions);
+            LOG.exit(method, connection);
             return Promise.resolve(connection);
         }
         else {
@@ -97,24 +106,40 @@ class HFCConnectionManager extends ConnectionManager {
 
             return new Promise((resolve, reject) => {
                 let chain = hfc.getChain(chainIdentifier, true);
-                chain.setKeyValStore(hfc.newFileKeyValStore(connectOptions.keyValStore));
-                chain.setMemberServicesUrl(connectOptions.membershipServicesURL);
-                chain.addPeer(connectOptions.peerURL);
+                let wallet = Wallet.getWallet();
+                if (wallet) {
+                    chain.setKeyValStore(new HFCWalletProxy(wallet));
+                } else {
+                    chain.setKeyValStore(hfc.newFileKeyValStore(connectOptions.keyValStore));
+                }
+                let grpcOptions = {};
+                // Check to see if a certificate has been specified.
+                if (connectOptions.certificate) {
+                    // Check to see that the certificate is not just whitespace.
+                    let certificate = connectOptions.certificate.trim();
+                    if (certificate) {
+                        grpcOptions.pem = certificate;
+                    }
+                }
+                LOG.debug(method, 'GRPC options', grpcOptions);
+                chain.setMemberServicesUrl(connectOptions.membershipServicesURL, grpcOptions);
+                chain.addPeer(connectOptions.peerURL, grpcOptions);
                 if (connectOptions.deployWaitTime) {
                     chain.setDeployWaitTime(connectOptions.deployWaitTime);
                 }
                 if (connectOptions.invokeWaitTime) {
                     chain.setInvokeWaitTime(connectOptions.invokeWaitTime);
                 }
-                chain.eventHubConnect(connectOptions.eventHubURL);
+                chain.eventHubConnect(connectOptions.eventHubURL, grpcOptions);
                 process.on('exit', () => {
                     if (chain) {
                         chain.eventHubDisconnect();
                         chain = null;
                     }
                 });
-                const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chain);
+                const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chain, connectOptions);
                 this.chainPool[chainIdentifier] = {count: 1, chain: chain};
+                LOG.exit(method, connection);
                 resolve(connection);
             });
         }

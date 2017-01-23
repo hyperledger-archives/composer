@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -23,14 +27,16 @@ class Registry extends EventEmitter {
      * Constructor.
      * @param {string} dataCollection The data collection to use.
      * @param {Serializer} serializer The serializer to use.
+     * @param {AccessController} accessController The access controller to use.
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
      * @param {string} name The name of the registry.
      */
-    constructor(dataCollection, serializer, type, id, name) {
+    constructor(dataCollection, serializer, accessController, type, id, name) {
         super();
         this.dataCollection = dataCollection;
         this.serializer = serializer;
+        this.accessController = accessController;
         this.type = type;
         this.id = id;
         this.name = name;
@@ -95,15 +101,7 @@ class Registry extends EventEmitter {
         options = options || {};
         return resources.reduce((result, resource) => {
             return result.then(() => {
-                let id = resource.getIdentifier();
-                let object = this.serializer.toJSON(resource, {
-                    convertResourcesToRelationships: options.convertResourcesToRelationships
-                });
-                this.emit('resourceadded', {
-                    registry: this,
-                    resource: resource
-                });
-                return this.dataCollection.add(id, object);
+                return this.add(resource, options);
             });
         }, Promise.resolve());
     }
@@ -118,16 +116,19 @@ class Registry extends EventEmitter {
      * with an error.
      */
     add(resource, options) {
+        this.accessController.check(resource, 'CREATE');
         options = options || {};
         let id = resource.getIdentifier();
         let object = this.serializer.toJSON(resource, {
             convertResourcesToRelationships: options.convertResourcesToRelationships
         });
-        this.emit('resourceadded', {
-            registry: this,
-            resource: resource
-        });
-        return this.dataCollection.add(id, object);
+        return this.dataCollection.add(id, object)
+            .then(() => {
+                this.emit('resourceadded', {
+                    registry: this,
+                    resource: resource
+                });
+            });
     }
 
     /**
@@ -153,19 +154,7 @@ class Registry extends EventEmitter {
         options = options || {};
         return resources.reduce((result, resource) => {
             return result.then(() => {
-                let id = resource.getIdentifier();
-                return this.get(id)
-                    .then((oldResource) => {
-                        let object = this.serializer.toJSON(resource, {
-                            convertResourcesToRelationships: options.convertResourcesToRelationships
-                        });
-                        this.emit('resourceupdated', {
-                            registry: this,
-                            oldResource: oldResource,
-                            newResource: resource
-                        });
-                        return this.dataCollection.update(id, object);
-                    });
+                return this.update(resource, options);
             });
         }, Promise.resolve());
     }
@@ -185,14 +174,21 @@ class Registry extends EventEmitter {
         let object = this.serializer.toJSON(resource, {
             convertResourcesToRelationships: options.convertResourcesToRelationships
         });
-        return this.get(id)
+        return this.dataCollection.get(id)
             .then((oldResource) => {
-                this.emit('resourceupdated', {
-                    registry: this,
-                    oldResource: oldResource,
-                    newResource: resource
-                });
-                return this.dataCollection.update(id, object);
+                return this.serializer.fromJSON(oldResource);
+            })
+            .then((oldResource) => {
+                // We must perform access control checks on the old version of the resource!
+                this.accessController.check(oldResource, 'UPDATE');
+                return this.dataCollection.update(id, object)
+                    .then(() => {
+                        this.emit('resourceupdated', {
+                            registry: this,
+                            oldResource: oldResource,
+                            newResource: resource
+                        });
+                    });
             });
     }
 
@@ -214,20 +210,7 @@ class Registry extends EventEmitter {
     removeAll(resources) {
         return resources.reduce((result, resource) => {
             return result.then(() => {
-                if (resource instanceof Resource) {
-                    let id = resource.getIdentifier();
-                    this.emit('resourceremoved', {
-                        registry: this,
-                        resourceID: id
-                    });
-                    return this.dataCollection.remove(id);
-                } else {
-                    this.emit('resourceremoved', {
-                        registry: this,
-                        resourceID: resource
-                    });
-                    return this.dataCollection.remove(resource);
-                }
+                return this.remove(resource);
             });
         }, Promise.resolve());
     }
@@ -239,20 +222,32 @@ class Registry extends EventEmitter {
      * with an error.
      */
     remove(resource) {
-        if (resource instanceof Resource) {
-            let id = resource.getIdentifier();
-            this.emit('resourceremoved', {
-                registry: this,
-                resourceID: id
+        return Promise.resolve()
+            .then(() => {
+                // If the resource is a string, then we need to retrieve
+                // the resource using its ID from the registry. We need to
+                // do this to figure out the type of the resource for
+                // access control.
+                if (resource instanceof Resource) {
+                    return resource;
+                } else {
+                    return this.dataCollection.get(resource)
+                        .then((resource) => {
+                            return this.serializer.fromJSON(resource);
+                        });
+                }
+            })
+            .then((resource) => {
+                this.accessController.check(resource, 'DELETE');
+                let id = resource.getIdentifier();
+                return this.dataCollection.remove(id)
+                    .then(() => {
+                        this.emit('resourceremoved', {
+                            registry: this,
+                            resourceID: id
+                        });
+                    });
             });
-            return this.dataCollection.remove(id);
-        } else {
-            this.emit('resourceremoved', {
-                registry: this,
-                resourceID: resource
-            });
-            return this.dataCollection.remove(resource);
-        }
     }
 
     /**

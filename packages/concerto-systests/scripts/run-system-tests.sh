@@ -18,11 +18,9 @@ if [ "${SYSTEST}" = "" ]; then
     exit 1
 fi
 
-# If running under Travis, bump up the timeouts.
-if [ "${TRAVIS}" = "true" ]; then
-    export CONCERTO_PORT_WAIT_SECS=30
-    export CONCERTO_DEPLOY_WAIT_SECS=120
-fi
+# Set default timeouts
+export CONCERTO_PORT_WAIT_SECS=30
+export CONCERTO_DEPLOY_WAIT_SECS=120
 
 # Pull any required Docker images.
 if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then

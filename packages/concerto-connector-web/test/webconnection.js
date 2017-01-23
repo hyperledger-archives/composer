@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -105,13 +109,10 @@ describe('WebConnection', () => {
                 });
         });
 
-        it('should return a new security context with a null chaincode ID if the business network does not exist', () => {
+        it('should throw if the business network was specified but it does not exist', () => {
             connection.deleteChaincodeID('org.acme.business');
             return connection.login('doge', 'suchs3cret')
-                .then((securityContext) => {
-                    securityContext.should.be.an.instanceOf(WebSecurityContext);
-                    should.equal(securityContext.getChaincodeID(), null);
-                });
+                .should.be.rejectedWith(/No chaincode ID found/);
         });
 
         it('should create a new runtime and return a new security context with a non-null chaincode ID if the business network does exist', () => {
@@ -234,11 +235,14 @@ describe('WebConnection', () => {
     describe('#ping', () => {
 
         it('should submit a ping query request', () => {
-            sinon.stub(connection, 'queryChainCode').resolves();
+            sinon.stub(connection, 'queryChainCode').resolves(Buffer.from('{"hello":"world"}'));
             return connection.ping(mockSecurityContext)
-                .then(() => {
+                .then((result) => {
                     sinon.assert.calledOnce(connection.queryChainCode);
                     sinon.assert.calledWith(connection.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.should.deep.equal({
+                        hello: 'world'
+                    });
                 });
         });
 

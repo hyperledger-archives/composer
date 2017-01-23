@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -41,19 +45,20 @@ describe('HFCConnection', () => {
     let mockConnectionProfileManager;
     let mockConnectionProfileStore;
 
+    const connectOptions = {
+        type: 'hlf',
+        networks: {
+            testnetwork: '123'
+        }
+    };
+
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockConnectionManager.onDisconnect.resolves();
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
-
-        mockConnectionProfileStore.load.withArgs('testprofile').resolves({
-            type: 'hlf',
-            networks: {
-                testnetwork: '123'
-            }
-        });
+        mockConnectionProfileStore.load.withArgs('testprofile').resolves(connectOptions);
 
         mockConnectionProfileStore.save.resolves();
         mockConnectionProfileManager.getConnectionProfileStore.returns(mockConnectionProfileStore);
@@ -65,7 +70,7 @@ describe('HFCConnection', () => {
         mockChain.getEventHub.returns(mockEventHub);
         mockChain.enroll.callsArgWith(2, null, mockMember);
         mockSecurityContext = sinon.createStubInstance(HFCSecurityContext);
-        connection = new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', mockChain);
+        connection = new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', mockChain, connectOptions);
     });
 
     afterEach(function() {
@@ -76,8 +81,22 @@ describe('HFCConnection', () => {
 
         it('should throw if chain not specified', () => {
             (() => {
-                new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', null);
+                new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', null, connectOptions);
             }).should.throw(/chain must be set/);
+        });
+
+        it('should throw if connectOptions not specified', () => {
+            (() => {
+                new HFCConnection(mockConnectionManager, 'testprofile', 'testnetwork', mockChain, null);
+            }).should.throw(/connectOptions not specified/);
+        });
+
+    });
+
+    describe('#getConnectionOptions', () => {
+
+        it('should return the connection options', () => {
+            connection.getConnectionOptions().should.deep.equal(connectOptions);
         });
 
     });
@@ -194,7 +213,7 @@ describe('HFCConnection', () => {
         it('should not look for an existing chaincode ID if no business network is specified', () => {
 
             // Login to the Hyperledger Fabric using the mock hfc.
-            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain, connectOptions);
             let enrollmentID = 'doge';
             let enrollmentSecret = 'suchsecret';
             return connection
@@ -319,7 +338,7 @@ describe('HFCConnection', () => {
 
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
-            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain, connectOptions);
             sandbox.stub(connection, 'ping').resolves();
 
             return connection.undeploy(mockSecurityContext, 'testnetwork')
@@ -338,7 +357,7 @@ describe('HFCConnection', () => {
 
             const businessNetworkStub = sinon.createStubInstance(BusinessNetworkDefinition);
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
-            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain, connectOptions);
             sandbox.stub(connection, 'ping').resolves();
 
             return connection.deploy(mockSecurityContext, true, businessNetworkStub)
@@ -373,7 +392,7 @@ describe('HFCConnection', () => {
 
         it('should require a business network id', function() {
 
-            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain);
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain, connectOptions);
 
             (function() {
                 return connection

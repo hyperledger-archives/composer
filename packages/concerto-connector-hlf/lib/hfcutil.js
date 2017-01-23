@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -166,6 +170,10 @@ class HFCUtil {
         });
         LOG.info('deployChainCode', 'function ' + functionName + ' force ' + force, chaincodePath);
 
+        // We need the connection options as they include the certificate and
+        // certificate path options that are relevant to the deploy of the chaincode.
+        const connectOptions = securityContext.getConnection().getConnectionOptions();
+
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
         // must copy the chaincode to a temporary directory. We need to do this
         // to handle the case where Concerto is installed into the global directory
@@ -237,6 +245,24 @@ class HFCUtil {
             }
         })
         .then((tempDirectoryPath) => {
+            // If the connection options specify a certificate, write that to the file
+            // system for the chaincode to use to communicate with the peer.
+            if (connectOptions.certificate) {
+                return new Promise((resolve, reject) => {
+                    let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'certificate.pem');
+                    fs.outputFile(targetFilePath, connectOptions.certificate, (err) => {
+                        if (err) {
+                            LOG.error('deployChainCode', 'Failed to write certificate.pem', err);
+                            return reject(err);
+                        }
+                        resolve(tempDirectoryPath);
+                    });
+                });
+            } else {
+                return tempDirectoryPath;
+            }
+        })
+        .then((tempDirectoryPath) => {
             // Now we can ask hfc to deploy the chaincode.
             return new Promise((resolve, reject) => {
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
@@ -246,6 +272,9 @@ class HFCUtil {
                     args: args,
                     chaincodePath: chaincodePath
                 };
+                if (connectOptions.certificatePath) {
+                    deployRequest.certificatePath = connectOptions.certificatePath;
+                }
                 let enrolledMember = securityContext.getEnrolledMember();
                 let transactionContext = enrolledMember.deploy(deployRequest);
                 transactionContext.on('complete', (result) => {

@@ -1,15 +1,20 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
 
+const AccessController = require('../lib/accesscontroller');
 const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
@@ -34,13 +39,15 @@ describe('RegistryManager', () => {
     let mockDataService;
     let mockIntrospector;
     let mockSerializer;
+    let mockAccessController;
     let registryManager;
 
     beforeEach(() => {
         mockDataService = sinon.createStubInstance(DataService);
         mockIntrospector = sinon.createStubInstance(Introspector);
         mockSerializer = sinon.createStubInstance(Serializer);
-        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer);
+        mockAccessController = sinon.createStubInstance(AccessController);
+        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer, mockAccessController);
     });
 
     describe('#constructor', () => {
@@ -55,7 +62,7 @@ describe('RegistryManager', () => {
 
         it('should create a new registry and subscribe to its events', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
-            let registry = registryManager.createRegistry(mockDataCollection, mockSerializer, 'Asset', 'doges', 'The doges registry');
+            let registry = registryManager.createRegistry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
             ['resourceadded', 'resourceupdated', 'resourceremoved'].forEach((event) => {
                 let stub = sinon.stub();
                 registryManager.once(event, stub);

@@ -20,8 +20,18 @@ class Factory {
    + Resource newInstance(string,string,string,boolean) throws ModelException
    + Resource newResource(string,string,string,boolean) throws ModelException
    + Relationship newRelationship(string,string,string) throws ModelException
-   + Resource newTransaction(string,string) 
+   + Resource newTransaction(string,string,string,Object,boolean) 
    + Object toJSON() 
+}
+class FileWallet extends Wallet {
+   + string getHomeDirectory() 
+   + void constructor(Object,string,Object) 
+   + Promise list() 
+   + Promise contains(string) 
+   + Promise get(string) 
+   + Promise add(string,string) 
+   + Promise update(string,string) 
+   + Promise remove(string) 
 }
 class IllegalModelException extends BaseException {
    + void constructor(string) 
@@ -86,4 +96,14 @@ class Serializer {
 }
 class ValidationException extends BaseException {
    + void constructor(string) 
+}
+class Wallet {
+   + Wallet getWallet() 
+   + void setWallet(Wallet) 
+   + Promise list() 
+   + Promise contains(string) 
+   + Promise get(string) 
+   + Promise add(string,string) 
+   + Promise update(string,string) 
+   + Promise remove(string) 
 }

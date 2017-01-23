@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -27,7 +31,7 @@ describe('PlantUMLVisitor', function(){
             const mozartScript = fs.readFileSync(path.resolve(__dirname, '../data/model/mozart.cto.js'), 'utf8');
 
             // create and populate the ModelManager with a model file
-            const businessNetworkDefinition = new BusinessNetworkDefinition('com.ibm.concerto.mozart.DefraNetwork-1.0.0', 'DEFRA Animal Tracking Network');
+            const businessNetworkDefinition = new BusinessNetworkDefinition('com.ibm.concerto.mozart.DefraNetwork@1.0.0', 'DEFRA Animal Tracking Network');
             businessNetworkDefinition.getModelManager().addModelFile(mozartModel);
             const script = businessNetworkDefinition.getScriptManager().createScript('mozart.cto.js', 'JS', mozartScript);
             businessNetworkDefinition.getScriptManager().addScript(script);

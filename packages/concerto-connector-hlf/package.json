@@ -23,7 +23,7 @@
     "solutions"
   ],
   "author": "IBM",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "publishConfig": {
     "registry": "https://npm-registry.whitewater.ibm.com"
   },
@@ -40,7 +40,7 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/concerto-common": "~0.3.0-0",
+    "@ibm/concerto-common": "~0.3.2-0",
     "@ibm/concerto-runtime-hlf": "~0.3.0-0",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",

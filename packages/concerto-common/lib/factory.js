@@ -1,33 +1,37 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
 
-const Concept = require('./model/concept');
-const ValidatedConcept = require('./model/validatedconcept');
+const debug = require('debug')('ibm-concerto');
+const Globalize = require('./globalize');
+const InstanceGenerator = require('./serializer/instancegenerator');
+const Relationship = require('./model/relationship');
 
 const Resource = require('./model/resource');
 const ResourceValidator = require('./serializer/resourcevalidator');
-const ValidatedResource = require('./model/validatedresource');
-const Relationship = require('./model/relationship');
-const debug = require('debug')('ibm-concerto');
-const Globalize = require('./globalize');
-const uuid = require('uuid');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
+const TypedStack = require('./serializer/typedstack');
+const uuid = require('uuid');
+const ValidatedResource = require('./model/validatedresource');
 
 /**
  * Use the Factory to create instances of Resource: transactions, participants
  * and assets.
  * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="width:100%;"/></a></p>
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class Factory {
 
@@ -94,13 +98,16 @@ class Factory {
      * @param {string} ns - the namespace of the Resource
      * @param {string} type - the type of the Resource
      * @param {string} id - the identifier
-     * @param {boolean} disableValidation - pass true if you want the factory to
+     * @param {Object} [options] - an optional set of options
+     * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
+     * @param {boolean} [options.generate] - pass true if you want the factory to return a
+     * resource instance with generated sample data.
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      * @deprecated - use newResource instead
      */
-    newInstance(ns, type, id, disableValidation) {
+    newInstance(ns, type, id, options) {
         return this.newResource(ns, type, id, disableValidation);
     }
 
@@ -139,13 +146,24 @@ class Factory {
         }
 
         let newObj = null;
-        if(disableValidation) {
+        options = options || {};
+        if(options.disableValidation) {
             newObj = new Resource(this.modelManager,ns,type,id);
         }
         else {
             newObj = new ValidatedResource(this.modelManager,ns,type,id, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
+
+        if(options.generate) {
+            let visitor = new InstanceGenerator();
+            let parameters = {
+                stack: new TypedStack(newObj),
+                modelManager: this.modelManager,
+                factory: this
+            };
+            classDecl.accept(visitor, parameters);
+        }
 
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
@@ -198,16 +216,21 @@ class Factory {
      * set to a UUID.
      * @param {string} ns - the namespace of the transaction.
      * @param {string} type - the type of the transaction.
+     * @param {string} [id] - an optional identifier for the transaction; if you do not specify
+     * one then an identifier will be automatically generated.
+     * @param {Object} [options] - an optional set of options
+     * @param {boolean} [options.generate] - pass true if you want the factory to return a
+     * resource instance with generated sample data.
      * @return {Resource} A resource for the new transaction.
      */
-    newTransaction(ns, type) {
+    newTransaction(ns, type, id, options) {
         if (!ns) {
             throw new Error('ns not specified');
         } else if (!type) {
             throw new Error('type not specified');
         }
-        let id = uuid.v4();
-        let transaction = this.newInstance(ns, type, id);
+        id = id || uuid.v4();
+        let transaction = this.newInstance(ns, type, id, options);
         const classDeclaration = transaction.getClassDeclaration();
 
         if (!(classDeclaration instanceof TransactionDeclaration)) {

@@ -28,7 +28,7 @@
     "solutions"
   ],
   "author": "IBM",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
@@ -43,7 +43,7 @@
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "@ibm/concerto-common": "~0.3.0-0",
+    "@ibm/concerto-common": "~0.3.2-0",
     "@ibm/concerto-connector-hlf": "~0.3.0-0"
   },
   "publishConfig": {

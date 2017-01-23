@@ -1,15 +1,21 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
 
+const AccessController = require('../lib/accesscontroller');
+const AclManager = require('@ibm/concerto-common').AclManager;
 const Api = require('../lib/api');
 const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 const Context = require('../lib/context');
@@ -32,7 +38,7 @@ const TransactionExecutor = require('../lib/transactionexecutor');
 const TransactionLogger = require('../lib/transactionlogger');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
@@ -122,6 +128,28 @@ describe('Context', () => {
                 });
         });
 
+        it('should load but not set the current participant if an identity is specified and reinitialize is specified', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockDataCollection = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
+            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+            sandbox.stub(context, 'getDataService').returns(mockDataService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
+            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
+            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            mockIdentityService.getCurrentUserID.returns('dogeid1');
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            mockIdentityManager.getParticipant.withArgs('dogeid1').resolves(mockParticipant);
+            return context.initialize(true)
+                .then(() => {
+                    should.equal(context.getParticipant(), null);
+                });
+        });
+
         it('should throw an error if an invalid identity is specified', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             let mockDataCollection = sinon.createStubInstance(DataCollection);
@@ -206,11 +234,28 @@ describe('Context', () => {
             }).should.throw(/must call initialize before calling this function/);
         });
 
-        it('should return the business networks model manager', () => {
+        it('should return the business networks script manager', () => {
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
             context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             context.businessNetworkDefinition.getScriptManager.returns(mockScriptManager);
             context.getScriptManager().should.equal(mockScriptManager);
+        });
+
+    });
+
+    describe('#getAclManager', () => {
+
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getAclManager();
+            }).should.throw(/must call initialize before calling this function/);
+        });
+
+        it('should return the business networks ACL manager', () => {
+            let mockAclManager = sinon.createStubInstance(AclManager);
+            context.businessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            context.businessNetworkDefinition.getAclManager.returns(mockAclManager);
+            context.getAclManager().should.equal(mockAclManager);
         });
 
     });
@@ -275,6 +320,8 @@ describe('Context', () => {
             sinon.stub(context, 'getIntrospector').returns(mockIntrospector);
             let mockSerializer = sinon.createStubInstance(Serializer);
             sinon.stub(context, 'getSerializer').returns(mockSerializer);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            sinon.stub(context, 'getAccessController').returns(mockAccessController);
             context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
         });
 
@@ -372,12 +419,18 @@ describe('Context', () => {
 
         it('should set the current participant and create a participant logger', () => {
             let mockParticipant = sinon.createStubInstance(Resource);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
             context.setParticipant(mockParticipant);
             context.participant.should.equal(mockParticipant);
+            sinon.assert.calledOnce(mockAccessController.setParticipant);
+            sinon.assert.calledWith(mockAccessController.setParticipant, mockParticipant);
         });
 
         it('should throw if a participant has already been set', () => {
             let mockParticipant = sinon.createStubInstance(Resource);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
             context.setParticipant(mockParticipant);
             (() => {
                 context.setParticipant(mockParticipant);
@@ -476,6 +529,22 @@ describe('Context', () => {
             mockTransactionExecutor2.getType.returns('dogelang');
             context.transactionExecutors = [mockTransactionExecutor1, mockTransactionExecutor2];
             context.getTransactionExecutors().should.deep.equal([mockTransactionExecutor1, mockTransactionExecutor2]);
+        });
+
+    });
+
+    describe('#getAccessController', () => {
+
+        it('should return a new access controller', () => {
+            let mockAclManager = sinon.createStubInstance(AclManager);
+            sinon.stub(context, 'getAclManager').returns(mockAclManager);
+            context.getAccessController().should.be.an.instanceOf(AccessController);
+        });
+
+        it('should return an existing query executor', () => {
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
+            context.getAccessController().should.equal(mockAccessController);
         });
 
     });

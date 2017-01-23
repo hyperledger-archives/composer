@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -21,7 +25,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-subset'));
 
-describe('Asset registry system tests', function () {
+describe('Asset system tests', function () {
 
     let businessNetworkDefinition;
     let admin;
@@ -29,16 +33,16 @@ describe('Asset registry system tests', function () {
 
     before(function () {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/assetregistries.cto'), 'utf8')
+            fs.readFileSync(path.resolve(__dirname, 'data/assets.cto'), 'utf8')
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.assetregistries-0.0.1', 'The network for the asset registry system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest.assets@0.0.1', 'The network for the asset system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile);
         });
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.assetregistries')
+                return TestUtil.getClient('systest.assets')
                     .then((result) => {
                         client = result;
                     });
@@ -47,7 +51,7 @@ describe('Asset registry system tests', function () {
 
     let createAsset = (assetId) => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.assetregistries', 'SimpleAsset', assetId);
+        let asset = factory.newInstance('systest.assets', 'SimpleAsset', assetId);
         asset.stringValue = 'hello world';
         asset.stringValues = [ 'hello', 'world' ];
         asset.doubleValue = 3.142;
@@ -67,13 +71,13 @@ describe('Asset registry system tests', function () {
 
     let createAssetContainer = () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetContainer', 'dogeAssetContainer');
+        let asset = factory.newInstance('systest.assets', 'SimpleAssetContainer', 'dogeAssetContainer');
         return asset;
     };
 
     let createAssetRelationshipContainer = () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetRelationshipContainer', 'dogeAssetRelationshipContainer');
+        let asset = factory.newInstance('systest.assets', 'SimpleAssetRelationshipContainer', 'dogeAssetRelationshipContainer');
         return asset;
     };
 
@@ -109,12 +113,12 @@ describe('Asset registry system tests', function () {
     let validateAssetRelationshipContainer = (assetContainer, assetId) => {
         assetContainer.getIdentifier().should.equal(assetId);
         assetContainer.simpleAsset.$class.should.equal('Relationship');
-        assetContainer.simpleAsset.getFullyQualifiedIdentifier().should.equal('systest.assetregistries.SimpleAsset#dogeAsset1');
+        assetContainer.simpleAsset.getFullyQualifiedIdentifier().should.equal('systest.assets.SimpleAsset#dogeAsset1');
         assetContainer.simpleAssets.length.should.equal(2);
         assetContainer.simpleAssets[0].$class.should.equal('Relationship');
-        assetContainer.simpleAssets[0].getFullyQualifiedIdentifier().should.equal('systest.assetregistries.SimpleAsset#dogeAsset2');
+        assetContainer.simpleAssets[0].getFullyQualifiedIdentifier().should.equal('systest.assets.SimpleAsset#dogeAsset2');
         assetContainer.simpleAssets[1].$class.should.equal('Relationship');
-        assetContainer.simpleAssets[1].getFullyQualifiedIdentifier().should.equal('systest.assetregistries.SimpleAsset#dogeAsset3');
+        assetContainer.simpleAssets[1].getFullyQualifiedIdentifier().should.equal('systest.assets.SimpleAsset#dogeAsset3');
     };
 
     let validateResolvedAsset = (asset, assetId) => {
@@ -152,19 +156,19 @@ describe('Asset registry system tests', function () {
             .then(function (assetRegistries) {
                 assetRegistries.length.should.equal(4);
                 assetRegistries.should.containSubset([
-                    {'id': 'systest.assetregistries.SimpleAsset', 'name': 'Asset registry for systest.assetregistries.SimpleAsset'},
-                    {'id': 'systest.assetregistries.SimpleAssetContainer', 'name': 'Asset registry for systest.assetregistries.SimpleAssetContainer'},
-                    {'id': 'systest.assetregistries.SimpleAssetRelationshipContainer', 'name': 'Asset registry for systest.assetregistries.SimpleAssetRelationshipContainer'},
-                    {'id': 'systest.assetregistries.SimpleAssetCircle', 'name': 'Asset registry for systest.assetregistries.SimpleAssetCircle'}
+                    {'id': 'systest.assets.SimpleAsset', 'name': 'Asset registry for systest.assets.SimpleAsset'},
+                    {'id': 'systest.assets.SimpleAssetContainer', 'name': 'Asset registry for systest.assets.SimpleAssetContainer'},
+                    {'id': 'systest.assets.SimpleAssetRelationshipContainer', 'name': 'Asset registry for systest.assets.SimpleAssetRelationshipContainer'},
+                    {'id': 'systest.assets.SimpleAssetCircle', 'name': 'Asset registry for systest.assets.SimpleAssetCircle'}
                 ]);
             });
     });
 
     it('should get an asset registry', function () {
         return client
-            .getAssetRegistry('systest.assetregistries.SimpleAsset')
+            .getAssetRegistry('systest.assets.SimpleAsset')
             .then(function (assetRegistry) {
-                assetRegistry.should.containSubset({'id': 'systest.assetregistries.SimpleAsset', 'name': 'Asset registry for systest.assetregistries.SimpleAsset'});
+                assetRegistry.should.containSubset({'id': 'systest.assets.SimpleAsset', 'name': 'Asset registry for systest.assets.SimpleAsset'});
             });
     });
 
@@ -368,7 +372,7 @@ describe('Asset registry system tests', function () {
         let assetRegistry;
         let assetContainerRegistry;
         return client
-            .getAssetRegistry('systest.assetregistries.SimpleAsset')
+            .getAssetRegistry('systest.assets.SimpleAsset')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
@@ -383,7 +387,7 @@ describe('Asset registry system tests', function () {
                 return assetRegistry.add(asset);
             })
             .then(function () {
-                return client.getAssetRegistry('systest.assetregistries.SimpleAssetContainer');
+                return client.getAssetRegistry('systest.assets.SimpleAssetContainer');
             })
             .then(function (result) {
                 assetContainerRegistry = result;
@@ -412,7 +416,7 @@ describe('Asset registry system tests', function () {
         let assetRegistry;
         let assetContainerRegistry;
         return client
-            .getAssetRegistry('systest.assetregistries.SimpleAsset')
+            .getAssetRegistry('systest.assets.SimpleAsset')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
@@ -427,16 +431,16 @@ describe('Asset registry system tests', function () {
                 return assetRegistry.add(asset);
             })
             .then(function () {
-                return client.getAssetRegistry('systest.assetregistries.SimpleAssetRelationshipContainer');
+                return client.getAssetRegistry('systest.assets.SimpleAssetRelationshipContainer');
             })
             .then(function (result) {
                 assetContainerRegistry = result;
                 let assetContainer = createAssetRelationshipContainer();
                 let factory = client.getBusinessNetwork().getFactory();
-                assetContainer.simpleAsset = factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset1');
+                assetContainer.simpleAsset = factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset1');
                 assetContainer.simpleAssets = [
-                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset2'),
-                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset3')
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset2'),
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset3')
                 ];
                 return assetContainerRegistry.add(assetContainer);
             })
@@ -457,7 +461,7 @@ describe('Asset registry system tests', function () {
         let assetRegistry;
         let assetContainerRegistry;
         return client
-            .getAssetRegistry('systest.assetregistries.SimpleAsset')
+            .getAssetRegistry('systest.assets.SimpleAsset')
             .then(function (result) {
                 assetRegistry = result;
                 let asset = createAsset('dogeAsset1');
@@ -472,16 +476,16 @@ describe('Asset registry system tests', function () {
                 return assetRegistry.add(asset);
             })
             .then(function () {
-                return client.getAssetRegistry('systest.assetregistries.SimpleAssetRelationshipContainer');
+                return client.getAssetRegistry('systest.assets.SimpleAssetRelationshipContainer');
             })
             .then(function (result) {
                 assetContainerRegistry = result;
                 let assetContainer = createAssetRelationshipContainer();
                 let factory = client.getBusinessNetwork().getFactory();
-                assetContainer.simpleAsset = factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset1');
+                assetContainer.simpleAsset = factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset1');
                 assetContainer.simpleAssets = [
-                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset2'),
-                    factory.newRelationship('systest.assetregistries', 'SimpleAsset', 'dogeAsset3')
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset2'),
+                    factory.newRelationship('systest.assets', 'SimpleAsset', 'dogeAsset3')
                 ];
                 return assetContainerRegistry.add(assetContainer);
             })
@@ -502,21 +506,21 @@ describe('Asset registry system tests', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
         return client
-            .getAssetRegistry('systest.assetregistries.SimpleAssetCircle')
+            .getAssetRegistry('systest.assets.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
-                let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
-                asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
+                let asset = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle1');
+                asset.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
                 return assetRegistry.add(asset);
             })
             .then(function () {
-                let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
-                asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
+                let asset = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle2');
+                asset.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
                 return assetRegistry.add(asset);
             })
             .then(function () {
-                let asset = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
-                asset.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                let asset = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle3');
+                asset.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
                 return assetRegistry.add(asset);
             })
             .then(function () {
@@ -572,15 +576,15 @@ describe('Asset registry system tests', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
         return client
-            .getAssetRegistry('systest.assetregistries.SimpleAssetCircle')
+            .getAssetRegistry('systest.assets.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
-                let circle1 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
-                circle1.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
-                let circle2 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
-                circle2.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
-                let circle3 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
-                circle3.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                let circle1 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle1');
+                circle1.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
+                let circle2 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle2');
+                circle2.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
+                let circle3 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle3');
+                circle3.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
                 return assetRegistry.addAll([circle1, circle2, circle3]);
             })
             .then(function () {
@@ -653,15 +657,15 @@ describe('Asset registry system tests', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let assetRegistry;
         return client
-            .getAssetRegistry('systest.assetregistries.SimpleAssetCircle')
+            .getAssetRegistry('systest.assets.SimpleAssetCircle')
             .then(function (result) {
                 assetRegistry = result;
-                let circle1 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
-                circle1.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
-                let circle2 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle2');
-                circle2.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
-                let circle3 = factory.newInstance('systest.assetregistries', 'SimpleAssetCircle', 'circle3');
-                circle3.next = factory.newRelationship('systest.assetregistries', 'SimpleAssetCircle', 'circle1');
+                let circle1 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle1');
+                circle1.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle2');
+                let circle2 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle2');
+                circle2.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle3');
+                let circle3 = factory.newInstance('systest.assets', 'SimpleAssetCircle', 'circle3');
+                circle3.next = factory.newRelationship('systest.assets', 'SimpleAssetCircle', 'circle1');
                 return assetRegistry.addAll([circle1, circle2, circle3]);
             })
             .then(function () {

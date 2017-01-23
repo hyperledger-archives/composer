@@ -1,25 +1,31 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
 
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const fs = require('fs');
+const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
 const hfc = require('hfc');
 const hfcChain = hfc.Chain;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCConnectionManager = require('..');
-const sinon = require('sinon');
-const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
-const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
-const fs = require('fs');
+const HFCWalletProxy = require('../lib/hfcwalletproxy');
+const Wallet = require('@ibm/concerto-common').Wallet;
 
 require('chai').should();
+const sinon = require('sinon');
 
 describe('HFCConnectionManager', () => {
 
@@ -35,6 +41,7 @@ describe('HFCConnectionManager', () => {
     });
 
     afterEach(function() {
+        Wallet.setWallet(null);
         sandbox.restore();
     });
 
@@ -135,7 +142,7 @@ describe('HFCConnectionManager', () => {
                 });
         });
 
-        it('should create and configure a new connection', function() {
+        it('should create and configure a new connection using the key value store', function() {
 
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
@@ -157,9 +164,33 @@ describe('HFCConnectionManager', () => {
                             sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
                             sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
                             sinon.assert.calledOnce(mockChain.addPeer);
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL);
                             connection.should.be.an.instanceOf(HFCConnection);
                             connection.chain.should.equal(mockChain);
                             return true;
+                        });
+                });
+        });
+
+        it('should create and configure a new connection using the wallet proxy', function() {
+
+            // Set the wallet singleton.
+            let mockWallet = sinon.createStubInstance(Wallet);
+            Wallet.setWallet(mockWallet);
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            mockHFC.getChain.returns(mockChain);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork')
+                        .then(function(connection) {
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockChain.setKeyValStore);
+                            sinon.assert.calledWith(mockChain.setKeyValStore, sinon.match.instanceOf(HFCWalletProxy));
                         });
                 });
         });
@@ -293,6 +324,65 @@ describe('HFCConnectionManager', () => {
                         });
                 });
         });
+
+        it('should optionally configure the certificate', function() {
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            let mockKeyValStore = {};
+            mockHFC.getChain.returns(mockChain);
+            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            connectOptions.certificate = '=== such certificate ===';
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork')
+                        .then(() => {
+
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
+                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL, { pem: '=== such certificate ===' });
+                            sinon.assert.calledOnce(mockChain.addPeer);
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL, { pem: '=== such certificate ===' });
+                            sinon.assert.calledOnce(mockChain.eventHubConnect);
+                            sinon.assert.calledWith(mockChain.eventHubConnect, 'grpc://vp1', { pem: '=== such certificate ===' });
+                            return true;
+
+                        });
+                });
+        });
+
+        it('should ignore a certificate that is just whitespace', function() {
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            let mockKeyValStore = {};
+            mockHFC.getChain.returns(mockChain);
+            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            connectOptions.certificate = '     ';
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork')
+                        .then(() => {
+
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
+                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL, { });
+                            sinon.assert.calledOnce(mockChain.addPeer);
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL, { });
+                            sinon.assert.calledOnce(mockChain.eventHubConnect);
+                            sinon.assert.calledWith(mockChain.eventHubConnect, 'grpc://vp1', { });
+                            return true;
+
+                        });
+                });
+        });
+
     });
 
     describe('#onDisconnect', function() {

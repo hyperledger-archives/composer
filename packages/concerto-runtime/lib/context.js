@@ -1,15 +1,20 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
 
+const AccessController = require('./accesscontroller');
 const Api = require('./api');
 const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
@@ -29,7 +34,7 @@ const businessNetworkCache = LRU(8);
  * A class representing the current request being handled by the JavaScript engine.
  * @protected
  * @abstract
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  */
 class Context {
 
@@ -52,18 +57,27 @@ class Context {
     constructor(engine) {
         this.engine = engine;
         this.businessNetworkDefinition = null;
+        this.registryManager = null;
+        this.resolver = null;
+        this.api = null;
+        this.queryExecutor = null;
+        this.identityManager = null;
+        this.participant = null;
         this.transaction = null;
         this.transactionExecutors = [];
+        this.accessController = null;
     }
 
     /**
      * Initialize the context for use.
+     * @param {boolean} [reinitialize] Set to true if being reinitialized as a result
+     * of an upgrade to the business network, falsey value if not.
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    initialize() {
+    initialize(reinitialize) {
         const method = 'initialize';
-        LOG.entry(method);
+        LOG.entry(method, !!reinitialize);
 
         // Load the business network from the archive.
         LOG.debug(method, 'Getting $sysdata collection');
@@ -96,7 +110,11 @@ class Context {
                     return this.getIdentityManager().getParticipant(currentUserID)
                         .then((participant) => {
                             LOG.debug(method, 'Found current participant', participant.getFullyQualifiedIdentifier());
-                            this.setParticipant(participant);
+                            if (!reinitialize) {
+                                this.setParticipant(participant);
+                            } else {
+                                LOG.debug(method, 'Not setting current participant as we are reinitializing');
+                            }
                         })
                         .catch((error) => {
                             LOG.error(method, 'Could not find current participant', error);
@@ -159,6 +177,17 @@ class Context {
     }
 
     /**
+     * Get the ACL manager.
+     * @return {AclManager} The ACL manager.
+     */
+    getAclManager() {
+        if (!this.businessNetworkDefinition) {
+            throw new Error('must call initialize before calling this function');
+        }
+        return this.businessNetworkDefinition.getAclManager();
+    }
+
+    /**
      * Get the factory.
      * @return {Factory} The factory.
      */
@@ -197,7 +226,7 @@ class Context {
      */
     getRegistryManager() {
         if (!this.registryManager) {
-            this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer());
+            this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer(), this.getAccessController());
         }
         return this.registryManager;
     }
@@ -263,6 +292,7 @@ class Context {
             throw new Error('A current participant has already been specified');
         }
         this.participant = participant;
+        this.getAccessController().setParticipant(participant);
     }
 
     /**
@@ -314,6 +344,17 @@ class Context {
      */
     getTransactionExecutors() {
         return this.transactionExecutors;
+    }
+
+    /**
+     * Get the access controller.
+     * @return {AccessController} The access controller.
+     */
+    getAccessController() {
+        if (!this.accessController) {
+            this.accessController = new AccessController(this.getAclManager());
+        }
+        return this.accessController;
     }
 
     /**

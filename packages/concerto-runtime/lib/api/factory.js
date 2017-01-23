@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -16,13 +20,13 @@ const LOG = Logger.getLog('Factory');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:ibm-concerto-runtime#getFactory getFactory}
+ * You must use the {@link module:concerto-runtime#getFactory getFactory}
  * method instead.
  *
  * @class Factory
  * @classdesc A factory creates new instances of assets, participants, transactions,
  * and relationships.
- * @memberof module:ibm-concerto-runtime
+ * @memberof module:concerto-runtime
  * @public
  */
 
@@ -48,7 +52,7 @@ class Factory {
          * properties of the new instance should be set as standard JavaScript
          * object properties. The new instance can then be stored in a registry
          * using the appropriate registry APIs, for example {@link
-         * module:ibm-concerto-runtime.AssetRegistry AssetRegistry}.
+         * module:concerto-runtime.AssetRegistry AssetRegistry}.
          * @example
          * // Get the factory.
          * var factory = getFactory();
@@ -58,7 +62,7 @@ class Factory {
          * vehicle.colour = 'BLUE';
          * vehicle.manufacturer = 'Toyota';
          * @public
-         * @method module:ibm-concerto-runtime.Factory#newInstance
+         * @method module:concerto-runtime.Factory#newInstance
          * @param {string} ns The namespace of the resource to create.
          * @param {string} type The type of the resource to create.
          * @param {string} id The identifier of the new resource.
@@ -86,7 +90,7 @@ class Factory {
          * // Set the relationship as the value of the vehicle property of the driver.
          * driver.vehicle = vehicle;
          * @public
-         * @method module:ibm-concerto-runtime.Factory#newRelationship
+         * @method module:concerto-runtime.Factory#newRelationship
          * @param {string} ns The namespace of the resource referenced by the relationship.
          * @param {string} type The type of the resource referenced by the relationship.
          * @param {string} id The identifier of the resource referenced by the relationship.

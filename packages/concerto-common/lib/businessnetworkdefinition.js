@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -34,7 +38,7 @@ const LOG = Logger.getLog('BusinessNetworkDefinition');
  * the network as well as a set of executable scripts.
  * </p>
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:concerto-common
  */
 class BusinessNetworkDefinition {
 
@@ -45,8 +49,8 @@ class BusinessNetworkDefinition {
      * retrieve instances from {@link BusinessNetworkDefinition.fromArchive}</strong>
      * </p>
      * @param {String} identifier  - the identifier of the business network. The
-     * identifier is formed from a business network name + '-' + version. The
-     * version is a major.minor.micro dotted string.
+     * identifier is formed from a business network name + '@' + version. The
+     * version is a semver valid version string.
      * @param {String} description  - the description of the business network
      */
     constructor(identifier, description) {
@@ -54,17 +58,17 @@ class BusinessNetworkDefinition {
         LOG.entry(method, identifier, description);
         this.identifier = identifier;
 
-        const dashIndex = this.identifier.lastIndexOf('-');
+        const atIndex = this.identifier.lastIndexOf('@');
 
-        if (dashIndex >= 0) {
-            this.name = this.identifier.substring(0, dashIndex);
+        if (atIndex >= 0) {
+            this.name = this.identifier.substring(0, atIndex);
         } else {
-            throw new Error('Malformed business network identifier. It must be "name-major.minor.micro"');
+            throw new Error('Malformed business network identifier. It must be "name@major.minor.micro"');
         }
 
-        this.version = this.identifier.substring(dashIndex + 1);
+        this.version = this.identifier.substring(atIndex + 1);
         if (!semver.valid(this.version)) {
-            throw new Error('Version number is invalid. Should be major.minor.micro but found: ' + this.version);
+            throw new Error('Version number is invalid. Should be valid according to semver but found: ' + this.version);
         }
 
         this.description = description;
@@ -123,6 +127,7 @@ class BusinessNetworkDefinition {
             const allPromises = [];
             let ctoModelFiles = [];
             let jsScriptFiles = [];
+            let permissionsFiles = [];
             let businessNetworkDefinition;
 
             LOG.debug(method, 'Loading package.json');
@@ -138,7 +143,7 @@ class BusinessNetworkDefinition {
                 let packageName = jsonObject.name;
                 let packageVersion = jsonObject.version;
                 let packageDescription = jsonObject.description;
-                businessNetworkDefinition = new BusinessNetworkDefinition(packageName + '-' + packageVersion, packageDescription);
+                businessNetworkDefinition = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription);
             });
 
             LOG.debug(method, 'Looking for model files');
@@ -177,23 +182,28 @@ class BusinessNetworkDefinition {
                 allPromises.push(aclPromise);
                 aclPromise.then(contents => {
                     LOG.debug(method, 'Loaded permissions.acl');
-                    businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), contents));
+                    permissionsFiles.push(contents);
                 });
             }
 
             return Promise.all(allPromises)
                 .then(() => {
-                    LOG.debug(method, 'Loaded all model and JavaScript files');
+                    LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
                     LOG.debug(method, 'Adding model files to model manager');
                     businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles); // Adds all cto files to model manager
                     LOG.debug(method, 'Added model files to model manager');
                     // console.log('What are the jsObjectsArray?',jsObjectArray);
-                    LOG.debug(method, 'Adding JavaScript files to model manager');
+                    LOG.debug(method, 'Adding JavaScript files to script manager');
                     jsScriptFiles.forEach(function(obj) {
                         let jsObject = businessNetworkDefinition.scriptManager.createScript(obj.name, 'js', obj.contents);
                         businessNetworkDefinition.scriptManager.addScript(jsObject); // Adds all js files to script manager
                     });
-                    LOG.debug(method, 'Added JavaScript files to model manager');
+                    LOG.debug(method, 'Added JavaScript files to script manager');
+                    LOG.debug(method, 'Adding ACL files to ACL manager');
+                    permissionsFiles.forEach((permissionFile) => {
+                        businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile));
+                    });
+                    LOG.debug(method, 'Added ACL files to ACL manager');
 
                     LOG.exit(method, businessNetworkDefinition.toString());
                     return businessNetworkDefinition; // Returns business network (with model manager and script manager)
@@ -209,12 +219,11 @@ class BusinessNetworkDefinition {
 
         let zip = new JSZip();
 
-        let bnIdentifier = this.getIdentifier();
-
-        let packageName = bnIdentifier.substring(0, bnIdentifier.lastIndexOf('-'));
-        let packageVersion = bnIdentifier.substring(bnIdentifier.lastIndexOf('-') + 1);
-        let packageDescription = this.getDescription();
-        let packageFileContents = '{"name": "' + packageName + '", "version": "' + packageVersion + '", "description": "' + packageDescription + '"}';
+        let packageFileContents = JSON.stringify({
+            name: this.name,
+            version: this.version,
+            description: this.description
+        });
 
         zip.file('package.json', packageFileContents);
 
@@ -318,7 +327,7 @@ class BusinessNetworkDefinition {
         let packageDescription = jsonObject.description;
 
         // create the business network definition
-        const businessNetwork = new BusinessNetworkDefinition(packageName + '-' + packageVersion, packageDescription);
+        const businessNetwork = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription);
         const modelFiles = [];
 
         // process each module dependency
@@ -330,10 +339,16 @@ class BusinessNetworkDefinition {
 
             for( let dep of dependencies) {
                 // find all the *.cto files under the npm install dependency path
-                const dependencyPath = fsPath.resolve(path, 'node_modules', dep);
+                let dependencyPath = fsPath.resolve(path, 'node_modules', dep);
                 LOG.debug(method, 'Checking dependency path', dependencyPath);
                 if (!fs.existsSync(dependencyPath)) {
-                    throw new Error('npm dependency path ' + dependencyPath + ' does not exist. Did you run npm install?');
+                    // need to check to see if this is in a peer directory as well
+                    //
+                    LOG.debug(method,'trying different path '+path.replace(packageName,''));
+                    dependencyPath = fsPath.resolve(path.replace(packageName,''),dep);
+                    if(!fs.existsSync(dependencyPath)){
+                        throw new Error('npm dependency path ' + dependencyPath + ' does not exist. Did you run npm install?');
+                    }
                 }
 
                 BusinessNetworkDefinition.processDirectory(dependencyPath, {
