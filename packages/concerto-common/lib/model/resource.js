@@ -15,7 +15,6 @@
 'use strict';
 
 const Identifiable = require('./identifiable');
-const Field = require('../introspect/field');
 
 /**
  * <p>
@@ -51,63 +50,6 @@ class Resource extends Identifiable {
      */
     constructor(modelManager, ns, type, id) {
         super(modelManager, ns, type, id);
-    }
-
-    /**
-     * Sets a property on this Resource
-     * @param {string} propName - the name of the field
-     * @param {string} value - the value of the property
-     */
-    setPropertyValue(propName, value) {
-        this[propName] = value;
-    }
-
-    /**
-     * Adds a value to an array property on this Resource
-     * @param {string} propName - the name of the field
-     * @param {string} value - the value of the property
-     */
-    addArrayValue(propName, value) {
-        if(this[propName]) {
-            this[propName].push(value);
-        }
-        else {
-            this[propName] = [value];
-        }
-    }
-
-    /**
-     * Sets the fields to their default values, based on the model
-     * @private
-     */
-    assignFieldDefaults() {
-        let classDeclaration = this.getClassDeclaration();
-        let fields = classDeclaration.getProperties();
-
-        for (let n = 0; n < fields.length; n++) {
-            let field = fields[n];
-            if (field instanceof Field) {
-                let defaultValue = field.getDefaultValue();
-
-                if (defaultValue) {
-                    if (field.getType() === 'String') {
-                        this.setPropertyValue(field.getName(), defaultValue);
-                    } else if (field.getType() === 'Integer') {
-                        this.setPropertyValue(field.getName(), parseInt(defaultValue));
-                    } else if (field.getType() === 'Long') {
-                        this.setPropertyValue(field.getName(), parseInt(defaultValue));
-                    } else if (field.getType() === 'Double') {
-                        this.setPropertyValue(field.getName(), parseFloat(defaultValue));
-                    } else if (field.getType() === 'Boolean') {
-                        this.setPropertyValue(field.getName(), (defaultValue === 'true'));
-                    } else if (field.getType() === 'DateTime') {
-                        const dateTime = new Date();
-                        dateTime.setTime(Date.parse(defaultValue));
-                        this.setPropertyValue(field.getName(), dateTime);
-                    }
-                }
-            }
-        }
     }
 
     /**

@@ -75,7 +75,8 @@ describe('JSONSchemaVisitor', () => {
                 'org.acme.base.DerivedDerivedAsset.json',
                 'org.acme.base.MyBasicTransaction.json',
                 'org.acme.base.MyTransaction.json',
-                'org.acme.base.MyTransactionEx.json'
+                'org.acme.base.MyTransactionEx.json',
+                'org.acme.base.UnitedStatesAddress.json'
             ];
             sinon.assert.callCount(mockFileWriter.openFile, expectedFiles.length);
             let jsonSchemas = {};
@@ -107,9 +108,23 @@ describe('JSONSchemaVisitor', () => {
                     singlePerson: 'PERSON1',
                     personArray: ['PERSON2', 'PERSON3'],
                     myPeople: [{
-                        stringProperty: 'person1'
+                        stringProperty: 'person1',
+                        address: {
+                            $class: 'org.acme.base.UnitedStatesAddress',
+                            zipcode: 'CA',
+                            street: 'Test',
+                            city : 'Winchester',
+                            country : 'USA'
+                        }
                     }, {
-                        stringProperty: 'person2'
+                        stringProperty: 'person2',
+                        address: {
+                            $class: 'org.acme.base.UnitedStatesAddress',
+                            zipcode: 'CA',
+                            street: 'Test',
+                            city : 'Winchester',
+                            country : 'USA'
+                        }
                     }]
                 },
                 'org.acme.base.DerivedAsset.json': {
@@ -169,6 +184,13 @@ describe('JSONSchemaVisitor', () => {
                     }],
                     transactionId: 'transaction2',
                     timestamp: new Date().toISOString()
+                },
+                'org.acme.base.UnitedStatesAddress.json' : {
+                    $class: 'org.acme.base.UnitedStatesAddress',
+                    zipcode: 'CA',
+                    street: 'Test',
+                    city : 'Winchester',
+                    country : 'USA'
                 }
             };
 

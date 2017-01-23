@@ -18,6 +18,7 @@ const ClassDeclaration = require('../introspect/classdeclaration');
 const Field = require('../introspect/field');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const Resource = require('../model/resource');
+const Concept = require('../model/concept');
 const Relationship = require('../model/relationship');
 const ModelUtil = require('../modelutil');
 const Util = require('../util');
@@ -77,7 +78,10 @@ class JSONGenerator {
         parameters.writer.openObject();
         parameters.writer.writeKeyStringValue('$class', classDeclaration.getFullyQualifiedName());
 
-        const obj = parameters.stack.pop(Resource);
+        const obj = parameters.stack.pop();
+        if(!((obj instanceof Resource) || (obj instanceof Concept))) {
+            throw new Error('Expected a Resource or a Concept, but found ' + obj );
+        }
         const properties = classDeclaration.getProperties();
         for(let n=0; n < properties.length; n++) {
             const property = properties[n];

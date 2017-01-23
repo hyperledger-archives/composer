@@ -14,7 +14,7 @@
 
 'use strict';
 
-const IDENTIFIABLE_SYSTEM_PROPERTIES = ['$validator', '$class', '$modelManager', '$namespace', '$identifier', '$type'];
+const Typed = require('./typed');
 
 /**
  * Identifiable is an entity with a namespace, type and an identifier.
@@ -24,7 +24,7 @@ const IDENTIFIABLE_SYSTEM_PROPERTIES = ['$validator', '$class', '$modelManager',
  * @class
  * @memberof module:concerto-common
  */
-class Identifiable {
+class Identifiable extends Typed{
     /**
      * Create an instance.
      * <p>
@@ -39,30 +39,8 @@ class Identifiable {
      * @private
      */
     constructor(modelManager, ns, type, id) {
-        this.$modelManager = modelManager;
-        this.$namespace = ns;
+        super(modelManager, ns, type);
         this.$identifier = id;
-        this.$type = type;
-    }
-
-    /**
-     * Visitor design pattern
-     * @param {Object} visitor - the visitor
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    accept(visitor,parameters) {
-        return visitor.visit(this, parameters);
-    }
-
-    /**
-     * Get the ModelManager for this instance
-     * @return {ModelManager} The ModelManager for this object
-     * @private
-     */
-    getModelManager() {
-        return this.$modelManager;
     }
 
     /**
@@ -95,80 +73,11 @@ class Identifiable {
     }
 
     /**
-     * Get the type of the instance (a short name, not including namespace).
-     * @return {string} The type of this object
-     */
-    getType() {
-        return this.$type;
-    }
-
-    /**
-     * Get the fully-qualified type name of the instance (including namespace).
-     * @return {string} The fully-qualified type name of this object
-     */
-    getFullyQualifiedType() {
-        return this.$namespace + '.' + this.$type;
-    }
-
-    /**
-     * Get the namespace of the instance.
-     * @return {string} The namespace of this object
-     */
-    getNamespace() {
-        return this.$namespace;
-    }
-
-    /**
-     * Returns the class declaration for this instance object.
-     *
-     * @return {ClassDeclaration} - the class declaration for this instance
-     * @throws {Error} - if the class or namespace for the instance is not declared
-     * @private
-     */
-    getClassDeclaration() {
-        // do we have a model file?
-        let modelFile = this.getModelManager().getModelFile(this.getNamespace());
-
-        if (!modelFile) {
-            throw new Error('No model for namespace ' + this.getNamespace() + ' is registered with the ModelManager');
-        }
-
-        // do we have a class?
-        let classDeclaration = modelFile.getType(this.getType());
-
-        if (!classDeclaration) {
-            throw new Error('The namespace ' + this.getNamespace() + ' does not contain the type ' + this.getType());
-        }
-
-        return classDeclaration;
-    }
-
-    /**
-     * Overriden to prevent people accidentally converting a resource to JSON
-     * without using the Serializer.
-     * @private
-     */
-    toJSON() {
-        throw new Error('Use Serializer.toJSON to convert resource instances to JSON objects.');
-    }
-
-    /**
      * Returns the string representation of this class
      * @return {String} the string representation of the class
      */
     toString() {
         return 'Identifiable {id=' + this.getFullyQualifiedIdentifier() +'}';
-    }
-
-    /**
-     *  Returns true if the property is a system
-     * property.
-     * @param {string} name - the name of the property
-     * @return {boolean} true if the property is a system property
-     * @private
-     */
-    static isSystemProperty(name) {
-        return IDENTIFIABLE_SYSTEM_PROPERTIES.indexOf(name) >= 0;
     }
 
     /**
@@ -188,7 +97,6 @@ class Identifiable {
     isResource() {
         return false;
     }
-
 }
 
 module.exports = Identifiable;

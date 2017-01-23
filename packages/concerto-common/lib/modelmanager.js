@@ -321,6 +321,16 @@ class ModelManager {
     }
 
     /**
+     * Get the Concepts defined in this model manager
+     * @return {ConceptDeclaration[]} the ConceptDeclaration defined in the model manager
+     */
+    getConceptDeclarations() {
+        return this.getModelFiles().reduce((prev, cur) => {
+            return prev.concat(cur.getConceptDeclarations());
+        }, []);
+    }
+
+    /**
      * Stop serialization of this object.
      * @return {Object} An empty object.
      */

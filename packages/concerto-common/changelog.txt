@@ -12,8 +12,11 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.3.3 {120eb2d3b0e487c6e95696aadecec93a} 2017-01-18
+- Add support for Concepts
+
 Version 0.3.2 {c2fe56f50e1d1a2ac966dd23ebba2620} 2017-01-12
-- Add initial wallet API 
+- Add initial wallet API
 
 Version 0.3.1 {48540f8e5dace54cebaab04353bd7136} 2017-01-10
 - Add options to factory to generate resource instances with sample data

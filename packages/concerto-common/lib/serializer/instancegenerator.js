@@ -20,7 +20,6 @@ const Field = require('../introspect/field');
 const leftPad = require('left-pad');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
-const Resource = require('../model/resource');
 const randomWords = require('random-words');
 const Util = require('../util');
 
@@ -61,7 +60,7 @@ class InstanceGenerator {
      * @private
      */
     visitClassDeclaration(classDeclaration, parameters) {
-        const obj = parameters.stack.pop(Resource);
+        const obj = parameters.stack.pop();
         const properties = classDeclaration.getProperties();
         for(let n=0; n < properties.length; n++) {
             const property = properties[n];

@@ -20,6 +20,7 @@ const RelationshipDeclaration = require('../introspect/relationshipdeclaration')
 const EnumDeclaration = require('../introspect/enumdeclaration');
 const Relationship = require('../model/relationship');
 const Resource = require('../model/resource');
+const Concept = require('../model/concept');
 const Identifiable = require('../model/identifiable');
 const Util = require('../util');
 const ModelUtil = require('../modelutil');
@@ -108,11 +109,14 @@ class ResourceValidator {
         const obj = parameters.stack.pop();
 
         // are we dealing with a Resouce?
-        if(!(obj instanceof Resource)) {
+        if(!((obj instanceof Resource) || (obj instanceof Concept))) {
             ResourceValidator.reportNotResouceViolation(parameters.rootResourceIdentifier, classDeclaration, obj );
         }
 
-        parameters.rootResourceIdentifier = obj.getFullyQualifiedIdentifier();
+        if(obj instanceof Identifiable) {
+            parameters.rootResourceIdentifier = obj.getFullyQualifiedIdentifier();
+        }
+
         const toBeAssignedClassDeclaration = parameters.modelManager.getType(obj.getFullyQualifiedType());
 
         // is the type we are assigning to abstract?
@@ -126,7 +130,7 @@ class ResourceValidator {
         let props = Object.getOwnPropertyNames(obj);
         for (let n = 0; n < props.length; n++) {
             let propName = props[n];
-            if(!Identifiable.isSystemProperty(propName)) {
+            if(!this.isSystemProperty(propName)) {
                 const field = toBeAssignedClassDeclaration.getProperty(propName);
                 if (!field) {
                     ResourceValidator.reportUndeclaredField(obj.getIdentifier(), propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
@@ -134,7 +138,9 @@ class ResourceValidator {
             }
         }
 
-        this.currentIdentifier = obj.getFullyQualifiedIdentifier();
+        if(obj instanceof Identifiable) {
+            this.currentIdentifier = obj.getFullyQualifiedIdentifier();
+        }
 
         // now validate each property
         const properties = toBeAssignedClassDeclaration.getProperties();
@@ -152,6 +158,17 @@ class ResourceValidator {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns true if the property is a system property.
+     * System properties are not declared in the model.
+     * @param {String} propertyName - the name of the property
+     * @return {Boolean} true if the property is a system property
+     * @private
+     */
+    isSystemProperty(propertyName) {
+        return propertyName.charAt(0) === '$';
     }
 
     /**
@@ -347,6 +364,10 @@ class ResourceValidator {
 
         const relationshipType = parameters.modelManager.getType(obj.getFullyQualifiedType());
 
+        if(relationshipType.isConcept()) {
+            throw new Error('Cannot have a relationship to a concept. Relationships must be to resources.');
+        }
+
         if(!ModelUtil.isAssignableTo(relationshipType.getModelFile(), obj.getFullyQualifiedType(), relationshipDeclaration)) {
             ResourceValidator.reportInvalidFieldAssignment(parameters.rootResourceIdentifier, relationshipDeclaration.getName(), obj, relationshipDeclaration);
         }
@@ -413,7 +434,7 @@ class ResourceValidator {
      * @private
      */
     static reportNotResouceViolation(id, classDeclaration, value) {
-        let formatter = Globalize.messageFormatter('resourcevalidator-notresource');
+        let formatter = Globalize.messageFormatter('resourcevalidator-notresourceorconcept');
         throw new ValidationException(formatter({
             resourceId: id,
             classFQN: classDeclaration.getFullyQualifiedName(),
@@ -508,11 +529,17 @@ class ResourceValidator {
      */
     static reportInvalidFieldAssignment(resourceId, propName, obj, field) {
         let formatter = Globalize.messageFormatter('resourcevalidator-invalidfieldassignment');
+        let typeName = field.getFullyQualifiedTypeName();
+
+        if(field.isArray()) {
+            typeName += '[]';
+        }
+
         throw new ValidationException(formatter({
             resourceId: resourceId,
             propertyName: propName,
             objectType: obj.getFullyQualifiedType(),
-            fieldType: field.getFullyQualifiedTypeName()
+            fieldType: typeName
         }));
     }
 }
