@@ -1,6 +1,6 @@
 {
   "name": "@ibm/concerto-connector-web",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "The web client connector for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -62,8 +62,8 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "@ibm/concerto-common": "^0.3.3",
-    "@ibm/concerto-runtime": "^0.3.3",
-    "@ibm/concerto-runtime-web": "^0.3.3"
+    "@ibm/concerto-common": "^0.3.4",
+    "@ibm/concerto-runtime": "^0.3.4",
+    "@ibm/concerto-runtime-web": "^0.3.4"
   }
 }

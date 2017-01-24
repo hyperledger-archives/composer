@@ -108,7 +108,7 @@ if (mismatch && !fix) {
     console.error(`Run "scripts/pkgcheck.js --fix" inside the directory "${lernaDirectory}" to resolve this problem and change the version to "${targetVersion}"`);
     process.exit(1);
 } else if (mismatch && fix) {
-    const command = `lerna publish --skip-git --skip-npm --yes --repo-version ${targetVersion}`;
+    const command = `lerna publish --skip-git --skip-npm --yes --repo-version ${targetVersion} --force-publish '*'`;
     console.warn(`Status: running command ${command} to fix problems ...`)
     child_process.execSync(command);
     console.warn(`Status: modifying "${masterPackageFile} to fix problems ...`);
