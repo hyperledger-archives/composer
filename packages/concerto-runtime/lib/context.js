@@ -83,6 +83,12 @@ class Context {
         LOG.debug(method, 'Getting $sysdata collection');
         return this.getDataService().getCollection('$sysdata')
             .then((collection) => {
+
+                // check if the network has been undeployed first. if is has throw exception.
+                if (collection.undeployed){
+                    throw new Error('Network has already been undeployed');
+                }
+
                 LOG.debug(method, 'Getting business network archive from the $sysdata collection');
                 return collection.get('businessnetwork');
             })

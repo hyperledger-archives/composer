@@ -13,7 +13,8 @@
     "bootstrap": "lerna bootstrap",
     "test": "lerna run test",
     "script": "./scripts/script.sh",
-    "deploy": "./scripts/deploy.sh"
+    "deploy": "./scripts/deploy.sh",
+    "scanlicenses": "./scripts/scan-all-licenses.sh"
   },
   "repository": {
     "type": "git",
