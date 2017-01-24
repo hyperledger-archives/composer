@@ -39,7 +39,7 @@
   "dependencies": {
     "@ibm/concerto-admin": "~0.3.0-0",
     "@ibm/concerto-client": "~0.3.0-0",
-    "@ibm/concerto-common": "~0.3.2-0",
+    "@ibm/concerto-common": "~0.3.3-0",
     "homedir": "^0.6.0",
     "moment": "^2.17.1",
     "npm-paths": "^0.1.3",
