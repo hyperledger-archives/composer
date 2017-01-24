@@ -47,10 +47,10 @@ else
 
     # Push the changes back into GitHub.
     git config user.name "Travis CI"
-    git config user.email "travis@ibm.com"
+    git config user.email "noreply@travis.ibm.com"
     git checkout -b develop
     git add .
     git commit -m "Automatic version bump to ${VERSION}"
-    git push origin HEAD:develop
+    git push origin develop
 
 fi
