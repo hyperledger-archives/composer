@@ -1,6 +1,6 @@
 {
   "name": "@ibm/loopback-connector-concerto",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "A Loopback connector for IBM Concerto, the Blockchain Solution Framework.",
   "main": "index.js",
   "scripts": {
@@ -25,11 +25,11 @@
   "author": "IBM",
   "license": "ISC",
   "dependencies": {
-    "@ibm/concerto-admin": "^0.3.4",
-    "@ibm/concerto-client": "^0.3.4",
-    "@ibm/concerto-common": "^0.3.4",
-    "@ibm/concerto-connector-embedded": "^0.3.4",
-    "@ibm/concerto-connector-web": "^0.3.4",
+    "@ibm/concerto-admin": "^0.3.5",
+    "@ibm/concerto-client": "^0.3.5",
+    "@ibm/concerto-common": "^0.3.5",
+    "@ibm/concerto-connector-embedded": "^0.3.5",
+    "@ibm/concerto-connector-web": "^0.3.5",
     "loopback-connector": "^2.5.0"
   },
   "devDependencies": {
