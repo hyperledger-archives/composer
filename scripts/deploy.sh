@@ -43,13 +43,14 @@ else
 
     # Bump the version number.
     npm run pkgbump
+    export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 
     # Push the changes back into GitHub.
     git config user.name "Travis CI"
     git config user.email "travis@ibm.com"
-    git checkout develop
+    git checkout -b develop
     git add .
-    git commit -m "Automated version bump"
-    git push
+    git commit -m "Automatic version bump to ${VERSION}"
+    git push origin HEAD:develop
 
 fi
