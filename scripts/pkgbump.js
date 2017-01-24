@@ -24,4 +24,4 @@ const lernaConfigFile = path.resolve(lernaDirectory, 'lerna.json');
 const lernaConfig = require(lernaConfigFile);
 const targetVersion = semver.inc(lernaConfig.version, 'patch');
 lernaConfig.version = targetVersion;
-fs.writeFileSync(lernaConfigFile, JSON.stringify(lernaConfig, null, 4), 'utf8');
+fs.writeFileSync(lernaConfigFile, JSON.stringify(lernaConfig, null, 2), 'utf8');

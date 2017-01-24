@@ -27,12 +27,12 @@ const lernaConfig = require(lernaConfigFile);
 lernaConfig.version.replace(/-.*/, '');
 const targetVersion = lernaConfig.version + '-' + timestamp;
 lernaConfig.version = targetVersion;
-fs.writeFileSync(lernaConfigFile, JSON.stringify(lernaConfig, null, 4), 'utf8');
+fs.writeFileSync(lernaConfigFile, JSON.stringify(lernaConfig, null, 2), 'utf8');
 
 const masterPackageFile = path.resolve(lernaDirectory, 'package.json');
 const masterPackage = require(masterPackageFile);
 masterPackage.version = targetVersion;
-fs.writeFileSync(masterPackageFile, JSON.stringify(masterPackage, null, 4), 'utf8');
+fs.writeFileSync(masterPackageFile, JSON.stringify(masterPackage, null, 2), 'utf8');
 
 const packagesDirectory = path.resolve(lernaDirectory, 'packages');
 const packageNames = fs.readdirSync(packagesDirectory);
@@ -62,5 +62,5 @@ for (const i in packages) {
         }
     }
     const packageFile = path.resolve(packagesDirectory, i, 'package.json');
-    fs.writeFileSync(packageFile, JSON.stringify(currentPackage, null, 4), 'utf8');
+    fs.writeFileSync(packageFile, JSON.stringify(currentPackage, null, 2), 'utf8');
 }

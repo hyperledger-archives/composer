@@ -113,7 +113,7 @@ if (mismatch && !fix) {
     child_process.execSync(command);
     console.warn(`Status: modifying "${masterPackageFile} to fix problems ...`);
     masterPackage.version = targetVersion;
-    fs.writeFileSync(masterPackageFile, JSON.stringify(masterPackage, null, 4), 'utf8');
+    fs.writeFileSync(masterPackageFile, JSON.stringify(masterPackage, null, 2), 'utf8');
 } else {
     console.log('Status: no problems detected!');
 }
