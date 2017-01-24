@@ -25,11 +25,14 @@ if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
     exit 0
 fi
 
+# Determine the repository wide version.
+export VERSION=$(node -e "console.log(require('$DIR/package.json').version)")
+
 # If this is not for a tagged (release) build, set the prerelease version.
 if [ -z "${TRAVIS_TAG}" ]; then
-    lerna exec --ignore '@ibm/concerto-systests' -- ${DIR}/scripts/timestamp.js package.json 2>&1 | tee
+    export TIMESTAMP=$(date +%Y%m%d%H%M%S)
+    export VERSION="${VERSION}-${TIMESTAMP}"
+    lerna publish --skip-git --npm-tag unstable --force-publish --yes --repo-version "${VERSION}" 2>&1 | tee
+else
+    lerna publish --skip-git --force-publish --yes --repo-version "${VERSION}" 2>&1 | tee
 fi
-
-# Publish with latest tag (default).
-echo "Pushing with tag latest"
-lerna exec --ignore '@ibm/concerto-systests' -- npm publish --scope=@ibm 2>&1 | tee
