@@ -53,7 +53,7 @@ describe('EmbeddedLoggingService', () => {
 
     });
 
-    describe('#logDebug', () => {
+    describe.skip('#logDebug', () => {
 
         it('should call the console logger', () => {
             sandbox.stub(console, 'log');
