@@ -216,23 +216,30 @@ class TestUtil {
      * connected instance of {@link BusinessNetworkConnection}.
      */
     static getClient(network, enrollmentID, enrollmentSecret) {
-        enrollmentID = enrollmentID || 'admin';
-        enrollmentSecret = enrollmentSecret || 'Xurw3yU9zI0l';
+        let thisClient;
         return Promise.resolve()
         .then(() => {
-            if (client) {
+            if (enrollmentID) {
+                thisClient = new BusinessNetworkConnection();
+                process.on('exit', () => {
+                    thisClient.disconnect();
+                });
+            } else if (client) {
+                thisClient = client;
                 return client.disconnect();
             } else {
-                client = new BusinessNetworkConnection();
+                thisClient = client = new BusinessNetworkConnection();
                 return;
             }
         })
         .then(() => {
+            enrollmentID = enrollmentID || 'admin';
+            enrollmentSecret = enrollmentSecret || 'Xurw3yU9zI0l';
             console.log(`Calling Client.connect('concerto-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
-            return client.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
+            return thisClient.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
         })
         .then(() => {
-            return client;
+            return thisClient;
         });
     }
 

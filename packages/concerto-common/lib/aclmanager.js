@@ -14,6 +14,8 @@
 
 'use strict';
 
+const AclFile = require('./acl/aclfile');
+
 /**
  * <p>
  * Manages a set of ACL rules.
@@ -46,6 +48,16 @@ class AclManager {
      */
     accept(visitor,parameters) {
         return visitor.visit(this, parameters);
+    }
+
+    /**
+     * Create an ACL file using the specified ID and contents.
+     * @param {string} identifier The identifier of the ACL file.
+     * @param {string} contents The contents of the ACL file.
+     * @return {AclFile} The new ACL file.
+     */
+    createAclFile(identifier, contents) {
+        return new AclFile(identifier, this.modelManager, contents);
     }
 
     /**
