@@ -1,6 +1,6 @@
 {
   "name": "@ibm/concerto-runtime-web",
-  "version": "0.3.0",
+  "version": "0.3.3",
   "description": "The web runtime container for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
@@ -62,7 +62,7 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/concerto-runtime": "~0.3.0-0",
+    "@ibm/concerto-runtime": "^0.3.3",
     "dexie": "^1.5.1",
     "uuid": "^3.0.1"
   }
