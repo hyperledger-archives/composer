@@ -8,7 +8,7 @@
   },
   "name": "@ibm/concerto",
   "description": "You must install [Lerna](https://lernajs.io) to build this multi-package repository.",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "main": "index.js",
   "private": true,
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "@ibm/concerto-connector-embedded",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "The embedded client connector for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
   "scripts": {
@@ -52,8 +52,8 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "@ibm/concerto-common": "^0.3.6",
-    "@ibm/concerto-runtime": "^0.3.6",
-    "@ibm/concerto-runtime-embedded": "^0.3.6"
+    "@ibm/concerto-common": "^0.3.7",
+    "@ibm/concerto-runtime": "^0.3.7",
+    "@ibm/concerto-runtime-embedded": "^0.3.7"
   }
 }
