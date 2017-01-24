@@ -52,6 +52,13 @@ class Registry extends EventEmitter {
             .then((resources) => {
                 return resources.map((resource) => {
                     return this.serializer.fromJSON(resource);
+                }).filter((resource) => {
+                    try {
+                        this.accessController.check(resource, 'READ');
+                        return true;
+                    } catch (e) {
+                        return false;
+                    }
                 });
             });
     }
@@ -63,9 +70,18 @@ class Registry extends EventEmitter {
      * object when complete, or rejected with an error.
      */
     get(id) {
-        return this.dataCollection.get(id)
+        return Promise.resolve()
+            .then(() => {
+                return this.dataCollection.get(id);
+            })
             .then((resource) => {
-                return this.serializer.fromJSON(resource);
+                let result = this.serializer.fromJSON(resource);
+                try {
+                    this.accessController.check(result, 'READ');
+                    return result;
+                } catch (e) {
+                    throw new Error(`Object with ID '${id}' in collection with ID '${this.type}:${this.id}' does not exist`);
+                }
             });
     }
 
@@ -76,7 +92,21 @@ class Registry extends EventEmitter {
      * indicating whether the asset exists.
      */
     exists(id) {
-        return this.dataCollection.exists(id);
+        return this.dataCollection.exists(id)
+            .then((exists) => {
+                if (exists) {
+                    return this.dataCollection.get(id)
+                        .then((resource) => {
+                            let result = this.serializer.fromJSON(resource);
+                            try {
+                                this.accessController.check(result, 'READ');
+                                return true;
+                            } catch (e) {
+                                return false;
+                            }
+                        });
+                }
+            });
     }
 
     /**

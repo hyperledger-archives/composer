@@ -35,7 +35,7 @@ class WebLoggingService extends LoggingService {
      * @param {string} message The message to write to the log.
      */
     logDebug(message) {
-        console.debug(message);
+        // console.debug(message);
     }
 
     /**

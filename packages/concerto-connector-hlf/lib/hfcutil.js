@@ -370,6 +370,7 @@ class HFCUtil {
                     value: attributes[attribute]
                 });
             }
+            chain.setRegistrar(enrolledMember);
             chain.register(registerRequest, (error, userSecret) => {
                 if (error) {
                     LOG.error(method, 'Register request failed', error);

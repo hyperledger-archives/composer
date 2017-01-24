@@ -58,8 +58,9 @@ describe('WebLoggingService', () => {
         it('should call the console logger', () => {
             sandbox.stub(console, 'debug');
             loggingService.logDebug('doge');
-            sinon.assert.calledOnce(console.debug);
-            sinon.assert.calledWith(console.debug, 'doge');
+            sinon.assert.notCalled(console.debug);
+            // sinon.assert.calledOnce(console.debug);
+            // sinon.assert.calledWith(console.debug, 'doge');
         });
 
     });

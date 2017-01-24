@@ -55,7 +55,9 @@ describe('Registry', () => {
 
     describe('#getAll', () => {
 
-        it('should get and parse all of the resources in the registry', () => {
+        let mockResource1, mockResource2;
+
+        beforeEach(() => {
             mockDataCollection.getAll.resolves([{
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
@@ -63,8 +65,10 @@ describe('Registry', () => {
                 $class: 'org.doge.Doge',
                 assetId: 'doge2'
             }]);
-            let mockResource1 = sinon.createStubInstance(Resource);
-            let mockResource2 = sinon.createStubInstance(Resource);
+            mockResource1 = sinon.createStubInstance(Resource);
+            mockResource1.theValue = 'the value 1';
+            mockResource2 = sinon.createStubInstance(Resource);
+            mockResource2.theValue = 'the value 2';
             mockSerializer.fromJSON.withArgs({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
@@ -73,10 +77,28 @@ describe('Registry', () => {
                 $class: 'org.doge.Doge',
                 assetId: 'doge2'
             }).returns(mockResource2);
+        });
+
+        it('should get and parse all of the resources in the registry', () => {
             return registry.getAll()
                 .then((resources) => {
+                    sinon.assert.calledTwice(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource1, 'READ');
+                    sinon.assert.calledWith(mockAccessController.check, mockResource2, 'READ');
                     resources.should.all.be.an.instanceOf(Resource);
                     resources.should.deep.equal([mockResource1, mockResource2]);
+                });
+        });
+
+        it('should not throw or leak information about resources that cannot be accessed', () => {
+            mockAccessController.check.withArgs(mockResource2, 'READ').throws(new AccessException(mockResource2, 'READ', mockParticipant));
+            return registry.getAll()
+                .then((resources) => {
+                    sinon.assert.calledTwice(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource1, 'READ');
+                    sinon.assert.calledWith(mockAccessController.check, mockResource2, 'READ');
+                    resources.should.all.be.an.instanceOf(Resource);
+                    resources.should.deep.equal([mockResource1]);
                 });
         });
 
@@ -89,25 +111,38 @@ describe('Registry', () => {
 
     describe('#get', () => {
 
-        it('should get the specific resource in the registry', () => {
+        let mockResource;
+
+        beforeEach(() => {
             mockDataCollection.get.withArgs('doge1').resolves({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             });
-            let mockResource = sinon.createStubInstance(Resource);
+            mockResource = sinon.createStubInstance(Resource);
             mockSerializer.fromJSON.withArgs({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             }).returns(mockResource);
+        });
+
+        it('should get the specific resource in the registry', () => {
             return registry.get('doge1')
                 .then((resource) => {
+                    sinon.assert.calledOnce(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource, 'READ');
                     resource.should.be.an.instanceOf(Resource);
                     resource.should.deep.equal(mockResource);
                 });
         });
 
+        it('should not throw or leak information about resources that cannot be accessed', () => {
+            mockAccessController.check.withArgs(mockResource, 'READ').throws(new AccessException(mockResource, 'READ', mockParticipant));
+            return registry.get('doge1')
+                .should.be.rejectedWith(/does not exist/);
+        });
+
         it('should return errors from the data service', () => {
-            mockDataCollection.get.rejects();
+            mockDataCollection.get.withArgs('doge1').rejects();
             return registry.get('doge1').should.be.rejected;
         });
 
@@ -115,16 +150,42 @@ describe('Registry', () => {
 
     describe('#exists', () => {
 
-        it('should determine whether a specific resource exists in the registry', () => {
+        let mockResource;
+
+        beforeEach(() => {
             mockDataCollection.exists.withArgs('doge1').resolves(true);
+            mockDataCollection.get.withArgs('doge1').resolves({
+                $class: 'org.doge.Doge',
+                assetId: 'doge1'
+            });
+            mockResource = sinon.createStubInstance(Resource);
+            mockSerializer.fromJSON.withArgs({
+                $class: 'org.doge.Doge',
+                assetId: 'doge1'
+            }).returns(mockResource);
+        });
+
+        it('should determine whether a specific resource exists in the registry', () => {
             return registry.exists('doge1')
                 .then((exists) => {
                     exists.should.equal.true;
+                    sinon.assert.calledOnce(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource, 'READ');
+                });
+        });
+
+        it('should not throw or leak information about resources that cannot be accessed', () => {
+            mockAccessController.check.withArgs(mockResource, 'READ').throws(new AccessException(mockResource, 'READ', mockParticipant));
+            return registry.exists('doge1')
+                .should.eventually.equal(false)
+                .then(() => {
+                    sinon.assert.calledOnce(mockAccessController.check);
+                    sinon.assert.calledWith(mockAccessController.check, mockResource, 'READ');
                 });
         });
 
         it('should return errors from the data service', () => {
-            mockDataCollection.exists.rejects();
+            mockDataCollection.exists.withArgs('doge1').rejects();
             return registry.exists('doge1').should.be.rejected;
         });
 
@@ -137,14 +198,16 @@ describe('Registry', () => {
         beforeEach(() => {
             // New resources.
             mockResource1 = sinon.createStubInstance(Resource);
+            mockResource1.theValue = 'the value 1';
             mockResource1.getIdentifier.returns('doge1');
             mockSerializer.toJSON.withArgs(mockResource1).onFirstCall().returns({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
             });
             mockResource2 = sinon.createStubInstance(Resource);
+            mockResource2.theValue = 'the value 2';
             mockResource2.getIdentifier.returns('doge2');
-            mockSerializer.toJSON.withArgs(mockResource2).onSecondCall().returns({
+            mockSerializer.toJSON.withArgs(mockResource2).onFirstCall().returns({
                 $class: 'org.doge.Doge',
                 assetId: 'doge2'
             });
@@ -202,6 +265,7 @@ describe('Registry', () => {
         beforeEach(() => {
             // New resources.
             mockResource = sinon.createStubInstance(Resource);
+            mockResource.theValue = 'the value 1';
             mockResource.getIdentifier.returns('doge1');
             mockSerializer.toJSON.withArgs(mockResource).onFirstCall().returns({
                 $class: 'org.doge.Doge',
@@ -417,6 +481,7 @@ describe('Registry', () => {
             // Old resources.
             // Deleting a resource by ID currently requires that we read it from the registry.
             mockResource1 = sinon.createStubInstance(Resource);
+            mockResource1.theValue = 'the value 1';
             mockResource1.getIdentifier.returns('doge1');
             mockSerializer.toJSON.withArgs(mockResource1).onFirstCall().returns({
                 $class: 'org.doge.Doge',
@@ -427,6 +492,7 @@ describe('Registry', () => {
                 assetId: 'doge2'
             });
             mockResource2 = sinon.createStubInstance(Resource);
+            mockResource2.theValue = 'the value 2';
             mockResource2.getIdentifier.returns('doge2');
             mockSerializer.fromJSON.withArgs({
                 $class: 'org.doge.Doge',
@@ -484,6 +550,7 @@ describe('Registry', () => {
                 assetId: 'doge1'
             });
             mockResource = sinon.createStubInstance(Resource);
+            mockResource.theValue = 'the value 1';
             mockResource.getIdentifier.returns('doge1');
             mockSerializer.fromJSON.withArgs({
                 $class: 'org.doge.Doge',
