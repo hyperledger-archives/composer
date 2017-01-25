@@ -2,18 +2,18 @@ language: node_js
 node_js:
     - '4'
     - '6'
-# matrix:
-#     include:
-#         - env: SYSTEST=embedded
-#         - env: SYSTEST=web
-#         - env: SYSTEST=hlf SYSTEST_HLF=hlf
-#           sudo: required
-#           services:
-#             - docker
-#         - env: SYSTEST=hlf SYSTEST_HLF=ibm
-#           sudo: required
-#           services:
-#             - docker
+matrix:
+    include:
+        - env: SYSTEST=embedded
+        - env: SYSTEST=web
+        - env: SYSTEST=hlf SYSTEST_HLF=hlf
+          sudo: required
+          services:
+            - docker
+        - env: SYSTEST=hlf SYSTEST_HLF=ibm
+          sudo: required
+          services:
+            - docker
 dist: trusty
 before_install: |
     set -ev
