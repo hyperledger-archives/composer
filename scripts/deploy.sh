@@ -41,14 +41,18 @@ else
     echo "Pushing with tag latest"
     lerna exec --ignore '@ibm/concerto-systests' -- npm publish --scope=@ibm 2>&1 | tee
 
+    # Configure the Git repository and clean any untracked and unignored build files.
+    git config user.name "Travis CI"
+    git config user.email "noreply@travis.ibm.com"
+    git checkout -b develop
+    git reset --hard
+    git clean -d -f
+
     # Bump the version number.
     npm run pkgbump
     export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 
-    # Push the changes back into GitHub.
-    git config user.name "Travis CI"
-    git config user.email "noreply@travis.ibm.com"
-    git checkout -b develop
+    # Add the version number changes and push them to Git.
     git add .
     git commit -m "Automatic version bump to ${VERSION}"
     git push origin develop
