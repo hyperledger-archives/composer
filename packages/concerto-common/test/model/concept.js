@@ -12,7 +12,11 @@
 
 const ModelManager = require('../../lib/modelmanager');
 const Concept = require('../../lib/model/concept');
+const Serializer = require('../../lib/serializer');
+const Factory = require('../../lib/factory');
+
 const sinon = require('sinon');
+const fs = require('fs');
 
 const chai = require('chai');
 chai.should();
@@ -65,11 +69,29 @@ describe('Concept', function () {
     });
 
     describe('#toJSON', () => {
-        it('should throw is toJSON is called', function () {
+        it('should throw if toJSON is called', function () {
             const resource = new Concept(modelManager, 'org.acme.l1', 'Person');
             (function () {
                 resource.toJSON();
             }).should.throw(/Use Serializer.toJSON to convert resource instances to JSON objects./);
+        });
+    });
+
+    describe('#toJSON', () => {
+        it('should generate JSON for an asset that contains a concept', function () {
+            let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
+            modelManager.addModelFile(conceptModel);
+            const factory = new Factory(modelManager);
+            const asset = factory.newResource('org.acme.biznet', 'MakerInventory', '123' );
+            const inventorySets = factory.newConcept('org.acme.biznet', 'InventorySets' );
+            inventorySets.Make = 'Make';
+            inventorySets.Model = 'Model';
+            inventorySets.invCount = 10;
+            inventorySets.invType = 'NEWBATCH';
+            asset.invSets = [inventorySets];
+            const serializer = new Serializer(factory, modelManager);
+            const obj = serializer.toJSON(asset);
+            JSON.stringify(obj).should.equal('{"$class":"org.acme.biznet.MakerInventory","makerId":"123","invSets":[{"$class":"org.acme.biznet.InventorySets","Make":"Make","Model":"Model","invCount":10,"invType":"NEWBATCH"}]}');
         });
     });
 

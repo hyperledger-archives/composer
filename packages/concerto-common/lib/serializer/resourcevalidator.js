@@ -133,7 +133,12 @@ class ResourceValidator {
             if(!this.isSystemProperty(propName)) {
                 const field = toBeAssignedClassDeclaration.getProperty(propName);
                 if (!field) {
-                    ResourceValidator.reportUndeclaredField(obj.getIdentifier(), propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
+                    if(obj instanceof Identifiable) {
+                        ResourceValidator.reportUndeclaredField(obj.getIdentifier(), propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
+                    }
+                    else {
+                        ResourceValidator.reportUndeclaredField(this.currentIdentifier, propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
+                    }
                 }
             }
         }

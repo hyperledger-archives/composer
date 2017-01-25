@@ -42,7 +42,7 @@ class TypedStack {
      */
     push(obj, expectedType) {
         if(expectedType && !(obj instanceof expectedType)) {
-            throw new Error('Did not find expected type ' + expectedType.constructor.name + ' as argument to push. Found: ' + JSON.stringify(obj));
+            throw new Error('Did not find expected type ' + expectedType.constructor.name + ' as argument to push. Found: ' + obj.toString());
         }
 
         if(Util.isNull(obj)) {
