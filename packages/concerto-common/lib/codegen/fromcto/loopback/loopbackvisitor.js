@@ -15,6 +15,8 @@
 'use strict';
 
 const AssetDeclaration = require('../../../introspect/assetdeclaration');
+const ParticipantDeclaration = require('../../../introspect/participantdeclaration');
+const ConceptDeclaration = require('../../../introspect/conceptdeclaration');
 const ClassDeclaration = require('../../../introspect/classdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
@@ -50,6 +52,10 @@ class LoopbackVisitor {
             return this.visitModelFile(thing, parameters);
         } else if (thing instanceof AssetDeclaration) {
             return this.visitAssetDeclaration(thing, parameters);
+        } else if (thing instanceof ParticipantDeclaration) {
+            return this.visitParticipantDeclaration(thing, parameters);
+        } else if (thing instanceof ConceptDeclaration) {
+            return this.visitConceptDeclaration(thing, parameters);
         } else if (thing instanceof TransactionDeclaration) {
             return this.visitTransactionDeclaration(thing, parameters);
         } else if (thing instanceof EnumDeclaration) {
@@ -106,6 +112,7 @@ class LoopbackVisitor {
         let jsonSchemas = [];
         modelFile.getAssetDeclarations()
             .concat(modelFile.getTransactionDeclarations())
+            .concat(modelFile.getParticipantDeclarations())
             .filter((declaration) => {
                 return !declaration.isAbstract();
             })
@@ -147,6 +154,8 @@ class LoopbackVisitor {
                 methods: []
             };
             parameters.first = false;
+        } else {
+            jsonSchema.type = 'Object';
         }
 
         // Apply all the common schema elements.
@@ -154,6 +163,63 @@ class LoopbackVisitor {
 
     }
 
+    /**
+     * Visitor design pattern
+     * @param {ParticipantDeclaration} participantDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitParticipantDeclaration(participantDeclaration, parameters) {
+        debug('entering visitParticipantDeclaration', participantDeclaration.getName());
+
+        // If this is the first declaration, then we are building a schema for this participant.
+        let jsonSchema = {};
+        if (parameters.first) {
+            jsonSchema = {
+                $first: true,
+                name: participantDeclaration.getName(),
+                description: `A participant named ${participantDeclaration.getName()}`,
+                plural: participantDeclaration.getFullyQualifiedName(),
+                base: 'PersistedModel',
+                idInjection: true,
+                options: {
+                    validateUpsert: true
+                },
+                properties: {},
+                validations: [],
+                relations: {},
+                acls: [],
+                methods: []
+            };
+            parameters.first = false;
+        } else {
+            jsonSchema.type = 'Object';
+        }
+
+        // Apply all the common schema elements.
+        return this.visitClassDeclarationCommon(participantDeclaration, parameters, jsonSchema);
+
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {ConceptDeclaration} conceptDeclaration - the object being visited
+     * @param {Object} parameters - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitConceptDeclaration(conceptDeclaration, parameters) {
+        debug('entering visitConceptDeclaration', conceptDeclaration.getName());
+
+        // If this is the first declaration, then we are building a schema for this participant.
+        let jsonSchema = {};
+        jsonSchema.type = 'Object';
+
+        // Apply all the common schema elements.
+        return this.visitClassDeclarationCommon(conceptDeclaration, parameters, jsonSchema);
+
+    }
     /**
      * Visitor design pattern
      * @param {TransactionDeclaration} transactionDeclaration - the object being visited
@@ -184,6 +250,8 @@ class LoopbackVisitor {
                 methods: []
             };
             parameters.first = false;
+        } else {
+            jsonSchema.type = 'Object';
         }
 
         // Apply all the common schema elements.

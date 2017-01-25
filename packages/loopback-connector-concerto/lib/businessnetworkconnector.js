@@ -137,7 +137,7 @@ class BusinessNetworkConnector extends Connector {
                 let modelClassDeclarations = this.businessNetworkDefinition.getIntrospector().getClassDeclarations();
                 modelClassDeclarations
                     .forEach((modelClassDeclaration) => {
-                        if ((modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration) && !modelClassDeclaration.isAbstract()) {
+                        if (((modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
                             models.push({
                                 type : 'table',
                                 name : modelClassDeclaration.getFullyQualifiedName()
@@ -177,6 +177,25 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Retrieves all the instances of objects in IBM Concerto - I think.
+     */
+    all() {
+        debug('all');
+        this.ensureConnected()
+            .then(() => {
+                this.businessNetworkConnection.getAllAssetRegistries()
+                    .then((assetRegistries) => {
+                        console.log('-'+assetRegistries);
+                        assetRegistries.forEach((registry) => {
+
+                        });
+                    });
+                console.log('All Called');
+            });
+
+    }
+
+    /**
      * Create an instance of an object in IBM Concerto. For assets, this method
      * adds the asset to the default asset registry. For transactions, this method
      * submits the transaction for execution.
@@ -190,7 +209,10 @@ class BusinessNetworkConnector extends Connector {
 
         // If the $class property has not been provided, add it now.
         if (!data.$class) {
-            data.$class = modelName;
+            // Loopback doesn't like dots in the model names so the loopback bootscript needs to change them to underscores
+            // when it creates the schemas. (see <loopbackapp>/server/boot/concerto.js sample)
+            // So we need to change the underscores back to dots here for the concerto API.
+            data.$class = modelName.replace(/_/g, '.');
         }
 
         this.ensureConnected()
