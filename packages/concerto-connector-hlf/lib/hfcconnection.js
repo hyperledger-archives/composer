@@ -19,7 +19,8 @@ const Connection = require('@ibm/concerto-common').Connection;
 const Globalize = require('@ibm/concerto-common').Globalize;
 const HFCSecurityContext = require('./hfcsecuritycontext');
 const HFCUtil = require('./hfcutil');
-const version = require('../package.json').version;
+const packageJSON = require('../package.json');
+const semver = require('semver');
 
 /**
  * Class representing a connection to a business network running on Hyperledger
@@ -257,11 +258,18 @@ class HFCConnection extends Connection {
                 return JSON.parse(buffer.toString());
             })
             .then((response) => {
-                if (response.version !== version) {
-                    LOG.error('ping', 'Version mismatch', response.version);
-                    throw new Error(`Deployed chain-code (${response.version}) is incompatible with client (${version})`);
+                // Is the runtime using a prerelease version?
+                const connectorVersion = packageJSON.version;
+                const runtimeVersion = response.version;
+                const prerelease = (semver.prerelease(runtimeVersion) !== null);
+                // If the runtime is using a prerelease version, then we must exactly match that version.
+                // If the runtime is using a normal version, then our client version should be greater than or equal.
+                const range = (prerelease ? runtimeVersion : `^${runtimeVersion}`);
+                if (!semver.satisfies(connectorVersion, range)) {
+                    LOG.error('ping', 'Version mismatch', connectorVersion, runtimeVersion, range);
+                    throw new Error(`Deployed chain-code (${response.version}) is incompatible with client (${connectorVersion})`);
                 } else {
-                    LOG.info('ping', 'Successful ping', response.version);
+                    LOG.info('ping', 'Successful ping', connectorVersion, runtimeVersion, range);
                 }
                 return response;
             });

@@ -44,9 +44,9 @@
     "@ibm/concerto-runtime-hlf": "^0.3.7",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",
-    "uuid": "^3.0.0",
-    "rwlock": "^5.0.0",
-    "temp": "^0.8.3"
+    "semver": "^5.3.0",
+    "temp": "^0.8.3",
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
