@@ -95,6 +95,18 @@ describe('Concept', function () {
         });
     });
 
+    describe('#fromJSON', () => {
+        it('should generate an asset from JSON that contains a concept', function () {
+            let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
+            modelManager.addModelFile(conceptModel);
+            const factory = new Factory(modelManager);
+            const serializer = new Serializer(factory, modelManager);
+            const jsObject = JSON.parse('{"$class":"org.acme.biznet.MakerInventory","makerId":"123","invSets":[{"$class":"org.acme.biznet.InventorySets","Make":"Make","Model":"Model","invCount":10,"invType":"NEWBATCH"}]}');
+            const obj = serializer.fromJSON(jsObject);
+            obj.getIdentifier().should.equal('123');
+        });
+    });
+
     describe('#isConcept', () => {
         it('should be true', () => {
             const resource = new Concept(modelManager, 'org.acme.l1', 'Person');
