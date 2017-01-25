@@ -25,7 +25,8 @@ const hfcMember = hfc.Member;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCSecurityContext = require('../lib/hfcsecuritycontext');
 const HFCUtil = require('../lib/hfcutil');
-const version = require('../package.json').version;
+const semver = require('semver');
+const packageJSON = require('../package.json');
 
 const chai = require('chai');
 const should = chai.should();
@@ -457,6 +458,7 @@ describe('HFCConnection', () => {
     describe('#ping', () => {
 
         it('should perform a security check', () => {
+            const version = packageJSON.version;
             sandbox.stub(HFCUtil, 'securityCheck');
             sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
                 version: version
@@ -469,42 +471,134 @@ describe('HFCConnection', () => {
 
         it('should resolve if the package and chaincode version match', () => {
 
-        // Set up the responses from the chain-code.
+            // Set up the responses from the chain-code.
+            const version = packageJSON.version;
             sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
                 version: version
             })));
 
-        // Invoke the ping function.
+            // Invoke the ping function.
             return connection
-            .ping(mockSecurityContext)
-            .then((result) => {
+                .ping(mockSecurityContext)
+                .then((result) => {
 
-                // Check that the query was made successfully.
-                sinon.assert.calledOnce(HFCUtil.queryChainCode);
-                sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'ping', []);
-                result.should.deep.equal({
-                    version: version
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(HFCUtil.queryChainCode);
+                    sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.should.deep.equal({
+                        version: version
+                    });
+
                 });
-
-            });
 
         });
 
-        it('should throw an error if the package and chaincode version do not match', () => {
+        it('should resolve if the package is greater than but compatible with the chaincode version', () => {
 
-        // Set up the responses from the chain-code.
+            // Set up the responses from the chain-code.
+            const version = packageJSON.version;
+            const major = semver.major(version);
+            const minor = semver.minor(version);
+            let patch = semver.patch(version);
+            if (patch > 0) {
+                patch--;
+            }
+            let oldVersion = `${major}.${minor}.${patch}`;
             sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
-                version: '2016.12.25'
+                version: oldVersion
             })));
 
-        // Invoke the ping function.
+            // Invoke the ping function.
             return connection
-            .ping(mockSecurityContext)
-            .then(function() {
-                throw new Error('should not get here');
-            }).catch(function(error) {
-                error.should.match(/Deployed chain-code \(2016.12.25\) is incompatible with client \(.+?\)/);
-            });
+                .ping(mockSecurityContext)
+                .then((result) => {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(HFCUtil.queryChainCode);
+                    sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.should.deep.equal({
+                        version: oldVersion
+                    });
+
+                });
+
+        });
+
+        it('should resolve if the package is the same prerelease as the chaincode version', () => {
+
+            // Set up the responses from the chain-code.
+            const version = packageJSON.version;
+            let newVersion = semver.inc(version, 'prerelease');
+            for (let i = 0; i < 10; i++) {
+                newVersion = semver.inc(newVersion, 'prerelease');
+            }
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
+                version: newVersion
+            })));
+            const oldVersion = packageJSON.version;
+            packageJSON.version = newVersion;
+
+            // Invoke the ping function.
+            return connection
+                .ping(mockSecurityContext)
+                .then((result) => {
+
+                    // Check that the query was made successfully.
+                    sinon.assert.calledOnce(HFCUtil.queryChainCode);
+                    sinon.assert.calledWith(HFCUtil.queryChainCode, mockSecurityContext, 'ping', []);
+                    result.should.deep.equal({
+                        version: newVersion
+                    });
+                    packageJSON.version = oldVersion;
+
+                })
+                .catch((error) => {
+                    packageJSON.version = oldVersion;
+                    throw error;
+                });
+
+        });
+
+        it('should throw an error if the package and chaincode version are not compatible', () => {
+
+            // Set up the responses from the chain-code.
+            const version = packageJSON.version;
+            const newVersion = semver.inc(version, 'major');
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
+                version: newVersion
+            })));
+
+            // Invoke the ping function.
+            return connection
+                .ping(mockSecurityContext)
+                .then(function() {
+                    throw new Error('should not get here');
+                }).catch(function(error) {
+                    error.should.match(new RegExp(`Deployed chain-code \\(${newVersion}\\) is incompatible with client \\(${version}\\)`));
+                });
+
+        });
+
+        it('should throw an error if the package and chaincode version are prerelease versions and do not match', () => {
+
+            // Set up the responses from the chain-code.
+            const version = packageJSON.version;
+            let newVersion = semver.inc(version, 'prerelease');
+            for (let i = 0; i < 10; i++) {
+                newVersion = semver.inc(newVersion, 'prerelease');
+            }
+            sandbox.stub(HFCUtil, 'queryChainCode').resolves(Buffer.from(JSON.stringify({
+                version: newVersion
+            })));
+
+            // Invoke the ping function.
+            return connection
+                .ping(mockSecurityContext)
+                .then(function() {
+                    throw new Error('should not get here');
+                }).catch(function(error) {
+                    error.should.match(new RegExp(`Deployed chain-code \\(${newVersion}\\) is incompatible with client \\(${version}\\)`));
+                });
 
         });
 
