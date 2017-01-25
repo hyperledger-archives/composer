@@ -43,13 +43,27 @@ describe('VersionChecker', () => {
             }).should.throw(/.+pubic API changes./);
         });
 
-        it('should throw if version does not match', () => {
+        it('should not throw if version matches', () => {
+            const packageJson = { version: '0.0.2'};
+            const publicApi = 'class Bogus{}';
+            const digest = VersionChecker.getDigest(publicApi);
+            VersionChecker.check('Version 0.0.2 {' + digest + '}', publicApi, JSON.stringify(packageJson));
+        });
+
+        it('should not throw if version does not match but is less than package version', () => {
+            const packageJson = { version: '0.0.2'};
+            const publicApi = 'class Bogus{}';
+            const digest = VersionChecker.getDigest(publicApi);
+            VersionChecker.check('Version 0.0.1 {' + digest + '}', publicApi, JSON.stringify(packageJson));
+        });
+
+        it('should throw if version does not match and is greater than package version', () => {
             (() => {
                 const packageJson = { version: '0.0.2'};
                 const publicApi = 'class Bogus{}';
                 const digest = VersionChecker.getDigest(publicApi);
-                VersionChecker.check('Version 0.0.1 {' + digest + '}', publicApi, JSON.stringify(packageJson));
-            }).should.throw(/.+changelog file do not match./);
+                VersionChecker.check('Version 0.0.3 {' + digest + '}', publicApi, JSON.stringify(packageJson));
+            }).should.throw(/is not less than or equal/);
         });
 
         it('should throw if version missing from changelog', () => {

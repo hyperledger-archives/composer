@@ -15,6 +15,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const semver = require('semver');
 
 /**
  * Checks that a change log file takes into account
@@ -58,8 +59,8 @@ class VersionChecker {
                     // check the version in package.json is up to date
                     const packageObj = JSON.parse(packageJson);
 
-                    if (packageObj.version !== version) {
-                        throw new Error('The version in package.json and in the changelog file do not match.');
+                    if (!semver.lte(version, packageObj.version)) {
+                        throw new Error(`The version in the changelog file "${version}" is not less than or equal to the version in package.json "${packageObj.version}".`);
                     }
 
                     // get MD5
