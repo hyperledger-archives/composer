@@ -1,59 +1,10 @@
 # Contributing to Concerto
+We welcome contributions to Concerto!
 
-This document explains how you should work with the Concerto repository.
+This document explains how you should work with the Concerto repository.  More information is in the 'contrib-docs' directory.
 
-## Creating a Mac OS X development environment
-
-### Install Homebrew
-
-Follow the instructions at: http://brew.sh
-
-### Install Node Version Manager
-
-From a terminal window, type:
-
-    brew update
-    brew install nvm
-    mkdir ~/.nvm
-    nano ~/.bash_profile
-
-Add these lines to your .bash_profile file:
-
-    export NVM_DIR=~/.nvm
-    source $(brew --prefix nvm)/nvm.sh
-
-Then in a terminal type:
-
-    source ~/.bash_profile
-    echo $NVM_DIR
-
-### Install Required Version of Node
-
-Use the Node Version Manager (nvm) to install the correct version of
-Node for Concerto.
-
-In a terminal window type:
-
-    nvm install 4.6
-
-Note that if you ever change versions of Node you will need to delete your
-node_modules directory and rerun 'npm install'.
-
-### Install dependencies
-
-From a terminal window in the Concerto directory run:
-
-    ./scripts/install-deps.sh
-
-### Test the environment
-
-You can now run the Unit Tests to test your development environment works.
-From your checkout Concerto directory, switch to a terminal and type:
-
-    npm install
-    npm test
-
-The tests should all pass!
+* [Suggested ATOM setup](./contrib-notes/atom-setup.md)
+* [Step-by-step developement environmnet setup](./contrib-notes/getting-started.md)
 
 ## Our development process
 
