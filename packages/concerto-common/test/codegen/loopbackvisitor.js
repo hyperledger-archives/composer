@@ -72,7 +72,9 @@ describe('LoopbackVisitor', () => {
                 'org.acme.base.DerivedDerivedAsset.json',
                 'org.acme.base.MyBasicTransaction.json',
                 'org.acme.base.MyTransaction.json',
-                'org.acme.base.MyTransactionEx.json'
+                'org.acme.base.MyTransactionEx.json',
+                'org.acme.base.Person.json',
+                'org.acme.base.Bloke.json'
             ];
             sinon.assert.callCount(mockFileWriter.openFile, expectedFiles.length);
 

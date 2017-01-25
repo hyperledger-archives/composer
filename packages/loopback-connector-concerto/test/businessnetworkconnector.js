@@ -576,6 +576,78 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
     });
 
+
+    describe('#all', () => {
+        it('should retrieve all assets for a given modelname', () => {
+            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            mockBusinessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
+            mockAssetRegistry.getAll.returns(Promise.resolve([{mock : 'mockId'}, {mock2 : 'mockID2'}]));
+            mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockSerializer.toJSON.onFirstCall().returns({assetId : 'myId', stringValue : 'a big car'});
+            mockSerializer.toJSON.onSecondCall().returns({assetId : 'anId', stringValue : 'a big fox'});
+
+            return new Promise((resolve, reject) => {
+                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+                testConnector.connected = true;
+                sinon.spy(testConnector, 'ensureConnected');
+
+                testConnector.all('org.acme.Asset', {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+                .then((result) => {
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.Asset');
+                    sinon.assert.calledOnce(mockAssetRegistry.getAll);
+                    result[0].assetId.should.equal('myId');
+                    result[0].stringValue.should.equal('a big car');
+                    result[1].assetId.should.equal('anId');
+                    result[1].stringValue.should.equal('a big fox');
+                });
+        });
+
+        it('should handle errors when getting all assets', () => {
+            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            mockAssetRegistry.getAll.onFirstCall().throws('expected error');
+            mockBusinessNetworkConnection.getBusinessNetwork.returns(mockBusinessNetworkDefinition);
+            mockBusinessNetworkConnection.getAssetRegistry.onFirstCall().returns(Promise.resolve(mockAssetRegistry));
+            let mockResource = sinon.createStubInstance(Resource);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
+            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockAssetDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Asset');
+            mockResource.getClassDeclaration.onFirstCall().returns(mockAssetDeclaration);
+
+            return new Promise((resolve, reject) => {
+                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+                testConnector.connected = true;
+                sinon.spy(testConnector, 'ensureConnected');
+
+                testConnector.all('org.acme.Asset', { assetId : 'myId'}, (error) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.match(/expected error/);
+                });
+        });
+    });
+
+
+
+
     describe('#retrieve', () => {
         it('should retrieve an asset', () => {
             let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
