@@ -1,0 +1,23 @@
+/**
+ * Sample business network definition.
+ */
+namespace org.acme.biznet
+
+concept InventorySets {
+ o String Make
+ o String Model
+ o Integer invCount
+ o assetStatus invType // used or new?
+}
+
+asset MakerInventory identified by makerId {
+ o String makerId
+ o InventorySets[]  invSets
+}
+
+enum assetStatus {
+ o NEWBATCH
+ o INUSE
+ o REPAIRED
+ o RETIRED
+}

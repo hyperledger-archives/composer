@@ -18,6 +18,7 @@ const ClassDeclaration = require('../introspect/classdeclaration');
 const Field = require('../introspect/field');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const Resource = require('../model/resource');
+const Typed = require('../model/typed');
 const Concept = require('../model/concept');
 const Relationship = require('../model/relationship');
 const ModelUtil = require('../modelutil');
@@ -113,7 +114,7 @@ class JSONGenerator {
                 const item = obj[n];
                 if(!field.isPrimitive() && !ModelUtil.isEnum(field)) {
                     parameters.writer.writeComma();
-                    parameters.stack.push(item, Resource);
+                    parameters.stack.push(item, Typed);
                     const classDecl = parameters.modelManager.getType(item.getFullyQualifiedType());
                     classDecl.accept(this, parameters);
                 }
