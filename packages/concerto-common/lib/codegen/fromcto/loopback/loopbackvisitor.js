@@ -17,7 +17,6 @@
 const AssetDeclaration = require('../../../introspect/assetdeclaration');
 const ParticipantDeclaration = require('../../../introspect/participantdeclaration');
 const ConceptDeclaration = require('../../../introspect/conceptdeclaration');
-const ClassDeclaration = require('../../../introspect/classdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
 const Field = require('../../../introspect/field');
@@ -60,8 +59,6 @@ class LoopbackVisitor {
             return this.visitTransactionDeclaration(thing, parameters);
         } else if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
-        } else if (thing instanceof ClassDeclaration) {
-            return this.visitClassDeclaration(thing, parameters);
         } else if (thing instanceof Field) {
             return this.visitField(thing, parameters);
         } else if (thing instanceof RelationshipDeclaration) {
@@ -256,21 +253,6 @@ class LoopbackVisitor {
 
         // Apply all the common schema elements.
         return this.visitClassDeclarationCommon(transactionDeclaration, parameters, jsonSchema);
-
-    }
-
-    /**
-     * Visitor design pattern
-     * @param {ClassDeclaration} classDeclaration - the object being visited
-     * @param {Object} parameters - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    visitClassDeclaration(classDeclaration, parameters) {
-        debug('entering visitClassDeclaration', classDeclaration.getName());
-
-        // Apply all the common schema elements.
-        return this.visitClassDeclarationCommon(classDeclaration, parameters, {});
 
     }
 

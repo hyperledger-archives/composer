@@ -177,24 +177,36 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Retrieves all the instances of objects in IBM Concerto - I think.
+     * Retrieves all the instances of objects in IBM Concerto.
+     * @param {string} modelName The name of the model.
+     * @param {Object} options The options provided by Loopback.
+     * @param {function} callback The callback to call when complete.
+
      */
-    all() {
-        debug('all');
+    all(modelName, options, callback) {
+        debug('all', modelName, options, callback);
+        let model = modelName.replace(/_/g, '.');
+        let results = [];
         this.ensureConnected()
             .then(() => {
-                this.businessNetworkConnection.getAllAssetRegistries()
-                    .then((assetRegistries) => {
-                        console.log('-'+assetRegistries);
-                        assetRegistries.forEach((registry) => {
-
-                        });
+                let serializer = this.businessNetworkConnection.getBusinessNetwork().getSerializer();
+                this.businessNetworkConnection.getAssetRegistry(model)
+                    .then((assetRegistry) => {
+                        assetRegistry.getAll()
+                            .then((result) => {
+                                result.forEach((res) => {
+                                    results.push(serializer.toJSON(res));
+                                });
+                                callback(null, results);
+                            });
+                    })
+                    .catch((error) => {
+                        console.log('ERR: '+error);
+                        callback(error);
                     });
-                console.log('All Called');
             });
 
     }
-
     /**
      * Create an instance of an object in IBM Concerto. For assets, this method
      * adds the asset to the default asset registry. For transactions, this method
@@ -295,10 +307,10 @@ class BusinessNetworkConnector extends Connector {
      */
     update (modelName, data, options, callback) {
         debug('create', modelName, data, options);
-
+        console.log('Update', modelName, data, options);
         // If the $class property has not been provided, add it now.
         if (!data.$class) {
-            data.$class = modelName;
+            data.$class = modelName.replace(/_/g, '.');
         }
 
         this.ensureConnected()
