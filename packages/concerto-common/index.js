@@ -21,6 +21,18 @@
  * @module ibm-concerto-common
  */
 
+/* istanbul ignore next */
+if (process.version.match(/v4\.4\./)) {
+    const originalBufferFrom = Buffer.from;
+    const newBufferFrom = function (str, encoding) {
+        if (arguments.length === 2 && typeof str === 'string' && encoding === 'base64') {
+            return new Buffer(str, encoding);
+        }
+        return originalBufferFrom.apply(null, arguments);
+    };
+    Object.defineProperty(Buffer, 'from', { value: newBufferFrom });
+}
+
 module.exports.AclFile = require('./lib/acl/aclfile');
 module.exports.AclManager = require('./lib/aclmanager');
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
