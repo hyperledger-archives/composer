@@ -1,7 +1,7 @@
-[submodule "packages/concerto-runtime-hlf/vendor/github.com/hyperledger/fabric"]
+[submodule "packages/composer-runtime-hlf/vendor/github.com/hyperledger/fabric"]
 	path = packages/composer-runtime-hlf/vendor/github.com/hyperledger/fabric
 	url = https://github.com/hyperledger/fabric.git
 	branch = v0.6
-[submodule "packages/concerto-runtime-hlf/vendor/github.com/robertkrimen/otto"]
+[submodule "packages/composer-runtime-hlf/vendor/github.com/robertkrimen/otto"]
 	path = packages/composer-runtime-hlf/vendor/github.com/robertkrimen/otto
 	url = https://github.com/sstone1/otto.git
