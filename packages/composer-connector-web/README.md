@@ -1,2 +1,2 @@
-# Concerto-Connector-Web
-Concerto client specific code.
+# Composer-Connector-Web
+Composer client specific code.

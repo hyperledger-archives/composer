@@ -1,10 +1,10 @@
-# Concerto-Runtime
+# Composer-Runtime
 
 `npm install composer-runtime --save`
 
 ## Introduction
 
-This repository contains the core runtime code for the IBM Blockchain Framework.
+This repository contains the core runtime code for Fabric Composer.
 The runtime code is deployed to the Blockchain, and provides the support for managing
 business networks, registries and resources, and execution of transaction processor
 functions.
@@ -16,7 +16,7 @@ this repository must be kept isolated from the underlying Blockchain technology.
 
 ## Runtime Components
 
-The IBM Blockchain Framework runtime is split into several components to allow
+The Fabric Composer runtime is split into several components to allow
 the runtime code to execute in multiple environments. Those components are as follows:
 
 ![Runtime overview](./images/overview.png)
@@ -30,8 +30,8 @@ via a set of **Services**.
 
 Two **Container** implementations currently exist:
 
-* Hyperledger Fabric (Go): [Concerto-Runtime-Hyperledger-Fabric](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Runtime-Hyperledger-Fabric)
-* Web/in-browser (JavaScript): [Concerto-Runtime-Web](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Runtime-Web)
+* Hyperledger Fabric (Go): [Composer-Runtime-Hyperledger-Fabric](https://github.com/fabric-composer/fabric-composer/tree/develop/packages/composer-runtime-hlf)
+* Web/in-browser (JavaScript): [Composer-Runtime-Web](https://github.com/fabric-composer/fabric-composer/tree/develop/packages/composer-runtime-web)
 
 The **Container** interface is defined in [lib/container.js](./lib/container.js).
 

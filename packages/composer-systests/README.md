@@ -1,2 +1,2 @@
-# Concerto-System-Tests
-System tests and automation for IBM Concerto, the Blockchain Solution Framework
+# Composer-System-Tests
+System tests and automation for Fabric Composer

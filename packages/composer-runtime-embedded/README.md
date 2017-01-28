@@ -1,2 +1,2 @@
-# Concerto-Runtime-Embedded
-Concerto client specific code.
+# Composer-Runtime-Embedded
+Composer client specific code.

@@ -1,4 +1,4 @@
-# loopback-connector-concerto
+# Composer Loopback Connector
 
-A LoopBack connector for integrating IBM Concerto into applications that use the LoopBack framework seen here:
+A LoopBack connector for integrating Fabric Composer into applications that use the Loopback framework seen here:
 https://loopback.io/doc/index.html

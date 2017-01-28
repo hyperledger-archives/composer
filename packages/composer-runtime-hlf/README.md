@@ -1,2 +1,2 @@
-# Concerto-Runtime-Hyperledger-Fabric
-Concerto runtime that can execute on Hyperledger Fabric.
+# Composer-Runtime-Hyperledger-Fabric
+Composer runtime that can execute on Hyperledger Fabric.

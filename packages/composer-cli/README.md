@@ -1,4 +1,4 @@
-# Concerto-CLI
+# Composer-CLI
 
 Set up the Concerto command with
 

@@ -1,4 +1,4 @@
-# Concerto-Common
-Code that is shared across Concerto-Client, Concerto-Admin and Concerto-Runtime
+# Composer-Common
+Code that is shared across Composer-Client, Composer-Admin and Composer-Runtime
 
-Defines the core of the Concerto programming model, including the parser for the CTO language and services for assets, registries, participants and transactions.
+Defines the core of the Fabric Composer programming model, including the parser for the CTO language and services for assets, registries, participants and transactions.

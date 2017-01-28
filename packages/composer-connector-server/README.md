@@ -1,2 +1,2 @@
-# Concerto-Connector-Server
-The remote connector server for IBM Concerto, the Blockchain Solution Framework
+# Composer-Connector-Server
+The remote connector server for Fabric Composer

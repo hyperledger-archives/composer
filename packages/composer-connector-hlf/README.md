@@ -1,3 +1,3 @@
-# Concerto-Connector-Hyperledger-Fabric
+# Composer-Connector-Hyperledger-Fabric
 
-Concerto uses this module to connection to a Hyperledger Fabric instance.
+Fabric Composer uses this module to connection to a Hyperledger Fabric instance.
