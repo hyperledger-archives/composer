@@ -1,0 +1,42 @@
+---
+layout: base
+markdown: 0
+---
+<div id="content">
+  <h2 class="page-title">
+    <span class="container">{{ page.title }}</span>
+  </h2>
+
+  <div class="container clearfix{% if page.sidebar %} has-sidebar{% endif %}">
+    {% if page.sidebar %}
+      <nav class="context-nav">
+        {% capture sidebar %}{% include {{ page.sidebar }} %}{% endcapture %}
+        {% if sidebarHTML %}
+          {{ sidebar }}
+        {% else %}
+          {{ sidebar | markdownify }}
+        {% endif %}
+      </nav>
+    {% endif %}
+
+    <article class="main">
+      {% if page.social_text %}
+        {% include social.html %}
+      {% endif %}
+
+      <section class="content-chunk">
+        {% if page.markdown == 1 %}
+          {{ content | markdownify }}
+        {% else %}
+          {{ content }}
+        {% endif %}
+
+        {% if page.class == 'documentation' %}
+          <div class="contribute-doc">
+            Found a typo? An unclear example? Help us improve our documentation by forking and sending your fixes and suggestions. <a href="https://github.ibm.com/WW-Blockchain-Labs/Handel{{ page.url | replace:'.html','.md' }}">Improve this Page!</a>
+          </div>
+        {% endif %}
+      </section>
+    </article>
+  </div>
+</div>

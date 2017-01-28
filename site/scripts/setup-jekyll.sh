@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Exit on first error, print all commands.
+
+set -ev
+
+# Grab the Concerto-Docs directory.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+
+
+echo "Attempting to install jekyll"
+gem install jekyll
+#echo "Attempting to install jekyll-mentions"
+#gem install jekyll-mentions
+#echo "Attempting to install jemoji"
+#gem install jemoji
+#echo "Attempting to install jekyll-redirect-from"
+#gem install jekyll-redirect-from
+echo "Attempting to install jekyll-sitemap"
+gem install jekyll-sitemap
+echo "Attempting to install redcarpet"
+gem install redcarpet
+#echo "Attempting to install pygments"
+#gem install pygments.rb
+
+echo "Jekyll Installed"
