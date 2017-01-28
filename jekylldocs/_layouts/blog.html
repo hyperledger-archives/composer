@@ -1,0 +1,22 @@
+---
+layout: default
+category: blog
+class: blog
+sidebar: sidebars/blog.html
+sidebarHTML: true
+---
+
+<section>
+  <div class="blog-post-meta clearfix">
+    <p class="date">{{ page.date | date_to_string }}</p>
+    {% include social.html %}
+  </div>
+
+  <div class="post">
+    {{ content }}
+  </div>
+
+  <hr>
+
+  <a href="blog">&laquo; View More Posts</a>
+</section>
