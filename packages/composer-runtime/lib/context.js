@@ -34,7 +34,7 @@ const businessNetworkCache = LRU(8);
  * A class representing the current request being handled by the JavaScript engine.
  * @protected
  * @abstract
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  */
 class Context {
 

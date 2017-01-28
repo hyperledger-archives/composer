@@ -22,7 +22,7 @@ const AclFile = require('./acl/aclfile');
  * </p>
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class AclManager {
 

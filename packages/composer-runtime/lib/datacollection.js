@@ -18,7 +18,7 @@
  * Base class representing a data collection provided by a {@link DataService}.
  * @protected
  * @abstract
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  */
 class DataCollection {
 

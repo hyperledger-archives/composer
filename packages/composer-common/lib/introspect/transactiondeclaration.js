@@ -22,7 +22,7 @@ const Field = require('./field');
  * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class TransactionDeclaration extends ClassDeclaration {
     /**

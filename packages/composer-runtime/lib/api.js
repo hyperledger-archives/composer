@@ -28,7 +28,7 @@ const LOG = Logger.getLog('Api');
  * properties or internal methods which could be accessed or misused.
  * @private
  * @class
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  */
 class Api {
 

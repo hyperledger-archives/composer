@@ -25,7 +25,7 @@ const LOG = Logger.getLog('AssetRegistry');
  *
  * @class AssetRegistry
  * @classdesc An asset registry manages a set of assets.
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  * @public
  */
 

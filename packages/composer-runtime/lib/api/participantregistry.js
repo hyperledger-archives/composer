@@ -25,7 +25,7 @@ const LOG = Logger.getLog('ParticipantRegistry');
  *
  * @class ParticipantRegistry
  * @classdesc An participant registry manages a set of participants.
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  * @public
  */
 

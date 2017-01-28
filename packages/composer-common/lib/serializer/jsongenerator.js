@@ -33,7 +33,7 @@ const Util = require('../util');
  * 'modelManager' - the ModelManager to use.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class JSONGenerator {
 

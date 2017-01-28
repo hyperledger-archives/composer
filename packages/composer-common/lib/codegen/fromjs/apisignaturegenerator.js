@@ -23,7 +23,7 @@ const Writer = require('../writer');
  * output directory.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class APISignatureGenerator {
 

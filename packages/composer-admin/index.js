@@ -16,18 +16,18 @@
 
 /**
  * <p>
- * The ibm-concerto-admin module. Defines the administration API for Concerto.
+ * The composer-admin module. Defines the administration API for Fabric Composer.
  * </p>
  * <p>
- * Concerto is a framework for creating blockchain backed digital networks and
+ * Fabric Composer is a framework for creating blockchain backed digital networks and
  * exchanging assets between participants via processing transactions.
  * </p>
- * @module ibm-concerto-admin
+ * @module composer-admin
  */
 module.exports.AdminConnection = require('./lib/adminconnection');
 
 /**
- * Expose key concerto-common classes to simplify client application dependencies
+ * Expose key composer-common classes to simplify client application dependencies
  * @ignore
  */
 module.exports.BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;

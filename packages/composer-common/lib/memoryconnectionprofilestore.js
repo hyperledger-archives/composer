@@ -28,7 +28,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
  * @extends FSConnectionProfileStore
  * @see See [FSConnectionProfileStore]{@link module:concerto-common.FSConnectionProfileStore}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class MemoryConnectionProfileStore extends FSConnectionProfileStore {
 

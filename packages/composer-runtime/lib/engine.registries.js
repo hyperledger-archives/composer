@@ -22,7 +22,7 @@ const LOG = Logger.getLog('EngineRegistries');
 /**
  * The JavaScript engine responsible for processing chaincode commands.
  * @protected
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  */
 class EngineRegistries {
 

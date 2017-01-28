@@ -25,7 +25,7 @@ const connectionManagers = {};
  * with a ConnectionManager.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class ConnectionProfileManager {
 

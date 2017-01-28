@@ -22,7 +22,7 @@ const Util = require('../util');
  * checking on push/pop to make detecting bugs easier.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class TypedStack {
 

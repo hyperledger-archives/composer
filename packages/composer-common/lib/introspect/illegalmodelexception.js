@@ -21,7 +21,7 @@ const BaseException = require('../baseexception');
  * @extends BaseException
  * @see See [BaseException]{@link module:concerto-common.BaseException}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class IllegalModelException extends BaseException {
 

@@ -22,7 +22,7 @@ const ClassDeclaration = require('./classdeclaration');
  * @extends ClassDeclaration
  * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class EnumDeclaration extends ClassDeclaration {
 

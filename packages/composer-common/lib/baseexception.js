@@ -19,7 +19,7 @@
 * <p><a href="./diagrams/baseexception.svg"><img src="./diagrams/baseexception.svg" style="width:100%;"/></a></p>
 * @extends Error
 * @class
-* @memberof module:concerto-common
+* @memberof module:composer-common
 */
 class BaseException extends Error {
 

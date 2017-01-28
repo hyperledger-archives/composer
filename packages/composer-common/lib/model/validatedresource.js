@@ -24,7 +24,7 @@ const Resource = require('./resource');
  * @extends Resource
  * @see See [Resource]{@link module:concerto-common.Resource}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class ValidatedResource extends Resource {
     /**

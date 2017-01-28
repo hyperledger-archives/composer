@@ -36,7 +36,7 @@ const ModelFile = require('./introspect/modelfile');
  * <p><a href="./diagrams-private/modelmanager.svg"><img src="./diagrams-private/modelmanager.svg" style="width:100%;"/></a></p>
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class ModelManager {
     /**

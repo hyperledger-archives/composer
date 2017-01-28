@@ -26,7 +26,7 @@ const StringValidator = require('./stringvalidator');
  * @extends Property
  * @see See [Property]{@link module:concerto-common.Property}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Field extends Property {
 

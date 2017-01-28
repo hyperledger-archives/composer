@@ -20,7 +20,7 @@ const Validator = require('./validator');
  * A Validator to enforce that non null numeric values are between two values.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class NumberValidator extends Validator{
 

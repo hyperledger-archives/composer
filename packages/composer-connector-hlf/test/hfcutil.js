@@ -505,8 +505,7 @@ describe('HFCUtil', function () {
                     // Check the filter ignores any relevant node modules files.
                     fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
                     fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
-                    fs.copy.firstCall.args[2].filter('ibm-concerto-runtime-hlf/node_modules/here').should.be.false;
-                    fs.copy.firstCall.args[2].filter('Concerto-Runtime-Hyperledger-Fabric/node_modules/here').should.be.false;
+                    fs.copy.firstCall.args[2].filter('composer-runtime-hlf/node_modules/here').should.be.false;
 
                     // Check that the query was made successfully.
                     sinon.assert.calledOnce(enrolledMember.deploy);

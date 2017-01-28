@@ -23,7 +23,7 @@ const FileWriter = require('../filewriter');
  * file into a PlantUML format file.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class PlantUMLGenerator {
 

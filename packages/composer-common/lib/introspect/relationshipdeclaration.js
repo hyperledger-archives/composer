@@ -24,7 +24,7 @@ const ModelUtil = require('../modelutil');
  * @see See [Property]{@link module:concerto-common.Property}
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class RelationshipDeclaration extends Property {
 

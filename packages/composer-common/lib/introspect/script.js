@@ -23,7 +23,7 @@ const FunctionDeclaration = require('../introspect/functiondeclaration');
  * </p>
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Script {
   /**

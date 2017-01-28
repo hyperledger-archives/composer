@@ -21,7 +21,7 @@ const ClassDeclaration = require('./classdeclaration');
  * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class ParticipantDeclaration extends ClassDeclaration {
     /**

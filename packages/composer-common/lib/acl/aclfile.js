@@ -22,7 +22,7 @@ const ParseException = require('../introspect/parseexception');
  * Class representing an ACL File.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class AclFile {
 

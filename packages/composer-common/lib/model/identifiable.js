@@ -22,7 +22,7 @@ const Typed = require('./typed');
  * This class is abstract.
  * @abstract
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Identifiable extends Typed{
     /**

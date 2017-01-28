@@ -24,7 +24,7 @@ const Writer = require('./writer');
  * @extends Writer
  * @see See [Writer]{@link module:concerto-common.Writer}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class JSONWriter extends Writer {
 

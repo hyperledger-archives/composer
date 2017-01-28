@@ -22,7 +22,7 @@ const BaseException = require('composer-common').BaseException;
 * @extends BaseException
 * @see See [BaseException]{@link module:concerto-common.BaseException}
 * @class
-* @memberof module:concerto-runtime
+* @memberof module:composer-runtime
 */
 class AccessException extends BaseException {
 

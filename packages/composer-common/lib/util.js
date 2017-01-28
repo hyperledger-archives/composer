@@ -23,7 +23,7 @@ const SecurityException = require('./securityexception');
  * <p><a href="./diagrams-private/util.svg"><img src="./diagrams-private/util.svg" style="width:100%;"/></a></p>
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Util {
 

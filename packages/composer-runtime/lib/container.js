@@ -18,7 +18,7 @@
  * A class representing the chaincode container hosting the JavaScript engine.
  * @protected
  * @abstract
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  */
 class Container {
 

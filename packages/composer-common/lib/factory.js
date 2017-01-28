@@ -35,7 +35,7 @@ const uuid = require('uuid');
  * and assets.
  * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="width:100%;"/></a></p>
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Factory {
 

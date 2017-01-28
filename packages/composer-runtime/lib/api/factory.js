@@ -26,7 +26,7 @@ const LOG = Logger.getLog('Factory');
  * @class Factory
  * @classdesc A factory creates new instances of assets, participants, transactions,
  * and relationships.
- * @memberof module:concerto-runtime
+ * @memberof module:composer-runtime
  * @public
  */
 

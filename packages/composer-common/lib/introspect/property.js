@@ -21,7 +21,7 @@ const ModelUtil = require('../modelutil');
  * either a Field or a Relationship.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Property {
 

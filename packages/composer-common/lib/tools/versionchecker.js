@@ -24,7 +24,7 @@ const semver = require('semver');
  * with the contents of the changelog.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class VersionChecker {
 

@@ -20,7 +20,7 @@
  * @private
  * @class
  * @abstract
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Validator {
 

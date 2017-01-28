@@ -36,7 +36,7 @@ const LOG = Logger.getLog('BusinessNetworkConnection');
  * @extends EventEmitter
  * @see See [EventEmitter]{@link module:concerto-client.EventEmitter}
  * @class
- * @memberof module:concerto-client
+ * @memberof module:composer-client
  */
 class BusinessNetworkConnection extends EventEmitter {
 

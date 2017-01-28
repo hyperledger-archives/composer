@@ -21,7 +21,7 @@ const FSConnectionProfileStore = require('composer-common').FSConnectionProfileS
 const fs = require('fs');
 
 /**
- * This class creates an administration connection to a Concerto runtime. The
+ * This class creates an administration connection to a Fabric Composer runtime. The
  * connection can then be used to:
  * <ul>
  * <li>Deploy BusinessNetworkDefinitions</li>
@@ -33,7 +33,7 @@ const fs = require('fs');
  * </ul>
  *
  * @class
- * @memberof module:concerto-admin
+ * @memberof module:composer-admin
  */
 class AdminConnection {
 

@@ -22,7 +22,7 @@ const Property = require('./property');
  * @extends Property
  * @see See [Property]{@link module:concerto-common.Property}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class EnumValueDeclaration extends Property {
 

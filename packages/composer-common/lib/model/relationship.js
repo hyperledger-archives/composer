@@ -24,7 +24,7 @@ const Identifiable = require('./identifiable');
 * @extends Identifiable
 * @see See [Identifiable]{@link module:concerto-common.Identifiable}
 * @class
-* @memberof module:concerto-common
+* @memberof module:composer-common
 */
 class Relationship extends Identifiable {
     /**

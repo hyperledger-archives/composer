@@ -35,7 +35,7 @@ const FunctionDeclaration = require('../../../introspect/functiondeclaration');
  *
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class PlantUMLVisitor {
     /**

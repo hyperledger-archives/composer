@@ -45,7 +45,7 @@ const LOG = require('./log/logger').getLog('FSConnectionProfileStore');
  * @extends ConnectionProfileStore
  * @see See [ConnectionProfileStore]{@link module:concerto-common.ConnectionProfileStore}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class FSConnectionProfileStore extends ConnectionProfileStore {
 

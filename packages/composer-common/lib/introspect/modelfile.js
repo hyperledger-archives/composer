@@ -30,7 +30,7 @@ const Globalize = require('../globalize');
  * and a set of model elements: assets, transactions etc.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class ModelFile {
 

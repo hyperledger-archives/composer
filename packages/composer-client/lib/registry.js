@@ -22,7 +22,7 @@ const Util = require('composer-common').Util;
  * <p><a href="./diagrams/registry.svg"><img src="./diagrams/registry.svg" style="width:100%;"/></a></p>
  * @abstract
  * @class
- * @memberof module:concerto-client
+ * @memberof module:composer-client
  */
 class Registry {
 

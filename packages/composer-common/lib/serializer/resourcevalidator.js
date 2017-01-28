@@ -43,7 +43,7 @@ const Globalize = require('../globalize');
  * </ul>
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class ResourceValidator {
     /**

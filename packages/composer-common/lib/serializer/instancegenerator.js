@@ -29,7 +29,7 @@ const Util = require('../util');
  * updated with either default values or generated sample data.
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class InstanceGenerator {
 

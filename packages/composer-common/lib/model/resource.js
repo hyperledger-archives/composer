@@ -32,7 +32,7 @@ const Identifiable = require('./identifiable');
  * @extends Identifiable
  * @see See [Resource]{@link module:concerto-common.Resource}
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Resource extends Identifiable {
     /**

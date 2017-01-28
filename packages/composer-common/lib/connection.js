@@ -21,7 +21,7 @@ const ConnectionManager = require('./connectionmanager');
  * @private
  * @abstract
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class Connection {
 

@@ -25,7 +25,7 @@ const REGISTRY_TYPE = 'Asset';
  * @extends Registry
  * @see See [Registry]{@link module:concerto-client.Registry}
  * @class
- * @memberof module:concerto-client
+ * @memberof module:composer-client
  */
 class AssetRegistry extends Registry {
 

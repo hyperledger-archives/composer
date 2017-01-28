@@ -25,7 +25,7 @@ const acorn = require('acorn');
  * @param {Object} fileProcessor - the processor instance to use to generate code
  * @private
  * @class
- * @memberof module:concerto-common
+ * @memberof module:composer-common
  */
 class JavaScriptParser {
 
