@@ -1,8 +1,7 @@
-# Concerto
-Concerto is the Blockchain Solution Framework: a library of assets/functions for quickly creating blockchain-based applications.
+# Fabric Composer
+Fabric Composer is a blockchain Solution Framework for Hyperledger Fabric: a library of assets/functions for quickly creating blockchain-based applications.
 
-
-You must run the following commands in order to pull the Chaincode dependencies down from
+You must run the following commands in order to pull the chaincode dependencies down from
 their repositories:
 
     $ git submodule init
