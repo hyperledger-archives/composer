@@ -17,7 +17,7 @@ fi
 if [ "${SYSTEST}" != "" ]; then
 
     # Run the system tests.
-    ${DIR}/packages/concerto-systests/scripts/run-system-tests.sh
+    ${DIR}/packages/composer-systests/scripts/run-system-tests.sh
 
 # We must be running unit tests.
 else
