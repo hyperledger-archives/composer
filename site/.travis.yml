@@ -9,8 +9,6 @@ addons:
 before_install: |
     set -ev
     npm install -g npm
-    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
-    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
 script: |
     set -ev
     npm run doc
