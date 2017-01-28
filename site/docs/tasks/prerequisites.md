@@ -8,11 +8,11 @@ excerpt: How to install the development pre-requisites
 
 # Installing Development Pre-requisites
 
-The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. There are step by step [instructions](#Manual Installation) for installing these if perhaps you have some of them already. 
+The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. There are step by step [instructions](#Manual Installation) for installing these if perhaps you have some of them already.
 
-There are also [two scripts](#Automatic Installation) that can be used on Ubuntu to install everything automatically. 
+There are also [two scripts](#Automatic Installation) that can be used on Ubuntu to install everything automatically.
 
-The recommended versions are: 
+The recommended versions are:
 *Docker*: v1.12.5
 *Docker-compose*: v1.9.0
 *node.js*: v4 or v6
@@ -68,7 +68,7 @@ Atom is at it's most productive would used with a number of plugins. The ones th
 
 - *Code Highlighting*  On top of the existing code highlighting support there is a plugin for model file highlighting. [Atom Concerto Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom)
 - *Linting* JavaScript dosn't come with a compiler that can pick up silly mistakes, but a linter is an essential tool to help. The one we have used is [eslint]([https://atom.io/packages/linter-eslint]). The file that we use is in the git repos look for a `.eslint file`. If you use the Yeoman generator for a simple application you will get this file as part of the sample application.
-- *UI* [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different file 
+- *UI* [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different file
 
 ####Installation Commands for MacOS:
 
@@ -238,35 +238,7 @@ tbd
 - [Official Docker Compose installation guide](https://docs.docker.com/compose/install/)
 
 ### 6. Login to npm Whitewater
-All of the Concerto packages can be found in the IBM Whitewater npm registry
-
-**Installation Commands for Ubuntu:**
-
-Releases of IBM Concerto are currently pushed to a private npm registry, that is
-hosted by the IBM Whitewater team. You must authenticate to that private npm
-registry with your w3id before you can install the Concerto module:
-
-    $ npm login --registry=https://npm-registry.whitewater.ibm.com --scope=@ibm
-    Username: fredbloggs
-    Password: xxxxxxxx
-    Email: (this IS public) fredbloggs@xx.ibm.com
-    Logged in as fredbloggs to scope @ibm on https://npm-registry.whitewater.ibm.com/.
-
-It will ask you for a name (w3id without the @xx.ibm.com), password (w3 password),
-and e-mail (w3id). After you have logged in, you must complete the two stage
-w3id authentication process. When you run an npm command, it will fail and give
-you a link to access in a browser:
-
-    $ npm view @ibm/ibm-concerto-common
-    npm ERR! Linux 4.4.0-36-generic
-    npm ERR! argv "/usr/bin/nodejs" "/usr/bin/npm" "view" "@ibm/ibm-concerto-common"
-    npm ERR! node v6.5.0
-    npm ERR! npm  v3.10.3
-    npm ERR! code E401
-
-    npm ERR! visit https://github.ibm.com/login/oauth/authorize to validate your session : @ibm/ibm-concerto-common
-
-Ensure that you click the link that is displayed and complete the two stage w3id authentication process.
+All of the Fabric Composer packages can be found in the public npm registry.
 
 **Installation Commands for MacOS:**
 

@@ -7,7 +7,7 @@ sidebar: sidebars/support.md
 
 ##Welcome to the Support page.
 
-See the options below to get help or support. 
+See the options below to get help or support.
 
 Please review the FAQs below to see if your question is already answered, otherwise get in touch using the options below:
 
@@ -46,7 +46,7 @@ Can Concerto support hierarchy - for example a manufacturing scenario, where a c
 
 #### Answer 3
 
-Concerto can model classes with relationships to other classes, so I don't see why not. 
+Concerto can model classes with relationships to other classes, so I don't see why not.
 
 ### Question 4
 
@@ -244,7 +244,7 @@ Using the open source CodeMirror component.
 
 Will Concerto provide a Java API? Most of what I have seen so far focused on JavaScript.
 
-#### Answer 27 
+#### Answer 27
 
 Once Fabric has a Java equivalent of HFC then we can wrap it and build a Java API around it.
 
@@ -256,7 +256,7 @@ I have just started building a blockchain project with a client.  Is there an op
 
 The approaches are very different (writing Go code, vs JS, defining a model using the CTO modelling language) etc. so I can’t realistically see a migration path
 
-### Question 29 
+### Question 29
 
 1 Perspective - New developers will want to leverage existing libraries at a basic programming model level.  They will feel limited by the inability to do that, but also the current model of having business logic isolated to a monolithic function call that must be completely handled in a single JS file.
 
@@ -268,9 +268,9 @@ We do have plans to improve that experience in the short term by adding support 
 
 Why was JavaScript selected as the business/scripting language for the transaction processor functions?
 
-#### Answer 30 
+#### Answer 30
 
-Some reasons: the HFC library used to access the Fabric is a JS library, so JS has to be part of the picture. We wanted to provide an experience that allowed someone to use a single programming language across an entire solution (front-end, mid-tier, and business logic). JS is a dynamic language that has some interesting properties in terms of dynamic deploy, code gen etc. The JS ecosystem is very large, and growing quickly, with lots of interesting 3rd-party libraries that may be of use. Most developers under the age of 25 are familiar with JS… and due to the number of new developers getting trained every year this demographic is very important. The npm package manager has some very interesting capabilities to share and reuse code and models, and it integrates very nicely with JS. 
+Some reasons: the HFC library used to access the Fabric is a JS library, so JS has to be part of the picture. We wanted to provide an experience that allowed someone to use a single programming language across an entire solution (front-end, mid-tier, and business logic). JS is a dynamic language that has some interesting properties in terms of dynamic deploy, code gen etc. The JS ecosystem is very large, and growing quickly, with lots of interesting 3rd-party libraries that may be of use. Most developers under the age of 25 are familiar with JS… and due to the number of new developers getting trained every year this demographic is very important. The npm package manager has some very interesting capabilities to share and reuse code and models, and it integrates very nicely with JS.
 
 ### Question 31
 
@@ -296,23 +296,15 @@ Just working through the getting started doc...on the Publish Updated Business N
 
 The npm publish is going to the internal whitewater registry. Though you've raised a good point in that really that network is an example and if you wanted to try publishing a model/business network youself ideally it would be one to your own namespace or of a different name. I'll update the documents to be more clear about what publishing means. though to test out the getting started publishing to NPM isn't a mandatory part of getting a business network deployed.
 
-### Question 34 
-
-When you say my own namespace or different name, where would I make that change?
-
-#### Answer 34 
-
-The @ibm prefix is the namespace that refers to the IBM whitewater NPM.  so, there could be a different @ prefix for difference companies.   Alternatively use a different name for the digitalproperty-network  entirely. What I'm updating the getting started is to describe doing an update to the local digitalproperty-network, then in that module issue `npm link` and then in the gettingstarted issue `npm link @ibm/digitalproperty-network'.  that will let node use the local copy.
-
-### Question 35 
+### Question 35
 
 What's the concerto connector web for?
 
-#### Answer 35 
+#### Answer 35
 
 Execution/testing in a web page.
 
-### Question 36 
+### Question 36
 
 In the getting started I'm trying the 'Generating an Application' steps using generator-concerto clone, after running npm install and link commands when I go to run the 'yo concerto' command is says yo: command not found.  Anything I can check to see why that wouldn't be working?  Under node_modules I see several yeoman-xxxx modules, but not exactly sure what they are.
 
@@ -324,11 +316,11 @@ Install the yeoman tool http://yeoman.io/
 
 Is npm update specific to a directory where I have a package.json or is that command global?
 
-#### Answer 37 
+#### Answer 37
 
 `npm update` is locally - it's only global with the -g flag
 
-### Question 38 
+### Question 38
 
 When the term asset registry is used, ie animal registry, farm registry, business registry per playback 0...are those registries world state tables?  or is this handle some other way?
 

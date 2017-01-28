@@ -45,7 +45,7 @@ cp $1 $1.raw ; stat=$?
 echo "---" >$YAMLHDR
 echo "layout: default" >>$YAMLHDR
 echo "markdown: 1" >>$YAMLHDR
-echo "title: Concerto - need to update this YAML header to real title " >>$YAMLHDR
+echo "title: Fabric Composer - need to update this YAML header to real title " >>$YAMLHDR
 echo "sidebar: sidebars/$2.md" >>$YAMLHDR
 ---
 cp  $YAMLHDR $1  ; stat=$?  # 0 means it created a new file

@@ -56,7 +56,7 @@ For example
   "gettingstarted": {
        "participantId" : "WebAppAdmin",
        "participantPwd" :"DJY27pEnl16d",
-       "businessNetworkIdentifier" : "@ibm/digitalproperty-network",
+       "businessNetworkIdentifier" : "digitalproperty-network",
        "connectionProfile" :"defaultProfile"
     },
     "ConcertoConfig": {
@@ -121,8 +121,8 @@ matthew@matthew-VirtualBox:~$ cat ~/.concerto-connection-profiles/defaultProfile
     "deployWaitTime": "300",
     "invokeWaitTime": "100",
     "networks": {
-        "@ibm/digitalproperty-network": "e3ec656109284b63d5b7b1925454c9904e6c9c82b2053ed190d2f199e0fb0dad",
-        "@ibm/carauction-network": "9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7"
+        "digitalproperty-network": "e3ec656109284b63d5b7b1925454c9904e6c9c82b2053ed190d2f199e0fb0dad",
+        "carauction-network": "9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7"
     }
 };
 ```

@@ -22,7 +22,7 @@ If you're not familar with Promise based development it's worth reviewing some o
 ##  Modules required
 
 ```javascript
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 ```
 For a client application this is only Concerto require needed. In this getting started application we also use the `cli-table` and `winston` and `config` modules for support processing. We use these to get information from the command line options, formatting of output and logging.
 

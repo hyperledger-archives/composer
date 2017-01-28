@@ -22,7 +22,7 @@ $ npm run listAssets
 > node cli.js landregistry list
 
 info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained @ibm/digitalproperty-network@0.0.22-20170116133558
+info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
 info: [Handel] listTitles Getting the asset registry
 info: [Handel] listTitles Getting all assest from the registry.
 info: [Handel] listTitles Current Land Titles
@@ -100,10 +100,10 @@ I'm all done. Running npm install for you to install the required dependencies. 
 
 ```
 
-That is now all created - the next step is to add an adpater to link with the Fabric Composer runtime.
+That is now all created - the next step is to add an adapter to link with the Fabric Composer runtime.
 
 ```bash
-npm install --save @ibm/loopback-connector-concerto
+npm install --save composer-loopback-connector
 ```
 
 Last step before trying things out is to add a function in the `server/boot` boot directory. This function is below - the key parts are in the `datasource` variable.  These have been filled out with the same settings of the Getting Started guide.
@@ -118,9 +118,9 @@ module.exports = function (server) {
 
   const dataSource = server.loopback.createDataSource('Concerto', {
     "name": "Concerto",
-    "connector": "@ibm/loopback-connector-concerto",
+    "connector": "composer-loopback-connector",
     "connectionProfileName" : 'defaultProfile',
-    "businessNetworkIdentifier" : '@ibm/digitalproperty-network',
+    "businessNetworkIdentifier" : 'digitalproperty-network',
     "participantId" : 'WebAppAdmin',
     "participantPwd" : 'DJY27pEnl16d'
   });
@@ -234,7 +234,7 @@ $ npm run listAssets
 > node cli.js landregistry list
 
 info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained @ibm/digitalproperty-network@0.0.22-20170116133558
+info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
 info: [Handel] listTitles Getting the asset registry
 info: [Handel] listTitles Getting all assest from the registry.
 info: [Handel] listTitles Current Land Titles
@@ -252,4 +252,4 @@ info: [Handel] Command completed successfully.
 ```
 
 #Summary
-Using the Loopback framework on top of the Fabric Composer runtime has allowed us to generate a business domain speciifc REST api based on the deployed business network model!
+Using the Loopback framework on top of the Fabric Composer runtime has allowed us to generate a business domain specific REST api based on the deployed business network model!

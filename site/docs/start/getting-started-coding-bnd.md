@@ -21,7 +21,7 @@ This part is encapsulated within (currently) a single file using a defined synta
 ## What should I do with this model
 It is expected that the model would be part of the CI pipeline.  It is expected that the model would be held in a source management system, eg github-enterprise. Edited then submitted to a eg TravisCI build. This would then publish the model to the npm-enterpise
 
-This specific DigitalProperty-Model is already published into the private @ibm NPM repository. Therefore the deployment and pipeline has already been done for you.
+This specific DigitalProperty-Model is already published into the public npm repository. Therefore the deployment and pipeline has already been done for you.
 
 # Creating a new model for yourself
 There are two ways of creating a new model; either using the command line and your favorite editor, or by using the the web Composer UI.
@@ -158,7 +158,7 @@ There is a `concerto archive` command that can be used to create and inspect the
 
 ### Creating an archive
 
-The `concerto archive create` command is used to create the archive. The `--archiveFile` option is used to specify the name of the archive file to create. If this is not specified then a default name will be used that is based on the identifier of the business network (sanitized to be suitable as a filename). For example `@ibm_digitalPropertyNetwork-0.1.2.bna`.
+The `concerto archive create` command is used to create the archive. The `--archiveFile` option is used to specify the name of the archive file to create. If this is not specified then a default name will be used that is based on the identifier of the business network (sanitized to be suitable as a filename). For example `digitalPropertyNetwork-0.1.2.bna`.
 
 One of either --inputDir or --moduleName must be specified. --inputDir is the directory that contains the `package.json` file of the Business Network npm module's package.json.
 

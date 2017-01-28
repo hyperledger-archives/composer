@@ -8,11 +8,11 @@ excerpt: How to publish a domain model for use in a business network
 
 # Publish a Domain Model
 
-The easiest way to publish a domain model for reuse by business network definitions is to define your domain model as an `npm` package. You should create a `package.json` file in the root of you project and include the relevant information. The example packages a set of CTO files for reuse as `@ibm/digitalproperty-model` with version `0.0.1`. In addition the `license-check` Node module is used to ensure that the CTO files have a valid license header.
+The easiest way to publish a domain model for reuse by business network definitions is to define your domain model as an `npm` package. You should create a `package.json` file in the root of you project and include the relevant information. The example packages a set of CTO files for reuse as `digitalproperty-model` with version `0.0.1`. In addition the `license-check` Node module is used to ensure that the CTO files have a valid license header.
 
 ```
 {
-  "name": "@ibm/digitalproperty-model",
+  "name": "digitalproperty-model",
   "version": "0.0.1",
   "description": "Digital Property Network",
   "scripts": {

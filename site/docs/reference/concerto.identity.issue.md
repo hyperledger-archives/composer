@@ -40,7 +40,7 @@ Example: `defaultProfile`
 
 The name of the deployed Business Network to connect to.  
 Example:
-`@ibm/digitalproperty-network`
+`digitalproperty-network`
 
 `--enrollId, -i`
 

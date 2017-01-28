@@ -123,9 +123,9 @@ The sample below uses both the ```AdminConnection``` and ```BusinessNetworkConne
 ```javascript
 'use strict';
 
-const AdminConnection = require('@ibm/concerto-admin').AdminConnection;
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const AdminConnection = require('composer-admin').AdminConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const fs = require('fs');
 
 const admin = new AdminConnection();

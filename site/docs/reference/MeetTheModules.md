@@ -19,25 +19,25 @@ As part of the Concerto system we have 3 main modules for application developers
 
 Details of all the APIs have been documented in JSDocs. Please go to the [JSDoc API Documentation](https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/jsdoc/develop/index.html)
 
-## concerto-client
+## composer-client
 This module would usually be installed as a local dependency of an application. It provides the API that is used by business applications to connect to a business network to access __assets__, __participants__ and submitting __transactions__. When in production this is only module that needs to be added as a direct dependency of the application.
 
 ```
-npm install --save @ibm/concerto-client
+npm install --save composer-client
 ```
 
-## concerto-admin
+## composer-admin
 This module would usually be installed as a local dependency of **administrative** applications. This API permits the creation of and deployment of __business network definitions__.
 
 ```
-npm install --save @ibm/concerto-admin
+npm install --save composer-admin
 ```
 
-## concerto-cli
+## composer-cli
 This provides command line tools to provide the ability to deploy and managed business network definitions. This would normally be installed as a global module
 
 ```
-npm install -g @ibm/concerto-cli
+npm install -g composer-cli
 ```
 If you wish however you can instgall this as a local dependancy, but you could need to access the cli.js node class directly rather than used the `concerto` command.
 

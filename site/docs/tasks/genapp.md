@@ -38,7 +38,7 @@ yo concerto
 ? Short description: Test Concerto project
 ? Author name: Sophie Black
 ? Author email: sophie@ampretia.com
-? NPM Module name of the Business Network to connect to: @ibm/digitalproperty-network
+? NPM Module name of the Business Network to connect to: digitalproperty-network
 ? Is the name in NPM registry the same as the Business Network Identifier?: Yes
 ? What is the Connection Profile to use? defaultProfile
 ? Enrollment id: WebAppAdmin

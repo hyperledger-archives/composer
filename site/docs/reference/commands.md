@@ -13,7 +13,7 @@ administrative, operational, and development tasks.
 
 The Concerto command line application can be installed using npm:
 
-`npm install -g @ibm/ibm-concerto-cli`
+`npm install -g composer-cli`
 
 ## Business Network management
 

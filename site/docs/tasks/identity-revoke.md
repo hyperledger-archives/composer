@@ -57,5 +57,5 @@ The example also assumes that an identity `maeid1` has been issued to that parti
   * Command line
 
     ```bash
-    concerto identity revoke -n '@ibm/digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1
+    concerto identity revoke -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1
     ```

@@ -63,7 +63,7 @@ First check that you are running on a [supported system](../reference/platforms.
 Installing the Concerto CLI tools module is the first step. This gives you commands to deploy, update and list business networks.
 
 ```bash
-npm install -g @ibm/concerto-cli
+npm install -g composer-cli
 ```
 
 ### Clone the Getting Started Repository
@@ -161,10 +161,10 @@ Creating Business Network Archive
 Looking for package.json of Business Network Definition in /home/matthew/git17/DigitalProperty-Network
 
 Description:Digital Property Network
-Name:@ibm/digitalproperty-network
-Identifier:@ibm/digitalproperty-network-0.0.22
+Name:digitalproperty-network
+Identifier:digitalproperty-network-0.0.22
 
-Written Business Network Definition Archive file to @ibm_digitalproperty-network-0.0.22.bna
+Written Business Network Definition Archive file to digitalproperty-network-0.0.22.bna
 Command completed successfully.
 ```
 
@@ -173,10 +173,10 @@ We now have a new file that is the digital business network archive.
 ### Update the deployed business network
 
 ```bash
-$ concerto network update --archiveFile @ibm_digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-Deploying business network from archive @ibm_digitalproperty-network-0.0.22.bna
+$ concerto network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+Deploying business network from archive digitalproperty-network-0.0.22.bna
 Business network definition:
-	Identifier: @ibm/digitalproperty-network-0.0.22
+	Identifier: digitalproperty-network-0.0.22
 	Description: Digital Property Network
 Updating business network definition. This may take a few seconds...
 Command completed successfully.
@@ -187,7 +187,7 @@ If you go back to the getting started directory now - and list all the commands 
 
 ```bash
 $ npm run
-Lifecycle scripts included in concerto-gettingstarted:
+Lifecycle scripts included in composer-gettingstarted:
   test
     mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
   install
@@ -207,7 +207,7 @@ available via `npm run-script`:
   teardownHLF
     scripts/teardown.sh
   deployNetwork
-    concerto archive create -m @ibm/digitalproperty-network --archiveFile digitalPropertyNetwork.zip && concerto network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && concerto network list -n @ibm/digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+    concerto archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip && concerto network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && concerto network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
 ```
 
@@ -216,17 +216,17 @@ If you issue this command, that will submit a the transaction as was done during
 ```
 $ npm run submitTransaction
 
-> concerto-gettingstarted@1.0.0 submitTransaction /home/matthew/git17/Concerto-GettingStarted
+> composer-gettingstarted@1.0.0 submitTransaction /home/matthew/git17/Concerto-GettingStarted
 > node cli.js landregistry submit && node cli.js landregistry list
 
 info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained @ibm/digitalproperty-network-0.0.11
+info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
 info: [Handel] updateForSale Getting assest from the registry.
 info: [Handel] updateForSale Submitting transaction
 info: [Handel] Transaction Submitted
 info: [Handel] Command completed successfully.
 info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained @ibm/digitalproperty-network-0.0.11
+info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
 info: [Handel] listTitles Getting the asset registry
 info: [Handel] listTitles Getting all assest from the registry.
 info: [Handel] listTitles Current Land Titles
@@ -266,7 +266,7 @@ available via `npm run-script`:
   teardownHLF
     scripts/teardown.sh
   deployNetwork
-    concerto archive create -m @ibm/digitalproperty-network --archiveFile digitalPropertyNetwork.zip && concerto network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && concerto network list -n @ibm/digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+    concerto archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip && concerto network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && concerto network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 ```
 
 * *npm test*  The standard test target runs some mocha based unti tests, then invokes two other npm run commands to store some test assets and submit a simple transaction.
@@ -287,12 +287,12 @@ Let's look at each of the other scripts and what they do - there are two main sh
 
 **Concerto CLI**
 
-* `concerto archive create -m @ibm/digitalproperty-network --archiveFile digitalPropertyNetwork.zip`
+* `concerto archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip`
 This command is used to create a Business Network Archive. `--archiveFile` is the name of the file. The `-m` is the npm module name of the business network to use. There is also a -d option to specify the directory the business network is in. Useful whilst developing the business network transactions functions.
 
 * `concerto network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
 This deploys the business network to the HyperLedger runtime; the archive is specified but also the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)
-* `concerto network list -n @ibm/digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
+* `concerto network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
 This lists the deployed business network details. `-n` is the name of the business network. With the same options for the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)
 
 **Sample Applications**

@@ -55,7 +55,7 @@ of that participant has been created and placed into a participant registry.
   * Command line
 
     ```bash
-    concerto identity issue -n '@ibm/digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1 -a "net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
+    concerto identity issue -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1 -a "net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
     ```
 
     The enrollment secret will be printed to the console.
@@ -74,7 +74,7 @@ of that participant has been created and placed into a participant registry.
   * Command line
 
     ```bash
-    concerto network ping -n '@ibm/digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
+    concerto network ping -n 'digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
     ```
 
     The participant ID will be printed to the console, and should match the participant

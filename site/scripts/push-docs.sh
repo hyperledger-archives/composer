@@ -78,8 +78,8 @@ cp -rf ${DIR}/out/diagrams-private ${TODIR}/
 
 # Set the username address.
 cd ${DIR}/gh-pages
-git config user.email "noreply@ibm.com"
-git config user.name "Blockchain WW Labs - Solutions"
+git config user.email "noreply@fabric-composer.org"
+git config user.name "Fabric Composer"
 git config push.default simple
 
 ## copy new site
