@@ -21,11 +21,22 @@ before_install: |
     npm install -g npm
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     sudo dpkg -i google-chrome*.deb
+    wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+    echo "deb http://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+    sudo apt-get update && sudo apt-get install cf-cli
 install: |
     set -ev
     set -o pipefail
     npm install 2>&1 | tee
 script: npm run script
+after_success: |
+    set -ev
+    set -o pipefail
+    npm config set registry https://registry.npmjs.org/
+    npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+    $(npm bin)/set-up-ssh --key "$encrypted_568b95f14ac3_key" \
+                          --iv "$encrypted_568b95f14ac3_iv" \
+                          --path-encrypted-key ".travis/github_deploy_key.enc"
 deploy:
     provider: script
     script: npm run deploy
