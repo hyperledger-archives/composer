@@ -1,7 +1,7 @@
 {
   "name": "composer-loopback-connector",
   "version": "0.3.9",
-  "description": "A Loopback connector for IBM Concerto, the Blockchain Solution Framework.",
+  "description": "A Loopback connector for Fabric Composer",
   "main": "index.js",
   "scripts": {
     "pretest": "npm run lint",
@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.ibm.com/Blockchain-WW-Labs/Concerto-Loopback-Connector.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
-  "license": "ISC",
+  "author": "Fabric Composer",
+  "license": "Apache-2",
   "dependencies": {
     "composer-admin": "^0.3.9",
     "composer-client": "^0.3.9",
@@ -42,9 +42,6 @@
     "mocha": "^3.1.2",
     "sinon": "^1.17.6",
     "sleep-promise": "^2.0.0"
-  },
-  "publishConfig": {
-    "registry": "https://npm-registry.whitewater.ibm.com"
   },
   "license-check-config": {
     "src": [

@@ -31,6 +31,6 @@
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
-  "license": "ISC"
+  "author": "Fabric Composer",
+  "license": "Apache-2"
 }

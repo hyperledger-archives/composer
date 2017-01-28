@@ -1,7 +1,7 @@
 {
   "name": "composer-connector-proxy",
   "version": "0.3.4",
-  "description": "The proxying client connector for IBM Concerto, the Blockchain Solution Framework",
+  "description": "The proxying client connector for Fabric Composer",
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
@@ -15,18 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.ibm.com:Blockchain-WW-Labs/Concerto-Connector-Proxy.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
-  "license": "ISC",
-  "publishConfig": {
-    "registry": "https://npm-registry.whitewater.ibm.com"
-  },
+  "author": "Fabric Composer",
+  "license": "Apache-2",
   "license-check-config": {
     "src": [
       "**/*.js",

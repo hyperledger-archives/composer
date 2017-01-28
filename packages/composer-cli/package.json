@@ -1,7 +1,7 @@
 {
   "name": "composer-cli",
   "version": "0.3.9",
-  "description": "IBM Concerto command line interfaces (CLIs)",
+  "description": "Fabric Composer command line interfaces (CLIs)",
   "bin": {
     "concerto": "cli.js"
   },
@@ -16,17 +16,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.ibm.com/Blockchain-WW-Labs/Concerto-CLI.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
+  "author": "Fabric Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "eslint": "^3.12.1",
+    "eslint": "^3.5.0",
     "license-check": "^1.1.5",
     "mocha": "^3.2.0",
     "chai": "^3.5.0",
@@ -48,9 +48,6 @@
     "prompt": "^1.0.0",
     "sanitize-filename": "^1.6.1",
     "yargs": "^6.6.0"
-  },
-  "publishConfig": {
-    "registry": "https://npm-registry.whitewater.ibm.com"
   },
   "license-check-config": {
     "src": [

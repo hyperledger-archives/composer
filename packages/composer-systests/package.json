@@ -2,7 +2,7 @@
   "name": "composer-systests",
   "version": "0.3.9",
   "private": true,
-  "description": "System tests and automation for IBM Concerto, the Blockchain Solution Framework",
+  "description": "System tests and automation for Fabric Composer",
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
@@ -16,9 +16,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.ibm.com:Blockchain-WW-Labs/Concerto-System-Tests.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
-  "author": "IBM",
+  "author": "Fabric Composer",
   "license": "Apache-2.0",
   "keywords": [
     "blockchain",
@@ -48,9 +48,6 @@
     "mocha": "^3.1.2",
     "uuid": "^3.0.1",
     "watchify": "^3.7.0"
-  },
-  "publishConfig": {
-    "registry": "https://npm-registry.whitewater.ibm.com"
   },
   "license-check-config": {
     "src": [

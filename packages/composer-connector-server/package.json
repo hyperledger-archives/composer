@@ -1,7 +1,7 @@
 {
   "name": "composer-connector-server",
   "version": "0.3.4",
-  "description": "The remote connector server for IBM Concerto, the Blockchain Solution Framework",
+  "description": "The remote connector server for Fabric Composer",
   "bin": {
     "concerto-connector-server": "cli.js"
   },
@@ -18,18 +18,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.ibm.com:Blockchain-WW-Labs/Concerto-Connector-Server.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
-  "license": "ISC",
-  "publishConfig": {
-    "registry": "https://npm-registry.whitewater.ibm.com"
-  },
+  "author": "Fabric Composer",
+  "license": "Apache-2",
   "license-check-config": {
     "src": [
       "**/*.js",
@@ -49,6 +46,7 @@
     "composer-connector-hlf": "^0.3.0",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.2",
+    "uuid": "^3.0.1",
     "yargs": "^6.6.0"
   },
   "devDependencies": {

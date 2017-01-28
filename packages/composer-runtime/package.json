@@ -1,7 +1,7 @@
 {
   "name": "composer-runtime",
   "version": "0.3.9",
-  "description": "The runtime execution environment for IBM Concerto, the Blockchain Solution Framework",
+  "description": "The runtime execution environment for Fabric Composer",
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.ibm.com:Blockchain-WW-Labs/Concerto-Runtime.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
+  "author": "Fabric Composer",
   "license": "Apache-2.0",
   "devDependencies": {
     "babel-polyfill": "^6.16.0",
@@ -48,9 +48,6 @@
     "sinon": "^1.17.6",
     "sinon-as-promised": "^4.0.2",
     "uglifyify": "^3.0.4"
-  },
-  "publishConfig": {
-    "registry": "https://npm-registry.whitewater.ibm.com"
   },
   "license-check-config": {
     "src": [

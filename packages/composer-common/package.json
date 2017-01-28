@@ -1,7 +1,7 @@
 {
   "name": "composer-common",
   "version": "0.3.9",
-  "description": "IBM Concerto Common, code that is common across client, admin and runtime.",
+  "description": "Fabric Composer Common, code that is common across client, admin and runtime.",
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.ibm.com/Blockchain-WW-Labs/Concerto-Common.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
+  "author": "Fabric Composer",
   "license": "Apache-2.0",
   "devDependencies": {
     "ajv": "^4.8.2",
@@ -77,9 +77,6 @@
     "thenify-all": "^1.6.0",
     "uuid": "^3.0.0",
     "winston": "^2.3.0"
-  },
-  "publishConfig": {
-    "registry": "https://npm-registry.whitewater.ibm.com"
   },
   "license-check-config": {
     "src": [
