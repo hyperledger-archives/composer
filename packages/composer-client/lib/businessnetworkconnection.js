@@ -15,17 +15,17 @@
 'use strict';
 
 const AssetRegistry = require('./assetregistry');
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
-const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const EventEmitter = require('events');
 const fs = require('fs');
-const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
-const Logger = require('@ibm/concerto-common').Logger;
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
-const Resource = require('@ibm/concerto-common').Resource;
-const TransactionDeclaration = require('@ibm/concerto-common').TransactionDeclaration;
+const Resource = require('composer-common').Resource;
+const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
-const Util = require('@ibm/concerto-common').Util;
+const Util = require('composer-common').Util;
 const uuid = require('uuid');
 
 const LOG = Logger.getLog('BusinessNetworkConnection');

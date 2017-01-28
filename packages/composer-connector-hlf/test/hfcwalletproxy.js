@@ -15,7 +15,7 @@
 'use strict';
 
 const HFCWalletProxy = require('../lib/hfcwalletproxy');
-const Wallet = require('@ibm/concerto-common').Wallet;
+const Wallet = require('composer-common').Wallet;
 
 require('chai').should();
 const sinon = require('sinon');

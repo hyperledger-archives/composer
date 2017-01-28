@@ -14,7 +14,7 @@
 
 'use strict';
 
-const LoggingService = require('@ibm/concerto-runtime').LoggingService;
+const LoggingService = require('composer-runtime').LoggingService;
 
 /**
  * Base class representing the logging service provided by a {@link Container}.

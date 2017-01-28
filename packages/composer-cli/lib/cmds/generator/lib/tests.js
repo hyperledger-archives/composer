@@ -18,7 +18,7 @@ const CmdUtil = require('../../utils/cmdutils');
 const path = require('path');
 const fs = require('fs');
 const nunjucks = require('nunjucks');
-const Common = require('@ibm/concerto-common');
+const Common = require('composer-common');
 const BusinessNetworkDefinition = Common.BusinessNetworkDefinition;
 
 const TEMPLATES_DIR = path.join(__dirname, './../../../../gen');

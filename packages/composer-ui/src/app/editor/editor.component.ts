@@ -5,7 +5,7 @@ import { ClientService } from '../client.service';
 import { SampleService } from '../sample.service';
 import { InitializationService } from '../initialization.service';
 
-import { AclFile, BusinessNetworkDefinition, ModelFile } from '@ibm/concerto-common';
+import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';

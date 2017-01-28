@@ -30,5 +30,5 @@ module.exports.AdminConnection = require('./lib/adminconnection');
  * Expose key concerto-common classes to simplify client application dependencies
  * @ignore
  */
-module.exports.BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
-module.exports.Logger = require('@ibm/concerto-common').Logger;
+module.exports.BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+module.exports.Logger = require('composer-common').Logger;

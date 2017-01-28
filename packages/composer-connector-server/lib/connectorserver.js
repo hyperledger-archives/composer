@@ -10,8 +10,8 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
-const Logger = require('@ibm/concerto-common').Logger;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const Logger = require('composer-common').Logger;
 const realSerializerr = require('serializerr');
 const uuid = require('uuid');
 

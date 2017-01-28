@@ -14,7 +14,7 @@
 
 'use strict';
 
-const IdentityService = require('@ibm/concerto-runtime').IdentityService;
+const IdentityService = require('composer-runtime').IdentityService;
 const EmbeddedIdentityService = require('..').EmbeddedIdentityService;
 
 const should = require('chai').should();

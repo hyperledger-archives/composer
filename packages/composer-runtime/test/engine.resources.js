@@ -22,8 +22,8 @@ const QueryExecutor = require('../lib/queryexecutor');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
-const Resource = require('@ibm/concerto-common').Resource;
-const Serializer = require('@ibm/concerto-common').Serializer;
+const Resource = require('composer-common').Resource;
+const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
 chai.should();

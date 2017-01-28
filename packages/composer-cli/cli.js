@@ -26,15 +26,15 @@ yargs
     .demand(1)
     .wrap(null)
     .strict()
-    .epilogue('For more information: https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/reference')
+    .epilogue('For more information: https://pages.github.ibm.com/fabric-composer/fabric-composer/reference')
     .alias('v', 'version')
     .version(function() {
 
 
-        return getInfo('@ibm/ibm-concerto-cli')+'\n'+
-          getInfo('@ibm/concerto-admin')+'\n'+getInfo('@ibm/concerto-client')+'\n'+
-          getInfo('@ibm/concerto-common')+'\n'+getInfo('@ibm/concerto-runtime-hlf')+
-          '\n'+getInfo('@ibm/concerto-connector-hlf')+'\n';
+        return getInfo('composer-cli')+'\n'+
+          getInfo('composer-admin')+'\n'+getInfo('composer-client')+'\n'+
+          getInfo('composer-common')+'\n'+getInfo('composer-runtime-hlf')+
+          '\n'+getInfo('composer-connector-hlf')+'\n';
 
 
     })

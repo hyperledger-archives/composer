@@ -15,7 +15,7 @@
 'use strict';
 
 const EventEmitter = require('events');
-const Resource = require('@ibm/concerto-common').Resource;
+const Resource = require('composer-common').Resource;
 
 /**
  * A class for managing and persisting resources.

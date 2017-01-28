@@ -15,9 +15,9 @@
 'use strict';
 
 const AccessException = require('../lib/accessexception');
-const BaseException = require('@ibm/concerto-common').BaseException;
-const Factory = require('@ibm/concerto-common').Factory;
-const ModelManager = require('@ibm/concerto-common').ModelManager;
+const BaseException = require('composer-common').BaseException;
+const Factory = require('composer-common').Factory;
+const ModelManager = require('composer-common').ModelManager;
 
 require('chai').should();
 

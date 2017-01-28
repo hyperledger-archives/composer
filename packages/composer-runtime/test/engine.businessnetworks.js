@@ -14,7 +14,7 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');

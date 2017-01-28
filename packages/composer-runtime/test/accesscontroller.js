@@ -16,10 +16,10 @@
 
 const AccessController = require('../lib/accesscontroller');
 const AccessException = require('../lib/accessexception');
-const AclFile = require('@ibm/concerto-common').AclFile;
-const AclManager = require('@ibm/concerto-common').AclManager;
-const Factory = require('@ibm/concerto-common').Factory;
-const ModelManager = require('@ibm/concerto-common').ModelManager;
+const AclFile = require('composer-common').AclFile;
+const AclManager = require('composer-common').AclManager;
+const Factory = require('composer-common').Factory;
+const ModelManager = require('composer-common').ModelManager;
 
 require('chai').should();
 const sinon = require('sinon');

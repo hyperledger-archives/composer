@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/composer-ui",
+  "name": "composer-ui",
   "version": "0.3.4",
   "description": "A test harness/UI for the web runtime container for IBM Concerto, the Blockchain Solution Framework",
   "bin": {
@@ -69,8 +69,8 @@
     "webpack": "webpack"
   },
   "dependencies": {
-    "@ibm/concerto-common": "^0.3.3",
-    "@ibm/concerto-connector-server": "^0.3.4",
+    "composer-common": "^0.3.3",
+    "composer-connector-server": "^0.3.4",
     "express": "^4.14.0",
     "opener": "^1.4.2",
     "socket.io": "^1.7.2"
@@ -88,10 +88,10 @@
     "@angularclass/conventions-loader": "^1.0.13",
     "@angularclass/hmr": "^1.2.2",
     "@angularclass/hmr-loader": "^3.0.2",
-    "@ibm/concerto-admin": "^0.3.0",
-    "@ibm/concerto-client": "^0.3.0",
-    "@ibm/concerto-connector-proxy": "^0.3.4",
-    "@ibm/concerto-connector-web": "^0.3.0",
+    "composer-admin": "^0.3.0",
+    "composer-client": "^0.3.0",
+    "composer-connector-proxy": "^0.3.4",
+    "composer-connector-web": "^0.3.0",
     "@types/dropboxjs": "^0.0.29",
     "@types/filesystem": "^0.0.28",
     "@types/hammerjs": "^2.0.34",

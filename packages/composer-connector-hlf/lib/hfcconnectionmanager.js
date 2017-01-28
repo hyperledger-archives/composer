@@ -14,13 +14,13 @@
 
 'use strict';
 
-const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
-const Globalize = require('@ibm/concerto-common').Globalize;
+const ConnectionManager = require('composer-common').ConnectionManager;
+const Globalize = require('composer-common').Globalize;
 const hfc = require('hfc');
 const HFCConnection = require('./hfcconnection');
 const HFCWalletProxy = require('./hfcwalletproxy');
-const LOG = require('@ibm/concerto-common').Logger.getLog('HFCConnectionManager');
-const Wallet = require('@ibm/concerto-common').Wallet;
+const LOG = require('composer-common').Logger.getLog('HFCConnectionManager');
+const Wallet = require('composer-common').Wallet;
 
 /**
  * Class representing a connection manager that establishes and manages

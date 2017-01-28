@@ -1,8 +1,8 @@
 {
-  "name": "@ibm/test-npm-archive",
+  "name": "test-npm-archive",
   "version": "0.0.1",
   "description": "A test business network using npm model dependencies.",
   "dependencies": {
-    "@ibm/animaltracking-model": "0.0.7"
+    "animaltracking-model": "0.0.7"
   }
 }

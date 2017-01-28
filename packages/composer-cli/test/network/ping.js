@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Client = require('@ibm/concerto-client');
+const Client = require('composer-client');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
 
 const Ping = require('../../lib/cmds/network/pingCommand.js');

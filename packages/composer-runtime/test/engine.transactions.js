@@ -22,9 +22,9 @@ const LoggingService = require('../lib/loggingservice');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
-const Resource = require('@ibm/concerto-common').Resource;
-const ScriptManager = require('@ibm/concerto-common').ScriptManager;
-const Serializer = require('@ibm/concerto-common').Serializer;
+const Resource = require('composer-common').Resource;
+const ScriptManager = require('composer-common').ScriptManager;
+const Serializer = require('composer-common').Serializer;
 const TransactionExecutor = require('../lib/transactionexecutor');
 
 const chai = require('chai');

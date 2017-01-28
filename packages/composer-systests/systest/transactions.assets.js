@@ -15,7 +15,7 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/concerto-admin').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 
 const fs = require('fs');
 const path = require('path');

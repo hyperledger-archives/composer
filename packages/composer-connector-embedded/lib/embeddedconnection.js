@@ -14,10 +14,10 @@
 
 'use strict';
 
-const Connection = require('@ibm/concerto-common').Connection;
-const Engine = require('@ibm/concerto-runtime').Engine;
-const EmbeddedContainer = require('@ibm/concerto-runtime-embedded').EmbeddedContainer;
-const EmbeddedContext = require('@ibm/concerto-runtime-embedded').EmbeddedContext;
+const Connection = require('composer-common').Connection;
+const Engine = require('composer-runtime').Engine;
+const EmbeddedContainer = require('composer-runtime-embedded').EmbeddedContainer;
+const EmbeddedContext = require('composer-runtime-embedded').EmbeddedContext;
 const EmbeddedSecurityContext = require('./embeddedsecuritycontext');
 
 // A mapping of business networks to chaincode IDs.

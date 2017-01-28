@@ -16,10 +16,10 @@
 
 const AccessController = require('./accesscontroller');
 const Api = require('./api');
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
 const JSTransactionExecutor = require('./jstransactionexecutor');
-const Logger = require('@ibm/concerto-common').Logger;
+const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
 const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');

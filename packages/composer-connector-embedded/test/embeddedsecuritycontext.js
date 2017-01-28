@@ -14,8 +14,8 @@
 
 'use strict';
 
-const Connection = require('@ibm/concerto-common').Connection;
-const SecurityContext = require('@ibm/concerto-common').SecurityContext;
+const Connection = require('composer-common').Connection;
+const SecurityContext = require('composer-common').SecurityContext;
 const EmbeddedSecurityContext = require('../lib/embeddedsecuritycontext');
 
 require('chai').should();

@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/concerto-connector-server",
+  "name": "composer-connector-server",
   "version": "0.3.4",
   "description": "The remote connector server for IBM Concerto, the Blockchain Solution Framework",
   "bin": {
@@ -44,9 +44,9 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/concerto-common": "^0.3.3",
-    "@ibm/concerto-connector-embedded": "^0.3.0",
-    "@ibm/concerto-connector-hlf": "^0.3.0",
+    "composer-common": "^0.3.3",
+    "composer-connector-embedded": "^0.3.0",
+    "composer-connector-hlf": "^0.3.0",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.2",
     "yargs": "^6.6.0"

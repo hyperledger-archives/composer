@@ -28,13 +28,13 @@ if [ "${TRAVIS_BRANCH}" = "develop" ]; then
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag unstable"
-    npm publish --scope=@ibm --tag=unstable
+    npm publish --tag=unstable
 
 else
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag develop"
-    npm publish --scope=@ibm
+    npm publish
 
 fi
 
@@ -55,8 +55,8 @@ for PROJ in Concerto-System-Tests; do
         rm -rf temp
         git clone -b ${TRAVIS_BRANCH} ${THISREPO} temp
         cd temp
-        git config user.email "noreply@ibm.com"
-        git config user.name "Blockchain WW Labs - Solutions"
+        git config user.email "noreply@fabric-composer.org"
+        git config user.name "Fabric Composer"
         git config push.default simple
         git commit -m "Automated commit to trigger downstream build" --allow-empty
         git push && break

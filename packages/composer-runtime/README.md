@@ -1,6 +1,6 @@
 # Concerto-Runtime
 
-`npm install @ibm/concerto-runtime --save`
+`npm install composer-runtime --save`
 
 ## Introduction
 

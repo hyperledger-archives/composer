@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Logger = require('@ibm/concerto-common').Logger;
+const Logger = require('composer-common').Logger;
 const TransactionExecutor = require('./transactionexecutor');
 
 const LOG = Logger.getLog('JSTransactionExecutor');

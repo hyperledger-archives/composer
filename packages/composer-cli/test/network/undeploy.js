@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Admin = require('@ibm/concerto-admin');
+const Admin = require('composer-admin');
 
 const Undeploy = require('../../lib/cmds/network/lib/undeploy.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');

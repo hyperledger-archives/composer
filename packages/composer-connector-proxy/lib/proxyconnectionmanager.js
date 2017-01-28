@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
+const ConnectionManager = require('composer-common').ConnectionManager;
 const inflaterr = require('./proxyutil').inflaterr;
 const ProxyConnection = require('./proxyconnection');
 const socketIOClient = require('socket.io-client');

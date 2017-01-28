@@ -5,8 +5,8 @@ import { AdminService } from './admin.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
 
-import { BusinessNetworkConnection } from '@ibm/concerto-client';
-import { BusinessNetworkDefinition, Util } from '@ibm/concerto-common';
+import { BusinessNetworkConnection } from 'composer-client';
+import { BusinessNetworkDefinition, Util } from 'composer-common';
 
 @Injectable()
 export class ClientService {

@@ -15,7 +15,7 @@
 'use strict';
 
 
-const Client = require('@ibm/concerto-client');
+const Client = require('composer-client');
 const Pretty = require('prettyjson');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
 const DEFAULT_PROFILE_NAME = 'defaultProfile';

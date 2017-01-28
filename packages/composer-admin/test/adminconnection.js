@@ -16,7 +16,7 @@
 
 const Module = require('../');
 const AdminConnection = require('../lib/adminconnection');
-const ConcertoCommon = require('@ibm/concerto-common');
+const ConcertoCommon = require('composer-common');
 const BusinessNetworkDefinition = ConcertoCommon.BusinessNetworkDefinition;
 const Connection = ConcertoCommon.Connection;
 const ConnectionManager = ConcertoCommon.ConnectionManager;

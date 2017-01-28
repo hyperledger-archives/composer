@@ -15,11 +15,11 @@
 'use strict';
 
 const Api = require('../lib/api');
-const Factory = require('@ibm/concerto-common').Factory;
+const Factory = require('composer-common').Factory;
 const JSTransactionExecutor = require('../lib/jstransactionexecutor');
-const ModelManager = require('@ibm/concerto-common').ModelManager;
+const ModelManager = require('composer-common').ModelManager;
 const RegistryManager = require('../lib/registrymanager');
-const ScriptManager = require('@ibm/concerto-common').ScriptManager;
+const ScriptManager = require('composer-common').ScriptManager;
 
 const chai = require('chai');
 chai.should();

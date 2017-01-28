@@ -207,7 +207,7 @@ module.exports = function (options) {
 
         {
           test: /\.js$/,
-          exclude: /(node_modules(?!\/@ibm\/concerto)|bower_components)/,
+          exclude: /(node_modules(?!\composer)|bower_components)/,
           loader: 'babel-loader',
           query: {
             presets: ['es2015']

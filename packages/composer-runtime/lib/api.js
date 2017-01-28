@@ -16,7 +16,7 @@
 
 const AssetRegistry = require('./api/assetregistry');
 const Factory = require('./api/factory');
-const Logger = require('@ibm/concerto-common').Logger;
+const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./api/participantregistry');
 
 const LOG = Logger.getLog('Api');

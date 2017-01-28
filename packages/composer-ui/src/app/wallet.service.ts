@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { FileWallet } from '@ibm/concerto-common';
+import { FileWallet } from 'composer-common';
 
 @Injectable()
 export class WalletService {

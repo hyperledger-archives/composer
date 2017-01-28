@@ -19,8 +19,6 @@ before_install: |
     set -ev
     set -o pipefail
     npm install -g npm
-    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
-    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     sudo dpkg -i google-chrome*.deb
 install: |

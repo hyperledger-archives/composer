@@ -21,7 +21,7 @@ linked together:
 
     $ lerna bootstrap
 
-You can then work with the packages under [packages/@ibm](packages/@ibm) on a per-package
+You can then work with the packages under [packages/](packages/) on a per-package
 basis as any normal node.js package.
 
 Alternatively, you can execute npm commands across all of the packages at once using

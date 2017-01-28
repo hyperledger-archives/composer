@@ -5,10 +5,10 @@ import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
 
-import { AdminConnection, BusinessNetworkDefinition } from '@ibm/concerto-admin';
-import { AclFile, ConnectionProfileManager, Logger } from '@ibm/concerto-common';
-import ProxyConnectionManager = require('@ibm/concerto-connector-proxy');
-import WebConnectionManager = require('@ibm/concerto-connector-web');
+import { AdminConnection, BusinessNetworkDefinition } from 'composer-admin';
+import { AclFile, ConnectionProfileManager, Logger } from 'composer-common';
+import ProxyConnectionManager = require('composer-connector-proxy');
+import WebConnectionManager = require('composer-connector-web');
 
 const sampleModelCode =
 `/**

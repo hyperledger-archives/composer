@@ -21,7 +21,7 @@ const EventEmitter = require('events');
 const fs = require('fs-extra');
 const hfc = require('hfc');
 const path = require('path');
-const SecurityException = require('@ibm/concerto-common').SecurityException;
+const SecurityException = require('composer-common').SecurityException;
 const temp = require('temp').track();
 const uuid = require('uuid');
 const version = require('../package.json').version;
@@ -31,7 +31,7 @@ chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 
-const runtimeModulePath = path.dirname(require.resolve('@ibm/concerto-runtime-hlf'));
+const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlf'));
 
 describe('HFCUtil', function () {
 

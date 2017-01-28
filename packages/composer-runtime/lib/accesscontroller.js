@@ -15,7 +15,7 @@
 'use strict';
 
 const AccessException = require('./accessexception');
-const Logger = require('@ibm/concerto-common').Logger;
+const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('AccessController');
 

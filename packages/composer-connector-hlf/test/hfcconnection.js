@@ -14,9 +14,9 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
-const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
-const ConnectionProfileStore = require('@ibm/concerto-common').ConnectionProfileStore;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const ConnectionProfileStore = require('composer-common').ConnectionProfileStore;
 const ConnectionManager = require('../lib/hfcconnectionmanager');
 const hfc = require('hfc');
 const hfcChain = hfc.Chain;

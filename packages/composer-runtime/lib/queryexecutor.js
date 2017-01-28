@@ -15,9 +15,9 @@
 'use strict';
 
 const jsonata = require('jsonata');
-const Logger = require('@ibm/concerto-common').Logger;
-const Relationship = require('@ibm/concerto-common').Relationship;
-const Resource = require('@ibm/concerto-common').Resource;
+const Logger = require('composer-common').Logger;
+const Relationship = require('composer-common').Relationship;
+const Resource = require('composer-common').Resource;
 
 const LOG = Logger.getLog('QueryEngine');
 

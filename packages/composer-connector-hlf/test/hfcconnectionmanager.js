@@ -14,15 +14,15 @@
 
 'use strict';
 
-const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const fs = require('fs');
-const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const hfc = require('hfc');
 const hfcChain = hfc.Chain;
 const HFCConnection = require('../lib/hfcconnection');
 const HFCConnectionManager = require('..');
 const HFCWalletProxy = require('../lib/hfcwalletproxy');
-const Wallet = require('@ibm/concerto-common').Wallet;
+const Wallet = require('composer-common').Wallet;
 
 require('chai').should();
 const sinon = require('sinon');

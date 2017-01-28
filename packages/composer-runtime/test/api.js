@@ -18,10 +18,10 @@ const Api = require('../lib/api');
 const AssetRegistry = require('../lib/api/assetregistry');
 const Factory = require('../lib/api/factory');
 const ParticipantRegistry = require('../lib/api/participantregistry');
-const realFactory = require('@ibm/concerto-common').Factory;
+const realFactory = require('composer-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
-const Resource = require('@ibm/concerto-common').Resource;
+const Resource = require('composer-common').Resource;
 
 const chai = require('chai');
 chai.should();

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Connection = require('@ibm/concerto-common').Connection;
+const Connection = require('composer-common').Connection;
 const inflaterr = require('./proxyutil').inflaterr;
 const ProxySecurityContext = require('./proxysecuritycontext');
 

@@ -15,7 +15,7 @@
 'use strict';
 
 const Registry = require('./registry');
-const Util = require('@ibm/concerto-common').Util;
+const Util = require('composer-common').Util;
 
 const REGISTRY_TYPE = 'Asset';
 

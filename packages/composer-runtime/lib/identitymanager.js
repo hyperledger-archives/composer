@@ -14,8 +14,8 @@
 
 'use strict';
 
-const Logger = require('@ibm/concerto-common').Logger;
-const Resource = require('@ibm/concerto-common').Resource;
+const Logger = require('composer-common').Logger;
+const Resource = require('composer-common').Resource;
 
 const LOG = Logger.getLog('IdentityManager');
 

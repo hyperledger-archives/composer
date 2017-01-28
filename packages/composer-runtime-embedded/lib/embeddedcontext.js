@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Context = require('@ibm/concerto-runtime').Context;
+const Context = require('composer-runtime').Context;
 const EmbeddedIdentityService = require('./embeddedidentityservice');
 
 /**

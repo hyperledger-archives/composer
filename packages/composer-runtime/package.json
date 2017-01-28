@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/concerto-runtime",
+  "name": "composer-runtime",
   "version": "0.3.9",
   "description": "The runtime execution environment for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
@@ -65,7 +65,7 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/concerto-common": "^0.3.9",
+    "composer-common": "^0.3.9",
     "debug": "^2.4.4",
     "fast-json-patch": "^1.1.2",
     "jsonata": "^1.0.10",

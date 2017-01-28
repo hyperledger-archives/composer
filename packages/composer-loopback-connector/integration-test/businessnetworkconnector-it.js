@@ -16,7 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const BusinessNetworkDefinition = require('@ibm/concerto-admin').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('composer-admin').BusinessNetworkDefinition;
 const BusinessNetworkConnector = require('../lib/businessnetworkconnector');
 const TestUtil = require('./testutil');
 

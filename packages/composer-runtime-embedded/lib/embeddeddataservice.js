@@ -14,7 +14,7 @@
 
 'use strict';
 
-const DataService = require('@ibm/concerto-runtime').DataService;
+const DataService = require('composer-runtime').DataService;
 const Dexie = require('dexie');
 const EmbeddedDataCollection = require('./embeddeddatacollection');
 

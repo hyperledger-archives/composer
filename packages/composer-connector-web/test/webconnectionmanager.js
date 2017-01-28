@@ -14,9 +14,9 @@
 
 'use strict';
 
-const Connection = require('@ibm/concerto-common').Connection;
-const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
-const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const Connection = require('composer-common').Connection;
+const ConnectionManager = require('composer-common').ConnectionManager;
+const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const WebConnectionManager = require('..');
 
 const chai = require('chai');

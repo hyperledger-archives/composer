@@ -27,11 +27,6 @@ RUN apt-get update \
 # Create application directory.
 WORKDIR /usr/src/app
 
-# Set up the private npm registry.
-ARG NPM_TOKEN
-RUN npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
-RUN npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
-
 # Install application dependencies.
 COPY package.json /usr/src/app/
 RUN npm cache clean \
@@ -39,7 +34,7 @@ RUN npm cache clean \
 
 # Install the global dependencies.
 RUN npm cache clean \
-  && npm install -g --quiet @ibm/concerto-cli@^0.3.0 @ibm/concerto-connector-server@^0.3.0
+  && npm install -g --quiet composer-cli@^0.3.0 composer-connector-server@^0.3.0
 
 # Bundle application source.
 COPY . /usr/src/app/

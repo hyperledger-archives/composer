@@ -14,7 +14,7 @@
 
 'use strict';
 
-const BaseException = require('@ibm/concerto-common').BaseException;
+const BaseException = require('composer-common').BaseException;
 
 /**
 * Class representing an access exception

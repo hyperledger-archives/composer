@@ -14,17 +14,17 @@
 
 'use strict';
 
-const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
-const ClassDeclaration = require('@ibm/concerto-common').ClassDeclaration;
-const Introspector = require('@ibm/concerto-common').Introspector;
-const ParticipantDeclaration = require('@ibm/concerto-common').ParticipantDeclaration;
-const Property = require('@ibm/concerto-common').Property;
+const AssetDeclaration = require('composer-common').AssetDeclaration;
+const ClassDeclaration = require('composer-common').ClassDeclaration;
+const Introspector = require('composer-common').Introspector;
+const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
+const Property = require('composer-common').Property;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
-const Relationship = require('@ibm/concerto-common').Relationship;
+const Relationship = require('composer-common').Relationship;
 const Resolver = require('../lib/resolver');
-const Resource = require('@ibm/concerto-common').Resource;
-const TransactionDeclaration = require('@ibm/concerto-common').TransactionDeclaration;
+const Resource = require('composer-common').Resource;
+const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 
 const chai = require('chai');
 chai.should();

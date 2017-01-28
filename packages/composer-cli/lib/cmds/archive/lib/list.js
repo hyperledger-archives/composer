@@ -14,7 +14,7 @@
 
 'use strict';
 
-const Admin = require('@ibm/concerto-admin');
+const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const fs = require('fs');
 

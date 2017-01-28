@@ -14,9 +14,9 @@
 
 'use strict';
 
-const Container = require('@ibm/concerto-runtime').Container;
-const DataService = require('@ibm/concerto-runtime').DataService;
-const LoggingService = require('@ibm/concerto-runtime').LoggingService;
+const Container = require('composer-runtime').Container;
+const DataService = require('composer-runtime').DataService;
+const LoggingService = require('composer-runtime').LoggingService;
 const EmbeddedContainer = require('..').EmbeddedContainer;
 const uuid = require('uuid');
 const version = require('../package.json').version;

@@ -19,8 +19,8 @@ const AccessException = require('../lib/accessexception');
 const DataCollection = require('../lib/datacollection');
 const EventEmitter = require('events');
 const Registry = require('../lib/registry');
-const Resource = require('@ibm/concerto-common').Resource;
-const Serializer = require('@ibm/concerto-common').Serializer;
+const Resource = require('composer-common').Resource;
+const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
 chai.should();

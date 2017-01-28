@@ -23,12 +23,12 @@ const argv = require('yargs')
     })
     .argv;
 
-const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
+const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('.');
 const fs = require('fs');
-const FSConnectionProfileStore = require('@ibm/concerto-common').FSConnectionProfileStore;
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const io = require('socket.io')(argv.port);
-const Logger = require('@ibm/concerto-common').Logger;
+const Logger = require('composer-common').Logger;
 const util = require('util');
 
 Logger.setFunctionalLogger({

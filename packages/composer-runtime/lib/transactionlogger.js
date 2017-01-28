@@ -15,7 +15,7 @@
 'use strict';
 
 const jsonpatch = require('fast-json-patch');
-const Logger = require('@ibm/concerto-common').Logger;
+const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('TransactionLogger');
 

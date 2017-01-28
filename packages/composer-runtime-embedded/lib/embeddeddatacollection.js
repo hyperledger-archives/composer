@@ -14,7 +14,7 @@
 
 'use strict';
 
-const DataCollection = require('@ibm/concerto-runtime').DataCollection;
+const DataCollection = require('composer-runtime').DataCollection;
 
 /**
  * Base class representing a data collection provided by a {@link DataService}.

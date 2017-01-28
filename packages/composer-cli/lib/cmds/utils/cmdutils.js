@@ -15,8 +15,8 @@
 'use strict';
 
 const prompt = require('prompt');
-const Admin = require('@ibm/concerto-admin');
-const Client = require('@ibm/concerto-client');
+const Admin = require('composer-admin');
+const Client = require('composer-client');
 const BusinessNetworkConnection = Client.BusinessNetworkConnection;
 
 /**

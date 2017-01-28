@@ -16,7 +16,7 @@
 
 const ParticipantRegistry = require('../../lib/api/participantregistry');
 const Registry = require('../../lib/registry');
-const Resource = require('@ibm/concerto-common').Resource;
+const Resource = require('composer-common').Resource;
 
 const chai = require('chai');
 chai.should();

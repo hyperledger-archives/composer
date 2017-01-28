@@ -88,7 +88,7 @@ class ConnectionProfileManager {
         .then((data) => {
             let connectionManager  = connectionManagers[data.type];
             if(!connectionManager) {
-                const mod = `@ibm/concerto-connector-${data.type}`;
+                const mod = `composer-connector-${data.type}`;
                 try {
                     // Check for the connection manager class registered using
                     // registerConnectionManager (used by the web connector).

@@ -265,7 +265,7 @@ Functions    : 94.54% ( 173/183 )
 Lines        : 92.68% ( 734/792 )
 ================================================================================
 
-> @ibm/ibm-concerto@0.0.3 posttest /Users/anthonyodowd/Documents/CTO/GitHub/a-o-dowd/Concerto
+> composer@0.0.3 posttest /Users/anthonyodowd/Documents/CTO/GitHub/a-o-dowd/Concerto
 > istanbul check-coverage
 ```
 
@@ -349,10 +349,10 @@ Creating systest_vp0_1
 npm info it worked it ends with ok
 npm info using npm@2.15.9
 npm info using node@v4.6.0
-npm info presystest @ibm/ibm-concerto@0.0.3
-npm info systest @ibm/ibm-concerto@0.0.3
+npm info presystest composer@0.0.3
+npm info systest composer@0.0.3
 
-> @ibm/ibm-concerto@0.0.3 systest /usr/src/app
+> composer@0.0.3 systest /usr/src/app
 > mocha -t 0 systest && cucumber-js systest
 
 
@@ -390,7 +390,7 @@ Feature: Example feature
 1 scenario (1 passed)
 3 steps (3 passed)
 0m00.001s
-npm info postsystest @ibm/ibm-concerto@0.0.3
+npm info postsystest composer@0.0.3
 npm info ok
 
 # Shut down the Docker containers for the system tests.
@@ -506,7 +506,7 @@ Functions    : 97.41% ( 226/232 )
 Lines        : 95.9% ( 1029/1073 )
 ================================================================================
 
-> @ibm/ibm-concerto@0.0.3 posttest /Users/anthonyodowd/Documents/CTO/GitHub/a-o-dowd/Concerto
+> composer@0.0.3 posttest /Users/anthonyodowd/Documents/CTO/GitHub/a-o-dowd/Concerto
 > istanbul check-coverage
 
 ```
@@ -693,8 +693,6 @@ services:
 before_install: |
     set -ev
     npm install -g npm
-    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
-    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
 install: ./scripts/install-deps.sh
 script: |
     set -ev

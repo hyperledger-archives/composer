@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
 
-import { BusinessNetworkDefinition } from '@ibm/concerto-admin';
-import { AclFile } from '@ibm/concerto-common';
+import { BusinessNetworkDefinition } from 'composer-admin';
+import { AclFile } from 'composer-common';
 
 const samples = [
 

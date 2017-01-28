@@ -10,7 +10,7 @@
 
 'use strict';
 
-const SecurityContext = require('@ibm/concerto-common').SecurityContext;
+const SecurityContext = require('composer-common').SecurityContext;
 
 /**
  * A security context for the embedded connection.

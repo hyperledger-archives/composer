@@ -14,13 +14,13 @@
 
 'use strict';
 
-const Factory = require('@ibm/concerto-common').Factory;
-const ModelManager = require('@ibm/concerto-common').ModelManager;
+const Factory = require('composer-common').Factory;
+const ModelManager = require('composer-common').ModelManager;
 const Registry = require('../lib/registry');
-const Resource = require('@ibm/concerto-common').Resource;
-const SecurityContext = require('@ibm/concerto-common').SecurityContext;
-const Serializer = require('@ibm/concerto-common').Serializer;
-const Util = require('@ibm/concerto-common').Util;
+const Resource = require('composer-common').Resource;
+const SecurityContext = require('composer-common').SecurityContext;
+const Serializer = require('composer-common').Serializer;
+const Util = require('composer-common').Util;
 
 const chai = require('chai');
 chai.should();

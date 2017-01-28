@@ -20,7 +20,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const zlib = require('zlib');
 
-const sourceFile = require.resolve('@ibm/concerto-runtime');
+const sourceFile = require.resolve('composer-runtime');
 const sourcePolyfill = require.resolve('babel-polyfill/dist/polyfill.min.js');
 const targetFile = path.resolve(__dirname, '..', 'concerto.js.go');
 const targetFile2 = path.resolve(__dirname, '..', 'concerto.js.map');

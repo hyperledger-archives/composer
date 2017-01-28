@@ -14,10 +14,10 @@
 
 'use strict';
 
-const Connection = require('@ibm/concerto-common').Connection;
-const Engine = require('@ibm/concerto-runtime').Engine;
-const WebContainer = require('@ibm/concerto-runtime-web').WebContainer;
-const WebContext = require('@ibm/concerto-runtime-web').WebContext;
+const Connection = require('composer-common').Connection;
+const Engine = require('composer-runtime').Engine;
+const WebContainer = require('composer-runtime-web').WebContainer;
+const WebContext = require('composer-runtime-web').WebContext;
 const WebSecurityContext = require('./websecuritycontext');
 
 // A mapping of business networks to chaincode IDs.

@@ -14,13 +14,13 @@
 
 'use strict';
 
-const AssetDeclaration = require('@ibm/concerto-common').AssetDeclaration;
-const ParticipantDeclaration = require('@ibm/concerto-common').ParticipantDeclaration;
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const AssetDeclaration = require('composer-common').AssetDeclaration;
+const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const Connector = require('loopback-connector').Connector;
 const debug = require('debug')('loopback:connector:businessnetworkconnector');
-const LoopbackVisitor = require('@ibm/concerto-common/lib/codegen/fromcto/loopback/loopbackvisitor');
-const TransactionDeclaration = require('@ibm/concerto-common/lib/introspect/transactiondeclaration');
+const LoopbackVisitor = require('composer-common/lib/codegen/fromcto/loopback/loopbackvisitor');
+const TransactionDeclaration = require('composer-common/lib/introspect/transactiondeclaration');
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.

@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/concerto-client",
+  "name": "composer-client",
   "version": "0.3.9",
   "description": "The node.js client library for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
@@ -42,8 +42,8 @@
     "logError": true
   },
   "dependencies": {
-    "@ibm/concerto-common": "^0.3.9",
-    "@ibm/concerto-connector-hlf": "^0.3.9",
+    "composer-common": "^0.3.9",
+    "composer-connector-hlf": "^0.3.9",
     "uuid": "^3.0.0"
   },
   "devDependencies": {

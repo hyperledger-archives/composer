@@ -14,16 +14,16 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
-const Connection = require('@ibm/concerto-common').Connection;
-const ConnectionManager = require('@ibm/concerto-common').ConnectionManager;
-const Context = require('@ibm/concerto-runtime').Context;
-const DataService = require('@ibm/concerto-runtime').DataService;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const Connection = require('composer-common').Connection;
+const ConnectionManager = require('composer-common').ConnectionManager;
+const Context = require('composer-runtime').Context;
+const DataService = require('composer-runtime').DataService;
 const EmbeddedConnection = require('../lib/embeddedconnection');
-const EmbeddedContainer = require('@ibm/concerto-runtime-embedded').EmbeddedContainer;
+const EmbeddedContainer = require('composer-runtime-embedded').EmbeddedContainer;
 const EmbeddedSecurityContext = require('../lib/embeddedsecuritycontext');
-const Engine = require('@ibm/concerto-runtime').Engine;
-const LoggingService = require('@ibm/concerto-runtime').LoggingService;
+const Engine = require('composer-runtime').Engine;
+const LoggingService = require('composer-runtime').LoggingService;
 
 const chai = require('chai');
 const should = chai.should();

@@ -89,7 +89,7 @@ describe('BusinessNetworkDefinition', () => {
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                businessNetwork.getName().should.equal('@ibm/test-archive');
+                businessNetwork.getName().should.equal('test-archive');
                 businessNetwork.getVersion().should.equal('0.0.1');
                 businessNetwork.getDescription().should.equal('A test business network.');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
@@ -114,7 +114,7 @@ describe('BusinessNetworkDefinition', () => {
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-npm-archive').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                businessNetwork.getName().should.equal('@ibm/test-npm-archive');
+                businessNetwork.getName().should.equal('test-npm-archive');
                 businessNetwork.getVersion().should.equal('0.0.1');
                 businessNetwork.getDescription().should.equal('A test business network using npm model dependencies.');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(2);
@@ -136,7 +136,7 @@ describe('BusinessNetworkDefinition', () => {
             let readFile = fs.readFileSync(__dirname + '/data/zip/test-archive.zip');
             return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                businessNetwork.identifier.should.equal('@ibm/test-archive@0.0.1');
+                businessNetwork.identifier.should.equal('test-archive@0.0.1');
                 businessNetwork.description.should.equal('A test business network.');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);

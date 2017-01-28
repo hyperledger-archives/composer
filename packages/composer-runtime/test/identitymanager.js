@@ -19,7 +19,7 @@ const DataService = require('../lib/dataservice');
 const IdentityManager = require('../lib/identitymanager');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
-const Resource = require('@ibm/concerto-common').Resource;
+const Resource = require('composer-common').Resource;
 
 const chai = require('chai');
 chai.should();

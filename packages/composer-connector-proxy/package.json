@@ -1,5 +1,5 @@
 {
-  "name": "@ibm/concerto-connector-proxy",
+  "name": "composer-connector-proxy",
   "version": "0.3.4",
   "description": "The proxying client connector for IBM Concerto, the Blockchain Solution Framework",
   "main": "index.js",
@@ -53,7 +53,7 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "@ibm/concerto-common": "^0.3.3",
+    "composer-common": "^0.3.3",
     "socket.io-client": "^1.7.2"
   }
 }

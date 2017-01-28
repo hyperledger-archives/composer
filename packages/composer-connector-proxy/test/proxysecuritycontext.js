@@ -12,7 +12,7 @@
 
 const ProxyConnection = require('../lib/proxyconnection');
 const ProxySecurityContext = require('../lib/proxysecuritycontext');
-const SecurityContext = require('@ibm/concerto-common').SecurityContext;
+const SecurityContext = require('composer-common').SecurityContext;
 
 require('chai').should();
 const sinon = require('sinon');

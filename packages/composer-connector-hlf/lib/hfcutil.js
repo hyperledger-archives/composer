@@ -15,18 +15,18 @@
 'use strict';
 
 const fs = require('fs-extra');
-const Globalize = require('@ibm/concerto-common').Globalize;
+const Globalize = require('composer-common').Globalize;
 const hfc = require('hfc');
 const HFCSecurityContext = require('./hfcsecuritycontext');
 const path = require('path');
-const SecurityException = require('@ibm/concerto-common').SecurityException;
+const SecurityException = require('composer-common').SecurityException;
 const temp = require('temp').track();
-const Util = require('@ibm/concerto-common').Util;
+const Util = require('composer-common').Util;
 const uuid = require('uuid');
 const version = require('../package.json').version;
-const LOG = require('@ibm/concerto-common').Logger.getLog('HFCUtil');
+const LOG = require('composer-common').Logger.getLog('HFCUtil');
 
-const runtimeModulePath = path.dirname(require.resolve('@ibm/concerto-runtime-hlf'));
+const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlf'));
 
 /**
  * Internal Utility Class

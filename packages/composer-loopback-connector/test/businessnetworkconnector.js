@@ -14,16 +14,16 @@
 
 'use strict';
 
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
-const AssetRegistry = require('@ibm/concerto-client/lib/assetregistry');
-const AssetDeclaration = require('@ibm/concerto-common/lib/introspect/assetdeclaration');
-const Resource = require('@ibm/concerto-common/lib/model/resource');
-const Serializer = require('@ibm/concerto-common').Serializer;
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const AssetRegistry = require('composer-client/lib/assetregistry');
+const AssetDeclaration = require('composer-common/lib/introspect/assetdeclaration');
+const Resource = require('composer-common/lib/model/resource');
+const Serializer = require('composer-common').Serializer;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const BusinessNetworkConnector = require('../lib/businessnetworkconnector');
-const Introspector = require('@ibm/concerto-common').Introspector;
-const ModelManager = require('@ibm/concerto-common').ModelManager;
-const TransactionDeclaration = require('@ibm/concerto-common/lib/introspect/transactiondeclaration');
+const Introspector = require('composer-common').Introspector;
+const ModelManager = require('composer-common').ModelManager;
+const TransactionDeclaration = require('composer-common/lib/introspect/transactiondeclaration');
 
 
 require('chai').should();

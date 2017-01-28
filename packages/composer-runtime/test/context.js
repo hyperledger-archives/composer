@@ -15,25 +15,25 @@
 'use strict';
 
 const AccessController = require('../lib/accesscontroller');
-const AclManager = require('@ibm/concerto-common').AclManager;
+const AclManager = require('composer-common').AclManager;
 const Api = require('../lib/api');
-const BusinessNetworkDefinition = require('@ibm/concerto-common').BusinessNetworkDefinition;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
-const Factory = require('@ibm/concerto-common').Factory;
+const Factory = require('composer-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
-const Introspector = require('@ibm/concerto-common').Introspector;
+const Introspector = require('composer-common').Introspector;
 const JSTransactionExecutor = require('../lib/jstransactionexecutor');
-const ModelManager = require('@ibm/concerto-common').ModelManager;
+const ModelManager = require('composer-common').ModelManager;
 const QueryExecutor = require('../lib/queryexecutor');
 const RegistryManager = require('../lib/registrymanager');
 const Resolver = require('../lib/resolver');
-const Resource = require('@ibm/concerto-common').Resource;
-const ScriptManager = require('@ibm/concerto-common').ScriptManager;
-const Serializer = require('@ibm/concerto-common').Serializer;
+const Resource = require('composer-common').Resource;
+const ScriptManager = require('composer-common').ScriptManager;
+const Serializer = require('composer-common').Serializer;
 const TransactionExecutor = require('../lib/transactionexecutor');
 const TransactionLogger = require('../lib/transactionlogger');
 
