@@ -39,6 +39,3 @@ deploy:
 cache:
     directories:
         - $HOME/.npm
-notifications:
-    slack:
-        secure: NX1j3tH5CQ4hsmMzpu6iJ48TWr+IgxJpUwVqOy1NOcm+W8v9G/DfB8B+NZdkmb38Lijh/7eMqbII7wwGtMdrJKV4/WDT5r7crSgI6ITLMcu7azAaULqhaBT+9yaptee/02SDo8sOLWuG1+t2YaWTaP4lGp5VcB836CKZfyk3SRFbKJQZPioN+ivkuiiAA2JMQMeOzV5fpVFEBSBG4qwqUxyTWIL6fWtEjvtmEOwfcCEhmJv7Q2jnO0L3OGHAkXh6XauwYLElhwU/xxNT27N/gca9hB4DlMZjsag74YjkG2U0lZ71eFXq/TLfhLyUcyDs2LMLmaTU0cGILz9sP4HXZWGSxXfAZz259t41yX8sngdpUraU4j0v0grHuq83pA+OAP+X+FYhzoWJ5NFOv5URj17h+U7p5k3Np1TqeTtoQwVFbXnwcuVGlzdGoN9BzqHDiw5SW/n7dXPMp8LAXj8HHy+L5j26OtVq7UL6XjHxMUuHS31bp5QdBqmS/u+PkWI1IsfcQKhK3ip5iYc7OSEuzeswQRySpS2Qw4OHaSzAfTfbF877w7WHjYN3uu3MejfJLqI/pSyRZTDzafc2tydfJMPuh7BXP7DtJlXKfLQdD9uCdzFIrpyZ/xgeuvN949cIZE8Ip0Dy/69/pgZslH5OpHSrRFnz4jOZQTh47ibqJaU=
