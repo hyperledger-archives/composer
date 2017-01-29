@@ -20,10 +20,19 @@ if [ "${SYSTEST}" != "" ]; then
 fi
 
 # Check that this is the main repository.
-if [[ "${TRAVIS_REPO_SLUG}" != Blockchain-WW-Labs* ]]; then
+if [[ "${TRAVIS_REPO_SLUG}" != fabric-composer* ]]; then
     echo "Skipping deploy; wrong repository slug."
     exit 0
 fi
+
+# Set the NPM access token we will use to publish.
+npm config set registry https://registry.npmjs.org/
+npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+
+# Set the GitHub deploy key we will use to publish.
+set-up-ssh --key "$encrypted_568b95f14ac3_key" \
+           --iv "$encrypted_568b95f14ac3_iv" \
+           --path-encrypted-key ".travis/github_deploy_key.enc"
 
 # Push the code to npm.
 if [ -z "${TRAVIS_TAG}" ]; then
@@ -40,6 +49,13 @@ else
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag latest"
     lerna exec --ignore 'composer-systests' -- npm publish 2>&1 | tee
+
+    # Push to public Bluemix.
+    pushd ${DIR}/packages/composer-ui/dist
+    touch Staticfile
+    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
+    cf push fabric-composer
+    popd
 
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "Travis CI"
