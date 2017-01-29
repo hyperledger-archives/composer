@@ -25,6 +25,15 @@ if [[ "${TRAVIS_REPO_SLUG}" != fabric-composer* ]]; then
     exit 0
 fi
 
+# Set the NPM access token we will use to publish.
+npm config set registry https://registry.npmjs.org/
+npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+
+# Set the GitHub deploy key we will use to publish.
+set-up-ssh --key "$encrypted_568b95f14ac3_key" \
+           --iv "$encrypted_568b95f14ac3_iv" \
+           --path-encrypted-key ".travis/github_deploy_key.enc"
+
 # Push the code to npm.
 if [ -z "${TRAVIS_TAG}" ]; then
 
