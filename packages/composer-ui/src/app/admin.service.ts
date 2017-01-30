@@ -110,14 +110,14 @@ export class AdminService {
       })
       .then(() => {
         // If we're in a Docker Compose environment, check to see
-        // if the Hyperledger connection profile exists.
+        // if the Hyperledger Fabric connection profile exists.
         if (DOCKER_COMPOSE) {
-          console.log('Docker Compose environment, checking for hyperledger connection profile');
-          return this.adminConnection.getProfile('hyperledger')
+          console.log('Docker Compose environment, checking for hlfabric connection profile');
+          return this.adminConnection.getProfile('hlfabric')
             .catch((error) => {
               // It doesn't exist, so create it.
-              console.log('hyperledger connection profile does not exist, creating');
-              return this.adminConnection.createProfile('hyperledger', {
+              console.log('hlfabric connection profile does not exist, creating');
+              return this.adminConnection.createProfile('hlfabric', {
                 type: 'hlf',
                 keyValStore: '/home/concerto/.concerto-credentials',
                 membershipServicesURL: 'grpc://membersrvc:7054',
@@ -127,11 +127,11 @@ export class AdminService {
                 invokeWaitTime: 30
               })
               .then(() => {
-                return this.walletService.getWallet('hyperledger').add('admin', 'Xurw3yU9zI0l');
+                return this.walletService.getWallet('hlfabric').add('admin', 'Xurw3yU9zI0l');
               });
             });
         } else {
-          console.log('Not in Docker Compose environment, not checking for hyperledger connection profile');
+          console.log('Not in Docker Compose environment, not checking for hlfabric connection profile');
         }
       })
       .then(() => {
