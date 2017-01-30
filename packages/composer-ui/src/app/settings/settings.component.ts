@@ -47,7 +47,6 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit(): Promise<any> {
-    this.setDefaults();
     this.inUseConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
     return this.updateConnectionProfiles()
       .then(() => {
@@ -176,13 +175,19 @@ export class SettingsComponent implements OnInit {
           }
           return false;
         });
-        this.setDefaults();
         this.adminService.connectionProfileChanged$.next(this.addConnectionProfileName);
       });
   }
 
-  private setDefaults() {
-    this.addConnectionProfileName = 'hyperledger';
+  private onShow() {
+    let connectionProfileBase = 'hlfabric';
+    let connectionProfileName = connectionProfileBase;
+    let counter = 1;
+    while (this.connectionProfiles.some((cp) => { return cp.name === connectionProfileName; })) {
+      counter++;
+      connectionProfileName = connectionProfileBase + counter;
+    }
+    this.addConnectionProfileName = connectionProfileName;
     this.addConnectionProfilePeerURL = 'grpc://localhost:7051';
     this.addConnectionProfileMembershipServicesURL = 'grpc://localhost:7054';
     this.addConnectionProfileEventHubURL = 'grpc://localhost:7053';
