@@ -20,7 +20,7 @@ if [ "${DOCS}" != "" ] then
 	
 	
 # Are we running system tests?
-elif [ "${SYSTEST}" != "" ]; then
+elif [ "${SYSTEST}" != "" ] then
 
     # Run the system tests.
     ${DIR}/packages/composer-systests/scripts/run-system-tests.sh
