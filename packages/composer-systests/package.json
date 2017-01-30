@@ -1,6 +1,6 @@
 {
   "name": "composer-systests",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "private": true,
   "description": "System tests and automation for Fabric Composer",
   "main": "index.js",
@@ -26,11 +26,11 @@
     "solutions"
   ],
   "devDependencies": {
-    "composer-admin": "^0.3.9",
-    "composer-client": "^0.3.9",
-    "composer-common": "^0.3.9",
-    "composer-connector-embedded": "^0.3.9",
-    "composer-connector-web": "^0.3.9",
+    "composer-admin": "^0.3.10",
+    "composer-client": "^0.3.10",
+    "composer-common": "^0.3.10",
+    "composer-connector-embedded": "^0.3.10",
+    "composer-connector-web": "^0.3.10",
     "brfs": "^1.4.3",
     "browserfs": "^1.1.0",
     "chai": "^3.5.0",

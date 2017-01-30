@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-server",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "The remote connector server for Fabric Composer",
   "bin": {
     "concerto-connector-server": "cli.js"
@@ -41,9 +41,9 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.3.9",
-    "composer-connector-embedded": "^0.3.9",
-    "composer-connector-hlf": "^0.3.9",
+    "composer-common": "^0.3.10",
+    "composer-connector-embedded": "^0.3.10",
+    "composer-connector-hlf": "^0.3.10",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.2",
     "uuid": "^3.0.1",
