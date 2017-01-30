@@ -1,6 +1,6 @@
 {
   "name": "composer-cli",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "Fabric Composer command line interfaces (CLIs)",
   "bin": {
     "composer": "cli.js"
@@ -37,9 +37,9 @@
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "composer-admin": "^0.3.11",
-    "composer-client": "^0.3.11",
-    "composer-common": "^0.3.11",
+    "composer-admin": "^0.3.12",
+    "composer-client": "^0.3.12",
+    "composer-common": "^0.3.12",
     "homedir": "^0.6.0",
     "moment": "^2.17.1",
     "npm-paths": "^0.1.3",
