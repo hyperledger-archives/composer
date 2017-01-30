@@ -14,7 +14,7 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('../businessnetwork');
+const BusinessNetworkDefinition = require('../businessnetworkdefinition');
 const GoLangVisitor = require('./fromcto/golang/golangvisitor');
 const JSONSchemaVisitor = require('./fromcto/jsonschema/jsonschemavisitor');
 const PlantUMLVisitor = require('./fromcto/plantuml/plantumlvisitor');

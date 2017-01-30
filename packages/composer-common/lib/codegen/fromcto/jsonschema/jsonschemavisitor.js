@@ -22,9 +22,11 @@ const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration')
 const Field = require('../../../introspect/field');
 const ModelFile = require('../../../introspect/modelfile');
 const ModelManager = require('../../../modelmanager');
+const BusinessNetworkDefinition = require('../../../businessnetworkdefinition');
 const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
 const debug = require('debug')('concerto:jsonschemavisitor');
+const util = require('util');
 
 /**
  * Convert the contents of a {@link ModelManager} instance to a set of JSON
@@ -45,7 +47,9 @@ class JSONSchemaVisitor {
      * @private
      */
     visit(thing, parameters) {
-        if (thing instanceof ModelManager) {
+        if (thing instanceof BusinessNetworkDefinition) {
+            return this.visitBusinessNetwork(thing, parameters);
+        } else if (thing instanceof ModelManager) {
             return this.visitModelManager(thing, parameters);
         } else if (thing instanceof ModelFile) {
             return this.visitModelFile(thing, parameters);
@@ -66,8 +70,24 @@ class JSONSchemaVisitor {
         } else if (thing instanceof EnumValueDeclaration) {
             return this.visitEnumValueDeclaration(thing, parameters);
         } else {
-            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + JSON.stringify(thing));
+            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: null }));
         }
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition - the object being visited
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitBusinessNetwork(businessNetworkDefinition, parameters) {
+
+        businessNetworkDefinition.getModelManager().getModelFiles().forEach((decl) => {
+            decl.accept(this, parameters);
+        });
+
+        return null;
     }
 
     /**
