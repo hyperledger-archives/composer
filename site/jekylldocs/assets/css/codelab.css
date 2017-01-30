@@ -1,0 +1,138 @@
+/* General Overrides */
+
+em {
+  padding-right: 2px;
+}
+
+.highlight > pre,
+code.prettyprint {
+  color: white; /* default color in case offline */
+}
+
+/* Codelab article */
+
+.social {
+  margin-top: 25px;
+}
+
+.authors {
+  font-style: italic;
+}
+
+.keyboard {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-style: normal;
+}
+
+/* Note callouts */
+
+.note {
+  padding: 25px;
+}
+
+.note pre,
+.note code {
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  border-width: 0;
+}
+
+.note.important {
+  background: #f2dede;
+}
+
+.note.important code,
+.note.important pre {
+  background: #e2cbcb;
+}
+
+.note.tip {
+  background: #d2e0d2;
+}
+
+.note.tip code,
+.note.tip pre {
+  background: #bed3be;
+}
+
+.note p,
+.note li {
+  font-size: 0.9em;
+}
+
+.note h2 {
+  font-size: 1em;
+  margin-top: 1em;
+}
+
+.note *:first-child {
+  margin-top: 0;
+}
+
+.note *:last-child {
+  margin-bottom: 0;
+}
+
+/* Images */
+
+.mast-holder {
+  width: 100%;
+  text-align: center;
+}
+
+.mast-holder img {
+  max-height: 350px;
+}
+
+.mast-intro > img {
+  max-height: 300px;
+}
+
+@media (min-width: 761px) {
+  .mast-intro > img {
+    float: left;
+    margin: -10px 10px 0 0;
+    display: block;
+  }
+
+  .mast-intro ~ h2 {
+    clear: left;
+  }
+
+  article {
+    overflow: auto; /* required for above clear: left */;
+  }
+}
+
+@media (min-width: 761px) {
+  .side-by-side {
+    overflow: auto;
+  }
+
+  .side-by-side img {
+    width: 50%;
+    float: left;
+  }
+}
+
+/* Footer paging */
+
+.codelab-paging {
+  margin-top: 2em;
+  text-align: center;
+}
+
+.codelab-paging a {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.codelab-paging a:first-child {
+  margin-right: 1em;
+}
+
+.codelab-paging a:nth-of-type(2) {
+  margin-left: 1em;
+}

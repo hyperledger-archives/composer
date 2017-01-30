@@ -1,0 +1,35 @@
+{
+  "name": "fabric-composer-site",
+  "version": "0.3.9",
+  "description": "Fabric Composer is a blockchain development framework: a library of assets/functions for creating blockchain-based applications.",
+  "scripts": {
+    "doc": "npm run docpub && npm run docpriv",
+    "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public -R JSDOC-README.md",
+    "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private -R JSDOC-README.md",
+    "localpages": " npm run docpub && ./scripts/build-gh-pages.sh && ./scripts/run-jekyll-serve.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
+  },
+  "keywords": [
+    "blockchain",
+    "hyperledger",
+    "solutions"
+  ],
+  "author": "IBM",
+  "license": "ISC",
+  "devDependencies": {
+    "composer-admin": "latest",
+    "composer-client": "latest",
+    "composer-common": "latest",
+    "composer-runtime": "latest",
+    "ink-docstrap": "latest",
+    "jsdoc": "^3.4.1",
+    "mermaid": "^6.0.0",
+    "node-plantuml": "^0.5.0"
+  },
+  "dependencies": {
+    "jekyll": "^3.0.0-beta1"
+  }
+}

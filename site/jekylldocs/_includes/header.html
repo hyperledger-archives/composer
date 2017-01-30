@@ -1,0 +1,43 @@
+{% capture concepts %}{% include sidebars/concepts.md %}{% endcapture %}
+{% capture tasks %}{% include sidebars/tasks.md %}{% endcapture %}
+{% capture reference %}{% include sidebars/reference.md %}{% endcapture %}
+{% capture start %}{% include sidebars/start.md %}{% endcapture %}
+
+
+<header class="page-header">
+  <div class="container">
+    <div class="mobile-bar">
+     <h1 ><a href="{{site.baseurl}}/index.html" class="logot">IBM Blockchain Framework</a> </h1></a>
+      <button class="mobile-menu-toggle ir">open</button>
+    </div>
+    <nav class="main-menu">
+      <ul class="main-nav">
+        <li>
+          <a href="{{site.baseurl}}/index.html"><i class="fa fa-home" aria-hidden="true"></i></a>
+        </li>
+        <li>
+          <a href="{{site.baseurl}}/overview/overview.html">Overview</a>
+        </li>
+        <li>
+          <a href="{{site.baseurl}}/start/getting-started.html">Getting Started</a>
+          {{ start | markdownify }}
+        </li>
+        <li>
+          <a href="{{site.baseurl}}/concepts/index.html">Concepts</a>
+                    {{ concepts | markdownify }}
+        </li>
+        <li>
+          <a href="{{site.baseurl}}/tasks/index.html">Tasks</a>
+          {{ tasks | markdownify }}
+        </li>
+        <li>
+            <a href="{{site.baseurl}}/reference/index.html">Reference</a>
+            {{ reference | markdownify }}
+        </li>
+        <li>
+            <a href="{{site.baseurl}}/support/index.html">Support</a>
+        </li>
+      </ul>
+    </nav>
+  </div><!-- /.container -->
+</header><!-- /.page-header -->

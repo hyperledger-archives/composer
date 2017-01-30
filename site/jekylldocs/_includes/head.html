@@ -1,0 +1,27 @@
+<head>
+  <meta charset="utf-8">
+  {% if page.title %}
+    <title>{{page.title}} | Fabric Composer</title>
+  {% else %}
+    <title> Fabric Composer - Create Hyperledger business networks and applications</title>
+  {% endif %}
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="{{site.baseurl}}/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="{{site.baseurl}}/assets/js/clipboard.min.js"></script>
+
+  {% if page.category == 404 %}
+    <link href="{{site.baseurl}}/assets/css/404.css" rel="stylesheet">
+  {% else %}
+    <link href="{{site.baseurl}}/assets/css/normalize.css" rel="stylesheet">
+    <link href="{{site.baseurl}}/assets/css/main.css" rel="stylesheet">
+    <link href="{{site.baseurl}}/assets/css/footer.css" rel="stylesheet">
+    <link href="{{site.baseurl}}/assets/css/prettify.css" rel="stylesheet">
+  {% endif %}
+
+
+
+  <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
+</head>
