@@ -46,7 +46,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
 
     before(() => {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/transactions.cto'), 'utf8')
+            fs.readFileSync(path.resolve(__dirname, 'data/loopback.cto'), 'utf8')
         ];
 
         const scriptFiles = [
@@ -159,22 +159,31 @@ describe('BusinessNetworkConnector Integration Test', () => {
                 });
             })
                 .then((result) => {
-                    result.length.should.equal(5);
-                    result[0].should.deep.equal({'type' : 'table', 'name' : 'systest.transactions.SimpleStringAsset'});
-                    result[1].should.deep.equal({'type' : 'table', 'name' : 'systest.transactions.SimpleIntegerAsset'});
+                    result.length.should.equal(9);
+                    result[0].should.deep.equal({'type' : 'table', 'name' : 'systest.loopback.SimpleStringAsset'});
+                    result[1].should.deep.equal({'type' : 'table', 'name' : 'systest.loopback.SimpleIntegerAsset'});
                     result[2].should.deep.equal({
                         'type' : 'table',
-                        'name' : 'systest.transactions.SimpleRelationshipAsset'
+                        'name' : 'systest.loopback.SimpleRelationshipAsset'
                     });
                     result[3].should.deep.equal({
                         'type' : 'table',
-                        'name' : 'systest.transactions.SimpleRelationshipsAsset'
+                        'name' : 'systest.loopback.SimpleRelationshipsAsset'
                     });
-                    result[4].should.deep.equal({
+                    result[4].should.deep.equal({'type' : 'table', 'name' : 'systest.loopback.SimpleConceptAsset'});
+                    result[5].should.deep.equal({'type' : 'table', 'name' : 'systest.loopback.SimpleParticipant'});
+                    result[6].should.deep.equal({
                         'type' : 'table',
-                        'name' : 'systest.transactions.SimpleConceptAsset'
+                        'name' : 'systest.loopback.SimpleParticipantContainer'
                     });
-
+                    result[7].should.deep.equal({
+                        'type' : 'table',
+                        'name' : 'systest.loopback.SimpleParticipantRelationshipContainer'
+                    });
+                    result[8].should.deep.equal({
+                        'type' : 'table',
+                        'name' : 'systest.loopback.SimpleParticipantCircle'
+                    });
                 });
         });
 
@@ -183,49 +192,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
             testConnector = new BusinessNetworkConnector(goodSettings);
             let options = {};
             return new Promise((resolve, reject) => {
-                testConnector.discoverSchemas('systest.transactions.SimpleStringAsset', options, (error, result) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve(result);
-                });
-            })
-            .then((result) => {
-                let EXPECTED_SCHEMA = {
-                    'acls': [],
-                    'base': 'PersistedModel',
-                    'description': 'An asset named SimpleStringAsset',
-                    'idInjection': true,
-                    'methods': [],
-                    'name': 'SimpleStringAsset',
-                    'options': {
-                        'validateUpsert': true
-                    },
-                    'plural': 'systest.transactions.SimpleStringAsset',
-                    'properties': {
-                        'assetId': {
-                            'description': 'The instance identifier for this type',
-                            'id': true,
-                            'required': true,
-                            'type': 'string'
-                        },
-                        'stringValue': {
-                            'required': true,
-                            'type': 'string'
-                        }
-                    },
-                    'relations': {},
-                    'validations': []
-                };
-                result.should.deep.equal(EXPECTED_SCHEMA);
-            });
-        });
-
-        it('should discover schemas and create model with concept', () => {
-            testConnector = new BusinessNetworkConnector(goodSettings);
-            let options = {};
-            return new Promise((resolve, reject) => {
-                testConnector.discoverSchemas('systest.transactions.SimpleConceptAsset', options, (error, result) => {
+                testConnector.discoverSchemas('systest.loopback.SimpleStringAsset', options, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -234,40 +201,83 @@ describe('BusinessNetworkConnector Integration Test', () => {
             })
                 .then((result) => {
                     let EXPECTED_SCHEMA = {
-                        'acls': [],
-                        'base': 'PersistedModel',
-                        'description': 'An asset named SimpleConceptAsset',
-                        'idInjection': true,
-                        'methods': [],
-                        'name': 'SimpleConceptAsset',
-                        'options': {
-                            'validateUpsert': true
+                        'acls' : [],
+                        'base' : 'PersistedModel',
+                        'description' : 'An asset named SimpleStringAsset',
+                        'idInjection' : true,
+                        'methods' : [],
+                        'name' : 'SimpleStringAsset',
+                        'options' : {
+                            'validateUpsert' : true
                         },
-                        'plural': 'systest.transactions.SimpleConceptAsset',
-                        'properties': {
-                            'assetId': {
-                                'description': 'The instance identifier for this type',
-                                'id': true,
-                                'required': true,
-                                'type': 'string'
+                        'plural' : 'systest.loopback.SimpleStringAsset',
+                        'properties' : {
+                            'assetId' : {
+                                'description' : 'The instance identifier for this type',
+                                'id' : true,
+                                'required' : true,
+                                'type' : 'string'
                             },
-                            'conceptValue': {
-                                'description': 'An instance of systest.transactions.SimpleConcept',
-                                'properties': {
-                                    'conceptField': {
-                                        'required': true,
-                                        'type': 'string'
-                                    },
-                                    'conceptId': {
-                                        'required': true,
-                                        'type': 'string'
-                                    }
-                                },
-                                'required': true
+                            'stringValue' : {
+                                'required' : true,
+                                'type' : 'string'
                             }
                         },
-                        'relations': {},
-                        'validations': []
+                        'relations' : {},
+                        'validations' : []
+                    };
+                    result.should.deep.equal(EXPECTED_SCHEMA);
+                });
+        });
+
+        it('should discover schemas and create model with concept', () => {
+            testConnector = new BusinessNetworkConnector(goodSettings);
+            let options = {};
+            return new Promise((resolve, reject) => {
+                testConnector.discoverSchemas('systest.loopback.SimpleConceptAsset', options, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+                .then((result) => {
+                    let EXPECTED_SCHEMA = {
+                        'acls' : [],
+                        'base' : 'PersistedModel',
+                        'description' : 'An asset named SimpleConceptAsset',
+                        'idInjection' : true,
+                        'methods' : [],
+                        'name' : 'SimpleConceptAsset',
+                        'options' : {
+                            'validateUpsert' : true
+                        },
+                        'plural' : 'systest.loopback.SimpleConceptAsset',
+                        'properties' : {
+                            'assetId' : {
+                                'description' : 'The instance identifier for this type',
+                                'id' : true,
+                                'required' : true,
+                                'type' : 'string'
+                            },
+                            'conceptValue' : {
+                                type : 'Object',
+                                properties : {
+                                    'conceptField' : {
+                                        'required' : true,
+                                        'type' : 'string'
+                                    },
+                                    'conceptId' : {
+                                        'required' : true,
+                                        'type' : 'string'
+                                    }
+                                },
+                                description : 'An instance of systest.loopback.SimpleConcept',
+                                required : true
+                            },
+                        },
+                        'relations' : {},
+                        'validations' : []
                     };
                     result.should.deep.equal(EXPECTED_SCHEMA);
                 });
@@ -279,7 +289,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
             testConnector = new BusinessNetworkConnector(goodSettings);
             let options = {};
             return new Promise((resolve, reject) => {
-                testConnector.create('systest.transactions.SimpleStringAsset', {
+                testConnector.create('systest.loopback.SimpleStringAsset', {
                     assetId : 'myId',
                     stringValue : 'a big car'
                 }, options, (error) => {
@@ -287,7 +297,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
                         return reject(error);
                     }
 
-                    testConnector.retrieve('systest.transactions.SimpleStringAsset', 'myId', options, (error, result) => {
+                    testConnector.retrieve('systest.loopback.SimpleStringAsset', 'myId', options, (error, result) => {
                         if (error) {
                             return reject(error);
                         }
@@ -308,7 +318,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
             testConnector = new BusinessNetworkConnector(goodSettings);
             let options = {};
             return new Promise((resolve, reject) => {
-                testConnector.create('systest.transactions.SimpleTransactionWithPrimitiveTypes', {
+                testConnector.create('systest.loopback.SimpleTransactionWithPrimitiveTypes', {
                     transactionId : 'myId',
                     stringValue : 'what a transaction',
                     doubleValue : 3.142,
@@ -331,22 +341,33 @@ describe('BusinessNetworkConnector Integration Test', () => {
                     throw new Error('should not get here ' + error);
                 });
         });
-    });
 
-    describe('Update integration test', () => {
-        beforeEach(() => {
+        it('should create a participant', () => {
+            testConnector = new BusinessNetworkConnector(goodSettings);
+            let options = {};
             return new Promise((resolve, reject) => {
-                testConnector = new BusinessNetworkConnector(goodSettings);
-                let options = {};
-                testConnector.create('systest.transactions.SimpleStringAsset', {
-                    assetId : 'updateId',
-                    stringValue : 'a big car'
+                testConnector.create('systest.loopback.SimpleParticipant', {
+                    participantId : 'myParticipant',
+                    stringValue : 'Caroline',
+                    stringValues : ['Caroline', 'Church'],
+                    doubleValue : 1234.54,
+                    doubleValues : [1234.65, 543.67],
+                    integerValue : 123,
+                    integerValues : [123, 456],
+                    longValue : 1234,
+                    longValues : [1234, 5678],
+                    dateTimeValue : new Date('2016-10-14T18:30:30+00:00'),
+                    dateTimeValues : [new Date('2016-10-14T18:30:30+00:00'), new Date('2016-10-15T18:30:30+00:00')],
+                    booleanValue : true,
+                    booleanValues : [true, false],
+                    enumValue : 'WOW',
+                    enumValues : ['WOW', 'MANY']
                 }, options, (error) => {
                     if (error) {
                         return reject(error);
                     }
 
-                    testConnector.retrieve('systest.transactions.SimpleStringAsset', 'updateId', options, (error, result) => {
+                    testConnector.retrieve('systest.loopback.SimpleParticipant', 'myParticipant', options, (error, result) => {
                         if (error) {
                             return reject(error);
                         }
@@ -355,8 +376,91 @@ describe('BusinessNetworkConnector Integration Test', () => {
                 });
             })
                 .then((result) => {
-                    result.assetId.should.equal('updateId');
-                    result.stringValue.should.equal('a big car');
+                    result.participantId.should.equal('myParticipant');
+                    result.stringValue.should.equal('Caroline');
+                    result.stringValues.should.deep.equal(['Caroline', 'Church']);
+                    result.doubleValue.should.equal(1234.54);
+                    result.doubleValues.should.deep.equal([1234.65, 543.67]);
+                    result.integerValue.should.equal(123);
+                    result.integerValues.should.deep.equal([123, 456]);
+                    result.longValue.should.equal(1234);
+                    result.longValues.should.deep.equal([1234, 5678]);
+                    result.dateTimeValue.getTime().should.equal(new Date('2016-10-14T18:30:30+00:00').getTime());
+                    result.dateTimeValues[0].getTime().should.equal(new Date('2016-10-14T18:30:30+00:00').getTime());
+                    result.dateTimeValues[1].getTime().should.equal(new Date('2016-10-15T18:30:30+00:00').getTime());
+                    result.booleanValue.should.equal(true);
+                    result.booleanValues.should.deep.equal([true, false]);
+                    result.enumValue.should.equal('WOW');
+                    result.enumValues.should.deep.equal(['WOW', 'MANY']);
+                })
+                .catch((error) => {
+                    throw new Error('should not get here ' + error);
+                });
+        });
+    });
+
+    describe('Update integration test', () => {
+        before(() => {
+            let assetPromise = new Promise((resolve, reject) => {
+                testConnector = new BusinessNetworkConnector(goodSettings);
+                let options = {};
+                testConnector.create('systest.loopback.SimpleStringAsset', {
+                    assetId : 'updateAsset',
+                    stringValue : 'a big car'
+                }, options, (error) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    testConnector.retrieve('systest.loopback.SimpleStringAsset', 'updateAsset', options, (error, result) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        resolve(result);
+                    });
+                });
+            });
+
+            let participantPromise = new Promise((resolve, reject) => {
+                testConnector = new BusinessNetworkConnector(goodSettings);
+                let options = {};
+                testConnector.create('systest.loopback.SimpleParticipant', {
+                    participantId : 'updateParticipant',
+                    stringValue : 'Caroline',
+                    stringValues : ['Caroline', 'Church'],
+                    doubleValue : 1234.54,
+                    doubleValues : [1234.65, 543.67],
+                    integerValue : 123,
+                    integerValues : [123, 456],
+                    longValue : 1234,
+                    longValues : [1234, 5678],
+                    dateTimeValue : new Date('2016-10-14T18:30:30+00:00'),
+                    dateTimeValues : [new Date('2016-10-14T18:30:30+00:00'), new Date('2016-10-15T18:30:30+00:00')],
+                    booleanValue : true,
+                    booleanValues : [true, false],
+                    enumValue : 'WOW',
+                    enumValues : ['WOW', 'MANY']
+                }, options, (error) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    testConnector.retrieve('systest.loopback.SimpleParticipant', 'updateParticipant', options, (error, result) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        resolve(result);
+                    });
+                });
+            });
+
+            Promise.all([assetPromise, participantPromise])
+                .then(results => {
+                    results[0].assetId.should.equal('updateAsset');
+                    results[0].stringValue.should.equal('a big car');
+
+                    results[1].participantId.should.equal('updateParticipant');
+                    results[1].stringValue.should.equal('Caroline');
                 })
                 .catch((error) => {
                     //don't want test to run if this fails
@@ -369,15 +473,14 @@ describe('BusinessNetworkConnector Integration Test', () => {
             testConnector = new BusinessNetworkConnector(goodSettings);
             let options = {};
             return new Promise((resolve, reject) => {
-                testConnector.update('systest.transactions.SimpleStringAsset', {
-                    assetId : 'updateId',
+                testConnector.update('systest.loopback.SimpleStringAsset', {
+                    assetId : 'updateAsset',
                     stringValue : 'a bigger car'
                 }, options, (error) => {
                     if (error) {
                         return reject(error);
                     }
-
-                    testConnector.retrieve('systest.transactions.SimpleStringAsset', 'updateId', options, (error, result) => {
+                    testConnector.retrieve('systest.loopback.SimpleStringAsset', 'updateAsset', options, (error, result) => {
                         if (error) {
                             return reject(error);
                         }
@@ -386,8 +489,50 @@ describe('BusinessNetworkConnector Integration Test', () => {
                 });
             })
                 .then((result) => {
-                    result.assetId.should.equal('updateId');
+                    result.assetId.should.equal('updateAsset');
                     result.stringValue.should.equal('a bigger car');
+                })
+                .catch((error) => {
+                    throw new Error('should not get here ' + error);
+                });
+        });
+
+        it('should connect and update a participant', () => {
+            testConnector = new BusinessNetworkConnector(goodSettings);
+            let options = {};
+            return new Promise((resolve, reject) => {
+                testConnector.update('systest.loopback.SimpleParticipant', {
+                    participantId : 'updateParticipant',
+                    stringValue : 'update Caroline',
+                    stringValues : ['Caroline', 'Church'],
+                    doubleValue : 1234.54,
+                    doubleValues : [1234.65, 543.67],
+                    integerValue : 123,
+                    integerValues : [123, 456],
+                    longValue : 1234,
+                    longValues : [1234, 5678],
+                    dateTimeValue : new Date('2016-10-14T18:30:30+00:00'),
+                    dateTimeValues : [new Date('2016-10-14T18:30:30+00:00'), new Date('2016-10-15T18:30:30+00:00')],
+                    booleanValue : true,
+                    booleanValues : [true, false],
+                    enumValue : 'WOW',
+                    enumValues : ['WOW', 'MANY']
+                }, options, (error) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    testConnector.retrieve('systest.loopback.SimpleParticipant', 'updateParticipant', options, (error, result) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        resolve(result);
+                    });
+                });
+            })
+                .then((result) => {
+                    result.participantId.should.equal('updateParticipant');
+                    result.stringValue.should.equal('update Caroline');
                 })
                 .catch((error) => {
                     throw new Error('should not get here ' + error);
@@ -396,19 +541,84 @@ describe('BusinessNetworkConnector Integration Test', () => {
     });
 
     describe('Delete integration test', () => {
-        beforeEach(() => {
-            return new Promise((resolve, reject) => {
+        before(() => {
+            let assetPromise = new Promise((resolve, reject) => {
                 testConnector = new BusinessNetworkConnector(goodSettings);
                 let options = {};
-                testConnector.create('systest.transactions.SimpleStringAsset', {
-                    assetId : 'deleteId',
+                testConnector.create('systest.loopback.SimpleStringAsset', {
+                    assetId : 'deleteAsset',
                     stringValue : 'a big car'
                 }, options, (error) => {
                     if (error) {
                         return reject(error);
                     }
 
-                    testConnector.retrieve('systest.transactions.SimpleStringAsset', 'deleteId', options, (error, result) => {
+                    testConnector.retrieve('systest.loopback.SimpleStringAsset', 'deleteId', options, (error, result) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        resolve(result);
+                    });
+                });
+            });
+
+            let participantPromise = new Promise((resolve, reject) => {
+                testConnector = new BusinessNetworkConnector(goodSettings);
+                let options = {};
+                testConnector.create('systest.loopback.SimpleParticipant', {
+                    participantId : 'deleteParticipant',
+                    stringValue : 'Caroline',
+                    stringValues : ['Caroline', 'Church'],
+                    doubleValue : 1234.54,
+                    doubleValues : [1234.65, 543.67],
+                    integerValue : 123,
+                    integerValues : [123, 456],
+                    longValue : 1234,
+                    longValues : [1234, 5678],
+                    dateTimeValue : new Date('2016-10-14T18:30:30+00:00'),
+                    dateTimeValues : [new Date('2016-10-14T18:30:30+00:00'), new Date('2016-10-15T18:30:30+00:00')],
+                    booleanValue : true,
+                    booleanValues : [true, false],
+                    enumValue : 'WOW',
+                    enumValues : ['WOW', 'MANY']
+                }, options, (error) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    testConnector.retrieve('systest.loopback.SimpleParticipant', 'deleteParticipant', options, (error, result) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        resolve(result);
+                    });
+                });
+            });
+
+            Promise.all([assetPromise, participantPromise])
+                .then(results => {
+                    results[0].assetId.should.equal('deleteAsset');
+                    results[0].stringValue.should.equal('a big car');
+
+                    results[1].participantId.should.equal('deleteParticipant');
+                    results[1].stringValue.should.equal('Caroline');
+                })
+                .catch((error) => {
+                    //don't want test to run if this fails
+                    throw new Error('should not get here ' + error);
+                });
+        });
+
+        it('should connect and delete an asset', () => {
+            testConnector = new BusinessNetworkConnector(goodSettings);
+            let options = {};
+            return new Promise((resolve, reject) => {
+                testConnector.delete('systest.loopback.SimpleStringAsset', 'deleteAsset', options, (error) => {
+                    if (error) {
+                        return reject(error);
+                    }
+
+                    testConnector.retrieve('systest.loopback.SimpleStringAsset', 'deleteAsset', options, (error, result) => {
                         if (error) {
                             return reject(error);
                         }
@@ -417,26 +627,23 @@ describe('BusinessNetworkConnector Integration Test', () => {
                 });
             })
                 .then((result) => {
-                    result.assetId.should.equal('deleteId');
-                    result.stringValue.should.equal('a big car');
+                    throw new Error('should not get here ' + result);
                 })
                 .catch((error) => {
-                    //don't want test to run if this fails
-                    throw new Error('should not get here ' + error);
+                    error.should.match(/does not exist/);
                 });
         });
 
-
-        it('should connect and delete an asset', () => {
+        it('should connect and delete a participant', () => {
             testConnector = new BusinessNetworkConnector(goodSettings);
             let options = {};
             return new Promise((resolve, reject) => {
-                testConnector.delete('systest.transactions.SimpleStringAsset', 'deleteId', options, (error) => {
+                testConnector.delete('systest.loopback.SimpleParticipant', 'deleteParticipant', options, (error) => {
                     if (error) {
                         return reject(error);
                     }
 
-                    testConnector.retrieve('systest.transactions.SimpleStringAsset', 'deleteId', options, (error, result) => {
+                    testConnector.retrieve('systest.loopback.SimpleParticipant', 'deleteParticipant', options, (error, result) => {
                         if (error) {
                             return reject(error);
                         }

@@ -12,7 +12,7 @@ echo $DIR
 cd ${DIR}
 
 # Set default timeouts
-export CONCERTO_PORT_WAIT_SECS=30
+export CONCERTO_PORT_WAIT_SECS=40
 export CONCERTO_DEPLOY_WAIT_SECS=120
 
 # Pull any required Docker images.
@@ -55,11 +55,11 @@ npm run integration-test 2>&1 | tee
 
 
 # Kill and remove any started Docker images.
-if [ "${DOCKER_FILE}" != "" ]; then
-    docker-compose -f ${DOCKER_FILE} kill
-    docker-compose -f ${DOCKER_FILE} down
-fi
+#if [ "${DOCKER_FILE}" != "" ]; then
+#    docker-compose -f ${DOCKER_FILE} kill
+#    docker-compose -f ${DOCKER_FILE} down
+#fi
 
 # Delete any written configuration.
-rm -rf ${HOME}/.concerto-connection-profiles/concerto-systests
-rm -rf ${HOME}/.concerto-credentials/concerto-systests
+#rm -rf ${HOME}/.concerto-connection-profiles/concerto-systests
+#rm -rf ${HOME}/.concerto-credentials/concerto-systests
