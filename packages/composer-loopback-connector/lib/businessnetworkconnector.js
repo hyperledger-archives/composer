@@ -137,7 +137,7 @@ class BusinessNetworkConnector extends Connector {
                 let modelClassDeclarations = this.businessNetworkDefinition.getIntrospector().getClassDeclarations();
                 modelClassDeclarations
                     .forEach((modelClassDeclaration) => {
-                        if (((modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
+                        if ((modelClassDeclaration instanceof TransactionDeclaration), ((modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
                             models.push({
                                 type : 'table',
                                 name : modelClassDeclaration.getFullyQualifiedName()
@@ -167,7 +167,10 @@ class BusinessNetworkConnector extends Connector {
                 let introspector = this.businessNetworkDefinition.getIntrospector();
                 let classDeclaration = introspector.getClassDeclaration(object);
                 let visitor = new LoopbackVisitor();
-                let schema = classDeclaration.accept(visitor, { first: true, modelFile: classDeclaration.getModelFile() });
+                let schema = classDeclaration.accept(visitor, {
+                    first : true,
+                    modelFile : classDeclaration.getModelFile()
+                });
                 callback(null, schema);
             })
             .catch((error) => {
@@ -183,33 +186,62 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback The callback to call when complete.
 
      */
-    all(modelName, options, callback) {
+    all (modelName, options, callback) {
         debug('all', modelName, options, callback);
         let model = modelName.replace(/_/g, '.');
         let results = [];
         this.ensureConnected()
             .then(() => {
                 let serializer = this.businessNetworkConnection.getBusinessNetwork().getSerializer();
-                this.businessNetworkConnection.getAssetRegistry(model)
-                    .then((assetRegistry) => {
-                        assetRegistry.getAll()
-                            .then((result) => {
-                                result.forEach((res) => {
-                                    results.push(serializer.toJSON(res));
+
+                let modelManager = this.businessNetworkDefinition.getModelManager();
+                let classDeclaration = modelManager.getType(modelName);
+
+                if (classDeclaration instanceof AssetDeclaration) {
+                    this.businessNetworkConnection.getAssetRegistry(model)
+                        .then((assetRegistry) => {
+                            assetRegistry.getAll()
+                                .then((result) => {
+                                    result.forEach((res) => {
+                                        results.push(serializer.toJSON(res));
+                                    });
+                                    callback(null, results);
                                 });
-                                callback(null, results);
-                            });
-                    })
-                    .catch((error) => {
-                        console.log('ERR: '+error);
-                        callback(error);
-                    });
+                        })
+                        .catch((error) => {
+                            console.log('ERR: ' + error);
+                            callback(error);
+                        });
+                } else if (classDeclaration instanceof ParticipantDeclaration) {
+                    this.businessNetworkConnection.getParticipantRegistry(model)
+                        .then((participantRegistry) => {
+                            return participantRegistry.getAll()
+                                .then((result) => {
+                                    result.forEach((res) => {
+                                        results.push(serializer.toJSON(res));
+                                    });
+                                    callback(null, results);
+                                });
+                        })
+                        .catch((error) => {
+                            console.log('ERR: ' + error);
+                            callback(error);
+                        });
+                } else {
+                    // For everything else, we blow up!
+                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
+                }
+            })
+            .catch((error) => {
+                debug('all', 'error thrown doing all', error);
+                callback(error);
             });
 
     }
+
     /**
-     * Create an instance of an object in IBM Concerto. For assets, this method
-     * adds the asset to the default asset registry. For transactions, this method
+     * Create an instance of an object in IBM Concerto. For assets or participants, this method
+     * adds the asset or participant to the default asset or participant registry. For transactions, this method
      * submits the transaction for execution.
      * @param {string} modelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
@@ -258,6 +290,17 @@ class BusinessNetworkConnector extends Connector {
                             callback(error);
                         });
 
+                } else if (classDeclaration instanceof ParticipantDeclaration) {
+                    this.businessNetworkConnection.getParticipantRegistry(classDeclaration.getFullyQualifiedName())
+                        .then((participantRegistry) => {
+                            return participantRegistry.add(resource);
+                        })
+                        .then(() => {
+                            callback();
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
                 } else {
                     // For everything else, we blow up!
                     throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
@@ -270,8 +313,8 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Get an instance of an object in IBM Concerto. For assets, this method
-     * gets the asset from the default asset registry.
+     * Get an instance of an object in IBM Concerto. For assets or participants, this method
+     * gets the asset or participant from the default asset or participant registry.
      * @param {string} modelName the fully qualified model name.
      * @param {string} id the identifier of the asset or participant to retrieve.
      * @param {Object} options the options provided by Loopback.
@@ -282,32 +325,54 @@ class BusinessNetworkConnector extends Connector {
 
         this.ensureConnected()
             .then(() => {
-                // For assets, we add the asset to its default asset registry.
-                this.businessNetworkConnection.getAssetRegistry(modelName)
-                    .then((assetRegistry) => {
-                        return assetRegistry.get(id);
-                    })
-                    .then((result) => {
-                        callback(null, result);
-                    })
-                    .catch((error) => {
-                        callback(error);
-                    });
+                let modelManager = this.businessNetworkDefinition.getModelManager();
+                let classDeclaration = modelManager.getType(modelName);
 
+                if (classDeclaration instanceof AssetDeclaration) {
+                    // For assets, we add the asset to its default asset registry.
+                    this.businessNetworkConnection.getAssetRegistry(modelName)
+                        .then((assetRegistry) => {
+                            return assetRegistry.get(id);
+                        })
+                        .then((result) => {
+                            callback(null, result);
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                } else if (classDeclaration instanceof ParticipantDeclaration) {
+                    // For participants, we add the participant to its default participant registry.
+                    this.businessNetworkConnection.getParticipantRegistry(modelName)
+                        .then((participantRegistry) => {
+                            return participantRegistry.get(id);
+                        })
+                        .then((result) => {
+                            callback(null, result);
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                } else {
+                    // For everything else, we blow up!
+                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
+                }
+            })
+            .catch((error) => {
+                debug('retrieve', 'error thrown doing retrieve', error);
+                callback(error);
             });
     }
 
     /**
-     * Update an instance of an object in IBM Concerto. For assets, this method
-     * updates the asset to the default asset registry.
+     * Update an instance of an object in IBM Concerto. For assets or participants, this method
+     * updates the asset or participant to the default asset or participant registry.
      * @param {string} modelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
      * @param {Object} options the options provided by Loopback.
      * @param {function} callback the callback to call when complete.
      */
     update (modelName, data, options, callback) {
-        debug('create', modelName, data, options);
-        console.log('Update', modelName, data, options);
+        debug('update', modelName, data, options);
         // If the $class property has not been provided, add it now.
         if (!data.$class) {
             data.$class = modelName.replace(/_/g, '.');
@@ -333,6 +398,18 @@ class BusinessNetworkConnector extends Connector {
                         .catch((error) => {
                             callback(error);
                         });
+                } else if (classDeclaration instanceof ParticipantDeclaration) {
+                    // For participants, we add the participant to its default participant registry.
+                    this.businessNetworkConnection.getParticipantRegistry(classDeclaration.getFullyQualifiedName())
+                        .then((participantRegistry) => {
+                            return participantRegistry.update(resource);
+                        })
+                        .then(() => {
+                            callback();
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
                 } else {
                     // For everything else, we blow up!
                     throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
@@ -345,8 +422,8 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Delete an instance of an object in IBM Concerto. For assets, this method
-     * updates the asset to the default asset registry.
+     * Delete an instance of an object in IBM Concerto. For assets, or participants this method
+     * updates the asset or participant to the default asset or participant registry.
      * @param {string} modelName the fully qualified model name.
      * @param {Object} id the identifier of the asset or participant to be removed.
      * @param {Object} options the options provided by Loopback.
@@ -357,18 +434,44 @@ class BusinessNetworkConnector extends Connector {
 
         this.ensureConnected()
             .then(() => {
-                // Delete the object
-                this.businessNetworkConnection.getAssetRegistry(modelName)
-                    .then((assetRegistry) => {
-                        return assetRegistry.remove(id);
-                    })
-                    .then(() => {
-                        callback();
-                    })
-                    .catch((error) => {
-                        callback(error);
-                    });
+                let modelManager = this.businessNetworkDefinition.getModelManager();
+                let classDeclaration = modelManager.getType(modelName);
+
+                if (classDeclaration instanceof AssetDeclaration) {
+                    // Delete the object
+                    this.businessNetworkConnection.getAssetRegistry(modelName)
+                        .then((assetRegistry) => {
+                            return assetRegistry.remove(id);
+                        })
+                        .then(() => {
+                            callback();
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                } else if (classDeclaration instanceof ParticipantDeclaration) {
+                    // Delete the object
+                    this.businessNetworkConnection.getParticipantRegistry(modelName)
+                        .then((participantRegistry) => {
+                            return participantRegistry.remove(id);
+                        })
+                        .then(() => {
+                            callback();
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                } else {
+                    // For everything else, we blow up!
+                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
+                }
+
+            })
+            .catch((error) => {
+                debug('delete', 'error thrown doing delete', error);
+                callback(error);
             });
     }
 }
+
 module.exports = BusinessNetworkConnector;

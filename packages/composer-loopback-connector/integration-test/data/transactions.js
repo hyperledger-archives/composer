@@ -156,7 +156,7 @@ function onSimpleTransactionWithAssetRelationshipArrays(transaction) {
 
 function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             return ar.getAll();
         })
@@ -177,7 +177,7 @@ function onGetAllAssetsFromAssetRegistryTransaction(transaction) {
 
 function onGetAssetFromAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             return ar.get('stringAsset1');
         })
@@ -190,7 +190,7 @@ function onGetAssetFromAssetRegistryTransaction(transaction) {
 
 function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             return ar.add(transaction.stringAsset);
         });
@@ -198,7 +198,7 @@ function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {
 
 function onAddAssetWithRelationshipInTransactionToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+    return getAssetRegistry('systest.loopback.SimpleRelationshipAsset')
         .then(function (ar) {
             return ar.add(transaction.relationshipAsset);
         });
@@ -206,10 +206,10 @@ function onAddAssetWithRelationshipInTransactionToAssetRegistryTransaction(trans
 
 function onAddNewAssetToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newInstance('systest.loopback', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = 'party parrot in hursley';
             return ar.add(a);
         });
@@ -217,18 +217,18 @@ function onAddNewAssetToAssetRegistryTransaction(transaction) {
 
 function onAddNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+    return getAssetRegistry('systest.loopback.SimpleRelationshipAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
-            a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newInstance('systest.loopback', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            a.stringAsset = f.newRelationship('systest.loopback', 'SimpleStringAsset', 'stringAsset1');
             return ar.add(a);
         });
 }
 
 function onUpdateAssetInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             return ar.update(transaction.stringAsset);
         });
@@ -236,7 +236,7 @@ function onUpdateAssetInTransactionInAssetRegistryTransaction(transaction) {
 
 function onUpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+    return getAssetRegistry('systest.loopback.SimpleRelationshipAsset')
         .then(function (ar) {
             return ar.update(transaction.relationshipAsset);
         });
@@ -244,10 +244,10 @@ function onUpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction(tr
 
 function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newInstance('systest.loopback', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = 'party parrot in san francisco';
             return ar.update(a);
         });
@@ -255,18 +255,18 @@ function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
 
 function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+    return getAssetRegistry('systest.loopback.SimpleRelationshipAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
-            a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
+            var a = f.newInstance('systest.loopback', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            a.stringAsset = f.newRelationship('systest.loopback', 'SimpleStringAsset', 'stringAsset2');
             return ar.update(a);
         });
 }
 
 function onRemoveAssetInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             return ar.remove(transaction.stringAsset);
         });
@@ -274,7 +274,7 @@ function onRemoveAssetInTransactionInAssetRegistryTransaction(transaction) {
 
 function onRemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+    return getAssetRegistry('systest.loopback.SimpleRelationshipAsset')
         .then(function (ar) {
             return ar.remove(transaction.relationshipAsset);
         });
@@ -282,10 +282,10 @@ function onRemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction(tr
 
 function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newInstance('systest.loopback', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = 'party parrot in san francisco';
             return ar.remove(a);
         });
@@ -293,26 +293,26 @@ function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
 
 function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
-    return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
+    return getAssetRegistry('systest.loopback.SimpleRelationshipAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
-            a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newInstance('systest.loopback', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            a.stringAsset = f.newRelationship('systest.loopback', 'SimpleStringAsset', 'stringAsset1');
             return ar.remove(a);
         });
 }
 
 /**
  * Handle the single annotated transaction.
- * @param {systest.transactions.SingleAnnotatedTransaction} transaction The transaction
+ * @param {systest.loopback.SingleAnnotatedTransaction} transaction The transaction
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
 function handleTheSingleAnnotatedTransaction(transaction) {
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newInstance('systest.loopback', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = transaction.stringValue;
             return ar.add(a);
         });
@@ -320,15 +320,15 @@ function handleTheSingleAnnotatedTransaction(transaction) {
 
 /**
  * Handle the first annotated transaction.
- * @param {systest.transactions.MultipleAnnotatedTransaction} transaction The transaction
+ * @param {systest.loopback.MultipleAnnotatedTransaction} transaction The transaction
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
 function handleMultipleAnnotatedTransactionFirst(transaction) {
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newInstance('systest.loopback', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = transaction.stringValue1;
             return ar.add(a);
         });
@@ -336,15 +336,15 @@ function handleMultipleAnnotatedTransactionFirst(transaction) {
 
 /**
  * Handle the second annotated transaction.
- * @param {systest.transactions.MultipleAnnotatedTransaction} transaction The transaction
+ * @param {systest.loopback.MultipleAnnotatedTransaction} transaction The transaction
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
 function handleMultipleAnnotatedTransactionSecond(transaction) {
-    return getAssetRegistry('systest.transactions.SimpleStringAsset')
+    return getAssetRegistry('systest.loopback.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
+            var a = f.newInstance('systest.loopback', 'SimpleStringAsset', 'stringAsset2');
             a.stringValue = transaction.stringValue2;
             return ar.add(a);
         });
@@ -352,7 +352,7 @@ function handleMultipleAnnotatedTransactionSecond(transaction) {
 
 /**
  * Handle the single annotated transaction (1/4).
- * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
+ * @param {systest.loopback.TransactionUsingUtilityFunctions} transaction The transaction
  * @return {Promise} A promise that is resolved when complete.
  */
 function utilityFunc1(transaction) {
@@ -361,7 +361,7 @@ function utilityFunc1(transaction) {
 
 /**
  * Handle the single annotated transaction.
- * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
+ * @param {systest.loopback.TransactionUsingUtilityFunctions} transaction The transaction
  * @transaction
  * @return {Promise} A promise that is resolved when complete.
  */
@@ -371,7 +371,7 @@ function handleTheTransactionUsingUtilityFunctions(transaction) {
 
 /**
  * Handle the single annotated transaction (3/4).
- * @param {systest.transactions.TransactionUsingUtilityFunctions} transaction The transaction
+ * @param {systest.loopback.TransactionUsingUtilityFunctions} transaction The transaction
  * @return {Promise} A promise that is resolved when complete.
  */
 function utilityFunc2(transaction) {

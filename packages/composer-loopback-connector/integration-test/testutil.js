@@ -14,15 +14,15 @@
 
 'use strict';
 
-const AdminConnection = require('composer-admin').AdminConnection;
-const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const AdminConnection = require('@ibm/concerto-admin').AdminConnection;
+const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const ConnectionProfileManager = require('@ibm/concerto-common').ConnectionProfileManager;
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
-const Util = require('composer-common').Util;
+const Util = require('@ibm/concerto-common').Util;
 
 let adminConnection;
 let client;
@@ -138,7 +138,7 @@ class TestUtil {
                 if (TestUtil.isWeb()) {
                     const BrowserFS = require('browserfs');
                     BrowserFS.initialize(new BrowserFS.FileSystem.LocalStorage());
-                    ConnectionProfileManager.registerConnectionManager('web', require('composer-connector-web'));
+                    ConnectionProfileManager.registerConnectionManager('web', require('@ibm/concerto-connector-web'));
                     adminOptions = {
                         type: 'web'
                     };

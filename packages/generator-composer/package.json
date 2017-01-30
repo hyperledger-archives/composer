@@ -1,0 +1,29 @@
+{
+  "name": "generator-fabric-composer",
+  "version": "0.3.11",
+  "description": "Generates skeleton projects from Fabric Composer business network definitions",
+  "files": [
+    "generators/app"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "composer-client": "^0.3.11",
+    "bower": "^1.8.0",
+    "fs": "0.0.1-security",
+    "shelljs": "^0.7.5",
+    "underscore.string": "^3.3.4",
+    "yeoman-generator": "^0.24.1"
+  },
+  "homepage": "https://github.com/fabric-composer/fabric-composer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabric-composer/fabric-composer"
+  },
+  "author": "Fabric Composer",
+  "license": "Apache-2",
+  "devDependencies": {
+    "typings": "^2.1.0"
+  }
+}

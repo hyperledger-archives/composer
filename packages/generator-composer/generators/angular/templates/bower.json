@@ -1,0 +1,18 @@
+{
+  "name": "<%= appName %>",
+  "description": "<%= appDescription %>",
+  "main": "index.js",
+  "authors": [
+    "<%= authorName %> <%= authorEmail %>"
+  ],
+  "license": "Apache2",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
