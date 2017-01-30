@@ -1,0 +1,9 @@
+{
+
+  "<%= appName %>" : {
+     "participantId" : "<%= enrollmentId %>",
+     "participantPwd" :"<%= enrollmentSecret %>",
+     "businessNetworkIdentifier" : "<%= networkIdentifier %>",
+     "connectionProfile" : "<%= connectionProfileName %>"
+  }
+}

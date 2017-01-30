@@ -1,0 +1,29 @@
+{
+  "name": "generator-concerto",
+  "version": "0.1.0",
+  "description": "Generates suggested project structures for IBM Blockchain Framework artefacts",
+  "files": [
+    "generators/app"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "@ibm/concerto-client": "^0.3.6",
+    "bower": "^1.8.0",
+    "fs": "0.0.1-security",
+    "shelljs": "^0.7.5",
+    "underscore.string": "^3.3.4",
+    "yeoman-generator": "^0.24.1"
+  },
+  "homepage": "https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.ibm.com/Blockchain-WW-Labs/Mozart.git"
+  },
+  "author": "IBM",
+  "license": "Apache-2",
+  "devDependencies": {
+    "typings": "^2.1.0"
+  }
+}
