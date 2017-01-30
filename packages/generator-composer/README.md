@@ -1,5 +1,5 @@
-# generator-concerto
-This is a Yeoman module for a set of Yeoman geneators. These are used to create pro-forma templates for using with the IBM Blockchain Framework.
+# generator-composer
+This is a Yeoman module for a set of Yeoman generators. These are used to create pro-forma templates for using with the Fabric Composer.
 There are two current generators that can be used from the point of creating a model through to creating command line applications
 
 The naming of this repository is following the Yeoman naming conventions.
@@ -33,19 +33,9 @@ npm install -g typings
 npm install -g bower
 ```
 
-
-*Step 5:* At the moment, the generator module needs to be cloned and linked. 
-
-```
-git clone git@github.ibm.com:Blockchain-WW-Labs/generator-concerto.git
-cd generator-concerto
-npm link
-```
-
-
 # What are the generators I can use?
 
-##> yo concerto:app
+##> yo composer:app
 
 ### Description
 This command generates a basic command line application which can deploy a business network and list all the asset registries.
@@ -57,8 +47,7 @@ This command generates a basic command line application which can deploy a busin
 - DigitalProperty-Network
 
 
-
-##> yo concerto:angular
+##> yo composer:angular
 
 ### Description
 This command generates an Angular2 application which can connect to a business network and perform create, read, update and delete operations on assets.
