@@ -37,14 +37,14 @@ let testBusinessNetworkId = 'net.biz.TestNetwork-0.0.1';
 let testBusinessNetworkDescription = 'Test network description';
 
 //const DEFAULT_PROFILE_NAME = 'defaultProfile';
-const CREDENTIALS_ROOT = homedir() + '/.concerto-credentials';
+const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 
 let mockBusinessNetworkDefinition;
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 let mockAdminConnection;
 
-describe('concerto deploy network CLI unit tests', function () {
+describe('composer deploy network CLI unit tests', function () {
 
     let sandbox;
 

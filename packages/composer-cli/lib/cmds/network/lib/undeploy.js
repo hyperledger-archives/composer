@@ -19,7 +19,7 @@ const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 /**
  * <p>
- * Concerto "network network undeploy" command
+ * Composer "network network undeploy" command
  * </p>
  * @private
  */
@@ -27,7 +27,7 @@ class Undeploy {
 
   /**
     * Command process for undeploy command
-    * @param {string} argv argument list from concerto command
+    * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {

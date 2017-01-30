@@ -3,7 +3,7 @@
 # Exit on first error, print all commands.
 set -v
 
-# Grab the Concerto directory.
+# Grab the composer directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Check for the system tests.

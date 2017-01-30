@@ -20,15 +20,15 @@ const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const homedir = require('homedir');
 
-const PROFILE_ROOT = homedir() + '/.concerto-connection-profiles/';
+const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
 const CONNECTION_FILE = 'connection.json';
 
-const CREDENTIALS_ROOT = homedir() + '/.concerto-credentials';
+const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 /**
  * <p>
- * Concerto deploy command
+ * Composer deploy command
  * </p>
  * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
@@ -37,7 +37,7 @@ class Deploy {
 
   /**
     * Command process for deploy command
-    * @param {string} argv argument list from concerto command
+    * @param {string} argv argument list from composer command
     * @param {boolean} updateOption true if the network is to be updated
     * @return {Promise} promise when command complete
     */

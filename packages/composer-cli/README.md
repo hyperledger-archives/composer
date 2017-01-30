@@ -1,21 +1,20 @@
 # Composer-CLI
 
-Set up the Concerto command with
+Set up the Composer command with
 
 ```
-npm install
-npm link
+npm install composer-cli
 ```
 
 ## Overview
-Contains the Concerto CLIs for administering business networks.
+Contains the Fabric composer CLIs for administering business networks.
 
-Type `concerto --help` to list the available commands.
+Type `composer --help` to list the available commands.
 
 ## Usage
 
 ```bash  
-concerto network deploy [options]
+composer network deploy [options]
 
 Options:
   --help              Show help  [boolean]

@@ -15,7 +15,7 @@
 'use strict';
 
 exports.command = 'transaction <subcommand>';
-exports.desc = 'Concerto transaction command';
+exports.desc = 'Composer transaction command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs.commandDir('transaction');

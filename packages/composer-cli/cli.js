@@ -22,7 +22,7 @@ let _ = require('lodash');
 yargs
     .commandDir('./lib/cmds')
     .help()
-    .example('concerto identity issue\nconcerto network deploy\nconcerto participant add\nconcerto transaction submit')
+    .example('composer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
     .demand(1)
     .wrap(null)
     .strict()
