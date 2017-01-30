@@ -42,7 +42,7 @@ const ENROLL_SECRET = 'SuccessKidWin';
 
 const TEMPLATES_DIR = path.join(__dirname, './../../gen');
 
-describe('concerto generator tests CLI unit tests', () => {
+describe('composer generator tests CLI unit tests', () => {
 
     let sandbox;
     let mockBusinessNetworkConnection;

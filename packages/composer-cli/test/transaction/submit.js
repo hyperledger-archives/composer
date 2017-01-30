@@ -41,10 +41,10 @@ const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
 //const DEFAULT_PROFILE_NAME = 'defaultProfile';
-// const CREDENTIALS_ROOT = homedir() + '/.concerto-credentials';
+// const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 
 
-describe('concerto transaction submit CLI unit tests', () => {
+describe('composer transaction submit CLI unit tests', () => {
     let sandbox;
     let mockBusinessNetworkConnection;
     let mockBusinessNetwork;

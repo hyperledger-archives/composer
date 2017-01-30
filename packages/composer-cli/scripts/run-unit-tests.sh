@@ -3,7 +3,7 @@
 # Exit on first error, print all commands.
 set -ev
 
-# Grab the Concerto directory.
+# Grab the Composer directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Run the node.js unit tests.
@@ -17,6 +17,6 @@ eval "$(gimme 1.7)"
 
 # Run the Go unit tests.
 export GOPATH=${DIR}/chaincode
-cd ${GOPATH}/src/concerto
+cd ${GOPATH}/src/composer
 go vet $(go list ./... | grep -v /vendor/)
 go test -v $(go list ./... | grep -v /vendor/)

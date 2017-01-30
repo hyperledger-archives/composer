@@ -23,7 +23,7 @@ const homedir = require('homedir');
 const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
 const CONNECTION_FILE = 'connection.json';
 
-const CREDENTIALS_ROOT = homedir() + '/.concerto-credentials';
+const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 /**

@@ -3,7 +3,7 @@
   "version": "0.3.11",
   "description": "Fabric Composer command line interfaces (CLIs)",
   "bin": {
-    "concerto": "cli.js"
+    "composer": "cli.js"
   },
   "main": "index.js",
   "scripts": {

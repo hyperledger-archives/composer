@@ -19,7 +19,7 @@ const Test = require ('./lib/tests.js');
 module.exports.command = 'tests [options]';
 module.exports.describe = 'Generate unit tests';
 module.exports.builder = {
-    projectDir: {alias: 'd', required: true, describe: 'The directory of your your concerto project', type: 'string' },
+    projectDir: {alias: 'd', required: true, describe: 'The directory of your your composer project', type: 'string' },
     networkArchiveLocation: {alias: 'a', required: true, describe: 'The location of the network archive zip file', type: 'string' },
     testDirName: {alias: 't', required: false, describe: 'The name of the projects test directory', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },

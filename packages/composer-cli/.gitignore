@@ -43,7 +43,7 @@ jspm_packages
 **/.DS_Store
 
 chaincode/src/*
-!chaincode/src/concerto
+!chaincode/src/composer
 chaincode/bin
 chaincode/pkg
 
