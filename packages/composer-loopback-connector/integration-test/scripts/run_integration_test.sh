@@ -47,7 +47,7 @@ if [ "${DOCKER_FILE}" != "" ]; then
 fi
 
 # Delete any existing configuration.
-rm -rf ${HOME}/.concerto-connection-profiles/concerto-systests
+rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
 rm -rf ${HOME}/.concerto-credentials/concerto-systests
 
 # Run the integration tests.
@@ -61,5 +61,5 @@ npm run integration-test 2>&1 | tee
 #fi
 
 # Delete any written configuration.
-#rm -rf ${HOME}/.concerto-connection-profiles/concerto-systests
-#rm -rf ${HOME}/.concerto-credentials/concerto-systests
+rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
+rm -rf ${HOME}/.concerto-credentials/concerto-systests

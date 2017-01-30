@@ -20,7 +20,7 @@ const fs = require('fs');
 
 /**
  * <p>
- * Concerto List Archive command
+ * Composer List Archive command
  * </p>
  *
  * @private
@@ -29,7 +29,7 @@ class ListBNA {
 
   /**
     * Command process for deploy command
-    * @param {string} argv argument list from concerto command
+    * @param {string} argv argument list from composer command
 
     * @return {Promise} promise when command complete
     */

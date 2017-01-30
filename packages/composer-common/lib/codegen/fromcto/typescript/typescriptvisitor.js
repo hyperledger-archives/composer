@@ -203,9 +203,9 @@ class TypescriptVisitor {
     }
 
     /**
-     * Converts a Concerto type to a Typescript  type. Primitive types are converted
+     * Converts a Composer type to a Typescript  type. Primitive types are converted
      * everything else is passed through unchanged.
-     * @param {string} type  - the concerto type
+     * @param {string} type  - the composer type
      * @return {string} the corresponding type in Typescript
      * @private
      */

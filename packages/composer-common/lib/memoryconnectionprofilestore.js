@@ -21,12 +21,12 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
 /**
  * Stores connection profiles on an attached in memory BrowserFS filesystem.
- * The connection profiles are loaded from the ''<HOME_DIR>/concerto-connection-profiles/'
+ * The connection profiles are loaded from the ''<HOME_DIR>/composer-connection-profiles/'
  * directory.
  *
  * @private
  * @extends FSConnectionProfileStore
- * @see See [FSConnectionProfileStore]{@link module:concerto-common.FSConnectionProfileStore}
+ * @see See [FSConnectionProfileStore]{@link module:composer-common.FSConnectionProfileStore}
  * @class
  * @memberof module:composer-common
  */

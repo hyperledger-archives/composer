@@ -15,10 +15,10 @@
 'use strict';
 
 /**
- * IBM Concerto module. IBM Concerto is a framework for creating
+ * Fabric-Composer module. Fabric-Composer is a framework for creating
  * blockchain backed digital networks and exchanging assets between participants
  * via processing transactions.
- * @module ibm-concerto-common
+ * @module composer-common
  */
 
 /* istanbul ignore next */

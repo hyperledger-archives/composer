@@ -20,7 +20,7 @@ const LOG = Logger.getLog('HFCWalletProxy');
 
 /**
  * A class that implements a proxy between the Hyperledger Fabric,
- * key/value store, using the hfc module, and the Concerto wallet.
+ * key/value store, using the hfc module, and the Composer wallet.
  */
 class HFCWalletProxy {
 

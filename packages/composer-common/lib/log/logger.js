@@ -27,11 +27,11 @@ let _logger = null;
 let _clInstances = {};
 
 /**
- * @description Class that provides the API to enable parts of the *Concerto*
+ * @description Class that provides the API to enable parts of the *Composer*
  * library to diagnostic messages.
  *
  * The aim is to provide a system whereby
- *  - The *Concerto* library has a common API to call and formats the essential data
+ *  - The *Composer* library has a common API to call and formats the essential data
  *    its way
  *  - It's own control of what level of data points are currently being collected
  *    and for what module/class level
@@ -59,7 +59,6 @@ let _clInstances = {};
  * @todo Precrtiptive on how data is uploaded to logmet etc. ??
  *
  *
- * @see https://github.ibm.com/Blockchain-WW-Labs/Concerto/issues/16
  *
  * @private
  * @class
@@ -79,7 +78,7 @@ class Logger {
 
 /**
  *
- * @description Do the formatting of the data that *Concerto* wishes to have for all
+ * @description Do the formatting of the data that *Composer* wishes to have for all
  * logging systems. This method does basic formatting before passing to the
  * log method of the selected logger implementation.
  *
