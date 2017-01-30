@@ -1,0 +1,34 @@
+/**
+ * Test data types
+ */
+
+// define the namespace for this model
+namespace org.acme.ext
+
+import org.acme.base.DerivedAsset
+import org.acme.base.MyTransaction
+
+enum TrafficLight {
+  o RED
+  o AMBER
+  o GREEN
+}
+
+participant Clown identified by stringProperty {
+    o String stringProperty
+}
+
+asset Truck extends DerivedAsset {
+  o String yetAnotherStringProperty default="defaultString"
+}
+
+transaction MySuperTransaction extends MyTransaction {
+  o Clown theEvilClown
+  o Truck[] arrayOfTrucks
+}
+
+/*
+function onMySuperTransaction(foo) {
+    log('Hello');
+}
+*/

@@ -1,0 +1,10 @@
+instrumentation:
+    excludes:
+        - out/**
+        - scripts/**
+check:
+    global:
+        statements: 0
+        branches: 0
+        function: 0
+        lines: 0

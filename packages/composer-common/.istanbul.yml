@@ -1,0 +1,20 @@
+instrumentation:
+    excludes:
+        - "lib/codegen/*"
+        - "lib/codegen/fromcto/golang/**"
+        - "lib/codegen/fromcto/plantuml/**"
+        - "lib/codegen/fromcto/typescript/**"
+        - "lib/codegen/fromjs/**"
+        - "lib/tools/changelog.js"
+        - "lib/tools/plantumltoimage.js"
+        - "lib/introspect/parser.js"
+        - "lib/acl/parser.js"
+        - "out/**"
+        - "scripts/**"
+        - "systest/**"
+check:
+    global:
+        statements: 97
+        branches: 94
+        functions: 98
+        lines: 97

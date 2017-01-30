@@ -1,0 +1,7 @@
+namespace com.ibm.testing
+
+import com.ibm.elsewhere.BaseAsset
+
+asset TestAsset identified by assetId {
+    o String assetId optional
+}

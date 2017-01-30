@@ -1,0 +1,3 @@
+R1 | systest.accesscontrols.SampleAsset:a | READ | systest.accesscontrols.SampleParticipant:p | (a.owner.getIdentifier() === p.getIdentifier()) | ALLOW | The owner of a vehicle can read the vehicle
+R2 | systest.accesscontrols.SampleParticipant:p | READ | systest.accesscontrols.SampleParticipant:po | (p.getIdentifier() !== po.getIdentifier()) | DENY | Nobody except the participant can see the participant
+R3 | systest.accesscontrols.SampleParticipant:p | READ | systest.accesscontrols.SampleParticipant:po | (p.getIdentifier() === po.getIdentifier()) | ALLOW | Nobody except the participant can see the participant

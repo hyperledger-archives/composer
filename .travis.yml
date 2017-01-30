@@ -2,25 +2,40 @@ language: node_js
 node_js:
     - '4'
     - '6'
+matrix:
+    include:
+        - env: SYSTEST=embedded
+        - env: SYSTEST=web
+        - env: SYSTEST=hlf SYSTEST_HLF=hlf
+          sudo: required
+          services:
+            - docker
+        - env: SYSTEST=hlf SYSTEST_HLF=ibm
+          sudo: required
+          services:
+            - docker
 dist: trusty
 before_install: |
     set -ev
+    set -o pipefail
     npm install -g npm
-    npm config set @ibm:registry https://npm-registry.whitewater.ibm.com
-    npm config set //npm-registry.whitewater.ibm.com/:_authToken ${NPM_TOKEN}
+    npm install -g @alrra/travis-scripts
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
     sudo dpkg -i google-chrome*.deb
+    wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+    echo "deb http://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+    sudo apt-get update && sudo apt-get install cf-cli
 install: |
     set -ev
+    set -o pipefail
     npm install 2>&1 | tee
-script: |
-    set -ev
-    export DISPLAY=:99.0
-    sh -e /etc/init.d/xvfb start
-    npm test 2>&1 | tee
+script: ./.travis/script.sh
 deploy:
     provider: script
-    script: npm run deploy 2>&1 | tee
+    script: ./.travis/deploy.sh
     skip_cleanup: true
     on:
         all_branches: true
+cache:
+    directories:
+        - $HOME/.npm

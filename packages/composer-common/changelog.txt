@@ -1,0 +1,108 @@
+#
+# This is the changelog for IBM Concerto. It lists all significant changes to
+# functionality and public API.
+#
+# The most recent entry in the changelog should be at the top of this file
+# and must follow the format: Version <number> {public api digest} <date>. The version
+# number must match that specified in package.json. The public api digest is computed
+# and validated using ./scripts/api-changelog.sh
+#
+# Any changes to the public API must have an associated changelog entry.
+#
+# Note that the latest public API is documented using JSDocs and is available in api.txt.
+#
+
+Version 0.3.7 {120eb2d3b0e487c6e95696aadecec93a} 2017-01-24
+- Move to single version
+
+Version 0.3.3 {120eb2d3b0e487c6e95696aadecec93a} 2017-01-18
+- Add support for Concepts
+
+Version 0.3.2 {c2fe56f50e1d1a2ac966dd23ebba2620} 2017-01-12
+- Add initial wallet API
+
+Version 0.3.1 {48540f8e5dace54cebaab04353bd7136} 2017-01-10
+- Add options to factory to generate resource instances with sample data
+
+Version 0.3.0 {5e00fefd2800fa40026062a9c0a0b695} 2017-01-05
+- Move to monorepo
+
+Version 0.2.0 {527e1a68596d676f560cfdcd1aa1fca6} 2016-12-15
+- Playback 1
+
+Version 0.1.16 {fea512a10f25b132d4a683a232a4f6e1} 2016-12-09
+- Added getName and getVersion to BusinessNetworkDefinition
+- Added options to BusinessNetworkDefinition.fromDirectory and make static
+
+Version 0.1.15 {6a358e14976153039246fc1c466b7cf7} 2016-11-30
+- Added options to Serializer fromJSON/toJSON APIs
+
+Version 0.1.14 {ecb5f554bbfbfe92dd7c4f05a3491882} 2016-11-28
+- Re-introduced the fromDirectory API
+
+Version 0.1.13 {d3d85a95909c32d44e1ee5190a54f6e0} 2016-11-28
+- Changed the name of BusinessNetwork to BusinessNetworkDefinition
+
+Version 0.1.12 {8029f091f512572e7e64c9eba84b10b3} 2016-11-24
+- JSDoc fixes to remove private classes
+
+Version 0.1.11 {4220e2570af565a664f8ea087d3ab9e3} 2016-11-23
+- Added BusinessNetwork.toArchive
+
+Version 0.1.10 {05dafaf99a431dc4f4b774525fccf69f} 2016-11-23
+- Added test-archive (and zip)
+
+Version 0.1.9 {e7f84562eeebf7ee9503f18c02adc4f7} 2016-11-23
+- Added BusinessNetwork.fromArchive
+
+Version 0.1.8 {60d00f2b524c04421d8467484c234c07} 2016-11-23
+- Added ConnectionProfileManager.connect
+- Added ConnectionManager.deploy with a BusinessNetwork
+- Added ConnectionProfileManager, ConnectionProfileStore
+
+Version 0.1.6 {2fa60fd22886a5a44e1bbb9f966bfbe1} 2016-11-23
+- Modified ConnectionManager.connect to take connection profile name
+
+Version 0.1.5 {44348565a0cc6b97e7d4d87fea166945} 2016-11-22
+- Modified ConnectionManager to introduce connection profiles
+- Stop serialization of connection manager interfaces
+
+Version 0.1.4 {07e701400cc255fbc1413490405af162} 2016-11-18
+- Added description to BusinessNetwork
+
+Version 0.1.3 {a10f96f1abd8236e7e414b85228243fe} 2016-11-17
+- Added BusinessNetwork APIs
+
+Version 0.1.2 {ec8cb98ca41a011d5b595cdc24abfbfc} 2016-11-17
+- Added connection manager APIs
+
+Version 0.1.1 {882ad35d7b7f29f4d910d0100406f852} 2016-11-17
+- Added the Introspector
+
+Version 0.1.0 {134597a1d97142fe03b0cc8acd87ad53} 2016-11-16
+- Refactor the APIs
+
+Version 0.0.16 {d3b0dfc754c6b95c59849cf547bf9486} 2016-11-05
+- Added find() and query() methods to AssetRegistry
+
+Version 0.0.15 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-31
+- Added an automatic 'timestamp' property to transactions
+
+Version 0.0.14 {ed3c045ab18f3e988f67b5edb2abd438} 2016-10-27
+- Modified Concerto to extend EventEmitter
+
+Version 0.0.13 {1ff98116f0b834387a85d49d50debc69} 2016-10-27
+- Added ping() method to Concerto
+
+Version 0.0.12 {d3861b7bd41ea2eae871d2783ab259e2} 2016-10-27
+- Added setIdentifier method to Identifiable.
+
+Version 0.0.11 {097696ed79f18ca03d16975f4a257635} 2016-10-27
+- Added bulk addAll(), updateAll(), and removeAll() methods to AssetRegistry
+
+Version 0.0.10 {332e7e48d4d49d1ec0dee3dd1355b689} 2016-10-24
+- API signature of Registry.getAll and Registry.get changed
+
+Version 0.0.9 {09e645fa8244c6acdfac427a178584bb} 2016-10-22
+- Basic public API is defined and useable from both command line and Express applications
+- Start to enforce a change log entry for API changes

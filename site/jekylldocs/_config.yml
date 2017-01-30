@@ -1,0 +1,50 @@
+title: IBM Blockchain Framework
+description: Create business networks and application for Hyperledger
+author: Paul O'Mahoney
+
+email: mahoney@uk.ibm.com
+url: "http://pages.github.ibm.com/Blockchain-WW-Labs/Concerto"
+
+
+#For publishing to your own gh-pages branch of the Docs repo this will need to
+#be the sitebaseurl - but the build scripts handle this for you.
+#
+#baseurl: "/WHITEMAT/Concerto-Docs"
+baseurl: "/Blockchain-WW-Labs/Concerto"
+
+
+
+
+highlighter: rouge
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "strikethrough", "superscript", "with_toc_data"]
+
+
+# _config.build.yml sets future and show_drafts to false on `grunt build`
+future: true
+show_drafts: true
+
+permalink: /blog/:title.html
+
+gems:
+- jekyll-sitemap
+
+exclude: [
+            package.json,
+            bower.json,
+            grunt.js,
+            Gruntfile.js,
+            node_modules,
+            bower_components,
+            validation-report.json,
+            validation-status.json,
+            scripts.js,
+            scripts.tmp.min.js,
+            style.css,
+            style.tmp.min.css,
+            lgoo.psd,
+            Makefile,
+            exclude.rsync,
+            README.markdown
+         ]

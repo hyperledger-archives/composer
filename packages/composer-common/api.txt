@@ -1,0 +1,109 @@
+class BaseException extends Error {
+   + void constructor(string) 
+}
+class BusinessNetworkDefinition {
+   + void constructor(String,String) 
+   + String getIdentifier() 
+   + String getName() 
+   + String getVersion() 
+   + String getDescription() 
+   + Promise fromArchive(Buffer) 
+   + Buffer toArchive() 
+   + Promise fromDirectory(String,Object,Object,boolean,boolean) 
+   + Introspector getIntrospector() 
+   + Factory getFactory() 
+   + Serializer getSerializer() 
+}
+class Factory {
+   + void constructor(ModelManager) 
+   + Resource newInstance(string,string,string,Object,boolean,boolean) throws ModelException
+   + Resource newResource(string,string,string,Object,boolean,boolean) throws ModelException
+   + Resource newConcept(string,string,Object,boolean,boolean) throws ModelException
+   + Relationship newRelationship(string,string,string) throws ModelException
+   + Resource newTransaction(string,string,string,Object,boolean) 
+   + Object toJSON() 
+}
+class FileWallet extends Wallet {
+   + string getHomeDirectory() 
+   + void constructor(Object,string,Object) 
+   + Promise list() 
+   + Promise contains(string) 
+   + Promise get(string) 
+   + Promise add(string,string) 
+   + Promise update(string,string) 
+   + Promise remove(string) 
+}
+class IllegalModelException extends BaseException {
+   + void constructor(string) 
+}
+class Introspector {
+   + void constructor(ModelManager) 
+   + ClassDeclaration[] getClassDeclarations() 
+   + ClassDeclaration getClassDeclaration(String) throws Error
+}
+class ParseException extends BaseException {
+   + void constructor(string) 
+}
+class Concept extends Typed {
+   + boolean isConcept() 
+}
+class Identifiable extends Typed {
+   + string getIdentifier() 
+   + void setIdentifier(string) 
+   + string getFullyQualifiedIdentifier() 
+   + String toString() 
+   + boolean isRelationship() 
+   + boolean isResource() 
+}
+class Relationship extends Identifiable {
+   + String toString() 
+   + boolean isRelationship() 
+}
+class Resource extends Identifiable {
+   + String toString() 
+   + boolean isResource() 
+}
+class Typed {
+   + string getType() 
+   + string getFullyQualifiedType() 
+   + string getNamespace() 
+   + void setPropertyValue(string,string) 
+   + void addArrayValue(string,string) 
+}
+class ValidatedConcept extends Concept {
+   + void setPropertyValue(string,string) throws Error
+   + void addArrayValue(string,string) throws Error
+   + void validate() throws Error
+}
+class ValidatedResource extends Resource {
+   + void setPropertyValue(string,string) throws Error
+   + void addArrayValue(string,string) throws Error
+   + void validate() throws Error
+}
+class SecurityContext {
+   + void constructor(Connection,string) 
+   + Connection getConnection() 
+   + string getUser() 
+   + Object toJSON() 
+}
+class SecurityException extends BaseException {
+   + void constructor(string) 
+}
+class Serializer {
+   + void constructor(Factory,ModelManager) 
+   + Object toJSON(Resource,Object,boolean,boolean,boolean) throws Error
+   + Resource fromJSON(Object,Object,boolean) 
+}
+class ValidationException extends BaseException {
+   + void constructor(string) 
+}
+class Wallet {
+   + Wallet getWallet() 
+   + void setWallet(Wallet) 
+   + Promise list() 
+   + Promise contains(string) 
+   + Promise get(string) 
+   + Promise add(string,string) 
+   + Promise update(string,string) 
+   + Promise remove(string) 
+}

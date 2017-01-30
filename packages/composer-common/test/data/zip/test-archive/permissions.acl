@@ -1,0 +1,5 @@
+R1 | org.acme.Vehicle#ABC123 | DELETE | concerto.Participant#Fred | (true) | ALLOW | Fred can DELETE the car ABC123
+R2 | org.acme.Vehicle:c | UPDATE | org.acme.Regulator#Bill:r | (c.owner == r) | DENY | regulator with ID Bill can not update a Car if they own it
+R3 | org.acme.Vehicle.owner:o | UPDATE | concerto.Participant:d | (o == d) | ALLOW | Driver can change the ownership of a car that they own
+R4 | org.acme.Vehicle | ALL | org.acme.Regulator | (true) | ALLOW | regulators can perform all operations on Cars
+R5 | org.acme | READ | ANY | (true) | ALLOW | Everyone can read all resources in the org.acme namespace

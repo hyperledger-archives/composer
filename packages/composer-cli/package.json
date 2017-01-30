@@ -1,0 +1,65 @@
+{
+  "name": "composer-cli",
+  "version": "0.3.12",
+  "description": "Fabric Composer command line interfaces (CLIs)",
+  "bin": {
+    "composer": "cli.js"
+  },
+  "main": "index.js",
+  "scripts": {
+    "pretest": "npm run lint",
+    "lint": "eslint .",
+    "postlint": "npm run licchk",
+    "licchk": "license-check",
+    "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
+    "posttest": "istanbul check-coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
+  },
+  "keywords": [
+    "blockchain",
+    "hyperledger",
+    "solutions"
+  ],
+  "author": "Fabric Composer",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "eslint": "^3.5.0",
+    "license-check": "^1.1.5",
+    "mocha": "^3.2.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "chai-things": "^0.2.0",
+    "istanbul": "^0.4.5",
+    "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2"
+  },
+  "dependencies": {
+    "composer-admin": "^0.3.12",
+    "composer-client": "^0.3.12",
+    "composer-common": "^0.3.12",
+    "homedir": "^0.6.0",
+    "moment": "^2.17.1",
+    "npm-paths": "^0.1.3",
+    "nunjucks": "^3.0.0",
+    "prettyjson": "^1.2.1",
+    "prompt": "^1.0.0",
+    "sanitize-filename": "^1.6.1",
+    "yargs": "^6.6.0"
+  },
+  "license-check-config": {
+    "src": [
+      "**/*.js",
+      "!./cli.js",
+      "!./coverage/**/*",
+      "!./node_modules/**/*",
+      "!./out/**/*"
+    ],
+    "path": "header.txt",
+    "blocking": true,
+    "logInfo": false,
+    "logError": true
+  }
+}

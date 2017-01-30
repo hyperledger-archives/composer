@@ -1,0 +1,18 @@
+dist: trusty
+language: node_js
+node_js:
+    - '4'
+addons:
+    apt:
+        packages:
+            - graphviz
+before_install: |
+    set -ev
+    npm install -g npm
+script: |
+    set -ev
+    npm run doc
+    ./scripts/generate-uml.sh
+    ./scripts/setup-jekyll.sh
+    ./scripts/build-gh-pages.sh
+after_success: ./scripts/push-docs.sh

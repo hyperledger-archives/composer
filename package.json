@@ -1,27 +1,34 @@
 {
   "devDependencies": {
+    "colors": "^1.1.2",
     "lerna": "2.0.0-beta.32",
-    "moment": "^2.17.1"
+    "moment": "^2.17.1",
+    "semver": "^5.3.0",
+    "sleep-promise": "^2.0.0"
   },
-  "name": "@ibm/concerto",
+  "name": "fabric-composer",
   "description": "You must install [Lerna](https://lernajs.io) to build this multi-package repository.",
-  "version": "0.2.0",
+  "version": "0.3.12",
   "main": "index.js",
+  "private": true,
   "scripts": {
-    "postinstall": "npm run bootstrap",
+    "postinstall": "npm run pkgcheck && npm run bootstrap",
     "bootstrap": "lerna bootstrap",
     "test": "lerna run test",
-    "deploy": "./scripts/deploy.sh"
+    "scanlicenses": "./scripts/scan-all-licenses.sh",
+    "pkgcheck": "node ./scripts/pkgcheck.js",
+    "pkgstamp": "node ./scripts/pkgstamp.js",
+    "pkgbump": "node ./scripts/pkgbump.js && node ./scripts/pkgcheck.js --fix"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.ibm.com:Blockchain-WW-Labs/Concerto.git"
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
-  "license": "ISC"
+  "author": "Fabric Composer",
+  "license": "Apache-2"
 }
