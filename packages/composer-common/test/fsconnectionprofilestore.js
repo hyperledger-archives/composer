@@ -52,7 +52,7 @@ describe('FSConnectionProfileStore', () => {
     describe('#load', () => {
 
         it('should read all existing files', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             mkdirp.sync(ccp1, { fs: bfs_fs });
             let ccp1f = path.resolve(ccp1, 'connection.json');
@@ -66,7 +66,7 @@ describe('FSConnectionProfileStore', () => {
         });
 
         it('should handle a missing connection JSON', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             mkdirp.sync(ccp1, { fs: bfs_fs });
             // This one was accidentally deleted.
@@ -88,7 +88,7 @@ describe('FSConnectionProfileStore', () => {
     describe('#save', () => {
 
         it('should save the file', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             let ccp1f = path.resolve(ccp1, 'connection.json');
             return cps.save('profile1', {
@@ -114,7 +114,7 @@ describe('FSConnectionProfileStore', () => {
     describe('#loadAll', () => {
 
         it('should read all existing files', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             let ccp2 = path.resolve(ccp, 'profile2');
             mkdirp.sync(ccp1, { fs: bfs_fs });
@@ -138,7 +138,7 @@ describe('FSConnectionProfileStore', () => {
         });
 
         it('should handle a missing connection JSON', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             let ccp2 = path.resolve(ccp, 'profile2');
             mkdirp.sync(ccp1, { fs: bfs_fs });
@@ -170,7 +170,7 @@ describe('FSConnectionProfileStore', () => {
     describe('#delete', () => {
 
         it('should delete an existing file', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             mkdirp.sync(ccp1, { fs: bfs_fs });
             let ccp1f = path.resolve(ccp1, 'connection.json');
@@ -184,7 +184,7 @@ describe('FSConnectionProfileStore', () => {
         });
 
         it('should ignore a missing connection JSON', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             mkdirp.sync(ccp1, { fs: bfs_fs });
             // This one was accidentally deleted.
@@ -199,7 +199,7 @@ describe('FSConnectionProfileStore', () => {
         });
 
         it('should ignore a missing connection profiles directory', () => {
-            let ccp = path.resolve(homedir(), '.concerto-connection-profiles');
+            let ccp = path.resolve(homedir(), '.composer-connection-profiles');
             let ccp1 = path.resolve(ccp, 'profile1');
             return cps.delete('profile1')
                 .then(() => {

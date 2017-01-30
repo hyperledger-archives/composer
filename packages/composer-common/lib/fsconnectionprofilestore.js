@@ -26,9 +26,9 @@ const thenifyAll = require('thenify-all');
 const PROFILE_ROOT = (() => {
     const h = homedir();
     if (h) {
-        return path.resolve(h, '.concerto-connection-profiles');
+        return path.resolve(h, '.composer-connection-profiles');
     } else {
-        return path.resolve('/', '.concerto-connection-profiles');
+        return path.resolve('/', '.composer-connection-profiles');
     }
 })();
 const CONNECTION_FILE = 'connection.json';

@@ -20,7 +20,7 @@ const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const homedir = require('homedir');
 
-const PROFILE_ROOT = homedir() + '/.concerto-connection-profiles/';
+const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
 const CONNECTION_FILE = 'connection.json';
 
 const CREDENTIALS_ROOT = homedir() + '/.concerto-credentials';
