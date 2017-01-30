@@ -1,7 +1,7 @@
 {
-  "name": "generator-composer",
+  "name": "generator-fabric-composer",
   "version": "0.3.11",
-  "description": "Generates skeleton projects from Composer Fabric business network definitions",
+  "description": "Generates skeleton projects from Fabric Composer business network definitions",
   "files": [
     "generators/app"
   ],
