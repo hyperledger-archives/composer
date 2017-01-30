@@ -15,15 +15,15 @@
 'use strict';
 
 /**
- * IBM Concerto module. IBM Concerto is a framework for creating
+ * Fabric-Composer module. Fabric-Composer is a framework for creating
  * blockchain backed digital networks and exchanging assets between participants
  * via processing transactions.
  * <p>
- * Applications interact with the framework by instantiating the {@link Concerto}
+ * Applications interact with the framework by instantiating the {@link Fabric-Composer}
  * class.
  * </p>
  * <p><a href="diagrams/concerto.svg"><img src="diagrams/concerto.svg" style="width:100%;"/></a></p>
- * @module ibm-concerto
+ * @module composer
  */
 
 module.exports = require('./lib/webconnectionmanager');

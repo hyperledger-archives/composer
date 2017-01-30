@@ -19,7 +19,7 @@ const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 /**
  * <p>
- * Concerto "network ping" command
+ * Composer "network ping" command
  * </p>
  * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
@@ -28,7 +28,7 @@ class Ping {
 
   /**
     * Command process for deploy command
-    * @param {string} argv argument list from concerto command
+    * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {

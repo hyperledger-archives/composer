@@ -22,7 +22,7 @@ const Writer = require('./writer');
  * automatically based on context.
  * @private
  * @extends Writer
- * @see See [Writer]{@link module:concerto-common.Writer}
+ * @see See [Writer]{@link module:composer-common.Writer}
  * @class
  * @memberof module:composer-common
  */

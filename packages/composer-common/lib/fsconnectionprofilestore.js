@@ -38,12 +38,12 @@ const LOG = require('./log/logger').getLog('FSConnectionProfileStore');
 
 /**
  * Stores connection profiles on an attached fs fs.
- * The connection profiles are loaded from the ''<HOME_DIR>/concerto-connection-profiles/'
+ * The connection profiles are loaded from the ''<HOME_DIR>/composer-connection-profiles/'
  * directory.
  *
  * @private
  * @extends ConnectionProfileStore
- * @see See [ConnectionProfileStore]{@link module:concerto-common.ConnectionProfileStore}
+ * @see See [ConnectionProfileStore]{@link module:composer-common.ConnectionProfileStore}
  * @class
  * @memberof module:composer-common
  */

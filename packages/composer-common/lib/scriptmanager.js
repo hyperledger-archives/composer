@@ -109,7 +109,7 @@ class ScriptManager {
     }
 
     /**
-     * Remove all registered Concerto files
+     * Remove all registered Composer files
      */
     clearScripts() {
         this.scripts = {};

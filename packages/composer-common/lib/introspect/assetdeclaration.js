@@ -23,7 +23,7 @@ const ClassDeclaration = require('./classdeclaration');
  * identifying field.
  * @private
  * @extends ClassDeclaration
- * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
+ * @see See [ClassDeclaration]{@link module:composer-common.ClassDeclaration}
  * @class
  * @memberof module:composer-common
  */

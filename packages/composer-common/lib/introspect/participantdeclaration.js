@@ -18,7 +18,7 @@ const ClassDeclaration = require('./classdeclaration');
 
 /** Class representing the definition of a Participant.
  * @extends ClassDeclaration
- * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
+ * @see See [ClassDeclaration]{@link module:composer-common.ClassDeclaration}
  * @private
  * @class
  * @memberof module:composer-common

@@ -23,7 +23,7 @@ const cmdUtil = require('../../utils/cmdutils');
 
 /**
  * <p>
- * Concerto network list command
+ * Composer network list command
  * </p>
  * <p><a href="diagrams/List.svg"><img src="diagrams/list.svg" style="width:100%;"/></a></p>
  * @private
@@ -32,7 +32,7 @@ class List {
 
   /**
     * Command process for network list command
-    * @param {string} argv argument list from concerto command
+    * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {

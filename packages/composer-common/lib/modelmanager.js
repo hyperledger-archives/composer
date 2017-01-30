@@ -22,15 +22,15 @@ const ModelFile = require('./introspect/modelfile');
 /**
  * <p>
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled
- * in a set of Concerto files. The contents of these files are managed
- * by the {@link ModelManager}. Each Concerto file has a single namespace and contains
+ * in a set of Composer files. The contents of these files are managed
+ * by the {@link ModelManager}. Each Composer file has a single namespace and contains
  * a set of asset, transaction and participant type definitions.
  * </p>
  * <p>
- * Concerto applications load their Concerto files and then call the {@link ModelManager#addModelFile addModelFile}
- * method to register the Concerto file(s) with the ModelManager. The ModelManager
- * parses the text of the Concerto file and will make all defined types available
- * to other Concerto services, such as the {@link Serializer} (to convert instances to/from JSON)
+ * Composer applications load their Composer files and then call the {@link ModelManager#addModelFile addModelFile}
+ * method to register the Composer file(s) with the ModelManager. The ModelManager
+ * parses the text of the Composer file and will make all defined types available
+ * to other Composer services, such as the {@link Serializer} (to convert instances to/from JSON)
  * and {@link Factory} (to create instances).
  * </p>
  * <p><a href="./diagrams-private/modelmanager.svg"><img src="./diagrams-private/modelmanager.svg" style="width:100%;"/></a></p>
@@ -43,7 +43,7 @@ class ModelManager {
      * Create the ModelManager.
      * <p>
      * <strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link Concerto}</strong>
+     * retrieve instances from {@link Composer}</strong>
      * </p>
      */
     constructor() {
@@ -62,14 +62,14 @@ class ModelManager {
     }
 
     /**
-     * Adds a Concerto file (as a string) to the ModelManager.
-     * Concerto files have a single namespace. If a Concerto file with the
+     * Adds a Composer file (as a string) to the ModelManager.
+     * Composer files have a single namespace. If a Composer file with the
      * same namespace has already been added to the ModelManager then it
      * will be replaced.
      * Note that if there are dependencies between multiple files the files
      * must be added in dependency order, or the addModelFiles method can be
      * used to add a set of files irrespective of dependencies.
-     * @param {string} modelFile - The Concerto file as a string
+     * @param {string} modelFile - The Composer file as a string
      * @throws {InvalidModelException}
      * @return {Object} The newly added model file (internal).
      */
@@ -87,11 +87,11 @@ class ModelManager {
     }
 
     /**
-     * Updates a Concerto file (as a string) on the ModelManager.
-     * Concerto files have a single namespace. If a Concerto file with the
+     * Updates a Composer file (as a string) on the ModelManager.
+     * Composer files have a single namespace. If a Composer file with the
      * same namespace has already been added to the ModelManager then it
      * will be replaced.
-     * @param {string} modelFile - The Concerto file as a string
+     * @param {string} modelFile - The Composer file as a string
      * @throws {InvalidModelException}
      * @returns {Object} The newly added model file (internal).
      */
@@ -115,7 +115,7 @@ class ModelManager {
     }
 
     /**
-     * Remove the Concerto file for a given namespace
+     * Remove the Composer file for a given namespace
      * @param {string} namespace - The namespace of the model file to
      * delete.
      */
@@ -127,8 +127,8 @@ class ModelManager {
     }
 
     /**
-     * Add a set of Concerto files to the model manager.
-     * @param {string[]} modelFiles - An array of Concerto files as
+     * Add a set of Composer files to the model manager.
+     * @param {string[]} modelFiles - An array of Composer files as
      * strings.
      * @returns {Object[]} The newly added model files (internal).
      */
@@ -222,7 +222,7 @@ class ModelManager {
     }
 
     /**
-     * Remove all registered Concerto files
+     * Remove all registered Composer files
      */
     clearModelFiles() {
         this.modelFiles = {};

@@ -19,7 +19,7 @@ const Field = require('./field');
 
 /** Class representing the definition of an Transaction.
  * @extends ClassDeclaration
- * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
+ * @see See [ClassDeclaration]{@link module:composer-common.ClassDeclaration}
  * @private
  * @class
  * @memberof module:composer-common
