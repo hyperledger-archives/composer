@@ -34,6 +34,9 @@ set-up-ssh --key "$encrypted_568b95f14ac3_key" \
            --iv "$encrypted_568b95f14ac3_iv" \
            --path-encrypted-key ".travis/github_deploy_key.enc"
 
+# Change from HTTPS to SSH.
+./.travis/fix_github_https_repo.sh
+
 # Push the code to npm.
 if [ -z "${TRAVIS_TAG}" ]; then
 

@@ -2,15 +2,15 @@
   <h4>Connection profiles</h4>
   <div class="row h-100 mt-2">
     <div class="col-sm-4 h-100">
-      <div class="list-group">
-        <button type="button" class="list-group-item list-group-item-action" *ngFor="let connectionProfile of connectionProfiles" [class.active]="connectionProfile === currentConnectionProfile" [class.disabled]="connectionProfile.default" [disabled]="connectionProfile.default" (click)="setCurrentConnectionProfile(connectionProfile)">
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-action" *ngFor="let connectionProfile of connectionProfiles" [class.active]="connectionProfile === currentConnectionProfile" [class.disabled]="connectionProfile.default" (click)="!connectionProfile.default && setCurrentConnectionProfile(connectionProfile)">
           <ng-container *ngIf="connectionProfile.default">Web browser</ng-container>
           <ng-container *ngIf="!connectionProfile.default">{{connectionProfile.name}}</ng-container>
           <button type="button" class="btn btn-danger btn-sm float-sm-right" (click)="deleteConnectionProfile(connectionProfile)" *ngIf="!connectionProfile.default" [disabled]="(connectionProfile.name === inUseConnectionProfile)">
             <span class="fa fa-trash" aria-hidden="true"></span>
           </button>
-        </button>
-      </div>
+        </li>
+      </ul>
       <br>
       <button type="button" class="btn btn-primary" (click)="addConnectionProfileModal.show()">
         <span class="fa fa-plus" aria-hidden="true"></span> Connection profile
@@ -56,7 +56,7 @@
     </div>
   </div>
 </div>
-<div bsModal #addConnectionProfileModal="bs-modal" class="modal fade" tabindex="-1">
+<div bsModal #addConnectionProfileModal="bs-modal" class="modal fade" tabindex="-1" (onShow)="onShow();">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
