@@ -3,7 +3,7 @@
 # Exit on first error, print all commands.
 set -ev
 
-# Grab the Concerto directory.
+# Grab the Composer directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Check that this is the right node.js version.
@@ -43,22 +43,3 @@ if [ -n "${TRAVIS_TAG}" ]; then
     echo "Skipping downstream push; build is tagged"
     exit 0
 fi
-
-# Push empty commits to downstream projects to trigger builds.
-# TODO: remove this 'exit 0' when we need to trigger downstream builds.
-exit 0
-REPO=`git config remote.origin.url`
-for PROJ in Concerto-System-Tests; do
-    cd ${DIR}
-    THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
-    for i in {1..5}; do
-        rm -rf temp
-        git clone -b ${TRAVIS_BRANCH} ${THISREPO} temp
-        cd temp
-        git config user.email "noreply@fabric-composer.org"
-        git config user.name "Fabric Composer"
-        git config push.default simple
-        git commit -m "Automated commit to trigger downstream build" --allow-empty
-        git push && break
-    done
-done

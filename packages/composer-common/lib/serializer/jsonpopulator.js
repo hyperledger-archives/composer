@@ -163,7 +163,7 @@ class JSONPopulator {
      * Converts a primtive object to JSON text.
      *
      * @param {Field} field - the field declaration of the object
-     * @param {Object} json - the JSON object to convert to a Concerto Object
+     * @param {Object} json - the JSON object to convert to a Composer Object
      * @return {string} the text representation
      */
     convertToObject(field, json) {

@@ -21,7 +21,7 @@ const sprintf = require('sprintf-js').sprintf;
 /** The json structure that has been specified in the configuration
  * @private
  * @param {Object} config JSON structure with specific configuration information
- * @param {Array} configElements array with the  DEBUG env variables for concerto
+ * @param {Array} configElements array with the  DEBUG env variables for composer
  *
  * @returns {Object} object that is the logger to use
   */

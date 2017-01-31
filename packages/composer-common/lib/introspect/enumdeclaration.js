@@ -20,7 +20,7 @@ const ClassDeclaration = require('./classdeclaration');
  * EnumDeclaration defines an enumeration of static values.
  * @private
  * @extends ClassDeclaration
- * @see See [ClassDeclaration]{@link module:concerto-common.ClassDeclaration}
+ * @see See [ClassDeclaration]{@link module:composer-common.ClassDeclaration}
  * @class
  * @memberof module:composer-common
  */

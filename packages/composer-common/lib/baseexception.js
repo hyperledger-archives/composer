@@ -15,7 +15,7 @@
 'use strict';
 
 /**
-* A base class for all Concerto exceptions
+* A base class for all Composer exceptions
 * <p><a href="./diagrams/baseexception.svg"><img src="./diagrams/baseexception.svg" style="width:100%;"/></a></p>
 * @extends Error
 * @class

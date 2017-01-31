@@ -25,7 +25,7 @@ const TEMPLATES_DIR = path.join(__dirname, './../../../../gen');
 
 /**
  * <p>
- * Concerto Tests command
+ * Composer Tests command
  * </p>
  * @private
  */
@@ -33,7 +33,7 @@ class Tests {
 
   /**
     * Command process for deploy command
-    * @param {string} argv argument list from concerto command
+    * @param {string} argv argument list from composer command
     * @return {Promise} promise when command complete
     */
     static handler(argv) {

@@ -51,9 +51,9 @@ class Api {
          * @example
          * // Get the factory.
          * var factory = getFactory();
-         * @method module:concerto-runtime#getFactory
+         * @method module:composer-runtime#getFactory
          * @public
-         * @return {module:concerto-runtime.Factory} The factory.
+         * @return {module:composer-runtime.Factory} The factory.
          */
         this.getFactory = function getFactory() {
             const method = 'getFactory';
@@ -76,11 +76,11 @@ class Api {
          *   .catch(function (error) {
          *     // Add optional error handling here.
          *   });
-         * @method module:concerto-runtime#getAssetRegistry
+         * @method module:composer-runtime#getAssetRegistry
          * @public
          * @param {string} id The ID of the asset registry.
          * @return {Promise} A promise. The promise is resolved with an {@link
-         * module:concerto-runtime.AssetRegistry AssetRegistry} instance
+         * module:composer-runtime.AssetRegistry AssetRegistry} instance
          * representing the asset registry if it exists. If the asset registry
          * does not exist, or the current user does not have access to the asset
          * registry, then the promise will be rejected with an error that describes
@@ -110,11 +110,11 @@ class Api {
          *   .catch(function (error) {
          *     // Add optional error handling here.
          *   });
-         * @method module:concerto-runtime#getParticipantRegistry
+         * @method module:composer-runtime#getParticipantRegistry
          * @public
          * @param {string} id The ID of the participant registry.
          * @return {Promise} A promise. The promise is resolved with an {@link
-         * module:concerto-runtime.ParticipantRegistry ParticipantRegistry} instance
+         * module:composer-runtime.ParticipantRegistry ParticipantRegistry} instance
          * representing the participant registry if it exists. If the participant registry
          * does not exist, or the current user does not have access to the participant
          * registry, then the promise will be rejected with an error that describes
@@ -147,9 +147,9 @@ class Api {
          *   // Throw an error as the current participant is not a driver.
          *   throw new Error('Current participant is not the first driver');
          * }
-         * @method module:concerto-runtime#getCurrentParticipant
+         * @method module:composer-runtime#getCurrentParticipant
          * @public
-         * @return {module:concerto-common.Resource} The current participant,
+         * @return {module:composer-common.Resource} The current participant,
          * or null if the transaction was submitted using an identity that does
          * not map to a participant.
          */

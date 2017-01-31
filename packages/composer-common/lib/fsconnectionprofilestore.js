@@ -26,9 +26,9 @@ const thenifyAll = require('thenify-all');
 const PROFILE_ROOT = (() => {
     const h = homedir();
     if (h) {
-        return path.resolve(h, '.concerto-connection-profiles');
+        return path.resolve(h, '.composer-connection-profiles');
     } else {
-        return path.resolve('/', '.concerto-connection-profiles');
+        return path.resolve('/', '.composer-connection-profiles');
     }
 })();
 const CONNECTION_FILE = 'connection.json';
@@ -38,12 +38,12 @@ const LOG = require('./log/logger').getLog('FSConnectionProfileStore');
 
 /**
  * Stores connection profiles on an attached fs fs.
- * The connection profiles are loaded from the ''<HOME_DIR>/concerto-connection-profiles/'
+ * The connection profiles are loaded from the ''<HOME_DIR>/composer-connection-profiles/'
  * directory.
  *
  * @private
  * @extends ConnectionProfileStore
- * @see See [ConnectionProfileStore]{@link module:concerto-common.ConnectionProfileStore}
+ * @see See [ConnectionProfileStore]{@link module:composer-common.ConnectionProfileStore}
  * @class
  * @memberof module:composer-common
  */

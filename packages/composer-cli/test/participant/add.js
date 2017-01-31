@@ -35,7 +35,7 @@ const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
-describe('concerto participant add CLI unit tests', () => {
+describe('composer participant add CLI unit tests', () => {
 
     let sandbox;
     let mockBusinessNetworkConnection;

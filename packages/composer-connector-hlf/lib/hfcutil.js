@@ -176,7 +176,7 @@ class HFCUtil {
 
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
         // must copy the chaincode to a temporary directory. We need to do this
-        // to handle the case where Concerto is installed into the global directory
+        // to handle the case where Composer is installed into the global directory
         // (npm install -g) and is therefore owned by the root user.
         return new Promise((resolve, reject) => {
             // Create a temporary directory to contain the chaincode.

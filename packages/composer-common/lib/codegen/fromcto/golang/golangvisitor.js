@@ -247,9 +247,9 @@ class GoLangVisitor {
     }
 
     /**
-     * Converts a Concerto type to a Go Lang type. Primitive types are converted
+     * Converts a Composer type to a Go Lang type. Primitive types are converted
      * everything else is passed through unchanged.
-     * @param {string} type  - the concerto type
+     * @param {string} type  - the composer type
      * @return {string} the corresponding type in Go Lang
      * @private
      */
@@ -273,8 +273,8 @@ class GoLangVisitor {
     }
 
     /**
-     * Converts a Concerto namespace to a Go package name.
-     * @param {string} namespace  - the concerto type
+     * Converts a Composer namespace to a Go package name.
+     * @param {string} namespace  - the composer type
      * @return {string} the corresponding package name in Go Lang
      * @private
      */

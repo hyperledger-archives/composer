@@ -40,7 +40,7 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Ensure that the connector has connected to IBM Concerto.
+     * Ensure that the connector has connected to Composer.
      * @return {Promise} A promise that is resolved when the connector has connected.
      */
     ensureConnected () {
@@ -95,7 +95,7 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Test the connection to IBM Concerto.
+     * Test the connection to Composer.
      * @param {function} callback the callback to call when complete.
      */
     ping (callback) {
@@ -284,8 +284,13 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+<<<<<<< HEAD
+     * Create an instance of an object in Composer. For assets, this method
+     * adds the asset to the default asset registry. For transactions, this method
+=======
      * Create an instance of an object in IBM Concerto. For assets or participants, this method
      * adds the asset or participant to the default asset or participant registry. For transactions, this method
+>>>>>>> 3492d3a9085db42435393b9b97e99bd272457dfe
      * submits the transaction for execution.
      * @param {string} modelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
@@ -298,8 +303,8 @@ class BusinessNetworkConnector extends Connector {
         // If the $class property has not been provided, add it now.
         if (!data.$class) {
             // Loopback doesn't like dots in the model names so the loopback bootscript needs to change them to underscores
-            // when it creates the schemas. (see <loopbackapp>/server/boot/concerto.js sample)
-            // So we need to change the underscores back to dots here for the concerto API.
+            // when it creates the schemas. (see <loopbackapp>/server/boot/composer.js sample)
+            // So we need to change the underscores back to dots here for the composer API.
             data.$class = modelName.replace(/_/g, '.');
         }
 
@@ -357,8 +362,8 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Get an instance of an object in IBM Concerto. For assets or participants, this method
-     * gets the asset or participant from the default asset or participant registry.
+     * Get an instance of an object in Composer. For assets, this method
+     * gets the asset from the default asset registry.
      * @param {string} modelName the fully qualified model name.
      * @param {string} id the identifier of the asset or participant to retrieve.
      * @param {Object} options the options provided by Loopback.
@@ -408,8 +413,13 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+<<<<<<< HEAD
+     * Update an instance of an object in Composer. For assets, this method
+     * updates the asset to the default asset registry.
+=======
      * Update an instance of an object in IBM Concerto. For assets or participants, this method
      * updates the asset or participant to the default asset or participant registry.
+>>>>>>> 3492d3a9085db42435393b9b97e99bd272457dfe
      * @param {string} modelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
      * @param {Object} options the options provided by Loopback.
@@ -466,8 +476,13 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+<<<<<<< HEAD
+     * Delete an instance of an object in Composer. For assets, this method
+     * updates the asset to the default asset registry.
+=======
      * Delete an instance of an object in IBM Concerto. For assets, or participants this method
      * updates the asset or participant to the default asset or participant registry.
+>>>>>>> 3492d3a9085db42435393b9b97e99bd272457dfe
      * @param {string} modelName the fully qualified model name.
      * @param {Object} id the identifier of the asset or participant to be removed.
      * @param {Object} options the options provided by Loopback.

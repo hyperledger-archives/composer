@@ -15,7 +15,7 @@
 'use strict';
 
 exports.command = 'network <subcommand>';
-exports.desc = 'Concerto network command';
+exports.desc = 'Composer network command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs.commandDir('network');
