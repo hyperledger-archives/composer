@@ -4,6 +4,7 @@ node_js:
     - '6'
 matrix:
     include:
+        - env: DOCS-IGNORE=full
         - env: SYSTEST=embedded
         - env: SYSTEST=web
         - env: SYSTEST=hlf SYSTEST_HLF=hlf
@@ -15,6 +16,10 @@ matrix:
           services:
             - docker
 dist: trusty
+addons:
+    apt:
+        packages:
+            - graphviz
 before_install: |
     set -ev
     set -o pipefail

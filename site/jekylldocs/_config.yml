@@ -1,16 +1,14 @@
-title: IBM Blockchain Framework
+title: Fabric Composer 
 description: Create business networks and application for Hyperledger
-author: Paul O'Mahoney
 
-email: mahoney@uk.ibm.com
-url: "http://pages.github.ibm.com/Blockchain-WW-Labs/Concerto"
+email: 
+url: "https://fabric-composer.github.io/fabric-composer/"
 
 
 #For publishing to your own gh-pages branch of the Docs repo this will need to
 #be the sitebaseurl - but the build scripts handle this for you.
 #
-#baseurl: "/WHITEMAT/Concerto-Docs"
-baseurl: "/Blockchain-WW-Labs/Concerto"
+#baseurl: "/"
 
 
 
