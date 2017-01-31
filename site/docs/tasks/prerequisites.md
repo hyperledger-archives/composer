@@ -42,7 +42,7 @@ ibm@ubuntu:~/Concerto-GettingStarted$ ./scripts/prereqs-ubuntu.sh docker
 ## Manual Installation
 
 ### 1. Installing an editor
-The Concerto project allows you to edit its project files with any editor.
+Fabric Composer allows you to edit its project files with any editor.
 
 However, we recommend either using Atom or Visual Studio Code as both have excellent support for Javascript
 development. We have even created an experimental CTO file syntax highlighting plugin for Atom.
