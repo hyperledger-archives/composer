@@ -15,7 +15,7 @@
 'use strict';
 
 exports.command = 'generator <subcommand>';
-exports.desc = 'Generate parts of an application';
+exports.desc = 'Composer generator command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs

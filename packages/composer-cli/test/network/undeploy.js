@@ -32,7 +32,7 @@ chai.use(require('chai-as-promised'));
 
 let mockAdminConnection;
 
-describe('concerto undeploy network CLI unit tests', function () {
+describe('composer undeploy network CLI unit tests', function () {
 
     let sandbox;
 

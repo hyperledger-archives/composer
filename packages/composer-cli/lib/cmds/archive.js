@@ -15,7 +15,7 @@
 'use strict';
 
 exports.command = 'archive <subcommand>';
-exports.desc = 'Concerto archive command';
+exports.desc = 'Composer archive command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs.commandDir('archive');
