@@ -1,7 +1,7 @@
 {
   "name": "fabric-composer-site",
   "version": "0.3.9",
-  "description": "Fabric Composer is a blockchain development framework: a library of assets/functions for creating blockchain-based applications.",
+  "description": "Fabric Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "scripts": {
     "doc": "npm run docpub && npm run docpriv",
     "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public -R JSDOC-README.md",
