@@ -1,22 +1,22 @@
 ---
 layout: default
-title: Concerto Identity Revoke Command
+title: Fabric Composer Identity Revoke Command
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Concerto Identity Revoke Command
+excerpt: Fabric Composer Identity Revoke Command
 ---
 
-# concerto identity revoke
+# composer identity revoke
 
-The `concerto identity issue` command revokes an existing identity from a participant in a
+The `composer identity issue` command revokes an existing identity from a participant in a
 participant registry. See the task [Revoke an Identity from a Participant](../tasks/identity-revoke.md)
 for a walkthrough of using this command or the API.
 
 ## Syntax
 
 ```
-$ concerto identity revoke
-concerto identity revoke [options]
+$ composer identity revoke
+composer identity revoke [options]
 
 Options:
   --help                       Show help  [boolean]

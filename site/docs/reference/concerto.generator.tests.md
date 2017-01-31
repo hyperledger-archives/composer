@@ -6,14 +6,14 @@ sidebar: sidebars/reference.md
 excerpt: Generator CLI
 ---
 
-# Concerto Generator
-The `concerto generator` utility is used to automatically generate parts of your project from your business network archive.
+# Fabric Composer Generator
+The `composer generator` utility is used to automatically generate parts of your project from your business network archive.
 
 ## Tests
-`concerto generator tests` generates a framework for testing the transactions in the business network archive. The test file uses `mocha` and `chai` and will be saved
+`composer generator tests` generates a framework for testing the transactions in the business network archive. The test file uses `mocha` and `chai` and will be saved
 
 ```
-concerto generator tests -d <project-directory> -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>
+composer generator tests -d <project-directory> -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>
 ```
 
 ### Options

@@ -17,44 +17,44 @@ The Concerto command line application can be installed using npm:
 
 ## Business Network management
 
-`concerto network deploy`
+`composer network deploy`
 
 Deploy a Business Network Definition: [concerto network deploy](./concerto.network.deploy.md)
 
-`concerto network list`
+`composer network list`
 
 List the contents of a deployed Business Network: [concerto network list](./concerto.network.list.md)
 
-`concerto network ping`
+`composer network ping`
 
 Test the connection to a deployed a Business Network: [concerto network ping](./concerto.network.ping.md)
 
-`concerto network update`
+`composer network update`
 
 Update a deployed Business Network: [concerto network update](./concerto.network.update.md)
 
 ## Participant and Identity management
 
-`concerto participant add`
+`composer participant add`
 
 Adds a participant to a participant registry: [concerto participant add](./concerto.participant.add.md)
 
-`concerto identity issue`
+`composer identity issue`
 
 Issue an identity to a participant: [concerto identity issue](./concerto.identity.issue.md)
 
-`concerto identity revoke`
+`composer identity revoke`
 
 Revoke an identity from a participant: [concerto identity revoke](./concerto.identity.revoke.md)
 
 ## Transaction execution
 
-`concerto transaction submit`
+`composer transaction submit`
 
 Submit a transaction for execution: [concerto transaction submit](./concerto.transaction.submit.md)
 
 ## Development accelerators
 
-`concerto generator tests`
+`composer generator tests`
 
 Generate tests for a Business Network Definition: [concerto generator tests](./concerto.generator.tests.md)
