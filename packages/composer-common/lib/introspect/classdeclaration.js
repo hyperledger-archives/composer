@@ -146,12 +146,13 @@ class ClassDeclaration {
             if(classDecl===null) {
                 throw new IllegalModelException('Could not find super type ' + this.superType);
             }
-            else {
-                // check that assets only inherit from assets etc.
-                if( Object.getPrototypeOf(classDecl) !== Object.getPrototypeOf(this)) {
-                    throw new Error('Invalid super type for ' + this.name + ' is must be of type ' + Object.getPrototypeOf(this) );
-                }
-            }
+            // TODO (DCS)
+            // else {
+            //     // check that assets only inherit from assets etc.
+            //     if( Object.getPrototypeOf(classDecl) !== Object.getPrototypeOf(this)) {
+            //         throw new Error('Invalid super type for ' + this.name + ' is must be of type ' + Object.getPrototypeOf(this) );
+            //     }
+            // }
         }
 
         if(this.idField) {
@@ -263,7 +264,7 @@ class ClassDeclaration {
      * @return {string} the fully-qualified name of this class
      */
     getFullyQualifiedName() {
-        return this.getModelFile().getNamespace() + '.' + this.name;
+        return this.modelFile.getNamespace() + '.' + this.name;
     }
 
     /**
