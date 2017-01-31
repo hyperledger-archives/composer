@@ -18,8 +18,6 @@ if [ "${DOCS}" != "" ]; then
 	cd ${DIR}/site
 	npm install
 	npm run full
-
-
 # Are we running system tests?
 elif [ "${SYSTEST}" != "" ]; then
 
