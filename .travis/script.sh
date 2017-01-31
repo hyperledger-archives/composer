@@ -14,13 +14,13 @@ if [ -r "/etc/init.d/xvfb" ]; then
 fi
 
 
-if [ "${DOCS}" != "" ] then
-	cd ${DIR}/site 
+if [ "${DOCS}" != "" ]; then
+	cd ${DIR}/site
 	npm run full
-	
-	
+
+
 # Are we running system tests?
-elif [ "${SYSTEST}" != "" ] then
+elif [ "${SYSTEST}" != "" ]; then
 
     # Run the system tests.
     ${DIR}/packages/composer-systests/scripts/run-system-tests.sh
