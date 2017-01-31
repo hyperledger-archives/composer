@@ -265,6 +265,16 @@ Navigation
   transition: all 0.3s ease;
 }
 
+.main-nav p {
+  display: block;
+  padding: 1em;
+  border-bottom: 1px dotted rgba(255,255,255,0.2);
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+
 .main-nav a.active {
   color: #5aadbb;
   font-weight: 700;
@@ -304,6 +314,21 @@ Navigation
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+    padding-bottom: 0.5em;
+}
+
+.jumbotron.clearfix {
+    padding-bottom: 2em;
+}
+
+.jumbotron p {
+  margin: 0 1em;
+  font-weight: 200;
+  font-size: 1em;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #fff;
 }
 
 .illustration {
@@ -1568,7 +1593,7 @@ Button,
 
 /* hide back of pane during swap
 display: flex;
-justify-content: center; 
+justify-content: center;
 align-items: center;
 
 */
