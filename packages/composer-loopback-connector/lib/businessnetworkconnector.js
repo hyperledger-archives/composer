@@ -284,13 +284,8 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-<<<<<<< HEAD
      * Create an instance of an object in Composer. For assets, this method
      * adds the asset to the default asset registry. For transactions, this method
-=======
-     * Create an instance of an object in IBM Concerto. For assets or participants, this method
-     * adds the asset or participant to the default asset or participant registry. For transactions, this method
->>>>>>> 3492d3a9085db42435393b9b97e99bd272457dfe
      * submits the transaction for execution.
      * @param {string} modelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
@@ -413,13 +408,8 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-<<<<<<< HEAD
      * Update an instance of an object in Composer. For assets, this method
      * updates the asset to the default asset registry.
-=======
-     * Update an instance of an object in IBM Concerto. For assets or participants, this method
-     * updates the asset or participant to the default asset or participant registry.
->>>>>>> 3492d3a9085db42435393b9b97e99bd272457dfe
      * @param {string} modelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
      * @param {Object} options the options provided by Loopback.
@@ -476,13 +466,8 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-<<<<<<< HEAD
      * Delete an instance of an object in Composer. For assets, this method
      * updates the asset to the default asset registry.
-=======
-     * Delete an instance of an object in IBM Concerto. For assets, or participants this method
-     * updates the asset or participant to the default asset or participant registry.
->>>>>>> 3492d3a9085db42435393b9b97e99bd272457dfe
      * @param {string} modelName the fully qualified model name.
      * @param {Object} id the identifier of the asset or participant to be removed.
      * @param {Object} options the options provided by Loopback.
