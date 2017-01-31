@@ -1,6 +1,6 @@
 {
   "name": "composer-admin",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Fabric Composer admin, code that manages business networks",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -43,8 +43,8 @@
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "composer-common": "^0.4.0",
-    "composer-connector-hlf": "^0.4.0"
+    "composer-common": "^0.4.1",
+    "composer-connector-hlf": "^0.4.1"
   },
   "license-check-config": {
     "src": [
