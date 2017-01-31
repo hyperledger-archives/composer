@@ -1,6 +1,6 @@
 {
   "name": "generator-fabric-composer",
-  "version": "0.3.12",
+  "version": "0.4.1",
   "description": "Generates skeleton projects from Fabric Composer business network definitions",
   "files": [
     "generators/app"
@@ -9,7 +9,11 @@
     "yeoman-generator"
   ],
   "dependencies": {
+<<<<<<< HEAD
     "composer-client": "^0.4.0",
+=======
+    "composer-client": "^0.4.1",
+>>>>>>> b6a0727e22188c5d43b8dedd5ec8d16080905fb7
     "bower": "^1.8.0",
     "fs": "0.0.1-security",
     "shelljs": "^0.7.5",

@@ -13,7 +13,8 @@ if [ -r "/etc/init.d/xvfb" ]; then
     sh -e /etc/init.d/xvfb start
 fi
 
-# are we building the docs
+
+# are we building the docs?
 if [ "${DOCS}" != "" ]; then
 	cd ${DIR}/site
 	npm install
