@@ -16,6 +16,7 @@ fi
 
 if [ "${DOCS}" != "" ]; then
 	cd ${DIR}/site
+	npm install
 	npm run full
 
 
