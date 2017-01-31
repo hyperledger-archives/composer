@@ -3,10 +3,10 @@ let yeoman = require('yeoman-generator');
 // let fs = require('fs');
 let shell = require('shelljs');
 
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 let businessNetworkConnection = new BusinessNetworkConnection();
-const FileWriter = require('@ibm/concerto-common').FileWriter;
-const TypescriptVisitor = require('@ibm/concerto-common').TypescriptVisitor;
+const FileWriter = require('composer-common').FileWriter;
+const TypescriptVisitor = require('composer-common').TypescriptVisitor;
 
 let businessNetworkDefinition;
 let businessNetworkIdentifier;
