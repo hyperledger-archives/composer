@@ -1,5 +1,6 @@
 # Fabric Composer API
-Fabric Composer  is an application development framework for building blockchain applications based on Hyperledger. This is the API JSDoc for the Concerto Client, Admin and Runtime Javascript APIs.
+Fabric Composer  is an application development framework for building blockchain applications based on Hyperledger. This is the API JSDoc for the Fabric Composer Client, Admin and Runtime Javascript APIs.
+
 
 ## Overview
 The major components of Fabric Composer are:

@@ -19,18 +19,18 @@ The recommended versions are:
 
 ## Automatic Installation
 
-The script to install the pre-requisites can be found in [Concerto-GettingStarted](https://github.ibm.com/Blockchain-WW-Labs/Concerto-GettingStarted) under [scripts](https://github.ibm.com/Blockchain-WW-Labs/Concerto-GettingStarted/tree/develop/scripts) and is named [prereqs-ubuntu.sh](https://github.ibm.com/Blockchain-WW-Labs/Concerto-GettingStarted/blob/develop/scripts/prereqs-ubuntu.sh).
+The script to install the pre-requisites can be found in [GettingStarted](https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started) under [scripts](https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started/scripts) and is named [prereqs-ubuntu.sh](https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/scripts/prereqs-ubuntu.sh).
 
 Usage:
 
 ```bash
 # First run the script
-ibm@ubuntu:~/Concerto-GettingStarted$ ./scripts/prereqs-ubuntu.sh
+ibm@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh
 
 # IMPORTANT: You will then need to logout and login again before running the next command
 
 # Finishes the installation process
-ibm@ubuntu:~/Concerto-GettingStarted$ ./scripts/prereqs-ubuntu.sh docker
+ibm@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh docker
 ```
 
 
@@ -48,7 +48,7 @@ However, we recommend either using Atom or Visual Studio Code as both have excel
 development. We have even created an experimental CTO file syntax highlighting plugin for Atom.
 
 ### 1.1 Atom
-[Atom](https://atom.io/) is a very popular editor and several [contributors](https://github.ibm.com/orgs/Blockchain-WW-Labs/teams/technical-team) use it. Install Atom, and when you have done so, you are required to turn off Google analytics if you work for IBM. Navigate to Atom->Preferences->Packages, search and find the `metrics` package and disable it.
+[Atom](https://atom.io/) is a very popular editor and several contributors use it. Install Atom, and when you have done so, you are required to turn off Google analytics if you work for IBM. Navigate to Atom->Preferences->Packages, search and find the `metrics` package and disable it.
 
 ####Installation Commands for Ubuntu:
 
@@ -63,7 +63,7 @@ sudo apt-get update
 # Install Atom
 sudo apt-get -y install atom
 ```
-####Suggested Pluginss
+####Suggested Plugins
 Atom is at it's most productive would used with a number of plugins. The ones that we have found to be most useful are below and would suggest that you install these when with developing.
 
 - *Code Highlighting*  On top of the existing code highlighting support there is a plugin for model file highlighting. [Atom Concerto Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom)

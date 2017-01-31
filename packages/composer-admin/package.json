@@ -1,7 +1,7 @@
 {
   "name": "composer-admin",
   "version": "0.4.1",
-  "description": "Fabric Composer admin, code that manages business networks",
+  "description": "Fabric Composer Admin, code that manages business networks deployed to Hyperledger Fabric",
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
