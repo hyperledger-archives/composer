@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Concerto Command Line
+title: Fabric Composer Command Line
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Concerto Command Line
+excerpt: Fabric Composer Command Line
 ---
 
-# Concerto Command Line
+# Fabric Composer Command Line
 
-The Concerto command line application, `concerto`, can be used to perform multiple
+The Fabric Composer command line application, `composer`, can be used to perform multiple
 administrative, operational, and development tasks.
 
 The Concerto command line application can be installed using npm:
