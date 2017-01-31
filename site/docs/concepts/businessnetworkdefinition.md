@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Concerto - Business Network Definition
+title: Fabric Composer - Business Network Definition
 category: concepts
 sidebar: sidebars/concepts.md
 excerpt: Overview of the Business Network Definition
 ---
 # Business Network Definition
 
-Business Network Definitions are a key concept of the Concerto programming model. They are represented by the `BusinessNetworkDefinition` class, defined in the `ibm-concerto-common` module and exported by both `ibm-concerto-admin` and `ibm-concerto-client`.
+Business Network Definitions are a key concept of the Fabric Composer programming model. They are represented by the `BusinessNetworkDefinition` class, defined in the `composer-common` module and exported by both `composer-admin` and `composer-client`.
 
 Business Network Definitions are composed of:
 
@@ -20,4 +20,4 @@ The model files are typically created by business analysts, as they define the s
 
 The Javascript files are typically created by developers who are implementing business requirements provided by business analysts.
 
-Once defined, a Business Network Definition can be packaged into an archive using the `concerto` command line interface. These archives can then be deployed, undeployed or updated on a Fabric, using the `AdminConnection` class from the `ibm-concerto-admin` module.
+Once defined, a Business Network Definition can be packaged into an archive using the `composer` command line interface. These archives can then be deployed, undeployed or updated on a Fabric, using the `AdminConnection` class from the `composer-admin` module.

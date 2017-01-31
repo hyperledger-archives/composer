@@ -295,7 +295,7 @@ describe('Test Model', function(){
             let txDecl = modelFile.getTransactionDeclaration('VehicleTransferredToScrapMerchant');
             txDecl.should.not.be.null;
             txDecl.getName().should.equal('VehicleTransferredToScrapMerchant');
-            txDecl.getProperties().length.should.equal(3);
+            txDecl.getProperties().length.should.equal(4);
             let scrapMerchantField = txDecl.getProperty('scrapMerchant');
             (scrapMerchantField !== null).should.be.true;
             scrapMerchantField.getName().should.equal('scrapMerchant');

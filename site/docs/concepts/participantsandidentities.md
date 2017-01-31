@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Concerto - Participants and Identities
+title: Fabric Composer - Participants and Identities
 category: concepts
 sidebar: sidebars/concepts.md
 excerpt: Business Network

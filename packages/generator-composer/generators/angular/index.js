@@ -54,7 +54,7 @@ module.exports = yeoman.Base.extend({
                 type: 'input',
                 name: 'appDescription',
                 message: 'Short description:',
-                default: 'Test Concerto project',
+                default: 'Skeleton Fabric Composer angular2 project',
                 store: false,
                 validate: function(input) {
                     if(input !== null && input !== undefined && input !== '') {
@@ -92,7 +92,7 @@ module.exports = yeoman.Base.extend({
                 name: 'networkIdentifier',
                 message: 'What is the Business Network Identifier?:',
                 default: 'org.acme.biznet',
-                store: false,
+                store: true,
                 when: function(answers) {
                     return !answers.isNpmSameAsNetworkIdentifier;
                 },
