@@ -61,6 +61,7 @@ class BusinessNetworkConnector extends Connector {
      */
     connect (callback) {
         debug('connect', callback);
+        console.log('CONNECTING...'+JSON.stringify(this.settings));
         this.connecting = true;
         this.connected = false;
         this.connectionPromise = this.businessNetworkConnection
@@ -70,7 +71,11 @@ class BusinessNetworkConnector extends Connector {
                 this.settings.participantPwd
             )
             .then((result) => {
+                // setup some objects for this business network
                 this.businessNetworkDefinition = result;
+                this.serializer = this.businessNetworkDefinition.getSerializer();
+                this.modelManager = this.businessNetworkDefinition.getModelManager();
+                this.introspector = this.businessNetworkDefinition.getIntrospector();
             })
             .then(() => {
                 this.connected = true;
@@ -134,7 +139,7 @@ class BusinessNetworkConnector extends Connector {
         this.ensureConnected()
             .then(() => {
                 let models = [];
-                let modelClassDeclarations = this.businessNetworkDefinition.getIntrospector().getClassDeclarations();
+                let modelClassDeclarations = this.introspector.getClassDeclarations();
                 modelClassDeclarations
                     .forEach((modelClassDeclaration) => {
                         if ((modelClassDeclaration instanceof TransactionDeclaration), ((modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
@@ -164,8 +169,7 @@ class BusinessNetworkConnector extends Connector {
         debug('discoverSchemas', object, options);
         this.ensureConnected()
             .then(() => {
-                let introspector = this.businessNetworkDefinition.getIntrospector();
-                let classDeclaration = introspector.getClassDeclaration(object);
+                let classDeclaration = this.introspector.getClassDeclaration(object);
                 let visitor = new LoopbackVisitor();
                 let schema = classDeclaration.accept(visitor, {
                     first : true,
@@ -179,64 +183,104 @@ class BusinessNetworkConnector extends Connector {
             });
     }
 
+
     /**
-     * Retrieves all the instances of objects in IBM Concerto.
-     * @param {string} modelName The name of the model.
+     * Retrieves all the instances of objects in the Business Network.
+     * @param {string} lbModelName The name of the model.
+     * @param {string} whereFilter The filter of which objects to get
      * @param {Object} options The options provided by Loopback.
      * @param {function} callback The callback to call when complete.
-
      */
-    all (modelName, options, callback) {
-        debug('all', modelName, options, callback);
-        let model = modelName.replace(/_/g, '.');
+    all(lbModelName, whereFilter, options, callback) {
+        debug('all', lbModelName, whereFilter, options);
+        let composerModelName = lbModelName.replace(/_/g, '.');
         let results = [];
         this.ensureConnected()
             .then(() => {
-                let serializer = this.businessNetworkConnection.getBusinessNetwork().getSerializer();
+                this.getRegistryForModel(composerModelName, (error, registry) => {
 
-                let modelManager = this.businessNetworkDefinition.getModelManager();
-                let classDeclaration = modelManager.getType(modelName);
+                    // No filter so get all
+                    if(Object.keys(whereFilter).length === 0) {
+                        registry.getAll()
+                            .then((result) => {
+                                result.forEach((res) => {
+                                    results.push(this.serializer.toJSON(res));
+                                });
+                                callback(null, results);
+                            })
+                            .catch((error) => {
+                                callback(error);
+                            });
 
-                if (classDeclaration instanceof AssetDeclaration) {
-                    this.businessNetworkConnection.getAssetRegistry(model)
-                        .then((assetRegistry) => {
-                            assetRegistry.getAll()
+                    } else {
+                        // Check we have the right identifier for the object type
+                        let identifierFieldName = Object.keys(whereFilter.where)[0];
+                        if(this.isValidId(composerModelName, identifierFieldName)) {
+                            let objectId = whereFilter.where[identifierFieldName];
+                            registry.get(objectId)
                                 .then((result) => {
-                                    result.forEach((res) => {
-                                        results.push(serializer.toJSON(res));
-                                    });
+                                    results.push(this.serializer.toJSON(result));
                                     callback(null, results);
+                                })
+                                .catch((error) => {
+                                    callback(error);
                                 });
-                        })
-                        .catch((error) => {
-                            console.log('ERR: ' + error);
-                            callback(error);
-                        });
-                } else if (classDeclaration instanceof ParticipantDeclaration) {
-                    this.businessNetworkConnection.getParticipantRegistry(model)
-                        .then((participantRegistry) => {
-                            return participantRegistry.getAll()
-                                .then((result) => {
-                                    result.forEach((res) => {
-                                        results.push(serializer.toJSON(res));
-                                    });
-                                    callback(null, results);
-                                });
-                        })
-                        .catch((error) => {
-                            console.log('ERR: ' + error);
-                            callback(error);
-                        });
-                } else {
-                    // For everything else, we blow up!
-                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
-                }
+
+                        } else {
+                            callback('ERROR: the specified filter does not match the identifier in the model');
+                        }
+                    }
+                });
             })
             .catch((error) => {
-                debug('all', 'error thrown doing all', error);
+                //console.log('ERR: '+error);
                 callback(error);
             });
+    }
 
+    /**
+     * Check that the identifier provided matches that in the model.
+     * @param {string} modelName The fully qualified Composer model name.
+     * @param {id} id The filter to identify the asset or participant to be removed.
+     * @return {boolean} true if the identifier is valid, false otherwise
+     */
+    isValidId(modelName, id) {
+        debug('isValidId', modelName, id);
+        let classDeclaration = this.introspector.getClassDeclaration(modelName);
+        if(classDeclaration.getIdentifierFieldName() === id) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * Retrieves all the instances of objects in IBM Concerto.
+     * @param {string} modelName The name of the model.
+     * @param {Object} callback The callback to call with the result.
+     */
+    getRegistryForModel(modelName, callback) {
+        debug('all', modelName);
+        let classDeclaration = this.modelManager.getType(modelName);
+        if (classDeclaration instanceof AssetDeclaration) {
+            this.businessNetworkConnection.getAssetRegistry(modelName)
+                .then((assetRegistry) => {
+                    callback(null, assetRegistry);
+                });
+        } else if (classDeclaration instanceof ParticipantDeclaration) {
+            this.businessNetworkConnection.getParticipantRegistry(modelName)
+                .then((participantRegistry) => {
+                    callback(null, participantRegistry);
+                });
+        } else if (classDeclaration instanceof TransactionDeclaration) {
+            this.businessNetworkConnection.getTransactionRegistry(modelName)
+                .then((transactionRegistry) => {
+                    callback(null, transactionRegistry);
+                });
+        } else {
+            callback('Error: No registry for specified model name');
+        }
     }
 
     /**
