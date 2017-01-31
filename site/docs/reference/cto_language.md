@@ -1,16 +1,16 @@
 ---
 layout: default
-title: Concerto - Modeling Language
+title: Fabric Composer - Modeling Language
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Guide to the Concerto modeling language
+excerpt: Guide to the Fabric Composer modeling language
 ---
-# Concerto Modeling Language
+# Fabric Composer Modeling Language
 
-Concerto includes an Object-Oriented modeling language that is used to define
+Fabric Composer includes an Object-Oriented modeling language that is used to define
 the domain model for a business network definition.
 
-A Concerto CTO file is composed of the following elements:
+A Fabric Composer CTO file is composed of the following elements:
 
 1. A single namespace. All resource declarations within the file are implicitly
 in this namespace.
@@ -37,7 +37,7 @@ Assets, Participants and Transactions are class definitions. The
 concepts of Asset, Participant and Transaction may be considered to be different
 stereotypes of the class type.
 
-A class in Concerto is referred to as a Resource Definition. Therefore an
+A class in Fabric Composer is referred to as a Resource Definition. Therefore an
 Asset (instance) has-an Asset Definition.
 
 A resource definition has the following properties:
@@ -204,4 +204,3 @@ asset Vehicle extends Base {
   o Customer customer
 }
 ```
-

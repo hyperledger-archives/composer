@@ -12,7 +12,7 @@ An identity can be revoked from a participant using either the API or the comman
 Once an identity has been revoked, the identity can no longer be used by the participant
 to interact with the business network in the context of that participant.
 
-The IBM Blockchain Framework issues identities as Hyperledger Fabric enrollment
+Fabric Composer issues identities as Hyperledger Fabric enrollment
 certificates (ECerts). When an identity is revoked, the enrollment certificate is
 still valid, but it cannot be used to interact with the business network. This is
 due to a current limitation in Hyperledger Fabric that does not allow the IBM
@@ -57,5 +57,5 @@ The example also assumes that an identity `maeid1` has been issued to that parti
   * Command line
 
     ```bash
-    concerto identity revoke -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1
+    composer identity revoke -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1
     ```

@@ -7,7 +7,7 @@ excerpt: How to deploy a Business Network
 ---
 
 # Deploying a Business Network
-A business network is deployed using the `concerto network deploy` command.
+A business network is deployed using the `composer network deploy` command.
 
 ## Procedure
 1. Before deploying a business network, a [Business Network Definition]() is needed as a `zip` file with the following structure:
@@ -22,20 +22,20 @@ A business network is deployed using the `concerto network deploy` command.
     ```
 
     -	**lib** contains all of the transactions processor functions
-    -	**models** contains all of the model files written in the [Concerto Language](../reference/cto_language.md).
+    -	**models** contains all of the model files written in the [CTO Language](../reference/cto_language.md).
     -	**package.json** is required, and is used to create the [Business Network Definition](../reference/businessnetworkdefinition.md)'s identifier
 
-    You can use the `concerto archive` command to create an archive with the correct format.
+    You can use the `composer archive` command to create an archive with the correct format.
 
     **NOTE**: *Do not zip a a folder containing **lib**, **models**, and **package.json** to create an Business Network Archive, zip the contents themselves*
 
 2. Start [Hyperledger Fabric Peer and Membership Service]()
 
-3. [Create a Connection Profile](createconnectionprofile.md) or do *not* use `-p` and allow Concerto to create a `Default Connection Profile` for you.
+3. [Create a Connection Profile](createconnectionprofile.md) or do *not* use `-p` and allow Fabric Composer to create a `Default Connection Profile` for you.
 
 4. Enter the command on a single line. For example:
 
-    `concerto network deploy -a <BusinessNetworkDefinition>.zip -i <Your EnrollmentID>`
+    `composer network deploy -a <BusinessNetworkDefinition>.zip -i <Your EnrollmentID>`
 
 5. Enter your Enrollment Secret when prompted.
 
