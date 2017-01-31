@@ -20,7 +20,7 @@ const LOG = Logger.getLog('Factory');
 
 /**
  * Do not attempt to create an instance of this class.<br>
- * You must use the {@link module:concerto-runtime#getFactory getFactory}
+ * You must use the {@link module:composer-runtime#getFactory getFactory}
  * method instead.
  *
  * @class Factory
@@ -52,7 +52,7 @@ class Factory {
          * properties of the new instance should be set as standard JavaScript
          * object properties. The new instance can then be stored in a registry
          * using the appropriate registry APIs, for example {@link
-         * module:concerto-runtime.AssetRegistry AssetRegistry}.
+         * module:composer-runtime.AssetRegistry AssetRegistry}.
          * @example
          * // Get the factory.
          * var factory = getFactory();
@@ -62,7 +62,7 @@ class Factory {
          * vehicle.colour = 'BLUE';
          * vehicle.manufacturer = 'Toyota';
          * @public
-         * @method module:concerto-runtime.Factory#newInstance
+         * @method module:composer-runtime.Factory#newInstance
          * @param {string} ns The namespace of the resource to create.
          * @param {string} type The type of the resource to create.
          * @param {string} id The identifier of the new resource.
@@ -90,7 +90,7 @@ class Factory {
          * // Set the relationship as the value of the vehicle property of the driver.
          * driver.vehicle = vehicle;
          * @public
-         * @method module:concerto-runtime.Factory#newRelationship
+         * @method module:composer-runtime.Factory#newRelationship
          * @param {string} ns The namespace of the resource referenced by the relationship.
          * @param {string} type The type of the resource referenced by the relationship.
          * @param {string} id The identifier of the resource referenced by the relationship.

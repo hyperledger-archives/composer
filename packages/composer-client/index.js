@@ -17,23 +17,23 @@
 
 /**
 * <p>
-* The ibm-concerto-client module. Defines the client API for Concerto.
+* The composer-client module. Defines the client API for Composer.
 * </p>
 * <p>
-* Concerto is a framework for creating blockchain backed digital networks and
+* Composer is a framework for creating blockchain backed digital networks and
 * exchanging assets between participants via processing transactions.
 * </p>
- * <p>
- * Applications interact with the framework by instantiating the {@link BusinessNetworkConnection}
- * class.
- * </p>
- * @module ibm-concerto-client
- */
+* <p>
+* Applications interact with the framework by instantiating the {@link BusinessNetworkConnection}
+* class.
+* </p>
+* @module composer-client
+*/
 
 module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
 
 /**
- * Expose key concerto-common classes to simplify client application dependencies
+ * Expose key composer-common classes to simplify client application dependencies
  * @ignore
  */
 module.exports.Logger = require('composer-common').Logger;

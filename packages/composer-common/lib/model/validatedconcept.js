@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -19,17 +23,17 @@ const TypedStack = require('../serializer/typedstack');
  * specifies a set of properites (which themselves have types).
  * </p>
  * <p>
- * Type information in Concerto is used to validate the structure of
+ * Type information in Composer is used to validate the structure of
  * Resource instances and for serialization.
  * </p>
  * <p>
- * Resources are used in Concerto to represent Assets, Participants, Transactions and
+ * Resources are used in Composer to represent Assets, Participants, Transactions and
  * other domain classes that can be serialized for long-term persistent storage.
  * </p>
  * @extends Identifiable
- * @see See [Resource]{@link module:ibm-concerto-common.Resource}
+ * @see See [Resource]{@link module:composer-common.Resource}
  * @class
- * @memberof module:ibm-concerto-common
+ * @memberof module:composer-common
  */
 class ValidatedConcept extends Concept {
     /**

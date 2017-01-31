@@ -14,7 +14,7 @@ A Connection Profile is used by Concerto to connect to a running fabric. More in
 
 1. Navigate to the Connection Profile store:
     ```
-    cd $HOME/.concerto-connection-profiles
+    cd $HOME/.composer-connection-profiles
     ```
 2. Create a new profile folder
     ```

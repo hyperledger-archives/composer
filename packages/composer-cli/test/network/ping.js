@@ -28,7 +28,7 @@ const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const ENROLL_ID = 'SuccessKid';
 const ENROLL_SECRET = 'SuccessKidWin';
 
-describe('concerto network ping CLI unit tests', () => {
+describe('composer network ping CLI unit tests', () => {
 
     let sandbox;
     let mockBusinessNetworkConnection;

@@ -111,7 +111,7 @@ bb5db2ca4e6a hyperledger/fabric-peer
 The hex value after the dev-vp0 is the 'chaincodeid'. If you look in the connection profiles directory you'll see a simple JSON file that has the anem of the network mapped to the chaincode id. In this example we have two neworks listed.
 
 ```bash
-matthew@matthew-VirtualBox:~$ cat ~/.concerto-connection-profiles/defaultProfile/connection.json
+matthew@matthew-VirtualBox:~$ cat ~/.composer-connection-profiles/defaultProfile/connection.json
 {
     "type": "hlf",
     "membershipServicesURL": "grpc://localhost:7054",

@@ -20,7 +20,7 @@ const fs = require('fs');
 const sanitize = require('sanitize-filename');
 /**
  * <p>
- * Concerto Create Archive command
+ * Composer Create Archive command
  * </p>
  *
  * @private
@@ -29,7 +29,7 @@ class Create {
 
   /**
     * Command process for deploy command
-    * @param {string} argv argument list from concerto command
+    * @param {string} argv argument list from composer command
 
     * @return {Promise} promise when command complete
     */

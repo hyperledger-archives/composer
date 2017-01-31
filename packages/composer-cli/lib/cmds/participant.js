@@ -15,7 +15,7 @@
 'use strict';
 
 exports.command = 'participant <subcommand>';
-exports.desc = 'Concerto participant command';
+exports.desc = 'Composer participant command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs.commandDir('participant');

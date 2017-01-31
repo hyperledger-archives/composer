@@ -17,7 +17,7 @@
 /**
  * The runtime module provides the API that is made available to transaction
  * processing functions.
- * @module ibm-concerto-runtime
+ * @module composer-runtime
  */
 
 module.exports.Container = require('./lib/container');

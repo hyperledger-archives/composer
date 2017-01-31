@@ -22,7 +22,7 @@ const Identifiable = require('./identifiable');
 * a pointer that points at an instance of org.acme.Vehicle with the id
 * ABC.
 * @extends Identifiable
-* @see See [Identifiable]{@link module:concerto-common.Identifiable}
+* @see See [Identifiable]{@link module:composer-common.Identifiable}
 * @class
 * @memberof module:composer-common
 */

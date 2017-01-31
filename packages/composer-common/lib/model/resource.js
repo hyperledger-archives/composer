@@ -22,15 +22,15 @@ const Identifiable = require('./identifiable');
  * specifies a set of properites (which themselves have types).
  * </p>
  * <p>
- * Type information in Concerto is used to validate the structure of
+ * Type information in Composer is used to validate the structure of
  * Resource instances and for serialization.
  * </p>
  * <p>
- * Resources are used in Concerto to represent Assets, Participants, Transactions and
+ * Resources are used in Composer to represent Assets, Participants, Transactions and
  * other domain classes that can be serialized for long-term persistent storage.
  * </p>
  * @extends Identifiable
- * @see See [Resource]{@link module:concerto-common.Resource}
+ * @see See [Resource]{@link module:composer-common.Resource}
  * @class
  * @memberof module:composer-common
  */

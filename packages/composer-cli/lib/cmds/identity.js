@@ -15,7 +15,7 @@
 'use strict';
 
 exports.command = 'identity <subcommand>';
-exports.desc = 'Concerto identity command';
+exports.desc = 'Composer identity command';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs.commandDir('identity');

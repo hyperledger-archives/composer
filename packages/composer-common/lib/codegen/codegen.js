@@ -14,7 +14,7 @@
 
 'use strict';
 
-const BusinessNetworkDefinition = require('../businessnetwork');
+const BusinessNetworkDefinition = require('../businessnetworkdefinition');
 const GoLangVisitor = require('./fromcto/golang/golangvisitor');
 const JSONSchemaVisitor = require('./fromcto/jsonschema/jsonschemavisitor');
 const PlantUMLVisitor = require('./fromcto/plantuml/plantumlvisitor');
@@ -28,9 +28,9 @@ const program = require('commander');
  * and may be specified using the --format command line argument.
  *
  * node ./lib/codegen/codegen.js --format Go
- * --outputDir /Users/dselman/dev/git/Concerto/chaincode/src/concerto/gen
- * /Users/dselman/dev/git/Concerto/test/data/model/concerto.cto
- * /Users/dselman/dev/git/Concerto/test/data/model/carlease.cto
+ * --outputDir /Users/dselman/dev/git/Fabric-Composer/chaincode/src/fabric-composer/gen
+ * /Users/dselman/dev/git/Fabric-Composer/test/data/model/fabric-composer.cto
+ * /Users/dselman/dev/git/Fabric-Composer/test/data/model/carlease.cto
  */
 program
     .version('1.0')
