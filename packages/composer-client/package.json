@@ -1,7 +1,7 @@
 {
   "name": "composer-client",
   "version": "0.4.1",
-  "description": "The node.js client library for Fabric Composer, the Hyperledger Fabric development framework",
+  "description": "The node.js client library for Fabric Composer, a development framework for Hyperledger Fabric",
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {

@@ -1,30 +1,30 @@
 ---
 layout: default
-title: Getting Started with a Concerto node.js application
+title: Getting Started with a Fabric Composer node.js application
 category: start
 sidebar: sidebars/start.md
-excerpt: Getting Started with a Concerto node.js application
+excerpt: Getting Started with a Fabric Composer node.js application
 ---
-#Getting Started with a Concerto node.js application
+#Getting Started with a Fabric Composer node.js application
 
 We'll walk through the sample node.js applications here. The git repo is the GettingStarted repo that was cloned for the Getting Started.
-The [`landregistry.js`](https://github.ibm.com/Blockchain-WW-Labs/Concerto-GettingStarted/blob/develop/lib/landRegistry.js) file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.
+The [`landregistry.js`](https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/lib/landRegistry.js) file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.
 This has been implemented using a javascript class; however you are free to structure your code as you wish. The framework's API is agnostic to this.
 The application is also setup as a command line driven application using yargs (see the files in the cmd directory).
 
-We'll look at section of functionality in turn after first looking at the modules that are required and how to connect to a Concerto hosted application on the Hyperledger Fabirc.
+We'll look at section of functionality in turn after first looking at the modules that are required and how to connect to a Fabric Composer hosted application on the Hyperledger Fabric.
 
 ## Promises
-It's worth highlighting that the style of the API is to use promises. Typically Concerto APIs will return a promise that is resolved when the operation has been succesfully completed or with the result of the operation if applicable.
+It's worth highlighting that the style of the API is to use promises. Typically Fabric Composer APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.
 
-If you're not familar with Promise based development it's worth reviewing some of the tutorials online to get an idea. For example [https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics]
+If you're not familiar with Promise based development it's worth reviewing some of the tutorials online to get an idea. For example [https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics]
 
 ##  Modules required
 
 ```javascript
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 ```
-For a client application this is only Concerto require needed. In this getting started application we also use the `cli-table` and `winston` and `config` modules for support processing. We use these to get information from the command line options, formatting of output and logging.
+For a client application this is only Fabric Composer require needed. In this getting started application we also use the `cli-table` and `winston` and `config` modules for support processing. We use these to get information from the command line options, formatting of output and logging.
 
 ```javascript
 const winston = require('winston');
@@ -37,7 +37,7 @@ const LOG = winston.loggers.get('application');
 ```
 
 
-## Connecting to the Concerto Runtime
+## Connecting to the Fabric Composer Runtime
 We've split the code to connect into two parts, part in the constructor of the object and part in an initialization method. This is an implementation decision made for this example - you are free to structure this in the way that best suits your application. What's important is the API calls and the data.
 
 The key thing here is that we need to create a new BusinessNetworkConnection object; and get from application configuration, the connection profile and the business network identifier needed.
@@ -48,7 +48,7 @@ this.CONNECTION_PROFILE_NAME = config.get('connectionProfile');
 this.businessNetworkIdentifier = config.get('businessNetworkIdentifier');
 ```
 
-The first Concerto API call that we are going to make here, is the connect() API, to establish the connection to the Concerto runtime on the Hyperledger Fabric.
+The first Fabric Composer API call that we are going to make here, is the connect() API, to establish the connection to the Fabric Composer runtime on the Hyperledger Fabric.
 This API returns the businessNetworkDefinition if successful - which we hold onto.  The API takes, the connection profile name, business network identifier and participant details.
 
 ```javascript
@@ -61,7 +61,7 @@ this.bizNetworkConnection.connect(this.CONNECTION_PROFILE_NAME, this.businessNet
 For a client application this is all the essential setup that is required, from this point on it's up to what the application wants to do as to what APIs are called.
 
 ##Adding assets to a regsitry
-The Concerto runtime will create a default registry to store assets in. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. This `getAssetRegistry()` takes the fully qualified asset name as defined in the CTO model file (That's namespace plus asset name). It returns a promise that is resolved with the asset registry, which we hold onto.
+The Fabric Composer runtime will create a default registry to store assets in. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. This `getAssetRegistry()` takes the fully qualified asset name as defined in the CTO model file (That's namespace plus asset name). It returns a promise that is resolved with the asset registry, which we hold onto.
 
 ```javascript
 this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle')
@@ -132,7 +132,7 @@ this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandT
   return(table);
 })
 ```
-Most of this isn't Concerto API code - but it shows how to access the details of the objects that have been returned. At this point it's worth just looking again at the model.
+Most of this isn't Fabric Composer API code - but it shows how to access the details of the objects that have been returned. At this point it's worth just looking again at the model.
 
 ```
 asset LandTitle identified by titleId {
