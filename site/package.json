@@ -7,7 +7,7 @@
     "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public -R JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private -R JSDOC-README.md",
     "localpages": " npm run docpub && ./scripts/build-gh-pages.sh && ./scripts/run-jekyll-serve.sh",
-    "full" : " npm run doc && ./scripts/generate-uml.sh && ./scripts/setup-jekyll-serve.sh && ./scripts/build-gh-pages.sh"
+    "full" : " npm run doc && ./scripts/generate-uml.sh && ./scripts/setup-jekyll.sh && ./scripts/build-gh-pages.sh"
   },
   "repository": {
     "type": "git",
