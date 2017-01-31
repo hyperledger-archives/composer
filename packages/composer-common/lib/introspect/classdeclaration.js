@@ -146,10 +146,13 @@ class ClassDeclaration {
             if(classDecl===null) {
                 throw new IllegalModelException('Could not find super type ' + this.superType);
             }
+            else {
+                // check that assets only inherit from assets etc.
+                if( Object.getPrototypeOf(classDecl) !== Object.getPrototypeOf(this)) {
+                    throw new Error('Invalid super type for ' + this.name + ' is must be of type ' + Object.getPrototypeOf(this) );
+                }
+            }
         }
-
-        // TODO (DCS) we need to validate that the super type is compatible
-        // with this class. e.g. an asset cannot extend a transaction...
 
         if(this.idField) {
             const field = this.getProperty(this.idField);
@@ -172,6 +175,16 @@ class ClassDeclaration {
 
                 if(field.isOptional()) {
                     throw new IllegalModelException('Identifying fields cannot be optional.');
+                }
+            }
+        }
+        else {
+            if( this.isAbstract() === false && this.isEnum() === false && this.isConcept() === false) {
+                if( this.getIdentifierFieldName() === null) {
+                    let formatter = Globalize('en').messageFormatter('classdeclaration-validate-missingidentifier');
+                    throw new IllegalModelException( formatter({
+                        'class': this.name
+                    }));
                 }
             }
         }
@@ -250,7 +263,7 @@ class ClassDeclaration {
      * @return {string} the fully-qualified name of this class
      */
     getFullyQualifiedName() {
-        return this.modelFile.getNamespace() + '.' + this.name;
+        return this.getModelFile().getNamespace() + '.' + this.name;
     }
 
     /**
@@ -266,7 +279,14 @@ class ClassDeclaration {
         }
         else {
             if(this.getSuperType()) {
-                let classDecl = this.modelFile.getModelManager().getType(this.getSuperType());
+                // we first check our own modelfile, as we may be called from validate
+                // in which case our model file has not yet been added to the model modelManager
+                let classDecl = this.getModelFile().getLocalType(this.getSuperType());
+
+                // not a local type, so we try the model manager
+                if(!classDecl) {
+                    classDecl = this.modelFile.getModelManager().getType(this.getSuperType());
+                }
                 return classDecl.getIdentifierFieldName();
             }
             else {

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Concerto Generator CLI
+title: Fabric Composer Generator CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Generator CLI

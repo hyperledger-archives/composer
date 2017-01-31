@@ -3,7 +3,8 @@
   "version": "0.4.1",
   "description": "Generates skeleton projects from Fabric Composer business network definitions",
   "files": [
-    "generators/app"
+    "generators/app",
+    "generators/angular"
   ],
   "keywords": [
     "yeoman-generator"
