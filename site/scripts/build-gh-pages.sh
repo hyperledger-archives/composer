@@ -39,12 +39,12 @@ cd ${TODIR}/jekylldocs
 echo "About to build"
 echo ${TRAVIS_REPO_SLUG}
 
-if [ "${TRAVIS_REPO_SLUG}" == "Blockchain-WW-Labs/Concerto-Docs" ]; then #replace slug with Blockchain-WW-Labs
+#if [ "${TRAVIS_REPO_SLUG}" == "lockchain-WW-Labs/Concerto-Docs" ]; then #replace slug with Blockchain-WW-Labs
     echo "Main build"
     jekyll build
-else
-    echo "User build"
-    jekyll build --baseurl /${TRAVIS_REPO_SLUG}
-fi
+#else
+#    echo "User build"
+#    jekyll build --baseurl /${TRAVIS_REPO_SLUG}
+#fi
 
 pwd
