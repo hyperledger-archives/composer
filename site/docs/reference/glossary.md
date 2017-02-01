@@ -19,13 +19,13 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 More information is available internally to IBM is community website http://ibm.biz/BlockchainGang. This is  the one place for all IBMer enablement of Blockchain. The IBM external website is http://www.ibm.com/blockchain.
 
-# Concerto Narrative
+# Fabric Composer Narrative
 
 An **Economic Business Network** refers to the organizations that work together to take part in the digital business network. In many (all!) such networks there are multiple organisations that need to correlate their business process. In addition, in some industries, there are regulators that oversee the market. For example, within the food distribution network, the regulator is DEFRA in the UK or the Department of Agriculture in the US. To have a system that, for example, tracks food assets and the participants in the network, is very applicable to a Blockchain's quality of service. However, writing direct to the Hyperledger's core SDK requires a very low level API - and one that is not readily available or accessible to in-house developers. There is a high barrier to entry for practically solving business problems. So to help address this problem the ..tbc
 
-**Concerto**
+**Fabric Composer**
 
-The **IBM Concerto** solution framework has been developed to permit architects and developers to use a runtime, tooling, client and administration APIs, that runs utilising a Hyperledger blockchain to provide a business-centric programming model, the starting point for this is the ...tbc
+Fabric Composer has been developed to permit architects and developers to use a runtime, tooling, client and administration APIs, that runs utilising a Hyperledger blockchain to provide a business-centric programming model, the starting point for this is the ...tbc
 
 **Domain Specific Language** that they can use to describe the ...tbc
 
@@ -45,14 +45,14 @@ The **IBM Concerto** solution framework has been developed to permit architects 
 
 **Business Network Archive** that can be deployed as an administrative action to the Concerto system running on a Hyperledger fabric.
 
-# Development of a system using Concerto
+# Development of a system using Fabric Composer
 
 There are two 'phases' to running an application using the Concerto framework; the Business Network Definition should be deployed to a Hyperledger Fabric; then the application will run against this fabric, but using APIs applicable to the business model.
 
 The Concerto system is defined in a number of [modules](MeetTheModules.html).
 
-**Concerto Client API** This is the API that is used by applications to connect to a business network and submit transactions. These end applications might be either command line, gui web applications using for example Angular-2.  These APIs permit CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets for example.
+**Fabric Composer Client API** This is the API that is used by applications to connect to a business network and submit transactions. These end applications might be either command line, gui web applications using for example Angular-2.  These APIs permit CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets for example.
 
-**Concerto Admin API** is an administrative API to build admin applications. This can deploy and update business network definitions on the concerto fabric runtime.
+**Fabric Composer Admin API** is an administrative API to build admin applications. This can deploy and update business network definitions on the concerto fabric runtime.
 
 To facilitate the application development process there are helper tools to permit the development.

@@ -13,7 +13,7 @@ If something should ever go wrong with an application, what should you do about 
 
 Let's look at the Getting Started application, and use that to explain how to get diagnostics out of the Framework.
 
-Key Point: This is a framework - so your application will need to have it's own logging framework. Plus, your application could also have configuration information to control Concerto's own logging. Concerto does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
+Key Point: This is a framework - so your application will need to have it's own logging framework. Plus, your application could also have configuration information to control Fabric Composer's own logging. Concerto does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
 
 Note that the config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
 
@@ -22,10 +22,9 @@ There are two containers that are relevant to logging;
 - the one the application is running in, and
 - the chain code container that executes the transaction functions.
 
-
 ## Application
 
-Internally, the Concerto framework uses the [Winston](https://github.com/winstonjs/winston) node.js logging package by default, with an initial level of log points and destinations set up.
+Internally, Fabric Composer uses the [Winston](https://github.com/winstonjs/winston) node.js logging package by default, with an initial level of log points and destinations set up.
 
 ## Default Configuration
 
@@ -79,7 +78,7 @@ For example
 
 }
 ```
-The first section is specific to the Getting Started application, the second `ConcertoConfig` section is for the Concerto framework.
+The first section is specific to the Getting Started application, the second `ConcertoConfig` section is for the Fabric Composer.
 
 - `logger` is used to refer the module that does actual logging. default is implying that this is the winston framework
 - `config` is passed to the logger to control what it does.  So this section is specific to the logger in use.

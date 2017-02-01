@@ -17,6 +17,7 @@
         "classdeclaration-validate-identifiernotproperty": "Class {class} is identified by field ({idField}) but does not contain this property.",
         "classdeclaration-validate-identifiernotstring": "Class {class} is identified by field ({idField}) but the type of the field is not String.",
         "classdeclaration-validate-duplicatefieldname": "Class {class} has more than one field named ({fieldName}).",
+        "classdeclaration-validate-missingidentifier" : "Class {class} is not declared as abstract. It must define an identifying field.",
 
         "modelfile-constructor-unrecmodelelem": "Unrecognised model element {type}",
         "modelfile-resolvetype-undecltype": "Undeclared type {type} in {context}",

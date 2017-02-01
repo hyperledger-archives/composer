@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Concerto - Transaction Processor Functions
+title: Fabric Composer - Transaction Processor Functions
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Creating transaction processor functions in Javascript
 ---
 # Javascript Functions
 
-A Concerto Business Network Definition is composed of a set of model files
+A Fabric Composer Business Network Definition is composed of a set of model files
 and a set of scripts. The scripts may contain transaction processor
 functions that implement the transactions defined in the Business
 Network Definition's model files.
@@ -49,7 +49,7 @@ The script below defines two transaction processor functions, called `onAnimalMo
         }
         ```
 
-Transaction processor functions may use the APIs defined in the `ibm-concerto-runtime` module to access asset registries to create/read/update/delete assets. The `getCurrentParticipant` function may be called to determine the identity of the caller (identity used to submit a transaction for processing).
+Transaction processor functions may use the APIs defined in the `composer-runtime` module to access asset registries to create/read/update/delete assets. The `getCurrentParticipant` function may be called to determine the identity of the caller (identity used to submit a transaction for processing).
 
 ## Decorators
 

@@ -1,4 +1,4 @@
-# Composer-CLI
+# Fabric Composer CLI
 
 Set up the Composer command with
 
