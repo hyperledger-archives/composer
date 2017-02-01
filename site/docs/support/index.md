@@ -9,12 +9,10 @@ sidebar: sidebars/support.md
 
 See the options below to get help or support.
 
-Please review the FAQs below to see if your question is already answered, otherwise get in touch using the options below:
+## Stack Overflow
+
+Please post questions to StackOverflow. Tag questions with the [fabric-composer](http://stackoverflow.com/questions/tagged/fabric-composer) tag.
 
 ## Slack
 
-For questions, we use the [Fabric Composer](https://fabric-composer.slack.com/) Slack channel.
-
-## Stack Overflow
-
-Link tba
+Contributors use the [Fabric Composer](https://fabric-composer.slack.com/) Slack channel for ad-hoc communication.
