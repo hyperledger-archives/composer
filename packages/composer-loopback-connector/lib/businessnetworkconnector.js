@@ -283,6 +283,44 @@ class BusinessNetworkConnector extends Connector {
         }
     }
 
+
+    /**
+     * Updates the properties of the specified object in the Business Network.
+     * This function is called by the PATCH API.
+     * @param {string} lbModelName The name of the model.
+     * @param {string} objectId The id of the object to update
+     * @param {Object} data The object data to use for modification
+     * @param {Object} callback The object data to use for modification
+     */
+    updateAttributes(lbModelName, objectId, data, callback) {
+        debug('updateAttributes', lbModelName, objectId, data);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        // If the $class property has not been provided, add it now.
+        if (!data.$class) {
+            data.$class = composerModelName;
+        }
+
+        this.ensureConnected()
+            .then(() => {
+                let resource = this.serializer.fromJSON(data);
+                this.getRegistryForModel(composerModelName, (error, registry) => {
+                    registry.update(resource)
+                    .then(() => {
+                        callback();
+                    })
+                    .catch((error) => {
+                        callback(error);
+                    });
+                });
+            })
+            .catch((error) => {
+                debug('create', 'error thrown doing update', error);
+                callback(error);
+            });
+
+    }
+
+
     /**
      * Create an instance of an object in Composer. For assets, this method
      * adds the asset to the default asset registry. For transactions, this method
@@ -462,6 +500,42 @@ class BusinessNetworkConnector extends Connector {
             .catch((error) => {
                 debug('create', 'error thrown doing update', error);
                 callback(error);
+            });
+    }
+
+    /**
+     * Destroy all instances of the specified objects in Concerto.
+     * @param {string} lbModelName The fully qualified model name.
+     * @param {string} where The filter to identify the asset or participant to be removed.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     */
+    destroyAll(lbModelName, where, options, callback) {
+        debug('delete', lbModelName, where, options);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        //console.log('DESTROY ALL: '+composerModelName, where, options, callback);
+        this.ensureConnected()
+            .then(() => {
+                let idField = Object.keys(where)[0];
+                if(this.isValidId(composerModelName, idField)) {
+                    this.getRegistryForModel(composerModelName, (error, registry) => {
+                        registry.get(where[idField])
+                        .then((resourceToRemove) => {
+                            registry.remove(resourceToRemove)
+                            .then(() => {
+                                callback();
+                            })
+                            .catch((error) => {
+                                callback(error);
+                            });
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                    });
+                } else {
+                    callback('ERROR: the specified filter does not match the identifier in the model');
+                }
             });
     }
 
