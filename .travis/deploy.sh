@@ -93,10 +93,10 @@ export REPO = staging-fabric-composer-web
 git clone git@github.com:fabric-composer/${REPO}.git
 cd ${REPO}
 
-rm -rf ${DIR}/site/out/gh-pages/*
+rm -rf ${DIR}/site/out/${REPO}/*
 cp -rf ${DIR}/site/out/jekylldocs/_site/* .
 
 git add .
 
-git commit -m "Automated deploy to GitHub Pages"
+git commit -m "Automated deploy to ${REPO}"
 git push

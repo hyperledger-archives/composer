@@ -5,16 +5,16 @@ node_js:
 matrix:
     include:
         - env: DOCS=full
-#        - env: SYSTEST=embedded
-#        - env: SYSTEST=web
-#        - env: SYSTEST=hlf SYSTEST_HLF=hlf
-#          sudo: required
-#          services:
-#            - docker
-#        - env: SYSTEST=hlf SYSTEST_HLF=ibm
-#          sudo: required
-#          services:
-#            - docker
+        - env: SYSTEST=embedded
+        - env: SYSTEST=web
+        - env: SYSTEST=hlf SYSTEST_HLF=hlf
+          sudo: required
+          services:
+            - docker
+        - env: SYSTEST=hlf SYSTEST_HLF=ibm
+          sudo: required
+          services:
+            - docker
 dist: trusty
 addons:
     apt:
