@@ -88,7 +88,7 @@ echo ${DIR}
 cd ${DIR}/site/out
 rm -rf gh-pages
 
-export REPO = staging-fabric-composer-web
+export REPO="staging-fabric-composer-web"
 
 git clone git@github.com:fabric-composer/${REPO}.git
 cd ${REPO}
