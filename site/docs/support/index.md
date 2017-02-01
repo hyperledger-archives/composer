@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Fabric Composer -  Support
+title: Fabric Composer - Support
 category: support
 sidebar: sidebars/support.md
 ---
@@ -16,3 +16,7 @@ Please post questions to StackOverflow. Tag questions with the [fabric-composer]
 ## Slack
 
 Contributors use the [Fabric Composer](https://fabric-composer.slack.com/) Slack channel for ad-hoc communication.
+
+## Issues
+
+Defects, issues and enhancements are tracked using [GitHub Issues](https://github.com/fabric-composer/fabric-composer/issues).
