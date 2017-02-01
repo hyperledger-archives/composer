@@ -69,3 +69,6 @@ fi
 # Delete any written configuration.
 rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
 rm -rf ${HOME}/.concerto-credentials/concerto-systests
+
+# Run getting started system tests on a clean system
+.${DIR}/scripts/getting-started.sh
