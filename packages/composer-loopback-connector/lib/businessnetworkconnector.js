@@ -254,7 +254,6 @@ class BusinessNetworkConnector extends Connector {
         }
     }
 
-
     /**
      * Retrieves all the instances of objects in IBM Concerto.
      * @param {string} modelName The name of the model.
@@ -283,6 +282,51 @@ class BusinessNetworkConnector extends Connector {
         }
     }
 
+    /**
+     * counts the number of instances of the specified object in the blockchain
+     * @param {string} lbModelName The Loopback model name.
+     * @param {string} where The LoopBack filter with the ID apply.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The Callback to call when complete.
+     */
+    count(lbModelName, where, options, callback) {
+        debug('count', lbModelName, where, options);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        //console.log('COUNT: '+composerModelName, arguments);
+        this.ensureConnected()
+        .then(() => {
+            let idField = Object.keys(where)[0];
+            if(this.isValidId(composerModelName, idField)) {
+                // Just a basic existence check for now
+                this.exists(composerModelName, where[idField], callback);
+            } else {
+                callback('ERROR: '+idField+' is not valid for asset '+composerModelName);
+            }
+        });
+    }
+
+    /**
+     * Runs the callback with whether the object exists or not.
+     * @param {string} composerModelName The composer model name.
+     * @param {string} id The LoopBack filter with the ID apply.
+     * @param {function} callback The Callback to call when complete.
+     */
+    exists(composerModelName, id, callback) {
+        debug('exists', composerModelName, id);
+        this.getRegistryForModel(composerModelName, (error, registry) => {
+            registry.exists(id)
+            .then((result) => {
+                if(result === true) {
+                    callback(null, 1);
+                } else {
+                    callback(null, 0);
+                }
+            })
+            .catch((error) => {
+                callback(error);
+            });
+        });
+    }
 
     /**
      * Updates the properties of the specified object in the Business Network.

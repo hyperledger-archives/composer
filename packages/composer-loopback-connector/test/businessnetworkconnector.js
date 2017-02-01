@@ -767,6 +767,116 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
     });
 
+    describe('#count and #exists', () => {
+
+        let mockAssetRegistry;
+
+        beforeEach(() => {
+            testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.modelManager = modelManager;
+            testConnector.introspector = introspector;
+            testConnector.connected = true;
+            sinon.spy(testConnector, 'ensureConnected');
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            testConnector.businessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
+        });
+
+        it('should return 1 if the object exists', () => {
+            mockAssetRegistry.exists.returns(Promise.resolve(true));
+            return new Promise((resolve, reject) => {
+                testConnector.exists('org.acme.base.BaseAsset', { 'theValue':'mockId' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                result.should.equal(1);
+            });
+        });
+        it('should return 0 if the object does not exist', () => {
+            mockAssetRegistry.exists.returns(Promise.resolve(false));
+            return new Promise((resolve, reject) => {
+                testConnector.exists('org.acme.base.BaseAsset', { 'theValue':'mockId' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                result.should.equal(0);
+            });
+        });
+        it('should handle an error from the composer registry.exists API', () => {
+            mockAssetRegistry.exists.returns(Promise.reject('existence test error'));
+            return new Promise((resolve, reject) => {
+                testConnector.exists('org.acme.base.BaseAsset', { 'theValue':'mockId' }, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                throw new Error('test error');
+            })
+            .catch((error) => {
+                error.should.equal('existence test error');
+            });
+        });
+
+        it('should return count of 1 if the object exists', () => {
+            mockAssetRegistry.exists.returns(Promise.resolve(true));
+            return new Promise((resolve, reject) => {
+                testConnector.count('org.acme.base.BaseAsset', { 'theValue':'mockId' }, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                result.should.equal(1);
+            });
+        });
+
+        it('should return count of 0 if the object exists', () => {
+            mockAssetRegistry.exists.returns(Promise.resolve(false));
+            return new Promise((resolve, reject) => {
+                testConnector.count('org.acme.base.BaseAsset', { 'theValue':'mockId' }, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                result.should.equal(0);
+            });
+        });
+
+        it('should handle an error if an invalid identifier is supplied', () => {
+            return new Promise((resolve, reject) => {
+                testConnector.count('org.acme.base.BaseAsset', { 'theWrongValue':'mockId' }, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                throw new Error('test error');
+            })
+            .catch((error) => {
+                error.should.equal('ERROR: theWrongValue is not valid for asset org.acme.base.BaseAsset');
+            });
+        });
+
+
+    });
 
     describe('#all', () => {
 
@@ -785,7 +895,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
             mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
             testConnector.businessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
             testConnector.businessNetworkConnection.getParticipantRegistry.returns(Promise.resolve(mockParticipantRegistry));
-
         });
 
         it('should retrieve a specific Asset for a given id in a where clause', () => {
