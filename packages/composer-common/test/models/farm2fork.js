@@ -43,7 +43,7 @@ describe('Farm2Fork Model', function() {
             modelFile.getNamespace().should.equal('org.acme');
 
             modelFile.getAssetDeclarations().length.should.equal(3);
-            modelFile.getTransactionDeclarations().length.should.equal(10);
+            modelFile.getTransactionDeclarations().length.should.equal(11);
 
             // test the Animal Asset class
             let animal = modelFile.getAssetDeclaration('Animal');
@@ -74,7 +74,7 @@ describe('Farm2Fork Model', function() {
             let txDecl = modelFile.getTransactionDeclaration('MoveAnimalToHolding');
             txDecl.should.not.be.null;
             txDecl.getName().should.equal('MoveAnimalToHolding');
-            txDecl.getProperties().length.should.equal(3);
+            txDecl.getProperties().length.should.equal(4);
             let holdingField = txDecl.getProperty('holding');
             (holdingField !== null).should.be.true;
             holdingField.getName().should.equal('holding');

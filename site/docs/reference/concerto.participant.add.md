@@ -1,22 +1,22 @@
 ---
 layout: default
-title: Concerto Participant Add Command
+title: Fabric Composer Participant Add Command
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Concerto Participant Add Command
+excerpt: Fabric Composer Participant Add Command
 ---
 
-# concerto participant add
+# composer participant add
 
-The `concerto participant add` command adds a new instance of a participant to a
+The `composer participant add` command adds a new instance of a participant to a
 participant registry. See the task [Add a Participant](../tasks/participant-add.md)
 for a walkthrough of using this command or the API.
 
 ## Syntax
 
 ```
-$ concerto participant add
-concerto participant add [options]
+$ composer participant add
+composer participant add [options]
 
 Options:
   --help                       Show help  [boolean]

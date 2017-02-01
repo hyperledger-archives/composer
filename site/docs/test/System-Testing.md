@@ -1,14 +1,14 @@
 ---
 layout: default
 markdown: 1
-title: Concerto - System Testing Information
+title: Fabric Composer - System Testing Information
 sidebar: sidebars/learning.md
 ---
 ## System Testing
 
 ## Overview
 
-The automated build runs a set of system tests that stand up both Concerto and an instance of Hyperledger Fabric to confirm that the system works as a whole. These are end-to-end tests and should be not be confused with the unit tests that are also run in the build.
+The automated build runs a set of system tests that stand up both Fabric Composer and an instance of Hyperledger Fabric to confirm that the system works as a whole. These are end-to-end tests and should be not be confused with the unit tests that are also run in the build.
 
 ## Local set up
 
@@ -20,11 +20,11 @@ In order to run the system tests locally, you must follow these steps:
   [Docker](https://www.docker.com/products/overview)  
   [Docker Compose](https://docs.docker.com/compose/install/) - only required on Linux
 
-1. Fork and clone the Concerto repository:
+1. Fork and clone the Fabric Composer repository:
 
   `git clone git@github.ibm.com:USERNAME/Concerto.git`
 
-2. Change into the cloned Concerto repository:
+2. Change into the cloned Fabric Composer repository:
 
   `cd Concerto`
 
@@ -64,4 +64,3 @@ EventInvokeComplete { result: 'Tx 9a4361f5-140b-4425-91c8-9ed75a84c2f7 complete'
 
   3 passing (43s)
   ```
-  

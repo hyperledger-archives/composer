@@ -52,8 +52,13 @@ asset Meat identified by identifier {
     o Boolean packaged default=false
 }
 
-transaction AnimalTransaction {
+abstract transaction AnimalTransaction identified by transactionId {
     --> Animal animal //an AnimalTransaction is related to an Animal
+    o String transactionId
+}
+
+transaction Foo extends Meat {
+  
 }
 
 transaction AnimalCreated extends AnimalTransaction {
@@ -81,23 +86,15 @@ transaction SlaughterAnimal extends AnimalTransaction {
     o Meat meat
 }
 
-transaction MeatTransaction {
+transaction MeatTransaction identified by transactionId {
     --> Meat meat
+    o String transactionId
 }
 
 transaction PackageMeat extends MeatTransaction {
 }
 
-transaction PackagedMeatTransferedToPrivateConsumer {
+transaction PackagedMeatTransferedToPrivateConsumer identified by transactionId {
     --> Participant privateConsumer
+    o String transactionId
 }
-
-/*
-on event PackagedMeatTransferedToPrivateConsumer(packagedMeatTransferedToPrivateConsumer) {
-    if (!packagedMeatTransferedToPrivateConsumer.packaged)
-    then {
-        throw Error("meat must be packaged before being sent to a private owner")
-    }
-    packagedMeatTransferedToPrivateConsumer.meat.state = "PrivateOwner"
-}
-*/
