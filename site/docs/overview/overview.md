@@ -1,14 +1,14 @@
 ---
 layout: default
-title: IBM Blockchain Framework -  Overview
+title: Fabric Composer -  Overview
 category: overview
 sidebar: sidebars/overview.md
-excerpt: Concerto overview
+excerpt: Fabric Composer overview
 ---
 
 ## Overview
 
-The IBM Blockchain Framework is a set of APIs, a modeling language and
+Fabric Composer is a set of APIs, a modeling language and
 a programming model to quickly define and deploy business networks and applications
 that allow **participants** to send **transactions** that exchange **assets**.
 
@@ -17,7 +17,7 @@ are validated by concerned organizations in the business network.
 
 ## Framework Features
 
-|:Feature        |:Description  |
+|Feature        |Description  |
 | -------------- | ------------ |
 | Blockchain State Storage | All state is stored in Hyperledger Fabric, ensuring consensus, immutability etc. |
 | Assets | Use Assets and Asset Registries to define the data to be stored and exchanged across the business network |
@@ -29,18 +29,18 @@ are validated by concerned organizations in the business network.
 | Analytics and Monitoring integration | Provides integration extension points to send transactions to external analytics data stores |
 | Starter Applications | Generate starter applications from a Business Network Definition |
 
-## Framework Programming Model
+## Fabric Composer Programming Model
 
-The IBM Blockchain Framework programming model is based on defining and deploying a Business Network
+The Fabric Composer programming model is based on defining and deploying a Business Network
 Definition, which contains a data model that defines the name and structure of assets, participants
 and transactions in the business network. The business network also specifies *transaction processor functions*
 (written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
 
-The Framework defines [Javascript APIs](https://pages.github.ibm.com/Blockchain-WW-Labs/Concerto/jsdoc/develop/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
+Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/develop/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
 
 ### Roles, Responsibilities and Tasks
 
-A typical project using the Framework goes through a lifecycle of:
+A typical project using Fabric Composer goes through a lifecycle of:
 
 *Model -> Define Business Network -> Deploy Runtime -> Deploying Business Network -> Test -> Generate Application*
 
@@ -54,9 +54,9 @@ These tasks may all be performed by a single full-stack developer, but are more 
 
 ## Modeling the Business Domain
 
-Framework includes a powerful Object-Oriented modeling language, used to specify a domain model; the structure of assets, participants and transactions. The domain model is used across the Framework for code generation, type validation, user interface generation, API generation, amongst other things.
+Fabric Composer includes a powerful Object-Oriented modeling language, used to specify a domain model; the structure of assets, participants and transactions. The domain model is used across the Framework for code generation, type validation, user interface generation, API generation, amongst other things.
 
-### Sample Framework Domain Model
+### Sample Fabric Composer Domain Model
 
 ```javascript
 namespace net.biz.digitalPropertyNetwork
@@ -108,7 +108,7 @@ function onRegisterPropertyForSale(propertyForSale){
 
 ## Rapidly Create Applications
 
-The Framework includes [code generators](../tasks/genapp.md) so that web and mid-tier application developers can quickly generate starter applications that interact with a deployed business network definition. These code generators allow application developers to quickly focus on the integration and visual aspects of their projects, rather than writing boilerplate and configuration.
+Fabric Composer includes [code generators](../tasks/genapp.md) so that web and mid-tier application developers can quickly generate starter applications that interact with a deployed business network definition. These code generators allow application developers to quickly focus on the integration and visual aspects of their projects, rather than writing boilerplate and configuration.
 
 High-level administration and client APIs provide easy access to a deployed business network.
 

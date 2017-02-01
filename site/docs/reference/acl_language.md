@@ -1,17 +1,17 @@
 ---
 layout: default
-title: Concerto - Access Contol Language
+title: Fabric Composer - Access Contol Language
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Guide to the Concerto access control language
+excerpt: Guide to the Fabric Composer access control language
 ---
-# Concerto Access Control Language
+# Fabric Composer Access Control Language
 
-Concerto includes an access control language (ACL) that provides declarative access control over the elements of the domain model. By defining ACL rules you can deterime which users/roles are permitted to create, read, update or delete elements in a business network's domain model.
+Fabric Composer includes an access control language (ACL) that provides declarative access control over the elements of the domain model. By defining ACL rules you can determine which users/roles are permitted to create, read, update or delete elements in a business network's domain model.
 
 ### Evaluation of Access Control Rules
 
-Access control for a business network is defined by an ordered set of ACL rules. The rules are evaluated in order, and the first rule whose condition matches deterimes whether access is granted or denied. If no rule match then access is **denied**.
+Access control for a business network is defined by an ordered set of ACL rules. The rules are evaluated in order, and the first rule whose condition matches determines whether access is granted or denied. If no rule match then access is **denied**.
 
 ACL rules are defined in a file called `permissions.acl` in the root of the business network. If this file is missing from the business network then all access is **permitted**.
 

@@ -1,15 +1,14 @@
 ---
 layout: default
-title: Reference 
+title: Reference
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Concerto module info
+excerpt: Fabric Composer module info
 ---
 
-# Reference - Overview 
+# Reference - Overview
 
-
-The Reference section serves to provide more detailed information about subjects such as the IBM Blockchain Framework itself, its modules and components, the Domain Specific language, APIs, Transaction Processors and so on.
+The Reference section serves to provide more detailed information about subjects such as Fabric Composer, its modules and components, the Domain Specific language, APIs, Transaction Processors and so on.
 
 Use the Reference menu to check out to the different reference subjects.
 
@@ -33,4 +32,3 @@ Use the Reference menu to check out to the different reference subjects.
 <p>&nbsp;</p>
 
 *v.01*
-

@@ -59,8 +59,9 @@ participant Regulator extends Participant {
 }
 
 // defines a Vehicle transaction type
-transaction VehicleTransaction {
+transaction VehicleTransaction identified by transactionId {
 	--> Vehicle vehicle // a VehicleTransaction is related to a Vehicle
+  o String transactionId
 }
 
 transaction VehicleCreated extends VehicleTransaction {

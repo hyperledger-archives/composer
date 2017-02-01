@@ -36,4 +36,4 @@ The scripts for a business network definition are typically stored under the `li
 
 Prior to deploying or updating a business network definition it must be archived using the ZIP standard. A typical ZIP will contain a `package.json` a `lib` folder containing one or more `.js` files and a `models` folder containing one or more `.cto` files.
 
-The `concerto` CLI contains commands for creating an archive, deploying business network archives and the `BusinessNetworkDefinition.fromArchive, toArchive and fromDirectory` APIs can be used to programmatically create business network definitions.
+The `composer` CLI contains commands for creating an archive, deploying business network archives and the `BusinessNetworkDefinition.fromArchive, toArchive and fromDirectory` APIs can be used to programmatically create business network definitions.

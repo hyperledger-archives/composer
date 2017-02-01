@@ -13,8 +13,14 @@ if [ -r "/etc/init.d/xvfb" ]; then
     sh -e /etc/init.d/xvfb start
 fi
 
+
+# are we building the docs?
+if [ "${DOCS}" != "" ]; then
+	cd ${DIR}/site
+	npm install
+	npm run full
 # Are we running system tests?
-if [ "${SYSTEST}" != "" ]; then
+elif [ "${SYSTEST}" != "" ]; then
 
     # Run the system tests.
     ${DIR}/packages/composer-systests/scripts/run-system-tests.sh
