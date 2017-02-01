@@ -37,10 +37,10 @@ describe('AccessController', () => {
         modelManager = new ModelManager();
         modelManager.addModelFile(`
         namespace org.acme.base
-        asset BaseAsset {
+        abstract asset BaseAsset {
             o String theValue
         }
-        participant BaseParticipant {
+        abstract participant BaseParticipant {
             o String theValue
         }`);
         modelManager.addModelFile(`

@@ -53,5 +53,5 @@ participant Person identified by personId {
   * Command line
 
     ```bash
-    concerto participant add -n '@ibm/digitalproperty-network' -i admin -s Xurw3yU9zI0l -d '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
+    composer participant add -n '@ibm/digitalproperty-network' -i admin -s Xurw3yU9zI0l -d '{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'
     ```

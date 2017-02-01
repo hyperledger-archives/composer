@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Concerto - Connection Profile
+title: Fabric Composer - Connection Profile
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Overview of the Connection Profiles
@@ -11,7 +11,7 @@ The AdminConnection and BusinessNetworkConnection classes use references to name
 
 Connection Profiles are stored under sub-directories of the 'concerto-connection-profiles' directory in the user's home directory.
 
-For example, if connecting using the 'testprofile' Connection Profile, the '<HOMEDIR>/concerto-connection-profiles/testprofile' directory must exist, and must contain a file named 'connection.json'.
+For example, if connecting using the 'testprofile' Connection Profile, the '<HOMEDIR>/.composer-connection-profiles/testprofile' directory must exist, and must contain a file named 'connection.json'.
 
 The contents of the file will depend on the location of the Fabric, but will be similar to the example below:
 

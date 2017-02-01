@@ -12,7 +12,7 @@ An identity can be issued to a participant using either the API or the command l
 Once an identity has been issued, the identity can then be used by the participant
 to interact with the business network in the context of that participant.
 
-The IBM Blockchain Framework issues identities as Hyperledger Fabric enrollment
+Fabric Composer issues identities as Hyperledger Fabric enrollment
 certificates (ECerts). An enrollment secret is generated that should be given to
 the participant, who can use the enrollment secret to download their enrollment
 certificate.
@@ -55,7 +55,7 @@ of that participant has been created and placed into a participant registry.
   * Command line
 
     ```bash
-    concerto identity issue -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1 -a "net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
+    composer identity issue -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1 -a "net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
     ```
 
     The enrollment secret will be printed to the console.
@@ -74,8 +74,8 @@ of that participant has been created and placed into a participant registry.
   * Command line
 
     ```bash
-    concerto network ping -n 'digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
+    composer network ping -n 'digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
     ```
 
     The participant ID will be printed to the console, and should match the participant
-    ID that was specified in the `concerto identity issue` command.
+    ID that was specified in the `composer identity issue` command.

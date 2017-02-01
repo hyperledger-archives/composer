@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Concerto - Business Network
+title: Fabric Composer - Business Network
 category: concepts
 sidebar: sidebars/concepts.md
 excerpt: Business Network
 ---
 # Business Network
 
-A `Business Network` describes the structures and processes that exist in the exchange of assets between participants in economic networks. The Concerto framework helps you to easily develop applications for business networks, to digitize these networks - making them more efficient.
+A `Business Network` describes the structures and processes that exist in the exchange of assets between participants in economic networks. Fabric Composer helps you to easily develop applications for business networks, to digitize these networks - making them more efficient.
 
 There are many elements in a business network; the most fundamental of which are participants, assets, registries and transactions.  We're going to start by explaining these so that you get a feeling for this most important concepts.  We'll then reinforce these slightly abstract concepts with a concrete example involving a digital property network.
 
@@ -29,13 +29,13 @@ Here are the key elements of this property network.
 
 * Participants. Buyers, sellers, estate agents (realtors), conveyancers and the government land registry are the people and organizations who participate in this network.
 
-* Assets. Property is the asset that is exchanged and between buyers and sellers in the property network. Property is advertized by estate agents (realtors), exchanged by conveyancers, and recorded by land registries. Property has a fairly rich lifecycle, in that it can be created, exchanged, modified and destroyed.
+* Assets. Property is the asset that is exchanged and between buyers and sellers in the property network. Property is advertised by estate agents (realtors), exchanged by conveyancers, and recorded by land registries. Property has a fairly rich lifecycle, in that it can be created, exchanged, modified and destroyed.
 
 * Registries.  Clearly the Land Registry record of properties is an obvious registry in this network, but there are others.  The estate agent (realtor) has a set of properties for sale by registered sellers and interested buyers, and probably a separate record of the deals between buyers and sellers that are in-flight at a given moment in time.  Conveyancers probably have a registry of properties in the process of being legally exchanged between buyers and sellers.  Assets will be updated within these registries as they are exchanged between buyers and sellers.
 
 * Transactions. There are many transactions going on in this property network. Sellers sell property and buyers buy them.  Conveyancers create and exchange legal contracts with other conveyancers on behalf of buyers and sellers and their respective property sales.  The Land Registry records updates to property ownership, and estate agents (realtors) indicate that properties are for sale in a market and remove them from that market once they have been sold.
 
-The Concerto framework makes it easy to create these elements in a business network, and the applications which capture interactions between different participants.  
+Fabric Composer makes it easy to create these elements in a business network, and the applications which capture interactions between different participants.  
 
 ## Related Concepts
 

@@ -52,7 +52,7 @@ Load that file up in any editor and you can then add your model, Again using thi
 (aside if you are using the Atom editor, then there is a syntax highlighter plugin available)
 
 ```
-/**  A 'Getting Started Tutorial' to work with the IBM Concerto Framework
+/**  A 'Getting Started Tutorial' to work with Fabric Composer
 */
 
 namespace net.biz.digitalPropertyNetwork
@@ -154,22 +154,22 @@ function onRegisterPropertyForSale(propertyForSale) {
 ## Work with the network
 Once we have the network complete we can create a business network definition archive. This is the unit will actually be deployable to the HyperLedger Fabric.
 
-There is a `concerto archive` command that can be used to create and inspect these archives. The `concerto network` command is then used to administer the business network archive on the Hyperledger Fabric.
+There is a `composer archive` command that can be used to create and inspect these archives. The `composer network` command is then used to administer the business network archive on the Hyperledger Fabric.
 
 ### Creating an archive
 
-The `concerto archive create` command is used to create the archive. The `--archiveFile` option is used to specify the name of the archive file to create. If this is not specified then a default name will be used that is based on the identifier of the business network (sanitized to be suitable as a filename). For example `digitalPropertyNetwork-0.1.2.bna`.
+The `composer archive create` command is used to create the archive. The `--archiveFile` option is used to specify the name of the archive file to create. If this is not specified then a default name will be used that is based on the identifier of the business network (sanitized to be suitable as a filename). For example `digitalPropertyNetwork-0.1.2.bna`.
 
 One of either --inputDir or --moduleName must be specified. --inputDir is the directory that contains the `package.json` file of the Business Network npm module's package.json.
 
 
 
 ```bash
-concerto archive create --archiveFile digitialLandTitle.bna --inputDir . --moduleName DigitalLandTitle
+composer archive create --archiveFile digitialLandTitle.bna --inputDir . --moduleName DigitalLandTitle
 ```
 
 Once you have this archive it can then be deployed to Hyperledger (which will assuming is all running for the moment)
 
 ```bash
-concerto network deploy --archiveFile  DigitalLandTitle.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+composer network deploy --archiveFile  DigitalLandTitle.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 ```
