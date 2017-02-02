@@ -107,7 +107,7 @@ module.exports = yeoman.Base.extend({
                 type: 'input',
                 name: 'connectionProfileName',
                 message: 'What is the Connection Profile to use?',
-                default: 'hyperledger',
+                default: 'newProfile',
                 store: false,
                 validate: function(input) {
                     if(input !== null && input !== undefined && input !== '') {
