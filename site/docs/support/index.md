@@ -12,6 +12,7 @@ We're building a community to help with Fabric Composer, either request an id on
 ## Slack
 
 For discussions, we use the [Fabric Composer](https://fabric-composer.slack.com/) Slack channel.
+If you would like an invite as a contributor to Fabric Composer please <a href="mailto:info@fabric-composer.org?Subject=Fabric-Composer%20Slack%20Access">contact us</a> with your details (Github id, and bit of background info for interest).
 
 ## Stack Overflow
 
