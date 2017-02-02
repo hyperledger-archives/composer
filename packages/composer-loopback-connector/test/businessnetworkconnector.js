@@ -953,6 +953,22 @@ describe('BusinessNetworkConnector Unit Test', () => {
             });
         });
 
+        it('should return an empty list after an error when trying to retrieve a specific Asset by id if the error just indicates that the asset does not exist', () => {
+            mockAssetRegistry.get.returns(Promise.reject('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                result.should.deep.equal({});
+            });
+
+        });
+
         it('should handle an error when validating the id in a where clause', () => {
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.BaseAsset', {'where':{'theINvalidValue':'mockId'}}, {}, (error, result) => {
