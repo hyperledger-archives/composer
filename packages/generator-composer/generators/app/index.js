@@ -1,9 +1,20 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use strict';
 
 let generators = require('yeoman-generator');
-//
-// let chalk       = require('chalk');
-// let figlet      = require('figlet');
 
 
 module.exports = generators.Base.extend({
@@ -11,12 +22,6 @@ module.exports = generators.Base.extend({
     constructor: function() {
         generators.Base.apply(this, arguments);
         this.options = this.env.options;
-//         console.log(
-//   chalk.yellow(
-//     figlet.textSync('IBM Concerto')
-//   )
-// );
-
     },
 
   /**
@@ -79,7 +84,7 @@ module.exports = generators.Base.extend({
             type: 'input',
             name: 'npmNetworkDependancy',
             message: 'NPM Module name of the Business Network to connect to:',
-            default: '@ibm/digitalproperty-network',
+            default: 'digitalproperty-network',
             store: false,
             validate: function(input) {
                 if(input !== null && input !== undefined && input !== '') {
@@ -178,7 +183,6 @@ module.exports = generators.Base.extend({
    * Configure generator.
    */
     configuring: function() {
-    // create project in new folder with chosen appName
         console.log('configuring: '+this.appName);
         this.destinationRoot(this.appName);
     },

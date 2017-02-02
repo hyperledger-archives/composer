@@ -12,17 +12,16 @@
     "install" : "npm run teardownHLF && npm run setupHLF && npm run deployNetwork"
   },
   "keywords": [
-    "ibm",
     "blockchain",
     "hyperledger",
     "solutions",
     "framework"
   ],
-  "author": "IBM",
+  "author": "<%= authorName %>",
   "license": "Apache2",
   "dependencies": {
     "<%= npmNetworkDependancy %>": "0.0.21",
-    "@ibm/concerto-client": "^0.3.6",
+    "composer-client": "^0.4.0",
     "config": "^1.21.0",
     "shelljs": "^0.7.5",
     "winston": "^2.2.0",
