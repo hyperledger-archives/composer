@@ -223,7 +223,14 @@ class BusinessNetworkConnector extends Connector {
                                     callback(null, results);
                                 })
                                 .catch((error) => {
-                                    callback(error);
+
+                                    // check the error - it might be ok just an error indicating that the object doesn't exist
+                                    debug('all: error ', error);
+                                    if(error.toString().includes('does not exist')) {
+                                        callback(null, {});
+                                    } else {
+                                        callback(error);
+                                    }
                                 });
 
                         } else {
