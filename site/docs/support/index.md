@@ -7,12 +7,16 @@ sidebar: sidebars/support.md
 
 ##Welcome to the Support page.
 
-We're building a community to help with Fabric Composer, either request an id on Slack or ask a question in Stackoverflow.
-
-## Slack
-
-For discussions, we use the [Fabric Composer](https://fabric-composer.slack.com/) Slack channel.
+See the options below to get help or support.
 
 ## Stack Overflow
 
-Ask questions in Stackoverflow with the tag [*fabric-composer*](http://stackoverflow.com/questions/tagged/fabric-composer)
+Please post questions to StackOverflow. Tag questions with the [fabric-composer](http://stackoverflow.com/questions/tagged/fabric-composer) tag.
+
+## Slack
+
+Contributors use the [Fabric Composer](https://fabric-composer.slack.com/) Slack channel for ad-hoc communication.
+
+## Issues
+
+Defects, issues and enhancements are tracked using [GitHub Issues](https://github.com/fabric-composer/fabric-composer/issues).
