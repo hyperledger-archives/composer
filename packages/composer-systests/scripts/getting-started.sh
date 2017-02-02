@@ -2,13 +2,27 @@
 
 # Exit on first error, print all commands.
 set -ev
+set -o pipefail
 
 # Grab the Composer directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 TMP=$DIR/tmp
 
-# Install pre-reqs
-# sh $DIR/scripts/prereqs-ubuntu.sh
+# Get all hlf docker images
+DOCKER_FILE=${DIR}/hlf-docker-compose.yml
+docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
+docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
+docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
+docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
+docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
+docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
+
+# Start any required Docker images.
+if [ "${DOCKER_FILE}" != "" ]; then
+    docker-compose -f ${DOCKER_FILE} kill
+    docker-compose -f ${DOCKER_FILE} down
+    docker-compose -f ${DOCKER_FILE} up -d
+fi
 
 # Install cli
 npm install -g composer-cli
