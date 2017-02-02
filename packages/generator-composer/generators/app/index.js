@@ -33,7 +33,7 @@ module.exports = generators.Base.extend({
             type: 'input',
             name: 'appName',
             message: 'Your NPM library name:',
-            default: 'concerto-sample-app',
+            default: 'composer-sample-app',
             store: false,
             validate: function(input) {
                 if(input !== null && input !== undefined &&
@@ -47,7 +47,7 @@ module.exports = generators.Base.extend({
             type: 'input',
             name: 'appDescription',
             message: 'Short description:',
-            default: 'Test Concerto project',
+            default: 'Test Composer project',
             store: false,
             validate: function(input) {
                 if(input !== null && input !== undefined && input !== '') {
@@ -195,7 +195,6 @@ module.exports = generators.Base.extend({
         let model = this._generateTemplateModel();
         this.fs.copyTpl(this.templatePath('**/*'), this.destinationPath(), model);
         this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
-        console.log('Getting the npm module describing the ' + this.concertoNetwork);
     },
 
   /**
