@@ -71,4 +71,4 @@ rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
 rm -rf ${HOME}/.concerto-credentials/concerto-systests
 
 # Run getting started system test
-sh $DIR/scripts/getting-started.sh
+sh $DIR/scripts/getting-started.sh $DIR
