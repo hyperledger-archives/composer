@@ -223,7 +223,14 @@ class BusinessNetworkConnector extends Connector {
                                     callback(null, results);
                                 })
                                 .catch((error) => {
-                                    callback(error);
+
+                                    // check the error - it might be ok just an error indicating that the object doesn't exist
+                                    debug('all: error ', error);
+                                    if(error.toString().includes('does not exist')) {
+                                        callback(null, {});
+                                    } else {
+                                        callback(error);
+                                    }
                                 });
 
                         } else {
@@ -254,7 +261,6 @@ class BusinessNetworkConnector extends Connector {
         }
     }
 
-
     /**
      * Retrieves all the instances of objects in IBM Concerto.
      * @param {string} modelName The name of the model.
@@ -282,6 +288,89 @@ class BusinessNetworkConnector extends Connector {
             callback('Error: No registry for specified model name');
         }
     }
+
+    /**
+     * counts the number of instances of the specified object in the blockchain
+     * @param {string} lbModelName The Loopback model name.
+     * @param {string} where The LoopBack filter with the ID apply.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The Callback to call when complete.
+     */
+    count(lbModelName, where, options, callback) {
+        debug('count', lbModelName, where, options);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        //console.log('COUNT: '+composerModelName, arguments);
+        this.ensureConnected()
+        .then(() => {
+            let idField = Object.keys(where)[0];
+            if(this.isValidId(composerModelName, idField)) {
+                // Just a basic existence check for now
+                this.exists(composerModelName, where[idField], callback);
+            } else {
+                callback('ERROR: '+idField+' is not valid for asset '+composerModelName);
+            }
+        });
+    }
+
+    /**
+     * Runs the callback with whether the object exists or not.
+     * @param {string} composerModelName The composer model name.
+     * @param {string} id The LoopBack filter with the ID apply.
+     * @param {function} callback The Callback to call when complete.
+     */
+    exists(composerModelName, id, callback) {
+        debug('exists', composerModelName, id);
+        this.getRegistryForModel(composerModelName, (error, registry) => {
+            registry.exists(id)
+            .then((result) => {
+                if(result === true) {
+                    callback(null, 1);
+                } else {
+                    callback(null, 0);
+                }
+            })
+            .catch((error) => {
+                callback(error);
+            });
+        });
+    }
+
+    /**
+     * Updates the properties of the specified object in the Business Network.
+     * This function is called by the PATCH API.
+     * @param {string} lbModelName The name of the model.
+     * @param {string} objectId The id of the object to update
+     * @param {Object} data The object data to use for modification
+     * @param {Object} callback The object data to use for modification
+     */
+    updateAttributes(lbModelName, objectId, data, callback) {
+        debug('updateAttributes', lbModelName, objectId, data);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        // If the $class property has not been provided, add it now.
+        if (!data.$class) {
+            data.$class = composerModelName;
+        }
+
+        this.ensureConnected()
+            .then(() => {
+                let resource = this.serializer.fromJSON(data);
+                this.getRegistryForModel(composerModelName, (error, registry) => {
+                    registry.update(resource)
+                    .then(() => {
+                        callback();
+                    })
+                    .catch((error) => {
+                        callback(error);
+                    });
+                });
+            })
+            .catch((error) => {
+                debug('create', 'error thrown doing update', error);
+                callback(error);
+            });
+
+    }
+
 
     /**
      * Create an instance of an object in Composer. For assets, this method
@@ -462,6 +551,42 @@ class BusinessNetworkConnector extends Connector {
             .catch((error) => {
                 debug('create', 'error thrown doing update', error);
                 callback(error);
+            });
+    }
+
+    /**
+     * Destroy all instances of the specified objects in Concerto.
+     * @param {string} lbModelName The fully qualified model name.
+     * @param {string} where The filter to identify the asset or participant to be removed.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     */
+    destroyAll(lbModelName, where, options, callback) {
+        debug('delete', lbModelName, where, options);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        //console.log('DESTROY ALL: '+composerModelName, where, options, callback);
+        this.ensureConnected()
+            .then(() => {
+                let idField = Object.keys(where)[0];
+                if(this.isValidId(composerModelName, idField)) {
+                    this.getRegistryForModel(composerModelName, (error, registry) => {
+                        registry.get(where[idField])
+                        .then((resourceToRemove) => {
+                            registry.remove(resourceToRemove)
+                            .then(() => {
+                                callback();
+                            })
+                            .catch((error) => {
+                                callback(error);
+                            });
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                    });
+                } else {
+                    callback('ERROR: the specified filter does not match the identifier in the model');
+                }
             });
     }
 

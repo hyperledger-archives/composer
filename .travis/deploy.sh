@@ -78,6 +78,12 @@ else
 
 fi
 
+
+# Set the GitHub deploy key we will use to publish.
+set-up-ssh --key "$encrypted_f19708b15817_key" \
+           --iv "$encrypted_f19708b15817_iv" \
+           --path-encrypted-key " ${DIR}/.travis/github_deploy_docs_key.enc"
+
 # push the html documents
 # Configure the Git repository and clean any untracked and unignored build files.
 git config user.name "Travis CI"
@@ -86,12 +92,13 @@ git config push.default simple
 
 echo ${DIR}
 cd ${DIR}/site/out
-rm -rf gh-pages
 
-export REPO="staging-fabric-composer-web"
+export REPO="fabric-composer.github.io"
 
 git clone git@github.com:fabric-composer/${REPO}.git
-cd ${REPO}
+git remote set-url origin ${REPO}.git
+
+cd ${DIR}/site/out${REPO}
 
 rm -rf ${DIR}/site/out/${REPO}/*
 cp -rf ${DIR}/site/out/jekylldocs/_site/* .

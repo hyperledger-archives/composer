@@ -1,11 +1,15 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Mozart - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 'use strict';
@@ -14,10 +18,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const config = require('config').get('<%= appName %>');
 
-//const username = require('username');
+let connectionProfileName = config.get('connectionProfileName');
+let networkIdentifier = config.get('networkIdentifier');
+let enrollmentId = config.get('enrollmentId');
+let enrollmentSecret = config.get('enrollmentSecret');
 
-const createConcertoRouter = require('./router');
+
+const createcomposerRouter = require('./router');
 
 // configure Express
 const app = express();
@@ -37,11 +46,11 @@ app.use(express.static(path.join(__dirname, 'src')));
 app.use('/node_modules', express.static(__dirname + '/node_modules'));
 
 
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 let businessNetworkConnection = new BusinessNetworkConnection();
 
 try{
-  return createConcertoRouter('<%= connectionProfileName %>', '<%= networkIdentifier %>', '<%= enrollmentId %>', '<%= enrollmentSecret %>')
+  return createcomposerRouter(connectionProfileName, networkIdentifier, enrollmentId, enrollmentSecret)
   .then((router) => {
           // attach the Router to Express
           app.use('/api/v1/', router );

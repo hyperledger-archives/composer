@@ -6,7 +6,7 @@ var config = require('config').get('<%= appName %>');
 
 
 // Require the client API
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 
 // these are the credentials to use to connect to the Hyperledger Fabric
 let participantId = config.get('participantId');
@@ -33,7 +33,7 @@ businessNetworkConnection.connect(connectionProfile, businessNetworkIdentifier, 
       console.log('List of asset registries=');
 
       let table = new Table({
-          head: ['Resgtory Type', 'ID', 'Name']
+          head: ['Registry Type', 'ID', 'Name']
       });
       for (let i=0; i<result.length;i++){
           let tableLine = [];
