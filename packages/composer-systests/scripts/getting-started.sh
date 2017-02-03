@@ -7,8 +7,12 @@ set -ev
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 TMP=$DIR/tmp
 
+echo $DIR
+echo $TMP
+
 # Get all hlf docker images
 DOCKER_FILE=${DIR}/hlf-docker-compose.yml
+echo $DOCKER_FILE
 docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
 docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
 docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
