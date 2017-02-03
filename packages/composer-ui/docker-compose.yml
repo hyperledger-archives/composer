@@ -33,7 +33,6 @@ services:
   composer:
     build:
       args:
-        - NPM_TOKEN
         - DOCKER_COMPOSE=true
       context: "."
     ports:
