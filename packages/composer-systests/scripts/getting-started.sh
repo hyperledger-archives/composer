@@ -20,7 +20,7 @@ docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:
 docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
 docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
 
-docker rm -f $(docker ps -aq)
+docker rm -f $(docker ps -aq) || true
 
 # Install cli
 npm install -g composer-cli
