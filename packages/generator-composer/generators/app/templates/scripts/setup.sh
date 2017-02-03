@@ -7,8 +7,8 @@ set -ev
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # remove existing profiles and credentials
-rm -rf ~/.concerto-connection-profiles/*
-rm -rf ~/.concerto-credentials/*
+rm -rf ~/.composer-connection-profiles/*
+rm -rf ~/.composer-credentials/*
 
 # Shut down the Docker containers that might be currently running.
 cd ${DIR}/scripts
