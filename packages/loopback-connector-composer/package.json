@@ -1,5 +1,5 @@
 {
-  "name": "composer-loopback-connector",
+  "name": "loopback-connector-composer",
   "version": "0.4.1",
   "description": "A Loopback connector for Fabric Composer",
   "main": "index.js",
