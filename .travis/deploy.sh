@@ -82,7 +82,7 @@ fi
 # Set the GitHub deploy key we will use to publish.
 set-up-ssh --key "$encrypted_f19708b15817_key" \
            --iv "$encrypted_f19708b15817_iv" \
-           --path-encrypted-key " ${DIR}/.travis/github_deploy_docs_key.enc"
+           --path-encrypted-key ".travis/github_deploy_docs_key.enc"
 
 # push the html documents
 # Configure the Git repository and clean any untracked and unignored build files.
