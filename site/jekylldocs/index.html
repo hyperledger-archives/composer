@@ -4,126 +4,65 @@ title: Fabric Composer - Create business networks and blockchain applications qu
 ---
 
 <div class="content">
+  <div class="jumbotron">
+      <div class="container">
+          <h2>Fabric Composer</h2>
+      </div>
+      <!-- /.container -->
+      <div class="container">
+          <p>Build business networks, applications and integration with Hyperledger Fabric blockchain</p>
+      </div>
+      <!-- /.container -->
+  </div>
+<!-- /.jumbotron -->
 
-    <div class="jumbotron clearfix">
-        <div class="container">
-            <h2>Fabric Composer</h2>
-            <p>Build Business networks, applications and integration with Hyperledger fabric blockchain</p>
-        </div>
-
-<!--        <a href="/fabric-composer/start/getting-started.html" class="click-button click-button-light">Get Started!</a> -->
-
-    </div>
-    <!-- /.jumbotron -->
-    <div class="container">
-        <article class="main clearfix">
-            <section class="one-line-install">
-
-                <p>If you're experienced with npm and git, get going with
-                    <pre>npm install -g composer-cli
-git clone https://github.com/fabric-composer/sample-applications.git</pre>
-If you want to start or continue with a worked example, then use the  <a href="./start/getting-started.html">Quick Start</a>!
-
-</p>
-
-            </section>
-            <!-- one-line-install section - concerto -->
-            <section class="content-chunk section-tools">
-                <h1>What is  Fabric Composer ?</h1>
-                <p> <strong> Fabric Composer </strong> is an application development framework which simplifies and expedites the creation
-                  of <a href="https://hyperledger-fabric.readthedocs.io/en/latest/">Hyperledger fabric</a> blockchain applications. It provides
-                  interactive tools, APIs and a modelling language to help developers design business networks, the applications that exploit
-                  them, and the connectors to integrate blockchains with existing systems.
-                </p>
-                <p>
-                  <strong> Fabric Composer </strong> provides a layer of abstraction on top of the Hyperledger Fabric blockchain. Developers can
-                  design in terms of business networks, participants, identity, assets, registries, transactions, events and links, in contrast
-                  to the low level abstractions of chaincode and key-value stores.  The composer modelling language makes it easy for developers to model
-                  the specific nature of their business domains. The interactive composer tool allows them to author and test these models, and then create
-                  domain specific APIs for their consumers. Developers can use Composer tools to create sample applications which exploit these APIs,
-                  and create <a href="https://loopback.io/">loopback</a> connectors which provide connectivity between the blockchain and their existing systems.
-                </p>
-
-                <div>
-                  <h2>Framework Features</h2>
-                <table>
-                  <tr>
-                    <td>
-
-                    <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
-                    	<div class="flipper">
-                    		<div class="front">
-                    		Blockchain State Storage
-                    		</div>
-                    		<div class="back">
-                    			All state is stored in Hyperledger Fabric, ensuring consensus, immutability etc.
-                    		</div>
-                    	</div>
-                    </div>
-                      </td>
-                    <td>
-                      <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
-                        <div class="flipper">
-                          <div class="front">
-                        Assets
-                          </div>
-                          <div class="back">
-                           Asset Registries define the data to be stored and exchanged
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
-                        <div class="flipper">
-                          <div class="front">
-                        Particpants
-                          </div>
-                          <div class="back">
-                          	Transactions are associated with authenticated members of the Hyperledger Fabric
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
-                        <div class="flipper">
-                          <div class="front">
-                        REST APIs
-                          </div>
-                          <div class="back">
-                          		Provides REST APIs to interact with assets and the transaction registry
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="flip-container" ontouchstart="this.classList.toggle('hover');">
-                        <div class="flipper">
-                          <div class="front">
-                        Analytics and Monitoring
-                          </div>
-                          <div class="back">
-                          		Extension points to send transactions to external analytics data stores
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
+  <div class="container">
+      <!-- Main CTAs Section -->
+      <div class="row">
+          <div class="col-lg-12">
+              <h1 class="page-header">
+                  Compose Something Now
+              </h1>
+          </div>
+          <div class="col-md-4">
+              <div class="panel panel-default">
+                  <div class="panel-heading">
+                      <h4><i class="fa fa-fw fa-angle-right"></i> Get Coding</h4>
+                  </div>
+                  <div class="panel-body">
+                      <p>Check your prerequisites and install the developer tools via npm.  Click here for our Developer Quickstart instructions.</p>
+                      <a href="{{site.baseurl}}/start/quickstart.html" class="btn btn-primary">Quickstart</a>
+                  </div>
               </div>
-              <div>
-                  <h2>Check out these resources</h2>
-                  <ul>
-                      <li><b>First time here?</b> Check out the <a href="./overview/overview.html">Overview</a> and the <a href="concepts/index.html">Concepts</a></li>
-                      <li><b>Developer?</b> Get going with <a href="./start/getting-started.html">Getting Started</a> and clone our sample application git repo</li>
-                      <li><b>Analyst?</b> Model your you business network in the <a href="http://fabric-composer.mybluemix.net/">Composer</a> and see how you control business assets</li>
-                  </ul>
+          </div>
+          <div class="col-md-4">
+              <div class="panel panel-default">
+                  <div class="panel-heading">
+                      <h4><i class="fa fa-fw fa-compass"></i> Learn Before You Leap</h4>
+                  </div>
+                  <div class="panel-body">
+                      <p>First time here?  Start with our Overview for an introduction to the key blockchain and Fabric Composer concepts.</p>
+                      <a href="{{site.baseurl}}/overview/overview.html" class="btn btn-default">Overview</a>
+                  </div>
               </div>
-            </section>
-        </article>
-        <!-- /.main -->
+          </div>
+          <!--<div class="col-md-4">
+              <div class="panel panel-default">
+                  <div class="panel-heading">
+                      <h4><i class="fa fa-fw fa-puzzle-piece"></i> Composer (coming soon)</h4>
+                  </div>
+                  <div class="panel-body">
+                      <p>A web playground where you can learn and apply the full power of the framework without downloading anything.</p>
+                      <a href="#" class="btn btn-default disabled">Coming Soon...</a>
+                  </div>
+              </div>
+          </div>
+        </div>-->
+      <!-- /.row -->
     </div>
-    <!-- /.container -->
+  </div>
+  <!-- /.container -->
+
+
 </div>
 <!-- /.content -->
