@@ -1,28 +1,32 @@
 ---
 layout: default
-title: Getting Started with Fabric Composer
+title: Fabric Composer Quickstart
 category: start
-sidebar: sidebars/start.md
 excerpt: Getting Started with Fabric Composer
 ---
 
-# Getting Started with Fabric Composer
+## Fabric Composer Quickstart
 
-First check that your system has the required software (at the required versions) installed:
+---
 
+<i class="fa fa-fw  fa-coffee"></i>  <b>GET READY</b><br>
+
+---
+
+>Before you start, you should check that your system has the required software (at the required versions) installed:
 [Supported Platforms](../reference/platforms.md)
-
 If you need to update or install anything please refer to the install guides:
-
 [Installing Prerequisites](../tasks/prerequisites.md)
 
-# Clone the Sample Applications repository
+---
+
+## Clone the Sample Applications repository
 
 ```
 git clone https://github.com/fabric-composer/sample-applications.git
 ```
 
-# Install the Getting Started Application
+## Install the Getting Started Application
 
 ```
 cd sample-applications/
@@ -31,7 +35,7 @@ cd getting-started
 npm install
 ```
 
-# Run the Getting Started Application
+## Run the Getting Started Application
 
 Run the `npm test` command. You should see output as below.
 
@@ -115,13 +119,12 @@ info: [Composer-GettingStarted]
 info: [Composer-GettingStarted] Command completed successfully.
 
 ```
+---
 
-# Next Steps
+<i class="fa fa-fw  fa-forward"></i>  <b>WHERE TO NEXT?</b><br>
 
-[Command Line Usage](./getting-started-cmd-line.md)
+---
 
-[Generate a REST API](./getting-started-rest-api.md)
+Continue experimenting with one of our Getting Started guides:
 
-[Generate a Node.js App](./getting-started-nodejs-app.md)
-
-[Coding a Business Network Definition](./getting-started-coding-bnd.md)
+[Visit Getting Started](./index.md)

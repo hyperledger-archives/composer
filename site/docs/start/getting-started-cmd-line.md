@@ -6,13 +6,24 @@ sidebar: sidebars/start.md
 excerpt: Getting Started with Fabric Composer
 ---
 
-# Getting started with Fabric Composer Application Development
+## Running a sample with the CLI
+
+---
+
+<i class="fa fa-fw  fa-coffee"></i>  <b>GET READY</b><br>
+
+---
+
+>Before you follow these instructions, make sure you've completed the
+[Quickstart](./getting-started.md)!
+
+---
 
 To help get started with application development using the Fabric Composer Framework, this guide will talk you through downloading Fabric Composer, starting a Fabric, deploying a simple business network and submitting transactions.
 
 This is all done using a simple business network  **Digital Property Network**
 
-# What is the Digital Property Network?
+## What is the Digital Property Network?
 
 This network will be expanded for other tutorials, but for this getting started we'll keep it simple. We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
 
@@ -47,64 +58,21 @@ transaction RegisterPropertyForSale identified by transactionId{
 
 The applications we're going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the Fabric Composer backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.
 
-# But what is an asset?
+## But what is an asset?
 An is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.
 
 It's worth reading the [Overview](../overview/overview.md) page to get an idea of how everything fits together. The [Glossary](../reference/glossary.md) provides a detailed description of each term.
 
-# What are we going to do?
+## What are we going to do?
 All the resources and scripts you'll need are in a git repository that we'll clone, this will have the code for the applications along with the scripts to get the Hyperledger setup and ready to go.
 
 The first thing to do is to ensure that you have a suitable system ready for development.
 
-### Development Prerequisites
-First check that you are running on a [supported system](../reference/platforms.md) and install the required development [prerequisites](../tasks/prerequisites.md).  Essentially this means Linux/MacOS & node.js & docker & docker-compose & git
+**Ensure that you have followed the steps in our Quickstart before continuing!**  (Quickstart available [here](./getting-started.md))
 
-### Install the  Fabric Composer CLI
-Installing the  Fabric Composer CLI tools module is the first step. This gives you commands to deploy, update and list business networks.
+Let's go ahead and make a change to start to show how easy it is to develop with Fabric Composer.
 
-```bash
-npm install -g composer-cli
-```
-
-### Clone the Getting Started Repository
-Next you need to pull down the code for the Getting Started sample.
-
-```bash
-git clone git@github.com:fabric-composer/sample-applications.git
-cd sample-applications/packages/getting-started
-```
-
-### Install the Dependencies, Start Fabric and Deploy the Business Network
-Next you can run the following commands to install all the dependent Node modules for the sample, pull down the Docker images for Hyperledger Fabric, start the Fabric and then deploy a Business Network Definition.
-
-```bash
-npm install
-```
-
-This is doing quite a bit of work but at the end of it you will have all the dependent modules, together with a running local Hyperledger instance, and the DigitalProperty Network will have been deployed to that Hyperledger. At this point it doesn't contain any assets at all.
-
-### Create Assets and Submit a Transaction
-There are some simple applications included that will create some assets, list the current assets and submit a transaction.
-First, the assets are created and the newly created assets are listed. Then a transaction is submitted to update one of the assets 'for sale'. A final asset listed is then queried to show the update has taken place. To run this end-end sequence issue...
-
-```bash
-npm test
-```
-
-### That's it
-So to recap
-
-* You installed Fabric Composer command line tools
-* The 'Getting Started' repository was cloned
-* All the code dependencies where pulled down, and a docker-hosted Hyperledger instance was Started
-  * and the Digital Property Business Network was deployed to it
-* A sample set of assets were added
-* A simple transaction was invoked to update the assets
-
-**All done!** But let's go ahead and make a change to start to show how easy it is to develop with Fabric Composer.
-
-# Updating the Business Network
+## Updating the Business Network
 
 We are going to make a simple change to the business logic for the business network definition.
 
@@ -222,149 +190,8 @@ info: [Composer-GettingStarted] Fabric Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
 =======
 
-# Getting Started with Fabric Composer
-
-First check that your system has the required software (at the required versions) installed:
-
-[Supported Platforms](../reference/platforms.md)
-
-If you need to update or install anything please refer to the install guides:
-
-[Installing Prerequisites](../tasks/prerequisites.md)
-
-# Clone the Sample Applications repository
-
-```
-git clone https://github.com/fabric-composer/sample-applications.git
-```
-
-# Install the Getting Started Application
-
-```
-cd sample-applications/
-cd packages
-cd getting-started
-npm install
-```
-
-# Run the Getting Started Application
-
-Run the `npm test` command. You should see output as below.
-
-```
-npm test
-
-daniels-mbp:getting-started dselman$ npm test
-
-> getting-started@1.0.0 test /Users/dselman/dev/git/sample-applications/packages/getting-started
-> mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
-
-
-  Default
-    #sample test
-      ✓ should pass
-
-
-  1 passing (8ms)
-
-
-> getting-started@1.0.0 bootstrapAssets /Users/dselman/dev/git/sample-applications/packages/getting-started
-> node cli.js landregistry bootstrap
-
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: [Composer-GettingStarted] Adding default land titles to the asset registry
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles getting asset registry for "net.biz.digitalPropertyNetwork.LandTitle"
-info: [Composer-GettingStarted] about to get asset registry
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles got asset registry
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles getting factory and adding assets
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a person
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#1
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#2
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Adding these to the registry
-info: [Composer-GettingStarted] Default titles added
-info: [Composer-GettingStarted] Command completed successfully.
-
-> getting-started@1.0.0 listAssets /Users/dselman/dev/git/sample-applications/packages/getting-started
-> node cli.js landregistry list
-
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: [Composer-GettingStarted] listTitles Getting the asset registry
-info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
-info: [Composer-GettingStarted] listTitles Current Land Titles
-info: [Composer-GettingStarted] Titles listed
-info: [Composer-GettingStarted]
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ No      │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: [Composer-GettingStarted] Command completed successfully.
-
-> getting-started@1.0.0 submitTransaction /Users/dselman/dev/git/sample-applications/packages/getting-started
-> node cli.js landregistry submit && node cli.js landregistry list
-
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
-info: [Composer-GettingStarted] updateForSale Submitting transaction
-info: [Composer-GettingStarted] Transaction Submitted
-undefined
-info: [Composer-GettingStarted] Command completed successfully.
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: [Composer-GettingStarted] listTitles Getting the asset registry
-info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
-info: [Composer-GettingStarted] listTitles Current Land Titles
-info: [Composer-GettingStarted] Titles listed
-info: [Composer-GettingStarted]
-
-┌──────────┬────────────────┬────────────┬─────────┬───────────────────────────────────────────────────────────────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                                                                           │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country Updated at: Wed, 11 Jan 2017 Updated at: Wed, 11 Jan 2017 │ Yes     │
-├──────────┼────────────────┼────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city                                                              │ No      │
-└──────────┴────────────────┴────────────┴─────────┴───────────────────────────────────────────────────────────────────────────────────────┴─────────┘
-info: [Composer-GettingStarted] Command completed successfully.
-```
 
 ## Digging Deeper
-
-Both `npm install` and `npm test` run commands defined in `package.json`. If you open `package.json` you will see that it uses the following utility scripts and commands.
-
-```bash
-test
-    mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
-  install
-    scripts/download-hyperledger.sh && scripts/start-hyperledger.sh && npm run deployNetwork
-
-available via `npm run-script`:
-  submitTransaction
-    node cli.js landregistry submit && node cli.js landregistry list
-  listAssets
-    node cli.js landregistry list
-  bootstrapAssets
-    node cli.js landregistry bootstrap
-  startHLF
-    scripts/start-hyperledger.sh
-  stopHLF
-    scripts/stop-hyperledger.sh
-  teardownHLF
-    scripts/teardown.sh
-  deployNetwork
-    composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip && composer network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-```
-
-* *npm test*  The standard test target runs some mocha based unti tests, then invokes two other npm run commands to store some test assets and submit a simple transaction.
-* *npm install* This standard target installs the dependancies and also some some essential setup for the Fabric Composer Framework
-
-Let's look at each of the other scripts and what they do - there are two main shell scripts that we have written that will control Hyperledger, some Fabric Composer commands and then the application.
-
-**Shell scripts to control Hyperledger**
 
 * `scripts/download-hyperledger.sh` This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Fabric Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.
 
@@ -393,26 +220,13 @@ There are 3 sample Javascript applications that use the Fabric Composer Client A
 * `node cli.js landregistry list`   This lists the contents of the asset registries that have been defined in the business network.
 * `node cli.js landregistry bootstrap` This applications puts some pretend assets into the registries to work with.
 
-#Where next?
-So we have downloaded the Hyperledger docker containers and stated a fabric. We have used the Fabric Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.
-=======
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ Yes     │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: [Composer-GettingStarted] Command completed successfully.
+### Nice one!
+We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Fabric Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.
 
-```
-
-# Next Steps
-
-[Command Line Usage](./getting-started-cmd-line.md)
-
-[Generate a REST API](./getting-started-rest-api.md)
-
-[Generate a Node.js App](./getting-started-nodejs-app.md)
+If you want to continue exploring, check out our other Getting Started guides:
 
 [Coding a Business Network Definition](./getting-started-coding-bnd.md)
+
+[Generating a REST API](./getting-started-rest-api.md)
+
+[Writing a Node.js App](./getting-started-nodejs-app.md)

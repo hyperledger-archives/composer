@@ -1,36 +1,26 @@
 /*
- * IBM Confidential
- * OCO Source Materials
- * IBM Concerto Express Router - Blockchain Solution Framework
- * Copyright IBM Corp. 2016
- * The source code for this program is not published or otherwise
- * divested of its trade secrets, irrespective of what has
- * been deposited with the U.S. Copyright Office.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
-
-
-
-/*
-
-This file came from the old Concerto-Express-Router.
-
-Quite a lot of code which needs to either be removed or edited to work with the newest version of Concerto.
-Going to edit this and remove code when needed as the Strongloop connector will be replacing this.
-
-*/
-
-
 
 'use strict';
 
 const express = require('express');
-const BusinessNetworkConnection = require('@ibm/concerto-client').BusinessNetworkConnection;
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 /**
- * Returns an Express Router for the Concerto assets and transactions
+ * Returns an Express Router for the composer assets and transactions
  *
- * @param {Concerto} concerto - the Concerto instance
- * @param {SecurityContext} securityContext - the Security Context to access Concerto methods
+ * @param {composer} composer - the composer instance
+ * @param {SecurityContext} securityContext - the Security Context to access composer methods
  * @param {Object} options - the options
  * @return {Promise} a Promise to the Express Router
  * @public
@@ -107,11 +97,11 @@ function createRouter(profile,network,user,pass) {
 }
 
 /**
- * Creates the Express App routes for an Asset or Participant Concerto type
+ * Creates the Express App routes for an Asset or Participant composer type
  * @param {Router} router - the Express router
- * @param {Concerto} concerto - the Concerto instance
- * @param {SecurityContext} securityContext - the Security Context to access Concerto methods
- * @param {ClassDeclaration} classDeclaration - the Concerto type
+ * @param {composer} composer - the composer instance
+ * @param {SecurityContext} securityContext - the Security Context to access composer methods
+ * @param {ClassDeclaration} classDeclaration - the composer type
  * @param {Object} options - the options
  * @return {Promise} a promise to the asset registry
  */
@@ -184,8 +174,8 @@ function createAssetRoutes(router, businessNetworkConnection, businessNetworkDef
 /**
  * Creates the Express App route for querying and submitting transactions
  * @param {Router} router - the Express router
- * @param {Concerto} concerto - the Concerto instance
- * @param {SecurityContext} securityContext - the Security Context to access Concerto methods
+ * @param {composer} composer - the composer instance
+ * @param {SecurityContext} securityContext - the Security Context to access composer methods
  * @param {Object} options - the options
  * @return {Promise} a Promise to the transaction registry lookup
  */
@@ -255,14 +245,14 @@ function createTransactionRoutes(router, businessNetworkConnection, businessNetw
 /**
  * Creates the Express App route for refreshing the model manager
  * @param {Router} router - the Express router
- * @param {Concerto} concerto - the Concerto instance
- * @param {SecurityContext} securityContext - the Security Context to access Concerto methods
+ * @param {composer} composer - the composer instance
+ * @param {SecurityContext} securityContext - the Security Context to access composer methods
  * @param {Object} options - the options
  */
 function createModelManagerRoute(router, businessNetworkDefinition) {
     console.log('Registering model manager route.');
     router.get('/modelmanager/loadModels', (req, res, next) => {
-        concerto.loadModels(securityContext).then(() => {
+        composer.loadModels(securityContext).then(() => {
             res.type('application/json');
             res.send('{"status" : "ok"}');
         })
@@ -303,7 +293,7 @@ function getFunctionName(req) {
 
 /**
  * Returns a JS Object suitable for transmission on the wire
- * @param  {Serializer} serializer Concerto Serializer to use for Resources
+ * @param  {Serializer} serializer composer Serializer to use for Resources
  * @param  {string} functionName the registry function that was called to get the obj
  * @param  {Object} obj - the object returned by calling functionName on the registry
  * @return {Object} a JS Object that can be serialized to JSON for return to the caller
