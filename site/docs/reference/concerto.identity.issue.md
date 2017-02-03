@@ -1,22 +1,22 @@
 ---
 layout: default
-title: Concerto Identity Issue Command
+title: Fabric Composer Identity Issue Command
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Concerto Identity Issue Command
+excerpt: Fabric Composer Identity Issue Command
 ---
 
-# concerto identity issue
+# composer identity issue
 
-The `concerto identity issue` command issues a new identity to a participant in a
+The `composer identity issue` command issues a new identity to a participant in a
 participant registry. See the task [Issue an Identity to a Participant](../tasks/identity-issue.md)
 for a walkthrough of using this command or the API.
 
 ## Syntax
 
 ```
-$ concerto identity issue
-concerto identity issue [options]
+$ composer identity issue
+composer identity issue [options]
 
 Options:
   --help                       Show help  [boolean]

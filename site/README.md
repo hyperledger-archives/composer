@@ -1,9 +1,9 @@
-# Concerto Documentation
+# Fabric Composer Documentation
 
-This repository is holds the documentation for Concerto and the tools to create the static website for Concerto. This static site is hosted on the gh-pages branch of the main Concerto repo.  It also holds the scripts that create the API documentation; therefore this repo is in effect a node module that has a dependancy on the main Concerto modules.
+This repository is holds the documentation for Fabric Composer and the tools to create the static website for Fabric Composer. This static site is hosted on the gh-pages branch of the main fabric-composer repo.  It also holds the scripts that create the API documentation; therefore this repo is in effect a node module that has a dependency on the main Fabric Composer modules.
 
 # High Level Process
-In summary the documentation is generated using both Jekyll and the jsdoc tool. These are run using scripts on within Travis, with output being pushed to the gh-pages branch of the Concerto git repository.
+In summary the documentation is generated using both Jekyll and the jsdoc tool. These are run using scripts on within Travis, with output being pushed to the gh-pages branch of the Fabric Composer git repository.
 
 * The markdown files with the documentation are contained in a simple directory structure under `docs`
   * Images are in the `images` directory, (note considering if these should be moved under docs next to where they are referenced)
@@ -41,7 +41,7 @@ to write... note that a Java Runtime is required for the plantuml even though it
 
 ## jsdocs
 
-1. The API documentation using jsdoc are created initially; the source for these are in the node_modules directory. This is achieved by the fact the concerto npms are dependancies in the package.json. So the source code that contains the jsdoc comments will be pulled down and be contained within the node_modules directory,
+1. The API documentation using jsdoc are created initially; the source for these are in the node_modules directory. This is achieved by the fact the Fabric Composer npms are dependancies in the package.json. So the source code that contains the jsdoc comments will be pulled down and be contained within the node_modules directory,
 2.
     ```
     "composer-admin": "latest",
@@ -96,7 +96,7 @@ The jekyll template and files are stored in this tree
 
 ### Personal fork and travis
 
-When you push a change to your local fork of the Concerto-Docs repo, Travis will run. It will detect this fork and push to your local gh-pages. Two important things  (1) If you fork the Concerto-Docs repo, it will have a gh-pages branch - but github doesn't see this as having html in it. Delete and recreate it.
+When you push a change to your local fork of the fabric-composer repo, Travis will run. It will detect this fork and push to your local gh-pages. Two important things  (1) If you fork the fabric-composer repo, it will have a gh-pages branch - but github doesn't see this as having html in it. Delete and recreate it.
 
 If you want the git push to work, you'll need to add into Travis, your ssl key for github enterprise.
 

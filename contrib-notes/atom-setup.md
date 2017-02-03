@@ -1,86 +1,27 @@
-# Using Atom for Concerto development
-(Atom)[https://atom.io/] is the favoured development environment by many (possibly all) of the contributors on Concerto and related projects. Atom is at it's most productive would used with a number of plugins. The ones that we have found to be most useful are below and would suggest that you install these when with developing Concerto itself or applications using the Concerto API.
+# Using Atom for Fabric Composer development
 
-Quik
+[Atom](https://atom.io/) is the preferred code editor for contributors the fabric composer project.  Many developers find Atom especially productive due to the wide range of plugins availability to assist with code development activities. These include syntax highlighting for node.js code, JavaScript and the Composer modelling language, or *linting* to help eliminate potential bugs and ensure a consistent coding style. Developers can also develop their own plugins. Here's a list of Atom plugins  for you consider as you develop within the fabric composer project.
 
-## Code editing
+## Javascipt and node.js linting
 
-### Concerto File Highlighting
-The very first plugin you should install is a syntax highlighter for the Concerto model files. If you only install one thing, make it this one.
+Use the [linter-eslint plugin](https://atom.io/packages/linter-eslint) to help with linting node.js and JavaScript code. For an example of the eslinter config file see [here](../packages/composer-admin/.eslintrc.yml).
 
-[https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom]
+## Composer modelling language
 
-### esLint
-JavaScript dosn't come with a compiler that can pick up silly mistakes, but a linter is an essential tool to help. The one we have used is eslint.
+Use the [composer-atom plugin](https://github.com/fabric-composer/tools) for syntax highlighting of the composer modelling language. It is located in the *packages/composer-atom* directory of the [tools repository](https://github.com/fabric-composer/tools) in the fabric composer project. Follow the instructions in the README to install the plugin.
 
-[https://atom.io/packages/linter-eslint]
+## Find unfinished work items
 
-This is the config file that we have used with eslint
-```
-env:
-    es6: true
-    node: true
-    mocha: true
-extends: 'eslint:recommended'
-parserOptions:
-    sourceType:
-        - script
-rules:
-    indent:
-        - error
-        - 4
-    linebreak-style:
-        - error
-        - unix
-    quotes:
-        - error
-        - single
-    semi:
-        - error
-        - always
-    no-unused-vars:
-        - error
-        - args: none
-    no-console: off
-    curly: error
-    eqeqeq: error
-    no-throw-literal: error
-    strict: error
-    no-var: error
-    dot-notation: error
-    no-tabs: error
-    no-trailing-spaces: error
-    # no-use-before-define: error
-    no-useless-call: error
-    no-with: error
-    operator-linebreak: error
-    require-jsdoc:
-        - error
-        - require:
-            ClassDeclaration: true
-            MethodDefinition: true
-            FunctionDeclaration: true
-    valid-jsdoc:
-        - error
-        - requireReturn: false
-    yoda: error
-```
+Use the [todo-show](https://atom.io/packages/todo-show) plugin to find indicators that code might not be complete by finding instances of indicative text, such as *TODO*, *FUTURE*, *BUG* etc.
 
-### TODO-Show
-This can show easily all the TODO: FUTURE: etc that in the codebase
-[https://atom.io/packages/todo-show]
+## Match selected keywords
 
-### Highlight selected
-Click on a keyword or variable and this will show up the matching instances in the file.
-[https://atom.io/packages/highlight-selected]
+Use the [highlight-selected plugin](https://atom.io/packages/highlight-selected) to find all matches of a keyword in the current file.
 
-### DocBlockr
-Helps to create skeltion doc comments for Functions
-[https://atom.io/packages/docblockr]
+## Documentation assistance
 
-## General
+Use the [docblockr plugin](https://atom.io/packages/docblockr) to create pretty comments, function prototypes and other helpful code decorations.
 
-### FileIcons
-Useful UI enhancement to show different icons for different file Types
+## File type visualization
 
-[https://atom.io/packages/file-icons]
+Use the [file-icons plugin](https://atom.io/packages/file-icons) to assign visual representations to file extension to help locate files of a given type.

@@ -34,7 +34,7 @@ RUN npm cache clean \
 
 # Install the global dependencies.
 RUN npm cache clean \
-  && npm install -g --quiet composer-cli@^0.3.0 composer-connector-server@^0.3.0
+  && npm install -g --quiet composer-cli@^0.4.0 composer-connector-server@^0.4.0
 
 # Bundle application source.
 COPY . /usr/src/app/

@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Contributing to Concerto
+title: Contributing to Fabric Composer
 category: contributing
 sidebar: sidebars/contributing.md
-excerpt: Concerto project contribution guidelines
+excerpt: Fabric Composer project contribution guidelines
 ---
-# Contributing to Concerto
+# Contributing to Fabric Composer
 
-This document explains how you should work with the Concerto repository.
+This document explains how you should work with the Fabric Composer repository.
 
 ## Creating a Mac OS X development environment
 
@@ -37,7 +37,7 @@ Then in a terminal type:
 ### Install Required Version of Node
 
 Use the Node Version Manager (nvm) to install the correct version of
-Node for Concerto.
+Node for Fabric Composer.
 
 In a terminal window type:
 
@@ -48,14 +48,14 @@ node_modules directory and rerun 'npm install'.
 
 ### Install dependencies
 
-From a terminal window in the Concerto directory run:
+From a terminal window in the Fabric Composer directory run:
 
     ./scripts/install-deps.sh
 
 ### Test the environment
 
 You can now run the Unit Tests to test your development environment works.
-From your checkout Concerto directory, switch to a terminal and type:
+From your checkout Fabric Composer directory, switch to a terminal and type:
 
     npm install
     npm test
@@ -64,7 +64,7 @@ The tests should all pass!
 
 ## Our development process
 
-All work on Concerto is performed on GitHub Enterprise. Changes should be developed in a fork of the Concerto repository, and the changes submitted for approval in the form of pull requests.
+All work on Fabric Composer is performed on GitHub. Changes should be developed in a fork of the fabric-composer repository, and the changes submitted for approval in the form of pull requests.
 
 | Workflow |
 | :-----: |
@@ -72,7 +72,7 @@ All work on Concerto is performed on GitHub Enterprise. Changes should be develo
 
 ### `develop` branch
 
-All changes and pull requests should be targeted at the `develop` branch. The `develop` branch has been configured as the default branch for the Concerto repository. When you create a pull request, a Travis CI build will automatically run to confirm that your changes build cleanly and pass all known tests. Your changes will **not** be merged into the `develop` branch unless this build runs cleanly.
+All changes and pull requests should be targeted at the `develop` branch. The `develop` branch has been configured as the default branch for the fabric-composer repository. When you create a pull request, a Travis CI build will automatically run to confirm that your changes build cleanly and pass all known tests. Your changes will **not** be merged into the `develop` branch unless this build runs cleanly.
 
 ### `master` branch
 
@@ -80,7 +80,7 @@ We try to keep the `master` branch as stable as possible. Changes are regularly 
 
 ### Testing
 
-All changes pushed to Concerto should include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes which are not covered by automated unit tests will **not** be accepted.
+All changes pushed to Fabric Composer should include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes which are not covered by automated unit tests will **not** be accepted.
 
 Unit testing is for ensuring that small units of code *Do The Right Thing*, with an extremely quick turnaround time. An example of this might be the `AssetRegistryFactory.create()` method. The code in this method *probably* needs to do two things; send the correct invoke request to the chain-code, and correctly handle all of the possible responses from that chain-code.
 
