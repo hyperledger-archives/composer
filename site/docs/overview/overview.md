@@ -2,11 +2,12 @@
 layout: default
 title: Fabric Composer -  Overview
 category: overview
-sidebar: sidebars/overview.md
 excerpt: Fabric Composer overview
 ---
 
 ## Overview
+
+---
 
 Fabric Composer is a set of APIs, a modeling language and
 a programming model to quickly define and deploy business networks and applications
@@ -195,3 +196,15 @@ return admin.createProfile('testprofile', config)
 Front-end developers use domain-specific (dynamically generated from the domain model for the business network definition) to interact with assets and asset registries.
 
 In addition, if they are building an Angular2 application, they may generate Typescript types from the domain model, ensuring type-safety in the user interface code they are writing.
+
+---
+
+<i class="fa fa-fw  fa-forward"></i>  <b>WHERE TO NEXT?</b><br>
+
+---
+
+Read more about the key concepts in a Business Network on our Concepts page, or get ready for app development with Quickstart.
+
+[Fabric Composer Concepts Doc](../concepts/index.md)
+
+[Developer Quickstart](../start/getting-started.md)
