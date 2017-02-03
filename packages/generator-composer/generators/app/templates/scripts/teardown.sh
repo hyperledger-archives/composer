@@ -11,6 +11,6 @@ cd ${DIR}/scripts
 docker-compose kill && docker-compose down
 
 # remove the local state
-rm -f ~/.concerto-credentials/*
+rm -f ~/.composer-credentials/*
 
 # Your system is now clean
