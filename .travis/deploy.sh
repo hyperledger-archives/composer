@@ -27,7 +27,7 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
-  ./.travis/deploy_docs.#!/bin/sh
+  ./.travis/deploy_docs.sh
   exit 0
 fi
 
