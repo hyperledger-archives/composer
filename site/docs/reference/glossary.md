@@ -17,8 +17,6 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 **Hyperledger** is the name of the Linux Foundation project to produce an open blockchain platform that is ready for business. It will provide an implementation of the shared ledger, smart contracts, privacy and consensus mechanisms. It will not provide any value added services (like monitoring or cloud hosting). IBM is one of many sponsors of the Hyperledger project.
 
-More information is available internally to IBM is community website http://ibm.biz/BlockchainGang. This is  the one place for all IBMer enablement of Blockchain. The IBM external website is http://www.ibm.com/blockchain.
-
 # Fabric Composer Narrative
 
 An **Economic Business Network** refers to the organizations that work together to take part in the digital business network. In many (all!) such networks there are multiple organisations that need to correlate their business process. In addition, in some industries, there are regulators that oversee the market. For example, within the food distribution network, the regulator is DEFRA in the UK or the Department of Agriculture in the US. To have a system that, for example, tracks food assets and the participants in the network, is very applicable to a Blockchain's quality of service. However, writing direct to the Hyperledger's core SDK requires a very low level API - and one that is not readily available or accessible to in-house developers. There is a high barrier to entry for practically solving business problems. So to help address this problem the ..tbc
