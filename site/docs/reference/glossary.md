@@ -11,7 +11,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 > A blockchain— originally block chain — is a distributed database that maintains a continuously-growing list of records called blocks. Each block contains a timestamp and a link to a previous block. The data in a block cannot be altered retrospectively. Blockchains are an example of a distributed computing system with high byzantine fault tolerance.
 
-**Blockchain** is a shared, replicated ledger that can record asset transfers. An implemented blockchain platform is often referred to as ...
+**Blockchain** is a shared, replicated ledger that can record asset transfers. An implemented blockchain platform is often referred to as a Blockchain Fabric.
 
 **Blockchain fabric** or just fabric. This is a platform that user applications connect to in order to interact with such a ledger, as well as the ledger itself. Examples of blockchain fabrics include Bitcoin, Ethereum, Open Blockchain and of course Hyperledger ...
 
