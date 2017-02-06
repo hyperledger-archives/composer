@@ -207,4 +207,4 @@ Read more about the key concepts in a Business Network on our Concepts page, or 
 
 [Fabric Composer Concepts Doc](../concepts/index.md)
 
-[Developer Quickstart](../start/getting-started.md)
+[Developer Quickstart](../start/quickstart.md)
