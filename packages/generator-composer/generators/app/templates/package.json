@@ -21,7 +21,7 @@
   "license": "Apache2",
   "dependencies": {
     "<%= npmNetworkDependancy %>": "0.0.21",
-    "composer-client": "^0.4.0",
+    "composer-client": "^0.4.1",
     "config": "^1.21.0",
     "shelljs": "^0.7.5",
     "winston": "^2.2.0",

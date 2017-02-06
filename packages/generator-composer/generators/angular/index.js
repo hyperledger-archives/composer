@@ -231,7 +231,7 @@ module.exports = yeoman.Base.extend({
                             if(input !== null && input !== undefined) {
                                 return true;
                             } else {
-                                return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
+                                return 'File name cannot be null or empty.';
                             }
                         }
                     }];
