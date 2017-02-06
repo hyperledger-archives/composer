@@ -25,6 +25,13 @@ if [[ "${TRAVIS_REPO_SLUG}" != fabric-composer* ]]; then
     exit 0
 fi
 
+# are we building the docs?
+if [ "${DOCS}" != "" ]; then
+  ./.travis/deploy_docs.sh
+  exit 0
+fi
+
+
 # Set the NPM access token we will use to publish.
 npm config set registry https://registry.npmjs.org/
 npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
@@ -77,33 +84,3 @@ else
     git push origin develop
 
 fi
-
-
-# Set the GitHub deploy key we will use to publish.
-set-up-ssh --key "$encrypted_f19708b15817_key" \
-           --iv "$encrypted_f19708b15817_iv" \
-           --path-encrypted-key " ${DIR}/.travis/github_deploy_docs_key.enc"
-
-# push the html documents
-# Configure the Git repository and clean any untracked and unignored build files.
-git config user.name "Travis CI"
-git config user.email "noreply@travis.ibm.com"
-git config push.default simple
-
-echo ${DIR}
-cd ${DIR}/site/out
-
-export REPO="fabric-composer.github.io"
-
-git clone git@github.com:fabric-composer/${REPO}.git
-git remote set-url origin ${REPO}.git
-
-cd ${DIR}/site/out${REPO}
-
-rm -rf ${DIR}/site/out/${REPO}/*
-cp -rf ${DIR}/site/out/jekylldocs/_site/* .
-
-git add .
-
-git commit -m "Automated deploy to ${REPO}"
-git push

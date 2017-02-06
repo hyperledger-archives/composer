@@ -11,13 +11,11 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 > A blockchain— originally block chain — is a distributed database that maintains a continuously-growing list of records called blocks. Each block contains a timestamp and a link to a previous block. The data in a block cannot be altered retrospectively. Blockchains are an example of a distributed computing system with high byzantine fault tolerance.
 
-**Blockchain** is a shared, replicated ledger that can record asset transfers. An implemented blockchain platform is often referred to as ...
+**Blockchain** is a shared, replicated ledger that can record asset transfers. An implemented blockchain platform is often referred to as a Blockchain Fabric.
 
 **Blockchain fabric** or just fabric. This is a platform that user applications connect to in order to interact with such a ledger, as well as the ledger itself. Examples of blockchain fabrics include Bitcoin, Ethereum, Open Blockchain and of course Hyperledger ...
 
 **Hyperledger** is the name of the Linux Foundation project to produce an open blockchain platform that is ready for business. It will provide an implementation of the shared ledger, smart contracts, privacy and consensus mechanisms. It will not provide any value added services (like monitoring or cloud hosting). IBM is one of many sponsors of the Hyperledger project.
-
-More information is available internally to IBM is community website http://ibm.biz/BlockchainGang. This is  the one place for all IBMer enablement of Blockchain. The IBM external website is http://www.ibm.com/blockchain.
 
 # Fabric Composer Narrative
 
