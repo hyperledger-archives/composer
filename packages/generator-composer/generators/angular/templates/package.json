@@ -23,7 +23,7 @@
     "@angular/platform-browser": "^2.3.1",
     "@angular/platform-browser-dynamic": "^2.3.1",
     "@angular/router": "^3.3.1",
-    "composer-client": "^0.4.0",
+    "composer-client": "^0.4.1",
     "bootstrap": "^3.3.7",
     "bower": "^1.8.0",
     "concurrently": "^3.1.0",
