@@ -22,7 +22,8 @@ If you need to update or install anything please refer to the install guides:
 
 ## Clone the Sample Applications repository
 
-```
+```bash
+sudo npm install -f composer-cli
 git clone https://github.com/fabric-composer/sample-applications.git
 ```
 
