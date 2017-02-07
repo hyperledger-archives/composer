@@ -29,8 +29,10 @@ cd ${DIR}/site/out/
 #export REPO="staging-fabric-composer-web"
 export REPO=`git config remote.origin.url`
 
-git clone git@github.com:${REPO}.git gh-pages
-git remote set-url origin ${REPO}.git
+echo ${REPO}
+
+git clone git@github.com:mbwhite/fabric-composer.git gh-pages
+git remote set-url origin mbwhite/fabric-composer.git.git
 
 # do some clean up of all files older than a day
 #find ${DIR}/site/out/* -mtime +1 -exec rm -rf {} \;
