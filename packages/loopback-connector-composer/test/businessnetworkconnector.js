@@ -384,27 +384,39 @@ describe('BusinessNetworkConnector Unit Test', () => {
     });
 
 
-
-
-
     describe('#create', () => {
+
+        let mockAssetRegistry;
+        let mockParticipantRegistry;
+        let mockAssetDeclaration;
+        let mockParticipantDeclaration;
+        let mockTransactionDeclaration;
+        let mockResource;
+
+        beforeEach(() => {
+            testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.introspector = introspector;
+            testConnector.connected = true;
+            sinon.spy(testConnector, 'ensureConnected');
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
+            mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
+            mockResource = sinon.createStubInstance(Resource);
+            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
+
+        });
 
         it('should use the model name as the class name if not specified', () => {
 
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
             mockBusinessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            let mockResource = sinon.createStubInstance(Resource);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
             mockAssetDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Asset');
             mockResource.getClassDeclaration.onFirstCall().returns(mockAssetDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
 
                 testConnector.create('org.acme.Asset', {
                     some : 'data'
@@ -424,19 +436,10 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should throw if the type is not an asset or a transaction', () => {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
             mockBusinessNetworkConnection.getAssetRegistry.onFirstCall().returns(Promise.resolve(mockAssetRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
             mockResource.getClassDeclaration.onFirstCall().returns({});
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.create('org.acme.Asset', {
                     some : 'data'
                 }, {}, (error) => {
@@ -455,21 +458,11 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should add an asset to the default asset registry', () => {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
             mockBusinessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
             mockAssetDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Asset');
             mockResource.getClassDeclaration.onFirstCall().returns(mockAssetDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.create('org.acme.Asset', {
                     $class : 'org.acme.Asset',
                     some : 'data'
@@ -489,22 +482,12 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should handle an error adding an asset to the default asset registry', () => {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
             mockAssetRegistry.add.onFirstCall().throws('expected error');
             mockBusinessNetworkConnection.getAssetRegistry.onFirstCall().returns(Promise.resolve(mockAssetRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
             mockAssetDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Asset');
             mockResource.getClassDeclaration.onFirstCall().returns(mockAssetDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.create('org.acme.Asset', {
                     $class : 'org.acme.Asset',
                     some : 'data'
@@ -524,21 +507,11 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should add a participant to the default participant registry', () => {
-            let mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
             mockBusinessNetworkConnection.getParticipantRegistry.returns(Promise.resolve(mockParticipantRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
             mockParticipantDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Participant');
             mockResource.getClassDeclaration.onFirstCall().returns(mockParticipantDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.create('org.acme.participant', {
                     $class : 'org.acme.Participant',
                     some : 'data'
@@ -558,22 +531,12 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should handle an error adding a participant to the default participant registry', () => {
-            let mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
             mockParticipantRegistry.add.onFirstCall().throws('expected error');
             mockBusinessNetworkConnection.getParticipantRegistry.onFirstCall().returns(Promise.resolve(mockParticipantRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
             mockParticipantDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Participant');
             mockResource.getClassDeclaration.onFirstCall().returns(mockParticipantDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.create('org.acme.Participant', {
                     $class : 'org.acme.Participant',
                     some : 'data'
@@ -593,19 +556,10 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should submit a transaction', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
             mockTransactionDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Transaction');
             mockResource.getClassDeclaration.onFirstCall().returns(mockTransactionDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.create('org.acme.Transaction', {
                     $class : 'org.acme.Transaction',
                     some : 'data'
@@ -624,19 +578,10 @@ describe('BusinessNetworkConnector Unit Test', () => {
 
         it('should handle an error submitting a transaction', () => {
             mockBusinessNetworkConnection.submitTransaction.onFirstCall().returns(Promise.reject(new Error('expected error')));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockTransactionDeclaration = sinon.createStubInstance(TransactionDeclaration);
             mockTransactionDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Transaction');
             mockResource.getClassDeclaration.onFirstCall().returns(mockTransactionDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.create('org.acme.Transaction', {
                     $class : 'org.acme.Transaction',
                     some : 'data'
@@ -1158,7 +1103,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
     });
 
 
-    describe('#destroy', () => {
+    describe('#destroyAll', () => {
 
         let mockAssetRegistry;
         let mockResourceToDelete;
@@ -1259,8 +1204,22 @@ describe('BusinessNetworkConnector Unit Test', () => {
 
 
     describe('#retrieve', () => {
+
+        let mockAssetRegistry;
+
+        beforeEach(() => {
+            sinon.spy(testConnector, 'ensureConnected');
+            testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.connected = true;
+            testConnector.modelManager = modelManager;
+            testConnector.introspector = introspector;
+            testConnector.serializer = mockSerializer;
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            testConnector.businessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
+        });
+
         it('should retrieve an asset', () => {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
             mockAssetRegistry.get.returns(Promise.resolve({assetId : 'myId', stringValue : 'a big car'}));
             mockBusinessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
 
@@ -1270,10 +1229,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
             mockModelManager.getType.returns(mockAssetDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
 
                 testConnector.retrieve('org.acme.Asset', 'myId', {}, (error, result) => {
                     if (error) {
@@ -1304,11 +1259,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
 
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.retrieve('org.acme.Asset', {
                     assetId : 'myId'
                 }, {}, (error) => {
@@ -1337,11 +1287,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
             mockModelManager.getType.returns(mockParticipantDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.retrieve('org.acme.Participant', 'myId', {}, (error, result) => {
                     if (error) {
                         return reject(error);
@@ -1370,11 +1315,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
             mockModelManager.getType.returns(mockParticipantDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.retrieve('org.acme.Participant', {
                     participantId : 'myId'
                 }, {}, (error) => {
@@ -1398,11 +1338,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
             mockModelManager.getType.returns({});
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.retrieve('org.acme.Asset', 'myId', {}, (error, result) => {
                     if (error) {
                         return reject(error);
@@ -1421,24 +1356,37 @@ describe('BusinessNetworkConnector Unit Test', () => {
 
 
 
-
-
     describe('#update', () => {
-        it('should update an asset', ()=> {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
-            mockBusinessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
+
+        let mockAssetRegistry;
+        let mockParticipantRegistry;
+        let mockResource;
+        let mockAssetDeclaration;
+        let mockParticipantDeclaration;
+        beforeEach(() => {
+            sinon.spy(testConnector, 'ensureConnected');
+            testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.connected = true;
+            testConnector.modelManager = modelManager;
+            testConnector.introspector = introspector;
+            testConnector.serializer = mockSerializer;
             mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
+            mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockResource = sinon.createStubInstance(Resource);
             mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockAssetDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Asset');
-            mockResource.getClassDeclaration.onFirstCall().returns(mockAssetDeclaration);
+            mockBusinessNetworkConnection.getParticipantRegistry.returns(Promise.resolve(mockParticipantRegistry));
+            mockBusinessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
+        });
+
+        it('should update an asset', ()=> {
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
+                mockAssetDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Asset');
+                mockResource.getClassDeclaration.onFirstCall().returns(mockAssetDeclaration);
 
                 testConnector.update('org.acme.Asset', {
                     $class : 'org.acme.Asset',
@@ -1459,21 +1407,10 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should update a participant', ()=> {
-            let mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
-            mockBusinessNetworkConnection.getParticipantRegistry.returns(Promise.resolve(mockParticipantRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
             mockParticipantDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Participant');
             mockResource.getClassDeclaration.onFirstCall().returns(mockParticipantDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.update('org.acme.Participant', {
                     $class : 'org.acme.Participant',
                     some : 'data'
@@ -1492,21 +1429,8 @@ describe('BusinessNetworkConnector Unit Test', () => {
                 });
         });
 
-        it('should blow up if unsupported class', () => {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
-            mockBusinessNetworkConnection.getAssetRegistry.onFirstCall().returns(Promise.resolve(mockAssetRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            mockResource.getClassDeclaration.onFirstCall().returns({});
-
-
+        it('should handle error if unsupported class', () => {
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.update('org.acme.Asset', {
                     assetId : 'myId',
                     stringValue : 'a bigger car'
@@ -1526,22 +1450,11 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should handle asset errors', () => {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
             mockAssetRegistry.update.onFirstCall().throws('expected error');
-            mockBusinessNetworkConnection.getAssetRegistry.onFirstCall().returns(Promise.resolve(mockAssetRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
-            mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
             mockAssetDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Asset');
             mockResource.getClassDeclaration.onFirstCall().returns(mockAssetDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.update('org.acme.Asset', {
                     assetId : 'myId',
                     stringValue : 'value'
@@ -1561,22 +1474,12 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should handle participant errors', () => {
-            let mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
             mockParticipantRegistry.update.onFirstCall().throws('expected error');
-            mockBusinessNetworkConnection.getParticipantRegistry.onFirstCall().returns(Promise.resolve(mockParticipantRegistry));
-            let mockResource = sinon.createStubInstance(Resource);
-            mockBusinessNetworkDefinition.getSerializer.returns(mockSerializer);
             mockSerializer.fromJSON.onFirstCall().returns(mockResource);
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
             mockParticipantDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Participant');
             mockResource.getClassDeclaration.onFirstCall().returns(mockParticipantDeclaration);
 
             return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
                 testConnector.update('org.acme.Participant', {
                     participantId : 'myId',
                     stringValue : 'value'
@@ -1592,156 +1495,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
                 })
                 .catch((error) => {
                     error.should.match(/expected error/);
-                });
-        });
-    });
-
-    describe('#delete', () => {
-        it('should delete an asset', ()=> {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
-            mockBusinessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockModelManager.getType.returns(mockAssetDeclaration);
-
-            return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
-                testConnector.delete('org.acme.Asset', 'myId', {}, (error) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve();
-                });
-            })
-                .then(() => {
-                    sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
-                    sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.Asset');
-                    sinon.assert.calledOnce(mockAssetRegistry.remove);
-                    sinon.assert.calledWith(mockAssetRegistry.remove, 'myId');
-                });
-        });
-
-        it('should handle asset errors', () => {
-            let mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
-            mockBusinessNetworkConnection.getAssetRegistry.onFirstCall().returns(Promise.resolve(mockAssetRegistry));
-            mockAssetRegistry.remove.onFirstCall().throws('expected error');
-
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
-            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
-            mockModelManager.getType.returns(mockAssetDeclaration);
-
-
-            return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
-                testConnector.delete('org.acme.Asset', 'myId', {}, (error) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve();
-                });
-            })
-                .then((error) => {
-                    console.log('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/expected error/);
-                });
-        });
-
-        it('should delete a participant', ()=> {
-            let mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
-            mockBusinessNetworkConnection.getParticipantRegistry.returns(Promise.resolve(mockParticipantRegistry));
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
-            mockModelManager.getType.returns(mockParticipantDeclaration);
-
-            return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
-                testConnector.delete('org.acme.Participant', 'myId', {}, (error) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve();
-                });
-            })
-                .then(() => {
-                    sinon.assert.calledOnce(mockBusinessNetworkConnection.getParticipantRegistry);
-                    sinon.assert.calledWith(mockBusinessNetworkConnection.getParticipantRegistry, 'org.acme.Participant');
-                    sinon.assert.calledOnce(mockParticipantRegistry.remove);
-                    sinon.assert.calledWith(mockParticipantRegistry.remove, 'myId');
-                });
-        });
-
-        it('should handle participant errors', () => {
-            let mockParticipantRegistry = sinon.createStubInstance(ParticipantRegistry);
-            mockBusinessNetworkConnection.getParticipantRegistry.onFirstCall().returns(Promise.resolve(mockParticipantRegistry));
-            mockParticipantRegistry.remove.onFirstCall().throws('expected error');
-
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
-            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
-            mockModelManager.getType.returns(mockParticipantDeclaration);
-
-
-            return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
-                testConnector.delete('org.acme.Participant', 'myId', {}, (error) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve();
-                });
-            })
-                .then((error) => {
-                    console.log('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/expected error/);
-                });
-        });
-
-        it('should throw error on unsupported type', ()=> {
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            mockBusinessNetworkDefinition.getModelManager.returns(mockModelManager);
-            mockModelManager.getType.returns({});
-
-            return new Promise((resolve, reject) => {
-                testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
-                testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
-                testConnector.connected = true;
-                sinon.spy(testConnector, 'ensureConnected');
-
-                testConnector.delete('org.acme.Asset', 'myId', {}, (error) => {
-                    if (error) {
-                        return reject(error);
-                    }
-                    resolve();
-                });
-            })
-                .then(() => {
-                    throw new Error('should not get here');
-                })
-                .catch((error) => {
-                    error.should.match(/Unable to handle resource of type/);
                 });
         });
     });
