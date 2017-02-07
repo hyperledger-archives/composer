@@ -22,7 +22,7 @@
  */
 
 /* istanbul ignore next */
-if (process.version.match(/v4\.4\./)) {
+if (!nodeHasNewBufferVersion()) {
     const originalBufferFrom = Buffer.from;
     const newBufferFrom = function (str, encoding) {
         if (arguments.length === 2 && typeof str === 'string' && encoding === 'base64') {
@@ -31,6 +31,20 @@ if (process.version.match(/v4\.4\./)) {
         return originalBufferFrom.apply(null, arguments);
     };
     Object.defineProperty(Buffer, 'from', { value: newBufferFrom });
+}
+
+/**
+ * Check whether we're running in a version of node which has the updated Buffer implementation
+ * Used above to fall back to the old version if needed.
+ * @return {boolean} whether the new version is supported
+ */
+function nodeHasNewBufferVersion() {
+    try {
+        Buffer.from('b2xkbm9kZQ==', 'base64');
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 module.exports.AclFile = require('./lib/acl/aclfile');
