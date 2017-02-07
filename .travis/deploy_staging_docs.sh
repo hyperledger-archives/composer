@@ -13,9 +13,9 @@ if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then # do the full normal push
 fi
 
 # Set the GitHub deploy key we will use to publish.
-set-up-ssh --key "$encrypted_4664aa7e5e58_key" \
-           --iv "$encrypted_4664aa7e5e58_iv" \
-           --path-encrypted-key ".travis/github_deploy_staging_docs_key.enc"
+#set-up-ssh --key "$encrypted_4664aa7e5e58_key" \
+#           --iv "$encrypted_4664aa7e5e58_iv" \
+           #--path-encrypted-key ".travis/github_deploy_staging_docs_key.enc"
 
 # push the html documents
 # Configure the Git repository and clean any untracked and unignored build files.
@@ -26,16 +26,18 @@ git config push.default simple
 echo ${DIR}
 cd ${DIR}/site/out/
 
-export REPO="staging-fabric-composer-web"
+#export REPO="staging-fabric-composer-web"
+export REPO=`git config remote.origin.url`
 
-git clone git@github.com:fabric-composer/${REPO}.git
+git clone git@github.com:${REPO}.git gh-pages
 git remote set-url origin ${REPO}.git
 
 # do some clean up of all files older than a day
-find ${DIR}/site/out/* -mtime +1 -exec rm -rf {} \;
+#find ${DIR}/site/out/* -mtime +1 -exec rm -rf {} \;
 
-mkdir ${REPO}/${TRAVIS_PULL_REQUEST}
-cd ${DIR}/site/out/${REPO}/${TRAVIS_PULL_REQUEST}
+#mkdir ${REPO}/${TRAVIS_PULL_REQUEST}
+ls -l
+cd ${DIR}/site/out/${REPO}/gh-pages
 
 #rm -rf ${DIR}/site/out/${REPO}/*
 cp -rf ${DIR}/site/out/jekylldocs/_site/* .
