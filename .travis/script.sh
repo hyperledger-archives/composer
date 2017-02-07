@@ -20,8 +20,8 @@ if [ "${DOCS}" != "" ]; then
 	npm install
 	npm run full
   cd ${DIR}
-  ./.travis/deploy_staging_docs.#!/bin/sh
-  
+  ./.travis/deploy_staging_docs.sh
+
 # Are we running system tests?
 elif [ "${SYSTEST}" != "" ]; then
 

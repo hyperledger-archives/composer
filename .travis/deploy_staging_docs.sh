@@ -31,6 +31,10 @@ export REPO="staging-fabric-composer-web"
 git clone git@github.com:fabric-composer/${REPO}.git
 git remote set-url origin ${REPO}.git
 
+# do some clean up of all files older than a day
+find ${DIR}/site/out/* -mtime +1 -exec rm -rf {} \;
+
+mkdir ${REPO}/${TRAVIS_PULL_REQUEST}
 cd ${DIR}/site/out/${REPO}/${TRAVIS_PULL_REQUEST}
 
 #rm -rf ${DIR}/site/out/${REPO}/*
