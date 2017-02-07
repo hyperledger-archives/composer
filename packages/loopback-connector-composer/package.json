@@ -1,6 +1,6 @@
 {
   "name": "loopback-connector-composer",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A Loopback connector for Fabric Composer",
   "main": "index.js",
   "scripts": {
@@ -25,11 +25,11 @@
   "author": "Fabric Composer",
   "license": "Apache-2",
   "dependencies": {
-    "composer-admin": "^0.4.1",
-    "composer-client": "^0.4.1",
-    "composer-common": "^0.4.1",
-    "composer-connector-embedded": "^0.4.1",
-    "composer-connector-web": "^0.4.1",
+    "composer-admin": "^0.4.2",
+    "composer-client": "^0.4.2",
+    "composer-common": "^0.4.2",
+    "composer-connector-embedded": "^0.4.2",
+    "composer-connector-web": "^0.4.2",
     "loopback-connector": "^2.5.0"
   },
   "devDependencies": {
