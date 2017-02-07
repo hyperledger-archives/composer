@@ -562,7 +562,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback The callback to call when complete.
      */
     destroyAll(lbModelName, where, options, callback) {
-        debug('delete', lbModelName, where, options);
+        debug('destroyAll', lbModelName, where, options);
         let composerModelName = lbModelName.replace(/_/g, '.');
         //console.log('DESTROY ALL: '+composerModelName, where, options, callback);
         this.ensureConnected()
@@ -587,58 +587,6 @@ class BusinessNetworkConnector extends Connector {
                 } else {
                     callback('ERROR: the specified filter does not match the identifier in the model');
                 }
-            });
-    }
-
-    /**
-     * Delete an instance of an object in Composer. For assets, this method
-     * updates the asset to the default asset registry.
-     * @param {string} modelName the fully qualified model name.
-     * @param {Object} id the identifier of the asset or participant to be removed.
-     * @param {Object} options the options provided by Loopback.
-     * @param {function} callback the callback to call when complete.
-     */
-    delete (modelName, id, options, callback) {
-        debug('delete', modelName, id, options);
-
-        this.ensureConnected()
-            .then(() => {
-                let modelManager = this.businessNetworkDefinition.getModelManager();
-                let classDeclaration = modelManager.getType(modelName);
-
-                if (classDeclaration instanceof AssetDeclaration) {
-                    // Delete the object
-                    this.businessNetworkConnection.getAssetRegistry(modelName)
-                        .then((assetRegistry) => {
-                            return assetRegistry.remove(id);
-                        })
-                        .then(() => {
-                            callback();
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                } else if (classDeclaration instanceof ParticipantDeclaration) {
-                    // Delete the object
-                    this.businessNetworkConnection.getParticipantRegistry(modelName)
-                        .then((participantRegistry) => {
-                            return participantRegistry.remove(id);
-                        })
-                        .then(() => {
-                            callback();
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                } else {
-                    // For everything else, we blow up!
-                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
-                }
-
-            })
-            .catch((error) => {
-                debug('delete', 'error thrown doing delete', error);
-                callback(error);
             });
     }
 }
