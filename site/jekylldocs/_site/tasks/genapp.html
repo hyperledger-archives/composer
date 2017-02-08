@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Task - Generating an Application | Fabric Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-91314349-1', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+  
+
+  <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
+</head>
+
+
+<body class="">
+
+  
+  
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html">Fabric Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="/start/quickstart.html">Quickstart</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/overview/overview.html">Overview</a>
+                        </li>
+                        <li>
+                            <a href="/start/index.html">Getting Started</a>
+                        </li>
+                        <li>
+                            <a href="/concepts/index.html">Concepts</a>
+                        </li>
+                        <li>
+                            <a href="/tasks/index.html">Tasks</a>
+                        </li>
+                        <li>
+                            <a href="/reference/index.html">Reference</a>
+                        </li>
+                        <li>
+                            <a href="/jsdoc/index.html">API Documentation</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/support/index.html">Support</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-2">
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><a href="/tasks/prerequisites.html">Installing Pre-requisites</a></li>
+<li><a href="/tasks/deploybusinessnetwork.html">Deploy Business Network</a></li>
+<li><a href="/tasks/createconnectionprofile.html">Create Connection Profile</a></li>
+<li><a href="/tasks/bnd-define.html">Create a Business Network Definition</a></li>
+<li><a href="/tasks/bnd-publish.html"> Publish a Business Network Definition</a></li>
+<li><a href="/tasks/genapp.html">Generating an Application</a></li>
+<li><a href="/tasks/model-define.html">Create a Business Domain Model</a></li>
+<li><a href="/tasks/model-publish.html">Publish a Business Domain Model</a></li>
+<li><a href="/tasks/runtime-start.html">Start a Fabric Runtime</a></li>
+<li><a href="/tasks/testing.html">Test a Business Network Definition</a></li>
+<li><a href="/tasks/runtime-update.html">Update a Business Network Definition on Fabric</a></li>
+<li><a href="/tasks/participant-add.html">Add a Participant</a></li>
+<li><a href="/tasks/identity-issue.html">Issue an Identity for a Participant</a></li>
+<li><a href="/tasks/identity-revoke.html">Revoke an Identity for a Participant</a></li>
+<li><a href="/tasks/current-participant.html">Implementing access control using the current Participant</a></li>
+<li><a href="/tasks/diagnostics.html">Diagnosing Problems</a></li>
+</ul>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-10">
+          <section class="content-chunk">
+            
+              <h1 id="how-generate-a-starter-application">How Generate a Starter Application</h1>
+
+<p>We&#39;re going to assume that you&#39;ve been through the Getting Started section and would like to now start to look at writing your own application to use Fabric Composer.</p>
+
+<p>To help getting started with this, there&#39;s a <a href="http://yeoman.io/">Yeoman</a> generator that creates a suitable directory structure and helps bring in the required model and network modules.</p>
+
+<h2 id="yeoman">Yeoman</h2>
+
+<p>If you don&#39;t already have it, install Yeoman</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g yo
+</code></pre></div>
+<p>then install the generator for it</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g generator-fabric-composer
+</code></pre></div>
+<h2 id="running-the-generator">Running the generator</h2>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">yo fabric-composer
+</code></pre></div>
+<h3 id="what-are-the-questions">What are the questions?</h3>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">? Your NPM library name: concerto-sample-app
+? Short description: Test Concerto project
+? Author name: Sophie Black
+? Author email: sophie@ampretia.com
+? NPM Module name of the Business Network to connect to: digitalproperty-network
+? Is the name <span class="k">in </span>NPM registry the same as the Business Network Identifier?: Yes
+? What is the Connection Profile to use? defaultProfile
+? Enrollment id: WebAppAdmin
+? Enrollment Secret: DJY27pEnl16d
+configuring: concerto-sample-app
+Getting the npm module describing the undefined
+   create config/default.json
+   create Dockerfile
+   create gulpfile.js
+   create index.js
+   create package.json
+   create scripts/docker-compose.yml
+   create scripts/setup.sh
+   create scripts/teardown.sh
+   create .gitignore
+</code></pre></div>
+<h3 id="what-does-this-do">What does this do?</h3>
+
+<p>Firstly it creates a standard npm module with the usual attributes of name, author, description.
+Secondly it asks a set of Concerto framework questions to create to help create the sample structure.</p>
+
+<ul>
+<li>NPM Module name:  What is the name of the business network you want to connect to - and is this the same as the modules NPM registry name</li>
+<li>Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric</li>
+<li>The EnrollmentId/Secret: Are needed to create a connection to the fabric</li>
+</ul>
+
+<h3 id="testing-this-has-worked">Testing this has worked</h3>
+
+<p>The <code>index.js</code> file is a very simple application that lists the asset registries that have been defined.</p>
+
+<h1 id="generating-tests">Generating Tests</h1>
+
+<p>Note that after the application is generated you may choose to add skeletal tests to your application using the <code>composer generator tests</code> command.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+    </article>
+</div>
+
+    
+
+    
+    
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+    <div class="container">
+      <div class="navbar-fixed-bottom">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+      </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+          <ul class="nav navbar-nav navbar-left">
+            <li>
+              <a href="https://twitter.com/ibmblockchain" class="icon">
+                <img src="/assets/img/social-twitter.svg" class="SiteFooter-icon" alt="Twitter">
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/fabric-composer/fabric-composer" class="icon">
+                <img src="/assets/img/social-github.svg" class="SiteFooter-icon" alt="Github">
+              </a>
+            </li>
+            <li>
+              <a href="http://stackoverflow.com/" class="icon">
+              <i class="fa fa-stack-overflow icon" aria-hidden="true"></i>
+              </a>
+            </li>
+            <li>
+              <a href="/jsdoc/index.html">APIs</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+              <li>
+                  <a>Copyright 2017 IBM Corp. All Rights Reserved</a>
+              </li>
+          </ul>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+</html>
