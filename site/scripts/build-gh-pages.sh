@@ -28,10 +28,10 @@ done
 cp -pr ${DIR}/docs/images/ ${TODIR}/jekylldocs/images
 
 #copy latest images to jekylldocs
-rm -rf ${TODIR}/jekylldocs/jsdoc/develop
-mkdir -p ${TODIR}/jekylldocs/jsdoc/develop
-cp -pr ${DIR}/out/public/* ${TODIR}/jekylldocs/jsdoc/develop
-cp -pr ${DIR}/out/diagrams   ${TODIR}/jekylldocs/jsdoc/develop
+rm -rf ${TODIR}/jekylldocs/jsdoc
+mkdir -p ${TODIR}/jekylldocs/jsdoc
+cp -pr ${DIR}/out/public/* ${TODIR}/jekylldocs/jsdoc
+cp -pr ${DIR}/out/diagrams   ${TODIR}/jekylldocs/jsdoc
 
 cd ${TODIR}/jekylldocs
 

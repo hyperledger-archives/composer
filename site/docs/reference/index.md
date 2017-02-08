@@ -37,6 +37,6 @@ Explore Reference:
 
 [CLI Revoke Identity]({{site.baseurl}}/reference/concerto.identity.revoke.html  )
 
-[API Documentation]({{site.baseurl}}/jsdoc/develop/index.html )
+[API Documentation]({{site.baseurl}}/jsdoc/index.html )
 
 [Glossary]({{site.baseurl}}/reference/glossary.html )
