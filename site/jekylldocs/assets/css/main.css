@@ -127,19 +127,6 @@ code.prettyprint {
   padding: 0; /* otherwise 1st line of multi-line code block is misaligned */
 }
 
-.btn {
-  padding: 0.8em 1.2em;
-  background: #5aadbb;
-  border-radius: 3px;
-  color: #fff;
-  text-decoration: none;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-}
-
-.btn:hover {
-  background: #3398a9;
-}
-
 blockquote {
   background: #f9f9f9;
   border-left: 10px solid #ccc;
@@ -163,24 +150,11 @@ blockquote p {
 
 .SiteWrapper {
   overflow: hidden;
+
 }
 
 /* Page header and nav
 ========================================================================== */
-
-.page-header .mobile-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 12;
-  width: 100%;
-  height: 3em;
-  background: #1f1f1f;
-}
-
-.page-header .container {
-  position: relative;
-}
 
 /*
 Logo
@@ -227,11 +201,6 @@ Navigation
 
 .open .mobile-menu-toggle {
   opacity: 0.5;
-}
-
-.page-header ul {
-  margin: 0;
-  padding: 0;
 }
 
 .main-menu {
@@ -296,40 +265,6 @@ Navigation
   content: ' - '
 }
 
-
-/* Jumbotron
-========================================================================== */
-
-.jumbotron {
-  margin: 0 0 3em;
-  padding-top: 4.3em;
-  text-align: center;
-  background: #785ef0;
-}
-
-.jumbotron h2 {
-  margin: 0 1em;
-  font-weight: 400;
-  font-size: 1em;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-    padding-bottom: 0.5em;
-}
-
-.jumbotron.clearfix {
-    padding-bottom: 2em;
-}
-
-.jumbotron p {
-  margin: 0 1em;
-  font-weight: 200;
-  font-size: 1em;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #fff;
-}
 
 .illustration {
   position: relative;
@@ -561,11 +496,12 @@ Context/Local Nav
 
 .context-nav {
   padding: 0 1.2em;
+  position: static;;
 }
 
 .context-nav ul {
   margin: 0;
-  padding: 0;
+  padding: 1em 0em;
   list-style: none;
 }
 
@@ -601,7 +537,7 @@ Context/Local Nav
 .context-nav a {
   display: block;
   cursor: pointer;
-  padding: 0.5em 1em;
+  padding: 0.5em 0em;
   border-bottom: 1px dotted rgba(0,0,0,0.2);
   text-decoration: none;
   color: #0096c7;
@@ -638,7 +574,7 @@ Context/Local Nav
   padding-left: 1.5em;
 }
 .context-nav.navbar-fixed {
-  position: fixed;
+  position: static;
   top: 6em;
 }
 
@@ -668,14 +604,16 @@ pre .dec, code .dec { color: #3387CC; } /* decimal - blue */
 .highlight > pre,
 code.prettyprint {
   font-size: 0.95em;
-  background-color: #2e2e2e;
+  background-color: #eeeeee;
   border-radius: 0.35em;
+  max-width: 100%;
 }
 
 .highlight > pre {
   padding: 1em;
   overflow: auto;
   word-wrap: normal;
+  max-width: 100%;
 }
 .highlight > pre code {
   font-size: 1em;
@@ -1020,14 +958,6 @@ Modify as content requires.
 
 
 @media only screen and (min-width: 28em) {
-  .jumbotron {
-    padding-top: 5em;
-  }
-
-  .jumbotron h2 {
-    font-size: 1.4em;
-    margin-bottom: 0.5em;
-  }
 
   .page-title {
     margin-bottom: 1.4em;
@@ -1063,9 +993,6 @@ Modify as content requires.
 }
 
 @media only screen and (min-width: 35em) {
-  .jumbotron h2 {
-    font-size: 1.6em;
-  }
 
   .illustration {
     top: 1.5em;
@@ -1114,7 +1041,7 @@ Modify as content requires.
   }
 
   .context-nav {
-    max-width: 25em;
+    max-width: 35em;
   }
 }
 
@@ -1127,15 +1054,6 @@ Modify as content requires.
     display: block;
     float: right;
     overflow: visible;
-  }
-
-  .page-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: #1f1f1f;
-    z-index: 12;
   }
 
   .mobile-bar {
@@ -1195,11 +1113,6 @@ Modify as content requires.
     content: '';
   }
 
-  .jumbotron h2 {
-    font-size: 2em;
-    line-height: 1.2em;
-  }
-
   .page-title {
     margin-bottom: 1.5em;
     padding: 0;
@@ -1236,10 +1149,6 @@ Modify as content requires.
     padding: 1em;
   }
 
-  .jumbotron {
-    margin-bottom: 4em;
-  }
-
   .illustration {
     top: 2em;
   }
@@ -1250,13 +1159,6 @@ Modify as content requires.
 }
 
 @media only screen and (min-width: 55em) {
-  .jumbotron {
-    padding-top: 6em;
-  }
-
-  .jumbotron h2 {
-    font-size: 2.6em;
-  }
 
   .one-line-install {
     padding: 2em 2em 1em;
@@ -1286,7 +1188,7 @@ Modify as content requires.
   }
 }
 
-@media only screen and (min-width: 60em) {
+@media only screen and (min-width: 70em) {
   .container {
     position: relative;
     max-width: 1200px;
@@ -1332,19 +1234,6 @@ Modify as content requires.
     min-width: 200px;
   }
 
-  .jumbotron {
-    position: relative;
-    padding-top: 8em;
-  }
-
-  .jumbotron h2 {
-    float: left;
-    width: 55%;
-    margin: 0 0 0 5%;
-    text-align: left;
-    font-size: 3em;
-  }
-
   .illustration {
     float: right;
     width: 18%;
@@ -1368,12 +1257,12 @@ Modify as content requires.
   }
 
   .context-nav {
-    position: absolute;
+    position: static;
     top: 1.3em;
-    right: 0;
-    width: 17em;
+    /*width: 17em;*/
     margin: 0;
     padding: 0;
+    max-width: 100%;
   }
 
   .context-nav ul > li {

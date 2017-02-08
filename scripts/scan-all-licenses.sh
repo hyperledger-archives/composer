@@ -14,10 +14,10 @@ touch ${DIR}/license-raw.txt
 
 ls -d ${DIR}/packages/* | while read dirname
 
-#for dirname in concerto-admin  concerto-client concerto-connector-embedded  concerto-connector-web  concerto-runtime-embedded  concerto-runtime-web concerto-cli concerto-common  concerto-connector-hlf       concerto-runtime        concerto-runtime-hlf       concerto-systests
+#for dirname in composer-admin composer-connector-embedded	composer-connector-web composer-runtime-hlf	generator-composer composer-cli	composer-connector-hlf composer-loopback-connector composer-runtime-web composer-client	composer-connector-proxy composer-runtime	composer-systests	loopback-connector-composer composer-common	composer-connector-server	composer-runtime-embedded	composer-ui
 do
   cd ${dirname} && licensecheck --tsv >>  ${DIR}/license-raw.txt
 done
 
-echo "... Summary of all the licenses in the Concerto Monorepo"
+echo "... Summary of all the licenses in the Composer Monorepo"
 cat ${DIR}/license-raw.txt | cut -f2 | sort -u
