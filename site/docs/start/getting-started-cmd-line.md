@@ -46,9 +46,6 @@ participant Person identified by personId {
 }
 ```
 
-{% highglight %}
-console.log();
-{%endhighlight%}
 We want to be able to mark one of the titles for sale so we'll create a *RegisterPropertyForSale* transaction that will update the for sale flag.
 
 ```
