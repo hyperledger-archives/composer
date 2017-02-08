@@ -27,7 +27,7 @@ This is all done using a simple business network  **Digital Property Network**
 
 This network will be expanded for other tutorials, but for this getting started we'll keep it simple. We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
 
-```
+```javascript
 asset LandTitle identified by titleId {
   o String   titleId
   o Person   owner
@@ -88,7 +88,8 @@ npm install
 ### Update the Transaction Processor Function
 
 Open the file `lib/DigitalLandTitle.js` in a text editor and replace the contents with:
-{% highlight javascript %}
+  
+```javascript
 
 'use strict';
 
@@ -108,7 +109,7 @@ function onRegisterPropertyForSale(propertyForSale) {
         }
     );
 }
-{% endhighlight %}
+```
 
 ### Update the Business Network Definition
 In a real-life scenario at this point you would edit `package.json` to increment the version number in the `DigitalProperty-Network` directory and publish this to npm. But please don't publish to the DigitalProperty-Network in npm - otherwise we'll have version numbers in the 1000s :-)
