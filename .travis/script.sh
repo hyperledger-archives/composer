@@ -19,6 +19,9 @@ if [ "${DOCS}" != "" ]; then
 	cd ${DIR}/site
 	npm install
 	npm run full
+  cd ${DIR}
+  ./.travis/deploy_staging_docs.sh
+
 # Are we running system tests?
 elif [ "${SYSTEST}" != "" ]; then
 

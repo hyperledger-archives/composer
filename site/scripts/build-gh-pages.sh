@@ -37,14 +37,14 @@ cd ${TODIR}/jekylldocs
 
 
 echo "About to build"
-echo ${TRAVIS_REPO_SLUG}
+echo ${TRAVIS_PULL_REQUEST}
 
-#if [ "${TRAVIS_REPO_SLUG}" == "lockchain-WW-Labs/Concerto-Docs" ]; then #replace slug with Blockchain-WW-Labs
-    echo "Main build"
-    jekyll build
-#else
-#    echo "User build"
-#    jekyll build --baseurl /${TRAVIS_REPO_SLUG}
-#fi
+if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then # do the full normal push
+    echo "Main merge build"
+   jekyll build
+else
+    echo "User build"
+    jekyll build --baseurl /${TRAVIS_PULL_REQUEST}
+fi
 
 pwd
