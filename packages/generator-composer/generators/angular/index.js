@@ -32,7 +32,7 @@ module.exports = yeoman.Base.extend({
 
     prompting: function () {
     // Have Yeoman greet the user.
-        console.log('Welcome to the skeleton app generator');
+        console.log('Welcome to the Angular2 skeleton app generator');
 
 
         return this.prompt([
@@ -55,7 +55,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'appName',
                         message: 'What is the name of the application you wish to generate?:',
-                        default: 'test-app',
+                        default: 'angular-app',
                         store: false,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input.match(/^[\w-]+$/)) {
@@ -69,7 +69,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'appDescription',
                         message: 'Description of the application:',
-                        default: 'Skeleton Fabric Composer angular2 project',
+                        default: 'Skeleton Fabric Composer Angular2 project',
                         store: false,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input !== '') {
@@ -172,7 +172,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'appName',
                         message: 'What is the name of the application you wish to generate?:',
-                        default: 'test-app',
+                        default: 'angular-app',
                         store: false,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input.match(/^[\w-]+$/)) {
@@ -186,7 +186,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'appDescription',
                         message: 'Description of the application:',
-                        default: 'Skeleton Fabric Composer angular2 project',
+                        default: 'Skeleton Fabric Composer Angular2 project',
                         store: false,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input !== '') {
@@ -278,7 +278,7 @@ module.exports = yeoman.Base.extend({
             console.log('About to connect to a running business network');
             businessNetworkConnection.connect(this.connectionProfileName, this.networkIdentifier, this.enrollmentId, this.enrollmentSecret)
             .then((result) => {
-                console.log('Connected!');
+                console.log('Connected to:',this.networkIdentifier);
                 businessNetworkDefinition = result;
 
             })

@@ -4,6 +4,7 @@
   "description": "Generates skeleton projects from Fabric Composer business network definitions",
   "files": [
     "generators/app",
+    "generators/cli",
     "generators/angular"
   ],
   "keywords": [
