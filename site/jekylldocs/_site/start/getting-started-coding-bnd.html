@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Getting Started with coding a Business Network Definition | Fabric Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-91314349-1', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+  
+
+  <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
+</head>
+
+
+<body class="">
+
+  
+  
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html">Fabric Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="/start/quickstart.html">Quickstart</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/overview/overview.html">Overview</a>
+                        </li>
+                        <li>
+                            <a href="/start/index.html">Getting Started</a>
+                        </li>
+                        <li>
+                            <a href="/concepts/index.html">Concepts</a>
+                        </li>
+                        <li>
+                            <a href="/tasks/index.html">Tasks</a>
+                        </li>
+                        <li>
+                            <a href="/reference/index.html">Reference</a>
+                        </li>
+                        <li>
+                            <a href="/jsdoc/index.html">API Documentation</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/support/index.html">Support</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-2">
+          <nav class="context-nav">
+            
+            
+              <ul>
+<li><a href="/start/getting-started-cmd-line.html">Running a sample with the CLI</a></li>
+<li><a href="/start/getting-started-coding-bnd.html">Coding a Business Network Definition</a></li>
+<li><a href="/start/getting-started-rest-api.html">Generating a REST api</a></li>
+<li><a href="/start/getting-started-nodejs-app.html">Writing a nodejs app</a></li>
+</ul>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-10">
+          <section class="content-chunk">
+            
+              <h1 id="creating-and-coding-a-business-network-definition">Creating and Coding a Business Network Definition</h1>
+
+<p>This tutorial will take you through how to code and deploy a Business Network Definition. This is how to put together the files, and code artifacts needed and what to do with them.</p>
+
+<p>This is after the important step of modeling the actual business network and the entities within it.  For this tutorial we are going to continue to use the Digital Property Network. Let&#39;s assume that this has been designed and agree with the relevant business analysts in the relevant companies. It now needs to be codified.</p>
+
+<h2 id="creating-a-business-network-model">Creating a Business Network model</h2>
+
+<h1 id="digital-property-network-model">Digital Property Network  Model</h1>
+
+<p>Defines the Business Network Model for the Digital Property Network.  This is the part of the Business Network Definition that defines the <em>model file</em> that defines the assets, participants, transactions, and relationships that form the Business Network.</p>
+
+<p>This part is encapsulated within (currently) a single file using a defined syntax. This file itself is encapsulated within an NPM module to permit version and distribution control. The transaction definitions, access control and other functional elements are held within a similar structure (npm module) that is dependent on a version of this model.</p>
+
+<h2 id="what-should-i-do-with-this-model">What should I do with this model</h2>
+
+<p>It is expected that the model would be part of the CI pipeline.  It is expected that the model would be held in a source management system, eg github-enterprise. Edited then submitted to a eg TravisCI build. This would then publish the model to the npm-enterpise</p>
+
+<p>This specific DigitalProperty-Model is already published into the public npm repository. Therefore the deployment and pipeline has already been done for you.</p>
+
+<h1 id="creating-a-new-model-for-yourself">Creating a new model for yourself</h1>
+
+<p>There are two ways of creating a new model; either using the command line and your favorite editor, or by using the the web Composer UI.</p>
+
+<h2 id="web-composer-ui">Web Composer UI</h2>
+
+<p><em>it&#39;s coming soon....</em> but for the moment use the command line.....</p>
+
+<h2 id="command-line">Command line</h2>
+
+<p><em>Step1:</em>  Create a new NPM module</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm init
+</code></pre></div>
+<p>There are no mandatory dependencies that are required; the most important features are name and description of the module. The version number is also very important. This will be used when you construct the full Business Network. That will have a dependency on a specific version of the model.</p>
+
+<p><em>Step2:</em> Edit the model</p>
+
+<p>The files are simple text files following a defined syntax. Within the npm module directory just create a new file, for example if you were creating this DigitalProperty-Network</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/git/DigitialProperty-Model&gt; touch models/DigitalLandTitle.cto
+</code></pre></div>
+<p>Load that file up in any editor and you can then add your model, Again using this Digital Property Network the file might contain
+(aside if you are using the Atom editor, then there is a syntax highlighter plugin available)</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**  A 'Getting Started Tutorial' to work with Fabric Composer
+*/
+
+namespace net.biz.digitalPropertyNetwork
+
+asset LandTitle identified by titleId {
+  o String   titleId
+  o Person   owner
+  o String   information
+  o Boolean  forSale   optional
+}
+
+asset SalesAgreement identified by salesId {
+  o String    salesId
+  o Person    buyer
+  o Person    seller
+  o LandTitle title
+}
+
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+
+transaction RegisterPropertyForSale identified by transactionId{
+  o String transactionId
+  --&gt; Person seller
+  --&gt; LandTitle title
+}
+</code></pre></div>
+<p><em>Step3:</em>
+The next step is to publish your module to the NPM repository you are using.  So a command along these lines</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm publish
+</code></pre></div>
+<p><strong>That&#39;s it... you can now progress to the  DigitalProperty-Network to add the implementation of the the transactions and complete the Business Network Definition creation.</strong></p>
+
+<h2 id="advanced-things-to-do-with-the-model">Advanced things to do with the model</h2>
+
+<p>Optional additions here are license checking to ensure that the model meets your Member Organization&#39;s agreed standards.</p>
+
+<p>Other additions:
+- Generation of UML to graphically show the assets and relationships
+- Validation of the model.</p>
+
+<h2 id="creating-a-business-network-definition">Creating a Business Network definition</h2>
+
+<h1 id="digital-property-network">Digital Property Network</h1>
+
+<p>This defines the transaction implementations, access control lists and other functional aspects. There is a dependency on a version of a Business Network Model.</p>
+
+<p>With this dependency, this DigitalProperty-Network defines the complete Business Network Definition.  In this specific example, the Digital Property Network.</p>
+
+<h2 id="what-should-i-do-with-this-npm-module">What should I do with this npm module?</h2>
+
+<p>It is expected that this npm module would be associated with a CI pipeline and tracked as source code in something like GitHub Enterprise. The CI pipeline this would be able to run functional validation on the whole definition, and also be able to published the module to an NPM repository. This allows sharing of the module etc.</p>
+
+<p>For a production or QA runtime there are administrative steps (deploy, update, remove etc.) that are performed using this Business Network Definition on a running Hyperledger Fabric. The life-cycle at it&#39;s simplest is <em>deploy a network definition</em>, <em>update a network definition</em> and (potentially) <em>remove the network definition</em>. These actions are performed using the Business Network Archive - which is a single file that encapsulates all aspects of the Business Network Definition. It is the &#39;deployable unit&#39;.</p>
+
+<h2 id="creating-the-businessnetwork">Creating the BusinessNetwork.</h2>
+
+<p><em>Step1:</em> Create a npm module</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm init
+</code></pre></div>
+<p>The important aspects of this are the name, version and description. The only dependency that will be required is the NPM module that contains the model - see step 2.</p>
+
+<p><em>Step2:</em> Create the transaction functions</p>
+
+<p>We need to create a standard JavaScript file to contain the transaction functions</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="se">\g</span>it<span class="se">\D</span>igitialProperty-Model &gt; touch lib/DigitalLandTitle.js
+</code></pre></div>
+<p>In this example the following is the implementation of the <code>registeryPropertyForSale</code> transaction</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="cm">/**
+ * Process a property that is held for sale
+ * @param {net.biz.digitalPropertyNetwork.RegisterPropertyForSale} propertyForSale the property to be sold
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">onRegisterPropertyForSale</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'### onRegisterPropertyForSale '</span> <span class="o">+</span> <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+    <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">forSale</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="work-with-the-network">Work with the network</h2>
+
+<p>Once we have the network complete we can create a business network definition archive. This is the unit will actually be deployable to the HyperLedger Fabric.</p>
+
+<p>There is a <code>composer archive</code> command that can be used to create and inspect these archives. The <code>composer network</code> command is then used to administer the business network archive on the Hyperledger Fabric.</p>
+
+<h3 id="creating-an-archive">Creating an archive</h3>
+
+<p>The <code>composer archive create</code> command is used to create the archive. The <code>--archiveFile</code> option is used to specify the name of the archive file to create. If this is not specified then a default name will be used that is based on the identifier of the business network (sanitized to be suitable as a filename). For example <code>digitalPropertyNetwork-0.1.2.bna</code>.</p>
+
+<p>One of either --inputDir or --moduleName must be specified. --inputDir is the directory that contains the <code>package.json</code> file of the Business Network npm module&#39;s package.json.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer archive create --archiveFile digitialLandTitle.bna --inputDir . --moduleName DigitalLandTitle
+</code></pre></div>
+<p>Once you have this archive it can then be deployed to Hyperledger (which will assuming is all running for the moment)</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer network deploy --archiveFile  DigitalLandTitle.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+</code></pre></div>
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+    </article>
+</div>
+
+    
+
+    
+    
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+    <div class="container">
+      <div class="navbar-fixed-bottom">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+      </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+          <ul class="nav navbar-nav navbar-left">
+            <li>
+              <a href="https://twitter.com/ibmblockchain" class="icon">
+                <img src="/assets/img/social-twitter.svg" class="SiteFooter-icon" alt="Twitter">
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/fabric-composer/fabric-composer" class="icon">
+                <img src="/assets/img/social-github.svg" class="SiteFooter-icon" alt="Github">
+              </a>
+            </li>
+            <li>
+              <a href="http://stackoverflow.com/" class="icon">
+              <i class="fa fa-stack-overflow icon" aria-hidden="true"></i>
+              </a>
+            </li>
+            <li>
+              <a href="/jsdoc/index.html">APIs</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+              <li>
+                  <a>Copyright 2017 IBM Corp. All Rights Reserved</a>
+              </li>
+          </ul>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+</html>
