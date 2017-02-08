@@ -3,11 +3,11 @@
   "version": "0.3.9",
   "description": "Fabric Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "scripts": {
-    "install": "npm run doc",
+    "install": "npm run doc && echo 'To see the site locally issue npm run jekyllserve'",
     "doc": "npm run docpub   && ./scripts/generate-uml.sh",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
-    "localpages": "cd ./jekylldocs && jekyll serve",
+    "jekysllsevre": "cd ./jekylldocs && jekyll serve",
     "full" : "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build"
   },
   "repository": {
