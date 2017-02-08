@@ -29,7 +29,7 @@ git remote set-url origin ${REPO}.git
 cd ${DIR}/site/out/${REPO}
 
 rm -rf ${DIR}/site/out/${REPO}/*
-cp -rf ${DIR}/site/out/jekylldocs/_site/* .
+cp -rf ${DIR}/site/jekylldocs/_site/* .
 
 git add .
 
