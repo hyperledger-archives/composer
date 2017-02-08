@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Fabric Composer Source: composer-runtime/lib/queryexecutor.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Fabric Composer</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.html">composer-admin</a></li><li><a href="module-composer-client.html">composer-client</a></li><li><a href="module-composer-common.html">composer-common</a></li><li><a href="module-composer-runtime.html">composer-runtime</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#theWallet">theWallet</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: composer-runtime/lib/queryexecutor.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+const jsonata = require('jsonata');
+const Logger = require('composer-common').Logger;
+const Relationship = require('composer-common').Relationship;
+const Resource = require('composer-common').Resource;
+
+const LOG = Logger.getLog('QueryEngine');
+
+/**
+ * Design documentation:
+ *
+ * The aim of this class to execute queries (currently JSONata expressions) on a
+ * resource or a set of resources. In order for this query support to be useful,
+ * the queries must be able to navigate relationships between resources. For example,
+ * I might want to execute a query of "find all the animals which are in a field,
+ * where that field is owned by a business, where that business is run by a farmer
+ * with the email address alice@farmers.com".
+ *
+ * We do not want to eagerly resolve all visible relationships, as this is slow.
+ * Most business networks are large and complex, with many relationships between
+ * resources, and additionally those relationships can be circular.
+ *
+ * Ideally, we would only resolve relationships that are needed in order to
+ * successfully execute the query. We can do this by creating "special" properties
+ * on the relationship object for each of the properties that should exist on the
+ * target resource. When the "special" property is accessed by the query, a function
+ * can be executed to resolve that relationship and replace it with the target
+ * resource.
+ *
+ * Unfortunately, resolving a relationship is an asynchronous operation, because
+ * we have to perform network I/O. JSONata (our expression runtime) does not, at
+ * the time of writing, have any support for handling asynchronous values or
+ * promises that will be resolved with values.
+ *
+ * The code below attempts to work around this by executing the following algorithm:
+ *
+ * 1)  An empty array of accessed relationships is created.
+ *
+ * 2)  The resource or resources being queried are modified so that all of their
+ *     relationships are augmented with "special" properties. These properties
+ *     execute a function when they are read. That function then adds the properties
+ *     owning relationship to the array defined in 1).
+ *
+ * 3)  The JSONata expression is evaluated against the resource or resources. The
+ *     evaluation will return a value.
+ *
+ * 4)  If the array defined in 1) is empty, no relationships were accessed, and
+ *     we can safely return the result of 3) and stop processing.
+ *
+ * 5)  If the array defined in 1) is not empty, then we must iterate over that array.
+ *     For each accessed relationship in the array:
+ *
+ * 5a) The relationship is resolved to its target resource.
+ *
+ * 5b) The resolved resource is modified as per 2) so that any relationships in the
+ *     resolved resource are also augumented with "special" properties.
+ *
+ * 5c) The relationship is replaced with the resolved resource.
+ *
+ * 5d) The accessed relationship is removed from the array defined in 1).
+ *
+ * 6)  Now that all accessed relationships have been resolved, we repeat step 3).
+ *     Note that new relationships may be accessed, so we may repeat steps 3) to
+ *     6) multiple times until we can return in 4).
+ *
+ * This is inefficient as we may have to evaluate the JSONata expression multiple
+ * times until all required relationships are resolved. Currently, the resolver
+ * uses a cache of resources to save on expensive registry lookups. A future
+ * improvement to this algorithm could be to keep a cache of queries and a list
+ * of the relationships that had to be resolved in order to process each query.
+ * Those relationships could then be eagerly resolved upfront for any subsequent
+ * executions of the same query.
+ */
+
+/**
+ * A class for executing queries using JSONata expressions against resources.
+ * @protected
+ */
+class QueryExecutor {
+
+    /**
+     * Constructor.
+     * @param {Resolver} resolver The resolver to use.
+     */
+    constructor(resolver) {
+        const method = 'constructor';
+        LOG.entry(method, resolver);
+        this.resolver = resolver;
+        LOG.exit(method);
+    }
+
+    /**
+     * Query all of the specified resources using the given JSONata expression.
+     * @param {string} expression The JSONata expression.
+     * @param {Resource[]} resources The resource to query.
+     * @return {Promise} A promise that will be resolved with the results of the
+     * query, or rejected with an error.
+     */
+    queryAll(expression, resources) {
+        const method = 'queryAll';
+        LOG.entry(method, expression, resources);
+
+        // Compile the expression.
+        LOG.debug(method, 'Compiling JSONata expression');
+        const compiledExpression = jsonata(expression);
+        LOG.debug(method, 'Compiled JSONata expression');
+
+        // Prepare the root resources.
+        let accessedRelationships = [];
+        let cachedResources = new Map();
+        resources.forEach((resource) => {
+            LOG.debug(method, 'Preparing resource', resource.getFullyQualifiedIdentifier());
+            let fqi = resource.getFullyQualifiedIdentifier();
+            cachedResources.set(fqi, resource);
+            this.prepareResource(resource, accessedRelationships);
+        });
+
+        // Process the query by calling the recursive method that does the bulk of the work.
+        let promise = Promise.resolve();
+        let result = [];
+        resources.forEach((resource) => {
+            promise = promise.then(() => {
+                LOG.debug(method, 'Executing query on resource', resource.getFullyQualifiedIdentifier());
+                return this.queryInternal(compiledExpression, resource, accessedRelationships, cachedResources)
+                    .then((thisResult) => {
+                        LOG.debug(method, 'Executed query, adding result to list');
+                        result.push(thisResult);
+                    });
+            });
+        });
+        return promise
+            .then(() => {
+                LOG.exit(method, result);
+                return result;
+            });
+
+    }
+
+    /**
+     * Query the specified resource using the given JSONata expression.
+     * @param {string} expression The JSONata expression.
+     * @param {Resource} resource The resource to query.
+     * @return {Promise} A promise that will be resolved with the results of the
+     * query, or rejected with an error.
+     */
+    query(expression, resource) {
+        const method = 'query';
+        LOG.entry(method, expression, resource.toString());
+
+        // Compile the expression.
+        LOG.debug(method, 'Compiling JSONata expression');
+        const compiledExpression = jsonata(expression);
+        LOG.debug(method, 'Compiled JSONata expression');
+
+        // Prepare the root resource.
+        let accessedRelationships = [];
+        let cachedResources = new Map();
+        let fqi = resource.getFullyQualifiedIdentifier();
+        cachedResources.set(fqi, resource);
+        this.prepareResource(resource, accessedRelationships);
+
+        // Process the query by calling the recursive method that does the bulk of the work.
+        return this.queryInternal(compiledExpression, resource, accessedRelationships, cachedResources)
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
+
+    }
+
+    /**
+     * @private
+     * @typedef {Object} FoundRelationship
+     * @property {Relationship} relationship The relationship.
+     * @property {function} resolve The function to set the resolved value.
+     */
+
+    /**
+     * Query the specified resource using the given JSONata expression.
+     * @private
+     * @param {Object} compiledExpression The compiled JSONata expression.
+     * @param {Resource} resource The resource to query.
+     * @param {FoundRelationship[]} accessedRelationships The working array of accessed relationships.
+     * @param {Map} cachedResources The cache of resources.
+     * @return {Promise} A promise that will be resolved with the results of the
+     * query, or rejected with an error.
+     */
+    queryInternal(compiledExpression, resource, accessedRelationships, cachedResources) {
+        const method = 'queryInternal';
+        LOG.entry(method, compiledExpression, resource, accessedRelationships, cachedResources);
+
+        // Evaluate the expression.
+        LOG.debug(method, 'Evaluating JSONata expression');
+        let result = compiledExpression.evaluate(resource);
+        LOG.debug(method, 'Evaluated JSONata expression', result);
+
+        // Did we hit any relationships?
+        if (accessedRelationships.length === 0) {
+
+            // The result is safe to use.
+            LOG.debug(method, 'No relationships were accessed');
+            LOG.exit(method, result);
+            return Promise.resolve(result);
+
+        }
+
+        // The result will be a promise chain of resolves and a retry.
+        result = Promise.resolve();
+
+        // Resolve all accessed relationships.
+        while (accessedRelationships.length !== 0) {
+            let accessedRelationship = accessedRelationships.shift();
+            result = result.then(() => {
+                LOG.debug(method, 'Resolving accessed relationship', accessedRelationship.relationship.toString());
+                return this.resolver.resolveRelationship(accessedRelationship.relationship, {
+                    cachedResources: new Map(),
+                    skipRecursion: true
+                })
+                .then((resolvedResource) => {
+                    LOG.debug(method, 'Resolved accessed relationship', accessedRelationship.relationship.toString());
+                    this.prepareResource(resolvedResource, accessedRelationships);
+                    accessedRelationship.resolve(resolvedResource);
+                });
+            });
+        }
+
+        // Try again.
+        return result.then(() => {
+            LOG.debug(method, 'Relationships were accessed and resolved, trying again');
+            LOG.exit(method);
+            return this.queryInternal(compiledExpression, resource, accessedRelationships, cachedResources);
+        });
+
+    }
+
+    /**
+     * Find all of the relationships in the specified resource.
+     * @private
+     * @param {Resource} resource The resource to resolve.
+     * @return {FoundRelationship[]} The relationships in the specified resource.
+     */
+    findRelationships(resource) {
+        const method = 'findRelationships';
+        LOG.entry(method, resource.toString());
+        let classDeclaration = resource.getClassDeclaration();
+        let result = [];
+        classDeclaration.getProperties().forEach((property) => {
+            LOG.debug(method, 'Looking at property', property.getName());
+            let value = resource[property.getName()];
+            if (value instanceof Resource) {
+                LOG.debug(method, 'Found resource property, recursing');
+                result.concat(this.findRelationships(value));
+            } else if (value instanceof Relationship) {
+                LOG.debug(method, 'Found relationship property');
+                result.push({
+                    relationship: value,
+                    resolve: (newValue) => { resource[property.getName()] = newValue; }
+                });
+            } else if (Array.isArray(value)) {
+                LOG.debug(method, 'Found array property, iterating');
+                value.forEach((item, index) => {
+                    if (item instanceof Resource) {
+                        LOG.debug(method, 'Found array resource property, recursing');
+                        result.concat(this.findRelationships(item));
+                    } else if (item instanceof Relationship) {
+                        LOG.debug(method, 'Found array relationship property');
+                        result.push({
+                            relationship: item,
+                            resolve: (newValue) => { resource[property.getName()][index] = newValue; }
+                        });
+                    } else {
+                        LOG.debug(method, 'Found array primitive value, ignoring');
+                    }
+                });
+            } else {
+                LOG.debug(method, 'Found primitive value, ignoring');
+            }
+        });
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Modify the specified relationship so that for every property on the target
+     * resource, a "special" property is added to the relationship with the same
+     * name, which when accessed calls the specified callback.
+     * @private
+     * @param {Relationship} relationship The relationship to modify.
+     * @param {function} callback The function to call when the "special" properties
+     * are accessed.
+     */
+    modifyRelationship(relationship, callback) {
+        const method = 'modifyRelationship';
+        LOG.entry(method, relationship.toString());
+        LOG.debug(method, 'Adding hidden $resolved property');
+        Object.defineProperty(relationship, '$resolved', {
+            enumerable: false,
+            configurable: false,
+            value: false,
+            writable: true
+        });
+        let classDeclaration = relationship.getClassDeclaration();
+        classDeclaration.getProperties().forEach((property) => {
+            LOG.debug(method, 'Adding special property', property.getName());
+            Object.defineProperty(relationship, property.getName(), {
+                enumerable: true,
+                configurable: false,
+                get: () => {
+                    if (!relationship.$resolved) {
+                        callback();
+                        relationship.$resolved = true;
+                    }
+                    return undefined;
+                }
+            });
+        });
+        LOG.exit(method);
+    }
+
+    /**
+     * Prepare the specified resource so that every relationship in the resource
+     * is modified so that if the relationship is accessed, it adds itself to the
+     * list of accessed relationships.
+     * @private
+     * @param {Resource} resource The resource to prepare.
+     * @param {FoundRelationship[]} accessedRelationships The working array of accessed relationships.
+     */
+    prepareResource(resource, accessedRelationships) {
+        const method = 'prepareResource';
+        LOG.entry(method, resource.toString(), accessedRelationships);
+
+        // Don't prepare an already prepared resource.
+        if (resource.hasOwnProperty('$prepared')) {
+            LOG.exit(method);
+            return;
+        }
+        Object.defineProperty(resource, '$prepared', {
+            enumerable: false,
+            configurable: false,
+            value: true,
+            writable: true
+        });
+
+        // Find all the relationships in this resource.
+        const foundRelationships = this.findRelationships(resource);
+
+        // Add properties to each relationship.
+        foundRelationships.forEach((foundRelationship) => {
+            LOG.debug(method, 'Found relationship object', foundRelationship.relationship.toString());
+            this.modifyRelationship(foundRelationship.relationship, () => {
+                accessedRelationships.push(foundRelationship);
+            });
+        });
+
+        LOG.exit(method);
+    }
+
+}
+
+module.exports = QueryExecutor;
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+	 
+
+
+	<span class="copyright">
+	2017 Copyright IBM Corp. All Rights Reserved
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+		on Wed Feb 8th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

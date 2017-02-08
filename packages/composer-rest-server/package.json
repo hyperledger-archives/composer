@@ -31,7 +31,7 @@
     "loopback": "^3.2.1",
     "loopback-boot": "^2.23.0",
     "loopback-component-explorer": "^4.1.0",
-    "loopback-connector-composer": "^0.4.1",
+    "loopback-connector-composer": "^0.4.2",
     "touch": "^1.0.0",
     "yargs": "^6.6.0"
   }
