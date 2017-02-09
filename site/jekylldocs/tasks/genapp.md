@@ -113,6 +113,7 @@ This generator can also be ran using ```yo fabric-composer:angular```
 
 
 **1. Generating the application by connecting to a running business network**
+
 ```
 Welcome to the Angular2 skeleton app generator
 
@@ -134,6 +135,7 @@ About to connect to a running business network
 
 
 **2. Generating the application with a business network archive file**
+
 ```
 Welcome to the Angular2 skeleton app generator
 
