@@ -103,7 +103,7 @@ I'm all done. Running npm install for you to install the required dependencies. 
 That is now all created - the next step is to add an adapter to link with the Fabric Composer runtime.
 
 ```bash
-npm install --save composer-loopback-connector
+npm install --save loopback-connector-composer
 ```
 
 Last step before trying things out is to add a function in the `server/boot` boot directory. This function is below - the key parts are in the `datasource` variable.  These have been filled out with the same settings of the Getting Started guide.
@@ -118,7 +118,7 @@ module.exports = function (server) {
 
   const dataSource = server.loopback.createDataSource('Concerto', {
     "name": "Concerto",
-    "connector": "composer-loopback-connector",
+    "connector": "loopback-connector-composer",
     "connectionProfileName" : 'defaultProfile',
     "businessNetworkIdentifier" : 'digitalproperty-network',
     "participantId" : 'WebAppAdmin',
