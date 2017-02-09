@@ -3,13 +3,22 @@
   "version": "0.4.2",
   "description": "Fabric Composer REST server that uses the Fabric Composer LoopBack connector",
   "bin": {
-    "composer-rest-server": "server.js"
+    "composer-rest-server": "server/server.js"
   },
   "main": "server/server.js",
   "scripts": {
     "lint": "eslint .",
     "start": "node ."
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabric-composer/fabric-composer.git"
+  },
+  "keywords": [
+    "blockchain",
+    "hyperledger",
+    "solutions"
+  ],
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
