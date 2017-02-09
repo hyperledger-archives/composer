@@ -58,9 +58,9 @@ class FileWallet extends Wallet {
         if (!this.directory) {
             let h = FileWallet.getHomeDirectory();
             if (h) {
-                this.directory = path.resolve(h, '.concerto-credentials');
+                this.directory = path.resolve(h, '.composer-credentials');
             } else {
-                this.directory = path.resolve('/', '.concerto-credentials');
+                this.directory = path.resolve('/', '.composer-credentials');
             }
             LOG.debug(method, 'Generated directory', this.directory);
         }
