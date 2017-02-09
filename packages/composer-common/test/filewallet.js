@@ -73,20 +73,20 @@ describe('FileWallet', () => {
         it('should use the home directory by default', () => {
             sandbox.stub(FileWallet, 'getHomeDirectory').returns('/home/doge1');
             fileWallet = new FileWallet();
-            fileWallet.directory.should.equal(path.resolve('/home/doge1', '.concerto-credentials'));
+            fileWallet.directory.should.equal(path.resolve('/home/doge1', '.composer-credentials'));
         });
 
         it('should use the root directory by default if no home directory available', () => {
             sandbox.stub(FileWallet, 'getHomeDirectory').returns(null);
             fileWallet = new FileWallet();
-            fileWallet.directory.should.equal(path.resolve('/', '.concerto-credentials'));
+            fileWallet.directory.should.equal(path.resolve('/', '.composer-credentials'));
         });
 
         it('should use the specified directory', () => {
             fileWallet = new FileWallet({
-                directory: '/var/concerto'
+                directory: '/var/composer'
             });
-            fileWallet.directory.should.equal('/var/concerto');
+            fileWallet.directory.should.equal('/var/composer');
         });
 
     });

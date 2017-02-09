@@ -3,7 +3,7 @@
   "version": "0.4.2",
   "description": "A test harness/UI for the web runtime container for Fabric Composer",
   "bin": {
-    "composer": "cli.js"
+    "composer-ui": "cli.js"
   },
   "repository": {
     "type": "git",
@@ -69,6 +69,7 @@
     "composer-common": "^0.4.2",
     "composer-connector-server": "^0.4.2",
     "express": "^4.14.0",
+    "is-docker": "^1.1.0",
     "opener": "^1.4.2",
     "socket.io": "^1.7.2"
   },
