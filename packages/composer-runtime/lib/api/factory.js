@@ -102,6 +102,30 @@ class Factory {
             return factory.newRelationship(ns, type, id);
         };
 
+        /**
+         * Create a new concept with a given namespace, type, and identifier.
+         * A concept is an advanced data structure
+         * @example
+         * // The existing driver of the vehicle.
+         * var person;
+         * // Get the factory.
+         * var factory = getFactory();
+         * // Create a new relationship to the vehicle.
+         * var record = factory.newConcept('org.acme', 'Record', 'RECORD_1');
+         * // Add the record to the persons array of records.
+         * person.records.push(record);
+         * @public
+         * @method module:composer-runtime.Factory#newConcept
+         * @param {string} ns The namespace of the concept.
+         * @param {string} type The type of the concept.
+         * @return {Concept} The new instance of the concept.
+         * @throws {Error} If the specified type (specified by the namespace and
+         * type) is not defined in the current version of the business network.
+         */
+        this.newConcept = function newConcept(ns, type) {
+            return factory.newConcept(ns, type);
+        };
+
         Object.freeze(this);
         LOG.exit(method);
     }
