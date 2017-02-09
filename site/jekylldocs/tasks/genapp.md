@@ -19,11 +19,25 @@ If you don't already have it, install Yeoman
 npm install -g yo
 ```
 
-then install the generator for it
+
+If you wish to use the Angular2 Application Generator, then you will need a few other globally installed
+
+```bash
+npm install -g typings
+
+npm install -g bower
+
+npm install -g angular-cli
+```
+
+
+Then install the generator for it
+
 
 ```bash
 npm install -g generator-fabric-composer
 ```
+
 
 ## Running the generator
 
@@ -40,12 +54,12 @@ Welcome to the Fabric Composer Skeleton Application Generator
 
 ### What are the generator options?
 
-#### CLI Application
+### CLI Application
 
 Description ...
-This can also be ran using ```yo fabric-composer:cli```
+This generator also be ran using ```yo fabric-composer:cli```
 
-##### What questions does this ask?
+#### What questions does this ask?
 
 ```
 Welcome to the CLI skeleton app generator
@@ -72,7 +86,7 @@ configuring: composer-sample-app
    create .gitignore
 ```
 
-##### What does this do?
+#### What does this do?
 Firstly it creates a standard npm module with the usual attributes of name, author, description.
 Secondly it asks a set of Fabric Composer questions to help create the sample structure.
 
@@ -80,19 +94,22 @@ Secondly it asks a set of Fabric Composer questions to help create the sample st
 - Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric
 - The EnrollmentId/Secret: Are needed to create a connection to the fabric
 
-##### Testing this has worked
+#### Testing this has worked
 The `index.js` file is a very simple application that lists the asset registries that have been defined.
 
 ---
 
-#### Angular2 Application
-The user has the option to generate an Angular2 application from providing:
-- The details required to connect to a running business network
-- A business network archive file.
+### Angular2 Application
 
-This can also be ran using ```yo fabric-composer:angular```
+The user has the ability to generate an application in two different ways:
 
-##### What questions does this ask?
+1. Generating the application by connecting to a running business network
+
+2. Generating the application with a business network archive file
+
+This generator can also be ran using ```yo fabric-composer:angular```
+
+#### What questions does this ask?
 
 
 **1. Generating the application by connecting to a running business network**
@@ -135,23 +152,47 @@ Reading file: org.acme.biznet@0.0.2.bna
 ...
 ```
 
-##### What does this do?
 
-1. Generating the application by connecting to a running business network
+#### What does this do?
+
+**1. Generating the application by connecting to a running business network**
+
 Firstly the generator will also a series of basic regarding the application name, author, description, etc.
 Then it will ask the user to enter the details required to connect a running business network.
 After the generator has stopped prompting the user to answer questions, it will then attempt to connect to the business network using the details provided.
-If it successfully connects to the business network, the generator will then examine the assets, transactions and participant.
+If it successfully connects to the business network, the generator will then examine the assets, transactions and participants.
 The generator will then create Angular components based upon the different modelled types.
 
 
-2. Generating the application with a business network archive file
-Firstly it creates a standard npm module with the usual attributes of name, author, description.
-Secondly it asks a set of Fabric Composer questions to help create the sample structure.
+**2. Generating the application with a business network archive file**
 
-- NPM Module name:  What is the name of the business network you want to connect to - and is this the same as the modules NPM registry name
+Firstly the generator will also a series of basic regarding the application name, author, description, etc.
+Then it will ask the user to enter the relative path to a business network archive file.
+After the generator has stopped prompting the user to answer questions, it will then attempt to read the business network archive file provided.
+If it successfully reads the file, the generator will then examine the assets, transactions and participants.
+The generator will then create Angular components based upon the different modelled types.
+
+
+- Business Network Identifier:  This is the name of the business network you want to connect to - and is this the same as the modules NPM registry name
+- Business Network Archive File: This is a business network definition archived using the Composer-CLI
 - Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric
 - The EnrollmentId/Secret: Are needed to create a connection to the fabric
+
+
+#### Testing this has worked
+
+**1. Generating the application by connecting to a running business network**
+
+After the application has been generated, the application can be started using ``npm start`` inside of the application directory.
+
+**2. Generating the applicaiton with a business network archive file**
+
+After the application has been generated, a business network needs to be deployed to a live fabric.
+Once this has been done, you will then need to change into applications ``config`` directory.
+Inside ``default.json``, the connection profile, business network identifier, enrollment id and secret to connect to the business network need to be set.
+The application can be then be started using ``npm start``.
+
+(Unit tests for components and services are coming soon)
 
 
 # Generating Tests
