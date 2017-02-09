@@ -4,6 +4,7 @@
   "description": "Generates skeleton projects from Fabric Composer business network definitions",
   "files": [
     "generators/app",
+    "generators/cli",
     "generators/angular"
   ],
   "keywords": [
@@ -14,7 +15,6 @@
     "composer-client": "^0.4.2",
     "composer-common": "^0.4.2",
     "fs": "0.0.1-security",
-    "generator-loopback": "^2.2.1",
     "shelljs": "^0.7.5",
     "underscore.string": "^3.3.4",
     "yeoman-generator": "^0.24.1"
