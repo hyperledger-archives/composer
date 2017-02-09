@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +30,13 @@ const argv = require('yargs')
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
+
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('composer-connector-server');
 const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const io = require('socket.io')(server);
+const isDocker = require('is-docker');
 const Logger = require('composer-common').Logger;
 const opener = require('opener');
 const path = require('path');
@@ -88,4 +91,6 @@ io.on('disconnect', (socket) => {
     LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
 });
 
-opener(`http://localhost:${argv.port}`);
+if (!isDocker()) {
+    opener(`http://localhost:${argv.port}`);
+}

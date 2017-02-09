@@ -51,7 +51,7 @@ export class AppComponent {
   private subs: any = null;
 
   private composerPackageVersion = composerPackageVersion;
-  private concertoRuntimeVersion = '<none>';
+  private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
 
   @ViewChild(BusyComponent) private busyComponent: BusyComponent;
@@ -156,7 +156,7 @@ export class AppComponent {
         return this.clientService.getBusinessNetworkConnection().ping();
       })
       .then((ping) => {
-        this.concertoRuntimeVersion = ping.version || this.concertoRuntimeVersion;
+        this.composerRuntimeVersion = ping.version || this.composerRuntimeVersion;
         this.participantFQI = ping.participant || this.participantFQI;
         // We then load the connection profiles again, as the connect calls may have
         // created versions of the default connection profiles.

@@ -39,5 +39,6 @@ jspm_packages
 # idea
 .idea
 
-# mac users
+# Mac OS X files
 .DS_Store
+*.swp

@@ -52,8 +52,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy the supervisord configuration.
 COPY supervisord-*.conf /etc/supervisor/conf.d/
 
-# Create the concerto user ID.
-RUN useradd -r -m -s /bin/false concerto
+# Create the composer user ID.
+RUN useradd -r -m -s /bin/false composer
 
 # Run supervisor to start the application.
 CMD [ "/usr/bin/supervisord", "-n" ]
