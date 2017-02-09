@@ -119,7 +119,7 @@ export class AdminService {
               console.log('hlfabric connection profile does not exist, creating');
               return this.adminConnection.createProfile('hlfabric', {
                 type: 'hlf',
-                keyValStore: '/home/concerto/.concerto-credentials',
+                keyValStore: '/home/composer/.composer-credentials',
                 membershipServicesURL: 'grpc://membersrvc:7054',
                 peerURL: 'grpc://vp0:7051',
                 eventHubURL: 'grpc://vp0:7053',

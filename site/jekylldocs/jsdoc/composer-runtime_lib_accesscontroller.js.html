@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Fabric Composer Source: composer-runtime/lib/accesscontroller.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Fabric Composer</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.html">composer-admin</a></li><li><a href="module-composer-client.html">composer-client</a></li><li><a href="module-composer-common.html">composer-common</a></li><li><a href="module-composer-runtime.html">composer-runtime</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#theWallet">theWallet</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: composer-runtime/lib/accesscontroller.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+const AccessException = require('./accessexception');
+const Logger = require('composer-common').Logger;
+
+const LOG = Logger.getLog('AccessController');
+
+/**
+ * A class that manages access to registries and resources by processing
+ * the access control list(s) in a business network definition.
+ * @private
+ * @class
+ * @memberof module:composer-runtime
+ */
+class AccessController {
+
+    /**
+     * Constructor.
+     * @param {AclManager} aclManager The ACL manager to use.
+     */
+    constructor(aclManager) {
+        const method = 'constructor';
+        LOG.entry(method, aclManager);
+        this.aclManager = aclManager;
+        this.participant = null;
+        LOG.exit(method);
+    }
+
+    /**
+     * Get the current participant.
+     * @return {Resource} The current participant.
+     */
+    getParticipant() {
+        return this.participant;
+    }
+
+    /**
+     * Set the current participant.
+     * @param {Resource} participant The current participant.
+     */
+    setParticipant(participant) {
+        this.participant = participant;
+    }
+
+    /**
+     * Check that the specified participant has the specified
+     * level of access to the specified resource.
+     * @param {Resource} resource The resource.
+     * @param {string} access The level of access.
+     * @param {Resource} participant The participant.
+     * @throws {AccessException} If the specified participant
+     * does not have the specified level of access to the specified
+     * resource.
+     */
+    check(resource, access) {
+        const method = 'check';
+        LOG.entry(method, resource.getFullyQualifiedIdentifier(), access);
+        try {
+
+            // Check to see if a participant has been set. If not, then ACL
+            // enforcement is not enabled.
+            let participant = this.participant;
+            if (!participant) {
+                LOG.debug(method, 'No participant');
+                LOG.exit(method);
+                return;
+            }
+
+            // Check to see if an ACL file was supplied. If not, then ACL
+            // enforcement is not enabled.
+            if (!this.aclManager.getAclFile()) {
+                LOG.debug(method, 'No ACL file');
+                LOG.exit(method);
+                return;
+            }
+
+            // Iterate over the ACL rules in order, but stop at the first rule
+            // that permits the action.
+            let aclRules = this.aclManager.getAclRules();
+            let result = aclRules.some((aclRule) => {
+                LOG.debug(method, 'Processing rule', aclRule);
+                let value = this.checkRule(resource, access, participant, aclRule);
+                LOG.debug(method, 'Processed rule', value);
+                return value;
+            });
+
+            // If a ACL rule permitted the action, return.
+            if (result) {
+                LOG.exit(method);
+                return;
+            }
+
+            // Otherwise no ACL rule permitted the action.
+            throw new AccessException(resource, access, participant);
+
+        } catch (e) {
+            LOG.error(method, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Check the specified ACL rule permits the specified level
+     * of access to the specified resource.
+     * @param {Resource} resource The resource.
+     * @param {string} access The level of access.
+     * @param {Resource} participant The participant.
+     * @param {AclRule} aclRule The ACL rule.
+     * @returns {boolean} True if the specified ACL rule permits
+     * the specified level of access to the specified resource.
+     */
+    checkRule(resource, access, participant, aclRule) {
+        const method = 'checkRule';
+        LOG.entry(method, participant.getFullyQualifiedIdentifier(), resource, access, participant, aclRule);
+
+        // Is the ACL rule relevant to the specified noun?
+        if (!this.matchNoun(resource, aclRule)) {
+            LOG.debug(method, 'Noun does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Is the ACL rule relevant to the specified verb?
+        if (!this.matchVerb(access, aclRule)) {
+            LOG.debug(method, 'Verb does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Is the ACL rule relevant to the specified participant?
+        if (!this.matchParticipant(participant, aclRule)) {
+            LOG.debug(method, 'Participant does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Is the predicate met?
+        if (!this.matchPredicate(resource, access, participant, aclRule)) {
+            LOG.debug(method, 'Predicate does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Yes, is this an allow or deny rule?
+        if (aclRule.getAction() === 'ALLOW') {
+            LOG.exit(method, true);
+            return true;
+        }
+
+        // This must be an explicit deny rule, so throw.
+        let e = new AccessException(resource, access, participant);
+        LOG.error(method, e);
+        throw e;
+
+    }
+
+    /**
+     * Check that the specified participant has the specified
+     * level of access to the specified resource.
+     * @param {Resource} resource The resource.
+     * @param {AclRule} aclRule The ACL rule.
+     * @returns {boolean} True if the specified ACL rule permits
+     * the specified level of access to the specified resource.
+     */
+    matchNoun(resource, aclRule) {
+        const method = 'matchNoun';
+        LOG.entry(method, resource.getFullyQualifiedIdentifier(), aclRule);
+
+        // Determine the input fully qualified name and ID.
+        let fqn = resource.getFullyQualifiedType();
+        let ns = resource.getNamespace();
+        let id = resource.getIdentifier();
+
+        // Check the namespace and type of the ACL rule.
+        let noun = aclRule.getNoun();
+
+        // Check to see if the fully qualified name matches.
+        let reqFQN = noun.getFullyQualifiedName();
+        if (fqn === reqFQN) {
+            // Noun is matching fully qualified type.
+        } else if (ns === reqFQN) {
+            // Noun is matching namespace.
+        } else {
+            // Noun does not match.
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Check to see if the identifier matches (if specified).
+        let reqID = noun.getInstanceIdentifier();
+        if (reqID) {
+            if (id === reqID) {
+                // Noun is matching identifier.
+            } else {
+                // Noun does not match.
+                LOG.exit(method, false);
+                return false;
+            }
+        } else {
+            // Noun does not specify identifier.
+        }
+
+        LOG.exit(method, true);
+        return true;
+    }
+
+    /**
+     * Check that the specified participant has the specified
+     * level of access to the specified resource.
+     * @param {string} access The level of access.
+     * @param {AclRule} aclRule The ACL rule.
+     * @returns {boolean} True if the specified ACL rule permits
+     * the specified level of access to the specified resource.
+     */
+    matchVerb(access, aclRule) {
+        const method = 'matchVerb';
+        LOG.entry(method, access, aclRule);
+
+        // Check to see if the access matches the verb of the ACL rule.
+        // Verb can be one of:
+        //   'CREATE' / 'READ' / 'UPDATE' / 'ALL' / 'DELETE'
+        let result = false;
+        let verb = aclRule.getVerb();
+        if (verb === 'ALL' || access === verb) {
+            result = true;
+        }
+
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Check that the specified participant has the specified
+     * level of access to the specified resource.
+     * @param {Resource} participant The participant.
+     * @param {AclRule} aclRule The ACL rule.
+     * @returns {boolean} True if the specified ACL rule permits
+     * the specified level of access to the specified resource.
+     */
+    matchParticipant(participant, aclRule) {
+        const method = 'matchParticipant';
+        LOG.entry(method, participant.getFullyQualifiedIdentifier(), aclRule);
+
+        // Is a participant specified in the ACL rule?
+        let reqParticipant = aclRule.getParticipant();
+        if (!reqParticipant) {
+            LOG.exit(method, true);
+            return true;
+        }
+
+        // Determine the input fully qualified name and ID.
+        let ns = participant.getNamespace();
+        let fqn = participant.getFullyQualifiedType();
+        let id = participant.getIdentifier();
+
+        // Check to see if the fully qualified name matches.
+        let reqFQN = reqParticipant.getFullyQualifiedName();
+        if (fqn === reqFQN) {
+            // Participant is matching fully qualified type.
+        } else if (ns === reqFQN) {
+            // Participant is matching namespace.
+        } else {
+            // Participant does not match.
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Check to see if the identifier matches (if specified).
+        let reqID = reqParticipant.getInstanceIdentifier();
+        if (reqID) {
+            if (id === reqID) {
+                // Participant is matching identifier.
+            } else {
+                // Participant does not match.
+                LOG.exit(method, false);
+                return false;
+            }
+        } else {
+            // Participant does not specify identifier.
+        }
+
+        LOG.exit(method, true);
+        return true;
+    }
+
+    /**
+     * Check that the specified participant has the specified
+     * level of access to the specified resource.
+     * @param {Resource} resource The resource.
+     * @param {string} access The level of access.
+     * @param {Resource} participant The participant.
+     * @param {AclRule} aclRule The ACL rule.
+     * @returns {boolean} True if the specified ACL rule permits
+     * the specified level of access to the specified resource.
+     */
+    matchPredicate(resource, access, participant, aclRule) {
+        const method = 'matchPredicate';
+        LOG.entry(method, resource.getFullyQualifiedIdentifier(), access, participant.getFullyQualifiedIdentifier(), aclRule);
+
+        // Get the predicate from the rule.
+        let predicate = aclRule.getPredicate().getExpression();
+
+        // We can fast track the simple boolean predicates.
+        if (predicate === 'true') {
+            LOG.exit(method, true);
+            return true;
+        } else if (predicate === 'false') {
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Otherwise we need to build a function.
+        let source = `return (${predicate});`;
+        let argNames = [];
+        let argValues = [];
+
+        // Check to see if the resource needs to be bound.
+        let resourceVar = aclRule.getNoun().getVariableName();
+        if (resourceVar) {
+            argNames.push(resourceVar);
+            argValues.push(resource);
+        }
+
+        // Check to see if the participant needs to be bound.
+        let reqParticipant = aclRule.getParticipant();
+        if (reqParticipant) {
+            let participantVar = aclRule.getParticipant().getVariableName();
+            if (participantVar) {
+                argNames.push(participantVar);
+                argValues.push(participant);
+            }
+        }
+
+        // Compile and execute the function.
+        let result;
+        try {
+            LOG.debug(method, 'Compiling and executing function', source, argNames, argValues);
+            let func = new Function(argNames.join(','), source);
+            result = func.apply(null, argValues);
+        } catch (e) {
+            LOG.error(method, e);
+            throw new AccessException(resource, access, participant);
+        }
+
+        // Convert the result into a boolean before returning it.
+        result = !!result;
+        LOG.exit(method, result);
+        return result;
+    }
+
+}
+
+module.exports = AccessController;
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+	 
+
+
+	<span class="copyright">
+	2017 Copyright IBM Corp. All Rights Reserved
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+		on Wed Feb 8th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
