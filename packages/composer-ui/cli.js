@@ -42,6 +42,13 @@ const opener = require('opener');
 const path = require('path');
 const util = require('util');
 
+if (process.env.COMPOSER_CONFIG) {
+  const config = JSON.parse(process.env.COMPOSER_CONFIG);
+  app.get('/config.json', (req, res, next) => {
+    res.json(config);
+  });
+}
+
 app.use(express.static(path.resolve(__dirname, 'dist')));
 server.listen(argv.port);
 
