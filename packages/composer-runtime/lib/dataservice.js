@@ -112,24 +112,6 @@ class DataService {
     }
 
     /**
-     * Determine whether the collection with the specified ID exists.
-     * @abstract
-     * @param {string} id The ID of the collection.
-     * @return {Promise} A promise that will be resolved with a boolean
-     * indicating whether the collection exists.
-     */
-    existsCollection(id) {
-        return new Promise((resolve, reject) => {
-            this._existsCollection(id, (error, exists) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(exists);
-            });
-        });
-    }
-
-    /**
      * @callback getCollectionCallback
      * @protected
      * @param {Error} error The error if any.
@@ -145,6 +127,24 @@ class DataService {
      */
     _getCollection(id, callback) {
         throw new Error('abstract function called');
+    }
+
+    /**
+     * Determine whether the collection with the specified ID exists.
+     * @abstract
+     * @param {string} id The ID of the collection.
+     * @return {Promise} A promise that will be resolved with a boolean
+     * indicating whether the collection exists.
+     */
+    existsCollection(id) {
+        return new Promise((resolve, reject) => {
+            this._existsCollection(id, (error, exists) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(exists);
+            });
+        });
     }
 
     /**

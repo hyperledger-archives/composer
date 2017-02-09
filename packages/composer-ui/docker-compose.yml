@@ -1,14 +1,14 @@
 version: "2"
 services:
   membersrvc:
-    image: hyperledger/fabric-membersrvc
+    image: hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
     ports:
       - '7054:7054'
     environment:
       - MEMBERSRVC_CA_ACA_ENABLED=true
     command: membersrvc
   vp0:
-    image: hyperledger/fabric-peer
+    image: hyperledger/fabric-peer:x86_64-0.6.1-preview
     ports:
       - '7050:7050'
       - '7051:7051'
