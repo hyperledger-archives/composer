@@ -18,6 +18,7 @@ const Factory = require('../../lib/api/factory');
 const realFactory = require('composer-common').Factory;
 const Relationship = require('composer-common').Relationship;
 const Resource = require('composer-common').Resource;
+const Concept = require('composer-common').Concept;
 
 const chai = require('chai');
 chai.should();
@@ -32,12 +33,14 @@ describe('AssetRegistry', () => {
     let factory;
     let mockRelationship;
     let mockResource;
+    let mockConcept;
 
     beforeEach(() => {
         mockFactory = sinon.createStubInstance(realFactory);
         factory = new Factory(mockFactory);
         mockRelationship = sinon.createStubInstance(Relationship);
         mockResource = sinon.createStubInstance(Resource);
+        mockConcept = sinon.createStubInstance(Concept);
     });
 
     describe('#constructor', () => {
@@ -66,6 +69,15 @@ describe('AssetRegistry', () => {
         it('should proxy to the registry', () => {
             mockFactory.newRelationship.withArgs('org.acme', 'Doge', 'DOGE_1').returns(mockRelationship);
             factory.newRelationship('org.acme', 'Doge', 'DOGE_1').should.equal(mockRelationship);
+        });
+
+    });
+
+    describe('#newConcept', () => {
+
+        it('should proxy to the registry', () => {
+            mockFactory.newConcept.withArgs('org.acme', 'Doge').returns(mockConcept);
+            factory.newConcept('org.acme', 'Doge').should.equal(mockConcept);
         });
 
     });
