@@ -37,17 +37,16 @@ module.exports = generators.Base.extend({
                 name: 'CLI Application',
                 value: 'CLI'
             },{
-                name: 'Angular Application',
-                value: 'Angular'
+                name: 'Angular2 Application',
+                value: 'Angular2'
             }
             ],
             store: true,
             validate: function(input) {
-                if(input !== null && input !== undefined &&
-          input.match(/^[\w-]+$/)) {
+                if(input !== null && input !== undefined) {
                     return true;
                 } else {
-                    return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
+                    return 'Generator type must be defined';
                 }
             }
         }];
@@ -62,10 +61,12 @@ module.exports = generators.Base.extend({
    * Configure generator.
    */
     configuring: function() {
-        if(this.generatorType == 'CLI'){
+        if(this.generatorType === 'CLI'){
+            console.log('You can run this generator using: \'yo fabric-composer:cli\'');
             this.composeWith(require.resolve('../cli'));
         }
-        else if(this.generatorType == 'Angular'){
+        else if(this.generatorType === 'Angular2'){
+            console.log('You can run this generator using: \'yo fabric-composer:angular\'');
             this.composeWith(require.resolve('../angular'));
         }
         else{
