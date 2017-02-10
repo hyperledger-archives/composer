@@ -23,6 +23,7 @@ addons:
 before_install: |
     set -ev
     set -o pipefail
+    ./.travis/should-run.sh
     npm install -g npm
     npm install -g @alrra/travis-scripts
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
