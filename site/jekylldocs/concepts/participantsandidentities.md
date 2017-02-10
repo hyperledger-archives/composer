@@ -62,5 +62,5 @@ function to use.
 ## Related Reference
 
 [Participant add command](../tasks/participant-add.md)  
-[Identity issue command](../reference/identity-issue.md)  
-[Identity revoke command](../reference/identity-revoke.md)  
+[Identity issue command](../tasks/identity-issue.md)  
+[Identity revoke command](../tasks/identity-revoke.md)  
