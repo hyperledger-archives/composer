@@ -43,7 +43,7 @@ elif [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
     docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
   else
     echo Not running as a PR or merge build
-    exit 1
+    exit 0
   fi
 elif [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "" ]; then
     echo You must set SYSTEST_HLF to 'hlf' or 'ibm'
