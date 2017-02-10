@@ -124,9 +124,9 @@ Looking for package.json of Business Network Definition in /home/matthew/git17/D
 
 Description:Digital Property Network
 Name:digitalproperty-network
-Identifier:digitalproperty-network-0.0.22
+Identifier:digitalproperty-network-0.0.1
 
-Written Business Network Definition Archive file to digitalproperty-network-0.0.22.bna
+Written Business Network Definition Archive file to digitalproperty-network-0.0.1.bna
 Command completed successfully.
 ```
 
@@ -135,10 +135,10 @@ We now have a new file that is the digital business network archive.
 ### Update the deployed business network
 
 ```bash
-$ composer network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-Deploying business network from archive digitalproperty-network-0.0.22.bna
+$ composer network update --archiveFile digitalproperty-network@0.0.1.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+Deploying business network from archive digitalproperty-network-0.0.1.bna
 Business network definition:
-	Identifier: digitalproperty-network-0.0.22
+	Identifier: digitalproperty-network-0.0.1
 	Description: Digital Property Network
 Updating business network definition. This may take a few seconds...
 Command completed successfully.
@@ -205,10 +205,10 @@ info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition ob
 
 **Composer CLI**
 
-* `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip`
+* `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna`
 This command is used to create a Business Network Archive. `--archiveFile` is the name of the file. The `-m` is the npm module name of the business network to use. There is also a -d option to specify the directory the business network is in. Useful whilst developing the business network transactions functions.
 
-* `composer network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
+* `composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
 This deploys the business network to the HyperLedger runtime; the archive is specified but also the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)
 * `composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
 This lists the deployed business network details. `-n` is the name of the business network. With the same options for the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)
