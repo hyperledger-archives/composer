@@ -30,7 +30,7 @@ This network will be expanded for other tutorials, but for this getting started 
 ```javascript
 asset LandTitle identified by titleId {
   o String   titleId
-  o Person   owner
+  --> Person   owner
   o String   information
   o Boolean  forSale   optional
 }
