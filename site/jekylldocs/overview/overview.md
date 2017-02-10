@@ -37,7 +37,7 @@ Definition, which contains a data model that defines the name and structure of a
 and transactions in the business network. The business network also specifies *transaction processor functions*
 (written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
 
-Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/develop/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
+Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/index.html) to submit transactions and to create, retrieve, update and delete assets within asset registries.
 
 ### Roles, Responsibilities and Tasks
 
@@ -45,7 +45,7 @@ A typical project using Fabric Composer goes through a lifecycle of:
 
 *Model -> Define Business Network -> Deploy Runtime -> Deploying Business Network -> Test -> Generate Application*
 
-![Framework Task Map](../images/framework_taskmap.png)
+![Framework Task Map](../assets/img/concerto_stack.png)
 
 These tasks may all be performed by a single full-stack developer, but are more typically performed by:
 * Business analyst, responsible for defining the data model
