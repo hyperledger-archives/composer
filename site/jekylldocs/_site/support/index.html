@@ -115,12 +115,12 @@
             </h1>
         </div>
         <div class="col-lg-12">
-          <p>We're building a community to help with Fabric Composer, either request an id on Slack or ask a question in Stackoverflow.</p>
+          <p>We're building a community to help with Fabric Composer, either chat on Rocket.chat or ask a question in Stackoverflow.</p>
         </div>
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4><i class="fa fa-fw fa-slack"></i> Discuss on Rocket Chat</h4>
+                    <h4><i class="fa fa-fw fa-rocket"></i> Discuss on Rocket Chat</h4>
                 </div>
                 <div class="panel-body">
                     <p>For discussions, we use the fabric-composer channel on the Hyperledger hosted <a href="https://chat.hyperledger.org/home">Rocket.chat</a></p>
@@ -146,7 +146,43 @@
 
       <section class="content-chunk">
         
-          <p>Need an invite to the Slack channel?  Send us an email: <a href="mailto:info@fabric-composer.org">info@fabric-composer.org</a></p>
+          <figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="cm">/** Process a property that is held for sale
+ * @param {net.biz.digitalPropertyNetwork.RegisterPropertyForSale} propertyForSale the property to be sold
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">onRegisterPropertyForSale</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'### onRegisterPropertyForSale '</span> <span class="o">+</span> <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+    <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">forSale</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="cm">/* new line is here to update the information */</span>
+    <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">information</span> <span class="o">=</span> <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">information</span> <span class="o">+</span> <span class="s1">' Updated at: '</span> <span class="o">+</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">toDateString</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+<span class="p">}</span></code></pre></figure> 
+
+<p><pre  style="visibility:hidden;" id="c1">&#39;use strict&#39;;</p>
+
+<p>/** Process a property that is held for sale
+ * @param &#123;net.biz.digitalPropertyNetwork.RegisterPropertyForSale&#125; propertyForSale the property to be sold
+ * @transaction
+ */
+function onRegisterPropertyForSale(propertyForSale) &#123;
+    console.log(&#39;### onRegisterPropertyForSale &#39; + propertyForSale.toString());
+    propertyForSale.title.forSale = true;</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/* new line is here to update the information */
+propertyForSale.title.information = propertyForSale.title.information + ' Updated at: ' + new Date().toDateString();
+
+return getAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle').then(function(result) &amp;#123;
+        return result.update(propertyForSale.title);
+    &amp;#125;
+);
+</code></pre></div>
+<p>&#125;</pre><button class="btn" data-clipboard-target="#c1">Copy to clipboard</button></p>
 
         
 
@@ -216,5 +252,13 @@
 
 <!-- Bootstrap Core JavaScript -->
 <script src="/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+      new Clipboard(".btn");
+  });
+
+</script>
 
 </html>
