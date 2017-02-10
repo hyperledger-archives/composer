@@ -31,7 +31,9 @@ if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
     docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
     docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
     docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
-elif [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "ibm" ]; then
+elif [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
+
+  if [ "${TRAVIS_EVENT_TYPE}" = "cron" ]; then
     DOCKER_FILE=${DIR}/ibm-docker-compose.yml
     docker pull ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview
     docker tag ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview ibmblockchain/fabric-membersrvc:latest
@@ -39,6 +41,10 @@ elif [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "ibm" ]; then
     docker tag ibmblockchain/fabric-peer:x86_64-0.6.1-preview ibmblockchain/fabric-peer:latest
     docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
     docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
+  else
+    echo Not running as a PR or merge build
+    exit 0
+  fi
 elif [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "" ]; then
     echo You must set SYSTEST_HLF to 'hlf' or 'ibm'
     echo For example:
