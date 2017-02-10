@@ -1,0 +1,52 @@
+<h1 id="fabric-composer-access-control-language">Fabric Composer Access Control Language</h1>
+
+<p>Fabric Composer includes an access control language (ACL) that provides declarative access control over the elements of the domain model. By defining ACL rules you can determine which users/roles are permitted to create, read, update or delete elements in a business network’s domain model.</p>
+
+<h3 id="evaluation-of-access-control-rules">Evaluation of Access Control Rules</h3>
+
+<p>Access control for a business network is defined by an ordered set of ACL rules. The rules are evaluated in order, and the first rule whose condition matches determines whether access is granted or denied. If no rule match then access is <strong>denied</strong>.</p>
+
+<p>ACL rules are defined in a file called <code class="highlighter-rouge">permissions.acl</code> in the root of the business network. If this file is missing from the business network then all access is <strong>permitted</strong>.</p>
+
+<h3 id="access-control-rule-grammer">Access Control Rule Grammer</h3>
+
+<p>ACL rules follow a tabular format, of the form:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ID | NOUN | VERB | PARTICIPANT | PREDICATE  | ACTION
+</code></pre>
+</div>
+
+<p>Multiple ACL rules may be defined that conceptually define a decision table. The actions of the decision tree define access control decisions (ALLOW or DENY). If the decision table fails to match then by default access is denied.</p>
+
+<p><strong>NOUN</strong> defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class, or a property on an instance of a class.</p>
+
+<p>Noun Examples:
+- Namespace: org.acme
+- Class in namespace: org.acme.Car
+- Property on class: org.acme.Car.owner
+- Instance of a class: org.acme.Car#ABC123
+- Property on an instance of a class: org.acme.Car.owner#ABC123</p>
+
+<p><strong>VERB</strong> identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.</p>
+
+<p><strong>PARTICIPANT</strong> defines the person or entity that has submitted a transaction for processing. If a Participant is specified they must exist in the Participant Registry. The PARTICIPANT may optionally be bound to a variable for use in a PREDICATE. The special value ‘EVERYONE’ may be used to denote that participant type checking is not enforced for a rule.</p>
+
+<p><strong>PREDICATE</strong> is a Boolean Javascript expression over bound variables. Any Javascript expression that is legal with the an <code class="highlighter-rouge">if(...)</code> expression may be used here.</p>
+
+<p><strong>ACTION</strong> identifies the action of the rule. It must be one of: ALLOW, DENY.</p>
+
+<h3 id="examples">Examples</h3>
+
+<p>Example ACL rules (in evaluation order):</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>R1 | org.acme.Car#ABC123 | DELETE | org.acme.Driver#Fred | NONE | ALLOW | Fred can DELETE the car ABC123
+R2 | org.acme.Car | UPDATE | org.acme.Regulator#Bill:r | org.acme.Car.owner == r | DENY | regulator with ID Bill can not update a Car if they own it
+R3 | org.acme.Car.owner | UPDATE | org.acme.Driver:d | org.acme.Car.owner == d  | ALLOW | Driver can change the ownership of a car that they own
+R4 | org.acme.Car | ALL | org.acme.Regulator | TRUE | ALLOW | regulators can perform all operations on Cars
+R5 | org.acme | READ | EVERYONE | TRUE | ALLOW | Everyone can read all resources in the org.acme namespace
+</code></pre>
+</div>
+
+<p>Rules are evaluated from top (most specific) to bottom (least specific). As soon as a the Noun, Verb and Predicate match for a rule then subsequent rules are not evaluated.</p>
+
+<p>This ordering makes the decision table faster to scan for both humans and computers. If no ACL rule fires then the access control decision must be DENY.</p>

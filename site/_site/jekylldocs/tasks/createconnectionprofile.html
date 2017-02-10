@@ -1,0 +1,33 @@
+<h1 id="creating-a-new-connection-profile">Creating a new Connection Profile</h1>
+
+<p>A Connection Profile is used by Fabric Composer to connect to a running fabric. More information about Connection Profiles can be found <a href="../reference/connectionprofile.md">here</a></p>
+
+<h2 id="procedure">Procedure</h2>
+
+<ol>
+  <li>Navigate to the Connection Profile store:
+ <code class="highlighter-rouge">
+ cd $HOME/.composer-connection-profiles
+</code></li>
+  <li>Create a new profile folder
+ <code class="highlighter-rouge">
+ mkdir ./MyProfile
+</code>
+ then navigate into the new profile folder
+ <code class="highlighter-rouge">
+ cd MyProfile
+</code></li>
+  <li>
+    <p>Using your favourite text editor, create a new file called <code class="highlighter-rouge">connection.json</code> that contains the following information:</p>
+
+    <p><code class="highlighter-rouge"><span class="w">
+ </span><span class="p">{</span><span class="w">
+     </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;hlf|web&gt;</span><span class="p">,</span><span class="w">
+     </span><span class="nt">"keyValStore"</span><span class="p">:</span><span class="s2">"/home/&lt;your-username&gt;/.composer-credentials"</span><span class="p">,</span><span class="w">
+     </span><span class="nt">"membershipServicesURL"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;your-membership-services-url&gt;</span><span class="p">,</span><span class="w">
+     </span><span class="nt">"peerURL"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;your-peer-url&gt;</span><span class="p">,</span><span class="w">
+     </span><span class="nt">"eventHubURL"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;your-event-hub-url&gt;</span><span class="w">
+ </span><span class="p">}</span><span class="w">
+</span></code></p>
+  </li>
+</ol>

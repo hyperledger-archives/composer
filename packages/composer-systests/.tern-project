@@ -1,9 +1,0 @@
-{
-    "ecmaVersion": 6,
-    "libs": [
-        "chai"
-    ],
-    "plugins": {
-        "node": {}
-    }
-}

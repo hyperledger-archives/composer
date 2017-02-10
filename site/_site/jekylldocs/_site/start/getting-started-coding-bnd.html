@@ -1,0 +1,162 @@
+<h1 id="creating-and-coding-a-business-network-definition">Creating and Coding a Business Network Definition</h1>
+<p>This tutorial will take you through how to code and deploy a Business Network Definition. This is how to put together the files, and code artifacts needed and what to do with them.</p>
+
+<p>This is after the important step of modeling the actual business network and the entities within it.  For this tutorial we are going to continue to use the Digital Property Network. Let’s assume that this has been designed and agree with the relevant business analysts in the relevant companies. It now needs to be codified.</p>
+
+<h2 id="creating-a-business-network-model">Creating a Business Network model</h2>
+<p># Digital Property Network  Model</p>
+
+<p>Defines the Business Network Model for the Digital Property Network.  This is the part of the Business Network Definition that defines the <em>model file</em> that defines the assets, participants, transactions, and relationships that form the Business Network.</p>
+
+<p>This part is encapsulated within (currently) a single file using a defined syntax. This file itself is encapsulated within an NPM module to permit version and distribution control. The transaction definitions, access control and other functional elements are held within a similar structure (npm module) that is dependent on a version of this model.</p>
+
+<h2 id="what-should-i-do-with-this-model">What should I do with this model</h2>
+<p>It is expected that the model would be part of the CI pipeline.  It is expected that the model would be held in a source management system, eg github-enterprise. Edited then submitted to a eg TravisCI build. This would then publish the model to the npm-enterpise</p>
+
+<p>This specific DigitalProperty-Model is already published into the public npm repository. Therefore the deployment and pipeline has already been done for you.</p>
+
+<h1 id="creating-a-new-model-for-yourself">Creating a new model for yourself</h1>
+<p>There are two ways of creating a new model; either using the command line and your favorite editor, or by using the the web Composer UI.</p>
+
+<h2 id="web-composer-ui">Web Composer UI</h2>
+
+<p><em>it’s coming soon….</em> but for the moment use the command line…..</p>
+
+<h2 id="command-line">Command line</h2>
+
+<p><em>Step1:</em>  Create a new NPM module</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>npm init
+</code></pre>
+</div>
+
+<p>There are no mandatory dependencies that are required; the most important features are name and description of the module. The version number is also very important. This will be used when you construct the full Business Network. That will have a dependency on a specific version of the model.</p>
+
+<p><em>Step2:</em> Edit the model</p>
+
+<p>The files are simple text files following a defined syntax. Within the npm module directory just create a new file, for example if you were creating this DigitalProperty-Network</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/git/DigitialProperty-Model&gt; touch models/DigitalLandTitle.cto
+</code></pre>
+</div>
+
+<p>Load that file up in any editor and you can then add your model, Again using this Digital Property Network the file might contain
+(aside if you are using the Atom editor, then there is a syntax highlighter plugin available)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/**  A 'Getting Started Tutorial' to work with Fabric Composer
+*/
+
+namespace net.biz.digitalPropertyNetwork
+
+asset LandTitle identified by titleId {
+  o String   titleId
+  o Person   owner
+  o String   information
+  o Boolean  forSale   optional
+}
+
+asset SalesAgreement identified by salesId {
+  o String    salesId
+  o Person    buyer
+  o Person    seller
+  o LandTitle title
+}
+
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+
+transaction RegisterPropertyForSale identified by transactionId{
+  o String transactionId
+  --&gt; Person seller
+  --&gt; LandTitle title
+}
+</code></pre>
+</div>
+
+<p><em>Step3:</em>
+The next step is to publish your module to the NPM repository you are using.  So a command along these lines</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>npm publish
+</code></pre>
+</div>
+
+<p><strong>That’s it… you can now progress to the  DigitalProperty-Network to add the implementation of the the transactions and complete the Business Network Definition creation.</strong></p>
+
+<h2 id="advanced-things-to-do-with-the-model">Advanced things to do with the model</h2>
+<p>Optional additions here are license checking to ensure that the model meets your Member Organization’s agreed standards.</p>
+
+<p>Other additions:
+- Generation of UML to graphically show the assets and relationships
+- Validation of the model.</p>
+
+<h2 id="creating-a-business-network-definition">Creating a Business Network definition</h2>
+<p># Digital Property Network
+This defines the transaction implementations, access control lists and other functional aspects. There is a dependency on a version of a Business Network Model.</p>
+
+<p>With this dependency, this DigitalProperty-Network defines the complete Business Network Definition.  In this specific example, the Digital Property Network.</p>
+
+<h2 id="what-should-i-do-with-this-npm-module">What should I do with this npm module?</h2>
+<p>It is expected that this npm module would be associated with a CI pipeline and tracked as source code in something like GitHub Enterprise. The CI pipeline this would be able to run functional validation on the whole definition, and also be able to published the module to an NPM repository. This allows sharing of the module etc.</p>
+
+<p>For a production or QA runtime there are administrative steps (deploy, update, remove etc.) that are performed using this Business Network Definition on a running Hyperledger Fabric. The life-cycle at it’s simplest is <em>deploy a network definition</em>, <em>update a network definition</em> and (potentially) <em>remove the network definition</em>. These actions are performed using the Business Network Archive - which is a single file that encapsulates all aspects of the Business Network Definition. It is the ‘deployable unit’.</p>
+
+<h2 id="creating-the-businessnetwork">Creating the BusinessNetwork.</h2>
+<p><em>Step1:</em> Create a npm module</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>npm init
+</code></pre>
+</div>
+<p>The important aspects of this are the name, version and description. The only dependency that will be required is the NPM module that contains the model - see step 2.</p>
+
+<p><em>Step2:</em> Create the transaction functions</p>
+
+<p>We need to create a standard JavaScript file to contain the transaction functions</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="se">\g</span>it<span class="se">\D</span>igitialProperty-Model &gt; touch lib/DigitalLandTitle.js
+</code></pre>
+</div>
+
+<p>In this example the following is the implementation of the <code class="highlighter-rouge">registeryPropertyForSale</code> transaction</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="cm">/**
+ * Process a property that is held for sale
+ * @param {net.biz.digitalPropertyNetwork.RegisterPropertyForSale} propertyForSale the property to be sold
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">onRegisterPropertyForSale</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'### onRegisterPropertyForSale '</span> <span class="o">+</span> <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+    <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">forSale</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h2 id="work-with-the-network">Work with the network</h2>
+<p>Once we have the network complete we can create a business network definition archive. This is the unit will actually be deployable to the HyperLedger Fabric.</p>
+
+<p>There is a <code class="highlighter-rouge">composer archive</code> command that can be used to create and inspect these archives. The <code class="highlighter-rouge">composer network</code> command is then used to administer the business network archive on the Hyperledger Fabric.</p>
+
+<h3 id="creating-an-archive">Creating an archive</h3>
+
+<p>The <code class="highlighter-rouge">composer archive create</code> command is used to create the archive. The <code class="highlighter-rouge">--archiveFile</code> option is used to specify the name of the archive file to create. If this is not specified then a default name will be used that is based on the identifier of the business network (sanitized to be suitable as a filename). For example <code class="highlighter-rouge">digitalPropertyNetwork-0.1.2.bna</code>.</p>
+
+<p>One of either –inputDir or –moduleName must be specified. –inputDir is the directory that contains the <code class="highlighter-rouge">package.json</code> file of the Business Network npm module’s package.json.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>composer archive create --archiveFile digitialLandTitle.bna --inputDir . --moduleName DigitalLandTitle
+</code></pre>
+</div>
+
+<p>Once you have this archive it can then be deployed to Hyperledger (which will assuming is all running for the moment)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>composer network deploy --archiveFile  DigitalLandTitle.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+</code></pre>
+</div>

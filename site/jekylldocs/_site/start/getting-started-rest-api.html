@@ -33,6 +33,7 @@
     <link href="/assets/css/prettify.css" rel="stylesheet">
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/assets/css/new-style.min.css" rel="stylesheet">
   
 
   <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
@@ -214,7 +215,7 @@ I<span class="s1">'m all done. Running npm install for you to install the requir
 
 </span></code></pre></div>
 <p>That is now all created - the next step is to add an adapter to link with the Fabric Composer runtime.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install --save composer-loopback-connector
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install --save loopback-connector-composer
 </code></pre></div>
 <p>Last step before trying things out is to add a function in the <code>server/boot</code> boot directory. This function is below - the key parts are in the <code>datasource</code> variable.  These have been filled out with the same settings of the Getting Started guide.
 Create a new file in this directory with the following contents, the name of the file is not important, so for example <code>loopback-composer.js</code>.</p>
@@ -225,7 +226,7 @@ Create a new file in this directory with the following contents, the name of the
 
   <span class="kr">const</span> <span class="nx">dataSource</span> <span class="o">=</span> <span class="nx">server</span><span class="p">.</span><span class="nx">loopback</span><span class="p">.</span><span class="nx">createDataSource</span><span class="p">(</span><span class="s1">'Concerto'</span><span class="p">,</span> <span class="p">{</span>
     <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Concerto"</span><span class="p">,</span>
-    <span class="s2">"connector"</span><span class="p">:</span> <span class="s2">"composer-loopback-connector"</span><span class="p">,</span>
+    <span class="s2">"connector"</span><span class="p">:</span> <span class="s2">"loopback-connector-composer"</span><span class="p">,</span>
     <span class="s2">"connectionProfileName"</span> <span class="p">:</span> <span class="s1">'defaultProfile'</span><span class="p">,</span>
     <span class="s2">"businessNetworkIdentifier"</span> <span class="p">:</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span>
     <span class="s2">"participantId"</span> <span class="p">:</span> <span class="s1">'WebAppAdmin'</span><span class="p">,</span>
@@ -394,7 +395,7 @@ info: <span class="o">[</span>Handel] Command completed successfully.
               </a>
             </li>
             <li>
-              <a href="http://stackoverflow.com/" class="icon">
+              <a href="http://stackoverflow.com/questions/tagged/fabric-composer" class="icon">
               <i class="fa fa-stack-overflow icon" aria-hidden="true"></i>
               </a>
             </li>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Fabric Composer Source: composer-common/lib/connection.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Fabric Composer</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.html">composer-admin</a></li><li><a href="module-composer-client.html">composer-client</a></li><li><a href="module-composer-common.html">composer-common</a></li><li><a href="module-composer-runtime.html">composer-runtime</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#theWallet">theWallet</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: composer-common/lib/connection.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+const ConnectionManager = require('./connectionmanager');
+
+/**
+ * Base class representing a connection to a business network.
+ * @private
+ * @abstract
+ * @class
+ * @memberof module:composer-common
+ */
+class Connection {
+
+    /**
+     * Constructor.
+     * @param {ConnectionManager} connectionManager The owning connection manager.
+     * @param {string} connectionProfile The name of the connection profile associated with this connection
+     * @param {string} businessNetworkIdentifier The identifier of the business network for this connection, or null if an admin connection
+     */
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
+        if (!(connectionManager instanceof ConnectionManager)) {
+            throw new Error('connectionManager not specified');
+        } else if (!connectionProfile) {
+            throw new Error('connectionProfile not specified');
+        }
+        this.connectionManager = connectionManager;
+        this.connectionProfile = connectionProfile;
+        this.businessNetworkIdentifier = businessNetworkIdentifier;
+    }
+
+    /**
+     * Get the connection manager that owns this connection.
+     * @return {ConnectionManager} The owning connection manager.
+     */
+    getConnectionManager() {
+        return this.connectionManager;
+    }
+
+    /**
+     * Returns a string that can be used to identify this connection.
+     * @return {string} the identifier of this connection
+     */
+    getIdentifier() {
+        if(this.businessNetworkIdentifier) {
+            return this.businessNetworkIdentifier + '@' + this.connectionProfile;
+        }
+        else {
+            return this.connectionProfile;
+        }
+    }
+
+    /**
+     * Terminate the connection to the business network.
+     * @abstract
+     * @return {Promise} A promise that is resolved once the connection has been
+     * terminated, or rejected with an error.
+     */
+    disconnect() {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Login as a participant on the business network.
+     * @abstract
+     * @param {string} enrollmentID The enrollment ID of the participant.
+     * @param {string} enrollmentSecret The enrollment secret of the participant.
+     * @return {Promise} A promise that is resolved with a {@link SecurityContext}
+     * object representing the logged in participant, or rejected with a login error.
+     */
+    login(enrollmentID, enrollmentSecret) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Deploy a business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {boolean} [force] Force the deployment of the business network artifacts.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been deployed, or rejected with an error.
+     */
+    deploy(securityContext, force, businessNetworkDefinition) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Updates an existing deployed business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The BusinessNetworkDefinition to deploy
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been updated, or rejected with an error.
+     */
+    update(securityContext, businessNetworkDefinition) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Undeploy a business network definition.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} businessNetworkIdentifier The identifier of the business network to remove
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been undeployed, or rejected with an error.
+     */
+    undeploy(securityContext, businessNetworkIdentifier) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Test ("ping") the connection to the business network.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that is resolved once the connection to the
+     * business network has been tested, or rejected with an error.
+     */
+    ping(securityContext) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Invoke a "query" chaincode function with the specified name and arguments.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} functionName The name of the chaincode function to invoke.
+     * @param {string[]} args The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that is resolved with the data returned by the
+     * chaincode function once it has been invoked, or rejected with an error.
+     */
+    queryChainCode(securityContext, functionName, args) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Invoke a "invoke" chaincode function with the specified name and arguments.
+     * @abstract
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} functionName The name of the chaincode function to invoke.
+     * @param {string[]} args The arguments to pass to the chaincode function.
+     * @return {Promise} A promise that is resolved once the chaincode function
+     * has been invoked, or rejected with an error.
+     */
+    invokeChainCode(securityContext, functionName, args) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Create a new identity for the specified user ID.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} userID The user ID.
+     * @param {object} [options] Options for the new identity.
+     * @param {boolean} [options.issuer] Whether or not the new identity should have
+     * permissions to create additional new identities. False by default.
+     * @param {string} [options.affiliation] Specify the affiliation for the new
+     * identity. Defaults to 'institution_a'.
+     * @return {Promise} A promise that is resolved with a generated user
+     * secret once the new identity has been created, or rejected with an error.
+     */
+    createIdentity(securityContext, userID, options) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * List all of the deployed business networks. The connection must
+     * be connected for this method to succeed.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @return {Promise} A promise that will be resolved with an array of
+     * business network identifiers, or rejected with an error.
+     */
+    list(securityContext) {
+        return Promise.reject(new Error('abstract function called'));
+    }
+
+    /**
+     * Stop serialization of this object.
+     * @return {Object} An empty object.
+     */
+    toJSON() {
+        return {};
+    }
+
+}
+
+module.exports = Connection;
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+	 
+
+
+	<span class="copyright">
+	2017 Copyright IBM Corp. All Rights Reserved
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+		on Wed Feb 8th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

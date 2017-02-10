@@ -1,0 +1,28 @@
+<h1 id="fabric-composer-network-undeploy">Fabric Composer Network Undeploy</h1>
+<p>The <code class="highlighter-rouge">composer network undeploy</code> utility is used to undeploy a business network from a Hyperledger Fabric runtime.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>composer network undeploy -a &lt;business-network-archive&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+</code></pre>
+</div>
+
+<p>Note that after undeploy the business network definition can no longer be used, however the docker container
+associated with the business network definition is still running. The docker container for the business network
+definition must be explicitly stopped and removed if no longer needed.</p>
+
+<h3 id="options">Options</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>  --help                       Show help  [boolean]
+  -v, --version                Show version number  [boolean]
+  --archiveFile, -a            The business network archive file name  [string] [required]
+  --connectionProfileName, -p  The connection profile name  [string]
+  --enrollId, -i               The enrollment ID of the user  [string] [required]
+  --enrollSecret, -s           The enrollment secret of the user  [string]
+  ```
+
+## Example Output
+
+</code></pre>
+</div>
+<p>composer network undeploy -n digitalproperty-network -i WebAppAdmin -s DJY27pEnl16d
+Undeploying business network definition. This may take some seconds…
+Command completed successfully.
+```</p>

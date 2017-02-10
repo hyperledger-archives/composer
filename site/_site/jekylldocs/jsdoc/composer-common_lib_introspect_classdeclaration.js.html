@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Fabric Composer Source: composer-common/lib/introspect/classdeclaration.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Fabric Composer</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.html">composer-admin</a></li><li><a href="module-composer-client.html">composer-client</a></li><li><a href="module-composer-common.html">composer-common</a></li><li><a href="module-composer-runtime.html">composer-runtime</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#theWallet">theWallet</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: composer-common/lib/introspect/classdeclaration.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+const Field = require('./field');
+const EnumValueDeclaration = require('./enumvaluedeclaration');
+const RelationshipDeclaration = require('./relationshipdeclaration');
+const IllegalModelException = require('./illegalmodelexception');
+const Globalize = require('../globalize');
+
+/**
+ * ClassDeclaration defines the structure (model/schema) of composite data.
+ * It is composed of a set of Properties, may have an identifying field, and may
+ * have a super-type.
+ * A ClassDeclaration is conceptually owned with a ModelFile which
+ * defines all the classes that are part of a namespace.
+ *
+ * @private
+ * @abstract
+ * @class
+ * @memberof module:composer-common
+ */
+class ClassDeclaration {
+
+    /**
+     * Create a ClassDeclaration from an Abstract Syntax Tree. The AST is the
+     * result of parsing.
+     *
+     * @param {ModelFile} modelFile - the ModelFile for this class
+     * @param {string} ast - the AST created by the parser
+     * @throws {IllegalModelException}
+     */
+    constructor(modelFile, ast) {
+        if(!modelFile || !ast) {
+            throw new IllegalModelException(Globalize.formatMessage('classdeclaration-constructor-modelastreq'));
+        }
+
+        this.ast = ast;
+        this.modelFile = modelFile;
+        this.process();
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {Object} visitor - the visitor
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    accept(visitor,parameters) {
+        return visitor.visit(this, parameters);
+    }
+
+    /**
+     * Returns the ModelFile that defines this class.
+     *
+     * @return {ModelFile} the owning ModelFile
+     */
+    getModelFile() {
+        return this.modelFile;
+    }
+
+    /**
+     * Process the AST and build the model
+     *
+     * @throws {InvalidModelException}
+     * @private
+     */
+    process() {
+        this.name = this.ast.id.name;
+        this.properties = [];
+        this.superType = null;
+        this.idField = null;
+        this.abstract = false;
+
+        if(this.ast.abstract) {
+            this.abstract = true;
+        }
+
+        if(this.ast.classExtension) {
+            this.superType = this.ast.classExtension.class.name;
+        }
+
+        if(this.ast.idField) {
+            this.idField = this.ast.idField.name;
+        }
+
+        for(let n=0; n &lt; this.ast.body.declarations.length; n++ ) {
+            let thing = this.ast.body.declarations[n];
+
+            //console.log('Found: ' + thing.type + ' ' + thing.id.name);
+
+            if(thing.type === 'FieldDeclaration') {
+                this.properties.push( new Field(this, thing) );
+            }
+            else if(thing.type === 'RelationshipDeclaration') {
+                this.properties.push( new RelationshipDeclaration(this, thing) );
+            }
+            else if(thing.type === 'EnumPropertyDeclaration') {
+                this.properties.push( new EnumValueDeclaration(this, thing) );
+            }
+            else {
+                let formatter = Globalize.messageFormatter('classdeclaration-process-unrecmodelelem');
+                throw new IllegalModelException(formatter({
+                    'type': thing.type
+                }));
+            }
+        }
+    }
+
+    /**
+     * Semantic validation of the structure of this class. Subclasses should
+     * override this method to impose additional semantic constraints on the
+     * contents/relations of fields.
+     *
+     * @throws {InvalidModelException}
+     * @private
+     */
+    validate() {
+        // TODO (LG) check that all imported classes exist, rather than just
+        // used imports
+
+        // if we have a super type make sure it exists
+        if(this.superType!==null) {
+            let classDecl = null;
+            if(this.getModelFile().isImportedType(this.superType)) {
+                let fqnSuper = this.getModelFile().resolveImport(this.superType);
+                classDecl = this.modelFile.getModelManager().getType(fqnSuper);
+            }
+            else {
+                classDecl = this.getModelFile().getType(this.superType);
+            }
+
+            if(classDecl===null) {
+                throw new IllegalModelException('Could not find super type ' + this.superType);
+            }
+            // TODO (DCS)
+            // else {
+            //     // check that assets only inherit from assets etc.
+            //     if( Object.getPrototypeOf(classDecl) !== Object.getPrototypeOf(this)) {
+            //         throw new Error('Invalid super type for ' + this.name + ' is must be of type ' + Object.getPrototypeOf(this) );
+            //     }
+            // }
+        }
+
+        if(this.idField) {
+            const field = this.getProperty(this.idField);
+            if(!field) {
+                let formatter = Globalize('en').messageFormatter('classdeclaration-validate-identifiernotproperty');
+                throw new IllegalModelException(formatter({
+                    'class': this.name,
+                    'idField': this.idField
+                }));
+            }
+            else {
+                // check that identifiers are strings
+                if(field.getType() !== 'String') {
+                    let formatter = Globalize('en').messageFormatter('classdeclaration-validate-identifiernotstring');
+                    throw new IllegalModelException( formatter({
+                        'class': this.name,
+                        'idField': this.idField
+                    }));
+                }
+
+                if(field.isOptional()) {
+                    throw new IllegalModelException('Identifying fields cannot be optional.');
+                }
+            }
+        }
+        else {
+            if( this.isAbstract() === false &amp;&amp; this.isEnum() === false &amp;&amp; this.isConcept() === false) {
+                if( this.getIdentifierFieldName() === null) {
+                    let formatter = Globalize('en').messageFormatter('classdeclaration-validate-missingidentifier');
+                    throw new IllegalModelException( formatter({
+                        'class': this.name
+                    }));
+                }
+            }
+        }
+
+        // we also have to check fields defined in super classes
+        const properties = this.getProperties();
+        for(let n=0; n &lt; properties.length; n++) {
+            let field = properties[n];
+
+            // check we don't have a field with the same name
+            for(let i=n+1; i &lt; properties.length; i++) {
+                let otherField = properties[i];
+                if(field.getName() === otherField.getName()) {
+                    let formatter = Globalize('en').messageFormatter('classdeclaration-validate-duplicatefieldname');
+                    throw new IllegalModelException( formatter({
+                        'class': this.name,
+                        'fieldName': field.getName()
+                    }));
+                }
+            }
+
+            field.validate(this);
+        }
+    }
+
+    /**
+     * Returns true if this class is declared as abstract in the model file
+     *
+     * @return {boolean} true if the class is abstract
+     */
+    isAbstract() {
+        return this.abstract;
+    }
+
+    /**
+     * Returns true if this class is an enumeration.
+     *
+     * @return {boolean} true if the class is an enumerated type
+     */
+    isEnum() {
+        return false;
+    }
+
+    /**
+     * Returns true if this class is the definition of a concept.
+     *
+     * @return {boolean} true if the class is a concept
+     */
+    isConcept() {
+        return false;
+    }
+
+    /**
+     * Returns true if this class can be pointed to by a relationship
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isRelationshipTarget() {
+        return false;
+    }
+
+    /**
+     * Returns the short name of a class. This name does not include the
+     * namespace from the owning ModelFile.
+     *
+     * @return {string} the short name of this class
+     */
+    getName() {
+        return this.name;
+    }
+
+    /**
+     * Returns the fully qualified name of this class.
+     * The name will include the namespace if present.
+     *
+     * @return {string} the fully-qualified name of this class
+     */
+    getFullyQualifiedName() {
+        return this.modelFile.getNamespace() + '.' + this.name;
+    }
+
+    /**
+     * Returns the name of the identifying field for this class. Note
+     * that the identifying field may come from a super type.
+     *
+     * @return {string} the name of the id field for this class
+     */
+    getIdentifierFieldName() {
+
+        if(this.idField) {
+            return this.idField;
+        }
+        else {
+            if(this.getSuperType()) {
+                // we first check our own modelfile, as we may be called from validate
+                // in which case our model file has not yet been added to the model modelManager
+                let classDecl = this.getModelFile().getLocalType(this.getSuperType());
+
+                // not a local type, so we try the model manager
+                if(!classDecl) {
+                    classDecl = this.modelFile.getModelManager().getType(this.getSuperType());
+                }
+                return classDecl.getIdentifierFieldName();
+            }
+            else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Returns the field with a given name or null if it does not exist.
+     * The field must be directly owned by this class -- the super-type is
+     * not introspected.
+     *
+     * @param {string} name the name of the field
+     * @return {Property} the field definition or null if it does not exist.
+     */
+    getOwnProperty(name) {
+        for(let n=0; n &lt; this.properties.length; n++) {
+            const field = this.properties[n];
+            if(field.getName() === name) {
+                return field;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the fields directly defined by this class.
+     *
+     * @return {Property[]} the array of fields
+     */
+    getOwnProperties() {
+        return this.properties;
+    }
+
+    /**
+     * Returns the FQN of the super type for this class or null if this
+     * class does not have a super type.
+     *
+     * @return {string} the FQN name of the super type or null
+     */
+    getSuperType() {
+        if(this.superType) {
+            const type = this.getModelFile().getType(this.superType);
+            if(type === null) {
+                throw new Error('Could not find super type:' + this.superType );
+            }
+            else {
+                return type.getFullyQualifiedName();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the property with a given name or null if it does not exist.
+     * Fields defined in super-types are also introspected.
+     *
+     * @param {string} name the name of the field
+     * @return {Property} the field, or null if it does not exist
+     */
+    getProperty(name) {
+        let result = this.getOwnProperty(name);
+        let classDecl = null;
+
+        if(result === null &amp;&amp; this.superType!==null) {
+            if(this.getModelFile().isImportedType(this.superType)) {
+                let fqnSuper = this.getModelFile().resolveImport(this.superType);
+                classDecl = this.modelFile.getModelManager().getType(fqnSuper);
+            }
+            else {
+                classDecl = this.getModelFile().getType(this.superType);
+            }
+            result = classDecl.getProperty(name);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the properties defined in this class and all super classes.
+     *
+     * @return {Property[]} the array of fields
+     */
+    getProperties() {
+        let result = this.getOwnProperties();
+        let classDecl = null;
+        if(this.superType!==null) {
+            if(this.getModelFile().isImportedType(this.superType)) {
+                let fqnSuper = this.getModelFile().resolveImport(this.superType);
+                classDecl = this.modelFile.getModelManager().getType(fqnSuper);
+            }
+            else {
+                classDecl = this.getModelFile().getType(this.superType);
+            }
+
+            if(classDecl===null) {
+                throw new IllegalModelException('Could not find super type ' + this.superType);
+            }
+
+            // go get the fields from the super type
+            result = result.concat(classDecl.getProperties());
+        }
+        else {
+            // console.log('No super type for ' + this.getName() );
+        }
+
+        return result;
+    }
+
+    /**
+     * Stop serialization of this object.
+     * @return {Object} An empty object.
+     */
+    toJSON() {
+        return {};
+    }
+
+    /**
+     * Returns the string representation of this class
+     * @return {String} the string representation of the class
+     */
+    toString() {
+        let superType = '';
+        if(this.superType) {
+            superType = ' super=' + this.superType;
+        }
+        return 'ClassDeclaration {id=' + this.getFullyQualifiedName() + superType + ' enum=' + this.isEnum() + ' abstract=' + this.isAbstract() + '}';
+    }
+}
+
+module.exports = ClassDeclaration;
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+	 
+
+
+	<span class="copyright">
+	2017 Copyright IBM Corp. All Rights Reserved
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+	
+		on Wed Feb 8th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
