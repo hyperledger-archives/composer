@@ -71,7 +71,8 @@
     "express": "^4.14.0",
     "is-docker": "^1.1.0",
     "opener": "^1.4.2",
-    "socket.io": "^1.7.2"
+    "socket.io": "^1.7.2",
+    "octokat": "^0.6.2"
   },
   "devDependencies": {
     "composer-admin": "^0.4.2",
