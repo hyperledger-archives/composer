@@ -80,7 +80,7 @@ We are going to make a simple change to the business logic for the business netw
 First clone the repository:
 
 ```bash
-git clone git@github.com:fabric-composer/sample-networks.git
+git clone https://github.com/fabric-composer/sample-networks.git
 cd sample-networks/packages/DigitalProperty-Network
 npm install
 ```
@@ -169,7 +169,7 @@ available via `npm run-script`:
   teardownHLF
     scripts/teardown.sh
   deployNetwork
-    composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip && composer network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+    composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna && composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
 ```
 
