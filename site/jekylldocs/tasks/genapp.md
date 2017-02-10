@@ -56,8 +56,7 @@ Welcome to the Fabric Composer Skeleton Application Generator
 
 ### CLI Application
 
-Description ...
-This generator also be ran using ```yo fabric-composer:cli```
+This generator can be ran using ```yo fabric-composer:cli```
 
 #### What questions does this ask?
 
