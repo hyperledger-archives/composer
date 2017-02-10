@@ -14,4 +14,12 @@
 
 'use strict';
 
+/**
+ * The composer-common module cannot load connector modules from parent modules
+ * when the dependencies are linked together using npm link or lerna. To work
+ * around this, the packages that require the connectors register themselves as
+ * modules that can load connection managers.
+ */
+require('composer-common').ConnectionProfileManager.registerConnectionManagerLoader(module);
+
 module.exports = require('./lib/connectorserver');

@@ -16,6 +16,7 @@
 
 let LOG;
 
+const connectionManagerLoaders = [];
 const connectionManagerClasses = {};
 const connectionManagers = {};
 
@@ -28,6 +29,17 @@ const connectionManagers = {};
  * @memberof module:composer-common
  */
 class ConnectionProfileManager {
+
+    /**
+     * The composer-common module cannot load connector modules from parent modules
+     * when the dependencies are linked together using npm link or lerna. To work
+     * around this, the packages that require the connectors register themselves as
+     * modules that can load connection managers.
+     * @param {Object} module The module that can load connector modules.
+     */
+    static registerConnectionManagerLoader(module) {
+        connectionManagerLoaders.push(module);
+    }
 
     /**
      * Register a new ConnectionManager class.
@@ -111,6 +123,17 @@ class ConnectionProfileManager {
                             curmod = curmod.parent;
                         }
                         if (!connectionManager) {
+                            connectionManagerLoaders.some((connectionManagerLoader) => {
+                                try {
+                                    connectionManager = new(connectionManagerLoader.require(mod))(this);
+                                    return true;
+                                } catch (e) {
+                                    // Search the next one.
+                                    return false;
+                                }
+                            });
+                        }
+                        if (!connectionManager) {
                             // We still didn't find it, so try plain old require
                             // one last time.
                             connectionManager = new(require(mod))(this);
@@ -160,6 +183,10 @@ class ConnectionProfileManager {
      * Clear the static object containing all the connection managers
      */
     static removeAllConnectionManagers() {
+        connectionManagerLoaders.length = 0;
+        Object.keys(connectionManagerClasses).forEach((key) => {
+            connectionManagerClasses[key] = null;
+        });
         Object.keys(connectionManagers).forEach((key) => {
             connectionManagers[key] = null;
         });
