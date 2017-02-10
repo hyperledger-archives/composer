@@ -4576,7 +4576,7 @@ fieldset[disabled] .navbar-default .btn-link:focus {
   border-color: #345578;
 }
 .navbar-inverse .navbar-brand {
-  color: #ddd;
+  color: #fff;
 }
 .navbar-inverse .navbar-brand:hover,
 .navbar-inverse .navbar-brand:focus {
@@ -4584,10 +4584,10 @@ fieldset[disabled] .navbar-default .btn-link:focus {
   background-color: transparent;
 }
 .navbar-inverse .navbar-text {
-  color: #ddd;
+  color: #fff;
 }
 .navbar-inverse .navbar-nav > li > a {
-  color: #ddd;
+  color: #fff;
 }
 .navbar-inverse .navbar-nav > li > a:hover,
 .navbar-inverse .navbar-nav > li > a:focus {
@@ -4634,7 +4634,7 @@ fieldset[disabled] .navbar-default .btn-link:focus {
     background-color: #345578;
   }
   .navbar-inverse .navbar-nav .open .dropdown-menu > li > a {
-    color: #ddd;
+    color: #fff;
   }
   .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:hover,
   .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:focus {
@@ -4655,13 +4655,13 @@ fieldset[disabled] .navbar-default .btn-link:focus {
   }
 }
 .navbar-inverse .navbar-link {
-  color: #ddd;
+  color: #fff;
 }
 .navbar-inverse .navbar-link:hover {
   color: #fff;
 }
 .navbar-inverse .btn-link {
-  color: #ddd;
+  color: #fff;
 }
 .navbar-inverse .btn-link:hover,
 .navbar-inverse .btn-link:focus {
@@ -6731,7 +6731,7 @@ button.close {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe4e4e4', GradientType=0);
   filter: none;
 
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+
 }
 .navbar-inverse {
   background-color: #008673;

@@ -151,24 +151,44 @@
 <p>If you don&#39;t already have it, install Yeoman</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g yo
 </code></pre></div>
-<p>then install the generator for it</p>
+<p>If you wish to use the Angular2 Application Generator, then you will need a few other globally installed</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g typings
+
+npm install -g bower
+
+npm install -g angular-cli
+</code></pre></div>
+<p>Then install the generator for it</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g generator-fabric-composer
 </code></pre></div>
 <h2 id="running-the-generator">Running the generator</h2>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">yo fabric-composer
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Fabric Composer Skeleton Application Generator
+? Please select the type of Application: (Use arrow keys)
+❯ CLI Application 
+  Angular2 Application
 </code></pre></div>
-<h3 id="what-are-the-questions">What are the questions?</h3>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">? Your NPM library name: concerto-sample-app
-? Short description: Test Concerto project
+<h3 id="what-are-the-generator-options">What are the generator options?</h3>
+
+<h3 id="cli-application">CLI Application</h3>
+
+<p>Description ...
+This generator also be ran using <code>yo fabric-composer:cli</code></p>
+
+<h4 id="what-questions-does-this-ask">What questions does this ask?</h4>
+<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the CLI skeleton app generator
+? Your NPM library name: composer-sample-app
+? Short description: Test Composer project
 ? Author name: Sophie Black
 ? Author email: sophie@ampretia.com
 ? NPM Module name of the Business Network to connect to: digitalproperty-network
-? Is the name <span class="k">in </span>NPM registry the same as the Business Network Identifier?: Yes
+
+
+? Is the name in NPM registry the same as the Business Network Identifier?: Yes
 ? What is the Connection Profile to use? defaultProfile
 ? Enrollment id: WebAppAdmin
 ? Enrollment Secret: DJY27pEnl16d
-configuring: concerto-sample-app
-Getting the npm module describing the undefined
+configuring: composer-sample-app
    create config/default.json
    create Dockerfile
    create gulpfile.js
@@ -179,10 +199,10 @@ Getting the npm module describing the undefined
    create scripts/teardown.sh
    create .gitignore
 </code></pre></div>
-<h3 id="what-does-this-do">What does this do?</h3>
+<h4 id="what-does-this-do">What does this do?</h4>
 
 <p>Firstly it creates a standard npm module with the usual attributes of name, author, description.
-Secondly it asks a set of Concerto framework questions to create to help create the sample structure.</p>
+Secondly it asks a set of Fabric Composer questions to help create the sample structure.</p>
 
 <ul>
 <li>NPM Module name:  What is the name of the business network you want to connect to - and is this the same as the modules NPM registry name</li>
@@ -190,9 +210,103 @@ Secondly it asks a set of Concerto framework questions to create to help create 
 <li>The EnrollmentId/Secret: Are needed to create a connection to the fabric</li>
 </ul>
 
-<h3 id="testing-this-has-worked">Testing this has worked</h3>
+<h4 id="testing-this-has-worked">Testing this has worked</h4>
 
 <p>The <code>index.js</code> file is a very simple application that lists the asset registries that have been defined.</p>
+
+<hr>
+
+<h3 id="angular2-application">Angular2 Application</h3>
+
+<p>The user has the ability to generate an application in two different ways:</p>
+
+<ol>
+<li><p>Generating the application by connecting to a running business network</p></li>
+<li><p>Generating the application with a business network archive file</p></li>
+</ol>
+
+<p>This generator can also be ran using <code>yo fabric-composer:angular</code></p>
+
+<h4 id="what-questions-does-this-ask">What questions does this ask?</h4>
+
+<p><strong>1. Generating the application by connecting to a running business network</strong>
+```
+Welcome to the Angular2 skeleton app generator</p>
+
+<p>? Do you want to connect to a running Business Network? Yes</p>
+
+<p>? What is the name of the application you wish to generate?: angular-app
+? Description of the application: Skeleton Fabric Composer Angular2 project
+? Author name: Sophie Black
+? Author email: <a href="mailto:sophie@ampretia.com">sophie@ampretia.com</a>
+? What is the Business Network Identifier?: org.acme.biznet
+? What is the Connection Profile to use? newProfile
+? Enrollment id: WebAppAdmin
+? Enrollment Secret: DJY27pEnl16d
+Configuring: angular-app
+About to connect to a running business network</p>
+
+<p>...
+```</p>
+
+<p><strong>2. Generating the application with a business network archive file</strong>
+```
+Welcome to the Angular2 skeleton app generator</p>
+
+<p>? Do you want to connect to a running Business Network? No</p>
+
+<p>? What is the name of the application you wish to generate?: angular-app
+? Description of the application: Skeleton Fabric Composer Angular2 project
+? Author name: Sophie Black
+? Author email: <a href="mailto:sophie@ampretia.com">sophie@ampretia.com</a>
+? What is the name of the business network archive file? (Path from the current working direc
+tory): <a href="mailto:org.acme.biznet@0.0.2.bna">org.acme.biznet@0.0.2.bna</a>
+Configuring: angular-app
+About to read a business network archive file
+Reading file: <a href="mailto:org.acme.biznet@0.0.2.bna">org.acme.biznet@0.0.2.bna</a></p>
+
+<p>...
+```</p>
+
+<h4 id="what-does-this-do">What does this do?</h4>
+
+<p><strong>1. Generating the application by connecting to a running business network</strong></p>
+
+<p>Firstly the generator will also a series of basic regarding the application name, author, description, etc.
+Then it will ask the user to enter the details required to connect a running business network.
+After the generator has stopped prompting the user to answer questions, it will then attempt to connect to the business network using the details provided.
+If it successfully connects to the business network, the generator will then examine the assets, transactions and participants.
+The generator will then create Angular components based upon the different modelled types.</p>
+
+<p><strong>2. Generating the application with a business network archive file</strong></p>
+
+<p>Firstly the generator will also a series of basic regarding the application name, author, description, etc.
+Then it will ask the user to enter the relative path to a business network archive file.
+After the generator has stopped prompting the user to answer questions, it will then attempt to read the business network archive file provided.
+If it successfully reads the file, the generator will then examine the assets, transactions and participants.
+The generator will then create Angular components based upon the different modelled types.</p>
+
+<ul>
+<li>Business Network Identifier:  This is the name of the business network you want to connect to - and is this the same as the modules NPM registry name</li>
+<li>Business Network Archive File: This is a business network definition archived using the Composer-CLI</li>
+<li>Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric</li>
+<li>The EnrollmentId/Secret: Are needed to create a connection to the fabric</li>
+</ul>
+
+<h4 id="testing-this-has-worked">Testing this has worked</h4>
+
+<p><strong>1. Generating the application by connecting to a running business network</strong></p>
+
+<p>After the application has been generated, the application can be started using <code>npm start</code> inside of the application directory.</p>
+
+<p><strong>2. Generating the applicaiton with a business network archive file</strong></p>
+
+<p>After the application has been generated, a business network needs to be deployed to a live fabric.
+Once this has been done, you will then need to change into applications <code>config</code> directory.
+Inside <code>default.json</code>, the connection profile, business network identifier, enrollment id and secret to connect to the business network need to be set.
+The application can be then be started using <code>npm start</code>.</p>
+
+<p>(Unit tests for components and services are coming soon)</p>
 
 <h1 id="generating-tests">Generating Tests</h1>
 
@@ -240,7 +354,7 @@ Secondly it asks a set of Concerto framework questions to create to help create 
               </a>
             </li>
             <li>
-              <a href="http://stackoverflow.com/" class="icon">
+              <a href="http://stackoverflow.com/questions/tagged/fabric-composer" class="icon">
               <i class="fa fa-stack-overflow icon" aria-hidden="true"></i>
               </a>
             </li>
