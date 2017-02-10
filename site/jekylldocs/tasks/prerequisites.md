@@ -15,7 +15,7 @@ There are also [two scripts](#Automatic Installation) that can be used on Ubuntu
 The recommended versions are:
 *Docker*: v1.12.5
 *Docker-compose*: v1.9.0
-*node.js*: v4 or v6
+*node.js*: v6.9.5
 
 ## Automatic Installation
 
