@@ -115,10 +115,10 @@ class AssetRegistry {
          *     // Get the factory for creating new asset instances.
          *     var factory = getFactory();
          *     // Create the first vehicle.
-         *     var vehicle1 = factory.newInstance('org.acme', 'Vehicle', 'VEHICLE_1');
+         *     var vehicle1 = factory.newResource('org.acme', 'Vehicle', 'VEHICLE_1');
          *     vehicle1.colour = 'BLUE';
          *     // Create the second vehicle.
-         *     var vehicle2 = factory.newInstance('org.acme', 'Vehicle', 'VEHICLE_2');
+         *     var vehicle2 = factory.newResource('org.acme', 'Vehicle', 'VEHICLE_2');
          *     vehicle2.colour = 'GREEN';
          *     // Add the vehicles to the vehicle asset registry.
          *     return vehicleAssetRegistry.addAll([vehicle1, vehicle2]);
@@ -148,7 +148,7 @@ class AssetRegistry {
          *     // Get the factory for creating new asset instances.
          *     var factory = getFactory();
          *     // Create the vehicle.
-         *     var vehicle = factory.newInstance('org.acme', 'Vehicle', 'VEHICLE_1');
+         *     var vehicle = factory.newResource('org.acme', 'Vehicle', 'VEHICLE_1');
          *     vehicle.colour = 'BLUE';
          *     // Add the vehicle to the vehicle asset registry.
          *     return vehicleAssetRegistry.add(vehicle);

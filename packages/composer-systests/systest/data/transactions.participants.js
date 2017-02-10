@@ -2,7 +2,7 @@
 
 function onSimpleTransactionWithPrimitiveTypes(transaction) {
     // console.log(JSON.stringify(transaction));
-    var assertEqual = function (property, actual, expected) {
+    let assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
         } else if (actual instanceof Date) {
@@ -24,13 +24,13 @@ function onSimpleTransactionWithPrimitiveTypes(transaction) {
 
 function onSimpleTransactionWithPrimitiveTypeArrays(transaction) {
     // console.log(JSON.stringify(transaction));
-    var assertArraysEqual = function (property, actuals, expecteds) {
+    let assertArraysEqual = function (property, actuals, expecteds) {
         if (actuals.length !== expecteds.length) {
             throw new Error('assertArraysEqual(' + property + ', ' + actuals + ', ' + expecteds + ') lengths not equal');
         }
-        for (var i = 0; i < actuals.length; i++) {
-            var actual = actuals[i];
-            var expected = expecteds[i];
+        for (let i = 0; i < actuals.length; i++) {
+            let actual = actuals[i];
+            let expected = expecteds[i];
             if (typeof actual !== typeof expected) {
                 throw new Error('assertArraysEqual(' + property + ', ' + actuals + ', ' + expecteds + ') types not equal');
             } else if (actual instanceof Date) {
@@ -53,7 +53,7 @@ function onSimpleTransactionWithPrimitiveTypeArrays(transaction) {
 
 function onSimpleTransactionWithParticipants(transaction) {
     // console.log(JSON.stringify(transaction));
-    var assertEqual = function (property, actual, expected) {
+    let assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
         } else if (actual instanceof Date) {
@@ -72,7 +72,7 @@ function onSimpleTransactionWithParticipants(transaction) {
 
 function onSimpleTransactionWithParticipantArrays(transaction) {
     // console.log(JSON.stringify(transaction));
-    var assertEqual = function (property, actual, expected) {
+    let assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
         } else if (actual instanceof Date) {
@@ -97,7 +97,7 @@ function onSimpleTransactionWithParticipantArrays(transaction) {
 
 function onSimpleTransactionWithParticipantRelationships(transaction) {
     // console.log(JSON.stringify(transaction));
-    var assertEqual = function (property, actual, expected) {
+    let assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
         } else if (actual instanceof Date) {
@@ -116,7 +116,7 @@ function onSimpleTransactionWithParticipantRelationships(transaction) {
 
 function onSimpleTransactionWithParticipantRelationshipArrays(transaction) {
     // console.log(JSON.stringify(transaction));
-    var assertEqual = function (property, actual, expected) {
+    let assertEqual = function (property, actual, expected) {
         if (typeof actual !== typeof expected) {
             throw new Error('assertEqual(' + property + ', ' + actual + ', ' + expected + ') types not equal');
         } else if (actual instanceof Date) {
@@ -193,8 +193,8 @@ function onAddNewParticipantToParticipantRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
     return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
         .then(function (ar) {
-            var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            let f = getFactory();
+            let a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             a.stringValue = 'party parrot in hursley';
             return ar.add(a);
         });
@@ -204,8 +204,8 @@ function onAddNewParticipantWithRelationshipToParticipantRegistryTransaction(tra
     // console.log(JSON.stringify(transaction));
     return getParticipantRegistry('systest.transactions.participants.SimpleRelationshipParticipant')
         .then(function (ar) {
-            var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+            let f = getFactory();
+            let a = f.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
             a.stringParticipant = f.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             return ar.add(a);
         });
@@ -231,8 +231,8 @@ function onUpdateNewParticipantInParticipantRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
     return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
         .then(function (ar) {
-            var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            let f = getFactory();
+            let a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             a.stringValue = 'party parrot in san francisco';
             return ar.update(a);
         });
@@ -242,8 +242,8 @@ function onUpdateNewParticipantWithRelationshipToParticipantRegistryTransaction(
     // console.log(JSON.stringify(transaction));
     return getParticipantRegistry('systest.transactions.participants.SimpleRelationshipParticipant')
         .then(function (ar) {
-            var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+            let f = getFactory();
+            let a = f.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
             a.stringParticipant = f.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
             return ar.update(a);
         });
@@ -269,8 +269,8 @@ function onRemoveNewParticipantInParticipantRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
     return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
         .then(function (ar) {
-            var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            let f = getFactory();
+            let a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             a.stringValue = 'party parrot in san francisco';
             return ar.remove(a);
         });
@@ -280,8 +280,8 @@ function onRemoveNewParticipantWithRelationshipInParticipantRegistryTransaction(
     // console.log(JSON.stringify(transaction));
     return getParticipantRegistry('systest.transactions.participants.SimpleRelationshipParticipant')
         .then(function (ar) {
-            var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+            let f = getFactory();
+            let a = f.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
             a.stringParticipant = f.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             return ar.remove(a);
         });

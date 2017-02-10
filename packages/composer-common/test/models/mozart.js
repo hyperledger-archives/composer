@@ -79,7 +79,7 @@ describe('Mozart Model', function(){
         });
 
         it('create and serialize instance', function() {
-            const myField = factory.newInstance('com.ibm.concerto.mozart', 'Field', 'MY_FIELD');
+            const myField = factory.newResource('com.ibm.concerto.mozart', 'Field', 'MY_FIELD');
             myField.should.not.be.null;
             myField.cph.should.equal('MY_FIELD');
             myField.setPropertyValue('name', 'Big Field');
@@ -91,7 +91,7 @@ describe('Mozart Model', function(){
             jsonField.should.not.be.null;
 
             // create an animal
-            const myAnimal = factory.newInstance('com.ibm.concerto.mozart', 'Animal', 'SHEEP_001');
+            const myAnimal = factory.newResource('com.ibm.concerto.mozart', 'Animal', 'SHEEP_001');
             myAnimal.species = 'SHEEP_GOAT';
             myAnimal.movementStatus = 'IN_FIELD';
             myAnimal.productionType = 'MEAT';
@@ -113,7 +113,7 @@ describe('Mozart Model', function(){
             // check that relationships have been replaced by a Relationship class instance
             newAnimal.location.getFullyQualifiedIdentifier().should.equal('com.ibm.concerto.mozart.Field#MY_FIELD');
 
-            const myBusiness = factory.newInstance('com.ibm.concerto.mozart', 'Business', 'MY_BUSINESS');
+            const myBusiness = factory.newResource('com.ibm.concerto.mozart', 'Business', 'MY_BUSINESS');
             myBusiness.should.not.be.null;
             myBusiness.sbi.should.equal('MY_BUSINESS');
             myBusiness.setPropertyValue('postcode', 'SO225GB');

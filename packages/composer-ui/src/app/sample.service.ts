@@ -65,16 +65,16 @@ function onSampleTransaction(sampleTransaction) {
 Default | org.acme.biznet | ALL | ANY | (true) | ALLOW | Allow all participants access to all resources\n`,
     setup: function (businessNetworkConnection) {
       let factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-      let participant1 = factory.newInstance('org.acme.biznet', 'SampleParticipant', '1234');
+      let participant1 = factory.newResource('org.acme.biznet', 'SampleParticipant', '1234');
       participant1.firstName = 'Alice';
       participant1.lastName = 'Anderson';
-      let participant2 = factory.newInstance('org.acme.biznet', 'SampleParticipant', '2345');
+      let participant2 = factory.newResource('org.acme.biznet', 'SampleParticipant', '2345');
       participant2.firstName = 'Bob';
       participant2.lastName = 'Baxter';
       let participants = [participant1, participant2];
       let assets = [];
       for (let i = 0; i < 8; i++) {
-        let asset = factory.newInstance('org.acme.biznet', 'SampleAsset', `000${i + 1}`);
+        let asset = factory.newResource('org.acme.biznet', 'SampleAsset', `000${i + 1}`);
         if ((i % 2) === 0) {
           asset.owner = factory.newRelationship('org.acme.biznet', 'SampleParticipant', '1234');
         } else {
