@@ -31,10 +31,12 @@ export class InitializationService {
       })
       .then(() => {
         if (this.adminService.isInitialDeploy()) {
-          return this.sampleBusinessNetworkService.getSampleNetworkInfo(fabricComposerOwner, fabricComposerRepository, 'packages/CarAuction-Network/')
-            .then((info) => {
-              return this.sampleBusinessNetworkService.deploySample(fabricComposerOwner, fabricComposerRepository, info);
-            })
+          // We can't use the Github sample integration for the initial deploy until we figure out the rate limiting!
+          return this.sampleBusinessNetworkService.deployInitialSample();
+          // return this.sampleBusinessNetworkService.getSampleNetworkInfo(fabricComposerOwner, fabricComposerRepository, 'packages/CarAuction-Network/')
+          //   .then((info) => {
+          //     return this.sampleBusinessNetworkService.deploySample(fabricComposerOwner, fabricComposerRepository, info);
+          //   });
         }
       })
       .then(() => {
