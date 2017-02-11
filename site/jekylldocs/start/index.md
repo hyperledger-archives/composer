@@ -25,6 +25,8 @@ Explore Getting Started:
 
 [Coding a Business Network Definition](./getting-started-coding-bnd.md)
 
-[Generating a REST api](./getting-started-rest-api.md)
+[Generating a REST API](./getting-started-rest-api.md)
 
-[Writing a nodejs app](./getting-started-nodejs-app.md)
+[Writing a node.js app](./getting-started-nodejs-app.md)
+
+[Installing and running the playground](./getting-started-playground.md)
