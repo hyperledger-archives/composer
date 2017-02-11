@@ -27,14 +27,7 @@ services:
       - CORE_SECURITY_ENROLLSECRET=MwYpmSRjupbT
     links:
       - membersrvc
-    command:
-      - sh
-      - -c
-      - |
-        echo 'POST /images/create?fromImage=hyperledger/fabric-baseimage&tag=x86_64-0.1.0 HTTP/1.1\r\nHost: localhost\r\n\r\n' | nc -U /var/run/docker.sock;
-        echo 'POST /images/hyperledger%2Ffabric-baseimage:x86_64-0.1.0/tag?repo=hyperledger/fabric-baseimage&tag=latest HTTP/1.1\r\nHost: localhost\r\n\r\n' | nc -U /var/run/docker.sock;
-        sleep 5;
-        peer node start
+    command: sh -c 'sleep 5; peer node start'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   composer:

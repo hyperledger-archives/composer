@@ -22,23 +22,37 @@ In order to install Fabric Composer Playground, you need the following software 
 
 *   Docker Engine 1.12.3 or greater
 
-    Test that Docker Engine is installed by running the following command:
+    Test that Docker Engine is installed by running the following command in your terminal or command prompt:
+
+    ```
+    docker -v
+    ```
+
+    You should see the following output in your terminal or command prompt:
 
     ```
     $ docker -v
     Docker version 1.13.0, build 49bf474
     ```
 
-    If not, follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
+    Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
 
 *   Docker Compose 1.8 or greater
 
-    Test that Docker Compose is installed by running the following command:
+    Test that Docker Compose is installed by running the following command in your terminal or command prompt:
+
+    ```
+    docker-compose -v
+    ```
+
+    You should see the following output in your terminal or command prompt:
 
     ```
     $ docker-compose -v
     docker-compose version 1.10.0, build 4bd6f1a
     ```
+
+    Verify that no errors occurred, and the version is greater than or equal to 1.8. If not, then follow the official instructions for installing Docker Compose: [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 # Installation
 
@@ -58,22 +72,42 @@ The Docker Compose file describes a multi-container application that is made up 
 
     This container will use ports 8080
 
-In a terminal or command prompt, navigate to the directory that you downloaded the `docker-compose.yml` file into, and run the following command to start a Hyperledger Fabric instance and Fabric Composer Playground:
+In a terminal or command prompt, navigate to the directory that you downloaded the `docker-compose.yml` file into, and run the following commands to start a Hyperledger Fabric instance and Fabric Composer Playground:
 
   ```
+  docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
+  docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+  docker-compose up -d
+  ```
+
+You should see the following output in your terminal or command prompt:
+
+  ```
+  $ docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
+  x86_64-0.1.0: Pulling from hyperledger/fabric-baseimage
+  862a3e9af0ae: Already exists
+  6498e51874bf: Already exists
+  159ebdd1959b: Already exists
+  0fdbedd3771a: Already exists
+  7a1f7116d1e3: Already exists
+  0620a24d487d: Pull complete
+  b46385a2c430: Pull complete
+  Digest: sha256:ac6a2784cfd028ae62f5688f4436f95d7a60eeacd8506eb303c9c6335328c388
+  Status: Downloaded newer image for hyperledger/fabric-baseimage:x86_64-0.1.0
+  $ docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
   $ docker-compose up -d
   Creating start_membersrvc_1
   Creating start_vp0_1
   Creating start_composer_1
   ```
 
-If you see an error similar to the following example, you may have an existing Hyperledger Fabric instance or other service running on any of the ports used by the Docker Compose file:
+Verify that no errors occurred. If you see an error similar to the following error, then you may have an existing Hyperledger Fabric instance or other service running on any of the ports used by the Docker Compose file:
 
   ```
   ERROR: for membersrvc  Cannot start service membersrvc: driver failed programming external connectivity on endpoint start_membersrvc_1 (c99c05cca95c9bbcd75c0520bb2166cbf67fc660cd58924f095cdbecf4ad86da): Bind for 0.0.0.0:7054 failed: port is already allocated
   ```
 
-If you see this error, ensure that all of these ports are free before you run `docker-compose up -d`.
+If you see this error, ensure that all of these ports are free before you run any commands.
 
 If everything started OK, you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
@@ -98,40 +132,69 @@ Note that the same set of features is available regardless of the installation m
 
 In order to install Fabric Composer Playground with npm, you need the following software installed:
 
-*   Node.js v4.6.2 or greater, or Node.js v6.x
+*   Node.js v4.6.2 or greater, or Node.js v6.x (note that Node.js v7.x is unsupported)
 
-    Test that Node.js is installed by running the following command:
+    Test that Node.js is installed by running the following command in your terminal or command prompt:
+
+    ```
+    node -v
+    ```
+
+    You should see the following output in your terminal or command prompt:
 
     ```
     $ node -v
     v4.6.2
     ```
 
-    If not, follow the official instructions for installing Node.js v4 or v6: [Node.js] (https://nodejs.org)
+    Verify that no errors occurred, and the version is greater than or equal to v4.6.2 or v6.x. If not, follow the official instructions for installing Node.js v6.x: [Node.js] (https://nodejs.org)
 
 *   npm v3.x or greater
 
-    Test that npm is installed by running the following command:
+    Test that npm is installed by running the following command in your terminal or command prompt:
+
+    ```
+    npm -v
+    ```
+
+    You should see the following output in your terminal or command prompt:
 
     ```
     $ npm -v
     3.10.10
     ```
 
-    If not, upgrade npm by running `sudo npm -g upgrade npm`
+    Verify that no errors occurred, and the version is greater than or equal to v3.x. If not, upgrade npm to the latest version by running the following command in your terminal or command prompt:
+
+    ```
+    sudo npm -g upgrade npm
+    ```
 
 ### Installation
 
-You can install Fabric Composer Playground by running the following npm command:
+You can install Fabric Composer Playground by running the following command in your terminal or command prompt:
+
+  ```
+  sudo npm install -g composer-ui
+  ```
+
+You should see the following output in your terminal or command prompt:
 
   ```
   $ sudo npm install -g composer-ui
+  ...
+  /usr/local/bin/composer-ui -> /usr/local/lib/node_modules/composer-ui/cli.js
+  /usr/local/lib/node_modules
+  └─┬ composer-ui@0.4.3
+  ...
   ```
 
-You can then start Fabric Composer Playground by running the following command.
+Verify that no errors occurred. If any part of this process fails, then Fabric Composer Playground will fail to work correctly. You may see errors from a program called `node-gyp`. These errors indicate that your system is not set up correctly to build Node.js C/C++ native modules. You may need to install additional software to correct this error.
+
+You can then start Fabric Composer Playground by running the following command in your terminal or command prompt:
 
   ```
-  $ composer-ui
+  composer-ui
   ```
 
 A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
@@ -146,23 +209,38 @@ In order to install Fabric Composer Playground with Docker, you need the followi
 
 *   Docker Engine 1.12.3 or greater
 
-    Test that Docker Engine is installed by running the following command:
+    Test that Docker Engine is installed by running the following command in your terminal or command prompt:
+
+    ```
+    docker -v
+    ```
+
+    You should see the following output in your terminal or command prompt:
 
     ```
     $ docker -v
     Docker version 1.13.0, build 49bf474
     ```
 
-    If not, follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
+    Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
 
 ### Installation
 
-You can install Fabric Composer Playground by running the following Docker command:
+You can install Fabric Composer Playground by running the following Docker command in your terminal or command prompt:
+
+  ```
+  docker run -d -p 8080:8080 fabriccomposer/composer-ui
+  ```
+
+You should see the following output in your terminal or command prompt:
 
   ```
   $ docker run -d -p 8080:8080 fabriccomposer/composer-ui
+  afd1baff0487de5c69626b8baea69c702744f92813043e3d2b0ef786c7f77517
   ```
 
-If everything started OK, you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+Verify that no errors occurred.
+
+You can then start Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
 This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
