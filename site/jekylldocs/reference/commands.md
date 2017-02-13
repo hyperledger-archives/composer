@@ -15,7 +15,6 @@ The Fabric Composer command line application can be installed using npm:
 
 `npm install -g composer-cli`
 
-
 ## Business Network Archives
 
 `composer archive create`
