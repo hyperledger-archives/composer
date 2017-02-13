@@ -7,6 +7,7 @@ set -o pipefail
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+date
 # Start the X virtual frame buffer used by Karma.
 if [ -r "/etc/init.d/xvfb" ]; then
     export DISPLAY=:99.0
@@ -36,3 +37,4 @@ else
     npm run build:prod
 
 fi
+date
