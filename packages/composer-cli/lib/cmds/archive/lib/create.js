@@ -35,14 +35,11 @@ class Create {
     */
     static handler(argv) {
 
-        console.log('Creating Business Network Archive');
+        console.log('Creating Business Network Archive'+argv);
         if (!argv.inputDir){
             const path = require('path');
-
-
-
             console.log(process.env.NODE_PATH);
-            console.log('About to do the required');
+
             let moduleIndexjs;
             try {
                 moduleIndexjs=require.resolve(argv.moduleName);
@@ -52,8 +49,8 @@ class Create {
                     console.log('Main node_module search path empty - trying cwd');
                     moduleIndexjs=require.resolve(process.cwd()+'/node_modules/'+argv.moduleName);
                 }else {
-                    console.log('Unable to locate the npm moodule specified');
-                    throw err;
+                    console.log('Unable to locate the npm module specified');
+                    return Promise.reject(err);
                 }
 
             }

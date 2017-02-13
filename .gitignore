@@ -45,3 +45,4 @@ jspm_packages
 
 #generated jsdoc
 site/jekylldocs/jsdoc
+site/jekylldocs/_site
