@@ -38,8 +38,8 @@ import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
 import { NotificationService } from './notification.service';
-import { SampleService } from './sample.service';
 import { InitializationService } from './initialization.service';
+import { SampleBusinessNetworkService } from "./samplebusinessnetwork.service";
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -105,8 +105,8 @@ type StoreType = {
     WalletService,
     IdentityService,
     NotificationService,
-    SampleService,
-    InitializationService
+    InitializationService,
+    SampleBusinessNetworkService
   ]
 })
 export class AppModule {

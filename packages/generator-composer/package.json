@@ -1,6 +1,6 @@
 {
   "name": "generator-fabric-composer",
-  "version": "0.4.2",
+  "version": "0.4.4",
   "description": "Generates skeleton projects from Fabric Composer business network definitions",
   "files": [
     "generators/app",
@@ -12,8 +12,8 @@
   ],
   "dependencies": {
     "bower": "^1.8.0",
-    "composer-client": "^0.4.2",
-    "composer-common": "^0.4.2",
+    "composer-client": "^0.4.4",
+    "composer-common": "^0.4.4",
     "fs": "0.0.1-security",
     "shelljs": "^0.7.5",
     "underscore.string": "^3.3.4",

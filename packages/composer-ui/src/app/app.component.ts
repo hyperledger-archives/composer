@@ -11,13 +11,13 @@ import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
 import { NotificationService } from './notification.service';
-import { SampleService } from './sample.service';
 import { InitializationService } from './initialization.service';
 import { AddIdentityComponent } from './addidentity';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
 import { ResetComponent } from './reset';
 import { SampleComponent } from './sample';
+import { SampleBusinessNetworkService } from "./samplebusinessnetwork.service";
 
 const LZString = require('lz-string');
 
@@ -70,9 +70,7 @@ export class AppComponent {
     private walletService: WalletService,
     private identityService: IdentityService,
     private notificationService: NotificationService,
-    private sampleService: SampleService,
-    private initializationService: InitializationService
-  ) {
+    private initializationService: InitializationService) {
 
   }
 
