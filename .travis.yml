@@ -46,6 +46,4 @@ deploy:
     skip_cleanup: true
     on:
         all_branches: true
-cache:
-    directories:
-        - $HOME/.npm
+cache: false
