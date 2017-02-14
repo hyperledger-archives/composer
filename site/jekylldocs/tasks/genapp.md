@@ -7,6 +7,9 @@ excerpt: How to generate a starter application
 ---
 
 # How Generate a Starter Application
+
+---
+
 We're going to assume that you've been through the Getting Started section and would like to now start to look at writing your own application to use Fabric Composer.
 
 To help getting started with this, there's a [Yeoman](http://yeoman.io/) generator that creates a suitable directory structure and helps bring in the required model and network modules.
@@ -48,7 +51,7 @@ yo fabric-composer
 ```
 Welcome to the Fabric Composer Skeleton Application Generator
 ? Please select the type of Application: (Use arrow keys)
-❯ CLI Application 
+❯ CLI Application
   Angular2 Application
 ```
 

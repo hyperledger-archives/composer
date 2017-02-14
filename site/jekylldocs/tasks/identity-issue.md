@@ -8,6 +8,8 @@ excerpt: How to issue an Identity to a Participant
 
 # Issuing an identity to a participant
 
+---
+
 An identity can be issued to a participant using either the API or the command line.
 Once an identity has been issued, the identity can then be used by the participant
 to interact with the business network in the context of that participant.

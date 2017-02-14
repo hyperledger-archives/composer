@@ -2,10 +2,11 @@
 layout: default
 title: Fabric Composer -  Overview
 category: overview
+sidebar: sidebars/overview.md
 excerpt: Fabric Composer overview
 ---
 
-## Overview
+# Overview
 
 ---
 

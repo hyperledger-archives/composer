@@ -8,6 +8,8 @@ excerpt: How to revoke an Identity from a Participant
 
 # Revoking an identity from a participant
 
+---
+
 An identity can be revoked from a participant using either the API or the command line.
 Once an identity has been revoked, the identity can no longer be used by the participant
 to interact with the business network in the context of that participant.

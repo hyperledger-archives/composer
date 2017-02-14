@@ -4,9 +4,12 @@ title: Fabric Composer Quickstart
 category: start
 sidebar: sidebars/quickstart_sidebar.md
 excerpt: Quickstart
+
 ---
 
 # Fabric Composer Quickstart
+
+---
 
 Check that your system has the required software (at the required versions) installed:
 

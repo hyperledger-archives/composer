@@ -8,6 +8,8 @@ excerpt: Fabric Composer Command Line
 
 # Fabric Composer Command Line
 
+---
+
 The Fabric Composer command line application, `composer`, can be used to perform multiple
 administrative, operational, and development tasks.
 
