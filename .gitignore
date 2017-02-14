@@ -42,3 +42,6 @@ jspm_packages
 # Mac OS X files
 .DS_Store
 *.swp
+
+# Anything Jekyll has built
+_site/
