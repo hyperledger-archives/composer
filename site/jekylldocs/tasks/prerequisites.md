@@ -67,7 +67,7 @@ sudo apt-get -y install atom
 Atom is at it's most productive would used with a number of plugins. The ones that we have found to be most useful are below and would suggest that you install these when with developing.
 
 - *Code Highlighting*  On top of the existing code highlighting support there is a plugin for model file highlighting. [Atom Concerto Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom)
-- *Linting* JavaScript dosn't come with a compiler that can pick up silly mistakes, but a linter is an essential tool to help. The one we have used is [eslint]([https://atom.io/packages/linter-eslint]). The file that we use is in the git repos look for a `.eslint file`. If you use the Yeoman generator for a simple application you will get this file as part of the sample application.
+- *Linting* JavaScript dosn't come with a compiler that can pick up silly mistakes, but a linter is an essential tool to help. The one we have used is [eslint](https://atom.io/packages/linter-eslint). The file that we use is in the git repos look for a `.eslint file`. If you use the Yeoman generator for a simple application you will get this file as part of the sample application.
 - *UI* [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different file
 
 ####Installation Commands for MacOS:

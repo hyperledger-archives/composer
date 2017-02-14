@@ -1,8 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { AdminService } from './admin.service';
-import { ClientService } from './client.service';
-import { SampleService } from './sample.service';
+import {AdminService} from './admin.service';
+import {ClientService} from './client.service';
+import {SampleBusinessNetworkService} from './samplebusinessnetwork.service';
+
+const fabricComposerOwner = 'fabric-composer';
+const fabricComposerRepository = 'sample-networks';
 
 @Injectable()
 export class InitializationService {
@@ -10,11 +13,9 @@ export class InitializationService {
   private initializingPromise: Promise<any> = null;
   private initialized = false;
 
-  constructor(
-    private adminService: AdminService,
-    private clientService: ClientService,
-    private sampleService: SampleService
-  ) {
+  constructor(private adminService: AdminService,
+              private clientService: ClientService,
+              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
 
   }
 
@@ -30,8 +31,12 @@ export class InitializationService {
       })
       .then(() => {
         if (this.adminService.isInitialDeploy()) {
-          let sampleName = this.sampleService.getDefaultSample();
-          return this.sampleService.deploySample(sampleName);
+          // We can't use the Github sample integration for the initial deploy until we figure out the rate limiting!
+          return this.sampleBusinessNetworkService.deployInitialSample();
+          // return this.sampleBusinessNetworkService.getSampleNetworkInfo(fabricComposerOwner, fabricComposerRepository, 'packages/CarAuction-Network/')
+          //   .then((info) => {
+          //     return this.sampleBusinessNetworkService.deploySample(fabricComposerOwner, fabricComposerRepository, info);
+          //   });
         }
       })
       .then(() => {
@@ -46,7 +51,7 @@ export class InitializationService {
         this.adminService.errorStatus$.next(error);
         this.initialized = false;
         this.initializingPromise = null;
-      })
+      });
     return this.initializingPromise;
   }
 

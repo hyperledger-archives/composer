@@ -10,14 +10,17 @@
       <div class="modal-body">
         <label for="sampleName">Sample</label>
         <select class="form-control" id="sampleName" [(ngModel)]="sampleName" (ngModelChange)="onSampleNameChanged()">
-          <option *ngFor="let sampleName of sampleNames">{{sampleName}}</option>
+          <option *ngFor="let sampleNetwork of sampleNetworks">{{sampleNetwork.name}}</option>
         </select>
         <label for="sampleDescription" class="mt-2">Description</label>
         <div class="card">
-          <div class="card-block">
+          <div id="sampleDescription" class="card-block">
             {{sampleDescription}}
           </div>
         </div>
+        <!--Put this back in when allow getting sample from a different github
+        <input class="form-control" [(ngModel)]="owner">
+        <input class="form-control" [(ngModel)]="repository">-->
         <button type="button" class="btn btn-primary mt-2" (click)="deploy(); modal.hide();" [disabled]="!sampleName">
           <span>Deploy</span>
         </button>
