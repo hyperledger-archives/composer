@@ -8,6 +8,9 @@ set -o pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 
+ABORT_BUILD=false
+ABORT_CODE=0
+
 if [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
 
   if [ "${TRAVIS_EVENT_TYPE}" = "cron" ]; then
@@ -19,6 +22,8 @@ if [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
     exit 0
   fi
 fi
+
+
 
 cd ${DIR}
 npm install -g npm
