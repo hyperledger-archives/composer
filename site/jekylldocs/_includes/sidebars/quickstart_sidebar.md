@@ -3,4 +3,5 @@
 * [Getting Started]({{site.baseurl}}/start/index.html)
 * [Concepts]({{site.baseurl}}/concepts/index.html)
 * [Tasks]({{site.baseurl}}/tasks/index.html)
-* [Reference]({{site.baseurl}}/reference/index.html)
+* [API Documentation]({{site.baseurl}}/jsdoc/index.html)
+* [Support]({{site.baseurl}}/support/index.html)
