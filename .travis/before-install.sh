@@ -16,15 +16,20 @@ if [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
   if [ "${TRAVIS_EVENT_TYPE}" = "cron" ]; then
 	echo Valid to run hlf with ibm systest as CRON build
   else
-    export ABORT_BUILD=true
-    export ABORT_CODE=0
+    echo "ABORT_BUILD=true" > ${DIR}/build.cfg
+    echo "ABORT_CODE=0" > ${DIR}/build.cfg
     echo Not running as a PR or merge build
     exit 0
   fi
 fi
 
+# Check of the task current executing
+if [ "${FC_TASK}" = "docs" ]; then
+  echo Doing Docs - no requirement for installations of other software
+  exit 0;
+fi
 
-
+#
 cd ${DIR}
 npm install -g npm
 npm install -g @alrra/travis-scripts

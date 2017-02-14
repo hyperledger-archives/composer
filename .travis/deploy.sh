@@ -7,6 +7,15 @@ set -o pipefail
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 date
+ME=`basename "$0"`
+
+source ${DIR}/build.cfg
+
+if [ "${ABORT_BUILD}" = "true" ]; then
+  echo exiting early from ${ME}
+  exit ${ABORT_CODE}
+fi
+
 # Check that this is the right node.js version.
 if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
     echo Not executing as not running primary node.js version.
