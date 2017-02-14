@@ -20,7 +20,7 @@
   "author": "<%= authorName %>",
   "license": "Apache2",
   "dependencies": {
-    "<%= npmNetworkDependancy %>": "0.0.21",
+    "<%= npmNetworkDependancy %>": "0.0.1",
     "composer-client": "^0.4.1",
     "config": "^1.21.0",
     "shelljs": "^0.7.5",
