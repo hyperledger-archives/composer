@@ -1,4 +1,6 @@
-$font-stack: 'Helvetica Neue for IBM', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$font-stack: 'Open Sans', 'Helvetica Neue for IBM', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$display-font: 'Open Sans';
+$svg-font: 'Source Code Pro';
 $primary-color: #3C6DF0;
 $secondary-color: #F9F9F9;
 $text-color: #19273C;
@@ -15,22 +17,23 @@ html {
 
 body {
     font-family: $font-stack;
+    padding-bottom: 0;
     // color: $text-color;
 }
 
 h1 {
-  font-family: $font-stack;
+  font-family: $display-font;
   font-weight: 300;
-  font-size: 2.75rem;
-  letter-spacing: 0.4px;
+  font-size: 2.50rem;
+  // letter-spacing: 0.4px;
   color: $text-color;
 }
 
 h2 {
   font-family: $font-stack;
   font-weight: 300;
-  font-size: 1.50rem;
-  letter-spacing: 0.4px;
+  font-size: 1.35rem;
+  // letter-spacing: 0.4px;
   line-height: 130%;
   color: $text-color;
 }
@@ -39,9 +42,12 @@ p {
   font-family: $font-stack;
   color: $text-color;
   font-weight: 400;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
+svg {
+  font-family: $svg-font;
+}
 
 button {
     white-space: nowrap;
@@ -56,7 +62,7 @@ button {
     font-weight: 400;
     letter-spacing: 0.4px;
     font-family: $font-stack;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
     min-width: 100px;
     box-sizing: border-box;
@@ -135,7 +141,7 @@ button {
       font-family: $font-stack;
       color: $primary-color;
       font-weight: 400;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
       border-bottom: 1px solid $primary-color;
       transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
@@ -198,6 +204,7 @@ button {
 }
 
 .navcontent {
+  font-size: 0.9rem;
   display: flex;
   width: 70vw;
   margin: auto;
@@ -209,11 +216,10 @@ button {
   flex-basis: 100%;
   flex-shrink: 1;
   .brand {
-    display: flex;
     font-family: $font-stack;
     color: $text-color;
     font-weight: 400;
-    font-size: 1rem;
+    font-size: 0.9rem;
     cursor: pointer;
     text-decoration: none;
     a {
