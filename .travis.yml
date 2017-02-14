@@ -21,6 +21,7 @@ addons:
         packages:
             - graphviz
 before_install: |
+    date
     set -ev
     set -o pipefail
     ./.travis/should-run.sh
@@ -31,10 +32,13 @@ before_install: |
     wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
     echo "deb http://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
     sudo apt-get update && sudo apt-get install cf-cli
+    date
 install: |
+    date
     set -ev
     set -o pipefail
     npm install 2>&1 | tee
+    date
 script: ./.travis/script.sh
 deploy:
     provider: script
@@ -42,6 +46,4 @@ deploy:
     skip_cleanup: true
     on:
         all_branches: true
-cache:
-    directories:
-        - $HOME/.npm
+cache: false
