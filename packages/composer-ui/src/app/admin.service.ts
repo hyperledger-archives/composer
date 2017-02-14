@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { ConnectionProfileService } from './connectionprofile.service';
@@ -60,12 +61,13 @@ export class AdminService {
   private isConnected: boolean = false;
   private connectingPromise: Promise<any> = null;
   private initialDeploy: boolean = false;
+  private config: any = null;
 
   public busyStatus$: Subject<string> = new BehaviorSubject<string>(null);
   public errorStatus$: Subject<string> = new BehaviorSubject<string>(null);
   public connectionProfileChanged$: Subject<string> = new BehaviorSubject<string>(null);
 
-  constructor(private connectionProfileService: ConnectionProfileService, private walletService: WalletService, private identityService: IdentityService) {
+  constructor(private connectionProfileService: ConnectionProfileService, private walletService: WalletService, private identityService: IdentityService, private http: Http) {
     Logger.setFunctionalLogger({
       log: () => { }
     });
@@ -96,6 +98,18 @@ export class AdminService {
     console.log('Establishing admin connection ...');
     this.connectingPromise = Promise.resolve()
       .then(() => {
+
+        // Load the config data.
+        return this.http.get('/config.json')
+          .map((res:Response) => res.json())
+          .toPromise();
+
+      })
+      .then((config: any) => {
+
+        // Save the config data.
+        this.config = config;
+
         // Check to see if the default connection profile exists.
         console.log('Checking for $default connection profile');
         return this.adminConnection.getProfile('$default')
@@ -104,13 +118,57 @@ export class AdminService {
             console.log('$default connection profile does not exist, creating');
             return this.adminConnection.createProfile('$default', { type: 'web' })
               .then(() => {
-                return this.walletService.getWallet('$default').add('admin', 'Xurw3yU9zI0l');
+                return this.walletService.getWallet('$default').add('admin', 'adminpw');
               });
           });
+
       })
       .then(() => {
+
+        // Create all of the connection profiles specified in the configuration.
+        const connectionProfiles = this.config.connectionProfiles || {};
+        const connectionProfileNames = Object.keys(connectionProfiles).sort();
+        return connectionProfileNames.reduce((result, connectionProfileName) => {
+          return result.then(() => {
+            console.log('Checking for connection profile', connectionProfileName);
+            return this.adminConnection.getProfile(connectionProfileName)
+              .catch((error) => {
+                console.log('Connection profile does not exist, creating');
+                return this.adminConnection.createProfile(connectionProfileName, connectionProfiles[connectionProfileName]);
+              })
+          })
+        }, Promise.resolve());
+
+      })
+      .then(() => {
+
+        // Create all of the credentials specified in the configuration.
+        const credentials = this.config.credentials || {};
+        const connectionProfileNames = Object.keys(credentials).sort();
+        return connectionProfileNames.reduce((result, connectionProfileName) => {
+          return result.then(() => {
+            console.log('Creating credentials for connection profile', connectionProfileName);
+            return this.walletService.getWallet(connectionProfileName)
+          })
+          .then((wallet) => {
+            const connectionProfileCredentials = credentials[connectionProfileName];
+            const credentialNames = Object.keys(connectionProfileCredentials).sort();
+            return credentialNames.reduce((result2, credentialName) => {
+              return wallet.get(credentialName)
+                .catch((error) => {
+                  console.log('Adding credential', credentialName);
+                  return wallet.add(credentialName, connectionProfileCredentials[credentialName]);
+                });
+            }, Promise.resolve());
+          })
+        }, Promise.resolve());
+
+      })
+      .then(() => {
+
         // If we're in a Docker Compose environment, check to see
         // if the Hyperledger Fabric connection profile exists.
+        // TODO: remove once the workshops are out of the way and we can remove this stuff.
         if (DOCKER_COMPOSE) {
           console.log('Docker Compose environment, checking for hlfabric connection profile');
           return this.adminConnection.getProfile('hlfabric')
@@ -119,7 +177,7 @@ export class AdminService {
               console.log('hlfabric connection profile does not exist, creating');
               return this.adminConnection.createProfile('hlfabric', {
                 type: 'hlf',
-                keyValStore: '/home/concerto/.concerto-credentials',
+                keyValStore: '/home/composer/.composer-credentials',
                 membershipServicesURL: 'grpc://membersrvc:7054',
                 peerURL: 'grpc://vp0:7051',
                 eventHubURL: 'grpc://vp0:7053',
@@ -133,6 +191,7 @@ export class AdminService {
         } else {
           console.log('Not in Docker Compose environment, not checking for hlfabric connection profile');
         }
+
       })
       .then(() => {
         connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();

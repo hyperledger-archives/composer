@@ -11,13 +11,13 @@ import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
 import { NotificationService } from './notification.service';
-import { SampleService } from './sample.service';
 import { InitializationService } from './initialization.service';
 import { AddIdentityComponent } from './addidentity';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
 import { ResetComponent } from './reset';
 import { SampleComponent } from './sample';
+import { SampleBusinessNetworkService } from "./samplebusinessnetwork.service";
 
 const LZString = require('lz-string');
 
@@ -51,7 +51,7 @@ export class AppComponent {
   private subs: any = null;
 
   private composerPackageVersion = composerPackageVersion;
-  private concertoRuntimeVersion = '<none>';
+  private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
 
   @ViewChild(BusyComponent) private busyComponent: BusyComponent;
@@ -70,9 +70,7 @@ export class AppComponent {
     private walletService: WalletService,
     private identityService: IdentityService,
     private notificationService: NotificationService,
-    private sampleService: SampleService,
-    private initializationService: InitializationService
-  ) {
+    private initializationService: InitializationService) {
 
   }
 
@@ -156,7 +154,7 @@ export class AppComponent {
         return this.clientService.getBusinessNetworkConnection().ping();
       })
       .then((ping) => {
-        this.concertoRuntimeVersion = ping.version || this.concertoRuntimeVersion;
+        this.composerRuntimeVersion = ping.version || this.composerRuntimeVersion;
         this.participantFQI = ping.participant || this.participantFQI;
         // We then load the connection profiles again, as the connect calls may have
         // created versions of the default connection profiles.

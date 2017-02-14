@@ -6,7 +6,7 @@ set -o pipefail
 
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
+date
 # Check that this is the right node.js version.
 if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
     echo Not executing as not running primary node.js version.
@@ -44,21 +44,57 @@ set-up-ssh --key "$encrypted_568b95f14ac3_key" \
 # Change from HTTPS to SSH.
 ./.travis/fix_github_https_repo.sh
 
+# Log in to Docker Hub.
+docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+
+# This is the list of Docker images to build.
+export DOCKER_IMAGES=composer-ui
+
 # Push the code to npm.
 if [ -z "${TRAVIS_TAG}" ]; then
 
     # Set the prerelease version.
     npm run pkgstamp
+    export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag unstable"
     lerna exec --ignore 'composer-systests' -- npm publish --tag=unstable 2>&1 | tee
 
+    # Build, tag, and publish Docker images.
+    for i in ${DOCKER_IMAGES}; do
+
+        # Build the image and tag it with the version and unstable.
+        docker build --build-arg VERSION=${VERSION} -t fabriccomposer/${i}:${VERSION} ${DIR}/packages/${i}/docker
+        docker tag fabriccomposer/${i}:${VERSION} fabriccomposer/${i}:unstable
+
+        # Push both the version and unstable.
+        docker push fabriccomposer/${i}:${VERSION}
+        docker push fabriccomposer/${i}:unstable
+
+    done
+
 else
+
+    # Grab the current version.
+    export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag latest"
     lerna exec --ignore 'composer-systests' -- npm publish 2>&1 | tee
+
+    # Build, tag, and publish Docker images.
+    for i in ${DOCKER_IMAGES}; do
+
+        # Build the image and tag it with the version and latest.
+        docker build --build-arg VERSION=${VERSION} -t fabriccomposer/${i}:${VERSION} ${DIR}/packages/${i}/docker
+        docker tag fabriccomposer/${i}:${VERSION} fabriccomposer/${i}:latest
+
+        # Push both the version and latest.
+        docker push fabriccomposer/${i}:${VERSION}
+        docker push fabriccomposer/${i}:latest
+
+    done
 
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-ui/dist
@@ -76,11 +112,12 @@ else
 
     # Bump the version number.
     npm run pkgbump
-    export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
+    export NEW_VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 
     # Add the version number changes and push them to Git.
     git add .
-    git commit -m "Automatic version bump to ${VERSION}"
+    git commit -m "Automatic version bump to ${NEW_VERSION}"
     git push origin develop
 
 fi
+date

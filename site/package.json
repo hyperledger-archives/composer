@@ -3,11 +3,12 @@
   "version": "0.3.9",
   "description": "Fabric Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "scripts": {
-    "doc": "npm run docpub",
-    "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public -R JSDOC-README.md",
-    "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private -R JSDOC-README.md",
-    "localpages": " npm run docpub && ./scripts/generate-uml.sh && ./scripts/build-gh-pages.sh && ./scripts/run-jekyll-serve.sh",
-    "full" : " npm run doc && ./scripts/generate-uml.sh && ./scripts/setup-jekyll.sh && ./scripts/build-gh-pages.sh"
+    "install": "npm run doc",
+    "doc": "npm run docpub   && ./scripts/generate-uml.sh",
+    "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
+    "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
+    "jekyllserve": "cd ./jekylldocs && jekyll serve",
+    "full": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build"
   },
   "repository": {
     "type": "git",
@@ -25,10 +26,9 @@
     "composer-client": "latest",
     "composer-common": "latest",
     "composer-runtime": "latest",
-    "ink-docstrap": "latest",
     "jsdoc": "^3.4.1",
-    "mermaid": "^6.0.0",
-    "node-plantuml": "^0.5.0"
+    "node-plantuml": "^0.5.0",
+    "sanitize-html": "^1.14.1"
   },
   "dependencies": {
     "jekyll": "^3.0.0-beta1"
