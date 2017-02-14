@@ -1,5 +1,0 @@
-namespace com.ibm.testing
-
-asset TestAsset identified by assetId extends BaseAsset {
-    o String assetId
-}

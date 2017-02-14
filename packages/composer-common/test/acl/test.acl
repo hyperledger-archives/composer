@@ -1,5 +1,0 @@
-R1 | org.acme.Car#ABC123 | DELETE | org.acme.Driver#Fred | (true) | ALLOW | Fred can DELETE the car ABC123
-R2 | org.acme.Car:c | UPDATE | org.acme.Regulator#Bill:r | (c.owner == r) | DENY | regulator with ID Bill can not update a Car if they own it
-R3 | org.acme.Car.owner:o | UPDATE | org.acme.Driver:d | (o == d) | ALLOW | Driver can change the ownership of a car that they own
-R4 | org.acme.Car | ALL | org.acme.Regulator | (true) | ALLOW | regulators can perform all operations on Cars
-R5 | org.acme | READ | ANY | (true) | ALLOW | Everyone can read all resources in the org.acme namespace
