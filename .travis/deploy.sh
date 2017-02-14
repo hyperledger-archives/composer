@@ -6,7 +6,7 @@ set -o pipefail
 
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
+date
 # Check that this is the right node.js version.
 if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
     echo Not executing as not running primary node.js version.
@@ -120,3 +120,4 @@ else
     git push origin develop
 
 fi
+date
