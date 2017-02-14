@@ -5,6 +5,9 @@ node_js:
 matrix:
     include:
         - env: DOCS=full FC_TASK=docs
+          sudo: false
+          node_js :
+            - '4'
         - env: SYSTEST=embedded FC_TASK=systest
         - env: SYSTEST=web FC_TASK=systest
         - env: SYSTEST=hlf SYSTEST_HLF=hlf  FC_TASK=systest
