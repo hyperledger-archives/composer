@@ -6,6 +6,15 @@ set -o pipefail
 
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+ME=`basename "$0"`
+
+echo ${ME} `date`
+
+if [ "${ABORT_BUILD}" = "true" ]; then
+  echo exiting early from ${ME}
+  exit ${ABORT_CODE}
+fi
+
 
 # Start the X virtual frame buffer used by Karma.
 if [ -r "/etc/init.d/xvfb" ]; then
@@ -36,3 +45,5 @@ else
     npm run build:prod
 
 fi
+
+echo ${ME} `date`

@@ -15,7 +15,7 @@ There are also [two scripts](#Automatic Installation) that can be used on Ubuntu
 The recommended versions are:
 *Docker*: v1.12.5
 *Docker-compose*: v1.9.0
-*node.js*: v4 or v6
+*node.js*: v6.9.5
 
 ## Automatic Installation
 
@@ -67,7 +67,7 @@ sudo apt-get -y install atom
 Atom is at it's most productive would used with a number of plugins. The ones that we have found to be most useful are below and would suggest that you install these when with developing.
 
 - *Code Highlighting*  On top of the existing code highlighting support there is a plugin for model file highlighting. [Atom Concerto Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom)
-- *Linting* JavaScript dosn't come with a compiler that can pick up silly mistakes, but a linter is an essential tool to help. The one we have used is [eslint]([https://atom.io/packages/linter-eslint]). The file that we use is in the git repos look for a `.eslint file`. If you use the Yeoman generator for a simple application you will get this file as part of the sample application.
+- *Linting* JavaScript dosn't come with a compiler that can pick up silly mistakes, but a linter is an essential tool to help. The one we have used is [eslint](https://atom.io/packages/linter-eslint). The file that we use is in the git repos look for a `.eslint file`. If you use the Yeoman generator for a simple application you will get this file as part of the sample application.
 - *UI* [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different file
 
 ####Installation Commands for MacOS:
@@ -129,7 +129,7 @@ tbd
 
 ### 3. Installing NVM
 We highly recommend installing [nvm](https://github.com/creationix/nvm) to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation.
-The runtime requires a version higher than v4.6.0.
+The runtime requires a version higher than v6.
 
 **Installation Commands for Ubuntu:**
 
@@ -150,10 +150,12 @@ EOF
 source ~/.profile
 
 # Install node and npm
-nvm install 4.6.2
+nvm install 6.9.5
 
-# Configure nvm to use version 4.6.2
-nvm use 4.6.2.
+
+# Configure nvm to use version 6
+nvm use 6.9.5
+nvm alias default 6.9.5
 
 # Install the latest version of npm
 npm install npm@latest -g
@@ -236,16 +238,3 @@ tbd
 **Additional Notes:**
 
 - [Official Docker Compose installation guide](https://docs.docker.com/compose/install/)
-
-### 6. Login to npm Whitewater
-All of the Fabric Composer packages can be found in the public npm registry.
-
-**Installation Commands for MacOS:**
-
-```bash
-tbd
-```
-
-**Additional Notes:**
-
-- [npm Whitewater](https://npm.whitewater.ibm.com/)
