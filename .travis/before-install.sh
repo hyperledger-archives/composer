@@ -7,6 +7,8 @@ set -o pipefail
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+npm install -g npm
+npm install -g @alrra/travis-scripts
 
 echo "ABORT_BUILD=false" > ${DIR}/build.cfg
 echo "ABORT_CODE=0" >> ${DIR}/build.cfg
@@ -35,8 +37,7 @@ fi
 
 #
 cd ${DIR}
-npm install -g npm
-npm install -g @alrra/travis-scripts
+
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome*.deb
 wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
