@@ -9,7 +9,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 ME=`basename "$0"`
 
 
-if ["${ABORT_BUILD}" = "true"]; then
+if [ "${ABORT_BUILD}" = "true" ]; then
   echo exiting early from ${ME}
   exit ${ABORT_CODE}
 fi

@@ -10,7 +10,7 @@ ME=`basename "$0"`
 
 echo ${ME} `date`
 
-if ["${ABORT_BUILD}" = "true"]; then
+if [ "${ABORT_BUILD}" = "true" ]; then
   echo exiting early from ${ME}
   exit ${ABORT_CODE}
 fi
