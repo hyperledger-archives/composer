@@ -8,8 +8,8 @@ set -o pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 
-ABORT_BUILD=false
-ABORT_CODE=0
+echo "ABORT_BUILD=false" > ${DIR}/build.cfg
+echo "ABORT_CODE=0" >> ${DIR}/build.cfg
 
 if [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
 
@@ -17,11 +17,15 @@ if [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
 	echo Valid to run hlf with ibm systest as CRON build
   else
     echo "ABORT_BUILD=true" > ${DIR}/build.cfg
-    echo "ABORT_CODE=0" > ${DIR}/build.cfg
+    echo "ABORT_CODE=0" >> ${DIR}/build.cfg
     echo Not running as a PR or merge build
     exit 0
   fi
 fi
+
+
+#
+cat ${DIR}/build.cfg
 
 # Check of the task current executing
 if [ "${FC_TASK}" = "docs" ]; then
