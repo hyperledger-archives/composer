@@ -31,6 +31,7 @@
     "sanitize-html": "^1.14.1"
   },
   "dependencies": {
-    "jekyll": "^3.0.0-beta1"
+    "jekyll": "^3.0.0-beta1",
+    "moment": "^2.17.1"
   }
 }
