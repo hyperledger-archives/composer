@@ -2,32 +2,36 @@
 layout: default
 title: Fabric Composer Quickstart
 category: start
+sidebar: sidebars/quickstart_sidebar.md
 excerpt: Getting Started with Fabric Composer
 ---
 
-## Fabric Composer Quickstart
+# Fabric Composer Quickstart
+<br></br>
 
----
+Check that your system has the required software (at the required versions) installed:
 
-<i class="fa fa-fw  fa-coffee"></i>  <b>GET READY</b><br>
+**Operating Systems:** Ubuntu Linux 14.04 LTS (64-bit) or Mac OS 10.12
 
----
+**Docker Engine:** Version 1.12.x
 
->Before you start, you should check that your system has the required software (at the required versions) installed:
-[Supported Platforms](../reference/platforms.md)
+**Docker-Compose:** Version 1.8.x
+
+**Node:** 4.6.x or 6.x
+
+**npm:** 4.0.x
+
 If you need to update or install anything please refer to the install guides:
 [Installing Prerequisites](../tasks/prerequisites.md)
 
----
-
-## Clone the Sample Applications repository
+**Clone the Sample Applications Repository:**
 
 ```
 npm install -g composer-cli
 git clone https://github.com/fabric-composer/sample-applications.git
 ```
 
-## Install the Getting Started Application
+**Install the Getting Started Application:**
 
 ```
 cd sample-applications/
@@ -36,15 +40,11 @@ cd getting-started
 npm install
 ```
 
-## Run the Getting Started Application
+**Run the Getting Started Application:**
 
 Run the `npm test` command. You should see output as below.
 
 ```
-npm test
-
-daniels-mbp:getting-started dselman$ npm test
-
 > getting-started@1.0.0 test /Users/dselman/dev/git/sample-applications/packages/getting-started
 > mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
 
@@ -120,12 +120,3 @@ info: [Composer-GettingStarted]
 info: [Composer-GettingStarted] Command completed successfully.
 
 ```
----
-
-<i class="fa fa-fw  fa-forward"></i>  <b>WHERE TO NEXT?</b><br>
-
----
-
-Continue experimenting with one of our Getting Started guides:
-
-[Visit Getting Started](./index.md)
