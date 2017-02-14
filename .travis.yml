@@ -4,14 +4,14 @@ node_js:
     - '6'
 matrix:
     include:
-        - env: DOCS=full
-        - env: SYSTEST=embedded
-        - env: SYSTEST=web
-        - env: SYSTEST=hlf SYSTEST_HLF=hlf
+        - env: DOCS=full FC_TASK=docs
+        - env: SYSTEST=embedded FC_TASK=systest
+        - env: SYSTEST=web FC_TASK=systest
+        - env: SYSTEST=hlf SYSTEST_HLF=hlf  FC_TASK=systest
           sudo: required
           services:
             - docker
-        - env: SYSTEST=hlf SYSTEST_HLF=ibm
+        - env: SYSTEST=hlf SYSTEST_HLF=ibm FC_TASK=systest
           sudo: required
           services:
             - docker
@@ -40,3 +40,4 @@ deploy:
     on:
         all_branches: true
 cache: false
+sudo: required
