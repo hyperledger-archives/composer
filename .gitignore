@@ -43,5 +43,10 @@ jspm_packages
 .DS_Store
 *.swp
 
+<<<<<<< HEAD
 # Anything Jekyll has built
 _site/
+=======
+#generated jsdoc
+site/jekylldocs/jsdoc
+>>>>>>> 97d340dea3e66afbf20a39833ae19e1b43d20c21

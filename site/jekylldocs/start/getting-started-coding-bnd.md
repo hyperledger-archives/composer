@@ -62,16 +62,16 @@ namespace net.biz.digitalPropertyNetwork
 
 asset LandTitle identified by titleId {
   o String   titleId
-  o Person   owner
+  --> Person   owner
   o String   information
   o Boolean  forSale   optional
 }
 
 asset SalesAgreement identified by salesId {
   o String    salesId
-  o Person    buyer
-  o Person    seller
-  o LandTitle title
+  --> Person    buyer
+  --> Person    seller
+  --> LandTitle title
 }
 
 participant Person identified by personId {
@@ -147,7 +147,7 @@ function onRegisterPropertyForSale(propertyForSale) {
     console.log('### onRegisterPropertyForSale ' + propertyForSale.toString());
     propertyForSale.title.forSale = true;
 
-    return getAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle').then(function(result) {
+    returAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle').then(function(result) {
             return result.update(propertyForSale.title);
         }
     );
@@ -174,5 +174,5 @@ composer archive create --archiveFile digitialLandTitle.bna --inputDir . --modul
 Once you have this archive it can then be deployed to Hyperledger (which will assuming is all running for the moment)
 
 ```bash
-composer network deploy --archiveFile  DigitalLandTitle.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+composer network deploy --archiveFile  DigitalLandTitle.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 ```

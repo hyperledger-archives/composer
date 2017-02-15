@@ -64,6 +64,6 @@ function to use.
 
 ## Related Reference
 
-[Participant add command](../reference/concerto.participant.add.md)  
-[Identity issue command](../reference/concerto.identity.issue.md)  
-[Identity revoke command](../reference/concerto.identity.revoke.md)  
+[Participant add command](../tasks/participant-add.md)  
+[Identity issue command](../tasks/identity-issue.md)  
+[Identity revoke command](../tasks/identity-revoke.md)  
