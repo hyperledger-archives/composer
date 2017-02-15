@@ -8,7 +8,7 @@ set -o pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Switch into the system tests directory.
-cd ${DIR}
+cd "${DIR}"
 
 # Barf if we don't recognize this test suite.
 if [ "${SYSTEST}" = "" ]; then
