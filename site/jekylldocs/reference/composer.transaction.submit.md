@@ -55,4 +55,4 @@ Example: `Xurw3yU9zI0l`
 `--data, -d`
 
 The transaction represented as a JSON object.  
-Example: `'{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale ","seller":"SELLER_001","title":"TITLE_001"}'`
+Example: `'{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","seller":"SELLER_001","title":"TITLE_001"}'`
