@@ -20,7 +20,7 @@ ACL rules are defined in a file called `permissions.acl` in the root of the busi
 ACL rules follow a tabular format, of the form:
 
 ````
-ID | NOUN | VERB | PARTICIPANT | PREDICATE  | ACTION
+ID | NOUN | VERB | PARTICIPANT | PREDICATE  | ACTION | DESCRIPTION
 ````
 
 Multiple ACL rules may be defined that conceptually define a decision table. The actions of the decision tree define access control decisions (ALLOW or DENY). If the decision table fails to match then by default access is denied.
@@ -41,6 +41,8 @@ Noun Examples:
 **PREDICATE** is a Boolean Javascript expression over bound variables. Any Javascript expression that is legal with the an `if(...)` expression may be used here.
 
 **ACTION** identifies the action of the rule. It must be one of: ALLOW, DENY.
+
+**DESCRIPTION** can be used to describe the purpose of the rule.
 
 ### Examples
 
