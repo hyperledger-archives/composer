@@ -1,0 +1,258 @@
+<h1 id="installing-development-pre-requisites">Installing Development Pre-requisites</h1>
+
+<p>The essential tools you will need are <em>npm</em>, <em>docker</em>, <em>docker-compose</em> and a code editor for example <em>Atom</em> or <em>VSCode</em>. There are step by step <a href="#Manual Installation">instructions</a> for installing these if perhaps you have some of them already.</p>
+
+<p>There are also <a href="#Automatic Installation">two scripts</a> that can be used on Ubuntu to install everything automatically.</p>
+
+<p>The recommended versions are:
+<em>Docker</em>: v1.12.5
+<em>Docker-compose</em>: v1.9.0
+<em>node.js</em>: v4 or v6</p>
+
+<h2 id="automatic-installation">Automatic Installation</h2>
+
+<p>The script to install the pre-requisites can be found in <a href="https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started">GettingStarted</a> under <a href="https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started/scripts">scripts</a> and is named <a href="https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/scripts/prereqs-ubuntu.sh">prereqs-ubuntu.sh</a>.</p>
+
+<p>Usage:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># First run the script</span>
+<span class="gp">ibm@ubuntu:~/GettingStarted$ </span>./scripts/prereqs-ubuntu.sh
+
+<span class="c"># IMPORTANT: You will then need to logout and login again before running the next command</span>
+
+<span class="c"># Finishes the installation process</span>
+<span class="gp">ibm@ubuntu:~/GettingStarted$ </span>./scripts/prereqs-ubuntu.sh docker
+</code></pre>
+</div>
+
+<p><strong>Additional Notes:</strong></p>
+
+<ul>
+  <li>The installation commands have been tested on Ubuntu 14.04 (trusty), 64-bit. For other versions of Ubuntu, please check the official installation guides found under each instruction.</li>
+</ul>
+
+<h2 id="manual-installation">Manual Installation</h2>
+
+<h3 id="installing-an-editor">1. Installing an editor</h3>
+<p>Fabric Composer allows you to edit its project files with any editor.</p>
+
+<p>However, we recommend either using Atom or Visual Studio Code as both have excellent support for Javascript
+development. We have even created an experimental CTO file syntax highlighting plugin for Atom.</p>
+
+<h3 id="atom">1.1 Atom</h3>
+<p><a href="https://atom.io/">Atom</a> is a very popular editor and several contributors use it. Install Atom, and when you have done so, you are required to turn off Google analytics if you work for IBM. Navigate to Atom-&gt;Preferences-&gt;Packages, search and find the <code class="highlighter-rouge">metrics</code> package and disable it.</p>
+
+<p>####Installation Commands for Ubuntu:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># Add Atom Repository</span>
+sudo add-apt-repository ppa:webupd8team/atom -y
+
+<span class="c"># Update package lists</span>
+sudo apt-get update
+
+<span class="c"># Install Atom</span>
+sudo apt-get -y install atom
+</code></pre>
+</div>
+<p>####Suggested Plugins
+Atom is at it’s most productive would used with a number of plugins. The ones that we have found to be most useful are below and would suggest that you install these when with developing.</p>
+
+<ul>
+  <li><em>Code Highlighting</em>  On top of the existing code highlighting support there is a plugin for model file highlighting. <a href="https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom">Atom Concerto Syntax Highlighter</a></li>
+  <li><em>Linting</em> JavaScript dosn’t come with a compiler that can pick up silly mistakes, but a linter is an essential tool to help. The one we have used is <a href="[https://atom.io/packages/linter-eslint]">eslint</a>. The file that we use is in the git repos look for a <code class="highlighter-rouge">.eslint file</code>. If you use the Yeoman generator for a simple application you will get this file as part of the sample application.</li>
+  <li><em>UI</em> <a href="https://atom.io/packages/file-icons">File Icons</a> is a useful UI enhancement to show different icons for different file</li>
+</ul>
+
+<p>####Installation Commands for MacOS:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tbd
+</code></pre>
+</div>
+
+<p>####Additional Notes:</p>
+
+<ul>
+  <li><a href="http://flight-manual.atom.io/getting-started/sections/installing-atom/">Official Atom installation guide</a></li>
+  <li><a href="https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom">Atom Concerto Syntax Highlighter</a></li>
+</ul>
+
+<h3 id="visual-studio-code">1.2 Visual Studio Code</h3>
+<p><a href="https://code.visualstudio.com/">Visual Studio Code</a> is a lightweight and powerful editor.</p>
+
+<p><strong>Installation Commands for Ubuntu:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># Download vscode .deb file</span>
+curl -o vscode.deb https://az764295.vo.msecnd.net/stable/7ba55c5860b152d999dda59393ca3ebeb1b5c85f/code_1.7.2-1479766213_amd64.deb
+
+<span class="c"># Install vscode</span>
+sudo dpkg -i vscode.deb
+
+<span class="c"># Install dependencies</span>
+sudo apt-get install -f
+</code></pre>
+</div>
+
+<p><strong>Installation Commands for MacOS:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tbd
+</code></pre>
+</div>
+
+<p><strong>Additional Notes:</strong></p>
+
+<ul>
+  <li><a href="https://code.visualstudio.com/docs/setup/setup-overview">Official VS Code installation guide</a></li>
+</ul>
+
+<h3 id="installing-git">2. Installing Git</h3>
+<p>This is probably already installed on most Linux machines. Setup is well documented on the <a href="https://help.github.com/enterprise/2.7/user/articles/set-up-git/">ibm.git website</a>. Pay particular attention to <a href="https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux">setting up the SSL keys</a> that are required.</p>
+
+<p><strong>Installation Commands for Ubuntu:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># Install Git</span>
+sudo apt-get -y install git
+</code></pre>
+</div>
+
+<p><strong>Installation Commands for MacOS:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tbd
+</code></pre>
+</div>
+
+<p><strong>Additional Notes:</strong></p>
+
+<ul>
+  <li><a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">Official Git installation guide</a></li>
+</ul>
+
+<h3 id="installing-nvm">3. Installing NVM</h3>
+<p>We highly recommend installing <a href="https://github.com/creationix/nvm">nvm</a> to easily install and manage versions of <a href="https://nodejs.org/en/">node.js</a> and <a href="https://www.npmjs.com/">npm</a>. The main runtime uses node.js and npm is used for package management and dependency installation.
+The runtime requires a version higher than v4.6.0.</p>
+
+<p><strong>Installation Commands for Ubuntu:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># Install nvm dependencies</span>
+sudo apt-get -y install build-essential libssl-dev
+
+<span class="c"># Execute nvm installation script</span>
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | bash
+
+<span class="c"># Update bash profile</span>
+cat <span class="sh">&lt;&lt;EOF &gt;&gt; ~/.profile
+export NVM_DIR=~/.nvm
+[ -s "\$NVM_DIR/nvm.sh" ] &amp;&amp; . "\$NVM_DIR/nvm.sh"
+EOF
+
+</span><span class="c"># Reload bash profile</span>
+<span class="nb">source</span> ~/.profile
+
+<span class="c"># Install node and npm</span>
+nvm install 4.6.2
+
+<span class="c"># Configure nvm to use version 4.6.2</span>
+nvm use 4.6.2.
+
+<span class="c"># Install the latest version of npm</span>
+npm install npm@latest -g
+</code></pre>
+</div>
+
+<p><strong>Installation Commands for MacOS:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tbd
+</code></pre>
+</div>
+
+<p><strong>Additional Notes:</strong></p>
+
+<ul>
+  <li><a href="https://github.com/creationix/nvm">Official nvm Github repository</a></li>
+</ul>
+
+<h3 id="installing-docker-engine">4. Installing Docker Engine</h3>
+<p>The Docker Engine is essential for running system tests and running the HyperLedger Fabric.</p>
+
+<p><strong>Installation Commands for Ubuntu:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># Ensure that CA certificates are installed</span>
+sudo apt-get -y install apt-transport-https ca-certificates
+
+<span class="c"># Add new GPG key and add it to adv keychain</span>
+sudo apt-key adv <span class="se">\</span>
+               --keyserver hkp://ha.pool.sks-keyservers.net:80 <span class="se">\</span>
+               --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+
+<span class="c"># Update where APT will search for Docker Packages</span>
+<span class="nb">echo</span> <span class="s2">"deb https://apt.dockerproject.org/repo ubuntu-trusty main"</span> | sudo tee /etc/apt/sources.list.d/docker.list
+
+<span class="c"># Update package lists</span>
+sudo apt-get update
+
+<span class="c"># Verifies APT is pulling from the correct Repository</span>
+sudo apt-cache policy docker-engine
+
+<span class="c"># Install kernel packages which allows us to use aufs storage driver</span>
+sudo apt-get -y install linux-image-extra-<span class="k">$(</span>uname -r<span class="k">)</span> linux-image-extra-virtual
+
+<span class="c"># Install docker-engine</span>
+sudo apt-get -y install docker-engine<span class="o">=</span>1.12.3-0~trusty
+
+<span class="c"># Modify user account</span>
+sudo usermod -aG docker <span class="k">$(</span>whoami<span class="k">)</span>
+
+<span class="c"># You will need to logout in order for these changes to take effect!</span>
+</code></pre>
+</div>
+
+<p><strong>Installation Commands for MacOS:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tbd
+</code></pre>
+</div>
+
+<p><strong>Additional Notes:</strong></p>
+
+<ul>
+  <li><a href="https://docs.docker.com/engine/installation/">Official Docker Engine installation guide</a></li>
+</ul>
+
+<h3 id="installing-docker-compose">5. Installing Docker Compose</h3>
+<p>Docker Compose is used for easily configuring and starting HyperLedger Fabric.</p>
+
+<p><strong>Installation Commands for Ubuntu:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># Install python package management system to easily install docker-compose</span>
+sudo apt-get -y install python-pip
+
+<span class="c"># Use pip to install Docker Compose</span>
+sudo pip install docker-compose
+</code></pre>
+</div>
+
+<p><strong>Installation Commands for MacOS:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tbd
+</code></pre>
+</div>
+
+<p><strong>Additional Notes:</strong></p>
+
+<ul>
+  <li><a href="https://docs.docker.com/compose/install/">Official Docker Compose installation guide</a></li>
+</ul>
+
+<h3 id="login-to-npm-whitewater">6. Login to npm Whitewater</h3>
+<p>All of the Fabric Composer packages can be found in the public npm registry.</p>
+
+<p><strong>Installation Commands for MacOS:</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tbd
+</code></pre>
+</div>
+
+<p><strong>Additional Notes:</strong></p>
+
+<ul>
+  <li><a href="https://npm.whitewater.ibm.com/">npm Whitewater</a></li>
+</ul>

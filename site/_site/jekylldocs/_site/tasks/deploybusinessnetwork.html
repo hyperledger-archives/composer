@@ -1,0 +1,53 @@
+<h1 id="deploying-a-business-network">Deploying a Business Network</h1>
+<p>A business network is deployed using the <code class="highlighter-rouge">composer network deploy</code> command.</p>
+
+<h2 id="procedure">Procedure</h2>
+<ol>
+  <li>
+    <p>Before deploying a business network, a <a href="">Business Network Definition</a> is needed as a <code class="highlighter-rouge">zip</code> file with the following structure:</p>
+
+    <p><code class="highlighter-rouge">
+ BusinessNetworkArchive.zip
+ ├── lib
+ │   └── mozart.cto.js
+ ├── models
+ │   └── mozart.cto
+ └── package.json
+</code></p>
+
+    <ul>
+      <li><strong>lib</strong> contains all of the transactions processor functions</li>
+      <li><strong>models</strong> contains all of the model files written in the <a href="../reference/cto_language.md">CTO Language</a>.</li>
+      <li><strong>package.json</strong> is required, and is used to create the <a href="../reference/businessnetworkdefinition.md">Business Network Definition</a>’s identifier</li>
+    </ul>
+
+    <p>You can use the <code class="highlighter-rouge">composer archive</code> command to create an archive with the correct format.</p>
+
+    <p><strong>NOTE</strong>: <em>Do not zip a a folder containing <strong>lib</strong>, <strong>models</strong>, and <strong>package.json</strong> to create an Business Network Archive, zip the contents themselves</em></p>
+  </li>
+  <li>
+    <p>Start <a href="">Hyperledger Fabric Peer and Membership Service</a></p>
+  </li>
+  <li>
+    <p><a href="createconnectionprofile.md">Create a Connection Profile</a> or do <em>not</em> use <code class="highlighter-rouge">-p</code> and allow Fabric Composer to create a <code class="highlighter-rouge">Default Connection Profile</code> for you.</p>
+  </li>
+  <li>
+    <p>Enter the command on a single line. For example:</p>
+
+    <p><code class="highlighter-rouge">composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;</code></p>
+  </li>
+  <li>
+    <p>Enter your Enrollment Secret when prompted.</p>
+
+    <p><code class="highlighter-rouge">prompt: What is the enrollment secret of the user?:</code></p>
+  </li>
+  <li>
+    <p>When you see</p>
+
+    <p><code class="highlighter-rouge">
+ Deploying business network definition. This may take a little time.
+ Command completed successfully.
+</code>
+ you have successfully deployed a business network!</p>
+  </li>
+</ol>

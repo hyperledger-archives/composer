@@ -8,6 +8,8 @@ excerpt: How to create a business network definition
 
 # Create a Business Network Definition
 
+---
+
 A business network definition is composed of three major items:
 * basic metadata for the business network definition (name, version and description)
 * a set of domain models that define the structure of the participants, assets and transactions within the network

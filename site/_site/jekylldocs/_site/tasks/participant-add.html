@@ -1,0 +1,58 @@
+<h1 id="adding-a-participant">Adding a participant</h1>
+
+<p>A participant can be added to a participant registry using either the API or the
+command line.</p>
+
+<h2 id="before-you-start">Before you start</h2>
+
+<p>Before you follow these steps, you must have modelled a participant in a Business
+Network Definition and deployed it as a Business Network.</p>
+
+<p>The procedure below shows an example using the following model of a participant
+from the Getting Started walkthrough.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>namespace net.biz.digitalPropertyNetwork
+
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+</code></pre>
+</div>
+
+<h2 id="procedure">Procedure</h2>
+
+<ol>
+  <li>Add the participant to a participant registry
+    <ul>
+      <li>JavaScript API</li>
+    </ul>
+
+    <p>```javascript
+ let businessNetworkConnection = /* TODO: get a business network connection */
+ businessNetworkConnection.getParticipantRegistry(‘net.biz.digitalPropertyNetwork’)
+     .then((participantRegistry) =&gt; {
+         let factory = businessNetworkConnection.getFactory();
+         let participant = factory.newInstance(‘net.biz.digitalPropertyNetwork’, ‘Person’, ‘mae@biznet.org’);
+         participant.firstName = ‘Mae’;
+         participant.lastName = ‘Smith’;
+         return participantRegistry.add(participant);
+     })
+     .catch((error) =&gt; {
+         // TODO: handle errors.
+     });</p>
+
+    <p>```</p>
+  </li>
+</ol>
+
+<ul>
+  <li>
+    <p>Command line</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>composer participant add -n <span class="s1">'@ibm/digitalproperty-network'</span> -i admin -s Xurw3yU9zI0l -d <span class="s1">'{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'</span>
+</code></pre>
+    </div>
+  </li>
+</ul>

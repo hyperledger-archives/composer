@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Generating a REST API | Fabric Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Merriweather:300|Open+Sans:300,400,700|PT+Sans:400,700|Playfair+Display|Source+Code+Pro" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-91314349-1', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <!-- <link href="/assets/css/new-style.min.css" rel="stylesheet"> -->
+  
+
+  <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
+</head>
+
+
+<body class="">
+
+  
+  
+
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html">Fabric Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="/start/quickstart.html">Quickstart</a>
+                </li>
+                <li>
+                    <a href="/overview/overview.html">Documentation</a>
+                </li>
+                <!-- <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/overview/overview.html">Overview</a>
+                        </li>
+                        <li>
+                            <a href="/start/index.html">Getting Started</a>
+                        </li>
+                        <li>
+                            <a href="/concepts/index.html">Concepts</a>
+                        </li>
+                        <li>
+                            <a href="/tasks/index.html">Tasks</a>
+                        </li>
+                        <li>
+                            <a href="/reference/index.html">Reference</a>
+                        </li>
+                        <li>
+                            <a href="/jsdoc/index.html">API Documentation</a>
+                        </li>
+                    </ul>
+                </li> -->
+                <li>
+                    <a href="/support/index.html">Support</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-2">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="/start/quickstart.html">Quickstart</a></strong>
+<strong><a href="/overview/overview.html">Overview</a></strong>
+<strong><a href="/start/getting-started-cmd-line.html">Getting Started</a></strong>
+<a href="/start/getting-started-cmd-line.html">Running a sample with the CLI</a>
+<a href="/start/getting-started-coding-bnd.html">Coding a Business Network Definition</a>
+<a href="/start/getting-started-rest-api.html">Generating a REST API</a>
+<a href="/start/getting-started-nodejs-app.html">Writing a node.js Application</a>
+<strong><a href="/concepts/businessnetwork.html">Concepts</a></strong>
+<strong><a href="/tasks/prerequisites.html">Tasks</a></strong>
+<strong><a href="/jsdoc/index.html">API Documentation</a></strong>
+<strong><a href="/reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="/support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-10">
+          <section class="content-chunk">
+            
+              <h1 id="generating-a-rest-api">Generating a REST API</h1>
+
+<hr>
+
+<p>This guide will show how to generate a REST api for the Digital Property business network. This api will be dynamically generated by using <a href="https://loopback.io/doc/index.html">LoopBack</a> from the specified Business Network Model. What is generated is not a generic api, but is specifically configured to let you interact with the assets you have specified.</p>
+
+<p>To get started with using this to create a REST interface to a Business Network, follow the steps below.  If you&#39;ve not followed the <a href="./getting-started.html">Getting Started</a> guide yet, it&#39;s worth following that first so you have Fabric Composer up and running on Hyperledger.</p>
+
+<h1 id="check-that-the-digital-land-title-network-is-up-and-running">Check that the Digital Land Title Network is up and running</h1>
+
+<p>Let&#39;s check the assets that are in the Digital Land Title registries. From your existing getting started directory issue</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>npm run listAssets
+
+<span class="gp">&gt; </span>concerto-gettingstarted@1.0.0 listAssets /home/matthew/git17/Concerto-GettingStarted
+<span class="gp">&gt; </span>node cli.js landregistry list
+
+info: <span class="o">[</span>Handel] IBM Concerto: Handel appliation
+info: <span class="o">[</span>Handel] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
+info: <span class="o">[</span>Handel] listTitles Getting the asset registry
+info: <span class="o">[</span>Handel] listTitles Getting all assest from the registry.
+info: <span class="o">[</span>Handel] listTitles Current Land Titles
+info: <span class="o">[</span>Handel] Titles listed
+info: <span class="o">[</span>Handel]
+┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
+│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
+├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house <span class="k">in </span>the country │ Yes     │
+├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat <span class="k">in </span>the city    │ No      │
+└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
+info: <span class="o">[</span>Handel] Command completed successfully.
+
+</code></pre></div>
+<p>We can see the two sample land titles listed.</p>
+
+<h2 id="install-loopback">Install LoopBack</h2>
+
+<p>We need to install LoopBack; this is two npm modules <code>loopback</code> and <code>loopback-cli</code>.</p>
+
+<blockquote>
+<p>You might need to issue both of these using sudo.</p>
+</blockquote>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g loopback
+npm install -g loopback-cli
+</code></pre></div>
+<h2 id="creating-the-loopback-server-application">Creating the LoopBack server application</h2>
+
+<p>We need to have a LoopBack server running to serve the REST api. As this is an application itself, it&#39;s worth creating a new directory for this.  So assuming you&#39;re still in the Getting Started directory create a new directory as follows.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd</span> ..
+mkdir loopback-server
+<span class="nb">cd </span>loopback-server
+</code></pre></div>
+<p>You can now create the loop back server. Issue the command <code>lb</code> in this new directory. This is the output you&#39;ll see together with the answers to the questions you&#39;ll be asked.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>lb
+
+     _-----_
+    |       |    ╭──────────────────────────╮
+    |--<span class="o">(</span>o<span class="o">)</span>--|    │  Let<span class="s1">'s create a LoopBack │
+   `---------´   │       application!       │
+    ( _´U`_ )    ╰──────────────────────────╯
+    /___A___\   /
+     |  ~  |
+   __'</span>.___.<span class="s1">'__
+ ´   `  |° ´ Y `
+
+? What'</span>s the name of your application? rest
+? Which version of LoopBack would you like to use? 2.x <span class="o">(</span>long term support<span class="o">)</span>
+? What kind of application <span class="k">do </span>you have <span class="k">in </span>mind? api-server <span class="o">(</span>A LoopBack API server with <span class="nb">local </span>User auth<span class="o">)</span>
+Generating .yo-rc.json
+
+
+I<span class="s1">'m all done. Running npm install for you to install the required dependencies. If this fails, try running the command yourself.
+
+
+   create .editorconfig
+   create .eslintignore
+   create .eslintrc
+   create server/boot/root.js
+   create server/middleware.development.json
+   create server/middleware.json
+   create server/server.js
+   create README.md
+   create server/boot/authentication.js
+   create .gitignore
+   create client/README.md
+
+</span></code></pre></div>
+<p>That is now all created - the next step is to add an adapter to link with the Fabric Composer runtime.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install --save loopback-connector-composer
+</code></pre></div>
+<p>Last step before trying things out is to add a function in the <code>server/boot</code> boot directory. This function is below - the key parts are in the <code>datasource</code> variable.  These have been filled out with the same settings of the Getting Started guide.
+Create a new file in this directory with the following contents, the name of the file is not important, so for example <code>loopback-composer.js</code>.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">
+<span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">server</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kr">const</span> <span class="nx">dataSource</span> <span class="o">=</span> <span class="nx">server</span><span class="p">.</span><span class="nx">loopback</span><span class="p">.</span><span class="nx">createDataSource</span><span class="p">(</span><span class="s1">'Concerto'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Concerto"</span><span class="p">,</span>
+    <span class="s2">"connector"</span><span class="p">:</span> <span class="s2">"loopback-connector-composer"</span><span class="p">,</span>
+    <span class="s2">"connectionProfileName"</span> <span class="p">:</span> <span class="s1">'defaultProfile'</span><span class="p">,</span>
+    <span class="s2">"businessNetworkIdentifier"</span> <span class="p">:</span> <span class="s1">'digitalproperty-network'</span><span class="p">,</span>
+    <span class="s2">"participantId"</span> <span class="p">:</span> <span class="s1">'WebAppAdmin'</span><span class="p">,</span>
+    <span class="s2">"participantPwd"</span> <span class="p">:</span> <span class="s1">'DJY27pEnl16d'</span>
+  <span class="p">});</span>
+
+  <span class="nx">dataSource</span><span class="p">.</span><span class="nx">discoverModelDefinitions</span><span class="p">({},</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">modelDefinitions</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Concerto Loopback Connector'</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">modelDefinitions</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">modelDefinition</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'found modelDefinition = '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">modelDefinition</span><span class="p">))</span>
+      <span class="nx">dataSource</span><span class="p">.</span><span class="nx">discoverSchemas</span><span class="p">(</span><span class="nx">modelDefinition</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="p">{</span><span class="na">visited</span><span class="p">:</span> <span class="p">{},</span> <span class="na">associations</span><span class="p">:</span> <span class="kc">true</span><span class="p">},</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">modelSchema</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="c1">// this is required because LoopBack doesn't like dots in model schema names</span>
+        <span class="nx">modelSchema</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">modelSchema</span><span class="p">.</span><span class="nx">plural</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\.</span><span class="sr">/g</span><span class="p">,</span> <span class="s1">'_'</span><span class="p">);</span>
+        <span class="nx">modelSchema</span><span class="p">.</span><span class="nx">idInjection</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="kd">let</span> <span class="nx">model</span> <span class="o">=</span> <span class="nx">server</span><span class="p">.</span><span class="nx">loopback</span><span class="p">.</span><span class="nx">createModel</span><span class="p">(</span><span class="nx">modelSchema</span><span class="p">);</span>
+        <span class="nx">server</span><span class="p">.</span><span class="nx">model</span><span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="p">{</span>
+          <span class="na">dataSource</span><span class="p">:</span> <span class="nx">dataSource</span><span class="p">,</span>
+          <span class="na">public</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">};</span>
+</code></pre></div>
+<h2 id="run-loopback-server">Run LoopBack server</h2>
+
+<p>Go back to the <code>loopback-server</code> directory and start the server as follows.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$cd</span> ../..
+<span class="gp">$ </span>node .
+WARNING: No configurations found <span class="k">in </span>configuration directory:/home/matthew/git17/rest/config
+WARNING: To disable this warning <span class="nb">set </span>SUPPRESS_NO_CONFIG_WARNING <span class="k">in </span>the environment.
+Web server listening at: http://0.0.0.0:3000
+Browse your REST API at http://0.0.0.0:3000/explorer
+Concerto Loopback Connector
+found modelDefinition <span class="o">=</span> <span class="o">{</span><span class="s2">"type"</span>:<span class="s2">"table"</span>,<span class="s2">"name"</span>:<span class="s2">"net.biz.digitalPropertyNetwork.LandTitle"</span><span class="o">}</span>
+found modelDefinition <span class="o">=</span> <span class="o">{</span><span class="s2">"type"</span>:<span class="s2">"table"</span>,<span class="s2">"name"</span>:<span class="s2">"net.biz.digitalPropertyNetwork.SalesAgreement"</span><span class="o">}</span>
+found modelDefinition <span class="o">=</span> <span class="o">{</span><span class="s2">"type"</span>:<span class="s2">"table"</span>,<span class="s2">"name"</span>:<span class="s2">"net.biz.digitalPropertyNetwork.Person"</span><span class="o">}</span>
+
+</code></pre></div>
+<h2 id="looking-at-the-generated-apis">Looking at the generated APIs</h2>
+
+<p>Launch your browser and go to the URL given (<a href="http://0.0.0.0:3000/explorer">http://0.0.0.0:3000/explorer</a>).  You&#39;ll see a screen similar to this.</p>
+
+<p><img src="../images/loopback-1.png" alt="LoopBack-1"></p>
+
+<p>Select the Land Title asset, and you can see all the REST APIs that have generated for this asset. At present get and put are fully implemented, with transactions  - so lets try and get a list of all the land titles.;</p>
+
+<p><img src="../images/loopback-2.png" alt="LoopBack-2"></p>
+
+<p>Expand the get and click on <em>Try it Out</em> to try it out.</p>
+
+<p><img src="../images/loopback-3.png" alt="LoopBack-3"></p>
+
+<p>You&#39;ll see a list of land titles presented as a set of JSON</p>
+
+<p><img src="../images/loopback-4.png" alt="LoopBack-4"></p>
+
+<p>Similarly it&#39;s quite easy to issue the curl command from a terminal prompt. This can be copied from the LoopBack web page.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>curl -X GET --header <span class="s2">"Accept: application/json"</span> <span class="s2">"http://0.0.0.0:3000/api/net.biz.digitalProperTitle"</span> | prettyjson
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   518  100   518    0     0    549      0 --:--:-- --:--:-- --:--:--   548
+-
+  titleId:     LID:1148
+  owner:
+    <span class="nv">$class</span>:    net.biz.digitalPropertyNetwork.Person
+    personId:  PID:1234567890
+    firstName: Fred
+    lastName:  Bloggs
+  information: A nice house <span class="k">in </span>the country
+  forSale:     <span class="nb">true</span>
+  <span class="nv">$class</span>:      net.biz.digitalPropertyNetwork.LandTitle
+-
+  titleId:     LID:6789
+  owner:
+    <span class="nv">$class</span>:    net.biz.digitalPropertyNetwork.Person
+    personId:  PID:1234567890
+    firstName: Fred
+    lastName:  Bloggs
+  information: A small flat <span class="k">in </span>the city
+  forSale:     <span class="nb">true</span>
+  <span class="nv">$class</span>:      net.biz.digitalPropertyNetwork.LandTitle
+</code></pre></div>
+<h2 id="submitting-a-transaction-via-rest">Submitting a transaction via REST</h2>
+
+<p>If you go back to the main page and search down to the register property for sale, we can mark the other property for sale.
+In this example, we&#39;ve specified the other landtitle in the data box, we&#39;ve also had to specify the transaction id and the timestamp (the last two will change shortly).</p>
+
+<p><img src="../images/loopback-5.png" alt="LoopBack-5"></p>
+
+<p>Click on the <em>Try it out!</em> button to submit the transaction. You&#39;ll see a succesful return code, but if you now return to your terminal prompt in the Getting Started directory, you can run the list assets command again.</p>
+
+<p>You&#39;ll see now that the other land title has been marked for sale.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>npm run listAssets
+
+<span class="gp">&gt; </span>concerto-gettingstarted@1.0.0 listAssets /home/matthew/git17/Concerto-GettingStarted
+<span class="gp">&gt; </span>node cli.js landregistry list
+
+info: <span class="o">[</span>Handel] IBM Concerto: Handel appliation
+info: <span class="o">[</span>Handel] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
+info: <span class="o">[</span>Handel] listTitles Getting the asset registry
+info: <span class="o">[</span>Handel] listTitles Getting all assest from the registry.
+info: <span class="o">[</span>Handel] listTitles Current Land Titles
+info: <span class="o">[</span>Handel] Titles listed
+info: <span class="o">[</span>Handel]
+┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
+│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
+├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house <span class="k">in </span>the country │ Yes     │
+├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat <span class="k">in </span>the city    │ Yes     │
+└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
+info: <span class="o">[</span>Handel] Command completed successfully.
+
+</code></pre></div>
+<h1 id="summary">Summary</h1>
+
+<p>Using the Loopback framework on top of the Fabric Composer runtime has allowed us to generate a business domain specific REST api based on the deployed business network model!</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+    </article>
+</div>
+
+    
+
+    
+    
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+    <div class="container">
+      <div class="navbar-fixed-bottom">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+      </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+          <ul class="nav navbar-nav navbar-left">
+            <li>
+              <a href="https://twitter.com/ibmblockchain" class="icon">
+                <img src="/assets/img/social-twitter.svg" class="SiteFooter-icon" alt="Twitter">
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/fabric-composer/fabric-composer" class="icon">
+                <img src="/assets/img/social-github.svg" class="SiteFooter-icon" alt="Github">
+              </a>
+            </li>
+            <li>
+              <a href="http://stackoverflow.com/questions/tagged/fabric-composer" class="icon">
+              <i class="fa fa-stack-overflow icon" aria-hidden="true"></i>
+              </a>
+            </li>
+            <li>
+              <a href="/jsdoc/index.html">APIs</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+              <li>
+                  <a>Copyright 2017 IBM Corp. All Rights Reserved</a>
+              </li>
+          </ul>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+</html>

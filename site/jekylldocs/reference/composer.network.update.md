@@ -7,6 +7,9 @@ excerpt: Composer Network Update CLI
 ---
 
 # Fabric Composer Network Update
+
+---
+
 The `composer network update` utility is used to update a deployed business network archive from local disk to a Hyperledger Fabric runtime.
 
 ```

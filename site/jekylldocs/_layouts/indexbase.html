@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+{% include relatives.html %}
+{% include head.html %}
+
+<body class="{{ page.class }}">
+
+  {% if page.category != 404 %}
+  {% include indexnavbar.html %}
+  {% endif %}
+
+  <div class="SiteWrapper">
+    {% if page.markdown == 1 %}
+      {{ content | markdownify }}
+    {% else %}
+      {{ content }}
+    {% endif %}
+
+    {% if page.category != 404 %}
+    {% include indexfooter.html %}
+    {% endif %}
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="{{site.baseurl}}/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="{{site.baseurl}}/assets/js/bootstrap.js"></script>
+
+</html>

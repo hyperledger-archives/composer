@@ -6,7 +6,9 @@ sidebar: sidebars/reference.md
 excerpt: Fabric Composer Identity Issue Command
 ---
 
-# composer identity issue
+# Composer Identity Issue
+
+---
 
 The `composer identity issue` command issues a new identity to a participant in a
 participant registry. See the task [Issue an Identity to a Participant](../tasks/identity-issue.md)

@@ -1,7 +1,0 @@
-/**
- * Mozart Domain Model and Business Logic
- *
- * Defines an Animal Movement compliance model.
- * Based on DEFRA https://www.gov.uk/animal-movement-england
- *
- */
