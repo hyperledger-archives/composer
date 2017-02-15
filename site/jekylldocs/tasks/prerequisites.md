@@ -17,7 +17,7 @@ The essential tools you will need are:
 
 You will also need a code editor, for example [*Atom*](#1-1-atom) or [*VSCode*](#1-2-visual-studio-code).
 
-There is a [script](#automatic-installation) that can be used on Ubuntu to install the essential tools automatically. There are also step by step [instructions](#manual-installation) for installing the essential tools or editors in isolation if you have some of them already.
+There is a script that can be used on Ubuntu to install the essential tools [automatically](#automatic-installation). There are also step by step instructions for [manually](#manual-installation) installing the essential tools or editors in isolation if you have some of them already.
 
 The recommended versions are:
 
