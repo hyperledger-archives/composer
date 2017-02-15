@@ -22,17 +22,17 @@ in this namespace.
 
 ### Declarations of enumerated types
 
-        ```
-        /**
-         * An enumerated type
-         */
-        enum AnimalType {
-          o SHEEP_GOAT
-          o CATTLE
-          o PIG
-          o DEER_OTHER
-        }
-        ```
+```
+/**
+* An enumerated type
+*/
+enum AnimalType {
+o SHEEP_GOAT
+o CATTLE
+o PIG
+o DEER_OTHER
+}
+```
 
 ### Declarations of Assets, Participants, Transactions
 

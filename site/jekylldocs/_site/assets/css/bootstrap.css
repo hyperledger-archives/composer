@@ -1567,6 +1567,7 @@ kbd kbd {
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
+  /*padding-top: 2em;*/
 }
 @media (min-width: 768px) {
   .container {

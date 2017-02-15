@@ -70,9 +70,9 @@ development. We have even created an experimental CTO file syntax highlighting p
 
 Suggested Plugins:
 
-- Code Highlighting: On top of the existing code highlighting support there is a plugin for model file highlighting. [Atom Concerto Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom)
+Code Highlighting: On top of the existing code highlighting support there is a plugin for model file highlighting. [Atom Concerto Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom)
 
-- UI: [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
+UI: [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
 
 **Visual Studio Code**
 

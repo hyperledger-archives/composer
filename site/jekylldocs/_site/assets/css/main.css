@@ -1521,7 +1521,9 @@ align-items: center;
 	transform: rotateY(180deg);
 }
 
-
+.content {
+  padding-top: 4rem;
+}
 
 
 .highlight .hll { background-color: #ffffcc }

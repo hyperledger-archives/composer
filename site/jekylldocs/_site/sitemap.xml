@@ -100,9 +100,6 @@
 <loc>http://localhost:4000/tasks/identity-revoke</loc>
 </url>
 <url>
-<loc>http://localhost:4000/</loc>
-</url>
-<url>
 <loc>http://localhost:4000/support/</loc>
 </url>
 <url>
@@ -140,6 +137,14 @@
 </url>
 <url>
 <loc>http://localhost:4000/tasks/testing</loc>
+</url>
+<url>
+<loc>http://localhost:4000/index-new.html</loc>
+<lastmod>2017-02-15T13:59:46+00:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/index.html</loc>
+<lastmod>2017-02-15T14:04:14+00:00</lastmod>
 </url>
 <url>
 <loc>http://localhost:4000/jsdoc/classes.list.html</loc>
