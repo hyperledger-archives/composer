@@ -32,13 +32,20 @@ class NumberValidator extends Validator{
      * @throws {InvalidModelException}
      */
     constructor(field, ast) {
-        super(field,ast);
+        super(field, ast);
 
         this.lowerBound = ast.lower;
         this.upperBound = ast.upper;
 
-        if(this.lowerBound > this.upperBound) {
-            this.reportError(null, 'Lower bound must be less than or equal to upper bound.');
+        if(this.lowerBound === null && this.upperBound === null) {
+            // can't specify no upper and lower value
+            this.reportError(null, 'Invalid range, lower and-or upper bound must be specified.');
+        } else if (this.lowerBound === null || this.upperBound === null) {
+            // this is fine and means that we don't need to check whether upper > lower
+        } else {
+            if(this.lowerBound.value > this.upperBound.value) {
+                this.reportError(null, 'Lower bound must be less than or equal to upper bound.');
+            }
         }
     }
 
@@ -51,11 +58,11 @@ class NumberValidator extends Validator{
      */
     validate(identifier, value) {
         if(value !== null) {
-            if(this.lowerBound && value < this.lowerBound) {
+            if(this.lowerBound && value < this.lowerBound.value) {
                 this.reportError(identifier, 'Value is outside lower bound ' + value);
             }
 
-            if(this.upperBound && value > this.upperBound) {
+            if(this.upperBound && value > this.upperBound.value) {
                 this.reportError(identifier, 'Value is outside upper bound ' + value);
             }
         }
