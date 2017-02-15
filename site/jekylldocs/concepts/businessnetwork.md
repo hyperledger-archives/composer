@@ -50,4 +50,4 @@ Fabric Composer makes it easy to create these elements in a business network, an
 
 ## Related Reference
 
-[Network deploy command](../reference/networkdeploycommand.md)
+[Network deploy command](../reference/composer.network.deploy.md)

@@ -13,24 +13,25 @@ excerpt: How to install the development pre-requisites
 The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*.
 
 The recommended versions are:
-*Docker*: v1.12.5 *Docker-compose*: v1.9.0 *node.js*: v4 or v6
+*Docker*: v1.12.5
+*Docker-compose*: v1.9.0
+*node.js*: v6.9.5
 
 ## Automatic Installation
 
 First run the script
 
 ```bash
-ibm@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh
+user@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh
 ```
 
 **Important:** You will then need to logout and login again before running the next command
 
-Finishes the installation process
+This command completes the installation process
 
 ```bash
-ibm@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh docker
+user@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh docker
 ```
-
 
 **Additional Notes:**
 

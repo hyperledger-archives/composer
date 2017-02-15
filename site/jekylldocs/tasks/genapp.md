@@ -59,8 +59,7 @@ Welcome to the Fabric Composer Skeleton Application Generator
 
 ### CLI Application
 
-Description ...
-This generator also be ran using ```yo fabric-composer:cli```
+This generator can be ran using ```yo fabric-composer:cli```
 
 #### What questions does this ask?
 
@@ -116,6 +115,7 @@ This generator can also be ran using ```yo fabric-composer:angular```
 
 
 **1. Generating the application by connecting to a running business network**
+
 ```
 Welcome to the Angular2 skeleton app generator
 
@@ -137,6 +137,7 @@ About to connect to a running business network
 
 
 **2. Generating the application with a business network archive file**
+
 ```
 Welcome to the Angular2 skeleton app generator
 
