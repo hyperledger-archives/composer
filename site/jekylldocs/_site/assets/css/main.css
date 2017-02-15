@@ -1266,7 +1266,7 @@ Modify as content requires.
     margin: 0;
     padding: 0;
     max-width: 100%;
-    padding-top: 6em;
+    padding-top: 1em;
   }
 
   .context-nav ul > li {
@@ -1521,7 +1521,9 @@ align-items: center;
 	transform: rotateY(180deg);
 }
 
-
+.content {
+  padding-top: 4rem;
+}
 
 
 .highlight .hll { background-color: #ffffcc }

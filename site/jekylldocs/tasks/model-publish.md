@@ -6,7 +6,7 @@ sidebar: sidebars/tasks.md
 excerpt: How to publish a domain model for use in a business network
 ---
 
-# Publish a Domain Model
+# Publish a Business Domain Model
 
 ---
 

@@ -10,10 +10,8 @@ excerpt: Getting Started with Fabric Composer
 
 ---
 
->Before you follow these instructions, make sure you've completed the
+Before you follow these instructions, make sure you've completed the
 [Quickstart](./getting-started.md)!
-
----
 
 To help get started with application development using the Fabric Composer Framework, this guide will talk you through downloading Fabric Composer, starting a Fabric, deploying a simple business network and submitting transactions.
 
@@ -21,7 +19,9 @@ This is all done using a simple business network  **Digital Property Network**
 
 ## What is the Digital Property Network?
 
-This network will be expanded for other tutorials, but for this getting started we'll keep it simple. We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
+This network will be expanded for other tutorials, but for this getting started we'll keep it simple.
+
+We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
 
 ```javascript
 asset LandTitle identified by titleId {
@@ -77,7 +77,13 @@ First clone the repository:
 
 ```bash
 git clone git@github.com:fabric-composer/sample-networks.git
+```
+
+```bash
 cd sample-networks/packages/DigitalProperty-Network
+```
+
+```bash
 npm install
 ```
 
@@ -186,7 +192,7 @@ info: [Composer-GettingStarted] Command completed successfully.
 info: [Composer-GettingStarted] Fabric Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
 =======
-
+```
 
 ## Digging Deeper
 

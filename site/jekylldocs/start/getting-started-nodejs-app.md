@@ -6,7 +6,7 @@ sidebar: sidebars/start.md
 excerpt: Getting Started with a Fabric Composer node.js application
 ---
 
-## Getting Started with a Fabric Composer node.js application
+# Writing a node.js Application
 
 ---
 

@@ -34,7 +34,7 @@
     <link href="/assets/css/prettify.css" rel="stylesheet">
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <!-- <link href="/assets/css/new-style.min.css" rel="stylesheet"> -->
   
 
   <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
@@ -52,10 +52,10 @@
 
 
 <!-- Navigation -->
-<!-- <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container"> -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <!-- <div class="navbar-header">
+        <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -63,17 +63,20 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/index.html">Fabric Composer</a>
-        </div> -->
+        </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <!-- <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right"> -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <!-- <li>
+                <li>
                     <a href="/start/quickstart.html">Quickstart</a>
                 </li>
-                <li class="dropdown">
+                <li>
+                    <a href="/overview/overview.html">Documentation</a>
+                </li>
+                <!-- <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
@@ -95,16 +98,17 @@
                             <a href="/jsdoc/index.html">API Documentation</a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <li>
                     <a href="/support/index.html">Support</a>
                 </li>
             </ul>
-        </div> -->
+        </div>
         <!-- /.navbar-collapse -->
-    <!-- </div> -->
-    <!-- /.container -->
-<!-- </nav> -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
 
   
 
@@ -116,7 +120,7 @@
         <!-- If there's a sidebar, divide into 2 columns -->
         
         <div class="col-md-2">
-          <nav class="context-nav">
+          <nav class="context-nav" id="myScrollspy">
             
             
               <p><strong><a href="/start/quickstart.html">Quickstart</a></strong>
@@ -149,6 +153,8 @@
             
               <h1 id="fabric-composer-network-list">Fabric Composer Network List</h1>
 
+<hr>
+
 <p>The <code>composer network list</code> utility is used to connect to a business network and retrieve metadata and asset information.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer network list -n &lt;business-network-id&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
 </code></pre></div>
@@ -168,21 +174,21 @@ List business network digitalproperty-network
 name:        digitalproperty-network
 identifier:  digitalproperty-network@0.0.1
 description: Digital Property Network
-models: 
+models:
   - net.biz.digitalPropertyNetwork
-scripts: 
+scripts:
   - lib/DigitalLandTitle.js
-registries: 
-  net.biz.digitalPropertyNetwork.SalesAgreement: 
+registries:
+  net.biz.digitalPropertyNetwork.SalesAgreement:
     id:           net.biz.digitalPropertyNetwork.SalesAgreement
     name:         Asset registry for net.biz.digitalPropertyNetwork.SalesAgreement
     registryType: Asset
-    assets: 
-  net.biz.digitalPropertyNetwork.LandTitle: 
+    assets:
+  net.biz.digitalPropertyNetwork.LandTitle:
     id:           net.biz.digitalPropertyNetwork.LandTitle
     name:         Asset registry for net.biz.digitalPropertyNetwork.LandTitle
     registryType: Asset
-    assets: 
+    assets:
 </code></pre></div>
             
           </section>
@@ -203,7 +209,7 @@ registries:
 
 
 <!-- Navigation -->
-<!-- <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
     <div class="container">
       <div class="navbar-fixed-bottom">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
@@ -240,9 +246,9 @@ registries:
               </li>
           </ul>
         </div>
-    </div> -->
+    </div>
     <!-- /.container -->
-<!-- </nav> -->
+</nav>
 
     
   </div>

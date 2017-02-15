@@ -46,8 +46,6 @@ A typical project using Fabric Composer goes through a lifecycle of:
 
 *Model -> Define Business Network -> Deploy Runtime -> Deploying Business Network -> Test -> Generate Application*
 
-![Framework Task Map](../images/framework_taskmap.png)
-
 These tasks may all be performed by a single full-stack developer, but are more typically performed by:
 * Business analyst, responsible for defining the data model
 * Technical analyst, responsible for creating the business network definition, including models and writing transaction processor functions, as well as dashboards and analytics to business stakeholders
@@ -197,15 +195,3 @@ return admin.createProfile('testprofile', config)
 Front-end developers use domain-specific (dynamically generated from the domain model for the business network definition) to interact with assets and asset registries.
 
 In addition, if they are building an Angular2 application, they may generate Typescript types from the domain model, ensuring type-safety in the user interface code they are writing.
-
----
-
-<i class="fa fa-fw  fa-forward"></i>  <b>WHERE TO NEXT?</b><br>
-
----
-
-Read more about the key concepts in a Business Network on our Concepts page, or get ready for app development with Quickstart.
-
-[Fabric Composer Concepts Doc](../concepts/index.md)
-
-[Developer Quickstart](../start/quickstart.md)

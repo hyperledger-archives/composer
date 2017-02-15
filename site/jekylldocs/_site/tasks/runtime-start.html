@@ -34,7 +34,7 @@
     <link href="/assets/css/prettify.css" rel="stylesheet">
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <!-- <link href="/assets/css/new-style.min.css" rel="stylesheet"> -->
   
 
   <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
@@ -52,10 +52,10 @@
 
 
 <!-- Navigation -->
-<!-- <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container"> -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <!-- <div class="navbar-header">
+        <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -63,17 +63,20 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/index.html">Fabric Composer</a>
-        </div> -->
+        </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <!-- <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right"> -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <!-- <li>
+                <li>
                     <a href="/start/quickstart.html">Quickstart</a>
                 </li>
-                <li class="dropdown">
+                <li>
+                    <a href="/overview/overview.html">Documentation</a>
+                </li>
+                <!-- <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
@@ -95,16 +98,17 @@
                             <a href="/jsdoc/index.html">API Documentation</a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <li>
                     <a href="/support/index.html">Support</a>
                 </li>
             </ul>
-        </div> -->
+        </div>
         <!-- /.navbar-collapse -->
-    <!-- </div> -->
-    <!-- /.container -->
-<!-- </nav> -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
 
   
 
@@ -116,7 +120,7 @@
         <!-- If there's a sidebar, divide into 2 columns -->
         
         <div class="col-md-2">
-          <nav class="context-nav">
+          <nav class="context-nav" id="myScrollspy">
             
             
               <p><strong><a href="/start/quickstart.html">Quickstart</a></strong>
@@ -124,20 +128,20 @@
  <strong><a href="/start/getting-started-cmd-line.html">Getting Started</a></strong>
  <strong><a href="/concepts/businessnetwork.html">Concepts</a></strong>
  <strong><a href="/tasks/prerequisites.html">Tasks</a></strong>
- <a href="/tasks/prerequisites.html">Installing Pre-requisites</a>
- <a href="/tasks/deploybusinessnetwork.html">Deploy Business Network</a>
- <a href="/tasks/createconnectionprofile.html">Create Connection Profile</a>
+ <a href="/tasks/prerequisites.html">Installing Prerequisites</a>
+ <a href="/tasks/deploybusinessnetwork.html">Deploy a Business Network</a>
+ <a href="/tasks/createconnectionprofile.html">Create a new Connection Profile</a>
  <a href="/tasks/bnd-define.html">Create a Business Network Definition</a>
  <a href="/tasks/bnd-publish.html"> Publish a Business Network Definition</a>
- <a href="/tasks/genapp.html">Generating an Application</a>
+ <a href="/tasks/genapp.html">How Generate a Starter Application</a>
  <a href="/tasks/model-define.html">Create a Business Domain Model</a>
  <a href="/tasks/model-publish.html">Publish a Business Domain Model</a>
  <a href="/tasks/runtime-start.html">Start a Fabric Runtime</a>
  <a href="/tasks/testing.html">Test a Business Network Definition</a>
  <a href="/tasks/runtime-update.html">Update a Business Network Definition on Fabric</a>
  <a href="/tasks/participant-add.html">Add a Participant</a>
- <a href="/tasks/identity-issue.html">Issue an Identity for a Participant</a>
- <a href="/tasks/identity-revoke.html">Revoke an Identity for a Participant</a>
+ <a href="/tasks/identity-issue.html">Issue an Identity to a Participant</a>
+ <a href="/tasks/identity-revoke.html">Revoke an Identity of a Participant</a>
  <a href="/tasks/current-participant.html">Implementing access control using the current Participant</a>
  <a href="/tasks/diagnostics.html">Diagnosing Problems</a>
  <strong><a href="/jsdoc/index.html">API Documentation</a></strong>
@@ -175,7 +179,7 @@
 
 
 <!-- Navigation -->
-<!-- <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
     <div class="container">
       <div class="navbar-fixed-bottom">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
@@ -212,9 +216,9 @@
               </li>
           </ul>
         </div>
-    </div> -->
+    </div>
     <!-- /.container -->
-<!-- </nav> -->
+</nav>
 
     
   </div>

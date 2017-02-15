@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Task - Revoke an Identity from a Participant
+title: Task - Revoke an Identity of a Participant
 category: tasks
 sidebar: sidebars/tasks.md
-excerpt: How to revoke an Identity from a Participant
+excerpt: Revoke an Identity of a Participant
 ---
 
-# Revoking an identity from a participant
+# Revoke an Identity of a Participant
 
 ---
 

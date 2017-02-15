@@ -6,7 +6,7 @@ sidebar: sidebars/tasks.md
 excerpt: How to add a participant
 ---
 
-# Adding a participant
+# Add a participant
 
 ---
 

@@ -6,7 +6,7 @@ sidebar: sidebars/tasks.md
 excerpt: How to update a business network definition on a fabric
 ---
 
-# How to Update a Business Network Definition on a Fabric
+# Update a Business Network Definition on a Fabric
 
 ---
 

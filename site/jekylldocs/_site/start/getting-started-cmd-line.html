@@ -34,7 +34,7 @@
     <link href="/assets/css/prettify.css" rel="stylesheet">
     <link href="/assets/css/bootstrap.css" rel="stylesheet">
     <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <!-- <link href="/assets/css/new-style.min.css" rel="stylesheet"> -->
   
 
   <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
@@ -52,10 +52,10 @@
 
 
 <!-- Navigation -->
-<!-- <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container"> -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <!-- <div class="navbar-header">
+        <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -63,17 +63,20 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/index.html">Fabric Composer</a>
-        </div> -->
+        </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <!-- <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right"> -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <!-- <li>
+                <li>
                     <a href="/start/quickstart.html">Quickstart</a>
                 </li>
-                <li class="dropdown">
+                <li>
+                    <a href="/overview/overview.html">Documentation</a>
+                </li>
+                <!-- <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
@@ -95,16 +98,17 @@
                             <a href="/jsdoc/index.html">API Documentation</a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
                 <li>
                     <a href="/support/index.html">Support</a>
                 </li>
             </ul>
-        </div> -->
+        </div>
         <!-- /.navbar-collapse -->
-    <!-- </div> -->
-    <!-- /.container -->
-<!-- </nav> -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
 
   
 
@@ -116,7 +120,7 @@
         <!-- If there's a sidebar, divide into 2 columns -->
         
         <div class="col-md-2">
-          <nav class="context-nav">
+          <nav class="context-nav" id="myScrollspy">
             
             
               <p><strong><a href="/start/quickstart.html">Quickstart</a></strong>
@@ -124,8 +128,8 @@
 <strong><a href="/start/getting-started-cmd-line.html">Getting Started</a></strong>
 <a href="/start/getting-started-cmd-line.html">Running a sample with the CLI</a>
 <a href="/start/getting-started-coding-bnd.html">Coding a Business Network Definition</a>
-<a href="/start/getting-started-rest-api.html">Generating a REST api</a>
-<a href="/start/getting-started-nodejs-app.html">Writing a nodejs app</a>
+<a href="/start/getting-started-rest-api.html">Generating a REST API</a>
+<a href="/start/getting-started-nodejs-app.html">Writing a node.js Application</a>
 <strong><a href="/concepts/businessnetwork.html">Concepts</a></strong>
 <strong><a href="/tasks/prerequisites.html">Tasks</a></strong>
 <strong><a href="/jsdoc/index.html">API Documentation</a></strong>
@@ -142,12 +146,8 @@
 
 <hr>
 
-<blockquote>
 <p>Before you follow these instructions, make sure you&#39;ve completed the
 <a href="./getting-started.html">Quickstart</a>!</p>
-</blockquote>
-
-<hr>
 
 <p>To help get started with application development using the Fabric Composer Framework, this guide will talk you through downloading Fabric Composer, starting a Fabric, deploying a simple business network and submitting transactions.</p>
 
@@ -155,7 +155,9 @@
 
 <h2 id="what-is-the-digital-property-network">What is the Digital Property Network?</h2>
 
-<p>This network will be expanded for other tutorials, but for this getting started we&#39;ll keep it simple. We going to model <em>Land Titles</em>, each of which has an owner, description, and a boolean saying if this property/land is up for sale.</p>
+<p>This network will be expanded for other tutorials, but for this getting started we&#39;ll keep it simple.</p>
+
+<p>We going to model <em>Land Titles</em>, each of which has an owner, description, and a boolean saying if this property/land is up for sale.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">asset</span> <span class="nx">LandTitle</span> <span class="nx">identified</span> <span class="nx">by</span> <span class="nx">titleId</span> <span class="p">{</span>
   <span class="nx">o</span> <span class="nb">String</span>   <span class="nx">titleId</span>
   <span class="nx">o</span> <span class="nx">Person</span>   <span class="nx">owner</span>
@@ -203,8 +205,8 @@
 
 <p>First clone the repository:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">git clone git@github.com:fabric-composer/sample-networks.git
-<span class="nb">cd </span>sample-networks/packages/DigitalProperty-Network
-npm install
+</code></pre></div><div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd </span>sample-networks/packages/DigitalProperty-Network
+</code></pre></div><div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install
 </code></pre></div>
 <h3 id="update-the-transaction-processor-function">Update the Transaction Processor Function</h3>
 
@@ -299,48 +301,55 @@ info: [Composer-GettingStarted] Command completed successfully.
 info: [Composer-GettingStarted] Fabric Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network-0.0.11
 =======
-
-
-## Digging Deeper
-
-* `scripts/download-hyperledger.sh` This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Fabric Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.
-
-`npm install` uses this script.
-
-* `scripts/start-hyperledger.sh` This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger fabric has started.
-`npm run startHLF` can also be used to call this script.
-* `scripts/stop-hyperledger.sh` This is the opposite of the start script, and will stop the Hyperledger Fabric - but it critically does not delete or remove any state. Therefore it canbe restarted with the start script.  `npm run stopHLF` can also be used to call this script.
-* `scripts/teardown.sh` This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Fabric Composer Connection Profiles.
-
-**Composer CLI**
-
-* `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip`
-This command is used to create a Business Network Archive. `--archiveFile` is the name of the file. The `-m` is the npm module name of the business network to use. There is also a -d option to specify the directory the business network is in. Useful whilst developing the business network transactions functions.
-
-* `composer network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
-This deploys the business network to the HyperLedger runtime; the archive is specified but also the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)
-* `composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
-This lists the deployed business network details. `-n` is the name of the business network. With the same options for the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)
-
-**Sample Applications**
-
-There are 3 sample Javascript applications that use the Fabric Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.
-
-* `node cli.js landregistry submit`  This applications connects, and submits a transaction.
-* `node cli.js landregistry list`   This lists the contents of the asset registries that have been defined in the business network.
-* `node cli.js landregistry bootstrap` This applications puts some pretend assets into the registries to work with.
-
-### Nice one!
-We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Fabric Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.
-
-If you want to continue exploring, check out our other Getting Started guides:
-
-[Coding a Business Network Definition](./getting-started-coding-bnd.html)
-
-[Generating a REST API](./getting-started-rest-api.html)
-
-[Writing a Node.js App](./getting-started-nodejs-app.html)
 </code></pre></div>
+<h2 id="digging-deeper">Digging Deeper</h2>
+
+<ul>
+<li><code>scripts/download-hyperledger.sh</code> This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Fabric Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.</li>
+</ul>
+
+<p><code>npm install</code> uses this script.</p>
+
+<ul>
+<li><code>scripts/start-hyperledger.sh</code> This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger fabric has started.
+<code>npm run startHLF</code> can also be used to call this script.</li>
+<li><code>scripts/stop-hyperledger.sh</code> This is the opposite of the start script, and will stop the Hyperledger Fabric - but it critically does not delete or remove any state. Therefore it canbe restarted with the start script.  <code>npm run stopHLF</code> can also be used to call this script.</li>
+<li><code>scripts/teardown.sh</code> This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Fabric Composer Connection Profiles.</li>
+</ul>
+
+<p><strong>Composer CLI</strong></p>
+
+<ul>
+<li><p><code>composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip</code>
+This command is used to create a Business Network Archive. <code>--archiveFile</code> is the name of the file. The <code>-m</code> is the npm module name of the business network to use. There is also a -d option to specify the directory the business network is in. Useful whilst developing the business network transactions functions.</p></li>
+<li><p><code>composer network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d</code>
+This deploys the business network to the HyperLedger runtime; the archive is specified but also the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)</p></li>
+<li><p><code>composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d</code>
+This lists the deployed business network details. <code>-n</code> is the name of the business network. With the same options for the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)</p></li>
+</ul>
+
+<p><strong>Sample Applications</strong></p>
+
+<p>There are 3 sample Javascript applications that use the Fabric Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.</p>
+
+<ul>
+<li><code>node cli.js landregistry submit</code>  This applications connects, and submits a transaction.</li>
+<li><code>node cli.js landregistry list</code>   This lists the contents of the asset registries that have been defined in the business network.</li>
+<li><code>node cli.js landregistry bootstrap</code> This applications puts some pretend assets into the registries to work with.</li>
+</ul>
+
+<h3 id="nice-one">Nice one!</h3>
+
+<p>We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Fabric Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.</p>
+
+<p>If you want to continue exploring, check out our other Getting Started guides:</p>
+
+<p><a href="./getting-started-coding-bnd.html">Coding a Business Network Definition</a></p>
+
+<p><a href="./getting-started-rest-api.html">Generating a REST API</a></p>
+
+<p><a href="./getting-started-nodejs-app.html">Writing a Node.js App</a></p>
+
             
           </section>
         </div>
@@ -360,7 +369,7 @@ If you want to continue exploring, check out our other Getting Started guides:
 
 
 <!-- Navigation -->
-<!-- <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
     <div class="container">
       <div class="navbar-fixed-bottom">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
@@ -397,9 +406,9 @@ If you want to continue exploring, check out our other Getting Started guides:
               </li>
           </ul>
         </div>
-    </div> -->
+    </div>
     <!-- /.container -->
-<!-- </nav> -->
+</nav>
 
     
   </div>
