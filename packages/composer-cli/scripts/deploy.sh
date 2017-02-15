@@ -20,7 +20,7 @@ fi
 
 # If this is not for a tagged (release) build, set the prerelease version.
 if [ -z "${TRAVIS_TAG}" ]; then
-    node ${DIR}/scripts/timestamp.js ${DIR}/package.json
+    node "${DIR}/scripts/timestamp.js" "${DIR}/package.json"
 fi
 
 # Push the code to npm.

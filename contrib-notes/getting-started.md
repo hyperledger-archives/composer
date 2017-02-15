@@ -299,7 +299,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
  dirname "${BASH_SOURCE[0]}"
 
 # Shut down the Docker containers for the system tests.
-cd ${DIR}/systest
+cd "${DIR}/systest"
 docker-compose kill && docker-compose down
 Killing systest_vp0_1 ... done
 Killing systest_membersrvc_1 ... done
