@@ -236,16 +236,3 @@ tbd
 **Additional Notes:**
 
 - [Official Docker Compose installation guide](https://docs.docker.com/compose/install/)
-
-### 6. Login to npm Whitewater
-All of the Fabric Composer packages can be found in the public npm registry.
-
-**Installation Commands for MacOS:**
-
-```bash
-tbd
-```
-
-**Additional Notes:**
-
-- [npm Whitewater](https://npm.whitewater.ibm.com/)
