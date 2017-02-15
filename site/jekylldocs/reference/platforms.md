@@ -1,18 +1,17 @@
 ---
 layout: default
-title: Supported Platforms 
+title: Supported Platforms
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Supported platforms (operating environment)
 ---
+
 # Operating Systems
+
+---
 
 - Ubuntu Linux 14.04 LTS (64-bit)
 - Mac OS 10.12
-
-# IBM Blockchain and Hyperledger
-
-- Hyperledger v0.6.x
 
 # Docker Engine
 

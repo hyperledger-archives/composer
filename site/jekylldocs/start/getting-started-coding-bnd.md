@@ -6,7 +6,7 @@ sidebar: sidebars/start.md
 excerpt: Getting Started with coding a Business Network Definition
 ---
 
-# Creating and Coding a Business Network Definition
+# Coding a Business Network Definition
 
 ---
 

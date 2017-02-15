@@ -6,7 +6,7 @@ sidebar: sidebars/tasks.md
 excerpt: How to test a business network definition
 ---
 
-# How to Test a Business Network Definition
+# Test a Business Network Definition
 
 ---
 

@@ -5,7 +5,10 @@ category: reference
 sidebar: sidebars/reference.md
 excerpt: Guide to the Fabric Composer modeling language
 ---
+
 # Fabric Composer Modeling Language
+
+---
 
 Fabric Composer includes an Object-Oriented modeling language that is used to define
 the domain model for a business network definition.

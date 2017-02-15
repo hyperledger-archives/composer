@@ -3,10 +3,10 @@ layout: default
 title: Task - Diagnosing Problems
 category: tasks
 sidebar: sidebars/tasks.md
-excerpt: How to diagnose problems
+excerpt: Diagnose Problems
 ---
 
-# How to diagnose problems
+# Diagnose Problems
 
 ---
 

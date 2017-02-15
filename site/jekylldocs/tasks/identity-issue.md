@@ -3,10 +3,10 @@ layout: default
 title: Task - Issue an Identity to a Participant
 category: tasks
 sidebar: sidebars/tasks.md
-excerpt: How to issue an Identity to a Participant
+excerpt: Issue an Identity to a Participant
 ---
 
-# Issuing an identity to a participant
+# Issue an Identity to a Participant
 
 ---
 

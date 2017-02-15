@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Adding a REST api to the business network
+title: Generating a REST API
 category: start
 sidebar: sidebars/start.md
-excerpt: Adding a REST api to the business network
+excerpt: Generating a REST API
 ---
 
-# Adding a REST API to the business network
+# Generating a REST API
 
 ---
 
