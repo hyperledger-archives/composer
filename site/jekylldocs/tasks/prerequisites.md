@@ -15,7 +15,7 @@ There are also [two scripts](#Automatic Installation) that can be used on Ubuntu
 The recommended versions are:
 *Docker*: v1.12.5
 *Docker-compose*: v1.9.0
-*node.js*: v4 or v6
+*node.js*: v6.9.5
 
 ## Automatic Installation
 
@@ -129,7 +129,7 @@ tbd
 
 ### 3. Installing NVM
 We highly recommend installing [nvm](https://github.com/creationix/nvm) to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation.
-The runtime requires a version higher than v4.6.0.
+The runtime requires a version higher than v6.
 
 **Installation Commands for Ubuntu:**
 
@@ -150,10 +150,12 @@ EOF
 source ~/.profile
 
 # Install node and npm
-nvm install 4.6.2
+nvm install 6.9.5
 
-# Configure nvm to use version 4.6.2
-nvm use 4.6.2.
+
+# Configure nvm to use version 6
+nvm use 6.9.5
+nvm alias default 6.9.5
 
 # Install the latest version of npm
 npm install npm@latest -g

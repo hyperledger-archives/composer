@@ -40,8 +40,6 @@ class Create {
             const path = require('path');
 
 
-
-            console.log(process.env.NODE_PATH);
             console.log('About to do the required');
             let moduleIndexjs;
             try {
