@@ -6,8 +6,9 @@ sidebar: sidebars/tasks.md
 excerpt: How to diagnose problems
 ---
 
-
 # How to diagnose problems
+
+---
 
 If something should ever go wrong with an application, what should you do about getting diagnostics?
 

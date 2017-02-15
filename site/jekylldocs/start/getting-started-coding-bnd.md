@@ -7,6 +7,9 @@ excerpt: Getting Started with coding a Business Network Definition
 ---
 
 # Creating and Coding a Business Network Definition
+
+---
+
 This tutorial will take you through how to code and deploy a Business Network Definition. This is how to put together the files, and code artifacts needed and what to do with them.
 
 This is after the important step of modeling the actual business network and the entities within it.  For this tutorial we are going to continue to use the Digital Property Network. Let's assume that this has been designed and agree with the relevant business analysts in the relevant companies. It now needs to be codified.

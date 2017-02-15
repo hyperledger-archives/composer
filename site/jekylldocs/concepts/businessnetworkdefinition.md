@@ -5,7 +5,10 @@ category: concepts
 sidebar: sidebars/concepts.md
 excerpt: Overview of the Business Network Definition
 ---
+
 # Business Network Definition
+
+---
 
 Business Network Definitions are a key concept of the Fabric Composer programming model. They are represented by the `BusinessNetworkDefinition` class, defined in the `composer-common` module and exported by both `composer-admin` and `composer-client`.
 

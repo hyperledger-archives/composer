@@ -8,6 +8,8 @@ excerpt: How to create a new Connection Profile
 
 # Creating a new Connection Profile
 
+---
+
 A Connection Profile is used by Fabric Composer to connect to a running fabric. More information about Connection Profiles can be found [here](../reference/connectionprofile.md)
 
 ## Procedure

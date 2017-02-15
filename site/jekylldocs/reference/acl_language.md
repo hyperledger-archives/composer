@@ -5,7 +5,10 @@ category: reference
 sidebar: sidebars/reference.md
 excerpt: Guide to the Fabric Composer access control language
 ---
+
 # Fabric Composer Access Control Language
+
+---
 
 Fabric Composer includes an access control language (ACL) that provides declarative access control over the elements of the domain model. By defining ACL rules you can determine which users/roles are permitted to create, read, update or delete elements in a business network's domain model.
 

@@ -3,11 +3,13 @@ layout: default
 title: Fabric Composer Quickstart
 category: start
 sidebar: sidebars/quickstart_sidebar.md
-excerpt: Getting Started with Fabric Composer
+excerpt: Quickstart
+
 ---
 
 # Fabric Composer Quickstart
-<br></br>
+
+---
 
 Check that your system has the required software (at the required versions) installed:
 

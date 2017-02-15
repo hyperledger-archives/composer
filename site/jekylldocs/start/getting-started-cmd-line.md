@@ -6,11 +6,7 @@ sidebar: sidebars/start.md
 excerpt: Getting Started with Fabric Composer
 ---
 
-## Running a sample with the CLI
-
----
-
-<i class="fa fa-fw  fa-coffee"></i>  <b>GET READY</b><br>
+# Running a sample with the CLI
 
 ---
 

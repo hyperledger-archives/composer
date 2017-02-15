@@ -7,6 +7,9 @@ excerpt: Composer Archive List CLI
 ---
 
 # Fabric Composer Archive List
+
+---
+
 The `composer archive list` utility is used to verify the structure of a business network archive on disk and print metdata.
 
 ```
@@ -23,7 +26,7 @@ composer archive list -a <business-network-archive>
 ## Example Output
 
 ```
-composer archive list -a digitalPropertyNetwork.zip 
+composer archive list -a digitalPropertyNetwork.zip
 Listing Business Network Archive from digitalPropertyNetwork.zip
 Identifier:digitalproperty-network@0.0.1
 Name:digitalproperty-network
