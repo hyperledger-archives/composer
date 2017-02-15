@@ -25,14 +25,10 @@ addons:
             - graphviz
 before_install: |
     date
-    set -ev
-    set -o pipefail
     ./.travis/before-install.sh
     date
 install: |
     date
-    set -ev
-    set -o pipefail
     ./.travis/install.sh
     date
 script: ./.travis/script.sh
