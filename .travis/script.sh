@@ -10,8 +10,10 @@ ME=`basename "$0"`
 
 echo ${ME} `date`
 
+source ${DIR}/build.cfg
+
 if [ "${ABORT_BUILD}" = "true" ]; then
-  echo exiting early from ${ME}
+  echo "-#- exiting early from ${ME}" 
   exit ${ABORT_CODE}
 fi
 
