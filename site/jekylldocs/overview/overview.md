@@ -64,16 +64,16 @@ namespace net.biz.digitalPropertyNetwork
 
 asset LandTitle identified by titleId {
   o String   titleId
-  o Person   owner
+  --> Person   owner
   o String   information
   o Boolean  forSale   optional
 }
 
 asset SalesAgreement identified by salesId {
   o String    salesId
-  o Person    buyer
-  o Person    seller
-  o LandTitle title
+  --> Person    buyer
+  --> Person    seller
+  --> LandTitle title
 }
 
 participant Person identified by personId {
