@@ -27,7 +27,7 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
-	cd ${DIR}/site
+	cd "${DIR}/site"
 	npm install
 	npm run full
 # Are we running system tests?
@@ -43,7 +43,7 @@ else
     npm test 2>&1 | tee
 
     # Build the Composer UI.
-    cd ${DIR}/packages/composer-ui
+    cd "${DIR}/packages/composer-ui"
     npm run build:prod
 
 fi
