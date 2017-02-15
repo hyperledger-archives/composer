@@ -6,8 +6,18 @@ set -o pipefail
 
 # Grab the Concerto directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+ME=`basename "$0"`
 
-date
+echo ${ME} `date`
+
+source ${DIR}/build.cfg
+
+if [ "${ABORT_BUILD}" = "true" ]; then
+  echo "-#- exiting early from ${ME}" 
+  exit ${ABORT_CODE}
+fi
+
+
 # Start the X virtual frame buffer used by Karma.
 if [ -r "/etc/init.d/xvfb" ]; then
     export DISPLAY=:99.0
@@ -17,7 +27,7 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
-	cd ${DIR}/site
+	cd "${DIR}/site"
 	npm install
 	npm run full
 # Are we running system tests?
@@ -33,8 +43,9 @@ else
     npm test 2>&1 | tee
 
     # Build the Composer UI.
-    cd ${DIR}/packages/composer-ui
+    cd "${DIR}/packages/composer-ui"
     npm run build:prod
 
 fi
-date
+
+echo ${ME} `date`

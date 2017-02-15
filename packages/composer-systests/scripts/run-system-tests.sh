@@ -8,7 +8,7 @@ set -o pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Switch into the system tests directory.
-cd ${DIR}
+cd "${DIR}"
 
 # Barf if we don't recognize this test suite.
 if [ "${SYSTEST}" = "" ]; then
@@ -77,4 +77,4 @@ rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
 rm -rf ${HOME}/.concerto-credentials/concerto-systests
 
 # Run getting started system test
-sh $DIR/scripts/getting-started.sh $DIR
+#sh $DIR/scripts/getting-started.sh $DIR

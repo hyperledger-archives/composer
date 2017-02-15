@@ -4,14 +4,17 @@ node_js:
     - '6'
 matrix:
     include:
-        - env: DOCS=full
-        - env: SYSTEST=embedded
-        - env: SYSTEST=web
-        - env: SYSTEST=hlf SYSTEST_HLF=hlf
+        - env: DOCS=full FC_TASK=docs
+          sudo: false
+          node_js :
+            - '4'
+        - env: SYSTEST=embedded FC_TASK=systest
+        - env: SYSTEST=web FC_TASK=systest
+        - env: SYSTEST=hlf SYSTEST_HLF=hlf  FC_TASK=systest
           sudo: required
           services:
             - docker
-        - env: SYSTEST=hlf SYSTEST_HLF=ibm
+        - env: SYSTEST=hlf SYSTEST_HLF=ibm FC_TASK=systest
           sudo: required
           services:
             - docker
@@ -22,22 +25,11 @@ addons:
             - graphviz
 before_install: |
     date
-    set -ev
-    set -o pipefail
-    ./.travis/should-run.sh
-    npm install -g npm
-    npm install -g @alrra/travis-scripts
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    sudo dpkg -i google-chrome*.deb
-    wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
-    echo "deb http://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
-    sudo apt-get update && sudo apt-get install cf-cli
+    ./.travis/before-install.sh
     date
 install: |
     date
-    set -ev
-    set -o pipefail
-    npm install 2>&1 | tee
+    ./.travis/install.sh
     date
 script: ./.travis/script.sh
 deploy:
@@ -47,3 +39,4 @@ deploy:
     on:
         all_branches: true
 cache: false
+sudo: required
