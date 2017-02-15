@@ -19,17 +19,17 @@ git config user.email "noreply@travis.ibm.com"
 git config push.default simple
 
 echo ${DIR}
-cd ${DIR}/site/out
+cd "${DIR}/site/out"
 
 export REPO="fabric-composer.github.io"
 
 git clone git@github.com:fabric-composer/${REPO}.git
 git remote set-url origin ${REPO}.git
 
-cd ${DIR}/site/out/${REPO}
+cd "${DIR}/site/out/${REPO}"
 
-rm -rf ${DIR}/site/out/${REPO}/*
-cp -rf ${DIR}/site/jekylldocs/_site/* .
+rm -rf "${DIR}/site/out/${REPO}/*"
+cp -rf "${DIR}/site/jekylldocs/_site/*" .
 
 git add .
 
