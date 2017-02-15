@@ -14,7 +14,7 @@ system*)
     ;;
 esac
 
-rm $DIR/api.txt
-node $DIR/node_modules/composer-common/lib/codegen/parsejs.js --format APISignature --inputDir "$DIR/lib" --outputDir $DIR
+rm "$DIR/api.txt"
+node "$DIR/node_modules/composer-common/lib/codegen/parsejs.js" --format APISignature --inputDir "$DIR/lib" --outputDir "$DIR"
 
-node $DIR/node_modules/composer-common/lib/tools/changelog.js --api "$DIR/api.txt" --changelog $DIR/changelog.txt
+node "$DIR/node_modules/composer-common/lib/tools/changelog.js" --api "$DIR/api.txt" --changelog "$DIR/changelog.txt"
