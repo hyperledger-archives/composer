@@ -42,7 +42,7 @@ Noun Examples:
 
 **ACTION** identifies the action of the rule. It must be one of: ALLOW, DENY.
 
-**DESCRIPTION** can be used to describe the rule.
+**DESCRIPTION** can be used to describe the purpose of the rule.
 
 ### Examples
 
