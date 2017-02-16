@@ -7,6 +7,9 @@ excerpt: Composer Network Deploy CLI
 ---
 
 # Fabric Composer Network Deploy
+
+---
+
 The `composer network deploy` utility is used to deploy a business network archive from local disk to a Hyperledger Fabric runtime.
 
 ```

@@ -6,7 +6,9 @@ sidebar: sidebars/tasks.md
 excerpt: How to test a business network definition
 ---
 
-# How to Test a Business Network Definition
+# Test a Business Network Definition
+
+---
 
 After you have deployed a business network definition it is often useful to run a "smoke test" to ensure that the deployment was successful. The `composer` CLI exposes several commands for running such smoke tests.
 

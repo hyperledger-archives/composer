@@ -8,7 +8,7 @@ markdown: 0
         <!-- If there's a sidebar, divide into 2 columns -->
         {% if page.sidebar %}
         <div class="col-md-2">
-          <nav class="context-nav">
+          <nav class="context-nav" id="myScrollspy">
             {% capture sidebar %}{% include {{ page.sidebar }} %}{% endcapture %}
             {% if sidebarHTML %}
               {{ sidebar }}

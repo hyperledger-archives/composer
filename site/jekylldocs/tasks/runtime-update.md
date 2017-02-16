@@ -6,7 +6,9 @@ sidebar: sidebars/tasks.md
 excerpt: How to update a business network definition on a fabric
 ---
 
-# How to Update a Business Network Definition on a Fabric
+# Update a Business Network Definition on a Fabric
+
+---
 
 You can update a business network definition to a running Fabric using the `composer network update` CLI command.
 

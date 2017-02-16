@@ -5,7 +5,10 @@ category: start
 sidebar: sidebars/start.md
 excerpt: Getting Started with a Fabric Composer node.js application
 ---
-#Getting Started with a Fabric Composer node.js application
+
+# Writing a node.js Application
+
+---
 
 We'll walk through the sample node.js applications here. The git repo is the GettingStarted repo that was cloned for the Getting Started.
 The [`landregistry.js`](https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/lib/landRegistry.js) file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.

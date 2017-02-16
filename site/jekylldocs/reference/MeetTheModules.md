@@ -5,7 +5,10 @@ category: reference
 sidebar: sidebars/reference.md
 excerpt: Fabric Composer module info
 ---
+
 # Meet the npm Modules
+
+---
 
 Fabric Composer has 3 main modules for application developers. If you are writing an application this is your entry point.
 
