@@ -1,12 +1,14 @@
 ---
 layout: default
-title: Task - Revoke an Identity from a Participant
+title: Task - Revoke an Identity of a Participant
 category: tasks
 sidebar: sidebars/tasks.md
-excerpt: How to revoke an Identity from a Participant
+excerpt: Revoke an Identity of a Participant
 ---
 
-# Revoking an identity from a participant
+# Revoke an Identity of a Participant
+
+---
 
 An identity can be revoked from a participant using either the API or the command line.
 Once an identity has been revoked, the identity can no longer be used by the participant

@@ -1065,7 +1065,7 @@ th {
 .glyphicon-menu-up:before {
   content: "\e260";
 }
-* {
+{
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
@@ -1076,9 +1076,10 @@ th {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
 }
+
 html {
   font-size: 10px;
-
+  box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
@@ -1566,6 +1567,7 @@ kbd kbd {
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
+  /*padding-top: 2em;*/
 }
 @media (min-width: 768px) {
   .container {
@@ -1598,6 +1600,7 @@ kbd kbd {
   min-height: 1px;
   padding-right: 15px;
   padding-left: 15px;
+  padding-top: 1em;
 }
 .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
   float: left;
@@ -1948,7 +1951,7 @@ kbd kbd {
     width: 25%;
   }
   .col-md-2 {
-    width: 16.66666667%;
+    width: 16.66%;
   }
   .col-md-1 {
     width: 8.33333333%;
@@ -1960,7 +1963,7 @@ kbd kbd {
     right: 91.66666667%;
   }
   .col-md-pull-10 {
-    right: 83.33333333%;
+    right: 83.33%;
   }
   .col-md-pull-9 {
     right: 75%;

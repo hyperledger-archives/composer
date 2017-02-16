@@ -19,7 +19,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Roboto', sans-serif;
 }
 body {
-    padding-top: 50px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+    /*padding-top: 50px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */*/
     font-family: 'Roboto', sans-serif;
 }
 

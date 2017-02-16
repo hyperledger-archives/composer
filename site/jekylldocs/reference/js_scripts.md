@@ -5,7 +5,10 @@ category: reference
 sidebar: sidebars/reference.md
 excerpt: Creating transaction processor functions in Javascript
 ---
+
 # Javascript Functions
+
+---
 
 A Fabric Composer Business Network Definition is composed of a set of model files
 and a set of scripts. The scripts may contain transaction processor

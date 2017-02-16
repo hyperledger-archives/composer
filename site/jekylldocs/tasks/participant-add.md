@@ -6,7 +6,9 @@ sidebar: sidebars/tasks.md
 excerpt: How to add a participant
 ---
 
-# Adding a participant
+# Add a participant
+
+---
 
 A participant can be added to a participant registry using either the API or the
 command line.
