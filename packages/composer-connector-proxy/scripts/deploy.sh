@@ -20,7 +20,7 @@ fi
 
 # If this is not for a tagged (release) build, set the prerelease version.
 if [ -z "${TRAVIS_TAG}" ]; then
-    node ${DIR}/scripts/timestamp.js ${DIR}/package.json
+    node "${DIR}/scripts/timestamp.js" "${DIR}/package.json"
 fi
 
 # Push the code to npm.
@@ -47,7 +47,7 @@ fi
 # Push empty commits to downstream projects to trigger builds.
 REPO=`git config remote.origin.url`
 for PROJ in Concerto-System-Tests; do
-    cd ${DIR}
+    cd "${DIR}"
     THISREPO=$(echo ${REPO} | sed "s|/[^/]*$||")/${PROJ}.git
     for i in {1..5}; do
         rm -rf temp

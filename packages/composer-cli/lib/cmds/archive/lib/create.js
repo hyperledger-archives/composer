@@ -39,7 +39,6 @@ class Create {
         if (!argv.inputDir){
             const path = require('path');
             console.log(process.env.NODE_PATH);
-
             let moduleIndexjs;
             try {
                 moduleIndexjs=require.resolve(argv.moduleName);

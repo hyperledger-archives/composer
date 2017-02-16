@@ -8,7 +8,8 @@
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
     "jekyllserve": "cd ./jekylldocs && jekyll serve",
-    "full": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build"
+    "full": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
+    "changelog": "./scripts/changelog.sh"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,8 @@
     "sanitize-html": "^1.14.1"
   },
   "dependencies": {
-    "jekyll": "^3.0.0-beta1"
+    "github-changes": "^1.0.4",
+    "jekyll": "^3.0.0-beta1",
+    "moment": "^2.17.1"
   }
 }

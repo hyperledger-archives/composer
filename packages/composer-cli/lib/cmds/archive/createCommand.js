@@ -22,7 +22,8 @@ module.exports.builder = function (yargs){
 
     return yargs.option('archiveFile',{alias: 'a', required: false,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
             .option('sourceType',{alias: 't', required: true, choices: ['module','dir'], describe: 'npm module name or a directory as the source of the Business Network'})
-            .option('sourceName',{alias: 'n', required: true, describe: 'Name of the npm module or directory'});
+            .option('sourceName',{alias: 'n', required: true, describe: 'Name of the npm module or directory'})
+            .usage('');
 
 };
 
