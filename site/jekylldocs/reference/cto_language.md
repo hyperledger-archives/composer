@@ -5,7 +5,10 @@ category: reference
 sidebar: sidebars/reference.md
 excerpt: Guide to the Fabric Composer modeling language
 ---
+
 # Fabric Composer Modeling Language
+
+---
 
 Fabric Composer includes an Object-Oriented modeling language that is used to define
 the domain model for a business network definition.
@@ -19,17 +22,17 @@ in this namespace.
 
 ### Declarations of enumerated types
 
-        ```
-        /**
-         * An enumerated type
-         */
-        enum AnimalType {
-          o SHEEP_GOAT
-          o CATTLE
-          o PIG
-          o DEER_OTHER
-        }
-        ```
+```
+/**
+* An enumerated type
+*/
+enum AnimalType {
+o SHEEP_GOAT
+o CATTLE
+o PIG
+o DEER_OTHER
+}
+```
 
 ### Declarations of Assets, Participants, Transactions
 

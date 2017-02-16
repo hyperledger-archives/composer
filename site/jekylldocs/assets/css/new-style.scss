@@ -1,0 +1,353 @@
+$font-stack: 'Open Sans', 'Helvetica Neue for IBM', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$display-font: 'Open Sans';
+$svg-font: 'Source Code Pro';
+$primary-color: #3C6DF0;
+$secondary-color: #F9F9F9;
+$text-color: #19273C;
+$secondary-blue: #3151B7;
+$grey-1: #ECF0F2;
+$grey-2: #DFE9E9;
+
+html {
+    font-family: $font-stack;
+    font-size: 16px;
+    height: 100%;
+  //  text-rendering: optimizeLegibility !important;
+}
+
+body {
+    font-family: $font-stack;
+    padding-bottom: 0;
+    // color: $text-color;
+}
+
+h1 {
+  font-family: $display-font;
+  font-weight: 300;
+  font-size: 2.50rem;
+  // letter-spacing: 0.4px;
+  color: $text-color;
+}
+
+h2 {
+  font-family: $font-stack;
+  font-weight: 300;
+  font-size: 1.35rem;
+  // letter-spacing: 0.4px;
+  line-height: 130%;
+  color: $text-color;
+}
+
+p {
+  font-family: $font-stack;
+  color: $text-color;
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+svg {
+  font-family: $svg-font;
+}
+
+button {
+    white-space: nowrap;
+    height: 3rem;
+    background-color: $primary-color;
+    flex-basis: auto;
+    width: auto;
+    padding-right: 30px;
+    padding-left: 30px;
+    cursor: pointer;
+    border: none;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+    font-family: $font-stack;
+    font-size: 0.9rem;
+    transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+    min-width: 100px;
+    box-sizing: border-box;
+    line-height: 30px;
+    border-radius: 1px;
+    &.primary {
+        background-color: $primary-color;
+        border-color: $primary-color;
+        color: white !important;
+        &:hover {
+        background-color: $secondary-blue;
+        }
+
+    }
+    &.secondary {
+        background-color: white;
+        color: $primary-color;
+        border: 1px solid $primary-color;
+        &:hover {
+            background-color: $primary-color;
+            color: white;
+        }
+
+
+    }
+    &.icon {
+        flex-basis: calculaterel(40px);
+        width: calculaterel(40px);
+        min-width: initial;
+        padding: 0px;
+        img {
+            vertical-align: -2px;
+        }
+    }
+    & + button {
+        margin-left: 0.8em;
+    }
+    &:focus {
+        outline: none;
+    }
+}
+
+.overlay {
+    width: 60vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: $secondary-color;
+    z-index: -1;
+}
+
+.hero_container {
+    width: 70vw;
+    margin: auto;
+    margin-top: 20vh;
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    z-index: 10;
+    box-sizing: border-box;
+    .leftcontent {
+      flex-basis: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 4rem;
+    }
+    .hero_illustration {
+      flex-basis: 50%;
+      padding: 1.75rem;
+      box-sizing: border-box;
+    }
+    a {
+      font-family: $font-stack;
+      color: $primary-color;
+      font-weight: 400;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-bottom: 1px solid $primary-color;
+      transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+      text-decoration: none;
+      &:hover {
+        color: $primary-color;
+        text-decoration: none;
+        // border-bottom: 2px solid $primary-color;
+      }
+    }
+}
+
+.buttoncontainer  {
+  margin-top: 3.5rem;
+  margin-bottom: 1.75rem;
+}
+
+//Navbar overrides of bootstrap
+
+.navbar {
+  display: flex;
+  flex-basis: auto;
+  width: 100vw;
+  height: 4rem;
+  // line-height: 30px;
+  margin: auto;
+  background-color: none;
+  color: $text-color;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+  color: $text-color;
+  &:hover {
+    color: $text-color;
+  }
+}
+
+.navbar-inverse .navbar-brand {
+  color: $text-color;
+  &:hover {
+    color: $text-color;
+  }
+}
+
+.navbar-fixed-top {
+  border: none;
+}
+
+//New style nav
+
+.indexnav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100vw;
+  height: 3rem;
+  // background-color: red;
+  z-index: 11;
+  padding-top: 0px;
+}
+
+.navcontent {
+  font-size: 0.9rem;
+  display: flex;
+  width: 70vw;
+  margin: auto;
+  padding-top: 2rem;
+}
+
+.navlogo {
+  flex-grow: 1;
+  flex-basis: 100%;
+  flex-shrink: 1;
+  .brand {
+    font-family: $font-stack;
+    color: $text-color;
+    font-weight: 400;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    a {
+      text-decoration: none;
+    }
+  }
+}
+
+.menuitems {
+  display: flex;
+  justify-content: flex-end;
+  flex-basis: auto;
+  flex-shrink: 1;
+  height: 100%;
+  ul {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    li {
+      margin-left: 1rem;
+      margin-right: 1rem;
+      flex-direction: column;;
+      justify-content: center;
+      height: 100%;
+      display: flex;
+      a {
+        color: $text-color;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+//New style footer
+
+.footercontainer {
+  display: flex;
+  width: 70vw;
+  margin: auto;
+  // background-color: red;
+  padding-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.footerleft {
+  display: flex;
+  ul {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  li {
+    // margin-left: 1rem;
+    margin-right: 2rem;
+    flex-direction: column;;
+    justify-content: center;
+    height: 100%;
+    display: flex;
+    a {
+      // color: $text-color;
+      text-decoration: none;
+    }
+  }
+  .icon2 {
+    font-size: 20px;
+    height: 100%;
+    width: 100%;
+    transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+    color: $text-color;
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .hero_container {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    flex-direction: column;
+    width: 100vw;
+    margin-top: 5vh;
+    .leftcontent {
+      order: 2;
+      padding-right: 0;
+    }
+    .hero_illustration {
+      order: 1;
+    }
+  }
+  .overlay {
+      display: none;
+      width: 100vw;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background-color: $secondary-color;
+      z-index: 1;
+  }
+  button {
+    margin-bottom: 1rem;
+  }
+  button+button {
+    margin-left: 0;
+}
+
+.indexnav {
+      overflow: hidden;
+      height: auto;
+      .navcontent {
+          flex-direction: column;
+          .menuitems {
+            justify-content: flex-start;
+            ul {
+                margin-top: 0.5rem;
+              li {
+                margin-left: 0;
+                margin-right: 2rem;
+              }
+            }
+          }
+      }
+}
+
+}

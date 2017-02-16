@@ -5,7 +5,10 @@ category: reference
 sidebar: sidebars/reference.md
 excerpt: Overview of the Connection Profiles
 ---
+
 # Connection Profile
+
+---
 
 The AdminConnection and BusinessNetworkConnection classes use references to named Connection Profiles to connect to a running Fabric. A Connection Profile captures the URLs and configuration options required to connect to a physical instance of the Hyperledger Fabric.
 
