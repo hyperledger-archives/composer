@@ -2,10 +2,11 @@
 layout: default
 title: Fabric Composer -  Overview
 category: overview
+sidebar: sidebars/overview.md
 excerpt: Fabric Composer overview
 ---
 
-## Overview
+# Overview
 
 ---
 
@@ -37,15 +38,13 @@ Definition, which contains a data model that defines the name and structure of a
 and transactions in the business network. The business network also specifies *transaction processor functions*
 (written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
 
-Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/index.html) to submit transactions and to create, retrieve, update and delete assets within asset registries.
+Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/develop/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
 
 ### Roles, Responsibilities and Tasks
 
 A typical project using Fabric Composer goes through a lifecycle of:
 
 *Model -> Define Business Network -> Deploy Runtime -> Deploying Business Network -> Test -> Generate Application*
-
-![Framework Task Map](../assets/img/concerto_stack.png)
 
 These tasks may all be performed by a single full-stack developer, but are more typically performed by:
 * Business analyst, responsible for defining the data model
@@ -64,16 +63,16 @@ namespace net.biz.digitalPropertyNetwork
 
 asset LandTitle identified by titleId {
   o String   titleId
-  --> Person   owner
+  o Person   owner
   o String   information
   o Boolean  forSale   optional
 }
 
 asset SalesAgreement identified by salesId {
   o String    salesId
-  --> Person    buyer
-  --> Person    seller
-  --> LandTitle title
+  o Person    buyer
+  o Person    seller
+  o LandTitle title
 }
 
 participant Person identified by personId {
@@ -196,16 +195,3 @@ return admin.createProfile('testprofile', config)
 Front-end developers use domain-specific (dynamically generated from the domain model for the business network definition) to interact with assets and asset registries.
 
 In addition, if they are building an Angular2 application, they may generate Typescript types from the domain model, ensuring type-safety in the user interface code they are writing.
-
----
-
-<i class="fa fa-fw  fa-forward"></i>  <b>WHERE TO NEXT?</b><br>
-
----
-
-Read more about the key concepts in a Business Network on our Concepts page, or get ready for app development with Quickstart.
-
-[Fabric Composer Concepts Doc](../concepts/index.md)
-
-[Developer Quickstart](../start/quickstart.md)
-

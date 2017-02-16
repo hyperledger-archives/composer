@@ -3,11 +3,12 @@ layout: default
 title: Task - Diagnosing Problems
 category: tasks
 sidebar: sidebars/tasks.md
-excerpt: How to diagnose problems
+excerpt: Diagnose Problems
 ---
 
+# Diagnose Problems
 
-# How to diagnose problems
+---
 
 If something should ever go wrong with an application, what should you do about getting diagnostics?
 

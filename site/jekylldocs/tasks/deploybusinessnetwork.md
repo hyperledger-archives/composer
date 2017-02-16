@@ -7,6 +7,9 @@ excerpt: How to deploy a Business Network
 ---
 
 # Deploying a Business Network
+
+---
+
 A business network is deployed using the `composer network deploy` command.
 
 ## Procedure

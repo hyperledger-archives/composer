@@ -6,7 +6,9 @@ sidebar: sidebars/reference.md
 excerpt: Fabric Composer Participant Add Command
 ---
 
-# composer participant add
+# Composer participant add
+
+---
 
 The `composer participant add` command adds a new instance of a participant to a
 participant registry. See the task [Add a Participant](../tasks/participant-add.md)
