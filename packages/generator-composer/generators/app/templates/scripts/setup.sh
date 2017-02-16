@@ -11,7 +11,7 @@ rm -rf ~/.composer-connection-profiles/*
 rm -rf ~/.composer-credentials/*
 
 # Shut down the Docker containers that might be currently running.
-cd ${DIR}/scripts
+cd "${DIR}/scripts"
 docker-compose kill && docker-compose down
 
 
@@ -26,7 +26,7 @@ docker-compose build
 docker-compose up -d
 
 #
-cd ${DIR}
+cd "${DIR}"
 
 # Wait for the Hyperledger Fabric to start.
 while ! nc localhost 7051 </dev/null; do sleep 1; done
