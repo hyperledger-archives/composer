@@ -8,18 +8,30 @@ excerpt: How to install the development pre-requisites
 
 # Installing Development Pre-requisites
 
-The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. There are step by step [instructions](#Manual Installation) for installing these if perhaps you have some of them already.
+The essential tools you will need are:
 
-There are also [two scripts](#Automatic Installation) that can be used on Ubuntu to install everything automatically.
+- [*git*](#2-installing-git)
+- [*node.js and npm*](#3-installing-nvm)
+- [*docker*](#4-installing-docker-engine)
+- [*docker-compose*](#5-installing-docker-compose)
+
+You will also need a code editor, for example [*Atom*](#1-1-atom) or [*VSCode*](#1-2-visual-studio-code).
+
+There is a script that can be used on Ubuntu to install the essential tools [automatically](#automatic-installation). There are also step by step instructions for [manually](#manual-installation) installing the essential tools or editors in isolation if you have some of them already.
 
 The recommended versions are:
-*Docker*: v1.12.5
-*Docker-compose*: v1.9.0
-*node.js*: v6.9.5
+
+- *Docker*: v1.12.5
+- *Docker-compose*: v1.9.0
+- *node.js*: v6.9.5
 
 ## Automatic Installation
 
-The script to install the pre-requisites can be found in [GettingStarted](https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started) under [scripts](https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started/scripts) and is named [prereqs-ubuntu.sh](https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/scripts/prereqs-ubuntu.sh).
+The script to install the pre-requisite tools can be found in [GettingStarted](https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started) under [scripts](https://github.com/fabric-composer/sample-applications/tree/master/packages/getting-started/scripts) and is named [prereqs-ubuntu.sh](https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/scripts/prereqs-ubuntu.sh).
+
+The script must be run twice. On the first run the script will install *git*, *nvm*, *node and npm (via nvm)*, and *docker*.
+
+On the second run, performed after logout and login, and using the 'docker' flag, the script will install *python* and *docker-compose*.
 
 Usage:
 
@@ -37,6 +49,7 @@ ibm@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh docker
 **Additional Notes:**
 
 - The installation commands have been tested on Ubuntu 14.04 (trusty), 64-bit. For other versions of Ubuntu, please check the official installation guides found under each instruction.
+- The script will not install a code editor. Manual installation of recommended code editors is provided in the [manual installation](#1-installing-an-editor) section.
 
 
 ## Manual Installation
@@ -48,7 +61,7 @@ However, we recommend either using Atom or Visual Studio Code as both have excel
 development. We have even created an experimental CTO file syntax highlighting plugin for Atom.
 
 ### 1.1 Atom
-[Atom](https://atom.io/) is a very popular editor and several contributors use it. Install Atom, and when you have done so, you are required to turn off Google analytics if you work for IBM. Navigate to Atom->Preferences->Packages, search and find the `metrics` package and disable it.
+[Atom](https://atom.io/) is a very popular editor and several contributors use it. Having installed Atom, it may be a company requirement to disable the Google Analytics package (as is the case if you work for IBM). To do this, navigate to Atom->Preferences->Packages, search and find the `metrics` package and disable it.
 
 ####Installation Commands for Ubuntu:
 
@@ -108,7 +121,7 @@ tbd
 - [Official VS Code installation guide](https://code.visualstudio.com/docs/setup/setup-overview)
 
 ### 2. Installing Git
-This is probably already installed on most Linux machines. Setup is well documented on the [ibm.git website](https://help.github.com/enterprise/2.7/user/articles/set-up-git/). Pay particular attention to [setting up the SSL keys](https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux) that are required.
+Git setup is well documented on the [official Git installation guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
 **Installation Commands for Ubuntu:**
 
@@ -122,10 +135,6 @@ sudo apt-get -y install git
 ```bash
 tbd
 ```
-
-**Additional Notes:**
-
-- [Official Git installation guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 ### 3. Installing NVM
 We highly recommend installing [nvm](https://github.com/creationix/nvm) to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation.
