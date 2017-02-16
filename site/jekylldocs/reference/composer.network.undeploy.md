@@ -7,6 +7,9 @@ excerpt: Composer Network Undeploy CLI
 ---
 
 # Fabric Composer Network Undeploy
+
+---
+
 The `composer network undeploy` utility is used to undeploy a business network from a Hyperledger Fabric runtime.
 
 ```

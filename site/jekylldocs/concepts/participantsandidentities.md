@@ -5,7 +5,10 @@ category: concepts
 sidebar: sidebars/concepts.md
 excerpt: Business Network
 ---
+
 # Participants and Identities
+
+---
 
 A `Participant` is an actor in a business network. A participant might be an
 individual or an organization. A participant can create assets, and also exchange

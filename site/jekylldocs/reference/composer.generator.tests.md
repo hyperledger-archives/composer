@@ -7,6 +7,9 @@ excerpt: Generator CLI
 ---
 
 # Fabric Composer Generator
+
+---
+
 The `composer generator` utility is used to automatically generate parts of your project from your business network archive.
 
 ## Tests

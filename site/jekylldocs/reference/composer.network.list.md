@@ -7,6 +7,9 @@ excerpt: Composer Network List CLI
 ---
 
 # Fabric Composer Network List
+
+---
+
 The `composer network list` utility is used to connect to a business network and retrieve metadata and asset information.
 
 ```
@@ -33,19 +36,19 @@ List business network digitalproperty-network
 name:        digitalproperty-network
 identifier:  digitalproperty-network@0.0.1
 description: Digital Property Network
-models: 
+models:
   - net.biz.digitalPropertyNetwork
-scripts: 
+scripts:
   - lib/DigitalLandTitle.js
-registries: 
-  net.biz.digitalPropertyNetwork.SalesAgreement: 
+registries:
+  net.biz.digitalPropertyNetwork.SalesAgreement:
     id:           net.biz.digitalPropertyNetwork.SalesAgreement
     name:         Asset registry for net.biz.digitalPropertyNetwork.SalesAgreement
     registryType: Asset
-    assets: 
-  net.biz.digitalPropertyNetwork.LandTitle: 
+    assets:
+  net.biz.digitalPropertyNetwork.LandTitle:
     id:           net.biz.digitalPropertyNetwork.LandTitle
     name:         Asset registry for net.biz.digitalPropertyNetwork.LandTitle
     registryType: Asset
-    assets: 
+    assets:
 ```
