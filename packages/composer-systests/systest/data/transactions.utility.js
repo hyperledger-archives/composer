@@ -17,8 +17,8 @@ function utilityFuncA(transaction) {
 function utilityFuncB(transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
-            let f = getFactory();
-            let a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var f = getFactory();
+            var a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = transaction.stringValue;
             return ar.add(a);
         });
