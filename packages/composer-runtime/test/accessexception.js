@@ -39,8 +39,8 @@ describe('AccessException', function () {
             o String participantId
         }`);
         factory = new Factory(modelManager);
-        asset = factory.newInstance('org.acme.test', 'TestAsset', 'A1234');
-        participant = factory.newInstance('org.acme.test', 'TestParticipant', 'P5678');
+        asset = factory.newResource('org.acme.test', 'TestAsset', 'A1234');
+        participant = factory.newResource('org.acme.test', 'TestParticipant', 'P5678');
     });
 
     describe('#constructor', function () {

@@ -124,7 +124,7 @@ class InstanceGenerator {
             let idx = Math.round(Math.random() * 9999).toString();
             idx = leftPad(idx, 4, '0');
             let id = `${identifierFieldName}:${idx}`;
-            let resource = parameters.factory.newInstance(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
+            let resource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id);
             parameters.stack.push(resource);
             return classDeclaration.accept(this, parameters);
         }
