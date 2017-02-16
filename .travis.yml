@@ -40,3 +40,5 @@ deploy:
         all_branches: true
 cache: false
 sudo: required
+notifications:
+  slack: ibm-blockchain:Q6FOI8YfIq7P4L51WTaiDSKv
