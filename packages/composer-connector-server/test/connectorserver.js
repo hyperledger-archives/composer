@@ -14,16 +14,103 @@
 
 'use strict';
 
-/* const ConnectorServer = */ require('..');
+const proxyquire = require('proxyquire');
+const chai = require('chai');
+const should = chai.should();
+const sinon = require('sinon');
 
 describe('ConnectorServer', () => {
+
+    let connectorServer;
+
+    let npmError;
+    let npmStdout;
+    let npmSterr;
+    let requestMock = sinon.stub();
+
+
+    beforeEach(() => {
+        let execStub = ((command, execFunction) => {
+            execFunction(npmError, npmStdout, npmSterr);
+        });
+
+        let response = {
+            body: {
+                access_token: 'abcd'
+            }
+        };
+
+        requestMock.callsArgWith(1, null, response);
+
+        let mock = {
+            child_process : {'exec' : execStub},
+            request : requestMock
+        };
+
+        const ConnectorServer = proxyquire('../lib/connectorServer', mock);
+
+        let mockSocket = {
+            on : sinon.stub()
+        };
+
+        connectorServer = new ConnectorServer(null, null, mockSocket);
+    });
 
     describe('#constructor', () => {
 
         it('should do something', () => {
-
         });
 
     });
 
+    describe('#getNpmInfo', () => {
+        it('should get npm info', (done) => {
+            npmError = null;
+            npmStdout = '{\n test: 123 \n } \n';
+            npmSterr = '';
+            connectorServer.getNpmInfo('myModule', (err, response) => {
+                should.not.exist(err);
+                response.should.deep.equal({test : 123});
+                done();
+            });
+        });
+
+        it('should deal with error with npm info', (done) => {
+            npmError = 'some error';
+            npmStdout = '';
+            npmSterr = '';
+            connectorServer.getNpmInfo('myModule', (err) => {
+                err.should.equal('some error');
+                done();
+            });
+        });
+
+        it('should deal with error in json', (done) => {
+            npmError = null;
+            npmStdout = '{\n test: 123 \n \n';
+            npmSterr = '';
+            //  nockExec('npm view myModule').reply(0, '{\n test: 123 \n  \n');
+            connectorServer.getNpmInfo('myModule', (err) => {
+                err.message.should.equal('Unexpected token )');
+                done();
+            });
+        });
+    });
+
+    describe('#getGitHubAccessToken', () => {
+        it('should get the access token from github', (done) => {
+            connectorServer.getGitHubAccessToken('1234', (err, response) => {
+                response.access_token.should.equal('abcd');
+                done();
+            });
+        });
+
+        it('should deal with error from github', (done) => {
+            requestMock.callsArgWith(1, 'some error');
+            connectorServer.getGitHubAccessToken('1234', (err, response) => {
+                err.should.equal('some error');
+                done();
+            });
+        });
+    });
 });

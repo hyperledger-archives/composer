@@ -22,6 +22,7 @@ export class SampleComponent implements OnInit {
   private sampleDescription: string = null;
   private owner: string = '';
   private repository: string = '';
+  private gitHubAuthenticated: boolean = false;
 
   @ViewChild('modal') private modal;
 
@@ -42,18 +43,18 @@ export class SampleComponent implements OnInit {
       .then(() => {
         return this.clientService.ensureConnected();
       })
-      .then(() => {
-        return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner, fabricComposerRepository);
-      })
-      .then((modelsInfo) => {
-        this.sampleNetworks = modelsInfo;
-        this.sampleName = this.sampleNetworks[0].name;
-        this.sampleDescription = this.sampleNetworks[0].description
-      });
   }
 
   private onShow() {
-
+    this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
+    if (this.gitHubAuthenticated) {
+      return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner, fabricComposerRepository)
+        .then((modelsInfo) => {
+          this.sampleNetworks = modelsInfo;
+          this.sampleName = this.sampleNetworks[0].name;
+          this.sampleDescription = this.sampleNetworks[0].description
+        });
+    }
   }
 
   private onHidden() {

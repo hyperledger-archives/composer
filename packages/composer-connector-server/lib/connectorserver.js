@@ -14,11 +14,13 @@
 
 'use strict';
 
+const config = require('../config/environment');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Logger = require('composer-common').Logger;
 const realSerializerr = require('serializerr');
 const uuid = require('uuid');
 const exec = require('child_process').exec;
+const request = require('request');
 
 const LOG = Logger.getLog('ConnectorServer');
 
@@ -499,7 +501,6 @@ class ConnectorServer {
     getNpmInfo (moduleName, callback) {
         const method = 'getNpmInfo';
         LOG.entry(method, moduleName);
-
         let child = exec('npm view ' + moduleName,
             function (error, stdout, stderr) {
                 if (error !== null) {
@@ -515,6 +516,7 @@ class ConnectorServer {
                         return callback(null, result);
                     } catch (error) {
                         LOG.error(error);
+                        return callback(error);
                     }
                 }
             });
@@ -523,6 +525,34 @@ class ConnectorServer {
         return child;
     }
 
+    /**
+     * Exchange access code for a access token from github
+     * @param {string} accessCode The code obtained from authenicating with github
+     * @param {function} callback The callback to call when complete
+     * @return {Promise} A promise that is resolved when complete.
+     */
+    getGitHubAccessToken (accessCode, callback) {
+        const method = 'getGithubAccessToken';
+        LOG.entry(method, accessCode);
+
+        let endpoint = config.githubAccessTokenUrl + '?' +
+            'client_id=' + config.clientId +
+            '&client_secret=' + config.clientSecret +
+            '&code=' + accessCode;
+
+        return request({
+            method : 'POST',
+            url : endpoint,
+            json : true
+        }, function handleResponse (err, response) {
+            if (err) {
+                LOG.error({err : err}, 'Error occurred while attempting to exchange code for access token.');
+                return callback(err);
+            }
+
+            return callback(null, response.body);
+        });
+    }
 }
 
 module.exports = ConnectorServer;
