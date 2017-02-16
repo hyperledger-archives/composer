@@ -70,16 +70,16 @@ describe('Access control system tests', () => {
 
     beforeEach(() => {
         let factory = client.getBusinessNetwork().getFactory();
-        alice = factory.newInstance('systest.accesscontrols', 'SampleParticipant', 'alice@mailcorp.com');
+        alice = factory.newResource('systest.accesscontrols', 'SampleParticipant', 'alice@mailcorp.com');
         alice.firstName = 'Alice';
         alice.lastName = 'Ashley';
-        aliceCar = factory.newInstance('systest.accesscontrols', 'SampleAsset', 'AL1 CE');
+        aliceCar = factory.newResource('systest.accesscontrols', 'SampleAsset', 'AL1 CE');
         aliceCar.theValue = 'Alice\'s car';
         aliceCar.owner = factory.newRelationship('systest.accesscontrols', 'SampleParticipant', 'alice@mailcorp.com');
-        bob = factory.newInstance('systest.accesscontrols', 'SampleParticipant', 'bob@mailcorp.com');
+        bob = factory.newResource('systest.accesscontrols', 'SampleParticipant', 'bob@mailcorp.com');
         bob.firstName = 'Bob';
         bob.lastName = 'Bradley';
-        bobCar = factory.newInstance('systest.accesscontrols', 'SampleAsset', 'BO85 CAR');
+        bobCar = factory.newResource('systest.accesscontrols', 'SampleAsset', 'BO85 CAR');
         bobCar.theValue = 'Bob\'s car';
         bobCar.owner = factory.newRelationship('systest.accesscontrols', 'SampleParticipant', 'bob@mailcorp.com');
         let aliceIdentity = uuid.v4(), bobIdentity = uuid.v4();

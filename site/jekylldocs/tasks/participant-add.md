@@ -41,7 +41,7 @@ participant Person identified by personId {
     businessNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork')
         .then((participantRegistry) => {
             let factory = businessNetworkConnection.getFactory();
-            let participant = factory.newInstance('net.biz.digitalPropertyNetwork', 'Person', 'mae@biznet.org');
+            let participant = factory.newResource('net.biz.digitalPropertyNetwork', 'Person', 'mae@biznet.org');
             participant.firstName = 'Mae';
             participant.lastName = 'Smith';
             return participantRegistry.add(participant);

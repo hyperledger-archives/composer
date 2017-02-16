@@ -81,7 +81,7 @@ describe('#Transactions', () => {
 
 function createAsset(businessNetworkConnection, assetRegistry, assetType, assetId) {
       let factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-      let asset = factory.newInstance(assetRegistry, assetType, assetId);
+      let asset = factory.newResource(assetRegistry, assetType, assetId);
 
       return asset;
 }

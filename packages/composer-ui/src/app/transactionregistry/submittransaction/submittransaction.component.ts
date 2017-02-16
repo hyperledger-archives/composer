@@ -69,7 +69,7 @@ export class SubmitTransactionComponent implements OnInit {
     let idx = Math.round(Math.random() * 9999).toString();
     idx = leftPad(idx, 4, '0');
     let id = `${classDeclaration.getIdentifierFieldName()}:${idx}`;
-    let resource = factory.newInstance(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id, { generate: true });
+    let resource = factory.newResource(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName(), id, { generate: true });
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);

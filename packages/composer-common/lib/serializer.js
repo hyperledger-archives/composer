@@ -138,7 +138,7 @@ class Serializer {
         options = options || {};
 
         // create a new instance, using the identifier field name as the ID.
-        let resource = this.factory.newInstance( classDeclaration.getModelFile().getNamespace(),
+        let resource = this.factory.newResource( classDeclaration.getModelFile().getNamespace(),
           classDeclaration.getName(), jsonObject[classDeclaration.getIdentifierFieldName()] );
 
         // populate the resource based on the jsonObject
