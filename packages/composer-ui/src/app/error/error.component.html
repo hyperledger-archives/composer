@@ -8,7 +8,8 @@
         <h4 class="modal-title">Error</h4>
       </div>
       <div class="modal-body">
-        <p class="w-100">{{error}}</p>
+        <!-- allow html in error strings for lniks to the doc -->
+        <div class="w-100" [innerHTML]="error"></div>
         <button type="button" class="btn btn-primary" (click)="modal.hide();">
           <span>OK</span>
         </button>

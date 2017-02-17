@@ -46,7 +46,7 @@ describe('Test Model', function(){
             let factory = new Factory(modelManager);
 
             // create a new instance
-            let cObject = factory.newInstance(
+            let cObject = factory.newResource(
                 'org.acme', 'Vehicle', 'CAR_123' );
 
             // model is defined as a string
@@ -87,7 +87,7 @@ describe('Test Model', function(){
             let factory = new Factory(modelManager);
 
             // create a new instance
-            let cObject =  factory.newInstance(
+            let cObject =  factory.newResource(
                 'org.acme', 'Vehicle', 'AAAAAAAAXBB123456' );
 
             const customer = factory.newConcept('org.acme', 'Customer');
@@ -152,7 +152,7 @@ describe('Test Model', function(){
 
             // create a new instance
             let factory = new Factory(modelManager);
-            let cObject =  factory.newInstance(
+            let cObject =  factory.newResource(
                 'org.acme', 'Vehicle', 'CAR_123' );
 
             // vin is the identifying field for Vehicles, so should have been

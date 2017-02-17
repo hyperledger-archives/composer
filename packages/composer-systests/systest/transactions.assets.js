@@ -60,9 +60,9 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that contains assets', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'SimpleTransactionWithAssets');
-        transaction.stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        transaction.stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         transaction.stringAsset.stringValue = 'party parrot in hursley';
-        transaction.integerAsset = factory.newInstance('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1');
+        transaction.integerAsset = factory.newResource('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1');
         transaction.integerAsset.integerValue = 5318008;
         return client.submitTransaction(transaction);
     });
@@ -71,14 +71,14 @@ describe('Transaction (asset specific) system tests', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'SimpleTransactionWithAssetArrays');
         transaction.stringAssets = [
-            factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1'),
-            factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2')
+            factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1'),
+            factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2')
         ];
         transaction.stringAssets[0].stringValue = 'party parrot in hursley';
         transaction.stringAssets[1].stringValue = 'party parrot in san francisco';
         transaction.integerAssets = [
-            factory.newInstance('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1'),
-            factory.newInstance('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset2')
+            factory.newResource('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1'),
+            factory.newResource('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset2')
         ];
         transaction.integerAssets[0].integerValue = 5318008;
         transaction.integerAssets[1].integerValue = 56373351;
@@ -87,9 +87,9 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that contains relationships to assets', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset.stringValue = 'party parrot in hursley';
-        let integerAsset = factory.newInstance('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1');
+        let integerAsset = factory.newResource('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1');
         integerAsset.integerValue = 5318008;
         let transaction = factory.newTransaction('systest.transactions.assets', 'SimpleTransactionWithAssetRelationships');
         transaction.stringAsset = factory.newRelationship('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
@@ -122,13 +122,13 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that contains arrays of relationships to assets', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let stringAsset1 = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset1 = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset1.stringValue = 'party parrot in hursley';
-        let stringAsset2 = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2');
+        let stringAsset2 = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2');
         stringAsset2.stringValue = 'party parrot in san francisco';
-        let integerAsset1 = factory.newInstance('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1');
+        let integerAsset1 = factory.newResource('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset1');
         integerAsset1.integerValue = 5318008;
-        let integerAsset2 = factory.newInstance('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset2');
+        let integerAsset2 = factory.newResource('systest.transactions.assets', 'SimpleIntegerAsset', 'integerAsset2');
         integerAsset2.integerValue = 56373351;
         let transaction = factory.newTransaction('systest.transactions.assets', 'SimpleTransactionWithAssetRelationshipArrays');
         transaction.stringAssets = [
@@ -157,9 +157,9 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that gets all assets from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset1 = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let asset1 = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         asset1.stringValue = 'party parrot in hursley';
-        let asset2 = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2');
+        let asset2 = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2');
         asset2.stringValue = 'party parrot in san francisco';
         let transaction = factory.newTransaction('systest.transactions.assets', 'GetAllAssetsFromAssetRegistryTransaction');
         return client
@@ -180,7 +180,7 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that gets an asset from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.assets', 'GetAssetFromAssetRegistryTransaction');
         return client
@@ -196,7 +196,7 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that adds an asset in the transaction to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'AddAssetInTransactionToAssetRegistryTransaction');
-        transaction.stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        transaction.stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         transaction.stringAsset.stringValue = 'party parrot in hursley';
         return client
             .submitTransaction(transaction)
@@ -215,9 +215,9 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that adds an asset with a relationship in the transaction to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'AddAssetWithRelationshipInTransactionToAssetRegistryTransaction');
-        let stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset.stringValue = 'party parrot in hursley';
-        let relationshipAsset = factory.newInstance('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
+        let relationshipAsset = factory.newResource('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
         relationshipAsset.stringAsset = factory.newRelationship('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         transaction.relationshipAsset = relationshipAsset;
         return client.getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
@@ -260,7 +260,7 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that adds a new asset with a relationship to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'AddNewAssetWithRelationshipToAssetRegistryTransaction');
-        let stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset.stringValue = 'party parrot in hursley';
         return client.getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
             .then((assetRegistry) => {
@@ -284,10 +284,10 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that updates an asset in the transaction in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.assets', 'UpdateAssetInTransactionInAssetRegistryTransaction');
-        transaction.stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        transaction.stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         transaction.stringAsset.stringValue = 'party parrot in san francisco';
         return client
             .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
@@ -312,11 +312,11 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that updates an asset with a relationship in the transaction in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'UpdateAssetWithRelationshipInTransactionInAssetRegistryTransaction');
-        let stringAsset1 = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset1 = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset1.stringValue = 'party parrot in hursley';
-        let stringAsset2 = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2');
+        let stringAsset2 = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset2');
         stringAsset2.stringValue = 'party parrot in hursley';
-        let relationshipAsset = factory.newInstance('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
+        let relationshipAsset = factory.newResource('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
         relationshipAsset.stringAsset = factory.newRelationship('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         transaction.relationshipAsset = relationshipAsset;
         return client.getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
@@ -349,7 +349,7 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that updates a new asset in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.assets', 'UpdateNewAssetInAssetRegistryTransaction');
         return client
@@ -375,9 +375,9 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that updates a new asset with a relationship in an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'UpdateNewAssetWithRelationshipToAssetRegistryTransaction');
-        let stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset.stringValue = 'party parrot in hursley';
-        let relationshipAsset = factory.newInstance('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
+        let relationshipAsset = factory.newResource('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
         relationshipAsset.stringAsset = factory.newRelationship('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         return client.getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
             .then((assetRegistry) => {
@@ -407,10 +407,10 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that removes an asset in the transaction from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.assets', 'RemoveAssetInTransactionInAssetRegistryTransaction');
-        transaction.stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        transaction.stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         transaction.stringAsset.stringValue = 'party parrot in san francisco';
         return client
             .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
@@ -437,9 +437,9 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that removes an asset with a relationship in the transaction from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'RemoveAssetWithRelationshipInTransactionInAssetRegistryTransaction');
-        let stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset.stringValue = 'party parrot in hursley';
-        let relationshipAsset = factory.newInstance('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
+        let relationshipAsset = factory.newResource('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
         relationshipAsset.stringAsset = factory.newRelationship('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         transaction.relationshipAsset = relationshipAsset;
         return client
@@ -478,7 +478,7 @@ describe('Transaction (asset specific) system tests', () => {
 
     it('should submit and execute a transaction that removes a new asset from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let asset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         asset.stringValue = 'party parrot in hursley';
         let transaction = factory.newTransaction('systest.transactions.assets', 'RemoveNewAssetInAssetRegistryTransaction');
         return client
@@ -506,9 +506,9 @@ describe('Transaction (asset specific) system tests', () => {
     it('should submit and execute a transaction that removes a new asset with a relationship from an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'RemoveNewAssetWithRelationshipInAssetRegistryTransaction');
-        let stringAsset = factory.newInstance('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        let stringAsset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         stringAsset.stringValue = 'party parrot in hursley';
-        let relationshipAsset = factory.newInstance('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
+        let relationshipAsset = factory.newResource('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
         relationshipAsset.stringAsset = factory.newRelationship('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
         return client
             .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')

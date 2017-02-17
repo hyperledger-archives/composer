@@ -194,7 +194,7 @@ function onAddNewAssetToAssetRegistryTransaction(transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = 'party parrot in hursley';
             return ar.add(a);
         });
@@ -205,7 +205,7 @@ function onAddNewAssetWithRelationshipToAssetRegistryTransaction(transaction) {
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
             a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             return ar.add(a);
         });
@@ -232,7 +232,7 @@ function onUpdateNewAssetInAssetRegistryTransaction(transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = 'party parrot in san francisco';
             return ar.update(a);
         });
@@ -243,7 +243,7 @@ function onUpdateNewAssetWithRelationshipToAssetRegistryTransaction(transaction)
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
             a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
             return ar.update(a);
         });
@@ -270,7 +270,7 @@ function onRemoveNewAssetInAssetRegistryTransaction(transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = 'party parrot in san francisco';
             return ar.remove(a);
         });
@@ -281,7 +281,7 @@ function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction)
     return getAssetRegistry('systest.transactions.SimpleRelationshipAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleRelationshipAsset', 'relationshipAsset1');
             a.stringAsset = f.newRelationship('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             return ar.remove(a);
         });
@@ -297,7 +297,7 @@ function handleTheSingleAnnotatedTransaction(transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = transaction.stringValue;
             return ar.add(a);
         });
@@ -313,7 +313,7 @@ function handleMultipleAnnotatedTransactionFirst(transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
+            var a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset1');
             a.stringValue = transaction.stringValue1;
             return ar.add(a);
         });
@@ -329,7 +329,7 @@ function handleMultipleAnnotatedTransactionSecond(transaction) {
     return getAssetRegistry('systest.transactions.SimpleStringAsset')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
+            var a = f.newResource('systest.transactions', 'SimpleStringAsset', 'stringAsset2');
             a.stringValue = transaction.stringValue2;
             return ar.add(a);
         });

@@ -138,7 +138,7 @@ class JSONPopulator {
 
             // if this is identifiable, then we create a resource
             if(!classDeclaration.isConcept()) {
-                subResource = parameters.factory.newInstance(classDeclaration.getModelFile().getNamespace(),
+                subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
               classDeclaration.getName(), jsonItem[classDeclaration.getIdentifierFieldName()] );
             }
             else {
@@ -234,7 +234,7 @@ class JSONPopulator {
                     }
 
                     // create a new instance, using the identifier field name as the ID.
-                    let subResource = parameters.factory.newInstance(classDeclaration.getModelFile().getNamespace(),
+                    let subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
                         classDeclaration.getName(), jsonItem[classDeclaration.getIdentifierFieldName()] );
                     parameters.jsonStack.push(jsonItem);
                     parameters.resourceStack.push(subResource);
@@ -262,7 +262,7 @@ class JSONPopulator {
                 }
 
                 // create a new instance, using the identifier field name as the ID.
-                let subResource = parameters.factory.newInstance(classDeclaration.getModelFile().getNamespace(),
+                let subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
                     classDeclaration.getName(), jsonObj[classDeclaration.getIdentifierFieldName()] );
                 parameters.jsonStack.push(jsonObj);
                 parameters.resourceStack.push(subResource);
