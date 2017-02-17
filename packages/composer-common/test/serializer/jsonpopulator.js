@@ -179,7 +179,7 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
             (() => {
                 jsonPopulator.convertItem(assetDeclaration1, {
                     $class: 'org.acme.NOTAREALTYPE',
@@ -196,13 +196,13 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
             let resource = jsonPopulator.convertItem(assetDeclaration1, {
                 $class: 'org.acme.MyAsset1',
                 assetId: 'asset1'
             }, options);
             resource.should.be.an.instanceOf(Resource);
-            sinon.assert.calledWith(mockFactory.newInstance, 'org.acme', 'MyAsset1', 'asset1');
+            sinon.assert.calledWith(mockFactory.newResource, 'org.acme', 'MyAsset1', 'asset1');
         });
 
         it('should create a new resource from an object using a $class value even if it does not match the model', () => {
@@ -213,13 +213,13 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset2', 'asset2').returns(mockResource);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset2', 'asset2').returns(mockResource);
             let resource = jsonPopulator.convertItem(assetDeclaration1, {
                 $class: 'org.acme.MyAsset2',
                 assetId: 'asset2'
             }, options);
             resource.should.be.an.instanceOf(Resource);
-            sinon.assert.calledWith(mockFactory.newInstance, 'org.acme', 'MyAsset2', 'asset2');
+            sinon.assert.calledWith(mockFactory.newResource, 'org.acme', 'MyAsset2', 'asset2');
         });
 
         it('should create a new resource from an object using the model if no $class value is specified', () => {
@@ -230,12 +230,12 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
             let resource = jsonPopulator.convertItem(assetDeclaration1, {
                 assetId: 'asset1'
             }, options);
             resource.should.be.an.instanceOf(Resource);
-            sinon.assert.calledWith(mockFactory.newInstance, 'org.acme', 'MyAsset1', 'asset1');
+            sinon.assert.calledWith(mockFactory.newResource, 'org.acme', 'MyAsset1', 'asset1');
         });
 
     });
@@ -281,7 +281,7 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
             (() => {
                 jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration1, options);
             }).should.throw(/Invalid JSON data/);
@@ -299,7 +299,7 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource);
             let subResource = jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration1, options);
             subResource.should.be.an.instanceOf(Resource);
         });
@@ -391,9 +391,9 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource1 = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource1);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource1);
             let mockResource2 = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset2').returns(mockResource2);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset2').returns(mockResource2);
             (() => {
                 jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration2, options);
             }).should.throw(/Invalid JSON data/);
@@ -414,9 +414,9 @@ describe('JSONPopulator', () => {
                 modelManager: modelManager
             };
             let mockResource1 = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource1);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset1').returns(mockResource1);
             let mockResource2 = sinon.createStubInstance(Resource);
-            mockFactory.newInstance.withArgs('org.acme', 'MyAsset1', 'asset2').returns(mockResource2);
+            mockFactory.newResource.withArgs('org.acme', 'MyAsset1', 'asset2').returns(mockResource2);
             let subResources = jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration2, options);
             subResources.should.have.length.of(2);
             subResources[0].should.be.an.instanceOf(Resource);

@@ -29,6 +29,7 @@ import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
 import { ResetComponent } from './reset';
 import { SampleComponent } from './sample';
+import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
 
@@ -81,13 +82,14 @@ type StoreType = {
     ErrorComponent,
     ResetComponent,
     SampleComponent,
+    GithubComponent,
     NoContentComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot(ROUTES, { useHash: true, preloadingStrategy: PreloadAllModules }),
+    RouterModule.forRoot(ROUTES, { useHash: false, preloadingStrategy: PreloadAllModules }),
     CodemirrorModule,
     ModalModule.forRoot(),
     TooltipModule.forRoot(),

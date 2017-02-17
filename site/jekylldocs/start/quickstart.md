@@ -42,6 +42,18 @@ cd getting-started
 npm install
 ```
 
+***npm install***
+
+`npm install` will run several scripts that are packaged into the getting-started repository. 
+
+<small>[Reference material](https://fabric-composer.github.io/reference/commands.html) for Composer CLI</small>
+
+1. *scripts/download-hyperledger.sh* - This kills any docker images started with the */scripts/docker-compose.yml* file, remove the current default connection profile, *~/.composer-connection-profiles/defaultProfile* and pull the required Hyperledger Fabric base image.
+2. *scripts/start-hyperledger.sh* - This uses the */scripts/docker-compose.yml* by running `docker-compose up -d --build` to create a Hyperledger Fabric peer and memebership service docker container.
+3. `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna` - using Composer CLI, create an archive of the *npm* module *digitalproperty-network* and *archive* it into a `digitalPropertyNetwork.bna`.
+4. `composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d` - Deploy the `digitalPropertyNetwork.bna` business network to the deployed fabric using the *defaultProfile* connection progfile.
+5. `composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d` - Lists the contents of a deployed business network.
+
 **Run the Getting Started Application:**
 
 Run the `npm test` command. You should see output as below.
@@ -122,3 +134,10 @@ info: [Composer-GettingStarted]
 info: [Composer-GettingStarted] Command completed successfully.
 
 ```
+
+***npm test***
+
+1. `mocha --recursive` - Runs all unit tests in the */tests* directory.
+2. `node cli.js landregistry bootstrap` - Run the boostrap command included in getting-started to create two land titles owned by Fred Bloggs.
+3. `node cli.js landregistry list` - Run the list command included the getting-started to lists all of the assets in the LandTitles asset registry.
+4. `node cli.js landregistry submit` - Run the submit command included the getting-started to submit a transaction that changes LandTitle *LID:6789*'s *ForSale* property to *Yes*.

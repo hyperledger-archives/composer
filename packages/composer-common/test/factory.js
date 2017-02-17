@@ -178,8 +178,8 @@ describe('Factory', () => {
             resource.timestamp.should.be.an.instanceOf(Date);
         });
 
-        it('should pass options onto newInstance', () => {
-            let spy = sandbox.spy(factory, 'newInstance');
+        it('should pass options onto newResource', () => {
+            let spy = sandbox.spy(factory, 'newResource');
             factory.newTransaction('org.acme.test', 'MyTransaction', null, { hello: 'world' });
             sinon.assert.calledOnce(spy);
             sinon.assert.calledWith(spy, 'org.acme.test', 'MyTransaction', '5604bdfe-7b96-45d0-9883-9c05c18fe638', { hello: 'world' });
