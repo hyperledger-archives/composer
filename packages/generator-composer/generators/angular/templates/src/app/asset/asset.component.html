@@ -117,7 +117,7 @@
 
 
 <div class="container">
-  <h1><%= currentAsset.name %></h1>
+  <h1 id='assetName'><%= currentAsset.name %></h1>
   <div class="row">
     <div class="col-md-12 text-right">
       <button (click)="resetForm()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAssetModal">Add Asset</button>
@@ -127,8 +127,8 @@
   <div class="row">
     <div class="col-md-12">
       <table class="table table-bordered table-responsive table-striped">
-        <thead>
-          <tr>
+        <thead class="thead">
+          <tr class="thead-cols">
             <% for(var y=0;y<currentAsset.properties.length;y++){ %>
                 <th class="info"><%=currentAsset.properties[y].name%></th>
             <%}%>
