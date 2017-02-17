@@ -1,0 +1,21 @@
+.composer {
+  header {
+    height: 50px;
+    margin-bottom: .5em;
+    display: flex;
+    flex-direction: column;
+
+    h1 {
+      width: 100%;
+      flex: 1;
+    }
+
+    nav {
+      display: flex;
+
+      .links {
+        flex: 1;
+      }
+    }
+  }
+}

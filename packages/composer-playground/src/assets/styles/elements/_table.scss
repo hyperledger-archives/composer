@@ -1,0 +1,27 @@
+// Tables
+.composer {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      tr {
+        th {
+          text-align: left;
+          border-bottom: 2px solid $third-highlight;
+          padding: 8px;
+          font-weight: 700;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          border-top: 1px solid $third-highlight;
+          padding: 8px;
+        }
+      }
+    }
+  }
+}
