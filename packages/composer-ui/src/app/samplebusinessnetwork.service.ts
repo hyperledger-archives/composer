@@ -179,11 +179,10 @@ export class SampleBusinessNetworkService {
   private socket;
   private connected: boolean = false;
 
+  public OPEN_SAMPLE = false;
+
   constructor(private adminService: AdminService,
               private clientService: ClientService) {
-
-    //TODO: need to put in OAuth info here
-    this.octo = new Octokat();
 
     const connectorServerURL = 'http://localhost:15699';
 
@@ -232,6 +231,14 @@ export class SampleBusinessNetworkService {
     });
   }
 
+  setUpGithub(accessToken: string) {
+    this.octo = new Octokat({token: accessToken});
+  }
+
+  isAuthenticatedWithGitHub(): boolean {
+    return this.octo ? true : false;
+  }
+
   private getModelsInfoMonoRepo(owner: string, repository: string, models: any): Promise<any> {
     let modelNames: string[] = [];
     models.items.forEach((modelContainer) => {
@@ -254,6 +261,9 @@ export class SampleBusinessNetworkService {
   }
 
   public getModelsInfo(owner: string, repository: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
     let repo = this.octo.repos(owner, repository);
 
     return repo.contents('packages').fetch()
@@ -274,6 +284,10 @@ export class SampleBusinessNetworkService {
   }
 
   public getSampleNetworkInfo(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
 
     return repo.contents(path + 'package.json').read()
@@ -289,6 +303,10 @@ export class SampleBusinessNetworkService {
   }
 
   public getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
     return repo.contents('packages').fetch()
     //in this case we have a mono-repo so need to find the path to the model
@@ -310,6 +328,10 @@ export class SampleBusinessNetworkService {
   }
 
   public getModel(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
     return repo.contents(path + 'models').fetch()
       .then((models) => {
@@ -368,6 +390,10 @@ export class SampleBusinessNetworkService {
   }
 
   private getScripts(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
 
     let scriptFileData = [];
@@ -396,6 +422,10 @@ export class SampleBusinessNetworkService {
   }
 
   private getAcls(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
 
     return repo.contents(path + 'permissions.acl').read()
