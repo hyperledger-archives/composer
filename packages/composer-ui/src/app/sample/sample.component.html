@@ -8,14 +8,24 @@
         <h4 class="modal-title">Deploy sample business network</h4>
       </div>
       <div class="modal-body">
-        <label for="sampleName">Sample</label>
-        <select class="form-control" id="sampleName" [(ngModel)]="sampleName" (ngModelChange)="onSampleNameChanged()">
-          <option *ngFor="let sampleNetwork of sampleNetworks">{{sampleNetwork.name}}</option>
-        </select>
-        <label for="sampleDescription" class="mt-2">Description</label>
-        <div class="card">
-          <div id="sampleDescription" class="card-block">
-            {{sampleDescription}}
+        <div *ngIf="!gitHubAuthenticated && oAuthEnabled">
+          <a href="https://github.com/login/oauth/authorize?client_id=dca17eadbdb10b65bc3f">Authenticate With Github</a>
+          <div class="card">
+            <div id="githubDescription" class="card-block">
+              To be able to see the samples you need to authenticate with github.
+            </div>
+          </div>
+        </div>
+        <div *ngIf="gitHubAuthenticated || !oAuthEnabled">
+          <label for="sampleName">Sample</label>
+          <select class="form-control" id="sampleName" [(ngModel)]="sampleName" (ngModelChange)="onSampleNameChanged()">
+            <option *ngFor="let sampleNetwork of sampleNetworks">{{sampleNetwork.name}}</option>
+          </select>
+          <label for="sampleDescription" class="mt-2">Description</label>
+          <div class="card">
+            <div id="sampleDescription" class="card-block">
+              {{sampleDescription}}
+            </div>
           </div>
         </div>
         <!--Put this back in when allow getting sample from a different github

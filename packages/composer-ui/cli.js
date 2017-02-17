@@ -15,8 +15,6 @@
 
 'use strict';
 
-process.env.SUPPRESS_NO_CONFIG_WARNING = true;
-
 const argv = require('yargs')
     .option('p', {
         alias: 'port',

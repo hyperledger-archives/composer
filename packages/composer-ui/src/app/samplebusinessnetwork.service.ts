@@ -179,11 +179,13 @@ export class SampleBusinessNetworkService {
   private socket;
   private connected: boolean = false;
 
+  public OPEN_SAMPLE: boolean = false;
+  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded to fix this problem you need to setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html"  target="_blank">here</a>';
+
+
+
   constructor(private adminService: AdminService,
               private clientService: ClientService) {
-
-    //TODO: need to put in OAuth info here
-    this.octo = new Octokat();
 
     const connectorServerURL = 'http://localhost:15699';
 
@@ -220,6 +222,22 @@ export class SampleBusinessNetworkService {
     });
   }
 
+  isOAuthEnabled() {
+    return new Promise((resolve, reject) => {
+      this.socket.emit('/api/isOAuthEnabled', (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+
+        //if we aren't doing oauth then we need to setup github without token
+        if(!result) {
+          this.setUpGithub(null);
+        }
+        resolve(result);
+      });
+    });
+  }
+
   getNpmInfo(name) {
     return new Promise((resolve, reject) => {
       this.socket.emit('/api/getNpmInfo', name, (error, info) => {
@@ -230,6 +248,18 @@ export class SampleBusinessNetworkService {
         resolve(info);
       });
     });
+  }
+
+  setUpGithub(accessToken: string) {
+    if(accessToken) {
+      this.octo = new Octokat({token: accessToken});
+    } else {
+      this.octo = new Octokat();
+    }
+  }
+
+  isAuthenticatedWithGitHub(): boolean {
+    return this.octo ? true : false;
   }
 
   private getModelsInfoMonoRepo(owner: string, repository: string, models: any): Promise<any> {
@@ -249,11 +279,15 @@ export class SampleBusinessNetworkService {
         return results;
       })
       .catch((error) => {
+        if(error.message)
         throw error
       });
   }
 
   public getModelsInfo(owner: string, repository: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
     let repo = this.octo.repos(owner, repository);
 
     return repo.contents('packages').fetch()
@@ -274,6 +308,10 @@ export class SampleBusinessNetworkService {
   }
 
   public getSampleNetworkInfo(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
 
     return repo.contents(path + 'package.json').read()
@@ -289,6 +327,10 @@ export class SampleBusinessNetworkService {
   }
 
   public getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
     return repo.contents('packages').fetch()
     //in this case we have a mono-repo so need to find the path to the model
@@ -310,6 +352,10 @@ export class SampleBusinessNetworkService {
   }
 
   public getModel(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
     return repo.contents(path + 'models').fetch()
       .then((models) => {
@@ -368,6 +414,10 @@ export class SampleBusinessNetworkService {
   }
 
   private getScripts(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
 
     let scriptFileData = [];
@@ -396,6 +446,10 @@ export class SampleBusinessNetworkService {
   }
 
   private getAcls(owner: string, repository: string, path: string): Promise<any> {
+    if(!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
     let repo = this.octo.repos(owner, repository);
 
     return repo.contents(path + 'permissions.acl').read()
