@@ -18,7 +18,7 @@ gem install redcarpet
 - Make the changes you want to any of the md files under the jekylldocs directories. Be careful if modifing anything in a directory starting with an underscore. Those are the template
 - Issue `npm run jeykllserve` and then go to the url that you get given at the end.
 - (or you can just  `cd jekylldocs`  and then `jekyll serve`)
-- What you can do do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser)
+- What you can do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser)
 - Then push your changes as per usual.
 
 

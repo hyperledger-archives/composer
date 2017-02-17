@@ -18,6 +18,7 @@
  [Issue an Identity to a Participant]({{site.baseurl}}/tasks/identity-issue.html)
  [Revoke an Identity of a Participant]({{site.baseurl}}/tasks/identity-revoke.html)
  [Implementing access control using the current Participant]({{site.baseurl}}/tasks/current-participant.html)
+ [Enable OAuth with Github]({{site.baseurl}}/tasks/github-oauth.html)
  [Diagnosing Problems]({{site.baseurl}}/tasks/diagnostics.html)
  **[API Documentation]({{site.baseurl}}/jsdoc/index.html)**
  **[Reference]({{site.baseurl}}/reference/MeetTheModules.html)**
