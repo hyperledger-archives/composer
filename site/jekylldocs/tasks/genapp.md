@@ -196,8 +196,8 @@ Once this has been done, you will then need to change into applications ``config
 Inside ``default.json``, the connection profile, business network identifier, enrollment id and secret to connect to the business network need to be set.
 The application can be then be started using ``npm start``.
 
-(Unit tests for components and services are coming soon)
 
+The generated application can then be tested using ``npm test`` and ``npm run e2e``.
 
 # Generating Tests
 
