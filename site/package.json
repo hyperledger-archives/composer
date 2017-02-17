@@ -28,6 +28,7 @@
     "sanitize-html": "^1.14.1"
   },
   "dependencies": {
+    "fs-extra": "^2.0.0",
     "github-changes": "^1.0.4",
     "jekyll": "^3.0.0-beta1",
     "moment": "^2.17.1"
