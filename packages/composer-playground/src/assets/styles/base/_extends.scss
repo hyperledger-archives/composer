@@ -1,0 +1,25 @@
+// Extends
+%input {
+  background-color: $fourth-highlight;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: .3em .8em .2em 0;
+  font-size: 1rem;
+  box-shadow: none;
+  color: $primary-text;
+  outline: none;
+  height: 2.5rem;
+
+  &.ng-dirty.invalid {
+    border-bottom: 1px solid $error-colour-1;
+  }
+
+  &:hover {
+    border-bottom: 2px solid $first-highlight;
+  }
+
+  &:focus {
+    border-bottom: 2px solid $first-highlight;
+  }
+}

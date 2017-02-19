@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="-487 364 24 24" enable-background="new -487 364 24 24" xml:space="preserve">
+<g id="Background" display="none">
+	<rect x="-487" y="364" display="inline" fill="#F0F0F0" width="24" height="24"/>
+</g>
+<g id="Icon">
+	<path fill="#777677" d="M-478,367c3.3,0,6,2.7,6,6s-2.7,6-6,6s-6-2.7-6-6S-481.3,367-478,367 M-478,365c-4.4,0-8,3.6-8,8
+		c0,4.4,3.6,8,8,8s8-3.6,8-8C-470,368.6-473.6,365-478,365L-478,365z"/>
+	
+		<rect x="-470.1" y="379.5" transform="matrix(-0.7071 0.7071 -0.7071 -0.7071 -528.1051 984.7469)" fill="#777677" width="4.2" height="7.1"/>
+	<path fill="#777677" d="M-478,367c3.3,0,6,2.7,6,6s-2.7,6-6,6s-6-2.7-6-6S-481.3,367-478,367 M-478,365c-4.4,0-8,3.6-8,8
+		c0,4.4,3.6,8,8,8s8-3.6,8-8C-470,368.6-473.6,365-478,365L-478,365z"/>
+	
+		<rect x="-470.1" y="379.5" transform="matrix(-0.7071 0.7071 -0.7071 -0.7071 -528.1051 984.7469)" fill="#777677" width="4.2" height="7.1"/>
+</g>
+<g id="Guide" display="none">
+	<g display="inline">
+		<path fill="#FFCCCC" d="M-464,365v22h-22v-22H-464 M-463,364h-24v24h24V364L-463,364z"/>
+	</g>
+</g>
+</svg>

@@ -1,0 +1,18 @@
+// Layout
+.composer {
+  .flex-container {
+    display : flex;
+  }
+
+  .flex {
+    flex: 1;
+  }
+
+  .flex2 {
+    flex: 2;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+}
