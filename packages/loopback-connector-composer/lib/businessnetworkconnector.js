@@ -61,7 +61,7 @@ class BusinessNetworkConnector extends Connector {
      */
     connect (callback) {
         debug('connect', callback);
-        console.log('CONNECTING...'+JSON.stringify(this.settings));
+        debug('settings', JSON.stringify(this.settings));
         this.connecting = true;
         this.connected = false;
         this.connectionPromise = this.businessNetworkConnection
@@ -187,43 +187,40 @@ class BusinessNetworkConnector extends Connector {
     /**
      * Retrieves all the instances of objects in the Business Network.
      * @param {string} lbModelName The name of the model.
-     * @param {string} whereFilter The filter of which objects to get
+     * @param {string} filter The filter of which objects to get
      * @param {Object} options The options provided by Loopback.
      * @param {function} callback The callback to call when complete.
      */
-    all(lbModelName, whereFilter, options, callback) {
-        debug('all', lbModelName, whereFilter, options);
+    all(lbModelName, filter, options, callback) {
+        debug('all', lbModelName, filter, options);
         let composerModelName = lbModelName.replace(/_/g, '.');
         let results = [];
         this.ensureConnected()
             .then(() => {
                 this.getRegistryForModel(composerModelName, (error, registry) => {
 
-                    // No filter so get all
-                    if(Object.keys(whereFilter).length === 0) {
-                        registry.getAll()
-                            .then((result) => {
-                                result.forEach((res) => {
-                                    results.push(this.serializer.toJSON(res));
-                                });
-                                callback(null, results);
-                            })
-                            .catch((error) => {
-                                callback(error);
-                            });
+                    // check for resolve include filter
+                    let doResolve = this.isResolveSet(filter);
+                    debug('doResolve', doResolve);
+                    let filterKeys = Object.keys(filter);
 
-                    } else {
+                    if(filterKeys.includes('where')) {
+                        debug('where', JSON.stringify(filter.where));
+                        let whereKeys = Object.keys(filter.where);
+                        debug('where keys', whereKeys);
+                        let identifierField = this.getClassIdentifier(composerModelName);
+                        debug('identifierField', identifierField);
+
                         // Check we have the right identifier for the object type
-                        let identifierFieldName = Object.keys(whereFilter.where)[0];
-                        if(this.isValidId(composerModelName, identifierFieldName)) {
-                            let objectId = whereFilter.where[identifierFieldName];
-                            registry.get(objectId)
+                        if(whereKeys.includes(identifierField)) {
+                            let objectId = filter.where[identifierField];
+                            if(doResolve) {
+                                registry.resolve(objectId)
                                 .then((result) => {
                                     results.push(this.serializer.toJSON(result));
                                     callback(null, results);
                                 })
                                 .catch((error) => {
-
                                     // check the error - it might be ok just an error indicating that the object doesn't exist
                                     debug('all: error ', error);
                                     if(error.toString().includes('does not exist')) {
@@ -233,8 +230,56 @@ class BusinessNetworkConnector extends Connector {
                                     }
                                 });
 
+                            } else {
+                                registry.get(objectId)
+                                .then((result) => {
+                                    results.push(this.serializer.toJSON(result));
+                                    callback(null, results);
+                                })
+                                .catch((error) => {
+                                    // check the error - it might be ok just an error indicating that the object doesn't exist
+                                    debug('all: error ', error);
+                                    if(error.toString().includes('does not exist')) {
+                                        callback(null, {});
+                                    } else {
+                                        callback(error);
+                                    }
+                                });
+                            }
                         } else {
                             callback('ERROR: the specified filter does not match the identifier in the model');
+                        }
+                    } else {
+                        debug('no where filter');
+                        if(doResolve) {
+                            debug('About to resolve on all');
+                            // get all unresolved objects
+                            registry.resolveAll()
+                                .then((result) => {
+                                    result.forEach((res) => {
+                                        console.log('RESULT: '+res.$class);
+                                        console.log('RESULT: '+JSON.stringify(res));
+                                        results.push(this.serializer.toJSON(res));
+                                    });
+                                    callback(null, results);
+                                })
+                                .catch((error) => {
+                                    callback(error);
+                                });
+
+                        } else {
+                            // get all unresolved objects
+                            debug('About to get all');
+                            registry.getAll()
+                                .then((result) => {
+                                    result.forEach((res) => {
+                                        results.push(this.serializer.toJSON(res));
+                                    });
+                                    callback(null, results);
+                                })
+                                .catch((error) => {
+                                    callback(error);
+                                });
                         }
                     }
                 });
@@ -244,6 +289,37 @@ class BusinessNetworkConnector extends Connector {
                 callback(error);
             });
     }
+
+    /**
+     * check if the filter contains an Include filter
+     * @param {string} filter The filter of which objects to get
+     * @return {boolean} true if there is an include that specifies to resolve
+     */
+    isResolveSet(filter) {
+        debug('isResolveSet', filter);
+        let filterKeys = Object.keys(filter);
+        if(filterKeys.includes('include')) {
+            if(filter.include === 'resolve') {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get the identifier for the given class
+     * @param {string} modelName The fully qualified Composer name of the class.
+     * @return {string} the identifier for this class
+     */
+    getClassIdentifier(modelName) {
+        debug('getClassIdentifier', modelName);
+        let classDeclaration = this.introspector.getClassDeclaration(modelName);
+        return classDeclaration.getIdentifierFieldName();
+    }
+
 
     /**
      * Check that the identifier provided matches that in the model.
