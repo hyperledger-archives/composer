@@ -2,32 +2,38 @@
 layout: default
 title: Fabric Composer Quickstart
 category: start
-excerpt: Getting Started with Fabric Composer
----
-
-## Fabric Composer Quickstart
+sidebar: sidebars/quickstart_sidebar.md
+excerpt: Quickstart
 
 ---
 
-<i class="fa fa-fw  fa-coffee"></i>  <b>GET READY</b><br>
+# Fabric Composer Quickstart
 
 ---
 
->Before you start, you should check that your system has the required software (at the required versions) installed:
-[Supported Platforms](../reference/platforms.md)
+Check that your system has the required software (at the required versions) installed:
+
+**Operating Systems:** Ubuntu Linux 14.04 LTS (64-bit) or Mac OS 10.12
+
+**Docker Engine:** Version 1.12.x
+
+**Docker-Compose:** Version 1.8.x
+
+**Node:** 4.6.x or 6.x
+
+**npm:** 4.0.x
+
 If you need to update or install anything please refer to the install guides:
 [Installing Prerequisites](../tasks/prerequisites.md)
 
----
-
-## Clone the Sample Applications repository
+**Clone the Sample Applications Repository:**
 
 ```
 npm install -g composer-cli
 git clone https://github.com/fabric-composer/sample-applications.git
 ```
 
-## Install the Getting Started Application
+**Install the Getting Started Application:**
 
 ```
 cd sample-applications/
@@ -36,15 +42,23 @@ cd getting-started
 npm install
 ```
 
-## Run the Getting Started Application
+***npm install***
+
+`npm install` will run several scripts that are packaged into the getting-started repository. 
+
+<small>[Reference material](https://fabric-composer.github.io/reference/commands.html) for Composer CLI</small>
+
+1. *scripts/download-hyperledger.sh* - This kills any docker images started with the */scripts/docker-compose.yml* file, remove the current default connection profile, *~/.composer-connection-profiles/defaultProfile* and pull the required Hyperledger Fabric base image.
+2. *scripts/start-hyperledger.sh* - This uses the */scripts/docker-compose.yml* by running `docker-compose up -d --build` to create a Hyperledger Fabric peer and memebership service docker container.
+3. `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna` - using Composer CLI, create an archive of the *npm* module *digitalproperty-network* and *archive* it into a `digitalPropertyNetwork.bna`.
+4. `composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d` - Deploy the `digitalPropertyNetwork.bna` business network to the deployed fabric using the *defaultProfile* connection progfile.
+5. `composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d` - Lists the contents of a deployed business network.
+
+**Run the Getting Started Application:**
 
 Run the `npm test` command. You should see output as below.
 
 ```
-npm test
-
-daniels-mbp:getting-started dselman$ npm test
-
 > getting-started@1.0.0 test /Users/dselman/dev/git/sample-applications/packages/getting-started
 > mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
 
@@ -120,12 +134,10 @@ info: [Composer-GettingStarted]
 info: [Composer-GettingStarted] Command completed successfully.
 
 ```
----
 
-<i class="fa fa-fw  fa-forward"></i>  <b>WHERE TO NEXT?</b><br>
+***npm test***
 
----
-
-Continue experimenting with one of our Getting Started guides:
-
-[Visit Getting Started](./index.md)
+1. `mocha --recursive` - Runs all unit tests in the */tests* directory.
+2. `node cli.js landregistry bootstrap` - Run the boostrap command included in getting-started to create two land titles owned by Fred Bloggs.
+3. `node cli.js landregistry list` - Run the list command included the getting-started to lists all of the assets in the LandTitles asset registry.
+4. `node cli.js landregistry submit` - Run the submit command included the getting-started to submit a transaction that changes LandTitle *LID:6789*'s *ForSale* property to *Yes*.

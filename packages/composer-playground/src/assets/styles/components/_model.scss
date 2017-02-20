@@ -1,0 +1,117 @@
+// Modals
+
+.composer {
+  // Kill the scroll on the body
+  .modal-open {
+    overflow: hidden;
+  }
+
+  // Container that the modal scrolls within
+  .modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+    outline: 0;
+    &.fade .modal-dialog {
+      @include transition(transform);
+      transform: translate(0, -25%);
+    }
+    &.show .modal-dialog {
+      transform: translate(0, 0);
+    }
+  }
+  .modal-open .modal {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .modal-dialog {
+    margin: 100px auto;
+    display: table;
+    min-width: 320px;
+  }
+
+  // Actual modal
+  .modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: $white;
+    background-clip: padding-box;
+    border: 1px solid $fourth-highlight;
+    outline: 0;
+  }
+
+  // Modal background
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: $black;
+
+    // Fade for backdrop
+    &.fade {
+      opacity: 0;
+    }
+    &.show {
+      opacity: 0.7;
+    }
+  }
+
+  // Modal header
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-medium;
+    border-bottom: 1px solid $fourth-highlight;
+  }
+
+  // Title text within header
+  .modal-title {
+    margin-bottom: 0;
+    line-height: $space-smedium;
+  }
+
+  // Modal body
+  section {
+    position: relative;
+    flex: 1 1 auto;
+    padding: $space-medium;
+  }
+
+  // Footer (for actions)
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: $space-medium;
+    border-top: 1px solid $fourth-highlight;
+
+    // Easily place margin between footer elements
+    > :not(:first-child) {
+      margin-left: .25rem;
+    }
+    > :not(:last-child) {
+      margin-right: .25rem;
+    }
+  }
+
+  // Measure scrollbar width for padding body during modal show/hide
+  .modal-scrollbar-measure {
+    position: absolute;
+    top: -9999px;
+    width: 50px;
+    height: 50px;
+    overflow: scroll;
+  }
+}
+

@@ -1,23 +1,23 @@
 /*
  * Angular 2 decorators and services
  */
-import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { AppState } from './app.service';
-import { AdminService } from './admin.service';
-import { ClientService } from './client.service';
-import { ConnectionProfileService } from './connectionprofile.service';
-import { WalletService } from './wallet.service';
-import { IdentityService } from './identity.service';
-import { NotificationService } from './notification.service';
-import { InitializationService } from './initialization.service';
-import { AddIdentityComponent } from './addidentity';
-import { BusyComponent } from './busy';
-import { ErrorComponent } from './error';
-import { ResetComponent } from './reset';
-import { SampleComponent } from './sample';
-import { SampleBusinessNetworkService } from "./samplebusinessnetwork.service";
+import {AppState} from './app.service';
+import {AdminService} from './admin.service';
+import {ClientService} from './client.service';
+import {ConnectionProfileService} from './connectionprofile.service';
+import {WalletService} from './wallet.service';
+import {IdentityService} from './identity.service';
+import {NotificationService} from './notification.service';
+import {InitializationService} from './initialization.service';
+import {AddIdentityComponent} from './addidentity';
+import {BusyComponent} from './busy';
+import {ErrorComponent} from './error';
+import {ResetComponent} from './reset';
+import {SampleComponent} from './sample';
+import {SampleBusinessNetworkService} from "./samplebusinessnetwork.service";
 
 const LZString = require('lz-string');
 
@@ -60,17 +60,17 @@ export class AppComponent {
   @ViewChild(AddIdentityComponent) private addIdentityComponent: AddIdentityComponent;
   @ViewChild(SampleComponent) private sampleComponent: SampleComponent;
 
-  constructor(
-    public appState: AppState,
-    private route: ActivatedRoute,
-    private router: Router,
-    private adminService: AdminService,
-    private clientService: ClientService,
-    private connectionProfileService: ConnectionProfileService,
-    private walletService: WalletService,
-    private identityService: IdentityService,
-    private notificationService: NotificationService,
-    private initializationService: InitializationService) {
+  constructor(public appState: AppState,
+              private route: ActivatedRoute,
+              private router: Router,
+              private adminService: AdminService,
+              private clientService: ClientService,
+              private connectionProfileService: ConnectionProfileService,
+              private walletService: WalletService,
+              private identityService: IdentityService,
+              private notificationService: NotificationService,
+              private initializationService: InitializationService,
+              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
 
   }
 
@@ -100,7 +100,9 @@ export class AppComponent {
   }
 
   ngOnDestroy() {
-    this.subs.forEach((sub) => { sub.unsubscribe(); });
+    this.subs.forEach((sub) => {
+      sub.unsubscribe();
+    });
   }
 
   queryParamsUpdated(queryParams: Object): Promise<any> {
@@ -116,7 +118,7 @@ export class AppComponent {
       this.adminService.getAdminConnection().createProfile(connectionProfileName, connectionProfile);
       this.connectionProfileService.setCurrentConnectionProfile(connectionProfileName);
       // Add the credentials to the wallet.
-      let wallet = this.walletService.getWallet(connectionProfileName)
+      let wallet = this.walletService.getWallet(connectionProfileName);
       return wallet.contains(userID)
         .then((exists) => {
           if (exists) {
@@ -144,6 +146,12 @@ export class AppComponent {
     } else {
       console.log('no invitation here');
     }
+
+    if(this.sampleBusinessNetworkService.OPEN_SAMPLE) {
+      this.sample();
+      this.sampleBusinessNetworkService.OPEN_SAMPLE = false;
+    }
+
     // We load the connection profiles now, so we can immediately populate the menu.
     this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
     return this.updateConnectionData()
@@ -223,8 +231,8 @@ export class AppComponent {
                 return identity;
               }
             });
-        // Otherwise there are credentials in the wallet, but we need to check
-        // that the current identity is valid.
+          // Otherwise there are credentials in the wallet, but we need to check
+          // that the current identity is valid.
         } else {
           console.log('Have credentials in wallet', credentials.join(', '));
           // Get the current identity.
@@ -240,12 +248,12 @@ export class AppComponent {
               return identity;
             });
         }
-    }).then((result) => {
-      if (result) {
-        this.connectionProfileService.setCurrentConnectionProfile(connectionProfile.name);
-        window.location.reload();
-      }
-    });
+      }).then((result) => {
+        if (result) {
+          this.connectionProfileService.setCurrentConnectionProfile(connectionProfile.name);
+          window.location.reload();
+        }
+      });
   }
 
   private addIdentity(connectionProfile?: string): Promise<string> {

@@ -5,7 +5,10 @@ category: reference
 sidebar: sidebars/reference.md
 excerpt: Glossary
 ---
+
 # Glossary and definition of terms
+
+---
 
 From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 

@@ -53,11 +53,4 @@ class TransactionRegistry extends Registry {
    + Promise getAllTransactionRegistries(SecurityContext,ModelManager,Factory,Serializer) 
    + Promise getTransactionRegistry(SecurityContext,string,ModelManager,Factory,Serializer) 
    + Promise addTransactionRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
-   + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer) 
-   + void add(Resource,string) 
-   + void addAll(Resource[]) 
-   + void update(Resource) 
-   + void updateAll(Resource[]) 
-   + void remove() 
-   + void removeAll() 
 }

@@ -1,5 +1,4 @@
 import {Component, ViewChild, EventEmitter, Input, Output, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
 
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
@@ -22,6 +21,8 @@ export class SampleComponent implements OnInit {
   private sampleDescription: string = null;
   private owner: string = '';
   private repository: string = '';
+  private gitHubAuthenticated: boolean = false;
+  private oAuthEnabled: boolean = false;
 
   @ViewChild('modal') private modal;
 
@@ -29,8 +30,7 @@ export class SampleComponent implements OnInit {
   @Output('onHidden') private hidden$ = new EventEmitter();
   @Output('onError') private error$ = new EventEmitter();
 
-  constructor(private route: ActivatedRoute,
-              private adminService: AdminService,
+  constructor(private adminService: AdminService,
               private clientService: ClientService,
               private notificationService: NotificationService,
               private sampleBusinessNetworkService: SampleBusinessNetworkService) {
@@ -43,17 +43,33 @@ export class SampleComponent implements OnInit {
         return this.clientService.ensureConnected();
       })
       .then(() => {
-        return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner, fabricComposerRepository);
+        return this.sampleBusinessNetworkService.isOAuthEnabled()
       })
-      .then((modelsInfo) => {
-        this.sampleNetworks = modelsInfo;
-        this.sampleName = this.sampleNetworks[0].name;
-        this.sampleDescription = this.sampleNetworks[0].description
+      .then((result) => {
+        this.oAuthEnabled = result;
       });
+
   }
 
   private onShow() {
+    this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
+    if (this.gitHubAuthenticated) {
+      return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner, fabricComposerRepository)
+        .then((modelsInfo) => {
+          this.sampleNetworks = modelsInfo;
+          this.sampleName = this.sampleNetworks[0].name;
+          this.sampleDescription = this.sampleNetworks[0].description
+        })
+        .catch((error) => {
+          if(error.message.includes('API rate limit exceeded')) {
+            error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
+          }
 
+          this.modal.hide();
+          this.error$.emit(error);
+          this.adminService.errorStatus$.next(error);
+        })
+    }
   }
 
   private onHidden() {
@@ -88,6 +104,11 @@ export class SampleComponent implements OnInit {
         this.deployInProgress = false;
       })
       .catch((error) => {
+        if(error.message.includes('API rate limit exceeded')) {
+          error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
+        }
+
+        this.modal.hide();
         this.error$.emit(error);
         this.deployInProgress = false;
         this.adminService.errorStatus$.next(error);

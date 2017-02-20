@@ -115,10 +115,10 @@ class ParticipantRegistry {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Create the first driver.
-         *     var driver1 = factory.newInstance('org.acme', 'Driver', 'VEHICLE_1');
+         *     var driver1 = factory.newResource('org.acme', 'Driver', 'VEHICLE_1');
          *     driver1.location = 'Southampton';
          *     // Create the second driver.
-         *     var driver2 = factory.newInstance('org.acme', 'Driver', 'VEHICLE_2');
+         *     var driver2 = factory.newResource('org.acme', 'Driver', 'VEHICLE_2');
          *     driver2.location = 'GREEN';
          *     // Add the drivers to the driver participant registry.
          *     return driverParticipantRegistry.addAll([driver1, driver2]);
@@ -148,7 +148,7 @@ class ParticipantRegistry {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Create the driver.
-         *     var driver = factory.newInstance('org.acme', 'Driver', 'VEHICLE_1');
+         *     var driver = factory.newResource('org.acme', 'Driver', 'VEHICLE_1');
          *     driver.location = 'Southampton';
          *     // Add the driver to the driver participant registry.
          *     return driverParticipantRegistry.add(driver);

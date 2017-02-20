@@ -34,7 +34,7 @@ Additionally, the Hyperledger team have added unit test support for chain-code. 
 
 Obviously, unit testing is not sufficient, and we do need to test the framework against a running Hyperledger Fabric to ensure that the system works as a whole. This is additional functional, system, and performance testing that should automatically be run after the unit test phase. However, these additional testing phases are not yet in place, and so are not currently documented.
 
-We use **mocha** to execute our JavaScript unit tests, and these unit tests can be executed locally with `npm test`. All JavaScript code should include unit tests that can be run without requiring a running Hyperledger Fabric.
+We use **mocha** to execute our JavaScript unit tests, and these unit tests can be executed locally with `npm test`. All JavaScript code should include unit tests that can be run without requiring a running Hyperledger Fabric. Tests within composer-connector-web and composer-runtime-web use **karma** to launch a browser, and consequently **chrome** must be installed to prevent test failures.
 
 We use the testing package built into Go for our Go unit tests, and these unit tests can be executed with `go test`. All Go code (primarily chain-code) should include unit tests that can be run without requiring a running Hyperledger Fabric.
 

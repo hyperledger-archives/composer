@@ -7,6 +7,9 @@ excerpt: Composer Archive Create CLI
 ---
 
 # Fabric Composer Archive Create
+
+---
+
 The `composer archive create` utility is used to create a business network archive from the contents of a root directory.
 
 ```
