@@ -21,6 +21,11 @@ textarea {
 html {
   font-size: 1em;
   line-height: 1.4;
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
 }
 
 /*
@@ -116,7 +121,6 @@ a {
 }
 
 code {
-  /*padding: 0.2em 0.4em;*/
   background: #f8f8f8;
   border: 1px solid #ddd;
   line-height: 1;
@@ -537,17 +541,16 @@ Context/Local Nav
 .context-nav a {
   display: block;
   cursor: pointer;
-  padding: 0.5em 0em;
-  border-bottom: 1px dotted rgba(0,0,0,0.2);
+  padding: 1em 0em;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
   text-decoration: none;
-  color: #0096c7;
+  color: #19273C;
   transition: all 0.5s ease;
 }
 
 .context-nav a:hover,
 .context-nav a:active {
-  background: #bfe6ed;
-  color: #207d8d;
+  color: #3C6DF0;
   text-decoration: none;
 }
 
@@ -1263,6 +1266,7 @@ Modify as content requires.
     margin: 0;
     padding: 0;
     max-width: 100%;
+    padding-top: 1em;
   }
 
   .context-nav ul > li {
@@ -1517,7 +1521,9 @@ align-items: center;
 	transform: rotateY(180deg);
 }
 
-
+.content {
+  padding-top: 4rem;
+}
 
 
 .highlight .hll { background-color: #ffffcc }

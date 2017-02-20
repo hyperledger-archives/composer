@@ -453,7 +453,7 @@ describe('BusinessNetworkConnection', () => {
             let asset = sinon.createStubInstance(Resource);
             assetDecl.getFullyQualifiedName.returns('such.ns.suchType');
             asset.getClassDeclaration.returns(assetDecl);
-            mockFactory.newInstance.returns(asset);
+            mockFactory.newResource.returns(asset);
             (function () {
                 businessNetworkConnection.submitTransaction(asset);
             }).should.throw(/such\.ns\.suchType is not a transaction/);

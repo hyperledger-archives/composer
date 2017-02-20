@@ -7,6 +7,9 @@ excerpt: How to generate a starter application
 ---
 
 # How Generate a Starter Application
+
+---
+
 We're going to assume that you've been through the Getting Started section and would like to now start to look at writing your own application to use Fabric Composer.
 
 To help getting started with this, there's a [Yeoman](http://yeoman.io/) generator that creates a suitable directory structure and helps bring in the required model and network modules.
@@ -48,7 +51,7 @@ yo fabric-composer
 ```
 Welcome to the Fabric Composer Skeleton Application Generator
 ? Please select the type of Application: (Use arrow keys)
-❯ CLI Application 
+❯ CLI Application
   Angular2 Application
 ```
 
@@ -193,8 +196,8 @@ Once this has been done, you will then need to change into applications ``config
 Inside ``default.json``, the connection profile, business network identifier, enrollment id and secret to connect to the business network need to be set.
 The application can be then be started using ``npm start``.
 
-(Unit tests for components and services are coming soon)
 
+The generated application can then be tested using ``npm test`` and ``npm run e2e``.
 
 # Generating Tests
 

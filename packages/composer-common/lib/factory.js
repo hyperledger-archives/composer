@@ -132,7 +132,7 @@ class Factory {
             newObj[idField] = id;
         }
 
-        debug('Factory.newInstance created %s', id );
+        debug('Factory.newResource created %s', id );
         return newObj;
     }
 
@@ -251,7 +251,7 @@ class Factory {
             throw new Error('type not specified');
         }
         id = id || uuid.v4();
-        let transaction = this.newInstance(ns, type, id, options);
+        let transaction = this.newResource(ns, type, id, options);
         const classDeclaration = transaction.getClassDeclaration();
 
         if (!(classDeclaration instanceof TransactionDeclaration)) {

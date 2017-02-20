@@ -208,7 +208,7 @@ describe('Globalization', function() {
 
                 expect(function() {
                     let factory = new Factory(modelManager);
-                    factory.newInstance('foo', 'bar', '123');
+                    factory.newResource('foo', 'bar', '123');
                 }).to.throw(Error, 'ModelFile for namespace foo has not been registered with the ModelManager');
             });
 
@@ -229,6 +229,42 @@ describe('Globalization', function() {
                 expect(function() {
                     let factory = new Factory(modelManager);
                     factory.newInstance('foo', 'bar', 123);
+                }).to.throw(Error, 'Type bar is not declared in namespace foo');
+            });
+        });
+
+        describe('check messages in newResource()', function() {
+            it('where namespace hasn\'t been registered in the model manager', function() {
+                let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
+                formatter({
+                    'namespace': 'foo'
+                }).should.equal('ModelFile for namespace foo has not been registered with the ModelManager');
+
+                const modelManager = new ModelManager();
+
+                expect(function() {
+                    let factory = new Factory(modelManager);
+                    factory.newResource('foo', 'bar', '123');
+                }).to.throw(Error, 'ModelFile for namespace foo has not been registered with the ModelManager');
+            });
+
+            it('where a type is\'t declared in a namespace', function() {
+                let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
+                formatter({
+                    namespace: 'foo',
+                    type: 'bar'
+                }).should.equal('Type bar is not declared in namespace foo');
+
+                const modelManager = new ModelManager();
+
+                let fileName = './test/concerto/models/factory/newinstance/foo-typenotdeclaredinns.cto';
+                let file = fs.readFileSync(fileName, 'utf8');
+                file.should.not.be.null;
+                modelManager.addModelFile(file);
+
+                expect(function() {
+                    let factory = new Factory(modelManager);
+                    factory.newResource('foo', 'bar', 123);
                 }).to.throw(Error, 'Type bar is not declared in namespace foo');
             });
         });

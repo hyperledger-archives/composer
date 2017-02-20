@@ -55,6 +55,15 @@ describe('AssetRegistry', () => {
 
     });
 
+    describe('#newResource', () => {
+
+        it('should proxy to the registry', () => {
+            mockFactory.newResource.withArgs('org.acme', 'Doge', 'DOGE_1').returns(mockResource);
+            factory.newResource('org.acme', 'Doge', 'DOGE_1').should.equal(mockResource);
+        });
+
+    });
+
     describe('#newInstance', () => {
 
         it('should proxy to the registry', () => {

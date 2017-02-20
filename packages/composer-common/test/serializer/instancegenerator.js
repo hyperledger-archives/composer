@@ -41,7 +41,7 @@ describe('InstanceGenerator', () => {
 
     let test = (modelFile) => {
         modelManager.addModelFile(modelFile);
-        let resource = factory.newInstance('org.acme.test', 'MyAsset', 'asset1');
+        let resource = factory.newResource('org.acme.test', 'MyAsset', 'asset1');
         parameters.stack = new TypedStack(resource);
         let classDeclaration = resource.getClassDeclaration();
         return classDeclaration.accept(visitor, parameters);

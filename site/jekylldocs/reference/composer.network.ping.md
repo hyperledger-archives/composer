@@ -7,6 +7,9 @@ excerpt: Composer Network Ping CLI
 ---
 
 # Fabric Composer Network Ping
+
+---
+
 The `composer network ping` utility is used to verify the connection to a business network deployed to a Hyperledger Fabric.
 Note that ping also returns the participant information for the identity that was used to connect to the network, if
 an identity has been issued for the participant.

@@ -1,0 +1,22 @@
+// Textareas
+.composer {
+	textarea {
+		@extend %input;
+		resize: none;
+		width: 100%;
+
+		&.code {
+			background-color: $fourth-highlight;
+    	color: $white;
+
+	    &:hover,
+	    &:focus {
+	      border-color: $first-highlight;
+	    }
+
+	    &.invalid {
+	      border-color: $error-colour-1;
+	    }
+	  }
+	}
+}

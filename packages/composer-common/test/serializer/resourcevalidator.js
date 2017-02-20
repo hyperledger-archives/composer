@@ -296,7 +296,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect using a missing super type', function () {
-            const vehicle = factory.newInstance('org.acme.l2', 'Vehicle', 'ABC');
+            const vehicle = factory.newResource('org.acme.l2', 'Vehicle', 'ABC');
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
@@ -310,7 +310,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect assigning to a missing type', function () {
-            const vehicle = factory.newInstance('org.acme.l3', 'Car', 'ABC');
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'ABC');
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
@@ -324,7 +324,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect assigning to an abstract type', function () {
-            const vehicle = factory.newInstance('org.acme.l3', 'Car', 'ABC');
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'ABC');
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
@@ -341,7 +341,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect additional field', function () {
-            const vehicle = factory.newInstance('org.acme.l3', 'Car', 'ABC');
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'ABC');
             vehicle.foo = 'Baz';
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');

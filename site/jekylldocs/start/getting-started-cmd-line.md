@@ -6,18 +6,12 @@ sidebar: sidebars/start.md
 excerpt: Getting Started with Fabric Composer
 ---
 
-## Running a sample with the CLI
+# Running a sample with the CLI
 
 ---
 
-<i class="fa fa-fw  fa-coffee"></i>  <b>GET READY</b><br>
-
----
-
->Before you follow these instructions, make sure you've completed the
+Before you follow these instructions, make sure you've completed the
 [Quickstart](./quickstart.md)!
-
----
 
 To help get started with application development using the Fabric Composer Framework, this guide will talk you through downloading Fabric Composer, starting a Fabric, deploying a simple business network and submitting transactions.
 
@@ -25,7 +19,9 @@ This is all done using a simple business network  **Digital Property Network**
 
 ## What is the Digital Property Network?
 
-This network will be expanded for other tutorials, but for this getting started we'll keep it simple. We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
+This network will be expanded for other tutorials, but for this getting started we'll keep it simple.
+
+We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
 
 ```javascript
 asset LandTitle identified by titleId {
@@ -59,7 +55,7 @@ transaction RegisterPropertyForSale identified by transactionId{
 The applications we're going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the Fabric Composer backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.
 
 ## But what is an asset?
-An is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.
+An asset is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.
 
 It's worth reading the [Overview](../overview/overview.md) page to get an idea of how everything fits together. The [Glossary](../reference/glossary.md) provides a detailed description of each term.
 
@@ -81,7 +77,13 @@ First clone the repository:
 
 ```bash
 git clone https://github.com/fabric-composer/sample-networks.git
+```
+
+```bash
 cd sample-networks/packages/DigitalProperty-Network
+```
+
+```bash
 npm install
 ```
 
@@ -190,7 +192,7 @@ info: [Composer-GettingStarted] Command completed successfully.
 info: [Composer-GettingStarted] Fabric Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
 =======
-
+```
 
 ## Digging Deeper
 

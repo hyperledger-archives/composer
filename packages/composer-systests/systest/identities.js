@@ -65,7 +65,7 @@ describe('Identity system tests', () => {
 
     beforeEach(() => {
         let factory = client.getBusinessNetwork().getFactory();
-        participant = factory.newInstance('systest.identities', 'SampleParticipant', 'bob@uk.ibm.com');
+        participant = factory.newResource('systest.identities', 'SampleParticipant', 'bob@uk.ibm.com');
         participant.firstName = 'Bob';
         participant.lastName = 'Bobbington';
         return client.getParticipantRegistry('systest.identities.SampleParticipant')

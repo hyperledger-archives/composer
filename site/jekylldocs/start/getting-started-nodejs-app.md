@@ -5,7 +5,10 @@ category: start
 sidebar: sidebars/start.md
 excerpt: Getting Started with a Fabric Composer node.js application
 ---
-#Getting Started with a Fabric Composer node.js application
+
+# Writing a node.js Application
+
+---
 
 We'll walk through the sample node.js applications here. The git repo is the GettingStarted repo that was cloned for the Getting Started.
 The [`landregistry.js`](https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/lib/landRegistry.js) file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.
@@ -76,7 +79,7 @@ We use a factory style pattern to be able to create assets. A factory is obtaine
 
 ```javascript
 let factory = this.businessNetworkDefinition.getFactory();
-owner = factory.newInstance('net.biz.digitalPropertyNetwork', 'Person', 'PID:1234567890');
+owner = factory.newResource('net.biz.digitalPropertyNetwork', 'Person', 'PID:1234567890');
 owner.firstName = 'Fred';
 owner.lastName = 'Bloggs';
 ```
@@ -84,7 +87,7 @@ owner.lastName = 'Bloggs';
 We now have a Person! Now we need a land title. Note how the owner is specified as being the person we just created. (In the actual sample code we do this code twice to create landTitle1 and landTitle2).
 
 ```javascript
-let landTitle2 = factory.newInstance('net.biz.digitalPropertyNetwork', 'LandTitle', 'LID:6789');
+let landTitle2 = factory.newResource('net.biz.digitalPropertyNetwork', 'LandTitle', 'LID:6789');
 landTitle2.owner = owner;
 landTitle2.information = 'A small flat in the city';
 ```
