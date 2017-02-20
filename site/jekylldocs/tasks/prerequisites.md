@@ -19,10 +19,17 @@ The recommended versions are:
 
 ## Automatic Installation
 
-First run the script
+First clone the Getting Started repository
 
 ```bash
-user@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh
+git clone http://github.com/fabric-composer/sample-applications
+cd sample-applications/getting-started
+```
+
+Next run the script
+
+```bash
+user@ubuntu:~/getting-started$ ./scripts/prereqs-ubuntu.sh
 ```
 
 **Important:** You will then need to logout and login again before running the next command
@@ -30,7 +37,7 @@ user@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh
 This command completes the installation process
 
 ```bash
-user@ubuntu:~/GettingStarted$ ./scripts/prereqs-ubuntu.sh docker
+user@ubuntu:~/getting-started$ ./scripts/prereqs-ubuntu.sh docker
 ```
 
 **Additional Notes:**
