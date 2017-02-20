@@ -6,18 +6,12 @@ sidebar: sidebars/start.md
 excerpt: Getting Started with Fabric Composer
 ---
 
-## Running a sample with the CLI
+# Running a sample with the CLI
 
 ---
 
-<i class="fa fa-fw  fa-coffee"></i>  <b>GET READY</b><br>
-
----
-
->Before you follow these instructions, make sure you've completed the
-[Quickstart](./getting-started.md)!
-
----
+Before you follow these instructions, make sure you've completed the
+[Quickstart](./quickstart.md)!
 
 To help get started with application development using the Fabric Composer Framework, this guide will talk you through downloading Fabric Composer, starting a Fabric, deploying a simple business network and submitting transactions.
 
@@ -25,12 +19,14 @@ This is all done using a simple business network  **Digital Property Network**
 
 ## What is the Digital Property Network?
 
-This network will be expanded for other tutorials, but for this getting started we'll keep it simple. We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
+This network will be expanded for other tutorials, but for this getting started we'll keep it simple.
+
+We going to model *Land Titles*, each of which has an owner, description, and a boolean saying if this property/land is up for sale.
 
 ```javascript
 asset LandTitle identified by titleId {
   o String   titleId
-  o Person   owner
+  --> Person   owner
   o String   information
   o Boolean  forSale   optional
 }
@@ -59,7 +55,7 @@ transaction RegisterPropertyForSale identified by transactionId{
 The applications we're going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the Fabric Composer backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.
 
 ## But what is an asset?
-An is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.
+An asset is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.
 
 It's worth reading the [Overview](../overview/overview.md) page to get an idea of how everything fits together. The [Glossary](../reference/glossary.md) provides a detailed description of each term.
 
@@ -68,7 +64,7 @@ All the resources and scripts you'll need are in a git repository that we'll clo
 
 The first thing to do is to ensure that you have a suitable system ready for development.
 
-**Ensure that you have followed the steps in our Quickstart before continuing!**  (Quickstart available [here](./getting-started.md))
+**Ensure that you have followed the steps in our Quickstart before continuing!**  (Quickstart available [here](./quickstart.md))
 
 Let's go ahead and make a change to start to show how easy it is to develop with Fabric Composer.
 
@@ -80,8 +76,14 @@ We are going to make a simple change to the business logic for the business netw
 First clone the repository:
 
 ```bash
-git clone git@github.com:fabric-composer/sample-networks.git
+git clone https://github.com/fabric-composer/sample-networks.git
+```
+
+```bash
 cd sample-networks/packages/DigitalProperty-Network
+```
+
+```bash
 npm install
 ```
 
@@ -124,9 +126,9 @@ Looking for package.json of Business Network Definition in /home/matthew/git17/D
 
 Description:Digital Property Network
 Name:digitalproperty-network
-Identifier:digitalproperty-network-0.0.22
+Identifier:digitalproperty-network-0.0.1
 
-Written Business Network Definition Archive file to digitalproperty-network-0.0.22.bna
+Written Business Network Definition Archive file to digitalproperty-network-0.0.1.bna
 Command completed successfully.
 ```
 
@@ -135,10 +137,10 @@ We now have a new file that is the digital business network archive.
 ### Update the deployed business network
 
 ```bash
-$ composer network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-Deploying business network from archive digitalproperty-network-0.0.22.bna
+$ composer network update --archiveFile digitalproperty-network@0.0.1.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+Deploying business network from archive digitalproperty-network-0.0.1.bna
 Business network definition:
-	Identifier: digitalproperty-network-0.0.22
+	Identifier: digitalproperty-network-0.0.1
 	Description: Digital Property Network
 Updating business network definition. This may take a few seconds...
 Command completed successfully.
@@ -169,7 +171,7 @@ available via `npm run-script`:
   teardownHLF
     scripts/teardown.sh
   deployNetwork
-    composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip && composer network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+    composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna && composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
 ```
 
@@ -190,7 +192,7 @@ info: [Composer-GettingStarted] Command completed successfully.
 info: [Composer-GettingStarted] Fabric Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
 =======
-
+```
 
 ## Digging Deeper
 
@@ -205,10 +207,10 @@ info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition ob
 
 **Composer CLI**
 
-* `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.zip`
+* `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna`
 This command is used to create a Business Network Archive. `--archiveFile` is the name of the file. The `-m` is the npm module name of the business network to use. There is also a -d option to specify the directory the business network is in. Useful whilst developing the business network transactions functions.
 
-* `composer network deploy --archiveFile digitalPropertyNetwork.zip  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
+* `composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
 This deploys the business network to the HyperLedger runtime; the archive is specified but also the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)
 * `composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d`
 This lists the deployed business network details. `-n` is the name of the business network. With the same options for the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)

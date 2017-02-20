@@ -20,11 +20,12 @@ module.exports.command = 'create [options]';
 module.exports.describe = 'Create the details of a Business Network Archive';
 module.exports.builder = function (yargs){
 
-    return yargs.option('archiveFile',{alias: 'a', required: false, describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
+    return yargs.option('archiveFile',{alias: 'a', required: false,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
             .option('inputDir',{alias: 'd', required: false, describe: 'Location to create the archive from e.g. NPM module directory'})
             .option('moduleName',{alias: 'm', required: false, describe: 'Name of the npm module to use '})
             .conflicts('inputDir','moduleName')
             .epilog('Only one of either inputDir or moduleName must be specified.');
+
 };
 
 
@@ -36,6 +37,7 @@ module.exports.handler = (argv) => {
         process.exit(0);
     })
     .catch((error) => {
+
         console.log(error+ '\nCommand failed.');
         process.exit(1);
     });

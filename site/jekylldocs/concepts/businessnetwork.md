@@ -5,7 +5,10 @@ category: concepts
 sidebar: sidebars/concepts.md
 excerpt: Business Network
 ---
+
 # Business Network
+
+---
 
 A `Business Network` describes the structures and processes that exist in the exchange of assets between participants in economic networks. Fabric Composer helps you to easily develop applications for business networks, to digitize these networks - making them more efficient.
 
@@ -47,4 +50,4 @@ Fabric Composer makes it easy to create these elements in a business network, an
 
 ## Related Reference
 
-[Network deploy command](../reference/networkdeploycommand.md)
+[Network deploy command](../reference/composer.network.deploy.md)

@@ -1,0 +1,16 @@
+<header>
+  <h1>Fabric Composer</h1>
+  <nav>
+    <div class="links">
+    <button class="action"  [routerLink]="['./editor']" [routerLinkActive]="['active']">Define</button>
+    <button class="action"  [routerLink]="['./test']" [routerLinkActive]="['active']">Test</button>
+  </div>
+    <div>
+      <button class="action"  [routerLink]="['./settings']" [routerLinkActive]="['active']">Settings</button>
+    </div>
+  </nav>
+</header>
+<main class="main-container">
+  <router-outlet></router-outlet>
+</main>
+<template ngbModalContainer></template>

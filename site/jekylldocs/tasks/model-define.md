@@ -8,6 +8,8 @@ excerpt: How to create a business domain model
 
 # Create a Business Domain Model
 
+---
+
 You use the CTO language to model a business domain. The language allows you to quickly and unambiguously declare to Fabric Composer the structure of your transactions, assets and participants. These can be simple, or can become very sophisticated as the CTO language allows you to import types from external namespaces, subclass types, declare relationships to types etc.
 
 The elements of the CTO language are described in detail in the reference section of the documentation.

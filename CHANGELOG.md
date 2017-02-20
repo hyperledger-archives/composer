@@ -1,0 +1,1825 @@
+## Change Log
+
+### upcoming (2017/02/14 21:37 +00:00)
+- [0b58085](https://github.com/fabric-composer/fabric-composer/commit/0b580856bf7af3a38f4eddb5c79aab7d30435597) fix links on the deployment business network task (@xufengli)
+- [57febfb](https://github.com/fabric-composer/fabric-composer/commit/57febfbe663840ef8a810d95695a25bb7d4c0c08) Doc sidebar link fixes (@Jakeeyturner)
+- [ab8141a](https://github.com/fabric-composer/fabric-composer/commit/ab8141a288cb308c5aa0d614ca3bdba9935009a5) correct npm version (@mbwhite)
+- [b60cdb4](https://github.com/fabric-composer/fabric-composer/commit/b60cdb46bca5e58840f1e94662051e2fdac8d7ce) jsdoc moment dependancy (@mbwhite)
+- [a10a80a](https://github.com/fabric-composer/fabric-composer/commit/a10a80aa3e1460c7cef165ad0e2f6cbac5720f1a) Fixed another 404 (@Jakeeyturner)
+- [443b05b](https://github.com/fabric-composer/fabric-composer/commit/443b05b7e11c2a015fec1279fe2ab1a90d9601fa) Fixed link 404 errors (@Jakeeyturner)
+- [7f7a732](https://github.com/fabric-composer/fabric-composer/commit/7f7a732627a5df51609e203500e40814c74dfa43) default state (@mbwhite)
+- [49e0aaa](https://github.com/fabric-composer/fabric-composer/commit/49e0aaad7640cf4ffffea018248d05ba4348016a) build state maintained (@mbwhite)
+- [58d4028](https://github.com/fabric-composer/fabric-composer/commit/58d4028e3c3df6877e23e2ceaa960c6a5d616131) bash if statements need spacing (@mbwhite)
+- [e42884c](https://github.com/fabric-composer/fabric-composer/commit/e42884cbc9c2863723298cc7269397a9c3eae95b) test adding sudo (@mbwhite)
+- [58d3b13](https://github.com/fabric-composer/fabric-composer/commit/58d3b1387029245a58168b6e6dd9ed896b165fd2) add in required middleware config file (@samjsmith)
+- [bb022dd](https://github.com/fabric-composer/fabric-composer/commit/bb022dd574f1ac12806f7950f9875c7a3ab8370d) updates on build (@mbwhite)
+- [fbf25f7](https://github.com/fabric-composer/fabric-composer/commit/fbf25f7f3c6b3ef3b746bdd06e3972e0d3fb710d) build abort #2 (@mbwhite)
+- [7c8798b](https://github.com/fabric-composer/fabric-composer/commit/7c8798bd4ec5910e78d9bd34d8714e7d42ee700f) build abort #1 (@mbwhite)
+- [7e127a1](https://github.com/fabric-composer/fabric-composer/commit/7e127a134ea344099c24e057ee467c29b115b322) Trigger status check (@samjsmith)
+- [4119a0a](https://github.com/fabric-composer/fabric-composer/commit/4119a0ae6c1ec53c97bb1eb5bc8f1470bc8103f6) experimental remove caching (@mbwhite)
+- [5c051ed](https://github.com/fabric-composer/fabric-composer/commit/5c051ede9b7f4683d9ae964ee33174f45da5284e) Trigger status check (@samjsmith)
+- [35d1718](https://github.com/fabric-composer/fabric-composer/commit/35d17181ccceec42344b2e6f150fa100a4396ad7) remove space (@xufengli)
+- [8626e3a](https://github.com/fabric-composer/fabric-composer/commit/8626e3af2c3989873951706d3d904f42be257c37) profiling #1 (@mbwhite)
+- [56a37b9](https://github.com/fabric-composer/fabric-composer/commit/56a37b9dbcf7219332358613ccb27ee5e1b8608e) test change (@xufengli)
+- [9eb019c](https://github.com/fabric-composer/fabric-composer/commit/9eb019c07c16aa6dfb7fe7c96f557de605dae877) update package.json (@samjsmith)
+- [c0ea70b](https://github.com/fabric-composer/fabric-composer/commit/c0ea70b685d677a0549461afadbaad89124664b0) Fixed eslint link (@pards)
+- [9d62136](https://github.com/fabric-composer/fabric-composer/commit/9d621362ce165bd046f4d2fbf8f0dcbfee4b8d40) Remove ropey attempt to automate docker pull/tag (@sstone1)
+- [4ea5de9](https://github.com/fabric-composer/fabric-composer/commit/4ea5de941d7dbc5b9b7a74b745894c1fb2f74777) Bump version to 0.4.4 (@sstone1)
+- [b8e028e](https://github.com/fabric-composer/fabric-composer/commit/b8e028eaca865f68af19d8c29dd3a3b6ce55fa49) Add initial drop of the playground install guide (@sstone1)
+
+### v0.4.3 (2017/02/11 16:55 +00:00)
+- [d0abcea](https://github.com/fabric-composer/fabric-composer/commit/d0abceae609be86ca8b3ef37f0676a6ae3692469) Stop using Github for initial deploy (@sstone1)
+- [d151bc2](https://github.com/fabric-composer/fabric-composer/commit/d151bc22164c614aa5c5f61f5fee6be841469626) Bump version to 0.4.3 (@sstone1)
+
+### v0.4.2 (2017/02/10 20:24 +00:00)
+- [07e0924](https://github.com/fabric-composer/fabric-composer/commit/07e092426a04b44cfeb98756aec5f9b54055f049) Get samples from github (#146) (@caroline-church)
+- [a5b4104](https://github.com/fabric-composer/fabric-composer/commit/a5b41048e7e17c6193015b99ff6fd36b3fe31289) Fixed url (@Jakeeyturner)
+- [e8ac527](https://github.com/fabric-composer/fabric-composer/commit/e8ac527410ff06bcc2c7f211de963aba68d06b4b) Minor doc fixes (@Jakeeyturner)
+- [9b6fa46](https://github.com/fabric-composer/fabric-composer/commit/9b6fa46e8759a693e9aed97a006b4b716450443d) Updated docs, must now use node 6.9.5 for the angular generator to work (@Jakeeyturner)
+- [b708bf5](https://github.com/fabric-composer/fabric-composer/commit/b708bf557fe30dd179ac3ff39cb7c4c9061637d1) Updated docs, must now use node 6.9.5 for the angular generator to work (@Jakeeyturner)
+- [74591db](https://github.com/fabric-composer/fabric-composer/commit/74591db186adaf23785b7ac10104fe527e784491) Doc fixes (@Jakeeyturner)
+- [020106c](https://github.com/fabric-composer/fabric-composer/commit/020106c3eaed70e2a0493cf84dfcb65b423cba4d) Updated cli app, package json version (@Jakeeyturner)
+- [d7b556a](https://github.com/fabric-composer/fabric-composer/commit/d7b556af1e8bb86e3a2414587aa674f390d728bf) Fixed broken link (@Jakeeyturner)
+- [9eaa0d2](https://github.com/fabric-composer/fabric-composer/commit/9eaa0d21798f1f8bd21e01b523a4999e2c6d8166) Removed git@github clone, replaced with https (@Jakeeyturner)
+- [258bd10](https://github.com/fabric-composer/fabric-composer/commit/258bd10a97ae36c62e931f1e0e1c9a3b4248f9a1) remove slack refernces (@mbwhite)
+- [5fa82f6](https://github.com/fabric-composer/fabric-composer/commit/5fa82f6fb9b95d8e0921cf66be4f28fcaddf14db) prototype of should-run script (@mbwhite)
+- [03f3001](https://github.com/fabric-composer/fabric-composer/commit/03f30017bee32e0836eeed58baa4f97f9c1437c0) optimize logic (@mbwhite)
+- [b5299b6](https://github.com/fabric-composer/fabric-composer/commit/b5299b64ed0757b9bde102e3fd0436affe34db0a) Do not run the SYSTEST_HLF=ibm on PR builds only CROns (@mbwhite)
+- [423a07c](https://github.com/fabric-composer/fabric-composer/commit/423a07c189a67a8a398c0b1c3af10399bcaec10c) rocket chat replacing slack (@mbwhite)
+- [92ea3b1](https://github.com/fabric-composer/fabric-composer/commit/92ea3b1bd6684aeb67619b34ea88e0650f0b692b) Removed undefined logging from gettingstarted (@Jakeeyturner)
+- [59f4151](https://github.com/fabric-composer/fabric-composer/commit/59f4151fa8f04edbfa2b5401c4126d3651e6ede2) force build (@mbwhite)
+- [3971412](https://github.com/fabric-composer/fabric-composer/commit/39714126cf9a717b2ca262eb4627d34e83a4bf43) Register core modules that can load connector modules (resolves #134) (@sstone1)
+- [ae0230b](https://github.com/fabric-composer/fabric-composer/commit/ae0230b9d2ae11250b958cff92dd83ede8a015eb) Trigger status check (@samjsmith)
+- [3068a23](https://github.com/fabric-composer/fabric-composer/commit/3068a2382c606d63b3946341437b0ef4f43813b1) Fixed quickstart links (#128) (@jthub)
+- [277dedf](https://github.com/fabric-composer/fabric-composer/commit/277dedf0f549fa7e8fb1cb5e9e9f6f31a20fa67c) updates to the readme for docs (@mbwhite)
+- [b99cba2](https://github.com/fabric-composer/fabric-composer/commit/b99cba23f32c674bbb3f3a9242a50bdfaa299ca2) Can now run 'npm test' inside application to execute unit tests (@Jakeeyturner)
+- [1944ea3](https://github.com/fabric-composer/fabric-composer/commit/1944ea38733f819ab027181b78222cff018074dd) Fixed code tags. Hopefully (@Jakeeyturner)
+- [d9b4532](https://github.com/fabric-composer/fabric-composer/commit/d9b453261c1e701012fe7e3ea7b1bd11beca4269) Started to work on Angular2 app generator usage overview (@Jakeeyturner)
+- [c796c87](https://github.com/fabric-composer/fabric-composer/commit/c796c87a6edc7b678ea0019d87788dcd3a1c6aa7) Added newConcept method to runtime facotry (@14gracel)
+- [53a8c57](https://github.com/fabric-composer/fabric-composer/commit/53a8c57c972a5b24f924408f597919fcd346092f) Get Docker image working on Alpine Linux base (@sstone1)
+- [44679bc](https://github.com/fabric-composer/fabric-composer/commit/44679bcfeb327e49b82e6cab88d3c41fc5220382) jekyll serve command added (@mbwhite)
+- [a5e2979](https://github.com/fabric-composer/fabric-composer/commit/a5e2979d32846413561efbe6e5812120aa166392) Add shebang to script and update README (@samjsmith)
+- [0939a91](https://github.com/fabric-composer/fabric-composer/commit/0939a91ec1660aca133c630a40162d587fb350ea) Started to update app generation doc file (@Jakeeyturner)
+- [c928ef2](https://github.com/fabric-composer/fabric-composer/commit/c928ef2d7812659f1cc4735fc479f2467c6756e8) Make Composer UI configurable by runtime environment variables (@sstone1)
+- [2cffb73](https://github.com/fabric-composer/fabric-composer/commit/2cffb736715b379fba49188af46fc4eac0d366bb) force build (@mbwhite)
+- [bbd95d7](https://github.com/fabric-composer/fabric-composer/commit/bbd95d71118db7a0a05411f92048bfa3c3c4b35f) Automate building of composer-ui image (@sstone1)
+- [08196fe](https://github.com/fabric-composer/fabric-composer/commit/08196fe0aeb35fe69e6f2ec6144bea4703eba86f) shell script (@mbwhite)
+- [c6299da](https://github.com/fabric-composer/fabric-composer/commit/c6299da6d739171d5664ea283d9366a1135a704a) sanitize html (@mbwhite)
+- [5bda526](https://github.com/fabric-composer/fabric-composer/commit/5bda526fa888d9565065aaaf230860351f0b20e7) severe rationalization (@mbwhite)
+- [ecc56d6](https://github.com/fabric-composer/fabric-composer/commit/ecc56d650dd42e60969bd24844b228ebe21e3fec) new dependancy (@mbwhite)
+- [954c547](https://github.com/fabric-composer/fabric-composer/commit/954c547ebe054665925b60eea4c5597fbc5ccf85) (re)enable the syntax highlighting (@mbwhite)
+- [cc457e8](https://github.com/fabric-composer/fabric-composer/commit/cc457e83a6870a989366ed0f2cf0160c14376c3c) update package.json (@samjsmith)
+- [7006529](https://github.com/fabric-composer/fabric-composer/commit/7006529de39bc313a8680962336c5002af0a9a47) force build (@mbwhite)
+- [18e7971](https://github.com/fabric-composer/fabric-composer/commit/18e797179e54e9634556618d721f3ad20cc9411b) force build (@mbwhite)
+- [856316a](https://github.com/fabric-composer/fabric-composer/commit/856316a89accaf2b8f4a7a55b9badc40c3c58d8b) force build (@mbwhite)
+- [fe4210e](https://github.com/fabric-composer/fabric-composer/commit/fe4210e239e18dd43e97567d9bab1f6e5cb17511) The favico that everyone has been waiting for is here (@EdMoffatt)
+- [39874bb](https://github.com/fabric-composer/fabric-composer/commit/39874bba7264f446c1a6ad4a7718279d3ae3ebbe) shell script (@mbwhite)
+- [15973e3](https://github.com/fabric-composer/fabric-composer/commit/15973e3e38d3ed78f81137b9ec76802a4cddcd68) new dependancy (@mbwhite)
+- [ffbe3d4](https://github.com/fabric-composer/fabric-composer/commit/ffbe3d4d161a40eff8863ab54a628906a6edc09a) sanitize html (@mbwhite)
+- [af20122](https://github.com/fabric-composer/fabric-composer/commit/af20122dcf5e1ccac2fc29fd9b4b6f9bd46b6a68) severe rationalization (@mbwhite)
+- [1ce523d](https://github.com/fabric-composer/fabric-composer/commit/1ce523d48726a2dfcd4b35778ef50973c4fd0d8d) initial drop of composer-rest-server (@samjsmith)
+- [d0aae1d](https://github.com/fabric-composer/fabric-composer/commit/d0aae1d3422badd16c53bee01f94b8fb7d98bb13) initial drop of composer-rest-server (@samjsmith)
+- [5798267](https://github.com/fabric-composer/fabric-composer/commit/57982675b62d6fbe6a9db0cf66551a902d412b06) (re)enable the syntax highlighting (@mbwhite)
+- [4499908](https://github.com/fabric-composer/fabric-composer/commit/44999085971fd68067319d0a3896f097edda6149) force build (@mbwhite)
+- [9f92bfa](https://github.com/fabric-composer/fabric-composer/commit/9f92bfac6e23b10436cc7fd861cd3fbc5f4d8c56) force build (@mbwhite)
+- [6047920](https://github.com/fabric-composer/fabric-composer/commit/6047920f4afb341ba640e44896877ff560796f09) force build (@mbwhite)
+- [268722e](https://github.com/fabric-composer/fabric-composer/commit/268722ec3f60497a9fff4a48aa1c0f032a90f99c) Added a menu to 'yo fabric-composer' (@Jakeeyturner)
+- [41e7fa0](https://github.com/fabric-composer/fabric-composer/commit/41e7fa0b9859d8dad7a6a76c0127a127d1b34c2b) Added docs for CLI commands (@dselman)
+- [b247c5d](https://github.com/fabric-composer/fabric-composer/commit/b247c5df38832b7bdad77258c02424a529f5b423) move jsdoc template to be easier to find, and add api link (@mbwhite)
+- [bb720b8](https://github.com/fabric-composer/fabric-composer/commit/bb720b84d77b35090320e26f296bffa84398697f) Changes for #88 to remove/refactor code (@samjsmith)
+- [05648c8](https://github.com/fabric-composer/fabric-composer/commit/05648c8ace68e3fe18cb55db6f0ca05cf0c93301) Force build (@14gracel)
+- [7519957](https://github.com/fabric-composer/fabric-composer/commit/75199578531cbb87f55c2f54a76d1c76a5ecbb21) Fixed so build works (@dselman)
+- [8293f96](https://github.com/fabric-composer/fabric-composer/commit/8293f9604cc424418e31bdbefdb2026d3190dafc) Readded global install for composer-cli (@dselman)
+- [c451797](https://github.com/fabric-composer/fabric-composer/commit/c4517979c3dc043a769832ae82587fdeee2074e4) Updated old reference to deprecated composer-loopback-connector (@Jakeeyturner)
+- [5e8d0d9](https://github.com/fabric-composer/fabric-composer/commit/5e8d0d98e6b07d807b6f758951994b9213ba0466) Quick change (@Jakeeyturner)
+- [4fdd856](https://github.com/fabric-composer/fabric-composer/commit/4fdd8566b09f4519aa679e5b94a12344d40721b9) Edited Stackoverflow footer link (@Jakeeyturner)
+- [2c29f14](https://github.com/fabric-composer/fabric-composer/commit/2c29f145f954d0ecffea46d0021aa31560f3684a) Added offline mode for generator (@Jakeeyturner)
+- [67dee6a](https://github.com/fabric-composer/fabric-composer/commit/67dee6a734766548f3a336392a95bce9f1b4730c) Remove unneeded comment. (@samjsmith)
+- [0e5b91b](https://github.com/fabric-composer/fabric-composer/commit/0e5b91bba328271861c8276c6f1460b244ee4db1) GitHub link points at internal IBM GHE (@sstone1)
+- [9b060ef](https://github.com/fabric-composer/fabric-composer/commit/9b060ef4fa40c39c7f3335adba4f605c53e701eb) remove internal ibm link (@mbwhite)
+- [99c2652](https://github.com/fabric-composer/fabric-composer/commit/99c26527d36009ea48bfcc1df473d8f6963c2d4b) glossary update to test site deployment (@mbwhite)
+- [76a67ac](https://github.com/fabric-composer/fabric-composer/commit/76a67ac02fd89f3c41ebe0e96c1515bcd1142104) path correection (@mbwhite)
+- [8cd2167](https://github.com/fabric-composer/fabric-composer/commit/8cd21679b682530977eb61488efb22b22fb84b16) force build (@mbwhite)
+- [228ac72](https://github.com/fabric-composer/fabric-composer/commit/228ac7212f776d14523053af1117fbd12367f3cb) execute permission (@mbwhite)
+- [983c73a](https://github.com/fabric-composer/fabric-composer/commit/983c73a3d1c9b037d15c06faff6d9b798bb0a782) correct shell for travis shell env (@mbwhite)
+- [28566e6](https://github.com/fabric-composer/fabric-composer/commit/28566e6a778a48550cc32333acb6ed56355fbcdd) force build (@mbwhite)
+- [83a8632](https://github.com/fabric-composer/fabric-composer/commit/83a863253106230a18b27d588f7c38ffab01fa79) Fix Docker build of Composer UI (@sstone1)
+- [874d70d](https://github.com/fabric-composer/fabric-composer/commit/874d70d7f35439b16dd2646226f9d169b4e25d9a) Increment package version to 0.4.2 (@dselman)
+- [313f707](https://github.com/fabric-composer/fabric-composer/commit/313f70783fe5cfe9091b3357c89a90c760251a6f) travis (@14gracel)
+- [cea851c](https://github.com/fabric-composer/fabric-composer/commit/cea851cfac8b9cd3ff453243939a5a820f1a163e) Dont care if no docker images exist (@14gracel)
+- [ad496bc](https://github.com/fabric-composer/fabric-composer/commit/ad496bc039afabace9dcdefdeef169b5b26d37f2) Move docs push to separate script and reduce build errors (@mbwhite)
+- [7aa41ad](https://github.com/fabric-composer/fabric-composer/commit/7aa41addeb9d2660edb7ee1085381159dd4dd6d1) Getting started sys test change (@14gracel)
+- [d79761c](https://github.com/fabric-composer/fabric-composer/commit/d79761c23ca3795eeebc1e89af7d6e00806777d6) Fix quickstart link (@jthub)
+
+### v0.4.1 (2017/02/03 14:36 +00:00)
+- [09d0afb](https://github.com/fabric-composer/fabric-composer/commit/09d0afbea134262049ea62e361de33a436315918) Fix API link, add email contact for Slack invite (@EdMoffatt)
+- [aae9d2a](https://github.com/fabric-composer/fabric-composer/commit/aae9d2a859a72eb53f79c54555c241ee94c9545c) updates (@mbwhite)
+- [ca41d3a](https://github.com/fabric-composer/fabric-composer/commit/ca41d3a621fedc48e4de371845e339326c35175f) Systest changes (@14gracel)
+- [8d231ba](https://github.com/fabric-composer/fabric-composer/commit/8d231ba7daed34643ef23d95a0f1f675cb8ad6b9) trying to kick the styling changes into workinh (@EdMoffatt)
+- [7f217ab](https://github.com/fabric-composer/fabric-composer/commit/7f217abfb1a25a3bb53c9dabf3a8bcac14b5c56a) More systest (@14gracel)
+- [5b173f8](https://github.com/fabric-composer/fabric-composer/commit/5b173f841f768479f8909cfa8d1eb1d99061f32a) Systest fix (@14gracel)
+- [ff2a723](https://github.com/fabric-composer/fabric-composer/commit/ff2a7239db997c1fce5192a9f0b65761536e8a38) Setting the origin (@mbwhite)
+- [dfb0925](https://github.com/fabric-composer/fabric-composer/commit/dfb0925637e005ee2b742e00bd52d2ddbac26d38) Change loopback connector folder name (@samjsmith)
+- [bc7a305](https://github.com/fabric-composer/fabric-composer/commit/bc7a305621eda5ea6b3971688b8696cbb524676e) fix loopback connector package name (@samjsmith)
+- [4393202](https://github.com/fabric-composer/fabric-composer/commit/43932029544a9bc29cb45790cb5e48a25b644dcf) Empty commit to force yet another build (@samjsmith)
+- [4bdabdf](https://github.com/fabric-composer/fabric-composer/commit/4bdabdfcfb85440e24dd8127078e63d74d675f40) Updated doc head with GA tracker (@Jakeeyturner)
+- [4831b8b](https://github.com/fabric-composer/fabric-composer/commit/4831b8b8094aa28a7f2213a1a3e5a9033a646eae) Force builds (@mbwhite)
+- [71f0616](https://github.com/fabric-composer/fabric-composer/commit/71f06167051cf4b3b358b0d55ffd849eb190cab0) Empty commit to force build (@samjsmith)
+- [4f1edad](https://github.com/fabric-composer/fabric-composer/commit/4f1edad01b21c7ac2e544fcd38e4c95623c2f2d9) Styling overhaul on website - focus on navigation and homepage (@EdMoffatt)
+- [14f8f3e](https://github.com/fabric-composer/fabric-composer/commit/14f8f3efc2a3a8a7a202b11b2a48e81f5cd81b6e) Hopefully get this travis build working (@Jakeeyturner)
+- [b2a8d20](https://github.com/fabric-composer/fabric-composer/commit/b2a8d201509d42b89aa190e26b7f1dd5debb8fea) trial update (@mbwhite)
+- [5b6743f](https://github.com/fabric-composer/fabric-composer/commit/5b6743f5370084b0a238526c4dfdfa478f1d4209) Changed references from concerto to composer (@Jakeeyturner)
+- [5ce6cc7](https://github.com/fabric-composer/fabric-composer/commit/5ce6cc7b0d160bfb0373c3934fcbe2a9f0e4f1b2) Suppress object existence error in LoopBack Connector (@samjsmith)
+- [c23dce0](https://github.com/fabric-composer/fabric-composer/commit/c23dce0d180fb574896c19a5ec9ec897f17d9980) Removed some old references and added apache2 licenses to some files (@Jakeeyturner)
+- [3bf820d](https://github.com/fabric-composer/fabric-composer/commit/3bf820dbc54e8c31ea9b54fad3516f4eb05ebcd3) System test build (@14gracel)
+- [7c162c0](https://github.com/fabric-composer/fabric-composer/commit/7c162c0e1bac14709bdcb2411308842a567a43c6) Empty commit to force build (@samjsmith)
+- [38bcf91](https://github.com/fabric-composer/fabric-composer/commit/38bcf91fea85fbd31b72c410aca59d184d0fcbc8) landing page updates (@ODOWDAIBM)
+- [048c0de](https://github.com/fabric-composer/fabric-composer/commit/048c0deb7453035e4e28403745d505d0a81b8af3) basic count and exists support for loopback connector (@samjsmith)
+- [a362add](https://github.com/fabric-composer/fabric-composer/commit/a362add012b02b426d68842abebd6bf4809b23e3) Force Build (@mbwhite)
+- [20052cc](https://github.com/fabric-composer/fabric-composer/commit/20052cc485f09c2a49539cbc1edf2d4ca71c17c9) Change to build order (@14gracel)
+- [8dd820a](https://github.com/fabric-composer/fabric-composer/commit/8dd820aeb1cee6882fcc0fe9f7114f0fffd738a2) Force build (@14gracel)
+- [24795ef](https://github.com/fabric-composer/fabric-composer/commit/24795ef2f143c8784ce3f5940065e0bc7183c95b) fix (@14gracel)
+- [1ef2198](https://github.com/fabric-composer/fabric-composer/commit/1ef2198fc3cc5dd66963fe9728cef718205f0828) atom contrib notes updated (@ODOWDAIBM)
+- [c86a486](https://github.com/fabric-composer/fabric-composer/commit/c86a4866acd4b9788316b2ff3883b5a43eda52fa) Getting started Systest (@14gracel)
+- [7649fc9](https://github.com/fabric-composer/fabric-composer/commit/7649fc96825af2ac53a02163d043c87bbf9ca2bb) ssl key setup (@mbwhite)
+- [5fdbe45](https://github.com/fabric-composer/fabric-composer/commit/5fdbe451d06e6a69ebd2a6fb35b26d56d89353c5) README updates (@ODOWDAIBM)
+- [656a59d](https://github.com/fabric-composer/fabric-composer/commit/656a59da481e507fe14fa071bd70cf7e04ce5b09) README updates (@ODOWDAIBM)
+- [0afb594](https://github.com/fabric-composer/fabric-composer/commit/0afb5946e94faa35996000934324e0f4eceda66a) Updated description of support channels (@dselman)
+- [36e7400](https://github.com/fabric-composer/fabric-composer/commit/36e74001528a641180fe974193127e990940f866) bash shell error (@mbwhite)
+- [2187dee](https://github.com/fabric-composer/fabric-composer/commit/2187dee0dbd6122aae0148c82294e942ae97a318) new loopback function support (@samjsmith)
+- [f949912](https://github.com/fabric-composer/fabric-composer/commit/f949912baaaf42db5260908ce44b5050064ac964) take 2 (@mbwhite)
+- [07e2876](https://github.com/fabric-composer/fabric-composer/commit/07e287629f040fb9ad4b20639ba2c80f9438aaf3) test one push to site (@mbwhite)
+- [64b7b8b](https://github.com/fabric-composer/fabric-composer/commit/64b7b8bc7e549ecde8f3a8429fe0a0d7a92493e0) temp change (@mbwhite)
+- [53fa92a](https://github.com/fabric-composer/fabric-composer/commit/53fa92a939ff4a90bd42875fce659ad59950d6c9) travis renabled (@mbwhite)
+- [5e11a53](https://github.com/fabric-composer/fabric-composer/commit/5e11a5313e72d1fdfb6b9bc81c32930900c27a49) with Dans updates (@mbwhite)
+- [bf65278](https://github.com/fabric-composer/fabric-composer/commit/bf65278847336ec4f3f87d374b18b9887421df9c) updates (@mbwhite)
+- [9ffa920](https://github.com/fabric-composer/fabric-composer/commit/9ffa920d766b475a76024c57ebaf52aaf7c6b587) More doc fixes... (@dselman)
+- [c1e427f](https://github.com/fabric-composer/fabric-composer/commit/c1e427f6dee7d6ed7c6b14847ff92c558fbb332d) More Concerto removal (@dselman)
+- [2449d5b](https://github.com/fabric-composer/fabric-composer/commit/2449d5b665f1b3951e9c612727a6a478531c1ab4) Doc fixes, remove Concerto (@dselman)
+- [8e3e568](https://github.com/fabric-composer/fabric-composer/commit/8e3e5684ea6f10d76c049c0501224ae5220e710a) Fixed test (@dselman)
+- [7a11b64](https://github.com/fabric-composer/fabric-composer/commit/7a11b64cb2e3fd1e4f6932d3c7667704f7d98ec9) Doc fixes (@dselman)
+- [f88fd7a](https://github.com/fabric-composer/fabric-composer/commit/f88fd7accebf22dc4fdb4f8a06083f711190d1d7) Fixed tests (@dselman)
+- [140c021](https://github.com/fabric-composer/fabric-composer/commit/140c021e96614a8c422d4d9f3f6c9feab445a6a3) stop docs build (@mbwhite)
+- [44ae57d](https://github.com/fabric-composer/fabric-composer/commit/44ae57df48535125b59738e384f724810a479e4f) Force build (@mbwhite)
+- [bfffd1a](https://github.com/fabric-composer/fabric-composer/commit/bfffd1ac82f4d0aff7cfec254175dd941e121d2d) remove git merge comments (@samjsmith)
+- [b65d3eb](https://github.com/fabric-composer/fabric-composer/commit/b65d3eb5b203fa17e8c3fc8f3c733efa07384d0c) temp disable auto docs push (@mbwhite)
+- [66c2458](https://github.com/fabric-composer/fabric-composer/commit/66c2458e8b5aa9eec6bd2291bb75df0c9d5d16be) more removal of old name (@mbwhite)
+- [971b248](https://github.com/fabric-composer/fabric-composer/commit/971b248da04c28ad84c5dad878550fa465e622c8) Fixed versions (@dselman)
+- [6cc8af6](https://github.com/fabric-composer/fabric-composer/commit/6cc8af67c1c1b7c7e8594e901d63590faa4d6a4b) Force Travis Build (@samjsmith)
+- [d56d762](https://github.com/fabric-composer/fabric-composer/commit/d56d7623207649df100855dda5fb2163673d8bac) Doc and generator fixes (@dselman)
+- [21d4df5](https://github.com/fabric-composer/fabric-composer/commit/21d4df52abec748ccecf764752b57b4c0d2e99ad) updates and bug fixes to LoopBack connector (@samjsmith)
+- [462853f](https://github.com/fabric-composer/fabric-composer/commit/462853fab267f83040aec147ae8dcad6ab2873e2) take four (@mbwhite)
+- [1f9c32d](https://github.com/fabric-composer/fabric-composer/commit/1f9c32dfb77b454cf82aefa1f8e8f83f7ea577ca) bash take 3 (@mbwhite)
+- [797889a](https://github.com/fabric-composer/fabric-composer/commit/797889a67a8093d319de5f58f3a0dce1ba893c6a) bash take two (@mbwhite)
+- [e618b6a](https://github.com/fabric-composer/fabric-composer/commit/e618b6a96f982f3a69f22b4f7efc06efcf7d0b7d) travis update (@mbwhite)
+- [1a4719a](https://github.com/fabric-composer/fabric-composer/commit/1a4719a0cfbfdc3948dcd7f5cf244f2c70395974) bash weirdness (@mbwhite)
+- [3a0128a](https://github.com/fabric-composer/fabric-composer/commit/3a0128ae3cbb15154e01930289f304cab55e1f99) Added .DS_Store to git ignore (@14gracel)
+- [454e901](https://github.com/fabric-composer/fabric-composer/commit/454e90138de703e877b944096190c7c61d632e8c) Bump version to 0.4.1 (@sstone1)
+
+### v0.4.0 (2017/01/30 21:42 +00:00)
+- [2b35817](https://github.com/fabric-composer/fabric-composer/commit/2b3581726c8f30a0be766e6abb72718543ee35eb) Change display title in UI (@sstone1)
+- [775753b](https://github.com/fabric-composer/fabric-composer/commit/775753b7da65c2b9c5d4bee163b7da5e87a77152) Bump version to 0.4.0 (@sstone1)
+- [1846a22](https://github.com/fabric-composer/fabric-composer/commit/1846a22b3637020b3e2eeaa81375ad5c3f083ea1) Automatic version bump to 0.3.12
+
+### v0.3.11 (2017/01/30 17:49 +00:00)
+- [5e85348](https://github.com/fabric-composer/fabric-composer/commit/5e853480aee09558c621ab2820a6fa0b56c98e7e) Fixed the JSONSchema generator (@dselman)
+- [7bbf0e0](https://github.com/fabric-composer/fabric-composer/commit/7bbf0e0909d8ac345931d5b33c7e36a81d8e7f50) Renamed generator (@dselman)
+- [a393a6c](https://github.com/fabric-composer/fabric-composer/commit/a393a6c3f5238ce0e02a3c9076e214de069ebd99) Merged Loopback changes (@dselman)
+- [d8d60e9](https://github.com/fabric-composer/fabric-composer/commit/d8d60e906480d833ac27594e258952d838b019cd) CLI name update (@ODOWDAIBM)
+- [a360f55](https://github.com/fabric-composer/fabric-composer/commit/a360f556481cb331bfcb011ee8e37cd3f769b4d1) Rename all instances of .concerto-connection-profiles and .concerto-credentials to composer (@14gracel)
+- [b30d836](https://github.com/fabric-composer/fabric-composer/commit/b30d8361011357ff254852fcf2ce78af45d81fde) Merge with new generator-composer changes (@sstone1)
+- [d0c88ee](https://github.com/fabric-composer/fabric-composer/commit/d0c88ee00bb4d698c82c0e01532a7f21e1f7b860) Bump version numbers to 0.3.11 (@sstone1)
+- [fa9ff61](https://github.com/fabric-composer/fabric-composer/commit/fa9ff61d51e07ec03e03a82a0d10204816257f9e) Travis needs to switch from HTTPS to SSH (@sstone1)
+- [ea3b7f1](https://github.com/fabric-composer/fabric-composer/commit/ea3b7f11328d64e92e4da7bd438f95517ab77833) Fixed for generator (@dselman)
+- [58b176d](https://github.com/fabric-composer/fabric-composer/commit/58b176d7c3a302dfa5aaadb0fcf46a2ced201554) Moving (@dselman)
+- [37b63f0](https://github.com/fabric-composer/fabric-composer/commit/37b63f03deaf8ddb7c3a22925bce2174f63a03b0) typo (@mbwhite)
+- [602e077](https://github.com/fabric-composer/fabric-composer/commit/602e0770b06876c36b0596be5404a534ba2afbf3) Moving generator (@dselman)
+- [cb0a10e](https://github.com/fabric-composer/fabric-composer/commit/cb0a10ed489d1262c3327a2ae5476b7d602ae17b) First pass removing mentions of concerto from jsdocs (@14gracel)
+- [bc77515](https://github.com/fabric-composer/fabric-composer/commit/bc7751543919ad1345d81f49a2e8688c20e592f8) :wrench: First attempt at getting the docs to build (@mbwhite)
+
+### v0.3.10 (2017/01/30 13:53 +00:00)
+- [829aea4](https://github.com/fabric-composer/fabric-composer/commit/829aea46fffe3eb88c57f175a794fb8c484728cc) Bump version numbers to 0.3.10 (@sstone1)
+
+### v0.3.9 (2017/01/30 13:21 +00:00)
+- [eac11cb](https://github.com/fabric-composer/fabric-composer/commit/eac11cb6bf0782bf0c9169b899ef129c971ddcca) UI fixes to connection profiles (@sstone1)
+- [b3263df](https://github.com/fabric-composer/fabric-composer/commit/b3263df7d9cbd70df1ca126d47cd29e6156aacd9) Add missing encrypted file, remove Slack Enterprise notification (@sstone1)
+- [2cd5937](https://github.com/fabric-composer/fabric-composer/commit/2cd5937c04e90e45455e3a51f839f8ed9e988044) Add missing @alrra/travis-scripts install (@sstone1)
+- [d46d092](https://github.com/fabric-composer/fabric-composer/commit/d46d0925c1da68a8e0210189c8af35fb8cbf57dd) Get UI building in single monorepo (@sstone1)
+- [071e274](https://github.com/fabric-composer/fabric-composer/commit/071e2749d5367fe840c4ac3ede1e381564abffa3) Removed private npm (@dselman)
+- [1ac2105](https://github.com/fabric-composer/fabric-composer/commit/1ac210532c940121ac77ef6a3a0a6a0aedc6e6e9) Initial pass through the docs (@dselman)
+- [b105446](https://github.com/fabric-composer/fabric-composer/commit/b105446d846d5cecda6e140478d21cd4939bbde9) Added docs (@dselman)
+- [20a0062](https://github.com/fabric-composer/fabric-composer/commit/20a006226ba24d2b3faa7fe76fbeb4661453ad5b) Move docs (@dselman)
+- [15401f9](https://github.com/fabric-composer/fabric-composer/commit/15401f9610e6ecdaea047541143dd6fc92a67da3) Moving repos (@dselman)
+- [e0a5853](https://github.com/fabric-composer/fabric-composer/commit/e0a585304848da08ace9fa8ff04238453f3ce410) Try to get the deploy scripts working, part 1 (@sstone1)
+- [f8234c4](https://github.com/fabric-composer/fabric-composer/commit/f8234c43e9939b3abf06fb4b2d68eedc266dda2a) Move back to robertkrimen's main fork of Otto (@sstone1)
+- [8a472d3](https://github.com/fabric-composer/fabric-composer/commit/8a472d36e0ca0924d50e696313ed2d1157e321bc) system test passes, JSDoc fixes (@dselman)
+- [f34eeb1](https://github.com/fabric-composer/fabric-composer/commit/f34eeb1f3542692c35b84cac85369ff3f5225cea) fixed git submodules (@dselman)
+- [3804f49](https://github.com/fabric-composer/fabric-composer/commit/3804f492c070d6d5ff99c4ea520e00def2fd2d47) fixed name for sys tests (@dselman)
+- [be706a2](https://github.com/fabric-composer/fabric-composer/commit/be706a281b4abd789031533bb5b365421318dfe0) Aligned module versions (@dselman)
+- [c8576e0](https://github.com/fabric-composer/fabric-composer/commit/c8576e0b6817e3d7d53beed11b74d5452612e876) README updates (@dselman)
+- [53a7cb6](https://github.com/fabric-composer/fabric-composer/commit/53a7cb6f5ae1411e35f3bb9342f73c5693577f68) Removed concerto (@dselman)
+- [9131571](https://github.com/fabric-composer/fabric-composer/commit/9131571967b966f90b6778fc93dd104366861a45) lerna run test passes (@dselman)
+- [7b36002](https://github.com/fabric-composer/fabric-composer/commit/7b360023f5f9b913cf6a2d954c4b20a4e1b0ca50) composer-common tests pass (@dselman)
+- [6d59293](https://github.com/fabric-composer/fabric-composer/commit/6d592930911a4ec0c5bbb2496595e30261b3f59c) lerna bootstrap now works (@dselman)
+- [284add4](https://github.com/fabric-composer/fabric-composer/commit/284add43a8e1d0ce1c2a2e0bd4892a429bc0ebb4) Updated .gitmodule (@dselman)
+- [922612b](https://github.com/fabric-composer/fabric-composer/commit/922612b6200e0334169f4448de3979ceafd98e99) Renamed packages (@dselman)
+- [aae30d4](https://github.com/fabric-composer/fabric-composer/commit/aae30d4deeb9501ccd862c03883138b905983c1c) Collecting stuff to move (@dselman)
+- [b3d7e88](https://github.com/fabric-composer/fabric-composer/commit/b3d7e888439514d184cf08afc9a64ae34a0a496f) Add dodgy hack to handle broken Buffer.from on node.js v4.4.x (@sstone1)
+- [5845f2a](https://github.com/fabric-composer/fabric-composer/commit/5845f2a83d3a2e1c0f4ea4b37543589371bb01ca) Automatic version bump to 0.3.9
+
+### v0.3.8 (2017/01/25 22:30 +00:00)
+- [6bfc969](https://github.com/fabric-composer/fabric-composer/commit/6bfc969dcf1057f3d0e71ce6673d262cdda87a00) Added a test for fromJSON with concepts (@dselman)
+- [6600386](https://github.com/fabric-composer/fabric-composer/commit/66003863c2d63ed53659e0da23dd6c2a2128e372) Fixed toJSON bug with concepts (@dselman)
+- [138bc98](https://github.com/fabric-composer/fabric-composer/commit/138bc98dee9d26cd8fdb997bacb870a4f60d9fee) loopback fixes (@samjsmith)
+- [d4aa693](https://github.com/fabric-composer/fabric-composer/commit/d4aa693a24e32be464a6125eb3a8177d4ee78994) LoopBack fixes (@samjsmith)
+- [433800a](https://github.com/fabric-composer/fabric-composer/commit/433800a8ecdef227666b8cf19997732439f3fc44) Updated LoopBack README (@samjsmith)
+- [0eb8eba](https://github.com/fabric-composer/fabric-composer/commit/0eb8eba08079166c9d3af55140cd11ed460cab69) Automatic version bump to 0.3.8
+
+### v0.3.7 (2017/01/25 11:12 +00:00)
+- [db55520](https://github.com/fabric-composer/fabric-composer/commit/db55520de04138469a85d5bb80aa0bafdb81b2c3) :memo: Updates to contrib notes (@mbwhite)
+- [c505f89](https://github.com/fabric-composer/fabric-composer/commit/c505f89ff184f96f865eba11beef61ffd7e669ec) Fix version checker test (@sstone1)
+- [1190023](https://github.com/fabric-composer/fabric-composer/commit/1190023b9d2fcc56aec93b290a24ded8acb7d257) Don't require changelog.txt updates on automatic version bump (@sstone1)
+- [c3d2933](https://github.com/fabric-composer/fabric-composer/commit/c3d293335c1c5a13f6f2db943402cd02b2f16fd4) Updated LoopBack README (@samjsmith)
+- [9aaff9a](https://github.com/fabric-composer/fabric-composer/commit/9aaff9a6d0bd6a8f4f0eafd8cac6bdde51fa6688) Modified README (@dselman)
+- [0161228](https://github.com/fabric-composer/fabric-composer/commit/0161228c7216f1935f3f6ff1bbde073cbb881eda) Re-enable system tests in Travis builds (@sstone1)
+- [83e4a57](https://github.com/fabric-composer/fabric-composer/commit/83e4a579d524b441256dc6d82a3fb435dd4409f8) Relax runtime/client version requirements for release builds (@sstone1)
+- [8ba4403](https://github.com/fabric-composer/fabric-composer/commit/8ba4403ee12a614f32c82fe89266333251635987) Bump version numbers to 0.3.7 (@sstone1)
+- [db12103](https://github.com/fabric-composer/fabric-composer/commit/db121030b5bafc7ec0f7f7bd87f3adcdc39f50b7) Clean Git repository before pushing (@sstone1)
+- [8858357](https://github.com/fabric-composer/fabric-composer/commit/885835776cfe228e71b0c17a4db11fbaddb4dce9) Automatic version bump to 0.3.7
+
+### v0.3.6 (2017/01/24 23:04 +00:00)
+- [fbc0259](https://github.com/fabric-composer/fabric-composer/commit/fbc0259c50fbb7439292bf3000fca17ccab528b6) Changes to deploy script (@sstone1)
+- [90a7ac0](https://github.com/fabric-composer/fabric-composer/commit/90a7ac00c2a38a0b5a5d5bc24d0843eff3b67eb7) Automatic version bump to 0.3.6
+- [462aafb](https://github.com/fabric-composer/fabric-composer/commit/462aafb621d9dabdf4d6eb0a46ba1842eeadd5ea) Empty commit to check GitHub permissions
+
+### v0.3.5 (2017/01/24 22:21 +00:00)
+- [d83aed8](https://github.com/fabric-composer/fabric-composer/commit/d83aed89cf2f6b18b8e23bc86e788b3bc68c9761) Attempt to fix deploy script again (@sstone1)
+- [092d6b7](https://github.com/fabric-composer/fabric-composer/commit/092d6b7a30307fde17f58c41a5a8fd35872bdeee) Attempt to fix deploy script again (@sstone1)
+- [68b06c3](https://github.com/fabric-composer/fabric-composer/commit/68b06c375567c49a6141013a1de09cf99a803178) Empty commit to check GitHub permissions
+- [2589064](https://github.com/fabric-composer/fabric-composer/commit/25890648e9cb0f2b30c3ae28fa3c3bb3521b1d84) Automatic version bump to 0.3.5
+
+### v0.3.4 (2017/01/24 21:23 +00:00)
+- [633e78b](https://github.com/fabric-composer/fabric-composer/commit/633e78b7e5abd144aa9a34f33282c66bd5c27a1b) Bump version to 0.3.4, attempt to fix deploy script (@sstone1)
+
+### v0.3.3 (2017/01/24 19:48 +00:00)
+- [a8ae3ba](https://github.com/fabric-composer/fabric-composer/commit/a8ae3ba7ad71173c6d27e2d7615bbde744a6e281) Fix changelog.txt versions (@sstone1)
+- [831e7ee](https://github.com/fabric-composer/fabric-composer/commit/831e7ee16b76e6bd253049512bf286e456fef278) Add missing dependencies (@sstone1)
+- [bc47a1e](https://github.com/fabric-composer/fabric-composer/commit/bc47a1eee592758edca447c22eb7f14cb39ba19f) Switch version numbers and dependencies to 0.3.3 (@sstone1)
+- [a804bcb](https://github.com/fabric-composer/fabric-composer/commit/a804bcbe9b9d788e68d5cc493659bcc27662098a) Initial scripts to deal with problems (@sstone1)
+- [c96972c](https://github.com/fabric-composer/fabric-composer/commit/c96972c101db88047bc3b80cb255cc67fd2c2c1b) Use Lerna publish to publish all modules (@sstone1)
+- [fdf769d](https://github.com/fabric-composer/fabric-composer/commit/fdf769d5cd8b2453fe6d21d329b329fb123a3d8b) Add in a new package for a Concerto based Loopback adapter. (@samjsmith)
+- [b72e588](https://github.com/fabric-composer/fabric-composer/commit/b72e588f89588e1482d446c86a157c3671b14e5f) unit test updates (@mbwhite)
+- [6def185](https://github.com/fabric-composer/fabric-composer/commit/6def185576b693a64aec9105820596cef3961507) Disable embedded and web debug logging (@sstone1)
+- [d604dc5](https://github.com/fabric-composer/fabric-composer/commit/d604dc5a4fc00e6e3db513f09ac7aa92c25d1d6b) undeploy pahse 1 (@mbwhite)
+- [7dd7e79](https://github.com/fabric-composer/fabric-composer/commit/7dd7e79102a105b358804a794859dcfd8e2c3799) license scan tool (@mbwhite)
+- [2738ab0](https://github.com/fabric-composer/fabric-composer/commit/2738ab0d3bb477cc7eedee5ee1b27cdafcd83cec) undeploy correct using promises (@mbwhite)
+- [9817d4f](https://github.com/fabric-composer/fabric-composer/commit/9817d4f65ea4560c2f47b1ff5bf1546e6bd10912) undeploy phase 2 (@mbwhite)
+- [46cdf51](https://github.com/fabric-composer/fabric-composer/commit/46cdf513548d2f032de80ff7dc1b94f700c8241d) Disable embedded and web debug logging (@sstone1)
+- [40d891b](https://github.com/fabric-composer/fabric-composer/commit/40d891bc8c3e6601274b31ed1f55ba0a175ee5ae) Runtime support for READ access enforcement (@sstone1)
+- [14f8ec9](https://github.com/fabric-composer/fabric-composer/commit/14f8ec912e0f2bb0ac551101705cc822c74db4ba) unit test updates (@mbwhite)
+- [72ade1b](https://github.com/fabric-composer/fabric-composer/commit/72ade1b5cbec6c3aa93b416e736c4555bc620c01) Bump concerto-common dependencies to 0.3.3 (@sstone1)
+- [ef6c0e5](https://github.com/fabric-composer/fabric-composer/commit/ef6c0e540e2d82f62b4d932383b46955e18c6cff) Trigger buid (@mbwhite)
+- [39d1237](https://github.com/fabric-composer/fabric-composer/commit/39d12379b78925a2ff3f7449f99fd9a34956e8d2) Support for concepts (@dselman)
+- [51ab833](https://github.com/fabric-composer/fabric-composer/commit/51ab833375388eb8ce68eb2eb237b937b8361bf5) undeploy correct using promises (@mbwhite)
+- [3ebdf22](https://github.com/fabric-composer/fabric-composer/commit/3ebdf2229363c0900e3774ea582adcc889d71970) undeploy phase 2 (@mbwhite)
+- [88e61f9](https://github.com/fabric-composer/fabric-composer/commit/88e61f9e3969a07587b4f06419dde7e7a48c6f21) undeploy pahse 1 (@mbwhite)
+- [59aee05](https://github.com/fabric-composer/fabric-composer/commit/59aee0510be68ab12df87182d43211328ca682ef) Add affiliation options to createIdentity (@sstone1)
+- [977b10c](https://github.com/fabric-composer/fabric-composer/commit/977b10c2a00c39817563549b644ff158f09e1a70) Use a static rather than instance map (@samjsmith)
+- [21de65c](https://github.com/fabric-composer/fabric-composer/commit/21de65ce09b4aaf8a5f0f43653145cbe5b7412fa) Support for concepts, WIP (@dselman)
+- [5b70983](https://github.com/fabric-composer/fabric-composer/commit/5b70983a798fe3b6bb60d02c7c207dda539427af) Chaincode deployment needs certificate.pem file and certPath property (@sstone1)
+- [780bc21](https://github.com/fabric-composer/fabric-composer/commit/780bc21f496b6500f59bb3832ad1cea620b98590) license scan tool (@mbwhite)
+- [fa2d5b4](https://github.com/fabric-composer/fabric-composer/commit/fa2d5b49e157060163f3f620087f22343c8377eb) Compress Go inlined JavaScript source with gzip (@sstone1)
+- [8f42e8c](https://github.com/fabric-composer/fabric-composer/commit/8f42e8c63aafe4e6662ec1d7ce62ac487cb4226f) HFC connection manager should support GRPCS (@sstone1)
+- [065126b](https://github.com/fabric-composer/fabric-composer/commit/065126be361ea5b4880d49c7303330a9371a70f5) license udpates (@mbwhite)
+- [7884f9c](https://github.com/fabric-composer/fabric-composer/commit/7884f9cc31f9630f0c39268bf0cfa81d27ad75be) unit test coverage (@mbwhite)
+- [f1b354e](https://github.com/fabric-composer/fabric-composer/commit/f1b354e875ac1723c288542131362b2a375e6b6c) Fixed license issues (@14gracel)
+- [87d30d8](https://github.com/fabric-composer/fabric-composer/commit/87d30d8ce0d3050dc6c21e436edeb93a0d2c94f8) Fixed all license headers (@14gracel)
+- [5276350](https://github.com/fabric-composer/fabric-composer/commit/5276350b8f7da0378b16d740ce8c4363f8a8fed8) Add identity system tests (@sstone1)
+- [1d19a89](https://github.com/fabric-composer/fabric-composer/commit/1d19a890ae62471e7271111871b7c3ed12066be2) Edit license (@14gracel)
+- [8c28b50](https://github.com/fabric-composer/fabric-composer/commit/8c28b5077bd2555fe9278929445c0426458a6ae0) fix (@14gracel)
+- [a106fa0](https://github.com/fabric-composer/fabric-composer/commit/a106fa0016f7675963622661e1fa31a7f2c318ac) Edited license (@14gracel)
+- [37962b7](https://github.com/fabric-composer/fabric-composer/commit/37962b7e2a15d4f6df043c80aa6d308971bdc0a3) Add transaction system tests that work with participants (@sstone1)
+- [9c12d17](https://github.com/fabric-composer/fabric-composer/commit/9c12d17b725038c8f2a2ed0ef4122697273ee169) Changed license in package.json (@14gracel)
+- [ac4578e](https://github.com/fabric-composer/fabric-composer/commit/ac4578ebd1a74e6ebeb11bde161efc92e83d2743) updates (@samjsmith)
+- [27b48be](https://github.com/fabric-composer/fabric-composer/commit/27b48be688979087f7bcd04d5b5f361b5c2fb6a0) Add participant system tests (@sstone1)
+- [2e5cce6](https://github.com/fabric-composer/fabric-composer/commit/2e5cce6b7b2c4b139a36933c9548909773b2e698) Cannot use valid semver versions with prerelease identifiers (@sstone1)
+- [c16504c](https://github.com/fabric-composer/fabric-composer/commit/c16504c8c0f99aee1bd776273836bcdbd885c734) Business network participants cannot update business network (@sstone1)
+- [4c993ab](https://github.com/fabric-composer/fabric-composer/commit/4c993ab021c552c76942ac178eaf9084be04d626) Access control rules should apply to old version (@sstone1)
+- [4865821](https://github.com/fabric-composer/fabric-composer/commit/4865821216bb13c6b1b14c1c681bc9548097c182) Reduce Go compile memory requirements by minifying the JavaScript (@sstone1)
+- [fb01480](https://github.com/fabric-composer/fabric-composer/commit/fb0148025e19ac90b6c4acc5fc4690469edfd518) Embedded and web connectors fail to return ping response (@sstone1)
+- [8a3047b](https://github.com/fabric-composer/fabric-composer/commit/8a3047bd78752a0b25bdaa5e19d818ead4787a1c) remove ibm- from jsdoc (@mbwhite)
+- [cffca03](https://github.com/fabric-composer/fabric-composer/commit/cffca03a188c2d5755ffeed221638b09b992090d) Create CONTRIBUTING.md (@mbwhite)
+- [0e9a04f](https://github.com/fabric-composer/fabric-composer/commit/0e9a04f862c14e1e2692640bf711d9c8f93bdd39) initial undeploy (@mbwhite)
+- [e0b035c](https://github.com/fabric-composer/fabric-composer/commit/e0b035ccf0bcec132bc9ab8f6941713859058798) Embedded and web connectors should throw if chaincode ID missing (@sstone1)
+- [09778fc](https://github.com/fabric-composer/fabric-composer/commit/09778fc75e5baa106068f0f822ab83b043587c59) Optionally use wallet API in Hyperledger Fabric connector (@sstone1)
+- [589d9b2](https://github.com/fabric-composer/fabric-composer/commit/589d9b20fef46e34a3392d39a1d09afe01aad7f0) Add initial wallet API (@sstone1)
+- [73b9221](https://github.com/fabric-composer/fabric-composer/commit/73b9221999fbb47ede00fae01aff12269fa83608) Enforce access control list at runtime (@sstone1)
+- [45a4556](https://github.com/fabric-composer/fabric-composer/commit/45a455604b17c6ea7b0013aa60dc2220106abbbe) Add runtime access controller (@sstone1)
+- [b6cbb0f](https://github.com/fabric-composer/fabric-composer/commit/b6cbb0fb1318cb66235f9ae206753ec48df91f66) Fixing network archive command :bug: (@mbwhite)
+- [32f8d0d](https://github.com/fabric-composer/fabric-composer/commit/32f8d0da5c55f71729bb0704c8bcaadffb14f842) Fix CLI code to work in the monorepo (@sstone1)
+- [22e2263](https://github.com/fabric-composer/fabric-composer/commit/22e22633583516b986d6714e6ff49ddea7911b29) Monorepo move (@sstone1)
+- [1577591](https://github.com/fabric-composer/fabric-composer/commit/157759153699d58f10843650047b0e1a7ba5b0fa) Bump all concerto-common dependencies to 0.3.1 (@sstone1)
+- [ab55c26](https://github.com/fabric-composer/fabric-composer/commit/ab55c260774b2d6dded5db70e107682e5f59060f) network archive, basic version and :sparkles: (@mbwhite)
+- [b184f53](https://github.com/fabric-composer/fabric-composer/commit/b184f53e60696709ac4aeb1af3ddc1ea3b3b6cd1) Always publish with latest tag (@sstone1)
+- [c340f5d](https://github.com/fabric-composer/fabric-composer/commit/c340f5da825bfa6b1395778b1f77184ca60b162d) Stop pushing to npm on system tests (@sstone1)
+- [9ae39ec](https://github.com/fabric-composer/fabric-composer/commit/9ae39ecc87080fa77001742746a2b80787ff871b) Add options to factory to generate resource instances with sample data (@sstone1)
+- [5912c56](https://github.com/fabric-composer/fabric-composer/commit/5912c564ab7eb7f03b220cb3ca55d934d1e1f302) Added validators and tests (@dselman)
+- [11df854](https://github.com/fabric-composer/fabric-composer/commit/11df854345581e1338a67f193fff6f2152706948) Added regex and range validation (@dselman)
+- [8b5d0d7](https://github.com/fabric-composer/fabric-composer/commit/8b5d0d776972264e7828c6d069aa45a38d404fdc) Add runtime support for @transaction and utility functions (@sstone1)
+- [d9227ee](https://github.com/fabric-composer/fabric-composer/commit/d9227ee052f354cdd2568987f9381e911f17a9eb) Get system tests running again, part 2 (@sstone1)
+- [229d00e](https://github.com/fabric-composer/fabric-composer/commit/229d00eb50c49de341fd42122b092dd9b2860be8) Get system tests running again, part 1 (@sstone1)
+- [0c5e324](https://github.com/fabric-composer/fabric-composer/commit/0c5e3249e587d3379be3503701c4016a7e9634ca) Monorepo move (@sstone1)
+- [3af2d7e](https://github.com/fabric-composer/fabric-composer/commit/3af2d7effb0f6936091e77b65fc33fb07647da3f) Enable Slack notifications (@sstone1)
+- [1915b5d](https://github.com/fabric-composer/fabric-composer/commit/1915b5da8c68ec377fc07f7420eb129e7852c95e) Remove redundant files, fix deploy script (@sstone1)
+- [3c45731](https://github.com/fabric-composer/fabric-composer/commit/3c45731be3f44ffd9a7a796b5b90e54dd4b2a864) Fix changelog.txt versions (@sstone1)
+- [737e92a](https://github.com/fabric-composer/fabric-composer/commit/737e92ab3a129207b3f1fa6ccdb08ff925421fc9) Build errors not being spotted by Travis (@sstone1)
+- [d565c6e](https://github.com/fabric-composer/fabric-composer/commit/d565c6e493d8dcda93be97c504797492974c02da) Remove all ibm prefixes for requires (@sstone1)
+- [ed2dfb6](https://github.com/fabric-composer/fabric-composer/commit/ed2dfb60dedab7ea2c7280d35813c86ea1371eab) Change all dependencies to 0.3.0 (@sstone1)
+- [6bbc1d6](https://github.com/fabric-composer/fabric-composer/commit/6bbc1d611f6921dfc913afaefc0678f504dc0013) Bump all versions to 0.3.0 (@sstone1)
+- [d4be5b4](https://github.com/fabric-composer/fabric-composer/commit/d4be5b4dd7e78c46a1fe1ed9b535227b9d0118e1) Monorepo move (@sstone1)
+- [f10918d](https://github.com/fabric-composer/fabric-composer/commit/f10918d71c9ac0dff6d95b53aced2cffa99105be) Monorepo move (@sstone1)
+- [bfc4554](https://github.com/fabric-composer/fabric-composer/commit/bfc4554e07496f695755f96fff8fbb008a140d05) Monorepo move (@sstone1)
+- [9331539](https://github.com/fabric-composer/fabric-composer/commit/9331539d8165f8372e0744ac1f35be6c374fe050) Monorepo move (@sstone1)
+- [946ec51](https://github.com/fabric-composer/fabric-composer/commit/946ec51dacb258dc72e9b5dfe637ee0d2fea068a) Monorepo move (@sstone1)
+- [76ce6b2](https://github.com/fabric-composer/fabric-composer/commit/76ce6b2f978828f139561ee647662395808ac90f) Monorepo move (@sstone1)
+- [2dce41a](https://github.com/fabric-composer/fabric-composer/commit/2dce41a45ccab2380e92a008425f6ea78476bfb6) Monorepo move (@sstone1)
+- [876c935](https://github.com/fabric-composer/fabric-composer/commit/876c9353c2cc6089456ce53c7c97743e0097ebce) Add submodule configuration (@sstone1)
+- [dfd2e72](https://github.com/fabric-composer/fabric-composer/commit/dfd2e72b773ed8acb1e627f916b831094ec94a86) Monorepo move (@sstone1)
+- [dfeec68](https://github.com/fabric-composer/fabric-composer/commit/dfeec687006b73d61e503dd1a3f4c04b9bf7518f) Remove submodule configuration (@sstone1)
+- [44aefdd](https://github.com/fabric-composer/fabric-composer/commit/44aefdda0f893fe1039fefa2c128e26e6ae10675) Monorepo move (@sstone1)
+- [45cae37](https://github.com/fabric-composer/fabric-composer/commit/45cae37207daf77272f8b01ae79e6c8145bbdc62) Fix Lerna configuration (@sstone1)
+- [ab1f518](https://github.com/fabric-composer/fabric-composer/commit/ab1f518957eb4741ed27f212bc98c3162ed9d83f) Monorepo move (@sstone1)
+- [133a6db](https://github.com/fabric-composer/fabric-composer/commit/133a6db0a0eca4145fd978c7f306956768d8a4a1) Add initial Travis files (@sstone1)
+- [c4833d6](https://github.com/fabric-composer/fabric-composer/commit/c4833d64cf475341a0e4a5d9ca4e5837ace46267) Add initial Lerna files (@sstone1)
+- [017c5f8](https://github.com/fabric-composer/fabric-composer/commit/017c5f83bde18705e3d8b4750640c2aaf8f2f0ce) Initial commit (@sstone1)
+- [4f3b1d4](https://github.com/fabric-composer/fabric-composer/commit/4f3b1d4fc4eeb51eb4b3a340585b5a88ce7f6572) Automated commit to trigger downstream build
+- [2384b05](https://github.com/fabric-composer/fabric-composer/commit/2384b050510b33d92ac671f412c18c1850b0a936) Automated commit to trigger downstream build
+- [425c869](https://github.com/fabric-composer/fabric-composer/commit/425c8697c8a470a9177b1a434c165beac1e0dd78) Automated commit to trigger downstream build
+- [85457b6](https://github.com/fabric-composer/fabric-composer/commit/85457b6d0143b9bce01773e9cdaa977a3fd171ab) Automated commit to trigger downstream build
+- [5647513](https://github.com/fabric-composer/fabric-composer/commit/564751315e28d43dae465860a4dc6b604c5dd0e5) Automated commit to trigger downstream build
+- [6bee985](https://github.com/fabric-composer/fabric-composer/commit/6bee985d9cf6bf1ef66cb372013d573e053da94d) Automated commit to trigger downstream build
+- [c710ea1](https://github.com/fabric-composer/fabric-composer/commit/c710ea1b57d162398d92d750d207f430179309fd) Automated commit to trigger downstream build
+- [8efb23c](https://github.com/fabric-composer/fabric-composer/commit/8efb23c557081b8db99cc4ebc41b9c413f81e5ec) Automated commit to trigger downstream build
+- [ccaf09d](https://github.com/fabric-composer/fabric-composer/commit/ccaf09d87439690f72524abcb864044a700e39cc) Automated commit to trigger downstream build
+- [08d4fd9](https://github.com/fabric-composer/fabric-composer/commit/08d4fd906fc7154eeca7dd8a3e65075a5e820936) Fix broken dependencies (@sstone1)
+- [4c53271](https://github.com/fabric-composer/fabric-composer/commit/4c53271f3d15fc426d98ad7e0712c0762893574c) Workaround Starcounter-Jack/JSON-Patch issue #140 (@sstone1)
+- [f33b67c](https://github.com/fabric-composer/fabric-composer/commit/f33b67cf1e2d9280ccfe6442dbd8d3a4cb0a1732) Fix broken dependencies (@sstone1)
+- [3fdf1f1](https://github.com/fabric-composer/fabric-composer/commit/3fdf1f179887c818d5da6d88cd08b4291b3a2024) Fix broken dependencies (@sstone1)
+- [1049a8e](https://github.com/fabric-composer/fabric-composer/commit/1049a8e5985f3d889a3e5c6f8d308f6f5195050c) Automated commit to trigger downstream build
+- [989a420](https://github.com/fabric-composer/fabric-composer/commit/989a42050226767402bb1d7c17687f52b806fee9) Automated commit to trigger downstream build
+- [c9814b6](https://github.com/fabric-composer/fabric-composer/commit/c9814b66e49e335b9cbd0f2fc8265ace7127511f) Automated commit to trigger downstream build
+- [e2bdbc6](https://github.com/fabric-composer/fabric-composer/commit/e2bdbc6f586ab418839dd73877e0c0b750ab00a8) Automated commit to trigger downstream build
+- [dd2b35c](https://github.com/fabric-composer/fabric-composer/commit/dd2b35c0fb996135b493285a65efd37eb09f9958) Automated commit to trigger downstream build
+- [320d10d](https://github.com/fabric-composer/fabric-composer/commit/320d10d6c860b36c1750f3f74a77ea32b80a536c) Automated commit to trigger downstream build
+- [838b89a](https://github.com/fabric-composer/fabric-composer/commit/838b89acbb6d651c8f7178dd8a39b885809d02c7) Automated commit to trigger downstream build
+- [06c5700](https://github.com/fabric-composer/fabric-composer/commit/06c57009d680a5874a2d0db1fa5df504ca05a11b) Automated commit to trigger downstream build
+- [902b1de](https://github.com/fabric-composer/fabric-composer/commit/902b1de0ac912b13a9a8e4a104183d5f1caf65ec) Automated commit to trigger downstream build
+- [30e5520](https://github.com/fabric-composer/fabric-composer/commit/30e552059a0b41f70f0d01d219f018fd146d1d7c) Automated commit to trigger downstream build
+- [4580bdc](https://github.com/fabric-composer/fabric-composer/commit/4580bdc639b981f10461a46c00baa2878d9c3678) Automated commit to trigger downstream build
+- [b7f56f0](https://github.com/fabric-composer/fabric-composer/commit/b7f56f0626b4932e0b32d20362b2f9503e6be446) Automated commit to trigger downstream build
+- [9e7e101](https://github.com/fabric-composer/fabric-composer/commit/9e7e10175556233f3e770bf9b5f5826a124d95b4) Automated commit to trigger downstream build
+- [ff3375a](https://github.com/fabric-composer/fabric-composer/commit/ff3375a2662621a1e03e3f364852751439c82e3c) Added AclManager to business network definition (@dselman)
+- [16a2d44](https://github.com/fabric-composer/fabric-composer/commit/16a2d44a4d9ad9c90f9ed03a9b023f64a1131891) Automated commit to trigger downstream build
+- [4466c38](https://github.com/fabric-composer/fabric-composer/commit/4466c389067a72c6add84477b8f11db93e3fce7c) Automated commit to trigger downstream build
+- [a2a4961](https://github.com/fabric-composer/fabric-composer/commit/a2a49612c6abd489e639b8b46f4f17a76189b6e1) Automated commit to trigger downstream build
+- [fe92f61](https://github.com/fabric-composer/fabric-composer/commit/fe92f61b13b7f242b1d3ddd65074f647488eeece) Automated commit to trigger downstream build
+- [c4c4418](https://github.com/fabric-composer/fabric-composer/commit/c4c441875fd4eec9612542232554de1c0a7871b9) Automated commit to trigger downstream build
+- [cb4b1c7](https://github.com/fabric-composer/fabric-composer/commit/cb4b1c7a7d1bc8fa29d075e3faedfd1ca90b000a) Workaround Starcounter-Jack/JSON-Patch issue #140 (@sstone1)
+- [94c0e43](https://github.com/fabric-composer/fabric-composer/commit/94c0e4300bb32f55f7a9701b0a4d550ce2adcbcf) Automated commit to trigger downstream build
+- [c2ca932](https://github.com/fabric-composer/fabric-composer/commit/c2ca932acfd3a71800a3c43f2b6409521e0b6d8f) Automated commit to trigger downstream build
+- [3333984](https://github.com/fabric-composer/fabric-composer/commit/33339846db3b0540d0fdc4207ffe216a585a830f) Automated commit to trigger downstream build
+- [824ba6c](https://github.com/fabric-composer/fabric-composer/commit/824ba6ce1cb65c5bef225107fda9adfa4e939e0c) Automated commit to trigger downstream build
+- [786edba](https://github.com/fabric-composer/fabric-composer/commit/786edbac2cede374e29ea48eabb0003eb7a040ef) Automated commit to trigger downstream build
+- [0f7c0b8](https://github.com/fabric-composer/fabric-composer/commit/0f7c0b84f47b09f301751289aa6e5af8543c0f76) Automated commit to trigger downstream build
+- [97a0b2d](https://github.com/fabric-composer/fabric-composer/commit/97a0b2d175bc3d644d6bebb2c1ea8c4207e44096) Automated commit to trigger downstream build
+- [860a001](https://github.com/fabric-composer/fabric-composer/commit/860a001adf7db914e2c3f9c927d1764ec4679c70) Automated commit to trigger downstream build
+- [4683c9d](https://github.com/fabric-composer/fabric-composer/commit/4683c9dd5718ecc56ecf7a45cbd6c567f3cd0f35) Automated commit to trigger downstream build
+- [edb17f4](https://github.com/fabric-composer/fabric-composer/commit/edb17f463274ee5634146025163bddfe8e3fc13e) Automated commit to trigger downstream build
+- [1f174d6](https://github.com/fabric-composer/fabric-composer/commit/1f174d6c57d5c59eb7a605d27f52f1fade2c7f3e) Automated commit to trigger downstream build
+- [d832e63](https://github.com/fabric-composer/fabric-composer/commit/d832e6320009f50fb5e27639965726896921b9d7) Automated commit to trigger downstream build
+- [4804f9e](https://github.com/fabric-composer/fabric-composer/commit/4804f9ea1efd1a971aec0743f0f7985b21964974) Automated commit to trigger downstream build
+- [1c87ff2](https://github.com/fabric-composer/fabric-composer/commit/1c87ff255bdfe1e3f2c3b1a65205c60bb7a08ac0) Automated commit to trigger downstream build
+- [a386f07](https://github.com/fabric-composer/fabric-composer/commit/a386f07f7d8c12f173b2acec0481ad49b5854e2c) Automated commit to trigger downstream build
+- [f2046c0](https://github.com/fabric-composer/fabric-composer/commit/f2046c076e0d90bdcd0701278cd6fe47451e831c) Automated commit to trigger downstream build
+- [3cf52c5](https://github.com/fabric-composer/fabric-composer/commit/3cf52c5fc6ac24e91e5a494fc6e9cc1d6756e88f) Added unit tests for ACLs (@dselman)
+- [ca69027](https://github.com/fabric-composer/fabric-composer/commit/ca690276ac082773a7d8fa650bc832e40a3a38c1) Automated commit to trigger downstream build
+- [00a9349](https://github.com/fabric-composer/fabric-composer/commit/00a93494fb65a3e4d880d283b31fbd6ed50c8a76) Automated commit to trigger downstream build
+- [be7003e](https://github.com/fabric-composer/fabric-composer/commit/be7003e8bdeb4243e497085d7daef57a9880ad3d) Automated commit to trigger downstream build
+- [d6abf98](https://github.com/fabric-composer/fabric-composer/commit/d6abf984cb67cdb9c9febb2d7f5423df4a32d9c7) Automated commit to trigger downstream build
+- [9f4d544](https://github.com/fabric-composer/fabric-composer/commit/9f4d544bd543e80e1efd8c5abf577662092a0eca) Automated commit to trigger downstream build
+- [cba25df](https://github.com/fabric-composer/fabric-composer/commit/cba25df8669b6a1ba7f17d35544eb976e43f40cd) Automated commit to trigger downstream build
+- [485d083](https://github.com/fabric-composer/fabric-composer/commit/485d083b93c8a0bf7465687472259a4c65d32ed0) Automated commit to trigger downstream build
+- [01762de](https://github.com/fabric-composer/fabric-composer/commit/01762de76391c14deb12e308d257ef7b9b53f01e) Automated commit to trigger downstream build
+- [184643b](https://github.com/fabric-composer/fabric-composer/commit/184643bc9cff21e77cdca1fa4cf443d730ace404) Automated commit to trigger downstream build
+- [11c4a7e](https://github.com/fabric-composer/fabric-composer/commit/11c4a7eb97427f564d8f2bf57fc230828d41a4bd) Automated commit to trigger downstream build
+- [4bd9f00](https://github.com/fabric-composer/fabric-composer/commit/4bd9f00613064bb5fe6766418706e2a77736eba3) Automated commit to trigger downstream build
+- [0ddbc76](https://github.com/fabric-composer/fabric-composer/commit/0ddbc761b6e254a759222a70171d1eeff48e9319) Automated commit to trigger downstream build
+- [f71e71c](https://github.com/fabric-composer/fabric-composer/commit/f71e71ccceb77ea859975a22dcf03f6876d3dcc5) Automated commit to trigger downstream build
+- [eeddd95](https://github.com/fabric-composer/fabric-composer/commit/eeddd95d9a14c68144ad60d4bb1c90843a4288d4) BusinessNetworkDefinition.fromDirectory() does not work on Windows (@sstone1)
+- [27cd9fe](https://github.com/fabric-composer/fabric-composer/commit/27cd9fe88051ce09e677c5fc9f1f943442acc263) Automated commit to trigger downstream build
+- [2265740](https://github.com/fabric-composer/fabric-composer/commit/22657402224f31e0b959473f51e5fddbc6992c7b) Automated commit to trigger downstream build
+- [5a27edb](https://github.com/fabric-composer/fabric-composer/commit/5a27edb35c0def21519e5181bed60fde78c7ebfb) Automated commit to trigger downstream build
+- [7cad518](https://github.com/fabric-composer/fabric-composer/commit/7cad51818b1b5c02168ef7a2d8cd0a1f255bb9f6) Automated commit to trigger downstream build
+- [c247652](https://github.com/fabric-composer/fabric-composer/commit/c247652587e00e00e7216a126c363f4a9ada3a9c) Automated commit to trigger downstream build
+- [c0b568a](https://github.com/fabric-composer/fabric-composer/commit/c0b568af5fde387adebc2337c7f2548a3ff9d3bf) Automated commit to trigger downstream build
+- [1ef4b5f](https://github.com/fabric-composer/fabric-composer/commit/1ef4b5fb4fc36e89fd7c97d66cfdf4988b327d48) Automated commit to trigger downstream build
+- [02e7fff](https://github.com/fabric-composer/fabric-composer/commit/02e7fffa635baa182cb022810fd8174f1e0a8e33) Automated commit to trigger downstream build
+- [d1971c9](https://github.com/fabric-composer/fabric-composer/commit/d1971c996964b2db33ebfc0f85e6553019cbff07) Automated commit to trigger downstream build
+- [1bddc5c](https://github.com/fabric-composer/fabric-composer/commit/1bddc5c5636c69d8bca64a043afd7a6062b2f6ba) Automated commit to trigger downstream build
+- [26fc0f0](https://github.com/fabric-composer/fabric-composer/commit/26fc0f0734d1fc5bd7beb7529eb5ca3ab24ab56a) Automated commit to trigger downstream build
+- [529630f](https://github.com/fabric-composer/fabric-composer/commit/529630f245166be8af0c4c75940427477abeb352) Automated commit to trigger downstream build
+- [d0f49a4](https://github.com/fabric-composer/fabric-composer/commit/d0f49a4cc5e7040371df1569b1e6031807366025) Automated commit to trigger downstream build
+- [b4fd230](https://github.com/fabric-composer/fabric-composer/commit/b4fd230fb627338c776d6117c65288f9d00d4972) Automated commit to trigger downstream build
+- [727a54c](https://github.com/fabric-composer/fabric-composer/commit/727a54c3cc93e4d7c3b889788d3cdb476ee1b0c8) Automated commit to trigger downstream build
+- [fc21135](https://github.com/fabric-composer/fabric-composer/commit/fc211358aa011076207754742337e51f4d08bae5) Automated commit to trigger downstream build
+- [dd77216](https://github.com/fabric-composer/fabric-composer/commit/dd77216fd3e0b343af12d7744e01c1af780a0806) Automated commit to trigger downstream build
+- [9da7fa0](https://github.com/fabric-composer/fabric-composer/commit/9da7fa0b4fb9f2de5b49379dfd0bc7bb9019f6f8) Automated commit to trigger downstream build
+- [7cb7847](https://github.com/fabric-composer/fabric-composer/commit/7cb7847a53ff4df0d0e99b4761ae8b7c95be89d8) Automated commit to trigger downstream build
+- [b4b3f64](https://github.com/fabric-composer/fabric-composer/commit/b4b3f64b055db726665eb727ca3646365dd08c12) deploy cli (@ODOWDAIBM)
+- [dd96bf4](https://github.com/fabric-composer/fabric-composer/commit/dd96bf4622f39a16b6ba756eddcfba106bee2ac3) Automated commit to trigger downstream build
+- [977c5af](https://github.com/fabric-composer/fabric-composer/commit/977c5af1fc24ed10df0bd327d5439220bc13cb41) deploy cli (@ODOWDAIBM)
+- [3633884](https://github.com/fabric-composer/fabric-composer/commit/3633884b95ab92dfde724df7da0f714547dd2157) deploy cli (@ODOWDAIBM)
+- [aa8c8a6](https://github.com/fabric-composer/fabric-composer/commit/aa8c8a68c091e11bea2210837e3bcfb643770a40) deploy cli (@ODOWDAIBM)
+- [7c2d4ad](https://github.com/fabric-composer/fabric-composer/commit/7c2d4adce292890f7c39100e5dc4d8a1e3755300) deploy cli (@ODOWDAIBM)
+- [3cca303](https://github.com/fabric-composer/fabric-composer/commit/3cca303222ed9c10da55d68e1133b09f8d652c78) deploy cli (@ODOWDAIBM)
+- [4f65503](https://github.com/fabric-composer/fabric-composer/commit/4f655034244460dcec3520a4f251d581a87db3e0) deploy cli (@ODOWDAIBM)
+- [c0ebd5e](https://github.com/fabric-composer/fabric-composer/commit/c0ebd5efc5c6a9a9f68c49204fb0467f2cb1b730) deploy cli (@ODOWDAIBM)
+- [c2c27a4](https://github.com/fabric-composer/fabric-composer/commit/c2c27a4238defb5a109b693d9acc609b81d9a912) Automated commit to trigger downstream build
+- [4efeddb](https://github.com/fabric-composer/fabric-composer/commit/4efeddbd10959a9bfd80dec0b32f3785e8ec3a6b) Automated commit to trigger downstream build
+- [d6fe9b3](https://github.com/fabric-composer/fabric-composer/commit/d6fe9b33d83ef4cd9013a98de0d9d83db5fb9438) Automated commit to trigger downstream build
+- [298868b](https://github.com/fabric-composer/fabric-composer/commit/298868bf40fde665f5e557d4675f70ce8d40e5c9) Automated commit to trigger downstream build
+- [78267c9](https://github.com/fabric-composer/fabric-composer/commit/78267c91a9beeffc8ce51ee3616b0b9d1e15d88c) Automated commit to trigger downstream build
+- [c383d99](https://github.com/fabric-composer/fabric-composer/commit/c383d99718afd02ccdfdc2af7ddb9545daa34530) Automated commit to trigger downstream build
+- [bbe7ef4](https://github.com/fabric-composer/fabric-composer/commit/bbe7ef4d8a754a1f1a06792d1b5d46d9a3bf0fad) Hack regexes in thenify and support global window object (@sstone1)
+- [6292b6a](https://github.com/fabric-composer/fabric-composer/commit/6292b6aacf2717482ea25577fa432dddcdc31120) deploy cli (@ODOWDAIBM)
+- [d25785e](https://github.com/fabric-composer/fabric-composer/commit/d25785e18f64a8aba088c3caea0e22979d9f063b) deploy cli (@ODOWDAIBM)
+- [9323ea0](https://github.com/fabric-composer/fabric-composer/commit/9323ea07c6caf8a8189b7f9b2b5a06fc5d15849b) deploy cli (@ODOWDAIBM)
+- [9b866ba](https://github.com/fabric-composer/fabric-composer/commit/9b866ba9ba985e69d0abcaf76b144f2c4963f929) Automated commit to trigger downstream build
+- [a0cbf48](https://github.com/fabric-composer/fabric-composer/commit/a0cbf4822bdbd91502d773ec817ae1d81f6df176) Multiple changes for web runtime (@sstone1)
+- [eb2820b](https://github.com/fabric-composer/fabric-composer/commit/eb2820bc1d8ee97a64d051174513413a6c584503) Automated commit to trigger downstream build
+- [6c004eb](https://github.com/fabric-composer/fabric-composer/commit/6c004eb1d0f906c9c70087a5249db64c85ee4a17) Automated commit to trigger downstream build
+- [c5b1b0f](https://github.com/fabric-composer/fabric-composer/commit/c5b1b0fc5eff00f10369b22f41af42cac0c79767) Automated commit to trigger downstream build
+- [03207ed](https://github.com/fabric-composer/fabric-composer/commit/03207edc1b30258722e1f158d2ef1f60bbb88d61) Automated commit to trigger downstream build
+- [83034e5](https://github.com/fabric-composer/fabric-composer/commit/83034e5b5382e5812cc15bd5f658c233973dd44c) Automated commit to trigger downstream build
+- [de4e724](https://github.com/fabric-composer/fabric-composer/commit/de4e724350c6e8d53825ab974b24e462e79a6b6d) Automated commit to trigger downstream build
+- [7819a1d](https://github.com/fabric-composer/fabric-composer/commit/7819a1d95186627396ba4fbbf4787d28c5eed800) Automated commit to trigger downstream build
+- [733f7c4](https://github.com/fabric-composer/fabric-composer/commit/733f7c4ca214b86cde62cca129fccb26180b89b4) Automated commit to trigger downstream build
+- [b732b22](https://github.com/fabric-composer/fabric-composer/commit/b732b22fe6294135a23da4ce56f54cb3b3e82601) Automated commit to trigger downstream build
+- [20ccbfb](https://github.com/fabric-composer/fabric-composer/commit/20ccbfb06b9a874e6ecd8b93ac962cb000fae580) Automated commit to trigger downstream build
+- [87505b5](https://github.com/fabric-composer/fabric-composer/commit/87505b5f12355dc35f3c2f189a0c147733b65dce) Remove process.env usage which webpack does not like (@sstone1)
+- [c8af4b0](https://github.com/fabric-composer/fabric-composer/commit/c8af4b06f20531d36554c4999f4673b0b66082bd) Automated commit to trigger downstream build
+- [9c72375](https://github.com/fabric-composer/fabric-composer/commit/9c72375ea32206e6a3bff29612ed2b2ae7b5d224) Automated commit to trigger downstream build
+- [f794986](https://github.com/fabric-composer/fabric-composer/commit/f7949867d7e4dc7aa72f0ba50c10575014672afc) Automated commit to trigger downstream build
+- [d36e9de](https://github.com/fabric-composer/fabric-composer/commit/d36e9dede08b715735511a29b57fad81904c3afa) Automated commit to trigger downstream build
+- [991541c](https://github.com/fabric-composer/fabric-composer/commit/991541ce94c83de84ee266a901adf05120a124e5) Automated commit to trigger downstream build
+- [9e45a0e](https://github.com/fabric-composer/fabric-composer/commit/9e45a0e2de67c992c41c01c82fd1a2ae4419cc36) Automated commit to trigger downstream build
+- [d78360e](https://github.com/fabric-composer/fabric-composer/commit/d78360ec8426ffe4a68a0626e14ec9aa62804861) Automated commit to trigger downstream build
+- [ff16584](https://github.com/fabric-composer/fabric-composer/commit/ff165840649ae0562d5cf85a33e30e37f97af801) Automated commit to trigger downstream build
+- [bfa2a9f](https://github.com/fabric-composer/fabric-composer/commit/bfa2a9fc603c424a85ff20dfd5cbb5bdda42f31a) Web runtime needs to accept existing UUID (@sstone1)
+- [6161bf6](https://github.com/fabric-composer/fabric-composer/commit/6161bf64a503b73ceb8f25e96a8afd5cc45b4215) Automated commit to trigger downstream build
+- [e42b061](https://github.com/fabric-composer/fabric-composer/commit/e42b061e869f7bb744a7e72a10df71f67b36a376) Automated commit to trigger downstream build
+- [ffe8021](https://github.com/fabric-composer/fabric-composer/commit/ffe8021860ef219d8337e8c6ff21dc88edd8e283) Automated commit to trigger downstream build
+- [20ff3be](https://github.com/fabric-composer/fabric-composer/commit/20ff3be78de908b1e55d536b6fa4fc98ffece9bb) Automated commit to trigger downstream build
+- [5c00636](https://github.com/fabric-composer/fabric-composer/commit/5c006362437e539b52ac63b6d244bedadd73903c) Handle missing networks object in connection.json (@sstone1)
+- [88aa1c4](https://github.com/fabric-composer/fabric-composer/commit/88aa1c4a86090832889efbd70ddf2fc6a8090179) Add deleteProfile to AdminConnection (@sstone1)
+- [5ee4e5d](https://github.com/fabric-composer/fabric-composer/commit/5ee4e5d001fa8318b4c1129b3532d83fa601e71e) Add delete method to ConnectionProfileStore and all implementations (@sstone1)
+- [3daf3e6](https://github.com/fabric-composer/fabric-composer/commit/3daf3e63ee6747be9752714a66a6d4e115a2c372) Add getAllProfiles method to AdminConnection (@sstone1)
+- [c7d4a2e](https://github.com/fabric-composer/fabric-composer/commit/c7d4a2e10986bb5b82cf055db55373b7f661fc50) Add loadAll method to ConnectionProfileStore and all implementations (@sstone1)
+- [71103a2](https://github.com/fabric-composer/fabric-composer/commit/71103a244de3e454c732b202e4ced73acd0ab924) Add getProfile and list methods to AdminConnection (@sstone1)
+- [c1b32bd](https://github.com/fabric-composer/fabric-composer/commit/c1b32bd1ae30495dac5c47f91775418a93572a68) Implement list method in Hyperledger Fabric Connection implementation (@sstone1)
+- [0492151](https://github.com/fabric-composer/fabric-composer/commit/0492151b5a39caee1957bc5c3fc434e30c877c7a) Add list method to Connection interface (@sstone1)
+- [770aa33](https://github.com/fabric-composer/fabric-composer/commit/770aa33c1a9a27d8af2b3b20a7d00932dd3aeee5) Work in progress for ACL parser and model (@dselman)
+- [ffd158b](https://github.com/fabric-composer/fabric-composer/commit/ffd158bb250909c008219a16cc29c3a3d8b60c3f) Automated commit to trigger downstream build
+- [bf298ec](https://github.com/fabric-composer/fabric-composer/commit/bf298ecaf10a42fb7c6b37ca6e56e27643ba937e) Automated commit to trigger downstream build
+- [7a5e32a](https://github.com/fabric-composer/fabric-composer/commit/7a5e32a724222fe7822f6499edb0901669fb895b) Automated commit to trigger downstream build
+- [f8da6fa](https://github.com/fabric-composer/fabric-composer/commit/f8da6fa56857d289eb7ca28a002dec097e1609eb) Automated commit to trigger downstream build
+- [6b11a7a](https://github.com/fabric-composer/fabric-composer/commit/6b11a7a9bd7a1185a868f6dd993785479747206f) Automated commit to trigger downstream build
+- [879d9c8](https://github.com/fabric-composer/fabric-composer/commit/879d9c8dd1ac08d961c568cde2bcb010d918d08d) Automated commit to trigger downstream build
+- [29ae063](https://github.com/fabric-composer/fabric-composer/commit/29ae063a809be1836cb8b9112778870ee9d3a5a6) Automated commit to trigger downstream build
+- [643db41](https://github.com/fabric-composer/fabric-composer/commit/643db41a806c4063aaa9f799f42d5b8175d196f0) Improve TypeScript definition file generation (@sstone1)
+- [7061741](https://github.com/fabric-composer/fabric-composer/commit/7061741fc74c5af9a726e5cf99d155d61cc6d0fa) Improve TypeScript definition file generation (@sstone1)
+- [59f49b8](https://github.com/fabric-composer/fabric-composer/commit/59f49b8ac2541498cf97f1aa335b8953066f90e7) Improve TypeScript definition file generation (@sstone1)
+- [3004fa4](https://github.com/fabric-composer/fabric-composer/commit/3004fa4a27118a81c526700ea439bb4baab3749f) Improve TypeScript definition file generation (@sstone1)
+- [302183e](https://github.com/fabric-composer/fabric-composer/commit/302183ed6759b18750ae7bedd88ae84ae7c484f8) Improve TypeScript definition file generation (@sstone1)
+- [e3a3d19](https://github.com/fabric-composer/fabric-composer/commit/e3a3d19dd9135b69a63dce5ebca9246fbb119e3b) Automated commit to trigger downstream build
+- [05d3609](https://github.com/fabric-composer/fabric-composer/commit/05d3609bc03bbe48729e66cf0df70b7482c20384) Automated commit to trigger downstream build
+- [397229b](https://github.com/fabric-composer/fabric-composer/commit/397229bbf9726f1161fe80fed88b91d98ea3117a) Automated commit to trigger downstream build
+- [a1523f2](https://github.com/fabric-composer/fabric-composer/commit/a1523f2f4ef1216b35f99e1b1be3c1a626b37b17) Automated commit to trigger downstream build
+- [a94e1e0](https://github.com/fabric-composer/fabric-composer/commit/a94e1e0303fc3253fdf89499c28668fa24fbe4e1) Automated commit to trigger downstream build
+- [0f8e0f6](https://github.com/fabric-composer/fabric-composer/commit/0f8e0f603574983d4b742b4963bfec1d103b2615) Automated commit to trigger downstream build
+- [e953471](https://github.com/fabric-composer/fabric-composer/commit/e95347137c7362530b1b76b25df0452943563efb) Automated commit to trigger downstream build
+- [ee87573](https://github.com/fabric-composer/fabric-composer/commit/ee87573cb4c5029f540d5692887a60d7df47906b) Automated commit to trigger downstream build
+- [97618be](https://github.com/fabric-composer/fabric-composer/commit/97618be43bb3a9f1c343a7185a2011791602c6a1) Automated commit to trigger downstream build
+- [cecb221](https://github.com/fabric-composer/fabric-composer/commit/cecb22199793b6c68996caf0c3e52f5a37b8b3cb) Automated commit to trigger downstream build
+- [087cf9b](https://github.com/fabric-composer/fabric-composer/commit/087cf9b539eb18ad7541f01ce651606ff13a711c) Automated commit to trigger downstream build
+- [7d9bc83](https://github.com/fabric-composer/fabric-composer/commit/7d9bc8370a2bb9f342cb950a4721a98d2ebafc0d) Automated commit to trigger downstream build
+- [bc6e554](https://github.com/fabric-composer/fabric-composer/commit/bc6e554431a4b312abf68f337b827e1b757ac703) Automated commit to trigger downstream build
+- [a856c8a](https://github.com/fabric-composer/fabric-composer/commit/a856c8af7f194f270dc0935764b63aa84da133d9) Patch FileWriter so it can be browserified (@sstone1)
+- [531aedb](https://github.com/fabric-composer/fabric-composer/commit/531aedb105d9c0fc5b68428711034753f49db1ed) Automated commit to trigger downstream build
+- [b986ef7](https://github.com/fabric-composer/fabric-composer/commit/b986ef7de808e2c1baf9f5c6b8e7ddc346b413e6) Automated commit to trigger downstream build
+- [1e69ae5](https://github.com/fabric-composer/fabric-composer/commit/1e69ae5285c516172c316809dcbea85163e9a06e) Automated commit to trigger downstream build
+- [affe95f](https://github.com/fabric-composer/fabric-composer/commit/affe95f4233d23e96610ee0e7e678ccba76cdc8c) Automated commit to trigger downstream build
+- [8dc209b](https://github.com/fabric-composer/fabric-composer/commit/8dc209b4bd9cb3ec729c7cf8509416739b0df48e) Automated commit to trigger downstream build
+- [1b76ed1](https://github.com/fabric-composer/fabric-composer/commit/1b76ed1af964dad755919d362eedf3304f173815) Automated commit to trigger downstream build
+- [bdffc2e](https://github.com/fabric-composer/fabric-composer/commit/bdffc2e1aeca9aa5b8103b32845ab2cb76d33cc0) Automated commit to trigger downstream build
+- [da335af](https://github.com/fabric-composer/fabric-composer/commit/da335af2976566bbf189e0535210ac71ea434ac8) Automated commit to trigger downstream build
+- [dc31c2a](https://github.com/fabric-composer/fabric-composer/commit/dc31c2a4757e9fd6e5bf6dd1d6e437d40e5c44a0) Automated commit to trigger downstream build
+- [81565f6](https://github.com/fabric-composer/fabric-composer/commit/81565f615d38c93e355875f4234372264399e220) Automated commit to trigger downstream build
+- [7022584](https://github.com/fabric-composer/fabric-composer/commit/7022584388bcb8e09f5bc229e287421126532619) Automated commit to trigger downstream build
+- [9457057](https://github.com/fabric-composer/fabric-composer/commit/9457057911d4602575f97408fa1fdab42467af63) Automated commit to trigger downstream build
+- [6bd2d8e](https://github.com/fabric-composer/fabric-composer/commit/6bd2d8e3d3e8b56c4a721fa74dcec4ae99e8c759) Automated commit to trigger downstream build
+- [f750787](https://github.com/fabric-composer/fabric-composer/commit/f750787ac2e22ca7a63fa88ad4ed5f8b623e0ca6) Generate typescript bindings (@sstone1)
+- [f0eb283](https://github.com/fabric-composer/fabric-composer/commit/f0eb2836ebf44bcba20c8f006bdff548ad87dd11) Generate typescript bindings (@sstone1)
+- [53ee358](https://github.com/fabric-composer/fabric-composer/commit/53ee3589975442ad6bbb74300ef6bcbc6a6dd70b) Generate typescript bindings (@sstone1)
+- [64c404b](https://github.com/fabric-composer/fabric-composer/commit/64c404b89ea19eb8ad5724c3101629508ecb9ceb) Generate typescript bindings (@sstone1)
+- [a3d01de](https://github.com/fabric-composer/fabric-composer/commit/a3d01deda202bd31341636415f3d5420b566698b) Automated commit to trigger downstream build
+- [02416e2](https://github.com/fabric-composer/fabric-composer/commit/02416e2c9bb07c466eea9900a1470d08b75e64ff) Automated commit to trigger downstream build
+- [42ea058](https://github.com/fabric-composer/fabric-composer/commit/42ea058cb7fa39554c19b53a26fca07bb7bc4751) Automated commit to trigger downstream build
+- [852dc66](https://github.com/fabric-composer/fabric-composer/commit/852dc66836aa0b380be5c95d2c3b981eee0f4659) Automated commit to trigger downstream build
+- [b3dd4a6](https://github.com/fabric-composer/fabric-composer/commit/b3dd4a66ed37d30a4b05913828cdcd36b10d842b) Automated commit to trigger downstream build
+- [13da6c6](https://github.com/fabric-composer/fabric-composer/commit/13da6c682c6107f06ae6a433cfc7318d61efaeba) Automated commit to trigger downstream build
+- [582e23c](https://github.com/fabric-composer/fabric-composer/commit/582e23ccedc864a83b383abaffcf57194750d322) deploy cli (@ODOWDAIBM)
+- [4f9e0e5](https://github.com/fabric-composer/fabric-composer/commit/4f9e0e59a4474ad744f6408374f591b3d875586f) deploy cli (@ODOWDAIBM)
+- [5248a76](https://github.com/fabric-composer/fabric-composer/commit/5248a766819d3c8fe39023e2bb45238355fa38d5) deploy cli (@ODOWDAIBM)
+- [c92fc7e](https://github.com/fabric-composer/fabric-composer/commit/c92fc7e2a0d0b17b41c47b691a3affca566c918c) Edited path (@Jakeeyturner)
+- [a965883](https://github.com/fabric-composer/fabric-composer/commit/a965883e365fbb42f18aab9972f33d3fa8d70c98) Exported typescriptvisitor and filewriter. Going to use them to create typescript classes when generating an Angular2 app (@Jakeeyturner)
+- [a36de73](https://github.com/fabric-composer/fabric-composer/commit/a36de73c507a1a534823d0ddcc68671f48189539) Move default transaction executor to context initialisation (@sstone1)
+- [34605f6](https://github.com/fabric-composer/fabric-composer/commit/34605f67cb3b3c4c423f67c43571d5c87b2138cc) Automated commit to trigger downstream build
+- [cb6a8aa](https://github.com/fabric-composer/fabric-composer/commit/cb6a8aafa74683752b9f9fa230d1e5530acc3835) Automated commit to trigger downstream build
+- [497cf57](https://github.com/fabric-composer/fabric-composer/commit/497cf5797a27eb2b3830f4927d302359f2fe9d09) Automated commit to trigger downstream build
+- [35b5f7f](https://github.com/fabric-composer/fabric-composer/commit/35b5f7f0dd1def46ee1352b5d43b545fbe278e3f) Automated commit to trigger downstream build
+- [9925afc](https://github.com/fabric-composer/fabric-composer/commit/9925afcd72a1e3ec13f9cb6fb3753efa68f0bd73) Automated commit to trigger downstream build
+- [588b0b3](https://github.com/fabric-composer/fabric-composer/commit/588b0b31720115f1a8ec171ffa3b3e52a9e0c01c) Automated commit to trigger downstream build
+- [a26376f](https://github.com/fabric-composer/fabric-composer/commit/a26376f348796dc5ca311f70d1fd9bc0052468e2) Automated commit to trigger downstream build
+- [9d43d3a](https://github.com/fabric-composer/fabric-composer/commit/9d43d3a2d9e03ab235a4eda874baffb2ca8fe19f) Automated commit to trigger downstream build
+- [e914c0f](https://github.com/fabric-composer/fabric-composer/commit/e914c0fcaaa698390a1c7573e8fc5a5a7f04db90) Automated commit to trigger downstream build
+- [5b5714f](https://github.com/fabric-composer/fabric-composer/commit/5b5714f28fd1a3ce6740dc66a1fe1e0bde600231) Automated commit to trigger downstream build
+- [26097aa](https://github.com/fabric-composer/fabric-composer/commit/26097aaa39862c7517811dfa3938c371711330b5) Automated commit to trigger downstream build
+- [e4942e3](https://github.com/fabric-composer/fabric-composer/commit/e4942e37d4f5d620560ba5f962389f8e0cb58302) Automated commit to trigger downstream build
+- [5408b64](https://github.com/fabric-composer/fabric-composer/commit/5408b64fc738ddbe646a9e1d24eb4b9544bf1ec1) Automated commit to trigger downstream build
+- [7f869f6](https://github.com/fabric-composer/fabric-composer/commit/7f869f6d06ca9b0fa18f7c318b1bfcb653f8c838) Automated commit to trigger downstream build
+- [f74dd5a](https://github.com/fabric-composer/fabric-composer/commit/f74dd5a8fbb9fae03a927345f21b5cf471ecdbb5) Automated commit to trigger downstream build
+- [9518478](https://github.com/fabric-composer/fabric-composer/commit/9518478fbb10fa44aad65a3134f33d73b3602052) Automated commit to trigger downstream build
+- [cee4f45](https://github.com/fabric-composer/fabric-composer/commit/cee4f45b341e6952ffcc187288fe247b62e1d8e6) Add previously ignored node_modules (@sstone1)
+- [d08d559](https://github.com/fabric-composer/fabric-composer/commit/d08d559aafed653d751a5edd0036cb3fe779b214) Stop calling npm install in a unit test (@sstone1)
+- [e478211](https://github.com/fabric-composer/fabric-composer/commit/e478211fba618c7b816bae2dc9fc278fe6889600) Use source maps for runtime for better diagnostics (@sstone1)
+- [454b037](https://github.com/fabric-composer/fabric-composer/commit/454b037c983668f3e4874edcf01dd6666ead0c4d) Remove unused toJSON implementations (@sstone1)
+- [b05d3bd](https://github.com/fabric-composer/fabric-composer/commit/b05d3bd9d5590e51980c6628960ca8e76fee868a) Automated commit to trigger downstream build
+- [cfc0dba](https://github.com/fabric-composer/fabric-composer/commit/cfc0dba318b5b81f9d86dddce987c1ff5c8f9889) Automated commit to trigger downstream build
+- [99dfc89](https://github.com/fabric-composer/fabric-composer/commit/99dfc8941b17243b142cb30ec0529fca3aba74f9) Automated commit to trigger downstream build
+- [6a19867](https://github.com/fabric-composer/fabric-composer/commit/6a198673301e7d25dff581413ce8935ab96464ab) Automated commit to trigger downstream build
+- [7fc4202](https://github.com/fabric-composer/fabric-composer/commit/7fc42024f379087735765e92bb64bf62b6f123d1) Automated commit to trigger downstream build
+- [77d749a](https://github.com/fabric-composer/fabric-composer/commit/77d749a26638683a3edf1cbac8c54c5b7373753d) Automated commit to trigger downstream build
+- [f8ac79d](https://github.com/fabric-composer/fabric-composer/commit/f8ac79d9c1d565166bb3c4c97d9edb7c1b4f422f) Automated commit to trigger downstream build
+- [0c8fc7f](https://github.com/fabric-composer/fabric-composer/commit/0c8fc7f77db258b1b69f4eb742e3ea0afeea6e88) Automated commit to trigger downstream build
+- [d865847](https://github.com/fabric-composer/fabric-composer/commit/d8658476a77949310ba1279742629fb5ef902dd5) Automated commit to trigger downstream build
+- [804e6a4](https://github.com/fabric-composer/fabric-composer/commit/804e6a4e2dacd5c57d7d9523c222493e89996536) Automated commit to trigger downstream build
+- [0378ac0](https://github.com/fabric-composer/fabric-composer/commit/0378ac0e582d31a9c29501401a51cae220be3e2f) Split out execution of scripts into separate class (@sstone1)
+- [2b1611f](https://github.com/fabric-composer/fabric-composer/commit/2b1611f8eff65fa069f758d03c5047a7d7510ce8) Bump version to 0.2.0 (@sstone1)
+- [dfaca9b](https://github.com/fabric-composer/fabric-composer/commit/dfaca9bb4de380608eea59f3be943f67d4cb3542) Updates for multi-version (@sstone1)
+- [ef07818](https://github.com/fabric-composer/fabric-composer/commit/ef078182c5958a18b1d2bdfcb9190e8cf2773fe9) Updates for multi-version (@sstone1)
+- [86225b5](https://github.com/fabric-composer/fabric-composer/commit/86225b59e8e38f3dc29203340e854f861ba4853d) Empty commit to force build (@sstone1)
+- [cfedcf3](https://github.com/fabric-composer/fabric-composer/commit/cfedcf3f13a7f1add411028445b707356edd2fa9) Automated commit to trigger downstream build
+- [5d7b311](https://github.com/fabric-composer/fabric-composer/commit/5d7b31124d7f33036f18847deb2f30da21306c50) Automated commit to trigger downstream build
+- [3a82bb9](https://github.com/fabric-composer/fabric-composer/commit/3a82bb9b4c0c6983da1eff37458d068ba5904650) Bump version to 0.2.0 (@sstone1)
+- [52dd0e2](https://github.com/fabric-composer/fabric-composer/commit/52dd0e22b587ae9735f77dc56fd6513b73e6713c) Bump version to 0.2.0 (@sstone1)
+- [65400c8](https://github.com/fabric-composer/fabric-composer/commit/65400c8759e20b964fc7c2f8f2a100636d3a98eb) Bump version to 0.2.0 (@sstone1)
+- [52c2b0e](https://github.com/fabric-composer/fabric-composer/commit/52c2b0e3d2197cacb2159a763aa4d5393ffc57cf) Bump version to 0.2.0 (@sstone1)
+- [423ca00](https://github.com/fabric-composer/fabric-composer/commit/423ca008998d32c13469d87b1de939cac176fb12) Bump version to 0.2.0 (@sstone1)
+- [78ddf78](https://github.com/fabric-composer/fabric-composer/commit/78ddf7835e436299e54173aec2e74c8c33073bec) Automated commit to trigger downstream build
+- [f385e7e](https://github.com/fabric-composer/fabric-composer/commit/f385e7eeea84f203ccb0bc963e1838a18f821570) Automated commit to trigger downstream build
+- [24368fb](https://github.com/fabric-composer/fabric-composer/commit/24368fbbef0f3e831d92548d81b6aa9d8ba651eb) Updates for multi-version (@sstone1)
+- [154be41](https://github.com/fabric-composer/fabric-composer/commit/154be418f0ffe9093a425dc5b4ea9057c1a5bf16) Updates for multi-version (@sstone1)
+- [e975901](https://github.com/fabric-composer/fabric-composer/commit/e975901868047fef64c6d24191090d54eeb0d8bc) Updates for multi-version (@sstone1)
+- [03c82bb](https://github.com/fabric-composer/fabric-composer/commit/03c82bb59c84e1944c09417fe9ba265ad4351fa1) Automated commit to trigger downstream build
+- [22aecca](https://github.com/fabric-composer/fabric-composer/commit/22aeccace0c3d0b55e8a8015c0fe97e0f04f3a1e) Updates for multi-version (@sstone1)
+- [dbc90a8](https://github.com/fabric-composer/fabric-composer/commit/dbc90a8c2f4d0eae8162aaa66c06fde6dd2a6225) Updates for multi-version (@sstone1)
+- [e353b1a](https://github.com/fabric-composer/fabric-composer/commit/e353b1a16a53c2ddf2c3ea683b0716f40bdc9478) Automated commit to trigger downstream build
+- [3ec3062](https://github.com/fabric-composer/fabric-composer/commit/3ec3062d5c09f04bb336abc40cf14e49170613ec) Automated commit to trigger downstream build
+- [e89cffa](https://github.com/fabric-composer/fabric-composer/commit/e89cffac178e5066f4e107f78e030f176a4ca90b) Automated commit to trigger downstream build
+- [d8b8c96](https://github.com/fabric-composer/fabric-composer/commit/d8b8c96cdb9bb3c170ec150a0d2e844f0a7d652f) Automated commit to trigger downstream build
+- [74a6561](https://github.com/fabric-composer/fabric-composer/commit/74a6561c13153f5010f5b8ed73b7a024016938ef) Bump version to 0.2.0 (@sstone1)
+- [1db4b78](https://github.com/fabric-composer/fabric-composer/commit/1db4b78aacc413fbb435be62217c6505ba68d3db) Bump version to 0.2.0 (@sstone1)
+- [f323765](https://github.com/fabric-composer/fabric-composer/commit/f3237650af2d096eacccdda4a9650aa532df5d44) Bump version to 0.2.0 (@sstone1)
+- [98df96d](https://github.com/fabric-composer/fabric-composer/commit/98df96dad50051b1fa21d18cedce96e81fa4f2d0) Automated commit to trigger downstream build
+- [1f6b7d3](https://github.com/fabric-composer/fabric-composer/commit/1f6b7d3d38166d7c76b2a5696922cdcd727aa153) Automated commit to trigger downstream build
+- [760bf9f](https://github.com/fabric-composer/fabric-composer/commit/760bf9fe3ca2e04103e3403b085c034ced9c96e8) Automated commit to trigger downstream build
+- [897131e](https://github.com/fabric-composer/fabric-composer/commit/897131e0625d70dc6762a8a6f9cb6c4cfc6f823b) Automated commit to trigger downstream build
+- [df7ae87](https://github.com/fabric-composer/fabric-composer/commit/df7ae87527064a99f35cb6df3266fcc572c98624) Automated commit to trigger downstream build
+- [9e42cc8](https://github.com/fabric-composer/fabric-composer/commit/9e42cc8866dde884b5a1f227cb8f0bd9c779ea3e) Automated commit to trigger downstream build
+- [882ddb2](https://github.com/fabric-composer/fabric-composer/commit/882ddb2f59baa4545cac96c48fbf8df95a30fba6) Updates for multi-version (@sstone1)
+- [441c632](https://github.com/fabric-composer/fabric-composer/commit/441c6327262d2965b041dfe806f71a4ca4d65559) Automated commit to trigger downstream build
+- [e481ddb](https://github.com/fabric-composer/fabric-composer/commit/e481ddb0b180e3bee0222981d7fb02ab59fb7d41) Automated commit to trigger downstream build
+- [d61ab6a](https://github.com/fabric-composer/fabric-composer/commit/d61ab6a6c5137958d85216ec245c7118900359f8) Updates for multi-version (@sstone1)
+- [2ead88b](https://github.com/fabric-composer/fabric-composer/commit/2ead88bcf3874a82f8c2ea3f48f0594bb19b8106) Automated commit to trigger downstream build
+- [b0aeaa8](https://github.com/fabric-composer/fabric-composer/commit/b0aeaa8d6dee092efca4ae5125ea6a83411e4a93) Automated commit to trigger downstream build
+- [54ea44a](https://github.com/fabric-composer/fabric-composer/commit/54ea44a1b1772cec9a06135b3cc834e54fff8287) Updates for multi-version (@sstone1)
+- [7aa277a](https://github.com/fabric-composer/fabric-composer/commit/7aa277a80af18c3c491e5574918e974c4e1e0d3b) Automated commit to trigger downstream build
+- [b90c163](https://github.com/fabric-composer/fabric-composer/commit/b90c163ec2052cbc775795baeb829b54108beb72) Automated commit to trigger downstream build
+- [bc570fa](https://github.com/fabric-composer/fabric-composer/commit/bc570fabc74f92693e794a892ef8ee799c0b367f) Automated commit to trigger downstream build
+- [d860a57](https://github.com/fabric-composer/fabric-composer/commit/d860a578c4cc0e989306d07df2ed3d8a88b493fc) Automated commit to trigger downstream build
+- [eb91bdf](https://github.com/fabric-composer/fabric-composer/commit/eb91bdf6d44c3be1be8a7d7e14bfa27bf0674cd1) Bump version to 0.2.0 (@sstone1)
+- [7e05e25](https://github.com/fabric-composer/fabric-composer/commit/7e05e256fa8b258f73be4563e454c03963f787fc) Bump version to 0.2.0 (@sstone1)
+- [3e5685a](https://github.com/fabric-composer/fabric-composer/commit/3e5685ac67c8fb776409b2bbda354fa6f72adff7) Bump version to 0.2.0 (@sstone1)
+- [acf7e49](https://github.com/fabric-composer/fabric-composer/commit/acf7e4969da9abf1c8efcf3c73a1d11ada5f9ada) Automated commit to trigger downstream build
+- [db7fa6d](https://github.com/fabric-composer/fabric-composer/commit/db7fa6d9c23f681fecf090de7eaf7dbc488647f0) Automated commit to trigger downstream build
+- [8574855](https://github.com/fabric-composer/fabric-composer/commit/8574855dd3612d4d62d0cd9160abbba5e3a2e4c3) Automated commit to trigger downstream build
+- [e7e5ca1](https://github.com/fabric-composer/fabric-composer/commit/e7e5ca136a4db6256e6d323b27f062191834c600) Automated commit to trigger downstream build
+- [0cbaddb](https://github.com/fabric-composer/fabric-composer/commit/0cbaddb1ccc468ddabfe2689c5f27503b78ab734) Automated commit to trigger downstream build
+- [16384cb](https://github.com/fabric-composer/fabric-composer/commit/16384cbfa3f21e2db92d2e3e0630648ec761cb13) Automated commit to trigger downstream build
+- [2a03a65](https://github.com/fabric-composer/fabric-composer/commit/2a03a65ef74221b8c4830046bb766cb7ab1b83f9) Updates for multi-version (@sstone1)
+- [808c0cc](https://github.com/fabric-composer/fabric-composer/commit/808c0cc6ee1e304068b2f16f2890b84002dcd92d) Updates for multi-version (@sstone1)
+- [f98c2cf](https://github.com/fabric-composer/fabric-composer/commit/f98c2cfd13fefc2ba0d48c023107196bbc97be37) Updates for multi-version (@sstone1)
+- [2be3fb1](https://github.com/fabric-composer/fabric-composer/commit/2be3fb174218215f25fe54186a9093d1cb92de6c) Updates for multi-version (@sstone1)
+- [1b69e0b](https://github.com/fabric-composer/fabric-composer/commit/1b69e0ba40115352c35ab747ef314d4dab36f9f1) Updates for multi-version (@sstone1)
+- [8cf06af](https://github.com/fabric-composer/fabric-composer/commit/8cf06af0b2a57e299950b13c139cfa777a68f738) Automated commit to trigger downstream build
+- [b90009f](https://github.com/fabric-composer/fabric-composer/commit/b90009f750c1304f9da59fc12843162daad91a66) Automated commit to trigger downstream build
+- [4d51d08](https://github.com/fabric-composer/fabric-composer/commit/4d51d08e037d6acb387dadb35e61a08fa93c547a) Automated commit to trigger downstream build
+- [3d8ad94](https://github.com/fabric-composer/fabric-composer/commit/3d8ad94c9a999f90d8e1d15935d3ff9ffe6326e1) Automated commit to trigger downstream build
+- [460554a](https://github.com/fabric-composer/fabric-composer/commit/460554a8a7910e5bbfcb2ce64f1c567ecbabf321) Automated commit to trigger downstream build
+- [9b71f65](https://github.com/fabric-composer/fabric-composer/commit/9b71f65af8a4a7510e3feba6c94010be042046b9) Automated commit to trigger downstream build
+- [08e315f](https://github.com/fabric-composer/fabric-composer/commit/08e315fb4360f9c26ebc65cf0dc2ed1a20217d45) Automated commit to trigger downstream build
+- [8ae639f](https://github.com/fabric-composer/fabric-composer/commit/8ae639f2c19f603d00868d13d1e5116f3efa41a7) Automated commit to trigger downstream build
+- [ed0c910](https://github.com/fabric-composer/fabric-composer/commit/ed0c910ca6a72bd65a528295ad817bdc5839a558) Automated commit to trigger downstream build
+- [9fa0df6](https://github.com/fabric-composer/fabric-composer/commit/9fa0df6519a4530cd0b52dc1a624fcf113f4e3da) Automated commit to trigger downstream build
+- [6dd6901](https://github.com/fabric-composer/fabric-composer/commit/6dd6901edf07fa930df1ba54b368282dffddcf90) Automated commit to trigger downstream build
+- [eacd13e](https://github.com/fabric-composer/fabric-composer/commit/eacd13e7f869ca21d6d39efca89c62d6eb4a08eb) Automated commit to trigger downstream build
+- [2983a4c](https://github.com/fabric-composer/fabric-composer/commit/2983a4c6beeb754c2317003b29bc7d3c822bbefa) Automated commit to trigger downstream build
+- [213f5ad](https://github.com/fabric-composer/fabric-composer/commit/213f5ad523c6d3688abc60f69de69da9523c6b55) Automated commit to trigger downstream build
+- [f2a0c2f](https://github.com/fabric-composer/fabric-composer/commit/f2a0c2f53fe5ad88f7556bb62202620641bfd503) Automated commit to trigger downstream build
+- [5b08c56](https://github.com/fabric-composer/fabric-composer/commit/5b08c56068238c397e71f6bc9a22aa358892b64f) Automated commit to trigger downstream build
+- [091bbde](https://github.com/fabric-composer/fabric-composer/commit/091bbde81290e1d3fbf7cdab1691d7c179d74566) Automated commit to trigger downstream build
+- [7d708b7](https://github.com/fabric-composer/fabric-composer/commit/7d708b7da1d1ccb1baaf502bf49030f15991a3a9) Automated commit to trigger downstream build
+- [9eda57e](https://github.com/fabric-composer/fabric-composer/commit/9eda57e2e7cddd039d49cb038b2cefe1cb4d46cf) Automated commit to trigger downstream build
+- [c09f87e](https://github.com/fabric-composer/fabric-composer/commit/c09f87e1fd81199850933fa5ae77c433ec3e2a92) Automated commit to trigger downstream build
+- [216aca4](https://github.com/fabric-composer/fabric-composer/commit/216aca44c4d9bf90c9a08df9aecd03d8bb3a9207) Automated commit to trigger downstream build
+- [8d1c152](https://github.com/fabric-composer/fabric-composer/commit/8d1c1520dbd020019fdcb33a763dcee32edab4ee) Automated commit to trigger downstream build
+- [bc5869f](https://github.com/fabric-composer/fabric-composer/commit/bc5869f78b08af2bd70e0813fc62b266cd12cf25) Automated commit to trigger downstream build
+- [87a3da7](https://github.com/fabric-composer/fabric-composer/commit/87a3da714e019d395980476969a849b4e947a33e) Automated commit to trigger downstream build
+- [a3b412a](https://github.com/fabric-composer/fabric-composer/commit/a3b412af1a4efdf8471dfa8d346b03cad7c6a71b) Automated commit to trigger downstream build
+- [7d30868](https://github.com/fabric-composer/fabric-composer/commit/7d3086810842e9caadaf2e78d25dfacd1973976b) Automated commit to trigger downstream build
+- [11d7e5a](https://github.com/fabric-composer/fabric-composer/commit/11d7e5a1872aa139ec77b807278aee581adbfc63) Bump version to 0.2.0 (@sstone1)
+- [c59dac1](https://github.com/fabric-composer/fabric-composer/commit/c59dac1280be4f65721d09d215bb0cf0711d786f) Automated commit to trigger downstream build
+- [c422c07](https://github.com/fabric-composer/fabric-composer/commit/c422c07e682b90cfb346f109b45d4ab2bbcc2214) Automated commit to trigger downstream build
+- [738d3f1](https://github.com/fabric-composer/fabric-composer/commit/738d3f1a02157cf8e759cfa6753ec63183743138) Automated commit to trigger downstream build
+- [39deceb](https://github.com/fabric-composer/fabric-composer/commit/39deceb25a4f5424d3e1042eca092daa8587755f) Automated commit to trigger downstream build
+- [d623d78](https://github.com/fabric-composer/fabric-composer/commit/d623d785cc0a03211df64b1ca518e5675f0c54df) Automated commit to trigger downstream build
+- [f01b594](https://github.com/fabric-composer/fabric-composer/commit/f01b594ae9e6226876c5faed141ac338da93e0c5) Automated commit to trigger downstream build
+- [2352943](https://github.com/fabric-composer/fabric-composer/commit/23529430645de7f23eb020257bbd7382e0b2be3d) Automated commit to trigger downstream build
+- [16263d6](https://github.com/fabric-composer/fabric-composer/commit/16263d6ef134d5fe06e78b54e3e349b37bc39ec9) Automated commit to trigger downstream build
+- [0cc80f9](https://github.com/fabric-composer/fabric-composer/commit/0cc80f998a4f20d48e92b4d69d99cfcfc7e22160) Automated commit to trigger downstream build
+- [dab83d9](https://github.com/fabric-composer/fabric-composer/commit/dab83d9f550afd3c86fbb942fb37944900b8d4a9) Updates for multi-version (@sstone1)
+- [79468c6](https://github.com/fabric-composer/fabric-composer/commit/79468c63bbcd05df67ae5cf53cf33e0dcd142914) Automated commit to trigger downstream build
+- [fe66d94](https://github.com/fabric-composer/fabric-composer/commit/fe66d94ffb09611fc39ad178fb20470148dfa11a) Automated commit to trigger downstream build
+- [78e6851](https://github.com/fabric-composer/fabric-composer/commit/78e6851d66941c576196f2c1e0fd19d05eeb4ece) Automated commit to trigger downstream build
+- [591d8c7](https://github.com/fabric-composer/fabric-composer/commit/591d8c78bdb9a0104ab46b0e024e6a97d9851298) Bump version to 0.2.0 (@sstone1)
+- [2c7659d](https://github.com/fabric-composer/fabric-composer/commit/2c7659dde4b761cba159aa4cfc5cee79be0859cb) Automated commit to trigger downstream build
+- [5b3d2f1](https://github.com/fabric-composer/fabric-composer/commit/5b3d2f1985c92094995ba954a50181caf7db8dfd) Automated commit to trigger downstream build
+- [f6d0fce](https://github.com/fabric-composer/fabric-composer/commit/f6d0fce8af107ac1340ee999a7729431eae9d9d7) Automated commit to trigger downstream build
+- [7b89947](https://github.com/fabric-composer/fabric-composer/commit/7b899479b3d4e237cb88ff9dc64810bb19c1ac86) Automated commit to trigger downstream build
+- [6591e8f](https://github.com/fabric-composer/fabric-composer/commit/6591e8f576b9ecc0a5f501c8149aed7a46c0f3c3) Automated commit to trigger downstream build
+- [15749f5](https://github.com/fabric-composer/fabric-composer/commit/15749f592e58e335513c0dbe89ea1a320ae5a056) Automated commit to trigger downstream build
+- [550fb2e](https://github.com/fabric-composer/fabric-composer/commit/550fb2e925feb41678e267c17291524a84398e8d) Bump version to 0.2.0 (@sstone1)
+- [1deca37](https://github.com/fabric-composer/fabric-composer/commit/1deca37c89861b95d95d9e75536173445149d956) Automated commit to trigger downstream build
+- [223e4d7](https://github.com/fabric-composer/fabric-composer/commit/223e4d72773dca63d156293371d73b4705ad871c) Automated commit to trigger downstream build
+- [07ce27e](https://github.com/fabric-composer/fabric-composer/commit/07ce27e9982cffa03bacc66eafa83c8b13d5c8f5) Automated commit to trigger downstream build
+- [fee2f10](https://github.com/fabric-composer/fabric-composer/commit/fee2f104a37c5a5397b69095e0b2527a15fc63f6) Automated commit to trigger downstream build
+- [7b506e2](https://github.com/fabric-composer/fabric-composer/commit/7b506e2857b7f7dbcac4810d3e17e3120c357dd5) Automated commit to trigger downstream build
+- [ec77a77](https://github.com/fabric-composer/fabric-composer/commit/ec77a77ca41b979f0710a9082ebe4bed00925fbf) Updates for multi-version (@sstone1)
+- [cd3a338](https://github.com/fabric-composer/fabric-composer/commit/cd3a33833032dab1677afa55bb978b651bb4cd79) Updates for multi-version (@sstone1)
+- [e69e9ce](https://github.com/fabric-composer/fabric-composer/commit/e69e9cef38bfb4f8c5b31b55c13f46aecebced41) Automated commit to trigger downstream build
+- [b21b361](https://github.com/fabric-composer/fabric-composer/commit/b21b361f8c50dd5e348b1440c0bd7e42f57f3062) Automated commit to trigger downstream build
+- [28e78db](https://github.com/fabric-composer/fabric-composer/commit/28e78db9b2a4b190bfdeb094d622ec29267d3b90) Automated commit to trigger downstream build
+- [02073d7](https://github.com/fabric-composer/fabric-composer/commit/02073d7f57231fb2dcacd3d6b89ebbc548681b7b) Automated commit to trigger downstream build
+- [8647bd4](https://github.com/fabric-composer/fabric-composer/commit/8647bd47e92f0358a46085d3ce7ba204c11c3fd7) Automated commit to trigger downstream build
+- [40b3291](https://github.com/fabric-composer/fabric-composer/commit/40b32915869e0d6f7c5ebff30990d324e58a9cd1) Automated commit to trigger downstream build
+- [cb60df7](https://github.com/fabric-composer/fabric-composer/commit/cb60df73046e32feb03ccdde81c597fd8c48fed0) Automated commit to trigger downstream build
+- [1e65d70](https://github.com/fabric-composer/fabric-composer/commit/1e65d7025fde281ee99fc20c73236cb0ddb9bf9d) Automated commit to trigger downstream build
+- [c67fd5b](https://github.com/fabric-composer/fabric-composer/commit/c67fd5b93026aece64ace1db200075a7541acde7) Automated commit to trigger downstream build
+- [12443f7](https://github.com/fabric-composer/fabric-composer/commit/12443f790eba107710516ade407e7be4ae5a7aec) Automated commit to trigger downstream build
+- [b5b68cc](https://github.com/fabric-composer/fabric-composer/commit/b5b68cc2b8856408cd143e0c177046ec192a92d5) Automated commit to trigger downstream build
+- [c06bfe5](https://github.com/fabric-composer/fabric-composer/commit/c06bfe5eff650ecdcd903f07416e055fb9670d87) Automated commit to trigger downstream build
+- [233411d](https://github.com/fabric-composer/fabric-composer/commit/233411d4379660644548ac2b372b36310fe2d721) Automated commit to trigger downstream build
+- [20eef15](https://github.com/fabric-composer/fabric-composer/commit/20eef15af089e40c3d67f1878691c2309d91683e) Automated commit to trigger downstream build
+- [7564274](https://github.com/fabric-composer/fabric-composer/commit/756427428ef349e95e70d17ed6a47e4f285380c9) Automated commit to trigger downstream build
+- [cb1da40](https://github.com/fabric-composer/fabric-composer/commit/cb1da40b85957ae9bb333ad2a05ae4684e7b7b9e) Automated commit to trigger downstream build
+- [72ae2fd](https://github.com/fabric-composer/fabric-composer/commit/72ae2fd17d12706881b75e7a44be78a291c0e1a6) Automated commit to trigger downstream build
+- [bef6935](https://github.com/fabric-composer/fabric-composer/commit/bef69353520b433dfdb2f62484108a433b8ae2af) Ensure JavaScript code is tested in Go unit tests (@sstone1)
+- [c0baab3](https://github.com/fabric-composer/fabric-composer/commit/c0baab315674090afc9ed8201013407c10815414) Automated commit to trigger downstream build
+- [f92c2e4](https://github.com/fabric-composer/fabric-composer/commit/f92c2e49ae0114422cf43c59ad495d9fd880fa27) Get web system tests working again (@sstone1)
+- [66a95aa](https://github.com/fabric-composer/fabric-composer/commit/66a95aa5a583a69e27e11eb026a523982d3190e7) Automated commit to trigger downstream build
+- [fbf1ce7](https://github.com/fabric-composer/fabric-composer/commit/fbf1ce76ceed321da547791c35374a170fc82ce2) Automated commit to trigger downstream build
+- [91624d9](https://github.com/fabric-composer/fabric-composer/commit/91624d92953861fa8d9b10c0d6b974dfc505e254) Automated commit to trigger downstream build
+- [5b5b4b3](https://github.com/fabric-composer/fabric-composer/commit/5b5b4b3c247cec2b4b91c8636039899a91919d75) Automated commit to trigger downstream build
+- [ee5ad93](https://github.com/fabric-composer/fabric-composer/commit/ee5ad930e39fb9e482c81744932fda488f3b10c6) Automated commit to trigger downstream build
+- [693a5bd](https://github.com/fabric-composer/fabric-composer/commit/693a5bd2f0ba85aa963e4989e1f37a23ff1b714e) Automated commit to trigger downstream build
+- [3205beb](https://github.com/fabric-composer/fabric-composer/commit/3205beb59a735afdb75cba5b097111d345d42331) Automated commit to trigger downstream build
+- [2a6195b](https://github.com/fabric-composer/fabric-composer/commit/2a6195b2975eb0d01734a0709e13951abd4dc8bc) Automated commit to trigger downstream build
+- [f09e185](https://github.com/fabric-composer/fabric-composer/commit/f09e1851afd15f6388ed565e5dce85f56ee0fd36) Automated commit to trigger downstream build
+- [78a9487](https://github.com/fabric-composer/fabric-composer/commit/78a9487717fa08c6bbc7284d31e2071df642491f) Automated commit to trigger downstream build
+- [88699d6](https://github.com/fabric-composer/fabric-composer/commit/88699d6c8fb610775d7fb1f22d79b57eb564ae2f) Revert debug to 2.3.3 to avoid debug issue #375 (@sstone1)
+- [03c02a0](https://github.com/fabric-composer/fabric-composer/commit/03c02a049d45ffbddc49d92d23561a6ea7eb9988) Automated commit to trigger downstream build
+- [9926251](https://github.com/fabric-composer/fabric-composer/commit/9926251c4de0bc1154bb110bb4a0b02e35dadce3) Automated commit to trigger downstream build
+- [42a089b](https://github.com/fabric-composer/fabric-composer/commit/42a089be363def13390c2a349c1d31e52fa7a7d9) Automated commit to trigger downstream build
+- [8813407](https://github.com/fabric-composer/fabric-composer/commit/8813407281ff50abc36d5c9a485add1debba5395) Add missing dependency (@sstone1)
+- [d1763e2](https://github.com/fabric-composer/fabric-composer/commit/d1763e25919f5f9bdd9e61fbcf37ae615f37d9a0) Automated commit to trigger downstream build
+- [a51fc32](https://github.com/fabric-composer/fabric-composer/commit/a51fc320f81b694ae9e830c5135d1a8b2caf4b41) Automated commit to trigger downstream build
+- [cbd3f96](https://github.com/fabric-composer/fabric-composer/commit/cbd3f96a1f9abddf0541e957471197e65710b125) Automated commit to trigger downstream build
+- [c067f6f](https://github.com/fabric-composer/fabric-composer/commit/c067f6f1359f78625edb6a787fc3b8e85ac91865) Need to trigger Concerto-Runtime-Embedded builds (@sstone1)
+- [5258dbd](https://github.com/fabric-composer/fabric-composer/commit/5258dbde155fea7862090b97e491495e86129d98) Automated commit to trigger downstream build
+- [daf7ffb](https://github.com/fabric-composer/fabric-composer/commit/daf7ffb246c414d74e038236f27c041eccb9bbfa) Automated commit to trigger downstream build
+- [36d686f](https://github.com/fabric-composer/fabric-composer/commit/36d686f97b877a81285365d70a4ab8cf236c623e) Automated commit to trigger downstream build
+- [4ad1355](https://github.com/fabric-composer/fabric-composer/commit/4ad1355436083ad319ff0131d5f208af7a22822a) Automated commit to trigger downstream build
+- [b2084a5](https://github.com/fabric-composer/fabric-composer/commit/b2084a5630e082dfd50787d40c48b408039ecd5d) Automated commit to trigger downstream build
+- [bec88e0](https://github.com/fabric-composer/fabric-composer/commit/bec88e0c74a8c1b05eb1b9538f3ba7e43de47d2f) Automated commit to trigger downstream build
+- [050c307](https://github.com/fabric-composer/fabric-composer/commit/050c3076e8d404f323214d0f76142e0b84b6ef0d) Automated commit to trigger downstream build
+- [c2ab6f7](https://github.com/fabric-composer/fabric-composer/commit/c2ab6f7bde90c4634cef6f93dcf36e8f35304e0c) Automated commit to trigger downstream build
+- [3513fd9](https://github.com/fabric-composer/fabric-composer/commit/3513fd9ef1bede89dbb13a8a4d8bed3efe4c7d3d) Automated commit to trigger downstream build
+- [211b2f4](https://github.com/fabric-composer/fabric-composer/commit/211b2f4066a30fa6dbd946fa192d90320c37e12d) Automated commit to trigger downstream build
+- [b90e750](https://github.com/fabric-composer/fabric-composer/commit/b90e750cd40586f30ddae4a06176ae221ab5d475) Automated commit to trigger downstream build
+- [38e1d4d](https://github.com/fabric-composer/fabric-composer/commit/38e1d4debea76c436039ee9212e3696c2ea6f1ec) Automated commit to trigger downstream build
+- [db7578a](https://github.com/fabric-composer/fabric-composer/commit/db7578a18807c55ca0cd9e2e08856abde0d04d55) Automated commit to trigger downstream build
+- [e489e50](https://github.com/fabric-composer/fabric-composer/commit/e489e50a13b119ecd3e9863db0549578d1557fb8) Automated commit to trigger downstream build
+- [8da8242](https://github.com/fabric-composer/fabric-composer/commit/8da82424c9faa7701e50873ee448180eab653724) Automated commit to trigger downstream build
+- [e0e5502](https://github.com/fabric-composer/fabric-composer/commit/e0e550222ea8dc42203eacdd20b1f76231179650) Automated commit to trigger downstream build
+- [b567224](https://github.com/fabric-composer/fabric-composer/commit/b567224d74a5c1fde28321faf5c05b6904992c23) Modify error message (@sstone1)
+- [7c50f57](https://github.com/fabric-composer/fabric-composer/commit/7c50f573d2f3056d02a84e0d9730115bf2e6bce7) Automated commit to trigger downstream build
+- [de720e7](https://github.com/fabric-composer/fabric-composer/commit/de720e77d85a10b0540ad71faa090da4ca30caab) Automated commit to trigger downstream build
+- [ae7a7b8](https://github.com/fabric-composer/fabric-composer/commit/ae7a7b8eb7023bdd0fbd8c8c79e042b11283541d) Automated commit to trigger downstream build
+- [c312070](https://github.com/fabric-composer/fabric-composer/commit/c3120704382b448600870e8eeb2d29b17908b747) Fix loading a business network definition from directory (@sstone1)
+- [bc593a7](https://github.com/fabric-composer/fabric-composer/commit/bc593a70e618fe3d2c2cb914514fe13b6b3a1889) Add ability to inject connection manager classes (@sstone1)
+- [1615dca](https://github.com/fabric-composer/fabric-composer/commit/1615dca5aaf3d328c92deefa7e1a484184f7e6c3) Remove browserify uuid hack (@sstone1)
+- [b64cbf5](https://github.com/fabric-composer/fabric-composer/commit/b64cbf50b5fbff0d417c826e4cab86e62aa8e884) Get web connector working again (@sstone1)
+- [73a204b](https://github.com/fabric-composer/fabric-composer/commit/73a204b11d5e4ccb14e5ec28d38cccb831d81dfb) Missing chaincode ID tests (@sstone1)
+- [ce79c2f](https://github.com/fabric-composer/fabric-composer/commit/ce79c2f67eaff96d1b3b339e350d2fe40c474de3) Get web runtime working again (@sstone1)
+- [8f1bfe5](https://github.com/fabric-composer/fabric-composer/commit/8f1bfe5ea1fd62a3ebacca18c4aabc1455a99df0) Fix unit test arguments to EmbeddedDataService (@sstone1)
+- [f5e3048](https://github.com/fabric-composer/fabric-composer/commit/f5e3048ee3ad2b046e24f107e30b37ca199a5176) Remove logging of global object (@sstone1)
+- [70e3413](https://github.com/fabric-composer/fabric-composer/commit/70e3413ed20b6377c23163e033a3ed2e28743480) Get tests working (@sstone1)
+- [7f065c5](https://github.com/fabric-composer/fabric-composer/commit/7f065c5e03efba9a207aff4206e8474dc25931ba) Fix deploy script (@sstone1)
+- [7279d47](https://github.com/fabric-composer/fabric-composer/commit/7279d476c173657141c524c111cfed4b33e42e61) Get tests working (@sstone1)
+- [bf496fa](https://github.com/fabric-composer/fabric-composer/commit/bf496fa8b440926676c0e22d585cb2990f83f242) Initial code drop (@sstone1)
+- [2358d82](https://github.com/fabric-composer/fabric-composer/commit/2358d82dce21354658cea7c2045244070b436787) Initial code drop (@sstone1)
+- [19784fb](https://github.com/fabric-composer/fabric-composer/commit/19784fbfec5e677b51da266e1961f693b0970e6f) Automated commit to trigger downstream build
+- [3de9be2](https://github.com/fabric-composer/fabric-composer/commit/3de9be2ce9ff5b8ffa7b174a265ad96c7e642d41) Updated businessnetworkdefinition examples in JSDocs (@Jakeeyturner)
+- [c85bde6](https://github.com/fabric-composer/fabric-composer/commit/c85bde60834bb841cefc806cb9d6ad6cd5c81b17) Switch -a (args) to -d (data) for concerto participant add (@sstone1)
+- [747cbe2](https://github.com/fabric-composer/fabric-composer/commit/747cbe2b3b8f6f567297f27a244b28d28df063ab) Test bug fixes (@14gracel)
+- [49d4bae](https://github.com/fabric-composer/fabric-composer/commit/49d4baee78d9109ed1a544a95004ceb10b99a6f9) Added error handling (@14gracel)
+- [d19c64d](https://github.com/fabric-composer/fabric-composer/commit/d19c64d63b256cd146ff73d77af7f35c25488c85) Fixed dependency (@dselman)
+- [aa4d9ac](https://github.com/fabric-composer/fabric-composer/commit/aa4d9ac83b6b1cf074efd191b60cb562741ed2a7) Automated commit to trigger downstream build
+- [32cca9a](https://github.com/fabric-composer/fabric-composer/commit/32cca9a7cc872560b030168e08c018e707bc8244) Automated commit to trigger downstream build
+- [dcf2905](https://github.com/fabric-composer/fabric-composer/commit/dcf29055996e78b20f3c64c7a8b06df01e5ee7d8) Automated commit to trigger downstream build
+- [69d3e51](https://github.com/fabric-composer/fabric-composer/commit/69d3e5168b246929fafd1cb513f755b8ca8bcfb4) Updated changelog (@dselman)
+- [765a9db](https://github.com/fabric-composer/fabric-composer/commit/765a9db74b5c2ca139602c25bc08750633cfb794) Automated commit to trigger downstream build
+- [ce37123](https://github.com/fabric-composer/fabric-composer/commit/ce37123f4ba6107abd4aa92d18a9c31df2788565) Automated commit to trigger downstream build
+- [ab4e094](https://github.com/fabric-composer/fabric-composer/commit/ab4e094d312d5c572825ce17884698b03a9d9eb5) Fix for updating biz net (@dselman)
+- [9cfd25a](https://github.com/fabric-composer/fabric-composer/commit/9cfd25a86143cba9af58cc91bdd6e41015905508) Fix for update of biz net (@dselman)
+- [4e6e9d9](https://github.com/fabric-composer/fabric-composer/commit/4e6e9d90fb3a32e0cd5062bf38f5d8d0a242275e) Fix for update of a biz net (@dselman)
+- [3ea4a29](https://github.com/fabric-composer/fabric-composer/commit/3ea4a29f7aedff1eec0b2692ac28e1f05c08bd2c) Automated commit to trigger downstream build
+- [573c162](https://github.com/fabric-composer/fabric-composer/commit/573c162b0be457e94f537a34bdcb07aacc1acd42) Automated commit to trigger downstream build
+- [ba170ff](https://github.com/fabric-composer/fabric-composer/commit/ba170ff5e8509838f6a4c953ab597a0d813da470) Automated commit to trigger downstream build
+- [fa78738](https://github.com/fabric-composer/fabric-composer/commit/fa787382eed24d340f0758e726610bc815849f32) Automated commit to trigger downstream build
+- [b324466](https://github.com/fabric-composer/fabric-composer/commit/b3244668514720b8766016257fee0ea542fbcb90) Automated commit to trigger downstream build
+- [5d9d58b](https://github.com/fabric-composer/fabric-composer/commit/5d9d58b22b25bff5c276dd7cd6c6d1275ec68db9) Automated commit to trigger downstream build
+- [7f305f1](https://github.com/fabric-composer/fabric-composer/commit/7f305f1213b5863969fc08995d0fee3436ca9f56) Automated commit to trigger downstream build
+- [bae7089](https://github.com/fabric-composer/fabric-composer/commit/bae708963d54f1a4b18c393102aeeb0ea05623f6) Automated commit to trigger downstream build
+- [5b9776b](https://github.com/fabric-composer/fabric-composer/commit/5b9776b5e1d4ec7c2f9f8177d6c883465d47ebf2) Automated commit to trigger downstream build
+- [e960298](https://github.com/fabric-composer/fabric-composer/commit/e9602983fa8cdce4ba9554f37df34639869fc933) Automated commit to trigger downstream build
+- [1f75258](https://github.com/fabric-composer/fabric-composer/commit/1f7525857330f4ba34c269cdf05d05fb13b77edc) Automated commit to trigger downstream build
+- [99def88](https://github.com/fabric-composer/fabric-composer/commit/99def8894494215d2449fe903cf3405935dc990b) Automated commit to trigger downstream build
+- [344f5de](https://github.com/fabric-composer/fabric-composer/commit/344f5de94bbcc9294fff93eda2ac78288b9a39d6) Automated commit to trigger downstream build
+- [450b2de](https://github.com/fabric-composer/fabric-composer/commit/450b2de16b7814f8abc04ee1a2fbdd3c5acfd619) Automated commit to trigger downstream build
+- [bd35f84](https://github.com/fabric-composer/fabric-composer/commit/bd35f84ec7015f40b4e4abd399eabd13b867b248) rollback (@dselman)
+- [d7b7b4b](https://github.com/fabric-composer/fabric-composer/commit/d7b7b4b709eaa2e8e3c23966b15eff86dcd0e17e) rollback changes (@dselman)
+- [84adaba](https://github.com/fabric-composer/fabric-composer/commit/84adabadb5321282e89a86076ec1342ee1a56f89) Automated commit to trigger downstream build
+- [8a3043e](https://github.com/fabric-composer/fabric-composer/commit/8a3043e4a1ee197bc25f23b03d20a1a1ca23c2b6) Automated commit to trigger downstream build
+- [4c67c97](https://github.com/fabric-composer/fabric-composer/commit/4c67c976581e1dc8420c69b8802c8e1b738e6b98) Automated commit to trigger downstream build
+- [9f5dade](https://github.com/fabric-composer/fabric-composer/commit/9f5dade3a77ebd22161f8495acbc32ac09ba5981) Automated commit to trigger downstream build
+- [4b6857e](https://github.com/fabric-composer/fabric-composer/commit/4b6857e1052e69584c9748c9281f86a4ebb82115) Automated commit to trigger downstream build
+- [67ccd64](https://github.com/fabric-composer/fabric-composer/commit/67ccd64a8480b8402d976509068cd6cca5777686) Automated commit to trigger downstream build
+- [1a311e8](https://github.com/fabric-composer/fabric-composer/commit/1a311e83981b78d5fa47d63384a426a440467919) Automated commit to trigger downstream build
+- [d996b88](https://github.com/fabric-composer/fabric-composer/commit/d996b8872ca209cf857898a9c0d4c3568f894e1c) Automated commit to trigger downstream build
+- [1dd4e4d](https://github.com/fabric-composer/fabric-composer/commit/1dd4e4d776da248d928b64af030f917ea58c9553) Automated commit to trigger downstream build
+- [a670bee](https://github.com/fabric-composer/fabric-composer/commit/a670bee6774a2a27091a88300b83082d0391486d) Automated commit to trigger downstream build
+- [e7317c0](https://github.com/fabric-composer/fabric-composer/commit/e7317c053254e6648413f5c37581a4f9a2b9c152) Automated commit to trigger downstream build
+- [6aa3b91](https://github.com/fabric-composer/fabric-composer/commit/6aa3b91e05744316766beb8d1ecaf732e807946a) Automated commit to trigger downstream build
+- [8618341](https://github.com/fabric-composer/fabric-composer/commit/861834159f1d3dbfe400b16acee8a3a3ba32ce31) Automated commit to trigger downstream build
+- [6c9d26f](https://github.com/fabric-composer/fabric-composer/commit/6c9d26f1b0c9e6ccad6af2b3435ea75f0d569adc) Automated commit to trigger downstream build
+- [7d5b84b](https://github.com/fabric-composer/fabric-composer/commit/7d5b84b4b0b3a8c52166e82f6cb0ec9454d34440) Fix for setting chaincode id on login (@dselman)
+- [0e4cf0d](https://github.com/fabric-composer/fabric-composer/commit/0e4cf0d69517bd66fdec264fc938ecacbf66bfec) Added method to return name of business network (@dselman)
+- [3a6ba06](https://github.com/fabric-composer/fabric-composer/commit/3a6ba066c8fe103832dbf2e51be9712da05e4576) Removed IBM Confidential header from gen file (@14gracel)
+- [41c7a86](https://github.com/fabric-composer/fabric-composer/commit/41c7a869741ae9a180310170d0dfec5ca43a8e8b) Fixed templates and tests. --args has become --data (@14gracel)
+- [8d295c4](https://github.com/fabric-composer/fabric-composer/commit/8d295c4308da4918e837a16234be0d16e70a242c) Updated JSDoc example (@dselman)
+- [3fc5a5b](https://github.com/fabric-composer/fabric-composer/commit/3fc5a5b13e374bf779f410634cbfa73236eabbb4) Added nunjucks to package.json (@14gracel)
+- [916f769](https://github.com/fabric-composer/fabric-composer/commit/916f769734318a3a4b347acfd1740ab952d1fb3f) deploy cli updates (@ODOWDAIBM)
+- [a1c75c1](https://github.com/fabric-composer/fabric-composer/commit/a1c75c18b89f458d4d4c98aecdab712c47d2749e) Added concerto generate test command (@14gracel)
+- [e29cec2](https://github.com/fabric-composer/fabric-composer/commit/e29cec2f1c331305c74d8f6e0a71f3d4f4eb95b8) Automated commit to trigger downstream build
+- [9b6ad41](https://github.com/fabric-composer/fabric-composer/commit/9b6ad413a7b3f5e43b94fe836aa1586a6efccdd3) Automated commit to trigger downstream build
+- [3637f98](https://github.com/fabric-composer/fabric-composer/commit/3637f98a5bc553560fd3efc083d22b9eacc17e6b) Automated commit to trigger downstream build
+- [2dc9145](https://github.com/fabric-composer/fabric-composer/commit/2dc9145b909bc463ca51b341faade2b2e746bf88) Automated commit to trigger downstream build
+- [a2f9538](https://github.com/fabric-composer/fabric-composer/commit/a2f9538fc27e99a4a2c0b0d3b3eb72724dbcc813) Automated commit to trigger downstream build
+- [5e5146e](https://github.com/fabric-composer/fabric-composer/commit/5e5146ead7464913fab3c2cc2538c9e65c739987) Automated commit to trigger downstream build
+- [fe063bf](https://github.com/fabric-composer/fabric-composer/commit/fe063bfa6a9d4ff6ef563be110c246d8d69959bf) Automated commit to trigger downstream build
+- [0af7f49](https://github.com/fabric-composer/fabric-composer/commit/0af7f49af7263540479aefd02a7e4efe9dd0a27b) Automated commit to trigger downstream build
+- [cef3969](https://github.com/fabric-composer/fabric-composer/commit/cef39695d3c5472daa65962ad92b2441c88d2ea3) Automated commit to trigger downstream build
+- [8e2ce0b](https://github.com/fabric-composer/fabric-composer/commit/8e2ce0b9b4186f4646dc6a3746d26be9be8a2d3a) Automated commit to trigger downstream build
+- [10bb40a](https://github.com/fabric-composer/fabric-composer/commit/10bb40a22f091ef1b3957297a0ddd72fafb3c1c4) Automated commit to trigger downstream build
+- [40de77b](https://github.com/fabric-composer/fabric-composer/commit/40de77b96cc69d8fbc94b9779df913f1e58f0487) Automated commit to trigger downstream build
+- [a7d3234](https://github.com/fabric-composer/fabric-composer/commit/a7d3234023705357999924900dca8a161710ccae) Automated commit to trigger downstream build
+- [0e9f339](https://github.com/fabric-composer/fabric-composer/commit/0e9f339b9007580f4426379e80f21f4f3945d2b9) Automated commit to trigger downstream build
+- [cdab84d](https://github.com/fabric-composer/fabric-composer/commit/cdab84d48eacc256cd53c96328dcf3e02114c306) Add transaction processor function for getting the current participant (@sstone1)
+- [96384f9](https://github.com/fabric-composer/fabric-composer/commit/96384f9d92fe34d4d4c2b776a7cd8b1777e78401) Automated commit to trigger downstream build
+- [da67333](https://github.com/fabric-composer/fabric-composer/commit/da67333bff9f7bf832921a93d84f858c94c73278) Automated commit to trigger downstream build
+- [edf165a](https://github.com/fabric-composer/fabric-composer/commit/edf165ae7d1d4650815434b4b2104508a404a518) Automated commit to trigger downstream build
+- [f18e653](https://github.com/fabric-composer/fabric-composer/commit/f18e6531adc76074a2506c4eddecc95cd2b39624) Automated commit to trigger downstream build
+- [daf3b13](https://github.com/fabric-composer/fabric-composer/commit/daf3b1346b3282007c33366c54969875d317dddf) Automated commit to trigger downstream build
+- [c4c7b12](https://github.com/fabric-composer/fabric-composer/commit/c4c7b123c5c2f1d30789f86d049bfe6bb4f70a54) Automated commit to trigger downstream build
+- [51ca1a3](https://github.com/fabric-composer/fabric-composer/commit/51ca1a33c683b3240af50a8fa72d46bab936b541) Automated commit to trigger downstream build
+- [99da1f3](https://github.com/fabric-composer/fabric-composer/commit/99da1f3a7d181c8afc6e5441780c3802b1721078) Automated commit to trigger downstream build
+- [11358ea](https://github.com/fabric-composer/fabric-composer/commit/11358eae9017cdd5ff5c0fe7902d9b5c10d114b3) Automated commit to trigger downstream build
+- [cb6291a](https://github.com/fabric-composer/fabric-composer/commit/cb6291aad4152c3e75af422bd4a22b5000d1f1fa) Automated commit to trigger downstream build
+- [b2055b1](https://github.com/fabric-composer/fabric-composer/commit/b2055b1c0a96b01d37d8959b0304a52594dfe4d3) Automated commit to trigger downstream build
+- [64ea646](https://github.com/fabric-composer/fabric-composer/commit/64ea64603c52df8cae4e90eb3c3f46ee5ab45145) Automated commit to trigger downstream build
+- [7a43ca4](https://github.com/fabric-composer/fabric-composer/commit/7a43ca470163f815d27b53cfe8d511288741a98d) Automated commit to trigger downstream build
+- [378279f](https://github.com/fabric-composer/fabric-composer/commit/378279fe8d40a3fbf3f02f8cb5e4643c59edd7bc) Automated commit to trigger downstream build
+- [0bb7d4c](https://github.com/fabric-composer/fabric-composer/commit/0bb7d4cd832443bcda26fa9edfa97be8a4592421) Automated commit to trigger downstream build
+- [017037b](https://github.com/fabric-composer/fabric-composer/commit/017037b96b3596b53600195196df633ea0688b5e) Automated commit to trigger downstream build
+- [00e8890](https://github.com/fabric-composer/fabric-composer/commit/00e8890b009db6b4f964f2ae03d8cf13975d28dd) Automated commit to trigger downstream build
+- [dae8fbe](https://github.com/fabric-composer/fabric-composer/commit/dae8fbe4ce60c2656a18eddda47bc2af2ca03d86) Automated commit to trigger downstream build
+- [1248842](https://github.com/fabric-composer/fabric-composer/commit/1248842b46fb7bb1aa81abda16fe59eec3ebbe4f) Automated commit to trigger downstream build
+- [ff9a431](https://github.com/fabric-composer/fabric-composer/commit/ff9a4312e7b8f7a712f1073c1ddd528cd1b3c19d) Automated commit to trigger downstream build
+- [3a2f3fd](https://github.com/fabric-composer/fabric-composer/commit/3a2f3fdb11f3a9a9a748c85462400e6a111c96ba) Automated commit to trigger downstream build
+- [86ffac9](https://github.com/fabric-composer/fabric-composer/commit/86ffac9ad464c4c4bc6fff993b61ff56565e4d24) Automated commit to trigger downstream build
+- [6f3c269](https://github.com/fabric-composer/fabric-composer/commit/6f3c2692bd80a71223a9abe138d6743d59fc7503) Automated commit to trigger downstream build
+- [196bda6](https://github.com/fabric-composer/fabric-composer/commit/196bda68167da6d027668ea22c2814dcbb50b266) Automated commit to trigger downstream build
+- [1328a3c](https://github.com/fabric-composer/fabric-composer/commit/1328a3cdeb27961787cf2b51f280d5177c2aba25) Automated commit to trigger downstream build
+- [7a6ed8f](https://github.com/fabric-composer/fabric-composer/commit/7a6ed8f58e6df7d3a20369dff0d19e40670b9412) Automated commit to trigger downstream build
+- [3d4a5c8](https://github.com/fabric-composer/fabric-composer/commit/3d4a5c8a1c515cd33ff87cb437ac82f0690547bd) Automated commit to trigger downstream build
+- [89588c5](https://github.com/fabric-composer/fabric-composer/commit/89588c540b0c9cdea9447d6c66a5282aaab39d02) Automated commit to trigger downstream build
+- [97b85ef](https://github.com/fabric-composer/fabric-composer/commit/97b85efb74d39b126c0ade5ffe830a40e303e2b8) Automated commit to trigger downstream build
+- [7a8405a](https://github.com/fabric-composer/fabric-composer/commit/7a8405abb284d5d571b67e6ab6a94f02fda7f9f0) Create LICENSE.txt (@dselman)
+- [955bbbf](https://github.com/fabric-composer/fabric-composer/commit/955bbbf0ce4d0d4b376574e55fc08609ffaa0637) Automated commit to trigger downstream build
+- [537c3d7](https://github.com/fabric-composer/fabric-composer/commit/537c3d790e2338639577015590b8dde6791bbbe6) Automated commit to trigger downstream build
+- [2359fae](https://github.com/fabric-composer/fabric-composer/commit/2359fae6ef189c62cb35519e337a6626b7557851) Update README.md (@dselman)
+- [cce26a7](https://github.com/fabric-composer/fabric-composer/commit/cce26a78b74c0415160e2fe2ac836a7346214e45) Automated commit to trigger downstream build
+- [68b1eee](https://github.com/fabric-composer/fabric-composer/commit/68b1eee209a6ae761093b11d6b8bb0c3f2467f13) Create LICENSE.txt (@dselman)
+- [11abdb2](https://github.com/fabric-composer/fabric-composer/commit/11abdb2aea1450246b688f618b0fbcca34696d31) Automated commit to trigger downstream build
+- [4489c4c](https://github.com/fabric-composer/fabric-composer/commit/4489c4c9dfa9aaf89a30b8046f8dab4f2f51dc03) Automated commit to trigger downstream build
+- [afcfa44](https://github.com/fabric-composer/fabric-composer/commit/afcfa44a7c7203bad63c6ebad4df66041c13218f) Automated commit to trigger downstream build
+- [828e059](https://github.com/fabric-composer/fabric-composer/commit/828e059cb6fcb468a68cf6441f4b73eda27a19d4) Update README.md (@dselman)
+- [9250bcf](https://github.com/fabric-composer/fabric-composer/commit/9250bcfc69052d98c872a96b976fa48312db8869) Create LICENSE.txt (@dselman)
+- [e9b5ae3](https://github.com/fabric-composer/fabric-composer/commit/e9b5ae3cc232133fa43e547cf73fd5459c077c16) Automated commit to trigger downstream build
+- [977d4ad](https://github.com/fabric-composer/fabric-composer/commit/977d4ade97233eaee9b580598e56dd2db1d68b80) Update README.md (@dselman)
+- [02028e6](https://github.com/fabric-composer/fabric-composer/commit/02028e6023ec131f5d401214d624fdf9e8a17195) Create LICENSE.txt (@dselman)
+- [68a30cf](https://github.com/fabric-composer/fabric-composer/commit/68a30cf491fa61baf4438f51d4edf991d1917eb6) Create LICENSE.txt (@dselman)
+- [f511940](https://github.com/fabric-composer/fabric-composer/commit/f511940df23fb64cc8c03ba62ccb55de2563b8ec) Create LICENSE.txt (@dselman)
+- [e5b0dba](https://github.com/fabric-composer/fabric-composer/commit/e5b0dbaf3d6ee812535b7f42714443ad9afa78a7) Create LICENSE.txt (@dselman)
+- [ef75e1a](https://github.com/fabric-composer/fabric-composer/commit/ef75e1a7085f93161126998b93cb6b9d3a370134) Create LICENSE.txt (@dselman)
+- [1b5e420](https://github.com/fabric-composer/fabric-composer/commit/1b5e420c2557f0c56baff3d2c7aa5d61a70b73c1) Rename LICENSE.md to LICENSE.txt (@dselman)
+- [79fbdc6](https://github.com/fabric-composer/fabric-composer/commit/79fbdc62f2da8dc6f39cad79da88f35434100c5e) Update LICENSE.md (@dselman)
+- [63613f7](https://github.com/fabric-composer/fabric-composer/commit/63613f730dd684add900013c810cf3ff9e10f00e) Update LICENSE.md (@dselman)
+- [f643dc7](https://github.com/fabric-composer/fabric-composer/commit/f643dc78ad1116fe40961f6c9ab1d7c2ca48e771) Create LICENSE.md (@dselman)
+- [3f1a02d](https://github.com/fabric-composer/fabric-composer/commit/3f1a02d299a450ef3f4d15139a725a5c6b535975) Automated commit to trigger downstream build
+- [a043324](https://github.com/fabric-composer/fabric-composer/commit/a0433241cf01a7d336cd4f83532621024d494904) Automated commit to trigger downstream build
+- [a1ce360](https://github.com/fabric-composer/fabric-composer/commit/a1ce360de730d5440f75cbbb43d1eb1472fc64b7) Automated commit to trigger downstream build
+- [588ebff](https://github.com/fabric-composer/fabric-composer/commit/588ebffad01d1af3ddba90dc5944830e2e7ab76a) Automated commit to trigger downstream build
+- [545380d](https://github.com/fabric-composer/fabric-composer/commit/545380dce617c28bb81bca525d6a091efb542b64) Automated commit to trigger downstream build
+- [6fded58](https://github.com/fabric-composer/fabric-composer/commit/6fded588d1441ebe518cd1835e5c3f594ee94a24) Automated commit to trigger downstream build
+- [402886f](https://github.com/fabric-composer/fabric-composer/commit/402886f95c37a6f303a4d8c0c0632f73bf915dda) Automated commit to trigger downstream build
+- [6928c53](https://github.com/fabric-composer/fabric-composer/commit/6928c5324a007945f8bb5d4ac444a84af20cd9a4) Automated commit to trigger downstream build
+- [ebcc4aa](https://github.com/fabric-composer/fabric-composer/commit/ebcc4aa6554e80844a0d61c06a1faff2db17ee77) Automated commit to trigger downstream build
+- [a697d16](https://github.com/fabric-composer/fabric-composer/commit/a697d16c899b7712f6a0fb6ae05d2aaf4ee3ed4d) Automated commit to trigger downstream build
+- [d5c4746](https://github.com/fabric-composer/fabric-composer/commit/d5c4746e4a8e684d1cd24dfe42a564ae50c5a8a6) Automated commit to trigger downstream build
+- [366984c](https://github.com/fabric-composer/fabric-composer/commit/366984c946f567a5ccd9b9be19b35cd5f44a4135) Automated commit to trigger downstream build
+- [9067d55](https://github.com/fabric-composer/fabric-composer/commit/9067d55700190630f669acec4fc2a6a321a2a704) Automated commit to trigger downstream build
+- [d647590](https://github.com/fabric-composer/fabric-composer/commit/d6475909b6f73195162e005a809aeafb3b98a608) Automated commit to trigger downstream build
+- [a9abbd2](https://github.com/fabric-composer/fabric-composer/commit/a9abbd22cd5501c8f91df9780351318061626b72) Automated commit to trigger downstream build
+- [0da0d99](https://github.com/fabric-composer/fabric-composer/commit/0da0d99cef0ef4870901c042f9da7719c7950279) Automated commit to trigger downstream build
+- [96e8fff](https://github.com/fabric-composer/fabric-composer/commit/96e8fff688c0657f906e9d8fe76842f972f1677b) Automated commit to trigger downstream build
+- [b73ed52](https://github.com/fabric-composer/fabric-composer/commit/b73ed52407cf267fcce40d6e738634843e7bf677) Automated commit to trigger downstream build
+- [753d01e](https://github.com/fabric-composer/fabric-composer/commit/753d01ea079d68cf8b41a39be49736c6ad21cb7e) Automated commit to trigger downstream build
+- [a8fd917](https://github.com/fabric-composer/fabric-composer/commit/a8fd9177e440a6a7f8b7c96104836a327c20a4d6) Pretty print connection profiles on save (@sstone1)
+- [942b6d9](https://github.com/fabric-composer/fabric-composer/commit/942b6d975787f92f2e060b0a45435ac1c18194cb) Should reject query/invoke when identity specified but is invalid (@sstone1)
+- [ef77432](https://github.com/fabric-composer/fabric-composer/commit/ef77432a1ef581c6aec04838a85da3cf19f34ba6) Automated commit to trigger downstream build
+- [e9422ce](https://github.com/fabric-composer/fabric-composer/commit/e9422ced33da253bba4100b79abb487783eefebc) Automated commit to trigger downstream build
+- [3e1f177](https://github.com/fabric-composer/fabric-composer/commit/3e1f177e2df843edbef026c6707878a3561f9719) Automated commit to trigger downstream build
+- [c6592de](https://github.com/fabric-composer/fabric-composer/commit/c6592de87d435e6d59794ac6670ef51853f4aa9f) Automated commit to trigger downstream build
+- [cac05ca](https://github.com/fabric-composer/fabric-composer/commit/cac05caf5a9803bffe38c66475ab1f2b4608f543) Automated commit to trigger downstream build
+- [fc52465](https://github.com/fabric-composer/fabric-composer/commit/fc52465d6295770ee78f9b1bdf4e599229e7e448) Automated commit to trigger downstream build
+- [602367a](https://github.com/fabric-composer/fabric-composer/commit/602367a267658d80e955402c15d9b66d28b1257e) Update README.md (@dselman)
+- [fc4d461](https://github.com/fabric-composer/fabric-composer/commit/fc4d46101712a2cb7be04b1414810c54c5470d98) Update README.md (@dselman)
+- [484bff1](https://github.com/fabric-composer/fabric-composer/commit/484bff12b7a4531e3207b916d05d2173a44817c4) Update README.md (@dselman)
+- [0586084](https://github.com/fabric-composer/fabric-composer/commit/0586084382f1dee8488008bd6e1999126f5ae2f3) Automated commit to trigger downstream build
+- [1dfb336](https://github.com/fabric-composer/fabric-composer/commit/1dfb336283ccec63fb6ff0388dd3bb8372ad28aa) Automated commit to trigger downstream build
+- [b17af8b](https://github.com/fabric-composer/fabric-composer/commit/b17af8b75fe9e6906e8f3cb87266fce24ba93859) Automated commit to trigger downstream build
+- [54a6205](https://github.com/fabric-composer/fabric-composer/commit/54a6205d046998efaf8108e159a9ba15f2b122a9) Automated commit to trigger downstream build
+- [79e6710](https://github.com/fabric-composer/fabric-composer/commit/79e671088fa65bdbecdb095b353829de9c28fa84) Automated commit to trigger downstream build
+- [b05f175](https://github.com/fabric-composer/fabric-composer/commit/b05f175d4f0d553f7ded411cb9512c2ddd54044e) Automated commit to trigger downstream build
+- [3f95f2e](https://github.com/fabric-composer/fabric-composer/commit/3f95f2ece945e6583aeb7b94684b5ab0d0a4428d) Automated commit to trigger downstream build
+- [a0c6e15](https://github.com/fabric-composer/fabric-composer/commit/a0c6e15a11078b18541ae411ede0c88958a7bc6f) Automated commit to trigger downstream build
+- [89bc259](https://github.com/fabric-composer/fabric-composer/commit/89bc2596d9fe3465234feaf8cda02583c1a69b14) Automated commit to trigger downstream build
+- [8e79928](https://github.com/fabric-composer/fabric-composer/commit/8e79928015e479f37c56ffe6a169bcf146cafcee) Automated commit to trigger downstream build
+- [ad12990](https://github.com/fabric-composer/fabric-composer/commit/ad12990d7e8981abab0ccf1fd50051a58db445f0) Automated commit to trigger downstream build
+- [61c2a5f](https://github.com/fabric-composer/fabric-composer/commit/61c2a5fc21edb7dc598b2ad4874ec99fd1dcca9f) Automated commit to trigger downstream build
+- [9394b93](https://github.com/fabric-composer/fabric-composer/commit/9394b93fc8ac1f693659e2fa049f867528409654) Lookup current participant during runtime query/invoke (@sstone1)
+- [41e824b](https://github.com/fabric-composer/fabric-composer/commit/41e824bc502c64b4308f3071b796f1f174ac7c56) Add network ping command (@sstone1)
+- [95d3cf5](https://github.com/fabric-composer/fabric-composer/commit/95d3cf5114b1fb7f44c493583726170afb01d62c) ping() should return runtime response (@sstone1)
+- [ebb175e](https://github.com/fabric-composer/fabric-composer/commit/ebb175e30070e579c86cea76be64b802cd740991) Automated commit to trigger downstream build
+- [5c22875](https://github.com/fabric-composer/fabric-composer/commit/5c22875fdcff30b687ec42cb0a9652d8c282a030) Automated commit to trigger downstream build
+- [fca5e97](https://github.com/fabric-composer/fabric-composer/commit/fca5e97f2464e9e905721aa1bdcbc144249c6615) Automated commit to trigger downstream build
+- [c10ff17](https://github.com/fabric-composer/fabric-composer/commit/c10ff17a162b0b7d0e8031f92e25e855bb52e9bb) Automated commit to trigger downstream build
+- [434be5f](https://github.com/fabric-composer/fabric-composer/commit/434be5f992e5f7fe322fc03280323b9bccf5e274) Removed check for - as it prevents business networks from having a dash in their name (@dselman)
+- [2eb7130](https://github.com/fabric-composer/fabric-composer/commit/2eb71300233ded46f4a2eada4426bdfd804f761e) Automated commit to trigger downstream build
+- [1d673f9](https://github.com/fabric-composer/fabric-composer/commit/1d673f9210b72e49d719ff1fd7eab80d5ebe8fd8) Automated commit to trigger downstream build
+- [3d77f78](https://github.com/fabric-composer/fabric-composer/commit/3d77f7845f0f4c38d882a9f70c5e2c01b66d0f8b) Automated commit to trigger downstream build
+- [de47da5](https://github.com/fabric-composer/fabric-composer/commit/de47da5eee53d11f366613cf1aaa912e55138ab3) Automated commit to trigger downstream build
+- [38a4300](https://github.com/fabric-composer/fabric-composer/commit/38a4300dad9795e7f9314242cd7696a1732e63dd) Automated commit to trigger downstream build
+- [0556769](https://github.com/fabric-composer/fabric-composer/commit/05567696d3195f6cbd06962a2f594bd7fd45b4b0) Automated commit to trigger downstream build
+- [5cbc6cf](https://github.com/fabric-composer/fabric-composer/commit/5cbc6cf8eae106a8ca2def783f5733b9781fd0d9) Automated commit to trigger downstream build
+- [465b534](https://github.com/fabric-composer/fabric-composer/commit/465b534664b604748e48f22aa1adba1a3485ac67) Automated commit to trigger downstream build
+- [d45640f](https://github.com/fabric-composer/fabric-composer/commit/d45640f7763d7df1650345501ecd56eb59cd3b44) Automated commit to trigger downstream build
+- [9247d8b](https://github.com/fabric-composer/fabric-composer/commit/9247d8b73853daa3aab3b25973eaa831d97fa6d5) Automated commit to trigger downstream build
+- [f6a50f0](https://github.com/fabric-composer/fabric-composer/commit/f6a50f04f168ba92a56d884f3de1ae94a0bf5dde) Removed need for fs-extra (@dselman)
+- [67a8bca](https://github.com/fabric-composer/fabric-composer/commit/67a8bca858b26332cf422d49a72d957b0335b9cf) Fixed typo (@dselman)
+- [e47ff90](https://github.com/fabric-composer/fabric-composer/commit/e47ff9050565599ed0e8c4ccbf44a41b29c28e52) Automated commit to trigger downstream build
+- [858e647](https://github.com/fabric-composer/fabric-composer/commit/858e647a82516b4350b7e412e3edae3b2aca8b13) Automated commit to trigger downstream build
+- [f252b6a](https://github.com/fabric-composer/fabric-composer/commit/f252b6adeb7b1536039134c6debe07c206964da1) Automated commit to trigger downstream build
+- [1910d1b](https://github.com/fabric-composer/fabric-composer/commit/1910d1b8262fe8f0eac3a5d811be5b6695696ae3) Automated commit to trigger downstream build
+- [a58cbf7](https://github.com/fabric-composer/fabric-composer/commit/a58cbf7b16ee00b6d3ca54dedb0e2cdfef04510a) Automated commit to trigger downstream build
+- [2801861](https://github.com/fabric-composer/fabric-composer/commit/2801861ab1e6f5da871e079586e7bd905fe0b1c1) Automated commit to trigger downstream build
+- [3777737](https://github.com/fabric-composer/fabric-composer/commit/3777737e71a7eaf98b5963819969ec6601545808) Automated commit to trigger downstream build
+- [d9c30b0](https://github.com/fabric-composer/fabric-composer/commit/d9c30b0703965a34cd46e4c3e219848e527294fd) Automated commit to trigger downstream build
+- [b0a3242](https://github.com/fabric-composer/fabric-composer/commit/b0a32420d9138018c327a6b59a65dbd6cdd80d3f) list command expanded (@ODOWDAIBM)
+- [8f4da26](https://github.com/fabric-composer/fabric-composer/commit/8f4da2621cca88276bf5bf39a9a8a8f644e6f4d0) Added concerto generator tests command to CLI (@14gracel)
+- [3647e0f](https://github.com/fabric-composer/fabric-composer/commit/3647e0f97fde94d87363688363ac2df5f3ff1354) list command expanded (@ODOWDAIBM)
+- [1ed09c9](https://github.com/fabric-composer/fabric-composer/commit/1ed09c96a373152543218431264a9b253eab5b20) Fixed tests to create a business network with a version number (@dselman)
+- [eeb85e1](https://github.com/fabric-composer/fabric-composer/commit/eeb85e1328ec7a6bf11632e47713c55154f7a59f) Automated commit to trigger downstream build
+- [180a900](https://github.com/fabric-composer/fabric-composer/commit/180a90071053d3b324f382b0d7145e92771764aa) Removed node-uuid module and replaced with uuid module. No more npm deprecated warning (@Jakeeyturner)
+- [d088a58](https://github.com/fabric-composer/fabric-composer/commit/d088a586f8f596548d919469cd29c08eeaef1390) Removed node-uuid module and replaced with uuid module. No more npm deprecated warning (@Jakeeyturner)
+- [4f075e1](https://github.com/fabric-composer/fabric-composer/commit/4f075e1cbeee32fd3702cf9413ac182ea2e16eea) Automated commit to trigger downstream build
+- [f1d41aa](https://github.com/fabric-composer/fabric-composer/commit/f1d41aa5da9f9cee5bf633851416ccec4ea4046f) Automated commit to trigger downstream build
+- [9456fdd](https://github.com/fabric-composer/fabric-composer/commit/9456fdd71df35535dada91adb296f368f836327e) Removed node-uuid module and replaced with uuid module. No more npm deprecated warning (@Jakeeyturner)
+- [9b52b96](https://github.com/fabric-composer/fabric-composer/commit/9b52b96c21f37ef3443d06b63586bc8bd4fda06f) Automated commit to trigger downstream build
+- [bb2126b](https://github.com/fabric-composer/fabric-composer/commit/bb2126be846b9367609fad8daa2beeae844c77db) Automated commit to trigger downstream build
+- [4387531](https://github.com/fabric-composer/fabric-composer/commit/438753118926919f387152750a19a04bb0678af7) set to trusty distribution (@dselman)
+- [de82ba3](https://github.com/fabric-composer/fabric-composer/commit/de82ba3dde9115a36d48b43b941da580c3d877b3) BusinessNetworks now need ids (@dselman)
+- [8b4787e](https://github.com/fabric-composer/fabric-composer/commit/8b4787e971ee33c0daa17b9f1f25b0868cd12eba) Prevent deploy of the same network multiple times (@dselman)
+- [19eec59](https://github.com/fabric-composer/fabric-composer/commit/19eec5959eb6f1764019250b47ce0eea7b0efecb) Added name/version to BusinessNetworkDefintion. Fixed fromDirectory. (@dselman)
+- [f97f400](https://github.com/fabric-composer/fabric-composer/commit/f97f400351c8f111a31b82c9bf1192dee6df26de) Automated commit to trigger downstream build
+- [b4fe809](https://github.com/fabric-composer/fabric-composer/commit/b4fe80978f8cc528f1133b3387fd23f7d157b741) Fix failing admin tests (@sstone1)
+- [79d4a90](https://github.com/fabric-composer/fabric-composer/commit/79d4a9072f05dadc24a5ed3336c15468bf5ddee3) Add participant add and identity issue/revoke CLI commands (@sstone1)
+- [90307a2](https://github.com/fabric-composer/fabric-composer/commit/90307a24c200972215a345b08f525b3c63eb2870) Automated commit to trigger downstream build
+- [05cb1e9](https://github.com/fabric-composer/fabric-composer/commit/05cb1e9a82cc71a666a6d0334d67b70106acbe79) Automated commit to trigger downstream build
+- [1b104c4](https://github.com/fabric-composer/fabric-composer/commit/1b104c48eb6ce3bbfcb192daff6b4e603f9bb1ca) Automated commit to trigger downstream build
+- [d67c391](https://github.com/fabric-composer/fabric-composer/commit/d67c391a1d184f05956a050991b16b6793a61d0b) Automated commit to trigger downstream build
+- [5abb188](https://github.com/fabric-composer/fabric-composer/commit/5abb188e84aac2bcd11c05c56f7ccf4d993c3c2d) Automated commit to trigger downstream build
+- [df7136d](https://github.com/fabric-composer/fabric-composer/commit/df7136d5a1cac970ed3c865546aa7d420f80994e) Automated commit to trigger downstream build
+- [c8e828a](https://github.com/fabric-composer/fabric-composer/commit/c8e828a44705db98ea164b9ec6d2d13e010bf41a) Automated commit to trigger downstream build
+- [be9dc53](https://github.com/fabric-composer/fabric-composer/commit/be9dc53a786f7d3543599260bc554bb4355385de) Automated commit to trigger downstream build
+- [392bde4](https://github.com/fabric-composer/fabric-composer/commit/392bde4c598ab84df96b143eae2fcd65985acaf2) Automated commit to trigger downstream build
+- [a9744c4](https://github.com/fabric-composer/fabric-composer/commit/a9744c450918c72576b8c879b85c7f10b57193e4) Add API calls for issuing and revoking identities (@sstone1)
+- [e82db79](https://github.com/fabric-composer/fabric-composer/commit/e82db79367ac63d769f2e02a10d728227b02ec1b) Automated commit to trigger downstream build
+- [8858f31](https://github.com/fabric-composer/fabric-composer/commit/8858f318a7b753d8d5e5b73ddb888223c9e1dfc1) Automated commit to trigger downstream build
+- [a848dc7](https://github.com/fabric-composer/fabric-composer/commit/a848dc7c347f86e24ff787ef6341e181b2365113) Automated commit to trigger downstream build
+- [ac46f38](https://github.com/fabric-composer/fabric-composer/commit/ac46f389fbae5784bd290eacd93e09c5ad9c5530) Runtime support for issuing and revoking identities (@sstone1)
+- [43c5d69](https://github.com/fabric-composer/fabric-composer/commit/43c5d6996dfa6ea9d07f3675686704ca3250fcd2) Add identity service implementation for Hyperledger Fabric runtime container (@sstone1)
+- [72f08dc](https://github.com/fabric-composer/fabric-composer/commit/72f08dca21c0d3fa7fbf751c541b613246703ff1) Automated commit to trigger downstream build
+- [2258033](https://github.com/fabric-composer/fabric-composer/commit/2258033ba632fce75928b0df4cb88ae64b9d143d) Automated commit to trigger downstream build
+- [23359a5](https://github.com/fabric-composer/fabric-composer/commit/23359a599506719eaf175968e12c1a1474dd89fb) Automated commit to trigger downstream build
+- [db1fbdc](https://github.com/fabric-composer/fabric-composer/commit/db1fbdcb314d4877234daa9ca5c0c20de7b40ef7) Automated commit to trigger downstream build
+- [0ee7327](https://github.com/fabric-composer/fabric-composer/commit/0ee73277af009df0a5769d0fd3befd2e42cff177) Automated commit to trigger downstream build
+- [01823ec](https://github.com/fabric-composer/fabric-composer/commit/01823ec0ed83cc20ac40ef4eea3798b3c4b5709a) Automated commit to trigger downstream build
+- [0965d01](https://github.com/fabric-composer/fabric-composer/commit/0965d01ff359985c72523afd0a6c82cb4d94b7e1) Automated commit to trigger downstream build
+- [b2b3f17](https://github.com/fabric-composer/fabric-composer/commit/b2b3f174630c6c13ab6d1e3ade52e00ae6eaa540) Automated commit to trigger downstream build
+- [a1beedb](https://github.com/fabric-composer/fabric-composer/commit/a1beedb6d7c56b501cef9d8c4bc2f49dca1cb308) Automated commit to trigger downstream build
+- [77915cc](https://github.com/fabric-composer/fabric-composer/commit/77915cc0855caea90d69095d5ba964fb85d0ce7a) Automated commit to trigger downstream build
+- [07a7fd8](https://github.com/fabric-composer/fabric-composer/commit/07a7fd8d0b5a7a83a413652b7eb483cc62974890) Automated commit to trigger downstream build
+- [22fd95a](https://github.com/fabric-composer/fabric-composer/commit/22fd95a5b0a2929cf9814a806e2f50b8f5962f18) Rename Hyperledger Fabric connector method registerUser() to createIdentity() (@sstone1)
+- [5094ac7](https://github.com/fabric-composer/fabric-composer/commit/5094ac729e9d527782c304375f631e326bd3b40e) Rename connection API method registerUser() to createIdentity() (@sstone1)
+- [d924bd5](https://github.com/fabric-composer/fabric-composer/commit/d924bd50edfde8a325992555618a3c98a20a33f4) Add participant registry to transaction processor APIs (@sstone1)
+- [74e8991](https://github.com/fabric-composer/fabric-composer/commit/74e89917de0108e8018d818beda62487695889fd) Initial identity manager implementation (@sstone1)
+- [6dc0782](https://github.com/fabric-composer/fabric-composer/commit/6dc078231a6444ea438dd3059adfba782113e3a6) network list cli (@ODOWDAIBM)
+- [137bc45](https://github.com/fabric-composer/fabric-composer/commit/137bc45f7d3e42d5b23b0152675bee3ee56cdcd9) Automated commit to trigger downstream build
+- [0872400](https://github.com/fabric-composer/fabric-composer/commit/0872400c0b94ba1e92ac9df2611ed62c941ebd2c) Automated commit to trigger downstream build
+- [2a000f5](https://github.com/fabric-composer/fabric-composer/commit/2a000f548ab74badfb24367e94e8eb46628b1bf4) Automated commit to trigger downstream build
+- [3dff8f5](https://github.com/fabric-composer/fabric-composer/commit/3dff8f53163e0dc509afca4d1ea7a3a385335709) Automated commit to trigger downstream build
+- [9a6e36e](https://github.com/fabric-composer/fabric-composer/commit/9a6e36eef3326bc8ccf3db6e8808a205cab3b1eb) Automated commit to trigger downstream build
+- [f69c540](https://github.com/fabric-composer/fabric-composer/commit/f69c540c7211a49f61438b391be3ac64f7b76002) Implement DataCollection.exists() method in Go runtime container (@sstone1)
+- [4216ac0](https://github.com/fabric-composer/fabric-composer/commit/4216ac0befe65cd0ec5d432356e3f1761eb3f2b6) Added transaction submit command (@14gracel)
+- [e2127d7](https://github.com/fabric-composer/fabric-composer/commit/e2127d7121e5e69ced3b571d47d20180fa3b1658) Automated commit to trigger downstream build
+- [969f1d4](https://github.com/fabric-composer/fabric-composer/commit/969f1d41b8458ce5dfa7e60b18dec8295f532c3c) Updated reqs, istanbul rules and eslint rules (@14gracel)
+- [88af789](https://github.com/fabric-composer/fabric-composer/commit/88af7893844a52b31099e8540dcf8cff95de2d18) Stop console logging of business network on connect (@sstone1)
+- [800b7cd](https://github.com/fabric-composer/fabric-composer/commit/800b7cd6ae4f398858166471509d79ca3c67622a) Automated commit to trigger downstream build
+- [632a9b8](https://github.com/fabric-composer/fabric-composer/commit/632a9b86aac38c1b3a3a62555a65e3a33af198f0) Updated changelog (@Jakeeyturner)
+- [61d9efc](https://github.com/fabric-composer/fabric-composer/commit/61d9efcfde5bff5cec8cf0a3874d39e028f57328) Updated changelog (@Jakeeyturner)
+- [9d3be5f](https://github.com/fabric-composer/fabric-composer/commit/9d3be5f0d6baff4dc2d37e0bd50c3edfec609ad6) AdAdded .editorconfig (@14gracel)
+- [83fea96](https://github.com/fabric-composer/fabric-composer/commit/83fea96668476ea7a882a40af4b7b0b52f9ea232) Changed 'businesnetworkconnection' back (@Jakeeyturner)
+- [0596ec5](https://github.com/fabric-composer/fabric-composer/commit/0596ec5aedaf75c11fe71d0cd1b0b9b3bfa30ca4) Automated commit to trigger downstream build
+- [b7a679d](https://github.com/fabric-composer/fabric-composer/commit/b7a679da7268739e82e4ba8b12dab025b08fbdb0) Automated commit to trigger downstream build
+- [5f639da](https://github.com/fabric-composer/fabric-composer/commit/5f639dada0b0d4ae6bb80d020a400a0ff886d667) Automated commit to trigger downstream build
+- [1b68ed3](https://github.com/fabric-composer/fabric-composer/commit/1b68ed3dcedfb5e820f5db0e32903c736f833109) Automated commit to trigger downstream build
+- [97aa7cf](https://github.com/fabric-composer/fabric-composer/commit/97aa7cf723b55075400da41ec4879664b3198fd7) Automated commit to trigger downstream build
+- [651497e](https://github.com/fabric-composer/fabric-composer/commit/651497e3cf8bff66f7cdb3afcfaa95716bbe91f8) Automated commit to trigger downstream build
+- [33949f3](https://github.com/fabric-composer/fabric-composer/commit/33949f372946d1fb469ea5fc352583c28b762432) Automated commit to trigger downstream build
+- [36d1518](https://github.com/fabric-composer/fabric-composer/commit/36d15188f0caddb70c30329e6075d562e0a0a328) Automated commit to trigger downstream build
+- [ee53ccf](https://github.com/fabric-composer/fabric-composer/commit/ee53ccf598d6468ae51898f1fdad8b39bd459aca) Automated commit to trigger downstream build
+- [4f20193](https://github.com/fabric-composer/fabric-composer/commit/4f201939efedf9b8cfb201380bc554ffcaba584d) Automated commit to trigger downstream build
+- [d2a8778](https://github.com/fabric-composer/fabric-composer/commit/d2a87780be1f23221ff68bae8f22571f7d67b500) Automated commit to trigger downstream build
+- [28615c9](https://github.com/fabric-composer/fabric-composer/commit/28615c97b032a8788bab478b5b4bcf6a56305a33) Automated commit to trigger downstream build
+- [a031894](https://github.com/fabric-composer/fabric-composer/commit/a0318942c3ec8282124b0a180719f02ec3d5c9f8) Automated commit to trigger downstream build
+- [49bd4b4](https://github.com/fabric-composer/fabric-composer/commit/49bd4b49eb7d7eba408cf0759f189ee448ff8bbc) Automated commit to trigger downstream build
+- [7fdba3a](https://github.com/fabric-composer/fabric-composer/commit/7fdba3a76d90bb8a4ca6f0d4ad138224a580514f) Automated commit to trigger downstream build
+- [c6eecbb](https://github.com/fabric-composer/fabric-composer/commit/c6eecbbb0b6c26f71c21593fbb9fa1e3bbb04ef5) Callbacks appearing in public JSDocs (@sstone1)
+- [263d890](https://github.com/fabric-composer/fabric-composer/commit/263d89019aecd21818b0891a3d56334fa9f62316) Automated commit to trigger downstream build
+- [6cbe371](https://github.com/fabric-composer/fabric-composer/commit/6cbe37113b14c721ff1a372aaea456e50aa13a42) Events appearing in public JSDocs (@sstone1)
+- [62cb317](https://github.com/fabric-composer/fabric-composer/commit/62cb3177bcc3b2b43a553733e6c37e521cf3b2fe) BusinessNetworkConnection.connect not pinging the connection (@sstone1)
+- [8a7d991](https://github.com/fabric-composer/fabric-composer/commit/8a7d991e5e159aaf888ca17fefa02ce1e21f6afc) Automated commit to trigger downstream build
+- [813a582](https://github.com/fabric-composer/fabric-composer/commit/813a582c85fc2309bb36fc79ba0fc462ba84eb5c) removed redeclared types (@dselman)
+- [6985ace](https://github.com/fabric-composer/fabric-composer/commit/6985ace131f9177ea44d26ca7fe5655478b971ba) Added changelog tracking (@dselman)
+- [cf91b27](https://github.com/fabric-composer/fabric-composer/commit/cf91b27b734e37666bebcd8f1184ed635f69a535) Automated commit to trigger downstream build
+- [999bdd1](https://github.com/fabric-composer/fabric-composer/commit/999bdd17f3711080e7743e068d97a6ddb08886dd) Automated commit to trigger downstream build
+- [6e15df5](https://github.com/fabric-composer/fabric-composer/commit/6e15df5048951380121faad205a9ecbcc82f6baa) Automated commit to trigger downstream build
+- [545eaee](https://github.com/fabric-composer/fabric-composer/commit/545eaeea70c6f7f9b62ce471282d4f4c63e030af) Automated commit to trigger downstream build
+- [9aade70](https://github.com/fabric-composer/fabric-composer/commit/9aade707d1d86c9ecc8edfd949af69c453fd21b8) Automated commit to trigger downstream build
+- [ebc5556](https://github.com/fabric-composer/fabric-composer/commit/ebc5556a5acd0f18903d2d3f606d1ad7fd2dd8b1) Automated commit to trigger downstream build
+- [f5a179b](https://github.com/fabric-composer/fabric-composer/commit/f5a179bef834429cd3f0ae484cbe6c69a79b67c4) Automated commit to trigger downstream build
+- [6970f80](https://github.com/fabric-composer/fabric-composer/commit/6970f803be8dd153ae81e9764175e6cf72902e4c) Automated commit to trigger downstream build
+- [7ee2bbe](https://github.com/fabric-composer/fabric-composer/commit/7ee2bbe5cc214bd4af8b65d5fc7f1113d6daeb02) Automated commit to trigger downstream build
+- [e3f5018](https://github.com/fabric-composer/fabric-composer/commit/e3f50182def7a89150e80937ce5260c765dd7f26) Automated commit to trigger downstream build
+- [82f530c](https://github.com/fabric-composer/fabric-composer/commit/82f530cf76bc9cfbbc08ab394ff29426a94ef53b) Automated commit to trigger downstream build
+- [92f6dfa](https://github.com/fabric-composer/fabric-composer/commit/92f6dfaafb831a33fbadf486a1d16602ad1d6cb1) Automated commit to trigger downstream build
+- [0423b90](https://github.com/fabric-composer/fabric-composer/commit/0423b904eef801788599fd52b6d94b87ced20124) Add participant registries, clean up submitTransaction runtime function (@sstone1)
+- [5ceb750](https://github.com/fabric-composer/fabric-composer/commit/5ceb750277e6e69ed4cdb3a485c63179157d3a4c) Automated commit to trigger downstream build
+- [c87aff8](https://github.com/fabric-composer/fabric-composer/commit/c87aff8ecac7cb03292e2a47e735b1e52a0b63cb) Automated commit to trigger downstream build
+- [b2c0c5f](https://github.com/fabric-composer/fabric-composer/commit/b2c0c5f011b6f2bfc5a6465ae4d37dad0636e6d0) Automated commit to trigger downstream build
+- [9399d34](https://github.com/fabric-composer/fabric-composer/commit/9399d347d89d14cf7e1dc5dc5cb3509749a9d6c7) Automated commit to trigger downstream build
+- [b2b6b17](https://github.com/fabric-composer/fabric-composer/commit/b2b6b175ca76e01d15bbc0b9b522b9064db97598) Clean up submitTransaction runtime function (@sstone1)
+- [aaba7d5](https://github.com/fabric-composer/fabric-composer/commit/aaba7d5f570f6d5fa3cf65cb539a19986071a0ac) Automated commit to trigger downstream build
+- [da5f2d5](https://github.com/fabric-composer/fabric-composer/commit/da5f2d554209dbb858c182e753f594a448beba06) Automated commit to trigger downstream build
+- [1b71694](https://github.com/fabric-composer/fabric-composer/commit/1b71694d75cd25fee05115c8f8ed9ef63cffeace) Automated commit to trigger downstream build
+- [d09f118](https://github.com/fabric-composer/fabric-composer/commit/d09f118305d651658efe643f2802869ffe6f2445) Enable use of Certificate Attribute Authority in system tests (@sstone1)
+- [14aa037](https://github.com/fabric-composer/fabric-composer/commit/14aa0373011e223d36f57a954a42d42c6a9261ca) Automated commit to trigger downstream build
+- [e1e2435](https://github.com/fabric-composer/fabric-composer/commit/e1e24353658f6c23cc7458d31060d934767a923c) Automated commit to trigger downstream build
+- [2e7e4d3](https://github.com/fabric-composer/fabric-composer/commit/2e7e4d367393c57f0a146b696ab66bfaed708d1c) Automated commit to trigger downstream build
+- [12f4b5a](https://github.com/fabric-composer/fabric-composer/commit/12f4b5a4284bf9de278dade554d8ad05e35bffc0) Add registerUser method to Admin class (@sstone1)
+- [4e65912](https://github.com/fabric-composer/fabric-composer/commit/4e65912fa32cb5fd553101c821aacaa3161ac399) Implement registerUser in HFCConnection class (@sstone1)
+- [97a7c81](https://github.com/fabric-composer/fabric-composer/commit/97a7c81d26a3d1d304bccaa333bd205623c47637) Add registerUser to Connection interface (@sstone1)
+- [d484dc3](https://github.com/fabric-composer/fabric-composer/commit/d484dc37967b854367daced478f8d6a4a75e2f7d) Automated commit to trigger downstream build
+- [360705a](https://github.com/fabric-composer/fabric-composer/commit/360705abf806d826c0e1e18d33fb8656c9b97311) Automated commit to trigger downstream build
+- [856ce30](https://github.com/fabric-composer/fabric-composer/commit/856ce305a8b77d196340248588b973af8b5bb8e7) Automated commit to trigger downstream build
+- [1e65516](https://github.com/fabric-composer/fabric-composer/commit/1e65516f5c9849927c4494b7737156a9e2f0a937) Automated commit to trigger downstream build
+- [daf4fcd](https://github.com/fabric-composer/fabric-composer/commit/daf4fcd2236369eeb6d92638e41e3195272e3096) Automated commit to trigger downstream build
+- [51e6441](https://github.com/fabric-composer/fabric-composer/commit/51e6441c5af605c5d6777db88e39fcf521e71375) Automated commit to trigger downstream build
+- [9926371](https://github.com/fabric-composer/fabric-composer/commit/9926371f89ccd5ba3c10199d9d024d5ee94dbb11) Automated commit to trigger downstream build
+- [9d2a988](https://github.com/fabric-composer/fabric-composer/commit/9d2a9888f7319e559e569e417b1c6af58614e5a4) Automated commit to trigger downstream build
+- [9c64f95](https://github.com/fabric-composer/fabric-composer/commit/9c64f9501e256d73874c35a086ca71346d30a996) Automated commit to trigger downstream build
+- [ec0e479](https://github.com/fabric-composer/fabric-composer/commit/ec0e4792b6729de455ab538955c7118a02192edf) Automated commit to trigger downstream build
+- [302840e](https://github.com/fabric-composer/fabric-composer/commit/302840e7fb2b568f4d2fe703722731b8524891c4) Automated commit to trigger downstream build
+- [b2d81fe](https://github.com/fabric-composer/fabric-composer/commit/b2d81fec2493211bb559064e1bf644737f1c8270) Automated commit to trigger downstream build
+- [4e7276d](https://github.com/fabric-composer/fabric-composer/commit/4e7276deab9c9e71fca64fa798bfeeff1a8bc6b7) Automated commit to trigger downstream build
+- [b42a020](https://github.com/fabric-composer/fabric-composer/commit/b42a02034776bb8c37065f8b9b7b8d12b7b11d6a) Automated commit to trigger downstream build
+- [b822d92](https://github.com/fabric-composer/fabric-composer/commit/b822d92db94213b37082b23fd0392a7980718144) Automated commit to trigger downstream build
+- [aa5554c](https://github.com/fabric-composer/fabric-composer/commit/aa5554cdf55423f6f4fb747a86b9a11db0274910) Automated commit to trigger downstream build
+- [8ee0956](https://github.com/fabric-composer/fabric-composer/commit/8ee09569b64d410d430fb8d0d71774bd22547e12) Automated commit to trigger downstream build
+- [2bbaa38](https://github.com/fabric-composer/fabric-composer/commit/2bbaa38d384a8c55285a4140921364c409107251) Automated commit to trigger downstream build
+- [a09bf26](https://github.com/fabric-composer/fabric-composer/commit/a09bf26a80cbb82403a1a37d62e9c9776f5e7be9) Automated commit to trigger downstream build
+- [36cdabf](https://github.com/fabric-composer/fabric-composer/commit/36cdabfa6f8ef293f7132d2da71090ae8a328826) Hide the mixin global method (@sstone1)
+- [d5b1454](https://github.com/fabric-composer/fabric-composer/commit/d5b145483db27ff04bcd1497143ce2e328b7b8a4) Hide the getLogger global method (@sstone1)
+- [9584729](https://github.com/fabric-composer/fabric-composer/commit/9584729473ce0712f2c9bf3c8c9ed9df744f318e) Automated commit to trigger downstream build
+- [0ed8e7a](https://github.com/fabric-composer/fabric-composer/commit/0ed8e7a1660b6fa682c0aa94ec12c2495f8b2407) Automated commit to trigger downstream build
+- [cf4065e](https://github.com/fabric-composer/fabric-composer/commit/cf4065e8c1e5a9bb71ea6ea4fa3cf7ef43fe6c5e) Automated commit to trigger downstream build
+- [4a2f59a](https://github.com/fabric-composer/fabric-composer/commit/4a2f59a830a09994325acbc18d7cd8f9fb28d539) Automated commit to trigger downstream build
+- [f8e3205](https://github.com/fabric-composer/fabric-composer/commit/f8e3205fbeea0204a96d47cfa4a8672a096cbab1) Automated commit to trigger downstream build
+- [2b46e73](https://github.com/fabric-composer/fabric-composer/commit/2b46e73a8082c32c7912104835dc32041110c058) Automated commit to trigger downstream build
+- [9a8052e](https://github.com/fabric-composer/fabric-composer/commit/9a8052eef8c21b225f6cffa9c9eb1ccce5332b06) Initial transaction diffs support (@sstone1)
+- [b9b8a85](https://github.com/fabric-composer/fabric-composer/commit/b9b8a85c8625b65b7a7998d0784053da620020e5) Automated commit to trigger downstream build
+- [37be9d0](https://github.com/fabric-composer/fabric-composer/commit/37be9d0b0908afe53dfdd458e126fb90bc8593ff) Automated commit to trigger downstream build
+- [32d98e6](https://github.com/fabric-composer/fabric-composer/commit/32d98e6ed8798e9d3dd1e37a67562044770915bd) Automated commit to trigger downstream build
+- [699f806](https://github.com/fabric-composer/fabric-composer/commit/699f8061ea06af98f03fb1fa06e5d4f280746a53) Automated commit to trigger downstream build
+- [12c84be](https://github.com/fabric-composer/fabric-composer/commit/12c84beb1931ffdd9ef307da901fc66331f25d92) Automated commit to trigger downstream build
+- [b9a97f4](https://github.com/fabric-composer/fabric-composer/commit/b9a97f47024b108af21317f53b24ac2a12e83184) Automated commit to trigger downstream build
+- [175be4f](https://github.com/fabric-composer/fabric-composer/commit/175be4fa222e720ee43f74489c4e65a013cbb3c7) Automated commit to trigger downstream build
+- [50918d3](https://github.com/fabric-composer/fabric-composer/commit/50918d3d60898c7c402b8fa524c1ecef21aef0d5) Automated commit to trigger downstream build
+- [1969796](https://github.com/fabric-composer/fabric-composer/commit/1969796b0b9d671a9787a614f809fa898b85ac21) Automated commit to trigger downstream build
+- [edce3fa](https://github.com/fabric-composer/fabric-composer/commit/edce3fa7a6dfd2ad8292a5880b9123f54708c5a1) Moved 'docrtine' and 'esprima' to be regular dependencies (@14gracel)
+- [9578287](https://github.com/fabric-composer/fabric-composer/commit/95782874893444627f9fe36ba7647e67b482ce27) deploy cli (@ODOWDAIBM)
+- [a3ed14a](https://github.com/fabric-composer/fabric-composer/commit/a3ed14a7165046c67ae10bb15e51e8a573576f92) deploy cli (@ODOWDAIBM)
+- [0b80987](https://github.com/fabric-composer/fabric-composer/commit/0b80987a3cbc00c3848216ea915e3895571c7be8) Automated commit to trigger downstream build
+- [d34a81b](https://github.com/fabric-composer/fabric-composer/commit/d34a81bab0b046e2713c4e9c6e42d7fff86d5544) Automated commit to trigger downstream build
+- [6474f00](https://github.com/fabric-composer/fabric-composer/commit/6474f00bce8a4df3773e14662394a15184d84a45) Automated commit to trigger downstream build
+- [68df408](https://github.com/fabric-composer/fabric-composer/commit/68df408170afc24c3dbfc1c592af6947f3c1b4d7) Automated commit to trigger downstream build
+- [5aa920e](https://github.com/fabric-composer/fabric-composer/commit/5aa920e9a1f8fc4e266c9fc7cd11a4be422f09b4) Forgot a couple of example tags (@Jakeeyturner)
+- [ca23e08](https://github.com/fabric-composer/fabric-composer/commit/ca23e085e4b3723bfeed294bf9b6021fe7b18a05) Automated commit to trigger downstream build
+- [279dd47](https://github.com/fabric-composer/fabric-composer/commit/279dd471ff3ff65a2fd2edeff48412e840aff2d5) Added businessnetworkconnection JSDoc example snippets (@Jakeeyturner)
+- [be26683](https://github.com/fabric-composer/fabric-composer/commit/be266834da5e6655c8c0eb3aecd6c843898d6e42) Automated commit to trigger downstream build
+- [1650165](https://github.com/fabric-composer/fabric-composer/commit/16501650cc08a9826ec110a5f11181bdfe772eff) Automated commit to trigger downstream build
+- [c012574](https://github.com/fabric-composer/fabric-composer/commit/c012574cfaa386955a8cd734d5a55d9561b16604) Automated commit to trigger downstream build
+- [f08a6a6](https://github.com/fabric-composer/fabric-composer/commit/f08a6a658bb8949c6e80f50b5e7fe56b92437e05) Automated commit to trigger downstream build
+- [4650a97](https://github.com/fabric-composer/fabric-composer/commit/4650a97a8ec216cb6b93a81e7073c68022bea280) Automated commit to trigger downstream build
+- [ff0639a](https://github.com/fabric-composer/fabric-composer/commit/ff0639aa34f89501c7824a7a1a6cd6acf5a2bb90) Automated commit to trigger downstream build
+- [adec7ec](https://github.com/fabric-composer/fabric-composer/commit/adec7ec851479ec3fc38afd3dcae5760ef30c8a8) Automated commit to trigger downstream build
+- [191f4e1](https://github.com/fabric-composer/fabric-composer/commit/191f4e1acfddc636e8e22f7d23f5f1238cf77505) Automated commit to trigger downstream build
+- [4c9aae3](https://github.com/fabric-composer/fabric-composer/commit/4c9aae37a8f5600fe832a8a0a3ab420ac5cf1e26) Automated commit to trigger downstream build
+- [c437edb](https://github.com/fabric-composer/fabric-composer/commit/c437edb0e8f1f3fb0c8363cdb36a9d3ed8399008) Added esprima dependency to parse jsdoc @examples to check if they are syntactically valid (@14gracel)
+- [8989775](https://github.com/fabric-composer/fabric-composer/commit/898977520a1e87d617da05b745497177cb56182f) Automated commit to trigger downstream build
+- [fd9960a](https://github.com/fabric-composer/fabric-composer/commit/fd9960ad869a9b5eb17423ea96d260977c6aa657) Automated commit to trigger downstream build
+- [16aa39f](https://github.com/fabric-composer/fabric-composer/commit/16aa39fcefb90cd4b2dfbf616a59f5d2355cfef3) Automated commit to trigger downstream build
+- [68b788e](https://github.com/fabric-composer/fabric-composer/commit/68b788ea3ae6555804362da35b4c0cd81432b09d) Automated commit to trigger downstream build
+- [50b817f](https://github.com/fabric-composer/fabric-composer/commit/50b817f6f7c2c7d2b659c3c133df5ecaee5d00fb) Automated commit to trigger downstream build
+- [5010b55](https://github.com/fabric-composer/fabric-composer/commit/5010b55937c7453f6a7a26d1b9195dfba9873faf) Automated commit to trigger downstream build
+- [5185a66](https://github.com/fabric-composer/fabric-composer/commit/5185a666d3dc2bb2d73159ff1e786586236886aa) Automated commit to trigger downstream build
+- [26fdac6](https://github.com/fabric-composer/fabric-composer/commit/26fdac63ab708e2f0519ea02fb0358a40d228eb6) Automated commit to trigger downstream build
+- [8b2981d](https://github.com/fabric-composer/fabric-composer/commit/8b2981d73d3fce89c871df65f0012845e1b1d29e) Automated commit to trigger downstream build
+- [b9d7c83](https://github.com/fabric-composer/fabric-composer/commit/b9d7c8348a6ab02904ee73b01f3f9afb4ad2d328) Automated commit to trigger downstream build
+- [8d227f4](https://github.com/fabric-composer/fabric-composer/commit/8d227f4427eacc5b8750a31c8eeb34f7acf7a24a) Fixed parser errors when building other modules (@14gracel)
+- [080e1c1](https://github.com/fabric-composer/fabric-composer/commit/080e1c1dce2ad2f9a8fd3eb41bd6667ea60bc0e5) Automated commit to trigger downstream build
+- [b415a7d](https://github.com/fabric-composer/fabric-composer/commit/b415a7de1ab35c8edcfbf8acf519f18a855d0780) Automated commit to trigger downstream build
+- [7b5d044](https://github.com/fabric-composer/fabric-composer/commit/7b5d0446238800438733f804f5536d9f70593156) Automated commit to trigger downstream build
+- [7eb589f](https://github.com/fabric-composer/fabric-composer/commit/7eb589fb872293330b12603771c8a73568b2d942) Automated commit to trigger downstream build
+- [2f69042](https://github.com/fabric-composer/fabric-composer/commit/2f69042812c551836a6bc30cd0dbfaf49dc7cc12) Automated commit to trigger downstream build
+- [9be142c](https://github.com/fabric-composer/fabric-composer/commit/9be142c64f323dff394ec92dd07271dacf83afa9) Added example code snippets (@Jakeeyturner)
+- [324d313](https://github.com/fabric-composer/fabric-composer/commit/324d31343840b0c5d7c902e242fb67583894a611) Automated commit to trigger downstream build
+- [1eeccc7](https://github.com/fabric-composer/fabric-composer/commit/1eeccc73b394df53e79b70a35303282cb74c1fcb) Automated commit to trigger downstream build
+- [a74943e](https://github.com/fabric-composer/fabric-composer/commit/a74943e73ffd810bcbd1eba8d1398a20527d0501) Automated commit to trigger downstream build
+- [61e9d94](https://github.com/fabric-composer/fabric-composer/commit/61e9d94be202c8d96165ee8b97b6f99714197def) Allow 'sloppy' optional JSDoc comments (@14gracel)
+- [b746081](https://github.com/fabric-composer/fabric-composer/commit/b746081fbdf86149b45a92619af24e2bef427698) Automated commit to trigger downstream build
+- [869f3b4](https://github.com/fabric-composer/fabric-composer/commit/869f3b48ac241bb600c75fe44e7ee2bccab0aa0d) Automated commit to trigger downstream build
+- [8d3082f](https://github.com/fabric-composer/fabric-composer/commit/8d3082f1af4a1476231f3b9b870acef8e30ec95b) Automated commit to trigger downstream build
+- [62a4598](https://github.com/fabric-composer/fabric-composer/commit/62a4598cb7f63f7a167e63ee55f802b6a264b90c) Automated commit to trigger downstream build
+- [1fac580](https://github.com/fabric-composer/fabric-composer/commit/1fac5809c1d696da06fb322ef6851d751fa215fe) Automated commit to trigger downstream build
+- [d289c14](https://github.com/fabric-composer/fabric-composer/commit/d289c14434e642421d60a6b78926dfb2dbff78c5) Automated commit to trigger downstream build
+- [e5f1f44](https://github.com/fabric-composer/fabric-composer/commit/e5f1f4441fa77178125b5ba99e2d7f0db9456288) Automated commit to trigger downstream build
+- [e95aa58](https://github.com/fabric-composer/fabric-composer/commit/e95aa58c324ea4354f90d566a8fafa0da43f382a) Automated commit to trigger downstream build
+- [78d64d7](https://github.com/fabric-composer/fabric-composer/commit/78d64d7ad1a17a66cec6d44c2eb200b773020a68) Catch issue where tag.type.application is undefined (@14gracel)
+- [add73ef](https://github.com/fabric-composer/fabric-composer/commit/add73ef851e4431998548663d8e70337cc9bd4df) Automated commit to trigger downstream build
+- [c3499c6](https://github.com/fabric-composer/fabric-composer/commit/c3499c6b27d281b9558585bdc66103eb2fa1b136) Automated commit to trigger downstream build
+- [9aa4c91](https://github.com/fabric-composer/fabric-composer/commit/9aa4c91ae9693f619461a43927c2f84291d2cee4) Automated commit to trigger downstream build
+- [3881525](https://github.com/fabric-composer/fabric-composer/commit/3881525ce12f139f23871ae1bef5197b3fae1f38) Automated commit to trigger downstream build
+- [ed6b343](https://github.com/fabric-composer/fabric-composer/commit/ed6b3434211d1150c630ed45e02b2a55e9b4ba6b) Automated commit to trigger downstream build
+- [bafafbf](https://github.com/fabric-composer/fabric-composer/commit/bafafbfca2f7a7bb170b80d4e82b0671793e019c) Enable find and query system tests (@sstone1)
+- [9516a7e](https://github.com/fabric-composer/fabric-composer/commit/9516a7e42beb6c12133656b9a44024afe546fc24) Automated commit to trigger downstream build
+- [0067de2](https://github.com/fabric-composer/fabric-composer/commit/0067de22ba8838b0dd5dd808230c7be8fb77144d) Fix find and query client support (@sstone1)
+- [bfc2fae](https://github.com/fabric-composer/fabric-composer/commit/bfc2faeaa985e1c4e2cbf5f6beec9e4ff643fe67) Automated commit to trigger downstream build
+- [e4e5aca](https://github.com/fabric-composer/fabric-composer/commit/e4e5aca3416efef0acd0796971470e994194a842) Automated commit to trigger downstream build
+- [b468b90](https://github.com/fabric-composer/fabric-composer/commit/b468b90ab69b8044254ebd8df4a72a79c5659779) Fix find and query client support (@sstone1)
+- [fbf84d8](https://github.com/fabric-composer/fabric-composer/commit/fbf84d80482cefcfa31bc457c58438543fa5ddc5) Add find and query support (@sstone1)
+- [1d22acf](https://github.com/fabric-composer/fabric-composer/commit/1d22acf231bd92766a24559893e4c4a33864f641) Automated commit to trigger downstream build
+- [5308c55](https://github.com/fabric-composer/fabric-composer/commit/5308c55af96266c9ad2775208a947ec0f9d00c09) Automated commit to trigger downstream build
+- [c1f8e1c](https://github.com/fabric-composer/fabric-composer/commit/c1f8e1cf3a99cd23a56c2bca8c3b22e5e779db64) Automated commit to trigger downstream build
+- [545e251](https://github.com/fabric-composer/fabric-composer/commit/545e251b4030e537e84986c503d0bd93bd5d0411) Automated commit to trigger downstream build
+- [096cfbd](https://github.com/fabric-composer/fabric-composer/commit/096cfbd37e9e71393626b1f5054b69c1e0db3e99) Automated commit to trigger downstream build
+- [e9f540b](https://github.com/fabric-composer/fabric-composer/commit/e9f540b11909326264b12e117b9c8a00b9305e00) Automated commit to trigger downstream build
+- [77025bb](https://github.com/fabric-composer/fabric-composer/commit/77025bb5f424c3a25b569e3e7db6cbfd26e01d19) Automated commit to trigger downstream build
+- [b73ba3d](https://github.com/fabric-composer/fabric-composer/commit/b73ba3d9812fb0602a9a92c5da87d0c0d295befd) Automated commit to trigger downstream build
+- [6df99f4](https://github.com/fabric-composer/fabric-composer/commit/6df99f4c5ae76828a4604f50e7d5c8587e13268b) Move getClassDeclaration from Resource to Identifiable (@sstone1)
+- [815fc7b](https://github.com/fabric-composer/fabric-composer/commit/815fc7bca889427d6a2fa56e47801637af1335bf) deploy cli (@ODOWDAIBM)
+- [f4974cf](https://github.com/fabric-composer/fabric-composer/commit/f4974cf08bcb6519d1f4d2cfd8e47a627b09c143) deploy cli (@ODOWDAIBM)
+- [bb1760c](https://github.com/fabric-composer/fabric-composer/commit/bb1760c19eb81dfb88907b4729c6027a61716234) deploy cli (@ODOWDAIBM)
+- [7e6c369](https://github.com/fabric-composer/fabric-composer/commit/7e6c369fc235f4b6635a87edcf34b5d8c0e50501) deploy cli (@ODOWDAIBM)
+- [6cfd763](https://github.com/fabric-composer/fabric-composer/commit/6cfd763af458e5ad0780a5625b3a9cd80de63b3e) Automated commit to trigger downstream build
+- [abc6456](https://github.com/fabric-composer/fabric-composer/commit/abc64565f463097f5e8c3249ed0abc1d176429d7) Automated commit to trigger downstream build
+- [e0de6b4](https://github.com/fabric-composer/fabric-composer/commit/e0de6b4bc01e04a5563c3e11aa0a477847647d4b) Automated commit to trigger downstream build
+- [712f32e](https://github.com/fabric-composer/fabric-composer/commit/712f32e2f4c7b8f55cba93b85ee2c8a790d9a145) Automated commit to trigger downstream build
+- [9d4298b](https://github.com/fabric-composer/fabric-composer/commit/9d4298b33c5898d285047e3f35309bc07e9196be) Automated commit to trigger downstream build
+- [7c46547](https://github.com/fabric-composer/fabric-composer/commit/7c465476d4f06e3cd29f27b22ba53fa89761eae7) Automated commit to trigger downstream build
+- [1d78c52](https://github.com/fabric-composer/fabric-composer/commit/1d78c5275584c0e72ef31731bdb72ae1b87ac9fa) Automated commit to trigger downstream build
+- [0c7dfaa](https://github.com/fabric-composer/fabric-composer/commit/0c7dfaae7ac6cf939f16ebb16712fc82f5d41974) Automated commit to trigger downstream build
+- [76de0fe](https://github.com/fabric-composer/fabric-composer/commit/76de0fed8bc751d84fc35b6a348368a6ff026297) Automated commit to trigger downstream build
+- [bc5a53a](https://github.com/fabric-composer/fabric-composer/commit/bc5a53a126ad231df11598a58ec2eb3186c50f9c) Automated commit to trigger downstream build
+- [26cb2b5](https://github.com/fabric-composer/fabric-composer/commit/26cb2b599eaba0b231f6c65b28599bb08e4af63d) Automated commit to trigger downstream build
+- [0106321](https://github.com/fabric-composer/fabric-composer/commit/0106321432d39e7356454c30ce884888670de887) Added unit tests to check transaction jsdoc syntax (@14gracel)
+- [891dd26](https://github.com/fabric-composer/fabric-composer/commit/891dd26bf38e280bc78b664b9d98af184eda8657) Automated commit to trigger downstream build
+- [e0c6ba2](https://github.com/fabric-composer/fabric-composer/commit/e0c6ba2de64ef769f8bc4b0fae41cfaa57aa4f79) Automated commit to trigger downstream build
+- [beda5e6](https://github.com/fabric-composer/fabric-composer/commit/beda5e664840aaee52d79e1ab365af032f59e809) Started to add 'code snippet' examples to docs (@Jakeeyturner)
+- [1b6be1b](https://github.com/fabric-composer/fabric-composer/commit/1b6be1b5e36fee8946eadb6bb8bcb672c231a257) Automated commit to trigger downstream build
+- [41bdbd6](https://github.com/fabric-composer/fabric-composer/commit/41bdbd6067840e19478d12fbc36100fd8c7690ee) Automated commit to trigger downstream build
+- [6fac671](https://github.com/fabric-composer/fabric-composer/commit/6fac6717cbb673fae3a9cd9ae7bd8930b6e54f62) Automated commit to trigger downstream build
+- [3eab39c](https://github.com/fabric-composer/fabric-composer/commit/3eab39c1e61fc8bf215a99f5267f5095d948e619) Automated commit to trigger downstream build
+- [13d835a](https://github.com/fabric-composer/fabric-composer/commit/13d835a4bf6b0c1971c4e9fa985b0ad47722dfb4) Jakeproof the runtime documentation (@sstone1)
+- [c4108e4](https://github.com/fabric-composer/fabric-composer/commit/c4108e434d9bc18c9dd2f0f75978df0f51a4d548) Automated commit to trigger downstream build
+- [71c123e](https://github.com/fabric-composer/fabric-composer/commit/71c123ecebe008bc4797f493b643ea525c94e2ff) Automated commit to trigger downstream build
+- [974f0c5](https://github.com/fabric-composer/fabric-composer/commit/974f0c5dd228faf051cb5d8d34c50e5898e90075) Automated commit to trigger downstream build
+- [e5bfb98](https://github.com/fabric-composer/fabric-composer/commit/e5bfb985ddd49a669641082e04c0f8347997d2fe) Doc updates (@dselman)
+- [a019ae2](https://github.com/fabric-composer/fabric-composer/commit/a019ae2ae981e88a413ea3286bf643179dc47982) Automated commit to trigger downstream build
+- [3b7d457](https://github.com/fabric-composer/fabric-composer/commit/3b7d457a5e4c54e4c4c92358b6be43ca58e52b7b) Automated commit to trigger downstream build
+- [650e2aa](https://github.com/fabric-composer/fabric-composer/commit/650e2aa021e74b845c9ea435d87b95653cf09e2e) Automated commit to trigger downstream build
+- [cf75442](https://github.com/fabric-composer/fabric-composer/commit/cf75442ec94d34a326f2c69afbbcef487b7b45e0) Automated commit to trigger downstream build
+- [02b5d23](https://github.com/fabric-composer/fabric-composer/commit/02b5d230bc583de32f1b6db7276d0def40af297e) Automated commit to trigger downstream build
+- [8a1ff77](https://github.com/fabric-composer/fabric-composer/commit/8a1ff77d3e11c52778a6553cc8136648a1adda76) Updated changelog (@dselman)
+- [3e2bdde](https://github.com/fabric-composer/fabric-composer/commit/3e2bdde28a8add2c6ffd5e06375c38b416c6d973) Doc updates (@dselman)
+- [890749c](https://github.com/fabric-composer/fabric-composer/commit/890749caeb9c01ce2870642daf79af69034ae73f) Finish documentation for runtime API (@sstone1)
+- [eab1a17](https://github.com/fabric-composer/fabric-composer/commit/eab1a1780884cdf6bdbebcb8732b98f670f3b8fb) Automated commit to trigger downstream build
+- [10df51e](https://github.com/fabric-composer/fabric-composer/commit/10df51e443c3443e5ee097db7e5fbdd6df9d40b3) Automated commit to trigger downstream build
+- [8df559a](https://github.com/fabric-composer/fabric-composer/commit/8df559ac6e83d0319796f9b3b8f552f234907509) Automated commit to trigger downstream build
+- [3e8d2b5](https://github.com/fabric-composer/fabric-composer/commit/3e8d2b5037ccf52ba07089b3651f7b7fe376fe57) Automated commit to trigger downstream build
+- [fff81e1](https://github.com/fabric-composer/fabric-composer/commit/fff81e1353defa1185e5e851f1ac553593d4dd92) Automated commit to trigger downstream build
+- [036722b](https://github.com/fabric-composer/fabric-composer/commit/036722bfa4e1e4e387e8bb9f2792752f9231117d) Automated commit to trigger downstream build
+- [99109d3](https://github.com/fabric-composer/fabric-composer/commit/99109d386a4c8af2fe711f1960d583ca4720bc1a) Automated commit to trigger downstream build
+- [64b5b62](https://github.com/fabric-composer/fabric-composer/commit/64b5b620fed69c80ecf5ad283bc464bca72a8dd3) Automated commit to trigger downstream build
+- [0902b81](https://github.com/fabric-composer/fabric-composer/commit/0902b814b265e1392b837af739891f9f2550f065) Quick change (@Jakeeyturner)
+- [d64fe2a](https://github.com/fabric-composer/fabric-composer/commit/d64fe2a2394cf99e476f7cbd8d7bb85a337fd352) Updated JSDocs (@Jakeeyturner)
+- [88f7b29](https://github.com/fabric-composer/fabric-composer/commit/88f7b2994d7916ee9a241a2fa29ac8b99b06cf98) Automated commit to trigger downstream build
+- [0b56abb](https://github.com/fabric-composer/fabric-composer/commit/0b56abbb51a57e7badc3db6286619ac9ebf29d33) Automated commit to trigger downstream build
+- [6842729](https://github.com/fabric-composer/fabric-composer/commit/68427292816bc7a4364e1b17080ea955d1bf1378) Automated commit to trigger downstream build
+- [0068fce](https://github.com/fabric-composer/fabric-composer/commit/0068fce24ff67abcf869ffc229864249deeff2b7) Automated commit to trigger downstream build
+- [92ed2cc](https://github.com/fabric-composer/fabric-composer/commit/92ed2ccd79073e0cc2358f9639f7c8e820a7f5e0) Automated commit to trigger downstream build
+- [6535f78](https://github.com/fabric-composer/fabric-composer/commit/6535f7897a51d9987619d29b10f2cc0f457eda5a) Automated commit to trigger downstream build
+- [3312da1](https://github.com/fabric-composer/fabric-composer/commit/3312da1f8a304614d8e0c80157663db692ff4888) Automated commit to trigger downstream build
+- [a94b010](https://github.com/fabric-composer/fabric-composer/commit/a94b010372d4475fe68b514f42e3b04bfecdaea8) Automated commit to trigger downstream build
+- [72ba8be](https://github.com/fabric-composer/fabric-composer/commit/72ba8be65956dfd7875b389c2c485f8f5939ad3d) Automated commit to trigger downstream build
+- [bd68817](https://github.com/fabric-composer/fabric-composer/commit/bd6881711da7e0416caa01f88ffe8a0fca6d043d) Removed jsdoc comment (@Jakeeyturner)
+- [00dad38](https://github.com/fabric-composer/fabric-composer/commit/00dad384a26011bd0c6b0201d886f7e243b4182a) Automated commit to trigger downstream build
+- [24d0be2](https://github.com/fabric-composer/fabric-composer/commit/24d0be2ce2faf7bcb5f445c401f3e485ff9f5960) Automated commit to trigger downstream build
+- [fff6ee4](https://github.com/fabric-composer/fabric-composer/commit/fff6ee4f9e236919a63602f88e05c5bbe12ced10) Automated commit to trigger downstream build
+- [9041446](https://github.com/fabric-composer/fabric-composer/commit/9041446e19749242b6de4fb7d25dbf6dfca2f050) Automated commit to trigger downstream build
+- [87b658c](https://github.com/fabric-composer/fabric-composer/commit/87b658cd382e165746e90d136274922bb9b3f169) Automated commit to trigger downstream build
+- [f76a7df](https://github.com/fabric-composer/fabric-composer/commit/f76a7df0b9c815fafbdbd10105d931d7b45f8cbf) Automated commit to trigger downstream build
+- [7cd053f](https://github.com/fabric-composer/fabric-composer/commit/7cd053f6ab14f46352eb0ce82bc5855ddcb301dc) Updated img src and removed img reference (@Jakeeyturner)
+- [c523807](https://github.com/fabric-composer/fabric-composer/commit/c52380774f2fe220ffefd1dc5432632ce0693829) Automated commit to trigger downstream build
+- [701c830](https://github.com/fabric-composer/fabric-composer/commit/701c830c664eb87a187d52bd137ce8e59e212758) Automated commit to trigger downstream build
+- [17acca1](https://github.com/fabric-composer/fabric-composer/commit/17acca106b6cd7bdf8ce317361edab130e178dfa) Automated commit to trigger downstream build
+- [e5ecd58](https://github.com/fabric-composer/fabric-composer/commit/e5ecd58601899819f60717ac392f561bdc28c9f9) Updated img src path (@Jakeeyturner)
+- [bf750f4](https://github.com/fabric-composer/fabric-composer/commit/bf750f48f4d08a73c563cac75a7b0ae3db14720b) Automated commit to trigger downstream build
+- [d6cdfa1](https://github.com/fabric-composer/fabric-composer/commit/d6cdfa1eb7ef9bac61d828c0da361f078c114c21) Automated commit to trigger downstream build
+- [2c258e6](https://github.com/fabric-composer/fabric-composer/commit/2c258e648fba8503049ae1a9d04be55032a695a3) Automated commit to trigger downstream build
+- [8577c4a](https://github.com/fabric-composer/fabric-composer/commit/8577c4a77fa6b7ec29549eaaf6030a4dea6776c9) Automated commit to trigger downstream build
+- [d1f0220](https://github.com/fabric-composer/fabric-composer/commit/d1f02203571d91f2fdb9f101a92a9d21ad39a78d) Automated commit to trigger downstream build
+- [81211b0](https://github.com/fabric-composer/fabric-composer/commit/81211b00dde52327b69ad82f55d85401728800ac) Automated commit to trigger downstream build
+- [fa18e83](https://github.com/fabric-composer/fabric-composer/commit/fa18e8390262158b6c3380f62e594d384c4156ca) Automated commit to trigger downstream build
+- [747a2c4](https://github.com/fabric-composer/fabric-composer/commit/747a2c4e43cb0c756194e36ac45053e727609888) Automated commit to trigger downstream build
+- [c084fcf](https://github.com/fabric-composer/fabric-composer/commit/c084fcfd3dd8970cdb078501f51f072710ede22e) Automated commit to trigger downstream build
+- [c426de3](https://github.com/fabric-composer/fabric-composer/commit/c426de341ddc052e4e53e1e5a0413db099fa96b9) Automated commit to trigger downstream build
+- [c133913](https://github.com/fabric-composer/fabric-composer/commit/c133913f28ab23eaa687941bef7620f96d73a24d) Updated image src location (@Jakeeyturner)
+- [6b861cc](https://github.com/fabric-composer/fabric-composer/commit/6b861ccc6ab0d269a1f7a6a8469d886506fbc368) Updated jsdocs with 'see' tags (@Jakeeyturner)
+- [93d6f4d](https://github.com/fabric-composer/fabric-composer/commit/93d6f4d295ae18bd20ed049a50db0da2785222e4) Edited JSDoc comments, added @see tags (@Jakeeyturner)
+- [7a761c0](https://github.com/fabric-composer/fabric-composer/commit/7a761c08d52a3508c4d3fac3253f3f46c5a45659) Automated commit to trigger downstream build
+- [8164d05](https://github.com/fabric-composer/fabric-composer/commit/8164d0522f596d4eca7e32007284ed17504b50b5) Automated commit to trigger downstream build
+- [5c99918](https://github.com/fabric-composer/fabric-composer/commit/5c9991835991c046f77f3f132624f39480437684) Automated commit to trigger downstream build
+- [1eb73e9](https://github.com/fabric-composer/fabric-composer/commit/1eb73e97846d2ab739efefa40cecd8a28733504f) Automated commit to trigger downstream build
+- [642f5a3](https://github.com/fabric-composer/fabric-composer/commit/642f5a3b6e6afe092435c4ba816f78411a8f7097) Automated commit to trigger downstream build
+- [6d5edd2](https://github.com/fabric-composer/fabric-composer/commit/6d5edd2fd1542c631dfe9daa0105fde0157b3c1a) Automated commit to trigger downstream build
+- [107ee47](https://github.com/fabric-composer/fabric-composer/commit/107ee47087ddc025f0cd6eb5c69b820e572bc122) Automated commit to trigger downstream build
+- [1ae463b](https://github.com/fabric-composer/fabric-composer/commit/1ae463b79d494f8f6a45cdebd71eb06eca394bb4) Enable rest of transaction runtime tests (@sstone1)
+- [dcdad3c](https://github.com/fabric-composer/fabric-composer/commit/dcdad3c4931e1bb8f73ed1016c94dc65fc625850) Add final set of missing runtime functionality (@sstone1)
+- [676cced](https://github.com/fabric-composer/fabric-composer/commit/676cced71f2cba202d4c9e068cc84a0a2e966c4e) Automated commit to trigger downstream build
+- [4bc7e98](https://github.com/fabric-composer/fabric-composer/commit/4bc7e98a5b8ed2e84195e232c5fedb94c9760f7c) Automated commit to trigger downstream build
+- [db6e821](https://github.com/fabric-composer/fabric-composer/commit/db6e821accc999c12e27a3c34ee8c06c289f9b07) Automated commit to trigger downstream build
+- [b771785](https://github.com/fabric-composer/fabric-composer/commit/b7717854796e1e630a47532b8aa0aa86ed232bab) Automated commit to trigger downstream build
+- [6a63c5c](https://github.com/fabric-composer/fabric-composer/commit/6a63c5c259e73cae211dbaa5b6a820bcdc201812) Automated commit to trigger downstream build
+- [0c27325](https://github.com/fabric-composer/fabric-composer/commit/0c273253890121e84afb8c2ea07704d561ff66aa) Automated commit to trigger downstream build
+- [c6f5107](https://github.com/fabric-composer/fabric-composer/commit/c6f51074a43ff61076465eaebf4b03b02e642ee3) Automated commit to trigger downstream build
+- [64b6433](https://github.com/fabric-composer/fabric-composer/commit/64b643385df752502d660df2d778e4af7057dd07) Automated commit to trigger downstream build
+- [7f9c172](https://github.com/fabric-composer/fabric-composer/commit/7f9c172901abf84693f1441be2f845a11a1aa132) Enable the bulk of the transaction tests (@sstone1)
+- [b7edb10](https://github.com/fabric-composer/fabric-composer/commit/b7edb10d588162eae688c9cc910e4e69b5b136ef) Get asset registry and factory APIs working (@sstone1)
+- [655c575](https://github.com/fabric-composer/fabric-composer/commit/655c575d3e06f8df684d92eb50c7632247a5d107) Automated commit to trigger downstream build
+- [54db444](https://github.com/fabric-composer/fabric-composer/commit/54db444505ff6f533429fd8f8e0f9b813acfbce2) Automated commit to trigger downstream build
+- [54c5bd3](https://github.com/fabric-composer/fabric-composer/commit/54c5bd3cfdb58229be37a997e6efdda2b4ffc8fb) Automated commit to trigger downstream build
+- [4321fa5](https://github.com/fabric-composer/fabric-composer/commit/4321fa5f64e8ab5443c458a5270cc0f692ea88e9) Automated commit to trigger downstream build
+- [28152ea](https://github.com/fabric-composer/fabric-composer/commit/28152ea0cf8366694cc187a40ddb93001dc6aeb8) Automated commit to trigger downstream build
+- [516fae4](https://github.com/fabric-composer/fabric-composer/commit/516fae4a3648320a6f9b45b096bf143ce9860879) Automated commit to trigger downstream build
+- [9b85034](https://github.com/fabric-composer/fabric-composer/commit/9b85034f8aec3229016c5b4b17187224c1f5ce71) Automated commit to trigger downstream build
+- [9f34d36](https://github.com/fabric-composer/fabric-composer/commit/9f34d3676b0c41fc9179d582147d2f26a9d371d6) Automated commit to trigger downstream build
+- [3783ebe](https://github.com/fabric-composer/fabric-composer/commit/3783ebe78a0d448e1800733865ff3809ecb4a713) Added JSDoc for winstoninjector (@Jakeeyturner)
+- [22bd599](https://github.com/fabric-composer/fabric-composer/commit/22bd59963f7e2d1c319e743a03f10a27b94bff46) Added check for test suite (@Jakeeyturner)
+- [af3fa53](https://github.com/fabric-composer/fabric-composer/commit/af3fa53a867ac72209ac19a0981329a4ad11e060) updated deploy.sh (@Jakeeyturner)
+- [e0f6c73](https://github.com/fabric-composer/fabric-composer/commit/e0f6c73d0865df4e07028b937cd38c64973b29c1) Hopefully fixed deploy.sh (@Jakeeyturner)
+- [a7e47f2](https://github.com/fabric-composer/fabric-composer/commit/a7e47f2613fe1b84539a3518898bbeb42a98712c) Update (@Jakeeyturner)
+- [2c9f742](https://github.com/fabric-composer/fabric-composer/commit/2c9f7428c39222e8a1991d201c296e38076269c1) Adding deploy script to start doc build in Concerto (@Jakeeyturner)
+- [e5848fd](https://github.com/fabric-composer/fabric-composer/commit/e5848fd4c7f7a49b6f3bee4b3c33666bbee193fd) Automated commit to trigger downstream build
+- [51e32f6](https://github.com/fabric-composer/fabric-composer/commit/51e32f6f52f6946d0005b7b78d838f1441ef3808) Automated commit to trigger downstream build
+- [0738159](https://github.com/fabric-composer/fabric-composer/commit/07381598427ba619c3dc860673df467ba9749f3b) Automated commit to trigger downstream build
+- [975ff08](https://github.com/fabric-composer/fabric-composer/commit/975ff08087724f34835d5c6382e11af829213550) Automated commit to trigger downstream build
+- [fc59588](https://github.com/fabric-composer/fabric-composer/commit/fc59588c72d13bd908a5ce12572d0e595c283b01) Automated commit to trigger downstream build
+- [7ba7469](https://github.com/fabric-composer/fabric-composer/commit/7ba7469fbaa8f12d06339bfc47871d35ab48ee87) Updating JsDocs (@Jakeeyturner)
+- [b343533](https://github.com/fabric-composer/fabric-composer/commit/b3435338beb748ef843b53babbe5910b21362d5a) Automated commit to trigger downstream build
+- [9a32485](https://github.com/fabric-composer/fabric-composer/commit/9a324850cb1e3334bd6ca9fcc0fdb87dd16dcbd9) Automated commit to trigger downstream build
+- [ddb35a3](https://github.com/fabric-composer/fabric-composer/commit/ddb35a3aa93ebf433d3039a59f79123e81ed614a) Updating JsDocs (@Jakeeyturner)
+- [dd5fa9f](https://github.com/fabric-composer/fabric-composer/commit/dd5fa9f6070de7537bf7ac251ed71254bd9d04ce) Automated commit to trigger downstream build
+- [3eb6e6b](https://github.com/fabric-composer/fabric-composer/commit/3eb6e6b7ab879481438517355123d6f2213f907b) Automated commit to trigger downstream build
+- [468d89c](https://github.com/fabric-composer/fabric-composer/commit/468d89c93e4546ab05c487f1423c30065e70b01e) Automated commit to trigger downstream build
+- [3403802](https://github.com/fabric-composer/fabric-composer/commit/3403802def9a17ee96c484ff24a22422822adca9) Started to add new JSDoc comments (@Jakeeyturner)
+- [e22c00f](https://github.com/fabric-composer/fabric-composer/commit/e22c00fe94a30ea763b4568563e35a60e18b44ce) Automated commit to trigger downstream build
+- [d35dd7c](https://github.com/fabric-composer/fabric-composer/commit/d35dd7ceff658342b3007e913c374eb7d5a66429) Automated commit to trigger downstream build
+- [7a65d00](https://github.com/fabric-composer/fabric-composer/commit/7a65d0068472e94261c0471e84e107764a3a26e6) Automated commit to trigger downstream build
+- [3e8f8e1](https://github.com/fabric-composer/fabric-composer/commit/3e8f8e126707ead30e7e72811e8f3a4259b83081) Automated commit to trigger downstream build
+- [26bfb5a](https://github.com/fabric-composer/fabric-composer/commit/26bfb5a58954e1adcb6582e76a686c5d40fea3b1) Automated commit to trigger downstream build
+- [ba5e1e4](https://github.com/fabric-composer/fabric-composer/commit/ba5e1e4deb271d9ffdbc610cafc592f363052e53) Automated commit to trigger downstream build
+- [cc3f876](https://github.com/fabric-composer/fabric-composer/commit/cc3f876b4f424c384b6764520a99da001fa47356) Automated commit to trigger downstream build
+- [86c5e2c](https://github.com/fabric-composer/fabric-composer/commit/86c5e2c2b039fb840ce20eed42e9a5b2fba6d350) Automated commit to trigger downstream build
+- [6f472f5](https://github.com/fabric-composer/fabric-composer/commit/6f472f5cfe5be544b5bb93d28621d030dca7bebf) Automated commit to trigger downstream build
+- [c406a69](https://github.com/fabric-composer/fabric-composer/commit/c406a698e5f68d5b225b4504154ec8792af08cf8) Simplify client <-> runtime API (@sstone1)
+- [94db905](https://github.com/fabric-composer/fabric-composer/commit/94db9051e4f599b25058d7d4fae744f0c524419e) Simplify client <-> runtime API (@sstone1)
+- [4ee9da3](https://github.com/fabric-composer/fabric-composer/commit/4ee9da3b66d1df01c26b34a2401e1c77686d2a0f) Started to add mozart sys test (@Jakeeyturner)
+- [3322a7f](https://github.com/fabric-composer/fabric-composer/commit/3322a7f53ea3ec3f1462bf96eee4298061433c4f) Automated commit to trigger downstream build
+- [f0d5b46](https://github.com/fabric-composer/fabric-composer/commit/f0d5b4637189c5418303f128ef893188ca2b3f45) Update client to cater for resolve runtime API change (@sstone1)
+- [9d2d36b](https://github.com/fabric-composer/fabric-composer/commit/9d2d36b9a2184aea98e1b27bf07a47aa849bfa68) Automated commit to trigger downstream build
+- [57ebaef](https://github.com/fabric-composer/fabric-composer/commit/57ebaeff4c2062cd8a8abef182bd71a75b6a3a7b) Automated commit to trigger downstream build
+- [fe07d45](https://github.com/fabric-composer/fabric-composer/commit/fe07d45ea9728f608a513d66e67a50e89ff8b965) Automated commit to trigger downstream build
+- [e7961c8](https://github.com/fabric-composer/fabric-composer/commit/e7961c8a608bbcc160a902d84e75c609fee7ff5f) Automated commit to trigger downstream build
+- [52dc342](https://github.com/fabric-composer/fabric-composer/commit/52dc34294fd8f26ec1c776e3925950a4b77e6134) Automated commit to trigger downstream build
+- [a5b0cc8](https://github.com/fabric-composer/fabric-composer/commit/a5b0cc82a22f528ba66baf07b960bf052e25a34f) Automated commit to trigger downstream build
+- [6fa3b08](https://github.com/fabric-composer/fabric-composer/commit/6fa3b0823a2b233b20d9ef0d3169f51437a6f864) Automated commit to trigger downstream build
+- [c59c3fb](https://github.com/fabric-composer/fabric-composer/commit/c59c3fb274b518917292d3f13087aadcfb67f1cc) Automated commit to trigger downstream build
+- [86b0c90](https://github.com/fabric-composer/fabric-composer/commit/86b0c907f23d12d5dbccd75359deaef849f02b6b) Automated commit to trigger downstream build
+- [150b63b](https://github.com/fabric-composer/fabric-composer/commit/150b63bad35c30842f7cc2337892cbba9279d23b) Automated commit to trigger downstream build
+- [0abbc97](https://github.com/fabric-composer/fabric-composer/commit/0abbc97b6a2154ad4a44cda007c804140a8c8857) Automated commit to trigger downstream build
+- [42d7d7a](https://github.com/fabric-composer/fabric-composer/commit/42d7d7a9b9e575f7c4639ed0a92fc2a424d36d30) Automated commit to trigger downstream build
+- [5a02405](https://github.com/fabric-composer/fabric-composer/commit/5a02405ee67a8596ef35d5a728585cfc299c1c6a) Enable resolver tests (@sstone1)
+- [a7e17c7](https://github.com/fabric-composer/fabric-composer/commit/a7e17c7f4b182475a80dfa6311245af77d49d793) Automated commit to trigger downstream build
+- [b3f88c3](https://github.com/fabric-composer/fabric-composer/commit/b3f88c3088b1b261a1eba3b50477915c6c153f36) Automated commit to trigger downstream build
+- [e904d47](https://github.com/fabric-composer/fabric-composer/commit/e904d4770cc2cfc835a2496e85563fcea1ed5282) Add resolver support to runtime (@sstone1)
+- [1b39b9c](https://github.com/fabric-composer/fabric-composer/commit/1b39b9c330ae4d0303f0883a934067ad96b4b9ff) Automated commit to trigger downstream build
+- [8a58bd7](https://github.com/fabric-composer/fabric-composer/commit/8a58bd7469f8ee88d666ac740bce6fe96198a761) Automated commit to trigger downstream build
+- [7195dbb](https://github.com/fabric-composer/fabric-composer/commit/7195dbb8605fde8e6b05f77f72d9b61ea8ac4c84) Automated commit to trigger downstream build
+- [c694dfc](https://github.com/fabric-composer/fabric-composer/commit/c694dfc4ad5c033b31aa92f33bd15924490bbc95) Handle circular relationships when serializing resolved assets (@sstone1)
+- [995f777](https://github.com/fabric-composer/fabric-composer/commit/995f777ea37fd56b99c4aaa534c494c46860757b) Automated commit to trigger downstream build
+- [8994c5e](https://github.com/fabric-composer/fabric-composer/commit/8994c5e9bfaa03c36f25eeef9856bf8c2da8c01d) Automated commit to trigger downstream build
+- [b6a98f2](https://github.com/fabric-composer/fabric-composer/commit/b6a98f22c3d3b667993c149c31a11fab5406eb02) Automated commit to trigger downstream build
+- [34c5eae](https://github.com/fabric-composer/fabric-composer/commit/34c5eae4f3e8e84bbe1b26f2fb4c813d66324e0e) Automated commit to trigger downstream build
+- [c9f158e](https://github.com/fabric-composer/fabric-composer/commit/c9f158e09dd030b9235f590464b15fe71456dbfc) Automated commit to trigger downstream build
+- [cdac70a](https://github.com/fabric-composer/fabric-composer/commit/cdac70a0f8e8564f70e03568d6f51b3c3009abb2) Automated commit to trigger downstream build
+- [7f6704b](https://github.com/fabric-composer/fabric-composer/commit/7f6704bca0b14e5522d7e03defca45f71a80723c) Automated commit to trigger downstream build
+- [b53252a](https://github.com/fabric-composer/fabric-composer/commit/b53252a8fe56a8202710c89d962f995330d9199f) Automated commit to trigger downstream build
+- [d98dac4](https://github.com/fabric-composer/fabric-composer/commit/d98dac4dc6abf665b561bbd08165da62e32b0540) Expose serializer options for serializing resources in place of relationships (@sstone1)
+- [a5521b8](https://github.com/fabric-composer/fabric-composer/commit/a5521b885821847956e442b73a65a071dd2191df) Expose serializer options for serializing resources in place of relationships (@sstone1)
+- [2932df2](https://github.com/fabric-composer/fabric-composer/commit/2932df24e7ed7f25a0385c85118b8a5c7356aa4c) Automated commit to trigger downstream build
+- [0ace358](https://github.com/fabric-composer/fabric-composer/commit/0ace358e2e15093f6e67b53e35dbc536bcb9e390) Fix license checking errors (@sstone1)
+- [2e24ac9](https://github.com/fabric-composer/fabric-composer/commit/2e24ac983024eb975a8ea795ba5d8ffb4f835630) Automated commit to trigger downstream build
+- [03abcc6](https://github.com/fabric-composer/fabric-composer/commit/03abcc696900fbd2cd5f5b5661972af75ec21e29) Automated commit to trigger downstream build
+- [cfcf1eb](https://github.com/fabric-composer/fabric-composer/commit/cfcf1eb37bcd6e01a2c772c13bc3c26c69c9e803) Automated commit to trigger downstream build
+- [01da2e9](https://github.com/fabric-composer/fabric-composer/commit/01da2e92cf70c43a5567609b2a1af396d2484a86) Get first set of transaction system tests working (@sstone1)
+- [a3674ff](https://github.com/fabric-composer/fabric-composer/commit/a3674ffa1cd3a4afe4d7d2cc79711f113e7ee0e6) Automated commit to trigger downstream build
+- [490d157](https://github.com/fabric-composer/fabric-composer/commit/490d1576b5e2dd1402a629f144db65ce1fb30c9b) Automated commit to trigger downstream build
+- [98dec42](https://github.com/fabric-composer/fabric-composer/commit/98dec428d6b05d68f618a43b45eb782857ce8222) Automated commit to trigger downstream build
+- [d643eab](https://github.com/fabric-composer/fabric-composer/commit/d643eab232127c1d126c868283852fae845c51d5) Automated commit to trigger downstream build
+- [65aa59a](https://github.com/fabric-composer/fabric-composer/commit/65aa59af352b3230d49c2f81c6557f3d20e589de) Get first set of transaction system tests working (@sstone1)
+- [e8a5429](https://github.com/fabric-composer/fabric-composer/commit/e8a5429eeb5cc40a547079cb569e2e6863da7827) Automated commit to trigger downstream build
+- [f4199b0](https://github.com/fabric-composer/fabric-composer/commit/f4199b0787e5fc42d41d024ba56211a7befc0fe9) Automated commit to trigger downstream build
+- [a488a6c](https://github.com/fabric-composer/fabric-composer/commit/a488a6cc48dae9ff8f222ab1c95ab435634013ca) Automated commit to trigger downstream build
+- [7e91371](https://github.com/fabric-composer/fabric-composer/commit/7e9137122031ed8fd84d8028772387bddb8f8d65) Fixes and unit tests for disconnecting (@dselman)
+- [f58e673](https://github.com/fabric-composer/fabric-composer/commit/f58e6734c7cba37ac6b93d935df3b7da18d79ed8) Automated commit to trigger downstream build
+- [3bc6cba](https://github.com/fabric-composer/fabric-composer/commit/3bc6cbad71041038b49c9b8f4ecdc650b0b0120d) Automated commit to trigger downstream build
+- [efb5fde](https://github.com/fabric-composer/fabric-composer/commit/efb5fde6148eda762478f6bb9282855c55bc2f18) Automated commit to trigger downstream build
+- [8ce70a6](https://github.com/fabric-composer/fabric-composer/commit/8ce70a67474590a3250d84c0eedf301621e35c22) Automated commit to trigger downstream build
+- [651ba31](https://github.com/fabric-composer/fabric-composer/commit/651ba31108e370e432d1f298e399b4ab1f168a43) Automated commit to trigger downstream build
+- [26fc59a](https://github.com/fabric-composer/fabric-composer/commit/26fc59a70b39f33f65cacf4be1487ab2ee524ad9) Automated commit to trigger downstream build
+- [3c4a087](https://github.com/fabric-composer/fabric-composer/commit/3c4a087021779232b6aa34ba89cd6ddd0488cd69) Automated commit to trigger downstream build
+- [0cd452f](https://github.com/fabric-composer/fabric-composer/commit/0cd452ff5fbd65c2161fc18086b717e0b2a2fd07) Automated commit to trigger downstream build
+- [afa541c](https://github.com/fabric-composer/fabric-composer/commit/afa541c168624a731445dbb89fef279d405721a8) Automated commit to trigger downstream build
+- [73e2e85](https://github.com/fabric-composer/fabric-composer/commit/73e2e85c2b66f6e82632f6462cea92391380f3ff) deploy cli (@ODOWDAIBM)
+- [da2ca51](https://github.com/fabric-composer/fabric-composer/commit/da2ca5154ec6e16936378ea8d24b719ca1208b8c) Expose serializer options for permitting resources in place of relationships (@sstone1)
+- [0199459](https://github.com/fabric-composer/fabric-composer/commit/019945911ede2737413d9296d5a617aa45a88b69) Automated commit to trigger downstream build
+- [d3764e1](https://github.com/fabric-composer/fabric-composer/commit/d3764e1fc94245da3fa1722c1829cfad19a94143) Automated commit to trigger downstream build
+- [2d048ba](https://github.com/fabric-composer/fabric-composer/commit/2d048ba948a08dc18424af11d3bdfcf4124efc79) Automated commit to trigger downstream build
+- [f993a68](https://github.com/fabric-composer/fabric-composer/commit/f993a68871303b5fa18eabb9778b3c02f833ef9a) Automated commit to trigger downstream build
+- [4ba014d](https://github.com/fabric-composer/fabric-composer/commit/4ba014d297c44fa3af14290bf68b010f5c687714) Automated commit to trigger downstream build
+- [b5fde3a](https://github.com/fabric-composer/fabric-composer/commit/b5fde3a35a4ba021f8f74ce5e5a5163aa3d0673c) Register global object in Otto (@sstone1)
+- [2d0778a](https://github.com/fabric-composer/fabric-composer/commit/2d0778aafae070debce48856f81efac59f45dbac) Automated commit to trigger downstream build
+- [82b05d2](https://github.com/fabric-composer/fabric-composer/commit/82b05d2841367524ca69c40f2839cef9614c42fe) Automated commit to trigger downstream build
+- [9921b17](https://github.com/fabric-composer/fabric-composer/commit/9921b174b487cd51b0e51b509152ea2b5cf981ab) Automated commit to trigger downstream build
+- [028f511](https://github.com/fabric-composer/fabric-composer/commit/028f511b10fab97cc6db4e5e61382657c0f53c32) Automated commit to trigger downstream build
+- [dd7c35f](https://github.com/fabric-composer/fabric-composer/commit/dd7c35fb1eb762d482890dd6680660ee8503a820) Automated commit to trigger downstream build
+- [940a27f](https://github.com/fabric-composer/fabric-composer/commit/940a27faba30866048408c10677241b2ef3c4398) Automated commit to trigger downstream build
+- [2503734](https://github.com/fabric-composer/fabric-composer/commit/25037349cf7f37c11f304baf906a55c4248bacd3) Automated commit to trigger downstream build
+- [7d21b8f](https://github.com/fabric-composer/fabric-composer/commit/7d21b8ffe8649657ed3df51a72159690e47c6183) Automated commit to trigger downstream build
+- [88a45bc](https://github.com/fabric-composer/fabric-composer/commit/88a45bce7270dbf78130d7202941b4ec052ae5dc) Automated commit to trigger downstream build
+- [dff0d99](https://github.com/fabric-composer/fabric-composer/commit/dff0d99e636b3a59210cf8962f4fcff5823f1a34) Updated JSDoc comments, starting to make them more friendly for the 'big merge' (@Jakeeyturner)
+- [3ab801c](https://github.com/fabric-composer/fabric-composer/commit/3ab801c22918caeac09338455f76c3f33ca42a82) Automated commit to trigger downstream build
+- [eb1818d](https://github.com/fabric-composer/fabric-composer/commit/eb1818d13a21fa851d7741cf5603e56b42b0a59f) Automated commit to trigger downstream build
+- [7385f24](https://github.com/fabric-composer/fabric-composer/commit/7385f24a90c26cf42529c064fc9074fcf18018da) Automated commit to trigger downstream build
+- [df00ead](https://github.com/fabric-composer/fabric-composer/commit/df00ead9eeec1945f3db9816519bc017d5cb57bc) Automated commit to trigger downstream build
+- [41f36a3](https://github.com/fabric-composer/fabric-composer/commit/41f36a3ca4957751c84770234c43732764516227) Use a more suitable pool for Concerto objects (@sstone1)
+- [762e37d](https://github.com/fabric-composer/fabric-composer/commit/762e37d230c8c78a920667e5a92b0f626dbd1c9e) Automated commit to trigger downstream build
+- [0dd2617](https://github.com/fabric-composer/fabric-composer/commit/0dd2617f2474280411434317f12804a37fd8816c) Connect should return promise that resolves to BND (@mbwhite)
+- [dd3a3c3](https://github.com/fabric-composer/fabric-composer/commit/dd3a3c397ae6dadbddb80497682e6d77450bebec) Automated commit to trigger downstream build
+- [f64a966](https://github.com/fabric-composer/fabric-composer/commit/f64a966cadf8a980a09a4930f914038fefddf846) Automated commit to trigger downstream build
+- [fc8dedd](https://github.com/fabric-composer/fabric-composer/commit/fc8deddece17b27eed4bf3565ed3cce94a7378fc) Automated commit to trigger downstream build
+- [3d7a2fc](https://github.com/fabric-composer/fabric-composer/commit/3d7a2fc3e06ca6b84770be6a43de62d20b02b892) Automated commit to trigger downstream build
+- [e471c76](https://github.com/fabric-composer/fabric-composer/commit/e471c76d2219255680aa42220b496382ad9b7cf2) Fix broken admin connections (@sstone1)
+- [e8d8b7a](https://github.com/fabric-composer/fabric-composer/commit/e8d8b7a10e6b86f1be77020d54979d3f847ade17) Automated commit to trigger downstream build
+- [699364a](https://github.com/fabric-composer/fabric-composer/commit/699364aca7416eb68e404ecd4a9017a378cc1f5b) Automated commit to trigger downstream build
+- [3c29de6](https://github.com/fabric-composer/fabric-composer/commit/3c29de65b85670cde896e057afd1254601aa1245) Automated commit to trigger downstream build
+- [557e0fd](https://github.com/fabric-composer/fabric-composer/commit/557e0fdc4ab97068928dbe1f834be7744450a704) Automated commit to trigger downstream build
+- [5fdac92](https://github.com/fabric-composer/fabric-composer/commit/5fdac92c6c05ead222527b5e3df6263274122064) Support for transactions, part 1 (@sstone1)
+- [dfaa2ae](https://github.com/fabric-composer/fabric-composer/commit/dfaa2ae66fc31559dd49b336e5f4a38b772d931f) Can't deploy chaincode using local npm link configuration (@sstone1)
+- [0261a00](https://github.com/fabric-composer/fabric-composer/commit/0261a0079ef40fcd4bb9bc7dbc71b99d7017eb75) deploy cli (@ODOWDAIBM)
+- [d95daa2](https://github.com/fabric-composer/fabric-composer/commit/d95daa2813f70d8f162bba92725be69ea858a607) Automated commit to trigger downstream build
+- [f7eaa4f](https://github.com/fabric-composer/fabric-composer/commit/f7eaa4f58b2b200bbb34a2d865dfc52d14a4c7fe) Automated commit to trigger downstream build
+- [62d138b](https://github.com/fabric-composer/fabric-composer/commit/62d138b7bd28bfeeb291dbe5bab9f6f5e974de07) Automated commit to trigger downstream build
+- [eb654f5](https://github.com/fabric-composer/fabric-composer/commit/eb654f5cbfba426f20dd33ce240bec9a315fd99d) Automated commit to trigger downstream build
+- [ded49b4](https://github.com/fabric-composer/fabric-composer/commit/ded49b4036dcae2f399b4457b66eb3be8b3115a0) Automated commit to trigger downstream build
+- [1fd706f](https://github.com/fabric-composer/fabric-composer/commit/1fd706ffa4a6547c1f8d3799e3069c6c372fc29c) Automated commit to trigger downstream build
+- [f2d34c7](https://github.com/fabric-composer/fabric-composer/commit/f2d34c73d6c024f00e6fd573d018524202564838) Automated commit to trigger downstream build
+- [0b56f31](https://github.com/fabric-composer/fabric-composer/commit/0b56f3107ba77f1bd9446510925f6338630913ca) Automated commit to trigger downstream build
+- [c8e15d0](https://github.com/fabric-composer/fabric-composer/commit/c8e15d061587fe2604a464fb1b0f4b61f3d53450) Add extra logging, deal with varargs better (@sstone1)
+- [c00371b](https://github.com/fabric-composer/fabric-composer/commit/c00371b1edb6f1cc726f47b9e9625ece3a4080e3) Automated commit to trigger downstream build
+- [7907571](https://github.com/fabric-composer/fabric-composer/commit/7907571873fc9d613f49454c4e8bd6fbba79d44c) Added undeploy and update methods (@dselman)
+- [52e07ca](https://github.com/fabric-composer/fabric-composer/commit/52e07cad9198f09c2d5511b6a131d02396fb947a) Automated commit to trigger downstream build
+- [892a2e2](https://github.com/fabric-composer/fabric-composer/commit/892a2e23d40f61e8f9ff0a9e97b7afe623321ec5) Automated commit to trigger downstream build
+- [6cc7eea](https://github.com/fabric-composer/fabric-composer/commit/6cc7eea8d29c3864b5f16435d026760a92fdea39) Automated commit to trigger downstream build
+- [c1b63f1](https://github.com/fabric-composer/fabric-composer/commit/c1b63f16b510c88ec1c8f206a14332f9eedcc934) Automated commit to trigger downstream build
+- [76c9c26](https://github.com/fabric-composer/fabric-composer/commit/76c9c2668a643065f4e4810a7260a239c199413d) Automated commit to trigger downstream build
+- [4a901a5](https://github.com/fabric-composer/fabric-composer/commit/4a901a525c194eb98f5952f87d39bf9f3714aeb9) Automated commit to trigger downstream build
+- [7b82616](https://github.com/fabric-composer/fabric-composer/commit/7b826161f91fbf9e5cecfe57bc71faefd27e0772) Automated commit to trigger downstream build
+- [e6efb5e](https://github.com/fabric-composer/fabric-composer/commit/e6efb5e8b5cfdadaf2f95462504cf6bf51183b96) Automated commit to trigger downstream build
+- [32ae88a](https://github.com/fabric-composer/fabric-composer/commit/32ae88ad50ea227033fe0be1d81071e13c0d64dc) Automated commit to trigger downstream build
+- [278532f](https://github.com/fabric-composer/fabric-composer/commit/278532f2b4f11f52ca2914b563670bc3fb632cf9) Added update and undeploy methods on connection (@dselman)
+- [c8c0c24](https://github.com/fabric-composer/fabric-composer/commit/c8c0c24b2a5172338d810a0c8932cf97a3093476) Automated commit to trigger downstream build
+- [8eace71](https://github.com/fabric-composer/fabric-composer/commit/8eace7112ce2c0f9a17d74e4b48c68c9cca2e956) Automated commit to trigger downstream build
+- [2a8755c](https://github.com/fabric-composer/fabric-composer/commit/2a8755c4c08eefb3146246394d97fbe91eb9ae83) Automated commit to trigger downstream build
+- [fa3bc70](https://github.com/fabric-composer/fabric-composer/commit/fa3bc70c8038146a3ce58d724ee7b6ae6ec5bb2c) Automated commit to trigger downstream build
+- [c4610dd](https://github.com/fabric-composer/fabric-composer/commit/c4610dd3657d27db23dce50e23dd9304a6cf8e85) Automated commit to trigger downstream build
+- [ca04cdf](https://github.com/fabric-composer/fabric-composer/commit/ca04cdf80077304563c1de6d65e43d8c4eb53843) cli deploy (@ODOWDAIBM)
+- [323a8c2](https://github.com/fabric-composer/fabric-composer/commit/323a8c2b8b435abf136d5510dbf24a11a3ad7bfc) add shebang (@mbwhite)
+- [69a2c21](https://github.com/fabric-composer/fabric-composer/commit/69a2c211b12932f53ebd3c0b6bd599145cbb17df) WIP adding support for undeploy and update (@dselman)
+- [409e80c](https://github.com/fabric-composer/fabric-composer/commit/409e80c47ef707765eb9bb9ee754c81d901d0e5a) Added update and undeploy methods (@dselman)
+- [d2a1943](https://github.com/fabric-composer/fabric-composer/commit/d2a1943e3e961a4d332fff68a830e555a85416fe) Improved archive tests (@Jakeeyturner)
+- [5052875](https://github.com/fabric-composer/fabric-composer/commit/5052875e01ecc9de8ff511688e3b403b1988fc19) Fixed licence (@14gracel)
+- [3f11e10](https://github.com/fabric-composer/fabric-composer/commit/3f11e10fcab1e6629ff1676dbcb2ae52f778ee2f) Fixed all unit tests (@14gracel)
+- [3bac5a9](https://github.com/fabric-composer/fabric-composer/commit/3bac5a978d7e65c9c0f6a30adcd32d3225834bfd) Automated commit to trigger downstream build
+- [5bd8438](https://github.com/fabric-composer/fabric-composer/commit/5bd84383597d7bd363564ca60d46c9041ed92e4e) Automated commit to trigger downstream build
+- [736a6ed](https://github.com/fabric-composer/fabric-composer/commit/736a6edee0053538ea7371a9c537aae72fc73228) Automated commit to trigger downstream build
+- [3b47125](https://github.com/fabric-composer/fabric-composer/commit/3b47125750f7021f7e31bc480ab217e77afbb8c1) Automated commit to trigger downstream build
+- [0de0525](https://github.com/fabric-composer/fabric-composer/commit/0de0525e0ac445a006aad361a0358858aff268fc) Updated runtime to reflect common changes (@14gracel)
+- [239f03f](https://github.com/fabric-composer/fabric-composer/commit/239f03fa1f98c3ef378b543be8cbcf8dd6f71206) Automated commit to trigger downstream build
+- [e396211](https://github.com/fabric-composer/fabric-composer/commit/e396211d0efe82ca9b3cb93f8d84ed8bc9e87bde) Automated commit to trigger downstream build
+- [d2cf3f9](https://github.com/fabric-composer/fabric-composer/commit/d2cf3f9fe7f26c198821990e0af050036cbafe81) Removed logging (@Jakeeyturner)
+- [1bb30e0](https://github.com/fabric-composer/fabric-composer/commit/1bb30e09639b0dd42ffcc627b1aaa9aca528bf08) Re-introduced fromDirectory API (@Jakeeyturner)
+- [3e6e6f3](https://github.com/fabric-composer/fabric-composer/commit/3e6e6f3b9e31b928aaa7c2a78928ab3c1993d803) Automated commit to trigger downstream build
+- [09ed717](https://github.com/fabric-composer/fabric-composer/commit/09ed717c9655fc012936e555f9883cdada938b34) Automated commit to trigger downstream build
+- [16f6ad0](https://github.com/fabric-composer/fabric-composer/commit/16f6ad02fa1272a68445400421c4f9e09d4db013) Added a couple of extra tests (@Jakeeyturner)
+- [2c5d1b5](https://github.com/fabric-composer/fabric-composer/commit/2c5d1b5850754a46d900c5cbddff00bb349700c3) Removed MemoryConnectionProfileStore (@14gracel)
+- [97a7dfe](https://github.com/fabric-composer/fabric-composer/commit/97a7dfe0145f56bed13068eca2b393f258c30a9f) Updated use of Concerto-Admin to reflect API changes (@14gracel)
+- [8ae934e](https://github.com/fabric-composer/fabric-composer/commit/8ae934e6faf29b00d681ad6268ea36713e39c6d6) Automated commit to trigger downstream build
+- [26d1057](https://github.com/fabric-composer/fabric-composer/commit/26d10573b69eee6192052815eca1432cc1f64431) Fixed unit tests (@14gracel)
+- [dd5b790](https://github.com/fabric-composer/fabric-composer/commit/dd5b79000bf39aed080ef70b48a8c6cc70d19a33) Renamed test file (@14gracel)
+- [a89c8c0](https://github.com/fabric-composer/fabric-composer/commit/a89c8c0bdf9899e1aed93823276405086ed8eda6) Automated commit to trigger downstream build
+- [8e93128](https://github.com/fabric-composer/fabric-composer/commit/8e931282cd4a094745301a8514ad90040e2f55e7) Changed the name of test file (@14gracel)
+- [1b4ecbc](https://github.com/fabric-composer/fabric-composer/commit/1b4ecbcb6b1944555e316da895316657a03bb21c) Automated commit to trigger downstream build
+- [17f6109](https://github.com/fabric-composer/fabric-composer/commit/17f6109787c3957c4ddac9c7a9aeee778a068b10) Automated commit to trigger downstream build
+- [4d1e643](https://github.com/fabric-composer/fabric-composer/commit/4d1e643d9fdbf5c2dcd3d2bfe265d5162a75edf9) Automated commit to trigger downstream build
+- [5bebeb2](https://github.com/fabric-composer/fabric-composer/commit/5bebeb24a2f69b1086a0824a8a2cfdb8d1fe129a) Automated commit to trigger downstream build
+- [dc50c51](https://github.com/fabric-composer/fabric-composer/commit/dc50c51c8a46a516e06c82efc1b89725cca9e508) Automated commit to trigger downstream build
+- [069c4e0](https://github.com/fabric-composer/fabric-composer/commit/069c4e03a238986927a0d3f29a352504c5fe7174) Automated commit to trigger downstream build
+- [fcb4730](https://github.com/fabric-composer/fabric-composer/commit/fcb47308ba7d695b2b6fe14ca10b0709df700634) Fixed version numbers (@14gracel)
+- [e2f87f6](https://github.com/fabric-composer/fabric-composer/commit/e2f87f6fbc0647a66405bc8f7249be447a933843) Automated commit to trigger downstream build
+- [9d2308f](https://github.com/fabric-composer/fabric-composer/commit/9d2308f3e8364c50bcb3d914103c18e4b42af96c) Renamed Concerto class to BusinessNetworkConnection (@14gracel)
+- [5e42851](https://github.com/fabric-composer/fabric-composer/commit/5e42851ae6388b022d3ca58b51ec1e6330fd6ab0) Fixed changelog (@14gracel)
+- [926702d](https://github.com/fabric-composer/fabric-composer/commit/926702d8664c7653dad77631b3e1a6c5073bf6ba) Automated commit to trigger downstream build
+- [81533d3](https://github.com/fabric-composer/fabric-composer/commit/81533d34bd17784f751a37df0a85a08e9eef8c7d) Automated commit to trigger downstream build
+- [2d247c1](https://github.com/fabric-composer/fabric-composer/commit/2d247c15b5859866b7d7e606f093488caa416737) Changed the name of BusinessNetwork to BusinessNetworkDefinition (@14gracel)
+- [11970d5](https://github.com/fabric-composer/fabric-composer/commit/11970d5684a3c9172f69a536a12f0ae338ccf304) Automated commit to trigger downstream build
+- [108e7cf](https://github.com/fabric-composer/fabric-composer/commit/108e7cf7c009e2149538cc755878e42ab049ceca) Updated version number and changelog (@14gracel)
+- [284ab49](https://github.com/fabric-composer/fabric-composer/commit/284ab494cd78dfb458d3b22268dd46715952bbaa) Renamed Admin class to AdminConnection and AdminConnection.createConnectionProfile to AdminConnection.createProfile (@14gracel)
+- [24e6259](https://github.com/fabric-composer/fabric-composer/commit/24e6259c1a18cb45f3d6b4be6de360ad7792d755) deploy cli (@ODOWDAIBM)
+- [b4e615d](https://github.com/fabric-composer/fabric-composer/commit/b4e615da6ce2727d1a248471ee739b1136f69d41) Added an in-memory ConnectionProfileStore implementation based on BrowserFS (@dselman)
+- [d45bd57](https://github.com/fabric-composer/fabric-composer/commit/d45bd573c591efdbe67bc3877febb9e4606fd1ee) deploy cli (@ODOWDAIBM)
+- [07b9ac2](https://github.com/fabric-composer/fabric-composer/commit/07b9ac25939efd714292783aac413ad19dddd09c) deploy cli (@ODOWDAIBM)
+- [8f525e6](https://github.com/fabric-composer/fabric-composer/commit/8f525e67e1fd8ae24b439070753424deec21978f) deploy cli (@ODOWDAIBM)
+- [3c0933a](https://github.com/fabric-composer/fabric-composer/commit/3c0933ae062cb46d5d3784de6dd7b64d8a883650) deploy cli (@ODOWDAIBM)
+- [68e0093](https://github.com/fabric-composer/fabric-composer/commit/68e009334fcbb2e8ef56a4dec6568dfc964f7648) deploy cli (@ODOWDAIBM)
+- [fc103b8](https://github.com/fabric-composer/fabric-composer/commit/fc103b8c2b44d72f903f3789b5797958b2de713c) Automated commit to trigger downstream build
+- [0fb2835](https://github.com/fabric-composer/fabric-composer/commit/0fb28358fe015b0077e8096e042075706734090e) deploy cli (@ODOWDAIBM)
+- [679284a](https://github.com/fabric-composer/fabric-composer/commit/679284aed6ac0517e5586a8abbd6bfc678c254bd) deploy CLI (@ODOWDAIBM)
+- [04699e3](https://github.com/fabric-composer/fabric-composer/commit/04699e39751fbd02c665c6724caeb40cc58e977e) deploy CLI (@ODOWDAIBM)
+- [e4871e0](https://github.com/fabric-composer/fabric-composer/commit/e4871e0b5fe88acb6dd90f361448d0c6a6e35642) Deploy CLI (@ODOWDAIBM)
+- [e764250](https://github.com/fabric-composer/fabric-composer/commit/e76425065de1a53e905964ad39ff01e715241b6d) Automated commit to trigger downstream build
+- [644345c](https://github.com/fabric-composer/fabric-composer/commit/644345cdedbf4573ed182394f8386458592a8ff2) Automated commit to trigger downstream build
+- [1e64a3b](https://github.com/fabric-composer/fabric-composer/commit/1e64a3b500bf24dc4d54790625caef23e819f05a) Automated commit to trigger downstream build
+- [33cf640](https://github.com/fabric-composer/fabric-composer/commit/33cf6406611a3a9c122f5aabd8793618b64ea6e4) Automated commit to trigger downstream build
+- [8c08fda](https://github.com/fabric-composer/fabric-composer/commit/8c08fdab086b5222604bacb6fb5b83d10ade6c1c) Automated commit to trigger downstream build
+- [80c9ca9](https://github.com/fabric-composer/fabric-composer/commit/80c9ca91e7236cbf190dfd5b783728cca666ff09) Automated commit to trigger downstream build
+- [6d35d21](https://github.com/fabric-composer/fabric-composer/commit/6d35d215936c8d0a04dcefac272e7192d735f6d7) Automated commit to trigger downstream build
+- [a230731](https://github.com/fabric-composer/fabric-composer/commit/a230731a6598de2c4354772596ad6019a3e6fed0) Automated commit to trigger downstream build
+- [82a85b1](https://github.com/fabric-composer/fabric-composer/commit/82a85b186c1b9d1a49c1e503ef342bced8130737) Automated commit to trigger downstream build
+- [f5532d8](https://github.com/fabric-composer/fabric-composer/commit/f5532d860cc419fd05508947e568928456bb23e9) Automated commit to trigger downstream build
+- [7d6bf20](https://github.com/fabric-composer/fabric-composer/commit/7d6bf201bb834deac720d184bf42c02bb2c94be5) fixed logging (@mbwhite)
+- [347f4f3](https://github.com/fabric-composer/fabric-composer/commit/347f4f3e9d4665e3abca474434a389f1fafb69b5) Automated commit to trigger downstream build
+- [568a21f](https://github.com/fabric-composer/fabric-composer/commit/568a21f0bf95619c6098ee83c0b97340ce7081c3) Refactored tests to be more 'Unit-y' (@14gracel)
+- [c6fcca8](https://github.com/fabric-composer/fabric-composer/commit/c6fcca8c5880add00cb17b3b786ae3860aa58e62) Update tests to reflect change to admin API (@sstone1)
+- [33f3b7a](https://github.com/fabric-composer/fabric-composer/commit/33f3b7a70426b7e19fd9f306685b8f9591c13c7b) Disable deploysubmit.js file (@sstone1)
+- [536c03e](https://github.com/fabric-composer/fabric-composer/commit/536c03ee5c675bb57fd4771ca7a59efa1515cc58) Automated commit to trigger downstream build
+- [a0caa17](https://github.com/fabric-composer/fabric-composer/commit/a0caa1751d029462e4a1c4ecb988a3837c62419c) Automated commit to trigger downstream build
+- [2c35360](https://github.com/fabric-composer/fabric-composer/commit/2c3536078cc20e25ab128cff0f2a37f14e46e20b) Disable broken build configurations (@sstone1)
+- [0109394](https://github.com/fabric-composer/fabric-composer/commit/0109394950b607618cd174f7366c564132520167) Automated commit to trigger downstream build
+- [d16d194](https://github.com/fabric-composer/fabric-composer/commit/d16d194ca622c674be03eca0c7ed36844b138eb4) Automated commit to trigger downstream build
+- [22f9266](https://github.com/fabric-composer/fabric-composer/commit/22f9266345da482fef5d76d042335e9dd07d47aa) Fix file exclusion regex (@sstone1)
+- [4ca34a3](https://github.com/fabric-composer/fabric-composer/commit/4ca34a3375ca375fb098ec1f312905ef255ea750) Automated commit to trigger downstream build
+- [21e1b63](https://github.com/fabric-composer/fabric-composer/commit/21e1b639324729e2e92921c6be44150890450932) initial (@dselman)
+- [a37b435](https://github.com/fabric-composer/fabric-composer/commit/a37b4353e72fb0b41972c3287a78faf97a9541e9) support for connections with null business network (@dselman)
+- [82ab514](https://github.com/fabric-composer/fabric-composer/commit/82ab51498de63b1c914d0e99b6003add0b1b2c16) Automated commit to trigger downstream build
+- [830c755](https://github.com/fabric-composer/fabric-composer/commit/830c75500064e8e50ee0f7d7031517e14e972580) Get asset registry tests working again (@sstone1)
+- [2bab912](https://github.com/fabric-composer/fabric-composer/commit/2bab91274f70c5ed538355609a67893bd0edeec7) Get registry APIs working again (@sstone1)
+- [72caca5](https://github.com/fabric-composer/fabric-composer/commit/72caca5ed59c3831f3b11a8a4f3a448bfdd0ed35) Automated commit to trigger downstream build
+- [566db7b](https://github.com/fabric-composer/fabric-composer/commit/566db7bd94191abd216a5be9c69da808698dd9af) Automated commit to trigger downstream build
+- [d604cd2](https://github.com/fabric-composer/fabric-composer/commit/d604cd205e580d526f7b5b49382448b6a61bbc41) Automated commit to trigger downstream build
+- [3d3efb9](https://github.com/fabric-composer/fabric-composer/commit/3d3efb916e2e0ca9497bb97f2c846b8d7fee6d03) Automated commit to trigger downstream build
+- [af3bfdc](https://github.com/fabric-composer/fabric-composer/commit/af3bfdc5f41292153c129e2581dc3c2899c33104) Automated commit to trigger downstream build
+- [36f014a](https://github.com/fabric-composer/fabric-composer/commit/36f014a46ff84081806c834fa7be7f84f85becf9) Automated commit to trigger downstream build
+- [48c69c3](https://github.com/fabric-composer/fabric-composer/commit/48c69c3fe136562575475069dd7e794b43379d0c) Automated commit to trigger downstream build
+- [b27d1ee](https://github.com/fabric-composer/fabric-composer/commit/b27d1ee73f984164c78414f073823a6f39f27154) Automated commit to trigger downstream build
+- [5d3b348](https://github.com/fabric-composer/fabric-composer/commit/5d3b3485c13deea876de5d759bd450863ca96c8a) Automated commit to trigger downstream build
+- [2619192](https://github.com/fabric-composer/fabric-composer/commit/26191925712f3d3c5a6126745f174d0fd2e539b2) Default registries, update/reset network functions (@sstone1)
+- [f3805d1](https://github.com/fabric-composer/fabric-composer/commit/f3805d12bbecb788a3251213393fef4f378b9092) Automated commit to trigger downstream build
+- [cedaa1b](https://github.com/fabric-composer/fabric-composer/commit/cedaa1b0a781d4e1240eba4ffedd3845f5e8e4af) Automated commit to trigger downstream build
+- [fe23711](https://github.com/fabric-composer/fabric-composer/commit/fe23711a9f1c133da312d016dfcee8f381036740) Automated commit to trigger downstream build
+- [a6c9bc8](https://github.com/fabric-composer/fabric-composer/commit/a6c9bc8c10a96942b57fcc7c566bc1c090d4fbf3) Automated commit to trigger downstream build
+- [f3068ec](https://github.com/fabric-composer/fabric-composer/commit/f3068ecc9c28e9459d07cbc89f745c0ad89d049c) Automated commit to trigger downstream build
+- [1f42826](https://github.com/fabric-composer/fabric-composer/commit/1f42826a7a609b5b868984a7d0a4c8a8fbeb62d4) Automated commit to trigger downstream build
+- [0eb88f7](https://github.com/fabric-composer/fabric-composer/commit/0eb88f799fd4f751e26e0d749b4209f7924861bf) Automated commit to trigger downstream build
+- [0284e6a](https://github.com/fabric-composer/fabric-composer/commit/0284e6a2d5551a8959b89be6ba841e9f2a381edd) Automated commit to trigger downstream build
+- [0709e25](https://github.com/fabric-composer/fabric-composer/commit/0709e257aee12190c89d388c5294e6899449b3ee) Automated commit to trigger downstream build
+- [7f1bd65](https://github.com/fabric-composer/fabric-composer/commit/7f1bd6538e887ca64ed2955238455b702772cacd) Add missing participant declaration export (@sstone1)
+- [9a04bc5](https://github.com/fabric-composer/fabric-composer/commit/9a04bc543390c900fd90c82e026d493508895523) Automated commit to trigger downstream build
+- [38215ad](https://github.com/fabric-composer/fabric-composer/commit/38215ad7e3c119eb3e997d327736330c65a48c4a) Automated commit to trigger downstream build
+- [aac0540](https://github.com/fabric-composer/fabric-composer/commit/aac0540d7e9557c30d9fb86c3e956a4af122f2c7) Automated commit to trigger downstream build
+- [0ea7fc1](https://github.com/fabric-composer/fabric-composer/commit/0ea7fc1bee9610246f483e7c50ad74a9376b0ce5) Automated commit to trigger downstream build
+- [7748e64](https://github.com/fabric-composer/fabric-composer/commit/7748e64acd232ec552040be1ca8545901d857e2c) Automated commit to trigger downstream build
+- [3383dde](https://github.com/fabric-composer/fabric-composer/commit/3383dde82599231b76e2caa2b635e0238b4204d8) Automated commit to trigger downstream build
+- [e5196b3](https://github.com/fabric-composer/fabric-composer/commit/e5196b37b2375e5e714b5e2dcadda7d174b47ae8) Automated commit to trigger downstream build
+- [938a7b7](https://github.com/fabric-composer/fabric-composer/commit/938a7b71442b83171e517f23db1445eee6ab49d3) Automated commit to trigger downstream build
+- [1139eb1](https://github.com/fabric-composer/fabric-composer/commit/1139eb1a5a65846a269ab8cf336d0ee2fbd6211e) Automated commit to trigger downstream build
+- [3c44882](https://github.com/fabric-composer/fabric-composer/commit/3c448826699323b039f4edcc372a463023572583) Automated commit to trigger downstream build
+- [8031e96](https://github.com/fabric-composer/fabric-composer/commit/8031e969788d416f2abff82ce2bd40c9b374510d) Automated commit to trigger downstream build
+- [6d67b92](https://github.com/fabric-composer/fabric-composer/commit/6d67b92d30091c25a913161daacc2ef0e7103214) Automated commit to trigger downstream build
+- [68b0bc2](https://github.com/fabric-composer/fabric-composer/commit/68b0bc2e23f758b6f6ff86250116d1e386842a75) Automated commit to trigger downstream build
+- [2946cf0](https://github.com/fabric-composer/fabric-composer/commit/2946cf0ef6941bc6fff32b6ba9bcdbb0b0aa1dd1) Automated commit to trigger downstream build
+- [67bdfee](https://github.com/fabric-composer/fabric-composer/commit/67bdfee94473fd70f8a5abac3aff3adac284be18) Asset and transaction registry calls don't work (@sstone1)
+- [c82a361](https://github.com/fabric-composer/fabric-composer/commit/c82a36151916e745c22d07ffe8530a9c27d22d06) Connection should look for chaincode ID on login (@sstone1)
+- [a3cdb16](https://github.com/fabric-composer/fabric-composer/commit/a3cdb166016a1d01f4df4e84cabdc31d501d839e) Add call for downloading the business network (@sstone1)
+- [3fdeb39](https://github.com/fabric-composer/fabric-composer/commit/3fdeb3998402dc7ec4a84f3b37f31434cc9bd418) Automated commit to trigger downstream build
+- [aa2586d](https://github.com/fabric-composer/fabric-composer/commit/aa2586d2c7be24a7b9bb5cb59132c8bd04db06c4) Automated commit to trigger downstream build
+- [a0ff5a6](https://github.com/fabric-composer/fabric-composer/commit/a0ff5a6fc766355fe3e2b3c0224b8f8b4293aebf) Automated commit to trigger downstream build
+- [6c28a9d](https://github.com/fabric-composer/fabric-composer/commit/6c28a9d0977e6b197a41dd28972996094bb4473f) Automated commit to trigger downstream build
+- [79fa721](https://github.com/fabric-composer/fabric-composer/commit/79fa72182bff68130f462c656d3111f20a43d3d6) Automated commit to trigger downstream build
+- [0960d7a](https://github.com/fabric-composer/fabric-composer/commit/0960d7ab33a752ad7dfd556cf3c38f9d61454014) Fix dependency to Simon's fork of Otto (@sstone1)
+- [b782545](https://github.com/fabric-composer/fabric-composer/commit/b782545b72ab4bc7ef1495b822f78aa85160a6ec) Automated commit to trigger downstream build
+- [2bfd038](https://github.com/fabric-composer/fabric-composer/commit/2bfd038840600bfef08a7d6a6e49b6507db120e2) Automated commit to trigger downstream build
+- [f85fc70](https://github.com/fabric-composer/fabric-composer/commit/f85fc70b7de60c9ba4dfe191cd35974503f895ea) Automated commit to trigger downstream build
+- [4f99192](https://github.com/fabric-composer/fabric-composer/commit/4f99192e33fa34d53b9f334528da51f2ede7652c) Automated commit to trigger downstream build
+- [95b6273](https://github.com/fabric-composer/fabric-composer/commit/95b62733d3f9900213adda591b91fffa4bbb835f) Automated commit to trigger downstream build
+- [cbbb2b2](https://github.com/fabric-composer/fabric-composer/commit/cbbb2b22c66222f1a3c5a6981f7b588d873a0431) Automated commit to trigger downstream build
+- [8a5bada](https://github.com/fabric-composer/fabric-composer/commit/8a5bada5bdfbac1a784ad5726e3bbd49fc0d7e50) Automated commit to trigger downstream build
+- [5337aa9](https://github.com/fabric-composer/fabric-composer/commit/5337aa94ee970963db65a67f9ff216d79ce8c05a) Automated commit to trigger downstream build
+- [3f21d69](https://github.com/fabric-composer/fabric-composer/commit/3f21d694b0cc9bd0130fa52c6ddad0e40fbee2fc) Automated commit to trigger downstream build
+- [bc481b1](https://github.com/fabric-composer/fabric-composer/commit/bc481b1786369bfd84c2eeafc40c92d2f00da8a4) Switch to Simon's fork of Otto, add Acorn regex hack (@sstone1)
+- [30e50b0](https://github.com/fabric-composer/fabric-composer/commit/30e50b04864c02aa15f73007a1aba36725aeda4f) Automated commit to trigger downstream build
+- [96f7c6e](https://github.com/fabric-composer/fabric-composer/commit/96f7c6e7734e5b1fe9652c1e94e06e86f92f6e71) Automated commit to trigger downstream build
+- [a7645ab](https://github.com/fabric-composer/fabric-composer/commit/a7645ab7ed5e234ddc1e6ef3580a67fcc8b3c1a4) Automated commit to trigger downstream build
+- [0c454b8](https://github.com/fabric-composer/fabric-composer/commit/0c454b8737105c48aa07d44cd655e7fdd9f59623) Automated commit to trigger downstream build
+- [f75d25f](https://github.com/fabric-composer/fabric-composer/commit/f75d25fc96630e62c3d671881b38dd6cac360f30) Automated commit to trigger downstream build
+- [8712e18](https://github.com/fabric-composer/fabric-composer/commit/8712e181385b6ba5f92236fdfa1f26c34833e64a) Automated commit to trigger downstream build
+- [0f6bb75](https://github.com/fabric-composer/fabric-composer/commit/0f6bb75725845bccc8d5d102915b908aa345597d) Automated commit to trigger downstream build
+- [197e46e](https://github.com/fabric-composer/fabric-composer/commit/197e46eb6e1f71663459f3f16c8654589624e2df) Automated commit to trigger downstream build
+- [fa80f76](https://github.com/fabric-composer/fabric-composer/commit/fa80f76ff97c0d25239072eced82fd6614a1abf7) Automated commit to trigger downstream build
+- [ccc8833](https://github.com/fabric-composer/fabric-composer/commit/ccc88334ff7b37a910d8d70aab79d40caea39be0) Automated commit to trigger downstream build
+- [a1d367a](https://github.com/fabric-composer/fabric-composer/commit/a1d367a6984af21d6415b8c4e1011c5d1bbdbf90) Automated commit to trigger downstream build
+- [26df089](https://github.com/fabric-composer/fabric-composer/commit/26df089f8d738f1adf75dee2d8ad0ac0ca479c84) Automated commit to trigger downstream build
+- [4afa7d8](https://github.com/fabric-composer/fabric-composer/commit/4afa7d864ef48176ffcd9413ab707a157c25be95) Automated commit to trigger downstream build
+- [ecff6d1](https://github.com/fabric-composer/fabric-composer/commit/ecff6d1d7ed7df2148434bce9884fd24e276d373) Common module fails to install due to missing pegjs dependency (@sstone1)
+- [bbfc954](https://github.com/fabric-composer/fabric-composer/commit/bbfc954b781bbe9606c56225ac2f1d926e3c9c14) Initial support for deploying business networks (@sstone1)
+- [c412618](https://github.com/fabric-composer/fabric-composer/commit/c4126186854bc5318f7ea7239470c9261902cf18) Automated commit to trigger downstream build
+- [c48a9ff](https://github.com/fabric-composer/fabric-composer/commit/c48a9ffb9d7f088c7eceaebed8d6769ec6997eda) Remove hard config dependency, run browserify to prevent future breaks (@sstone1)
+- [fbdcd70](https://github.com/fabric-composer/fabric-composer/commit/fbdcd7005c83db0ae829d446cd30f0510f5e35ae) Automated commit to trigger downstream build
+- [a6a6eb2](https://github.com/fabric-composer/fabric-composer/commit/a6a6eb2a283f8367852168419c035a36c8ac4186) Automated commit to trigger downstream build
+- [72ab9c0](https://github.com/fabric-composer/fabric-composer/commit/72ab9c00e16b9dcbeb781b327eae2129798364fb) deploy cli (@ODOWDAIBM)
+- [7515bac](https://github.com/fabric-composer/fabric-composer/commit/7515bacafe6fc7e235e7454d1cc6661bab93f53f) Automated commit to trigger downstream build
+- [dd87130](https://github.com/fabric-composer/fabric-composer/commit/dd87130f294d119c579e33d5ff6924cec8333f6b) Automated commit to trigger downstream build
+- [ec2b941](https://github.com/fabric-composer/fabric-composer/commit/ec2b941c735b478f630e9ee87957343a4e450f44) Automated commit to trigger downstream build
+- [6ed5c41](https://github.com/fabric-composer/fabric-composer/commit/6ed5c41963383375bd127aae6576a9857031f00e) Automated commit to trigger downstream build
+- [7ea251a](https://github.com/fabric-composer/fabric-composer/commit/7ea251a8fae77075a235bd242c572d3d7414874a) Automated commit to trigger downstream build
+- [5de0651](https://github.com/fabric-composer/fabric-composer/commit/5de06514693cf6507103dd1407d9239dd7acd77e) Automated commit to trigger downstream build
+- [324d01d](https://github.com/fabric-composer/fabric-composer/commit/324d01d94e7c3400bb28f79774010bcccbdfa4ec) Added unit tests (@14gracel)
+- [62cd206](https://github.com/fabric-composer/fabric-composer/commit/62cd206469e42fc29b15bacb5b349fd28f29e34c) Empty commit to force build (@sstone1)
+- [868a2c9](https://github.com/fabric-composer/fabric-composer/commit/868a2c9fa20799597da2c5b46b1415022275d959) Fix unit tests (@sstone1)
+- [f26cfd1](https://github.com/fabric-composer/fabric-composer/commit/f26cfd1905cd7e11f967949f25c74028e7f02443) Automated commit to trigger downstream build
+- [bf7d842](https://github.com/fabric-composer/fabric-composer/commit/bf7d842e6896465f4cd26ef05c31152717eeca7a) Automated commit to trigger downstream build
+- [619ecc5](https://github.com/fabric-composer/fabric-composer/commit/619ecc5266150ee63c685371af55aff94b8518b8) Automated commit to trigger downstream build
+- [b83404d](https://github.com/fabric-composer/fabric-composer/commit/b83404d2da333972cf3153f29dfb766106e654f2) Don't try and deploy node_modules folder with chaincode (@sstone1)
+- [23f4a43](https://github.com/fabric-composer/fabric-composer/commit/23f4a430fc84a1841c031129b0128c894474b3bd) Need to search module parents for connector modules (@sstone1)
+- [cde5a9c](https://github.com/fabric-composer/fabric-composer/commit/cde5a9c7029a46f3f3e88c171e0bf45ad14bf444) Automated commit to trigger downstream build
+- [6943c6c](https://github.com/fabric-composer/fabric-composer/commit/6943c6c3b176f93a3ac31fd19bb75865b25b0251) Automated commit to trigger downstream build
+- [96651e3](https://github.com/fabric-composer/fabric-composer/commit/96651e3809b34e9c9931711ec3b8c0d626421a09) Automated commit to trigger downstream build
+- [633e37b](https://github.com/fabric-composer/fabric-composer/commit/633e37b831e74845a9a2f03c3bbb4cc9c573ad9f) Make business network id optional for connections (@dselman)
+- [7a308f0](https://github.com/fabric-composer/fabric-composer/commit/7a308f029a6b48d579f4e7e5edc0ae72158afd03) Automated commit to trigger downstream build
+- [bca9e11](https://github.com/fabric-composer/fabric-composer/commit/bca9e110d5abf1a37b0953d4383dad2dc8caa149) Create connection profile before connect (@dselman)
+- [b4acc9f](https://github.com/fabric-composer/fabric-composer/commit/b4acc9f0369da091c47ad05bae920577650af192) Check if package.json exists (@Jakeeyturner)
+- [1e70b7c](https://github.com/fabric-composer/fabric-composer/commit/1e70b7ca8866be8b5ccdcfee80ebcd7ac974dd32) Remove need to pass biznet name to Admin.connect (@dselman)
+- [422a669](https://github.com/fabric-composer/fabric-composer/commit/422a669ed5ebdc98fb4864775e7130be58213ff2) JSDoc fixes (@dselman)
+- [3775a28](https://github.com/fabric-composer/fabric-composer/commit/3775a280a4ab583d6ca09e6e08fc0312a72c6748) network deploy cli (@ODOWDAIBM)
+- [d1aeee8](https://github.com/fabric-composer/fabric-composer/commit/d1aeee8bf24dd905c1212d8f7c7eefceb2f4116c) Remove explicit hlf connector loading (@sstone1)
+- [f9bfe2e](https://github.com/fabric-composer/fabric-composer/commit/f9bfe2e44b292ddd44be068575792b9b32721aa8) Acorn is a runtime dependency (@dselman)
+- [8d0f551](https://github.com/fabric-composer/fabric-composer/commit/8d0f5516f9587faf3ee3bcd2977797d7e74c88fb) Fixed unit tests (@dselman)
+- [835c1f3](https://github.com/fabric-composer/fabric-composer/commit/835c1f3af1c7ca98463ccad82dd78279072382eb) Automated commit to trigger downstream build
+- [6582b70](https://github.com/fabric-composer/fabric-composer/commit/6582b705099f430ed6c45539807b66a5743ed0f0) Automated commit to trigger downstream build
+- [5a96e7f](https://github.com/fabric-composer/fabric-composer/commit/5a96e7fb7970469cdde3d687f9b0f8ca7f6c990c) Automated commit to trigger downstream build
+- [1ae73c5](https://github.com/fabric-composer/fabric-composer/commit/1ae73c5fe0257a6f882b0530d941c0d0d2ee15b3) Undo accidentally delivered change (@sstone1)
+- [b48d5af](https://github.com/fabric-composer/fabric-composer/commit/b48d5afa4af2c1297e649bab7642babe2e15e59c) Dynamically load connection manager modules (@sstone1)
+- [8ef73e5](https://github.com/fabric-composer/fabric-composer/commit/8ef73e5e14eea98da40effde7996625f2dc2df60) Dynamically load connection manager modules (@sstone1)
+- [343ecf5](https://github.com/fabric-composer/fabric-composer/commit/343ecf56611f1b3d0f23d88a3b27d8d150c3e84c) Automated commit to trigger downstream build
+- [53e4bfe](https://github.com/fabric-composer/fabric-composer/commit/53e4bfe322afa7201280e28f15a12d399f502e8a) Get web connection manager working (@sstone1)
+- [087ffd8](https://github.com/fabric-composer/fabric-composer/commit/087ffd8b2c45c582f349c686a1a5e192215f27a9) Empty commit to force build (@sstone1)
+- [3cf8384](https://github.com/fabric-composer/fabric-composer/commit/3cf83849ec9d53231621fb65fd12af11f5f6a113) Fix regex, update connection manager to be more restrictive on args (@sstone1)
+- [f85758c](https://github.com/fabric-composer/fabric-composer/commit/f85758c3a9c917dcce2811470744475d0be37c96) Automated commit to trigger downstream build
+- [fd3cdac](https://github.com/fabric-composer/fabric-composer/commit/fd3cdac9f5f02f037795f23d0ac2727dd549fcf1) Automated commit to trigger downstream build
+- [f6dc995](https://github.com/fabric-composer/fabric-composer/commit/f6dc995d8123cd8444e91e399ddabe08d25209cb) Automated commit to trigger downstream build
+- [3fce1c6](https://github.com/fabric-composer/fabric-composer/commit/3fce1c6934da9533a082249cc2e597b5aa4dce67) Updated businessnetwork.zip (@Jakeeyturner)
+- [5e400d3](https://github.com/fabric-composer/fabric-composer/commit/5e400d3ec59af9ed90a2a1897b5e3083f233ca11) Removed describe.only so all tests will run (@Jakeeyturner)
+- [fa2a02f](https://github.com/fabric-composer/fabric-composer/commit/fa2a02f9d82374f8776ac81b03a093f7b9f1d933) Added a few more model files and js files (@Jakeeyturner)
+- [8718a3a](https://github.com/fabric-composer/fabric-composer/commit/8718a3a3217223478e674d77bef0da0c8fad6d26) Automated commit to trigger downstream build
+- [06f8f2e](https://github.com/fabric-composer/fabric-composer/commit/06f8f2e1fed136fc0aea0d2ae5d57ee32f159a92) Automated commit to trigger downstream build
+- [12f06ac](https://github.com/fabric-composer/fabric-composer/commit/12f06acdbd6a9aa45e59f61ffe3eaacd39f6298f) Automated commit to trigger downstream build
+- [0dc65f0](https://github.com/fabric-composer/fabric-composer/commit/0dc65f01d63173ac069231833e0290cd6a38cae1) Updated businessnetwork.zip with new contents (@Jakeeyturner)
+- [221d1c5](https://github.com/fabric-composer/fabric-composer/commit/221d1c5f101404c9feaf35d1e90b09d09868bff2) toArchive and fromArchive can handle a package.json (to extract data and write to) (@Jakeeyturner)
+- [9806ff8](https://github.com/fabric-composer/fabric-composer/commit/9806ff84d3198f8d6d4451711c9059e4df8819df) Automated commit to trigger downstream build
+- [c6a5949](https://github.com/fabric-composer/fabric-composer/commit/c6a59495684ee7f17177a907263bb996a2fc0fe8) Automated commit to trigger downstream build
+- [4f65655](https://github.com/fabric-composer/fabric-composer/commit/4f65655a0274c8033fbc07af5716e753c6cea099) Fixed requires (@dselman)
+- [54d54c8](https://github.com/fabric-composer/fabric-composer/commit/54d54c8432c5c70650810642a421cb5978f565c3) work in progress (@dselman)
+- [519e56e](https://github.com/fabric-composer/fabric-composer/commit/519e56e4647ad1c41d0e3e20e330e52b3b784c13) wip (@dselman)
+- [8584178](https://github.com/fabric-composer/fabric-composer/commit/85841784e5a9f8b0aea29974fb3a453fca03118e) wip (@dselman)
+- [5525a50](https://github.com/fabric-composer/fabric-composer/commit/5525a5015f121e307e33e917ac1f04a16fd64890) Change to try to trigger Travis (@dselman)
+- [2391f23](https://github.com/fabric-composer/fabric-composer/commit/2391f232ac3e23af2b3ecf9f6774cfea4ed9ae41) Travis build failed (@dselman)
+- [bea1bd2](https://github.com/fabric-composer/fabric-composer/commit/bea1bd254a9720176c7f7d957cd555ccc5d46c7a) Connection pool (@dselman)
+- [891998f](https://github.com/fabric-composer/fabric-composer/commit/891998fa4ceefb6b9f796eee36c0eb8afcafe2e0) Automated commit to trigger downstream build
+- [af3db34](https://github.com/fabric-composer/fabric-composer/commit/af3db34edd7cd02e8c583974d9cfc6aafc4bc711) Export Logger (@dselman)
+- [5f9f73d](https://github.com/fabric-composer/fabric-composer/commit/5f9f73dca0fa4d8c484bb65b1e509aae1f16a547) network deploy command (@ODOWDAIBM)
+- [bf7ec65](https://github.com/fabric-composer/fabric-composer/commit/bf7ec6581c44dc88be953e6b0c07f4df89adafff) network deploy cli (@ODOWDAIBM)
+- [d919a3b](https://github.com/fabric-composer/fabric-composer/commit/d919a3b85afb0712cee9bbcf131d6135b21d6216) Automated commit to trigger downstream build
+- [8f7db30](https://github.com/fabric-composer/fabric-composer/commit/8f7db30b82081beb2d1a581c22ec1b17830d0bb8) Automated commit to trigger downstream build
+- [43e0aa4](https://github.com/fabric-composer/fabric-composer/commit/43e0aa4ea106757a0a7aa51a91144c0e924be188) Automated commit to trigger downstream build
+- [f337e98](https://github.com/fabric-composer/fabric-composer/commit/f337e983569b05bf0c9339e180fee7807196cf96) Added businessnetwork.toArchive function (@Jakeeyturner)
+- [7746b61](https://github.com/fabric-composer/fabric-composer/commit/7746b6133a2a7281bba23cc799c5f826ad4a78c1) Empty commit to force build (@sstone1)
+- [a680ab1](https://github.com/fabric-composer/fabric-composer/commit/a680ab16c19f5b01acd50f3acb810e82e77fe520) empty to trigger travis (@Jakeeyturner)
+- [60a9cbd](https://github.com/fabric-composer/fabric-composer/commit/60a9cbda1ceb597846dbd44147d550e873ce87f0) test-archive and zip now correct and working (@Jakeeyturner)
+- [a9a51fa](https://github.com/fabric-composer/fabric-composer/commit/a9a51fa3caba80e56b5c47907bd2564e3185449b) bump version (@dselman)
+- [fd0899f](https://github.com/fabric-composer/fabric-composer/commit/fd0899f457494d7e9b1e2e24dc4d32b0b33bb254) Automated commit to trigger downstream build
+- [a25c2e2](https://github.com/fabric-composer/fabric-composer/commit/a25c2e296a7ba702e57256e7e3bfb93a2098c91e) Automated commit to trigger downstream build
+- [cd6e808](https://github.com/fabric-composer/fabric-composer/commit/cd6e808881bf799685ba9958fba79d463c5b379d) Removed package.json from ZIP file (for now) (@Jakeeyturner)
+- [0e5c42d](https://github.com/fabric-composer/fabric-composer/commit/0e5c42d59e9e7a8c3614813e3950e804d38f1afb) Fixes (@dselman)
+- [2f8c584](https://github.com/fabric-composer/fabric-composer/commit/2f8c584fef2a732d61a5d6c014f755a9c50374ed) Added businessnetwork fromArchive function (@Jakeeyturner)
+- [97fdc46](https://github.com/fabric-composer/fabric-composer/commit/97fdc461e0474fc2d9a51fb9082fb8d085b2750f) Added logging (@dselman)
+- [2863ea8](https://github.com/fabric-composer/fabric-composer/commit/2863ea86e38d277009e368acc6e92e3c191c0e26) Automated commit to trigger downstream build
+- [25c9164](https://github.com/fabric-composer/fabric-composer/commit/25c9164512528b5793f57f91d9063f1f989ac5ef) Automated commit to trigger downstream build
+- [161f8d2](https://github.com/fabric-composer/fabric-composer/commit/161f8d20dd3c137644c2c02d652800b53f491879) Automated commit to trigger downstream build
+- [d5ef67b](https://github.com/fabric-composer/fabric-composer/commit/d5ef67babb910d86df2e8c64db7376eb2acf6d73) Automated commit to trigger downstream build
+- [78ebf60](https://github.com/fabric-composer/fabric-composer/commit/78ebf60092220ae146cb04cc0849f6be0b4d6f86) Bumped version (@dselman)
+- [bf3556c](https://github.com/fabric-composer/fabric-composer/commit/bf3556cc282b35fad08c8e434f419dbd58122e42) Fixed test (@dselman)
+- [69c17f1](https://github.com/fabric-composer/fabric-composer/commit/69c17f1fd515cca47a35f1541724dba880ee87d0) Added explicit options for file encoding and mode (@dselman)
+- [1ac6039](https://github.com/fabric-composer/fabric-composer/commit/1ac6039da145461bfde64b1ac45d4ff99844609c) yargs structure (@ODOWDAIBM)
+- [d8287f4](https://github.com/fabric-composer/fabric-composer/commit/d8287f49fc5d40a1f9838b550daf6fa1e3f6cd83) Automated commit to trigger downstream build
+- [426b4db](https://github.com/fabric-composer/fabric-composer/commit/426b4db01ac350a314ba4b5b358a456715a50afa) Added ConnectionProfileManager.connect method (@dselman)
+- [6a1ff3a](https://github.com/fabric-composer/fabric-composer/commit/6a1ff3a56075258525abfed77a720e41983da055) Added connection profile manager and store (@dselman)
+- [c6abf81](https://github.com/fabric-composer/fabric-composer/commit/c6abf8127a1873b87e80a773e13201649930fd15) prompt additions (@ODOWDAIBM)
+- [80e58da](https://github.com/fabric-composer/fabric-composer/commit/80e58da8b415cf9b792761b35802075359c0995a) Automated commit to trigger downstream build
+- [a0c9eba](https://github.com/fabric-composer/fabric-composer/commit/a0c9ebaa57fd6f0aee397dfdfb7603ecfd7ffc15) Automated commit to trigger downstream build
+- [d06add8](https://github.com/fabric-composer/fabric-composer/commit/d06add87266569da51efd00e88aff608e6c336f3) wip (@dselman)
+- [1771fa2](https://github.com/fabric-composer/fabric-composer/commit/1771fa24559eaf2851e208030ad04d3519023087) Use connection profiles (@dselman)
+- [9dc3e97](https://github.com/fabric-composer/fabric-composer/commit/9dc3e97963f7ef8b5a0e8148abd4cc6d996738a2) Added Connection.deploy with BusinessNetwork (@dselman)
+- [4553256](https://github.com/fabric-composer/fabric-composer/commit/4553256f113d431fd353f5fe3697049266231292) Automated commit to trigger downstream build
+- [cd8b146](https://github.com/fabric-composer/fabric-composer/commit/cd8b146298bbc893db735245869884ce9ff7ca6f) Automated commit to trigger downstream build
+- [31892a0](https://github.com/fabric-composer/fabric-composer/commit/31892a0bbf1954fbc1fee71e89adabf59251178b) Automated commit to trigger downstream build
+- [cc3b64a](https://github.com/fabric-composer/fabric-composer/commit/cc3b64afdf857bd480ec91092ce117689072c990) Automated commit to trigger downstream build
+- [99ac932](https://github.com/fabric-composer/fabric-composer/commit/99ac932ffc2f1ba3c8c9f0ee27d698a53c5e5048) Automated commit to trigger downstream build
+- [e4dadaa](https://github.com/fabric-composer/fabric-composer/commit/e4dadaa5bf97bc411579c921585c8b3d188af809) Force use of connection profiles in ConnectionManager (@dselman)
+- [067ccb5](https://github.com/fabric-composer/fabric-composer/commit/067ccb51ca96c56e6d5246465de5390318058809) Automated commit to trigger downstream build
+- [3558252](https://github.com/fabric-composer/fabric-composer/commit/3558252039033ee04048b6962b065657ae5e4325) Automated commit to trigger downstream build
+- [abda98c](https://github.com/fabric-composer/fabric-composer/commit/abda98cab1a93ab7fa0ab85a368072d70fcc2aa5) Automated commit to trigger downstream build
+- [c3cc48e](https://github.com/fabric-composer/fabric-composer/commit/c3cc48e717af4688319be983a8fffc5a3c2979f6) Automated commit to trigger downstream build
+- [eab86de](https://github.com/fabric-composer/fabric-composer/commit/eab86de633d48272bbf83fa39366e70b55b0984e) Automated commit to trigger downstream build
+- [1825a72](https://github.com/fabric-composer/fabric-composer/commit/1825a7259a6b0670a7475c0cc3fd0579561fa021) merged (@dselman)
+- [475f4eb](https://github.com/fabric-composer/fabric-composer/commit/475f4eb3bfa04822fb89612dcb470c60d6438c97) Added connection profiles to ConnectionManager (@dselman)
+- [66a2fe1](https://github.com/fabric-composer/fabric-composer/commit/66a2fe177e0762300ba61774b20eba0c96b1721b) Automated commit to trigger downstream build
+- [76396a4](https://github.com/fabric-composer/fabric-composer/commit/76396a4c53f07f8701fd3b1eebe89419a4159a24) Automated commit to trigger downstream build
+- [4bc13ce](https://github.com/fabric-composer/fabric-composer/commit/4bc13cea831363b8b9a812c2a3e0637d1f738092) Automated commit to trigger downstream build
+- [b5f521c](https://github.com/fabric-composer/fabric-composer/commit/b5f521c75f24313d4a7489d30a6026882490a59b) Automated commit to trigger downstream build
+- [8fccb75](https://github.com/fabric-composer/fabric-composer/commit/8fccb7597f020cd8fdf3eb8a0d774609351160c5) Automated commit to trigger downstream build
+- [0743c71](https://github.com/fabric-composer/fabric-composer/commit/0743c71d6e8100dbc4beec0e110a0f0e0bb8a0e7) Automated commit to trigger downstream build
+- [6dd6953](https://github.com/fabric-composer/fabric-composer/commit/6dd695301c14594bd2fe5af318a9d39315cc1639) Automated commit to trigger downstream build
+- [29f3197](https://github.com/fabric-composer/fabric-composer/commit/29f3197baabdb99dac1726db1d21f4dc1927ea7f) Automated commit to trigger downstream build
+- [58db386](https://github.com/fabric-composer/fabric-composer/commit/58db38602d5630e3e4ac8e4c45f3915d24161cec) Automated commit to trigger downstream build
+- [78fa4a7](https://github.com/fabric-composer/fabric-composer/commit/78fa4a78bfe3b32f76c500077d50b19748b2b109) Automated commit to trigger downstream build
+- [7cc5425](https://github.com/fabric-composer/fabric-composer/commit/7cc542580f74970252da43d296725ea67ac8ff41) Automated commit to trigger downstream build
+- [cb1a533](https://github.com/fabric-composer/fabric-composer/commit/cb1a533a41353694d6ba2f0630688e047a47df63) Automated commit to trigger downstream build
+- [3612aec](https://github.com/fabric-composer/fabric-composer/commit/3612aeca6ac6c0e9278986815bc618fd7fcae1d1) Automated commit to trigger downstream build
+- [5a4d242](https://github.com/fabric-composer/fabric-composer/commit/5a4d2422d71d13e5509bce0218ab43e58b26ad3a) Automated commit to trigger downstream build
+- [2df3e71](https://github.com/fabric-composer/fabric-composer/commit/2df3e71093ba86ea08e0f975c0816bbd87c954b1) Automated commit to trigger downstream build
+- [0a4e2f3](https://github.com/fabric-composer/fabric-composer/commit/0a4e2f3e7a8146890f906d0e64c6fb611f2a45e4) Automated commit to trigger downstream build
+- [55e1648](https://github.com/fabric-composer/fabric-composer/commit/55e16482e693759ae33a6276a4d01fac56de2033) Must use Trusty for modules that bring in hfc (@sstone1)
+- [d40f7d3](https://github.com/fabric-composer/fabric-composer/commit/d40f7d35901f982527ee7f3a451d283da42dcba7) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [14799f6](https://github.com/fabric-composer/fabric-composer/commit/14799f6b6ae1d768e6aacfafe32214aece535eee) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [8864b0f](https://github.com/fabric-composer/fabric-composer/commit/8864b0f4e994441b4f441e97ea69984af571155d) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [ae4c6fb](https://github.com/fabric-composer/fabric-composer/commit/ae4c6fbd395e7a49402c80272ffaffe56f34fd50) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [661ca96](https://github.com/fabric-composer/fabric-composer/commit/661ca968515948568912752d6b98d7a6804526fd) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [a16218c](https://github.com/fabric-composer/fabric-composer/commit/a16218c19541ff5fad611796e845b2311dce5690) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [175897e](https://github.com/fabric-composer/fabric-composer/commit/175897ed77bdc4bd8da8cb1c8187e631b041f5f2) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [e808a18](https://github.com/fabric-composer/fabric-composer/commit/e808a18f036f063fe499507577b8ef16dd3c2947) Fix npm/git ignore files and update downstream build triggering (@sstone1)
+- [f453054](https://github.com/fabric-composer/fabric-composer/commit/f453054e7adeaf3acd60f04feda0d5ce09fe3f6b) Push to web runtime on deploy (@sstone1)
+- [915bf9a](https://github.com/fabric-composer/fabric-composer/commit/915bf9ae81ee3364819a74e97c10f428e3fc825f) Fix npm/git ignore files (@sstone1)
+- [0e11403](https://github.com/fabric-composer/fabric-composer/commit/0e11403423c7defa88caa4b81b9a0a6cd9432e13) Fix npm/git ignore files (@sstone1)
+- [5aa45ca](https://github.com/fabric-composer/fabric-composer/commit/5aa45ca516542ef32381419c7970471d9e9f7516) Use Travis node version (@sstone1)
+- [f79ccdd](https://github.com/fabric-composer/fabric-composer/commit/f79ccddefac7f3794b5d7bfc1fd8b9ca894ab499) Automated commit to trigger downstream build
+- [9123562](https://github.com/fabric-composer/fabric-composer/commit/91235621829670df46bca5ef3493f329d67926c5) Initial commit (@sstone1)
+- [610140a](https://github.com/fabric-composer/fabric-composer/commit/610140ae68821ad6dd2b287d6b21b11f59edcf80) Automated commit to trigger downstream build
+- [1c0f07d](https://github.com/fabric-composer/fabric-composer/commit/1c0f07df1be1aa8a9ad3afb36e5ab5f78fb792d9) Automated commit to trigger downstream build
+- [43687b0](https://github.com/fabric-composer/fabric-composer/commit/43687b0a2da4b65c52c906f4933b636548a6222f) Automated commit to trigger downstream build
+- [49a3a89](https://github.com/fabric-composer/fabric-composer/commit/49a3a895b1267c2cd954d523ec4b0228db840bdc) Stop serialization of connection manager interfaces (@sstone1)
+- [4e7fd76](https://github.com/fabric-composer/fabric-composer/commit/4e7fd768e88f53765fc6f28bd9012f9501999d01) basic command structure (@ODOWDAIBM)
+- [8a7e2be](https://github.com/fabric-composer/fabric-composer/commit/8a7e2beed50be7a990ff4bb439e77629b308c177) work in progress (@ODOWDAIBM)
+- [c69c3d6](https://github.com/fabric-composer/fabric-composer/commit/c69c3d6a722dc6cf856ea0f60e098dd8b6f091da) work in progress (@ODOWDAIBM)
+- [cdc207e](https://github.com/fabric-composer/fabric-composer/commit/cdc207e29297cc6027d4625bfc34fda9599076dd) Initial commit (@sstone1)
+- [070208f](https://github.com/fabric-composer/fabric-composer/commit/070208f7f50c375801f312f538d54cd108ea6173) Test and editor setup (@14gracel)
+- [dd7994d](https://github.com/fabric-composer/fabric-composer/commit/dd7994d2358d7455a2f5b646d284bc925a78dda9) work in progress (@dselman)
+- [6aa9cee](https://github.com/fabric-composer/fabric-composer/commit/6aa9ceeb0563bc3abe72ae747f4100eb3cbe16d7) Automated commit to trigger downstream build
+- [d5e1966](https://github.com/fabric-composer/fabric-composer/commit/d5e1966ed8d09b7c0737d64d4a65a8ff0de5e3aa) Automated commit to trigger downstream build
+- [8d78267](https://github.com/fabric-composer/fabric-composer/commit/8d78267b3968e1149980c15cbea1a487ac704bb5) Automated commit to trigger downstream build
+- [7984a06](https://github.com/fabric-composer/fabric-composer/commit/7984a06e83b24b5d32b216724133e0d99673fcad) Automated commit to trigger downstream build
+- [12c9e0b](https://github.com/fabric-composer/fabric-composer/commit/12c9e0bbd401e8861cfda68f06a56b6b6d3a2a0e) update dependancies (@mbwhite)
+- [dff9297](https://github.com/fabric-composer/fabric-composer/commit/dff929796e3c9d6b10f85d0ff9d47e4b5c4e8545) Logging (@mbwhite)
+- [a7c8b89](https://github.com/fabric-composer/fabric-composer/commit/a7c8b8912f927cbd71b1d09612ab1b5108a40180) work in progress (@dselman)
+- [c5a3a6e](https://github.com/fabric-composer/fabric-composer/commit/c5a3a6e519ddf0eff3cf2962bf0472f3c4226814) Travis set up (@ODOWDAIBM)
+- [d2ab9a3](https://github.com/fabric-composer/fabric-composer/commit/d2ab9a3c60dd3c2f1ae298c11845c777cb8256ba) Travis set up (@ODOWDAIBM)
+- [599b962](https://github.com/fabric-composer/fabric-composer/commit/599b962d808038d8ce921108e00584528a142d96) command syntax (@ODOWDAIBM)
+- [3a15cbf](https://github.com/fabric-composer/fabric-composer/commit/3a15cbf14455185a93225422cbca89da07062813) first commit (@ODOWDAIBM)
+- [02844d1](https://github.com/fabric-composer/fabric-composer/commit/02844d15308bef0701014262550b868f4a2f3c4e) Automated commit to trigger downstream build
+- [d1579d8](https://github.com/fabric-composer/fabric-composer/commit/d1579d813c972020f1a3f2def066109610614541) Automated commit to trigger downstream build
+- [76992df](https://github.com/fabric-composer/fabric-composer/commit/76992dfdd71a1a606a696f783726b84931d142fa) Automated commit to trigger downstream build
+- [bc07e7b](https://github.com/fabric-composer/fabric-composer/commit/bc07e7b2c731203e7539818077d748ee2bbb3b79) Automated commit to trigger downstream build
+- [f23feac](https://github.com/fabric-composer/fabric-composer/commit/f23feac2de3255d488856ff7c0b4be05d2eba0b5) Automated commit to trigger downstream build
+- [b658623](https://github.com/fabric-composer/fabric-composer/commit/b658623009ec50ed8d512c6d8db00f4f72bef9f8) Automated commit to trigger downstream build
+- [55f7b6a](https://github.com/fabric-composer/fabric-composer/commit/55f7b6a9ca523da6d8381249cfab250f7f847d3e) Automated commit to trigger downstream build
+- [942b0e9](https://github.com/fabric-composer/fabric-composer/commit/942b0e9bd151f90de132e6e3fdb21c49093bcb38) Automated commit to trigger downstream build
+- [8d779ab](https://github.com/fabric-composer/fabric-composer/commit/8d779ab6ce9a9ee78d24f5ef1903f1f781c43694) Fix Travis file (@sstone1)
+- [d1848dd](https://github.com/fabric-composer/fabric-composer/commit/d1848dd4f0644fefced926b12b3b1e933eb64712) first commit (@sstone1)
+- [5fe7918](https://github.com/fabric-composer/fabric-composer/commit/5fe791837143c1f46c6ca5a2dc1db90592c07cd3) Automated unit tests and code coverage (@sstone1)
+- [749f415](https://github.com/fabric-composer/fabric-composer/commit/749f415d87cc212297f3f792b6dd77ab8060968c) Empty commit to trigger build (@sstone1)
+- [daafbd6](https://github.com/fabric-composer/fabric-composer/commit/daafbd6deac19a988833fab23c801ff8c7899982) first commit (@sstone1)
+- [beb6284](https://github.com/fabric-composer/fabric-composer/commit/beb6284429cdbcc8d2ac6cf6d91bdf93886aa509) Automated commit to trigger downstream build
+- [3e700cb](https://github.com/fabric-composer/fabric-composer/commit/3e700cb0b4483802fecd062d83ff4b683be4fe97) Automated commit to trigger downstream build
+- [92cedd2](https://github.com/fabric-composer/fabric-composer/commit/92cedd2f5e9897dcc437080fd517a94e9c40baf4) Automated commit to trigger downstream build
+- [e5577a7](https://github.com/fabric-composer/fabric-composer/commit/e5577a7c770e398eabcae252275bdd2c26e30485) Automated commit to trigger downstream build
+- [3d9dc27](https://github.com/fabric-composer/fabric-composer/commit/3d9dc27d1c1d0bbe438cd12d576128d284e148d6) Added support for reading JSDoc decorators for functions (@dselman)
+- [bd02046](https://github.com/fabric-composer/fabric-composer/commit/bd02046456e8e8e7afba5b7bd10e6b4fea9edf25) Automated commit to trigger downstream build
+- [68f8821](https://github.com/fabric-composer/fabric-composer/commit/68f8821fc462cb38a3e1ec400f5cc45cb7b99230) Automated commit to trigger downstream build
+- [8a0a11f](https://github.com/fabric-composer/fabric-composer/commit/8a0a11feb3bb080d3c5d9474d53c04dbcde90c39) Automated commit to trigger downstream build
+- [4e097c0](https://github.com/fabric-composer/fabric-composer/commit/4e097c0b3c4eda8347187ac03d3736c0e8b6143e) Automated commit to trigger downstream build
+- [fc60756](https://github.com/fabric-composer/fabric-composer/commit/fc60756e95e531a8242f0379fdc4a39b835e4214) Automated commit to trigger downstream build
+- [46d622b](https://github.com/fabric-composer/fabric-composer/commit/46d622b8eb73c647d10a0c4eb1c5e11f091386b2) Add Tern configuration file (@sstone1)
+- [fa6f4e0](https://github.com/fabric-composer/fabric-composer/commit/fa6f4e0ab3cb50ef7edb761573a96396fe89060b) Add Tern configuration file (@sstone1)
+- [25ffc4f](https://github.com/fabric-composer/fabric-composer/commit/25ffc4f20c1f734a4fca1fc020a6e813df66ee0e) Add Tern configuration file (@sstone1)
+- [0086098](https://github.com/fabric-composer/fabric-composer/commit/0086098931919d4093018481009c11c18172953b) Add Tern configuration file (@sstone1)
+- [04e1105](https://github.com/fabric-composer/fabric-composer/commit/04e11050372bc014e5154d02137958b02d7d3858) Added support for reading JSDoc decorators for functions (@dselman)
+- [6b05622](https://github.com/fabric-composer/fabric-composer/commit/6b056220a7fca6c2b6b11cc3862c9b889532259d) Initial drop of log api (@mbwhite)
+- [969592b](https://github.com/fabric-composer/fabric-composer/commit/969592be7197b957914890233f9a324a91309262) Automated commit to trigger downstream build
+- [69102cb](https://github.com/fabric-composer/fabric-composer/commit/69102cb6007440d9585cc7d57e4b59785e334a4d) Automated commit to trigger downstream build
+- [d4171fc](https://github.com/fabric-composer/fabric-composer/commit/d4171fc759fc215f11459bbb6d96c20494d3b019) Automated commit to trigger downstream build
+- [2b3cf76](https://github.com/fabric-composer/fabric-composer/commit/2b3cf765eff3659cc55f8a21cf1ea7425a6f4353) Automated commit to trigger downstream build
+- [4632615](https://github.com/fabric-composer/fabric-composer/commit/46326154aacac18a393109e26f28e7af435f521b) Check that the business network uml file is created (@dselman)
+- [c496eed](https://github.com/fabric-composer/fabric-composer/commit/c496eed60e4201e9c74c717e0de9ed27cf265215) Fixed UML generation for business network (@dselman)
+- [4213d67](https://github.com/fabric-composer/fabric-composer/commit/4213d67240bdedafb0d8ff2d33a4e216f25d5969) Add missing Travis file (@sstone1)
+- [726082e](https://github.com/fabric-composer/fabric-composer/commit/726082ea7abf9e6f233b89f1a02da77911729266) Automated commit to trigger downstream build
+- [96d773b](https://github.com/fabric-composer/fabric-composer/commit/96d773b31f1082a103bdc32064607dde9c8bc2b8) Automated commit to trigger downstream build
+- [b351f02](https://github.com/fabric-composer/fabric-composer/commit/b351f02f8d00c29822401f1f60d3e88ee3c33b60) Automated commit to trigger downstream build
+- [f2d6fb6](https://github.com/fabric-composer/fabric-composer/commit/f2d6fb6313b09134d83544db26b3d10f45303c1d) Automated commit to trigger downstream build
+- [a61e2f1](https://github.com/fabric-composer/fabric-composer/commit/a61e2f105a087a1d3311de85bcf1455497fb5264) More changes for client (@sstone1)
+- [84ef4fd](https://github.com/fabric-composer/fabric-composer/commit/84ef4fd1afef1fce52e7f433e977fc59ff2cdc6e) Initial client code drop (@sstone1)
+- [04dc19d](https://github.com/fabric-composer/fabric-composer/commit/04dc19d0c3bbf16dedb1456eb4af259322a3bfad) Add missing chaincode utility functions (@sstone1)
+- [79ccdbc](https://github.com/fabric-composer/fabric-composer/commit/79ccdbca5380fe5e857df6d3beeed2d9fda2c0b9) Automated commit to trigger downstream build
+- [66cd623](https://github.com/fabric-composer/fabric-composer/commit/66cd623ac812cccf848b41c10eaffe7bc0bf3fc3) Automated commit to trigger downstream build
+- [5e8d2fc](https://github.com/fabric-composer/fabric-composer/commit/5e8d2fced411dd620f7680596aca174c213718cc) Fix dodgy merge error (@sstone1)
+- [207b15a](https://github.com/fabric-composer/fabric-composer/commit/207b15aaa6612dee2f03b1d6a46d37d437829cc8) Automated commit to trigger downstream build
+- [e436b4a](https://github.com/fabric-composer/fabric-composer/commit/e436b4a623ccd484555bdb6321945d4a10d24078) Automated commit to trigger downstream build
+- [1707ec5](https://github.com/fabric-composer/fabric-composer/commit/1707ec5477136edd0e3b46fb58b14273bb277e91) Public API change (@dselman)
+- [0e626ec](https://github.com/fabric-composer/fabric-composer/commit/0e626ec1a8385eb1709c0565a8192305f574d522) Refactoring to move JS functions out of CTO files and introduce BusinessNetwork (@dselman)
+- [48392f0](https://github.com/fabric-composer/fabric-composer/commit/48392f0650deba11b085b80077d61f76a43e5835) Automated commit to trigger downstream build
+- [9845424](https://github.com/fabric-composer/fabric-composer/commit/984542480859016b083dc848a5e629f39067ede9) Add missing index.js file (@sstone1)
+- [84649c9](https://github.com/fabric-composer/fabric-composer/commit/84649c91c9127f66435ae2afca05149d22bec8db) Remove extraneous Go ignores (@sstone1)
+- [93c103f](https://github.com/fabric-composer/fabric-composer/commit/93c103f6f37112e0faba1025d6842c7d340c7912) first commit (@sstone1)
+- [263af7a](https://github.com/fabric-composer/fabric-composer/commit/263af7af84384ffc43ee3c68fc08be0790aeba17) first commit (@sstone1)
+- [6d98de6](https://github.com/fabric-composer/fabric-composer/commit/6d98de686ac2767b7d70cc281a1d12a842ebc773) Automated commit to trigger downstream build
+- [560ebb2](https://github.com/fabric-composer/fabric-composer/commit/560ebb293b01a745e60b6f1967ae07184a8e2624) Automated commit to trigger downstream build
+- [c195d75](https://github.com/fabric-composer/fabric-composer/commit/c195d750c120e69a9a5b9658a2f28ff8277a83d4) Add connection manager APIs (@sstone1)
+- [1fb684a](https://github.com/fabric-composer/fabric-composer/commit/1fb684a27fcd8a77cda3c49c2e95eb5ce1465d83) Automated commit to trigger downstream build
+- [afef347](https://github.com/fabric-composer/fabric-composer/commit/afef3479ee8e995b92d2dbedb389c4cc39d40b12) Add missing moment dependency (@sstone1)
+- [5e77c79](https://github.com/fabric-composer/fabric-composer/commit/5e77c791af65f12e1e8ade267bb1b56dcba00e3d) Add missing moment dependency (@sstone1)
+- [e80b07f](https://github.com/fabric-composer/fabric-composer/commit/e80b07f1b809d320c9d41884d15b652f75a3a982) Automated commit to trigger downstream build
+- [76bb218](https://github.com/fabric-composer/fabric-composer/commit/76bb2186ce988c9e1123754f8b0a1871d32dc2c0) Trigger downstream builds on deploy (@sstone1)
+- [0e860fc](https://github.com/fabric-composer/fabric-composer/commit/0e860fc79ef8970a6dddda7b7f74312d867c2795) Initial code drop (@sstone1)
+- [3457dbc](https://github.com/fabric-composer/fabric-composer/commit/3457dbc5a9203b37004ad72a641b28ebef2abfd9) Remove Go code (@sstone1)
+- [6cfdfe4](https://github.com/fabric-composer/fabric-composer/commit/6cfdfe4508b6f2fc6df034a3f39cef323a3bdf5b) Initial commit (@sstone1)
+- [445ee8d](https://github.com/fabric-composer/fabric-composer/commit/445ee8dab8490a869b9cfd239a126fee9ee0dcdd) Automated commit to trigger downstream build
+- [f8e0894](https://github.com/fabric-composer/fabric-composer/commit/f8e0894c623e51c96d06cca119ca880bde380572) Trigger downstream builds on deploy (@sstone1)
+- [9e7a03a](https://github.com/fabric-composer/fabric-composer/commit/9e7a03abcf7a1c90f4bd3fe9a94b853708c44f73) Trigger downstream builds on deploy (@sstone1)
+- [fd3443c](https://github.com/fabric-composer/fabric-composer/commit/fd3443cbd99620409b9e7ff59760191df0b13b91) I can haz push 2 npm plz (@sstone1)
+- [019918b](https://github.com/fabric-composer/fabric-composer/commit/019918bc42df463a9347c97da2afa9c2a7f1fb23) I can haz Travis builds plz (@sstone1)
+- [4866f8f](https://github.com/fabric-composer/fabric-composer/commit/4866f8fa434ec16cd80b07f50c77afe804209de3) I can haz push 2 npm plz (@sstone1)
+- [74c00af](https://github.com/fabric-composer/fabric-composer/commit/74c00af18ec5d942dadfc9b900acd0897f77264b) I can haz Travis builds plz (@sstone1)
+- [0713514](https://github.com/fabric-composer/fabric-composer/commit/07135143613c772314f7478047edd0e7a6330fbc) Automate generation of Go chaincode (@sstone1)
+- [97ca387](https://github.com/fabric-composer/fabric-composer/commit/97ca387d917be8fd5455e9847fc275b90819550d) Updated API changelog (@dselman)
+- [197b05a](https://github.com/fabric-composer/fabric-composer/commit/197b05a91685d670eba412d73072a77ade329eec) Added Introspector (@dselman)
+- [73abfee](https://github.com/fabric-composer/fabric-composer/commit/73abfee66e16ac6047627854a03f6254a8b91fb0) Initial drop of JavaScript runtime (@sstone1)
+- [9dbf8b0](https://github.com/fabric-composer/fabric-composer/commit/9dbf8b0b0e997eca409f25957082f07ce880f4b4) Common updates from JavaScript engine work (@sstone1)
+- [2e33d2e](https://github.com/fabric-composer/fabric-composer/commit/2e33d2e432abae630453c17878256f46a7611952) Removed unused dependencies (@dselman)
+- [5401f4b](https://github.com/fabric-composer/fabric-composer/commit/5401f4bc9cfc972130575cde7669d65cccd47a54) Split into modules (@dselman)
+- [ceec756](https://github.com/fabric-composer/fabric-composer/commit/ceec756ddda1744280b40522757b4fda525fc814) Initial commit (@dselman)
+- [94a00ae](https://github.com/fabric-composer/fabric-composer/commit/94a00aee5e630ec0834781dfbd4d17f92677d045) Initial commit (@dselman)
+- [2844348](https://github.com/fabric-composer/fabric-composer/commit/2844348d0dee004ade24edbe17cb5e45e817d5d2) Initial commit (@dselman)
+- [01fe062](https://github.com/fabric-composer/fabric-composer/commit/01fe06266eec2abbfd629910929bd1e222132718) Initial commit (@dselman)

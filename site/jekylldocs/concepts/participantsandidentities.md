@@ -5,7 +5,10 @@ category: concepts
 sidebar: sidebars/concepts.md
 excerpt: Business Network
 ---
+
 # Participants and Identities
+
+---
 
 A `Participant` is an actor in a business network. A participant might be an
 individual or an organization. A participant can create assets, and also exchange
@@ -61,6 +64,6 @@ function to use.
 
 ## Related Reference
 
-[Participant add command](../reference/concerto.participant.add.md)  
-[Identity issue command](../reference/concerto.identity.issue.md)  
-[Identity revoke command](../reference/concerto.identity.revoke.md)  
+[Participant add command](../tasks/participant-add.md)  
+[Identity issue command](../tasks/identity-issue.md)  
+[Identity revoke command](../tasks/identity-revoke.md)  

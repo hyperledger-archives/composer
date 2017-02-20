@@ -1,0 +1,36 @@
+<div class="editor">
+  <h1>Placeholder for sample name</h1>
+  <div class="container">
+    <section>
+      <!-- file stuff and import/export stuff goes here -->
+      <ul>
+        <li>File 1</li>
+        <li>File 2</li>
+        <!-- This should be just one button -->
+        <li><button type="button" class="primary" (click)="addModelFileModal.show()">
+          <span class="fa fa-plus" aria-hidden="true"></span> Model file
+        </button>
+        </li>
+        <li>
+          <button type="button" class="primary" (click)="addScriptFileModal.show()">
+            <span class="fa fa-plus" aria-hidden="true"></span> Script file
+          </button>
+        </li>
+      </ul>
+
+      <button type="button" class="action" (click)="openImportModal()">Import</button>
+      <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || currentError">
+        Update
+      </button>
+    </section>
+
+    <!-- code goes here --->
+    <section>
+      <codemirror [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
+      </codemirror>
+      <div class="alert alert-danger mt-2" role="alert" *ngIf="currentError">
+        {{currentError}}
+      </div>
+    </section>
+  </div>
+</div>

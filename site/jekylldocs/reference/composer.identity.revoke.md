@@ -8,6 +8,8 @@ excerpt: Fabric Composer Identity Revoke Command
 
 # composer identity revoke
 
+---
+
 The `composer identity issue` command revokes an existing identity from a participant in a
 participant registry. See the task [Revoke an Identity from a Participant](../tasks/identity-revoke.md)
 for a walkthrough of using this command or the API.

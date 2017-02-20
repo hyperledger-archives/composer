@@ -18,11 +18,22 @@ const Field = require('../../lib/introspect/field');
 const NumberValidator = require('../../lib/introspect/numbervalidator');
 
 require('chai').should();
+const chai = require('chai'), should = chai.should();
+
 const sinon = require('sinon');
 
 describe('NumberValidator', () => {
 
     let mockField;
+
+    // valid test parms
+    let VALID_UPPER_AND_LOWER_BOUND_AST = {'lower' : { 'type' : 'Literal' , 'value' : 0 }, 'upper' : { 'type' : 'Literal' , 'value' : 100 } };
+    let NO_LOWER_BOUND_AST = {'lower' : null, 'upper' : { 'type' : 'Literal' , 'value' : 100 } };
+    let NO_UPPER_BOUND_AST = {'lower' : { 'type' : 'Literal' , 'value' : 0 }, 'upper' : null };
+
+    // error parms
+    let NO_PARMS_IN_AST = {'lower' : null, 'upper' : null };
+    let LOWER_IS_HIGHER_THAN_UPPER = {'lower' : { 'type' : 'Literal' , 'value' : 200 }, 'upper' : { 'type' : 'Literal' , 'value' : 100 } };
 
     beforeEach(() => {
         mockField = sinon.createStubInstance(Field);
@@ -30,62 +41,78 @@ describe('NumberValidator', () => {
     });
 
     describe('#constructor', () => {
-
-        it('should store values', () => {
-            let v = new NumberValidator(mockField, {lower: 10,upper: 20});
-            v.lowerBound.should.equal(10);
-            v.upperBound.should.equal(20);
+        it('should accept valid constructor parms VALID_UPPER_AND_LOWER_BOUND_AST', () => {
+            let validator = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
+            validator.lowerBound.value.should.equal(0);
+            validator.upperBound.value.should.equal(100);
         });
 
-        it('should detect lower bound greater than upper bound', () => {
+        it('should accept valid constructor parms NO_LOWER_BOUND_AST', () => {
+            let validator = new NumberValidator(mockField, NO_LOWER_BOUND_AST);
+            should.equal(validator.lowerBound, null);
+            validator.upperBound.value.should.equal(100);
+        });
 
+        it('should accept valid constructor parms NO_UPPER_BOUND_AST', () => {
+            let validator = new NumberValidator(mockField, NO_UPPER_BOUND_AST);
+            validator.lowerBound.value.should.equal(0);
+            should.equal(validator.upperBound, null);
+        });
+
+        it('should throw an error for constructor parms NO_PARMS_IN_AST', () => {
             (() => {
-                new NumberValidator(mockField, {lower: 10,upper: 9});
-            }).should.throw(/Lower bound must be less than or equal to upper bound/);
+                new NumberValidator(mockField, NO_PARMS_IN_AST);
+            }).should.throw(/Invalid range, lower and-or upper bound must be specified./);
+        });
+
+        it('should throw an error for constructor parms LOWER_IS_HIGHER_THAN_UPPER', () => {
+            (() => {
+                new NumberValidator(mockField, LOWER_IS_HIGHER_THAN_UPPER);
+            }).should.throw(/Lower bound must be less than or equal to upper bound./);
         });
     });
 
     describe('#validate', () => {
 
         it('should validate', () => {
-            let v = new NumberValidator(mockField, {lower: 10,upper: 20});
-            v.validate('id', 10);
-            v.validate('id', 15);
-            v.validate('id', 20);
+            let v = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
+            v.validate('id', 1);
+            v.validate('id', 50);
+            v.validate('id', 100);
         });
 
         it('should detect lower bound violation', () => {
-            let v = new NumberValidator(mockField, {lower: 10,upper: 20});
+            let v = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
 
             (() => {
-                v.validate('id', 9);
-            }).should.throw(/org.acme.myField: Value is outside lower bound 9/);
+                v.validate('id', -1);
+            }).should.throw(/org.acme.myField: Value is outside lower bound -1/);
         });
 
         it('should detect upper bound violation', () => {
-            let v = new NumberValidator(mockField, {lower: 10,upper: 20});
+            let v = new NumberValidator(mockField, VALID_UPPER_AND_LOWER_BOUND_AST);
 
             (() => {
-                v.validate('id', 21);
-            }).should.throw(/org.acme.myField: Value is outside upper bound 21/);
+                v.validate('id', 101);
+            }).should.throw(/org.acme.myField: Value is outside upper bound 101/);
         });
 
         it('should ignore missing upper bound', () => {
-            let v = new NumberValidator(mockField, {lower: 10});
+            let v = new NumberValidator(mockField, NO_UPPER_BOUND_AST);
             v.validate('id', 21);
 
             (() => {
-                v.validate('id', 9);
-            }).should.throw(/org.acme.myField: Value is outside lower bound 9/);
+                v.validate('id', -1);
+            }).should.throw(/org.acme.myField: Value is outside lower bound -1/);
         });
 
         it('should ignore missing lower bound', () => {
-            let v = new NumberValidator(mockField, {upper: 20});
+            let v = new NumberValidator(mockField, NO_LOWER_BOUND_AST);
             v.validate('id', -1);
 
             (() => {
-                v.validate('id', 21);
-            }).should.throw(/org.acme.myField: Value is outside upper bound 21/);
+                v.validate('id', 101);
+            }).should.throw(/org.acme.myField: Value is outside upper bound 101/);
         });
     });
 });

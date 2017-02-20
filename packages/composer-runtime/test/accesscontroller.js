@@ -71,8 +71,8 @@ describe('AccessController', () => {
         }`);
         aclManager = new AclManager(modelManager);
         factory = new Factory(modelManager);
-        asset = factory.newInstance('org.acme.test', 'TestAsset', 'A1234');
-        participant = factory.newInstance('org.acme.test', 'TestParticipant', 'P5678');
+        asset = factory.newResource('org.acme.test', 'TestAsset', 'A1234');
+        participant = factory.newResource('org.acme.test', 'TestParticipant', 'P5678');
         controller = new AccessController(aclManager);
         controller.setParticipant(participant);
     });
