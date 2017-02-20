@@ -1,0 +1,21 @@
+syntax = "proto3";
+package main;
+  
+message UpdateShipment {
+	
+	string ShipmentStatus = 1;
+	string UpdateTimestamp = 2;
+	
+	message Invoice {
+		string InvoiceId = 1;
+		message LineItem {
+   			int32 InvoiceLineNumber = 1;
+		 	int32 POLineNumber = 2;
+   		}
+   		
+   		repeated LineItem LineItems = 2;
+	}
+	
+	repeated Invoice INVOICE = 3;
+   
+}

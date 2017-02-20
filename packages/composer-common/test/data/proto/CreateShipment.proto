@@ -1,0 +1,16 @@
+syntax = "proto3";
+package main;
+  
+message CreateShipment {
+	string InvoiceId = 1;
+	string CarrierCode = 2;
+	string TrackingNumber = 3;
+	string RoutingDescriptor = 4;
+	
+	message LineItem {
+   		 int32 InvoiceLineNumber = 1;
+		 int32 POLineNumber = 2;
+   	}
+
+   	repeated LineItem LineItems = 5;
+}
