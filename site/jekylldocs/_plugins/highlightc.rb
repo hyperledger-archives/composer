@@ -47,7 +47,7 @@ eos
         rendered_output = add_code_tag(output,originalcode)
         codeId = "cc1"
 
-        prefix + rendered_output + suffix +    "<pre  style=\"visibility:hidden;\" id=\"c1\">#{originalcode}</pre><button class=\"btn\" data-clipboard-target=\"#c1\">Copy to clipboard</button>"
+        prefix + rendered_output + suffix +    "<pre class=\"codecopy\" style=\"display:none;\" id=\"c1\">#{originalcode}</pre><button class=\"btn\" data-clipboard-target=\"#c1\">Copy to clipboard</button>"
       end
 
       def sanitized_opts(opts, is_safe)
