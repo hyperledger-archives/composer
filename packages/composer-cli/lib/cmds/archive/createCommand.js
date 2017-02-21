@@ -25,10 +25,6 @@ module.exports.builder = function (yargs){
             .option('moduleName',{alias: 'm', required: false, describe: 'Name of the npm module to use '})
             .conflicts('inputDir','moduleName')
             .epilog('Only one of either inputDir or moduleName must be specified.');
-          //  .option('sourceType',{alias: 't', required: true, choices: ['module','dir'], describe: 'npm module name or a directory as the source of the Business Network'})
-          //  .option('sourceName',{alias: 'n', required: true, describe: 'Name of the npm module or directory'})
-          //  .usage('');
-
 };
 
 

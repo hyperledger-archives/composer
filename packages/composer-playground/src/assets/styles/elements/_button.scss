@@ -1,0 +1,127 @@
+// Buttons
+.composer {
+  button {
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 1px;
+    margin: 0;
+    box-shadow: none;
+    line-height: 30px;
+    cursor: pointer;
+
+    //height: 3rem;
+    background-color: $primary-text;
+    flex-basis: auto;
+    width: auto;
+    padding-right: 30px;
+    padding-left: 30px;
+    font-family: $font-stack;
+    font-size: 0.9rem;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+    transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+    min-width: 100px;
+
+
+    &:focus {
+      outline: none;
+    }
+
+    & + button {
+      margin-left: 0.8em;
+    }
+
+    h1 {
+      display: inline;
+      margin-right: .5em;
+    }
+
+    &[disabled],
+    &[disabled]:hover {
+      opacity: .65;
+      cursor: not-allowed;
+    }
+
+    &.primary {
+      background-color: $first-highlight;
+      border-color: $first-highlight;
+      color: $white;
+
+      &:hover {
+        background-color: $second-highlight;
+      }
+      &.active, &:active, &:focus {
+        background-color: $second-highlight;
+      }
+
+      &[disabled], &[disabled]:hover {
+        background-color: $fifth-highlight;
+        border-color: $fifth-highlight;
+      }
+    }
+
+    &.secondary {
+      background-color: $white;
+      color: $first-highlight;
+      border-color: $first-highlight;
+
+      &:hover {
+        background-color: $second-highlight;
+        border-color: $second-highlight;
+        color: $white;
+
+      }
+      &.active, &:active, &:focus {
+        background-color: $second-highlight;
+        border-color: $second-highlight;
+        color: $second-highlight
+      }
+
+      &[disabled], &[disabled]:hover {
+        border-color: $fifth-highlight;
+        color: $fifth-highlight
+      }
+    }
+
+    &.action {
+      border: none;
+      border-bottom: 2px solid $primary-text;
+      background-color: transparent;
+      color: $primary-text;
+      min-width: 0;
+      padding: 0;
+
+      &.icon {
+        //TODO: styles for when has icon
+      }
+
+      &:hover{
+        color: $first-highlight;
+        background-color: transparent;
+        border-bottom: 1px solid $first-highlight;
+      }
+
+      &:focus,
+      &.active,
+      &:active {
+        color: $first-highlight;
+        background-color: transparent;
+        border-bottom: 1px solid $first-highlight;
+      }
+
+      &[disabled], &[disabled]:hover {
+        background-color: transparent;
+        color: $fourth-highlight;
+        border-bottom: 1px solid $fourth-highlight;
+      }
+
+    }
+  }
+}
