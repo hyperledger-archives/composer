@@ -92,20 +92,20 @@
 
     &.action {
       border: none;
-      border-bottom: 2px solid $primary-text;
+      border-bottom: 2px solid transparent;
       background-color: transparent;
       color: $primary-text;
       min-width: 0;
       padding: 0;
 
-      &.icon {
-        //TODO: styles for when has icon
-      }
-
       &:hover{
         color: $first-highlight;
         background-color: transparent;
-        border-bottom: 1px solid $first-highlight;
+        border-bottom: 2px solid $first-highlight;
+
+        svg.ibm-icon {
+          fill: $first-highlight;
+        }
       }
 
       &:focus,
@@ -113,15 +113,22 @@
       &:active {
         color: $first-highlight;
         background-color: transparent;
-        border-bottom: 1px solid $first-highlight;
+        border-bottom: 2px solid $first-highlight;
       }
 
       &[disabled], &[disabled]:hover {
         background-color: transparent;
         color: $fourth-highlight;
-        border-bottom: 1px solid $fourth-highlight;
+        border-bottom: 2px solid $fourth-highlight;
       }
 
+      &.icon {
+        svg.ibm-icon {
+          position: absolute;
+          top: 3px;
+          right: 3px;
+        }
+      }
     }
   }
 }

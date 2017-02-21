@@ -1,5 +1,24 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
 .editor {
+  padding: $space-medium;
   .container {
     display: flex;
+
+    .files {
+      flex: 1;
+    }
+
+    .add-file {
+      margin: $space-medium 0;
+      padding: $space-smedium 0;
+      border-top: 1px solid $fourth-highlight;
+      border-bottom: 1px solid $fourth-highlight;
+    }
+  }
+
+  .import-button {
+    margin-bottom: $space-smedium;
   }
 }

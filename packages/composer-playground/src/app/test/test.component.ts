@@ -10,8 +10,8 @@ import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
-  styles: [
-    require('./test.component.scss').toString()
+  styleUrls: [
+    './test.component.scss'.toString()
   ]
 })
 export class TestComponent implements OnInit {
