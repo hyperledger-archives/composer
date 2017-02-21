@@ -34,7 +34,7 @@ const program = require('commander');
  */
 program
     .version('1.0')
-    .description('convert a set of Concerto models to code')
+    .description('convert a set of Composer models to code')
     .usage('[options] <input model files ...>')
     .option('-f, --format <format>', 'Format of code to generate. Defaults to Go.', 'Go')
     .option('-o, --outputDir <outputDir>', 'Output directory')
