@@ -43,6 +43,13 @@ import { NotificationService } from './notification.service';
 import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from "./services/samplebusinessnetwork.service";
 
+var actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
+actionBasedIcons.keys().forEach(actionBasedIcons);
+var formattingIcons = require.context('../assets/svg/formatting', false, /.*\.svg$/);
+formattingIcons.keys().forEach(formattingIcons);
+var objectBasedIcons = require.context('../assets/svg/object-based', false, /.*\.svg$/);
+objectBasedIcons.keys().forEach(objectBasedIcons);
+
 // Application wide providers
 const APP_PROVIDERS = [
   ...APP_RESOLVER_PROVIDERS,

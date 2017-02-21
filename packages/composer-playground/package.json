@@ -163,6 +163,7 @@
     "source-map-loader": "^0.1.5",
     "string-replace-loader": "^1.0.5",
     "style-loader": "^0.13.1",
+    "svg-sprite-loader": "^0.3.0",
     "thenify": "^3.2.1",
     "thenify-all": "^1.6.0",
     "to-string-loader": "^1.1.5",
