@@ -34,7 +34,6 @@ module.exports = yeoman.Base.extend({
     // Have Yeoman greet the user.
         console.log('Welcome to the Angular2 skeleton app generator');
 
-
         return this.prompt([
             {
                 type: 'confirm',
@@ -271,26 +270,27 @@ module.exports = yeoman.Base.extend({
     },
 
     writing: function () {
-
+        console.log('entered writing')
         let self = this;
 
         if(liveNetwork){
-            console.log('About to connect to a running business network');
-            businessNetworkConnection.connect(this.connectionProfileName, this.networkIdentifier, this.enrollmentId, this.enrollmentSecret)
-            .then((result) => {
-                console.log('Connected to:',this.networkIdentifier);
-                businessNetworkDefinition = result;
 
-            })
-            .then(() => {
-                return businessNetworkConnection.disconnect();
-            })
-            .then(() => {
-                this.destinationRoot(this.appName);
-                destinationPath = this.destinationPath();
-                createApp();
-                this.installDependencies();
-            });
+                console.log('About to connect to a running business network');
+
+                return businessNetworkConnection.connect(this.connectionProfileName, this.networkIdentifier, this.enrollmentId, this.enrollmentSecret)
+                .then((result) => {
+                    console.log('Connected to:',this.networkIdentifier);
+                    businessNetworkDefinition = result;
+                    return businessNetworkConnection.disconnect();
+
+                })
+                .then(() => {
+                    this.destinationRoot(this.appName);
+                    destinationPath = this.destinationPath();
+                    createApp();
+                    this.installDependencies();
+                });
+
         }
         else{
             console.log('About to read a business network archive file');
