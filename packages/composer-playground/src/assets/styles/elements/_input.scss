@@ -14,18 +14,4 @@
       //TODO: check if need this
     }
 	}
-
-	input[type=search] {
-		border: 1px solid $fourth-highlight;
-		padding-left: 2.5em;
-		background: url(#{$composer-images-path}/search_24.svg) no-repeat .5em 50% / 1em 1em;
-		width: 100%;
-		font-size: 1.1em;
-    padding-top: .3em;
-    padding-bottom: 0.3em;
-	}
-
-	input.filter[type=search] {
-		background: url(#{$composer-images-path}/filter_24.svg) no-repeat .5em 50% / 1em 1em;
-	}
 }

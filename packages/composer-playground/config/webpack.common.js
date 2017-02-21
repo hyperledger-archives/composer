@@ -172,8 +172,12 @@ module.exports = function (options) {
           loader: "file-loader"
         },
         {
-          test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-          loader: "url-loader?limit=10000&minetype=image/svg+xml"
+          test: /\.svg$/,
+          loader: 'svg-sprite-loader?' + JSON.stringify({
+            name: 'icon-[1]',
+            prefixize: true,
+            regExp: './assets/svg/.*/(.*)\\.svg'
+          })
         },
 
         /**

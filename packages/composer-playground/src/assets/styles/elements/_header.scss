@@ -1,20 +1,30 @@
 .composer {
   header {
     height: 50px;
-    margin-bottom: .5em;
     display: flex;
-    flex-direction: column;
+    background-color: $fourth-highlight ;
+    align-items: center;
 
-    h1 {
-      width: 100%;
-      flex: 1;
+    & > *:first-child {
+      padding-left: $space-medium;
+      padding-right: $space-large;
+    }
+
+    & > *:last-child {
+      padding-right: $space-medium;
     }
 
     nav {
       display: flex;
+      flex: 1;
 
       .links {
         flex: 1;
+      }
+
+      button {
+        line-height: 45px;
+        margin-top: 5px;
       }
     }
   }
