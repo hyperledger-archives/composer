@@ -497,8 +497,8 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete
      * @return {Promise} A promise that is resolved when complete.
      */
-    isOAuthEnabled(callback) {
-        if(config.clientId && config.clientSecret) {
+    isOAuthEnabled (callback) {
+        if (config.clientId && config.clientSecret) {
             return callback(null, true);
         }
 
@@ -549,22 +549,24 @@ class ConnectorServer {
         LOG.entry(method, accessCode);
 
         let endpoint = config.githubAccessTokenUrl + '?' +
-            'client_id=' + config.clientId +
-            '&client_secret=' + config.clientSecret +
-            '&code=' + accessCode;
+            'code=' + accessCode +
+            '&client_id=' + config.clientId +
+            '&client_secret=' + config.clientSecret;
 
         return request({
             method : 'POST',
             url : endpoint,
             json : true
         }, function handleResponse (err, response) {
-            if (err) {
-                LOG.error({err : err}, 'Error occurred while attempting to exchange code for access token.');
-                return callback(err);
+            if (err || response.body.error) {
+                let error = err || response.body.error;
+                LOG.error({err : error}, 'Error occurred while attempting to exchange code for access token.');
+                return callback(error);
             }
 
             return callback(null, response.body);
         });
+
     }
 }
 
