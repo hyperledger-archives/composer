@@ -65,7 +65,7 @@
     "composer-common": "^0.4.4",
     "debug": "^2.4.4",
     "fast-json-patch": "^1.1.2",
-    "jsonata": "^1.0.10",
+    "jsonata": "1.0.10",
     "lru-cache": "^4.0.2",
     "sha.js": "^2.4.8"
   }
