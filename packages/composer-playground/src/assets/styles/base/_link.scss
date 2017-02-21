@@ -1,0 +1,23 @@
+// Links
+.fabric {
+	a,
+	a:visited {
+		color: $first-highlight;
+		text-decoration: none;
+		cursor: pointer;
+
+		&:hover {
+			border-bottom: 2px solid $second-highlight;
+			text-decoration: none;
+			color: $second-highlight;
+		}
+
+		&:active,
+		&:focus {
+			outline: none;
+			border-bottom: 2px solid $first-highlight;
+			text-decoration: none;
+			color: $first-highlight;
+		}
+	}
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39 (31667) - http://www.bohemiancoding.com/sketch -->
+    <title>Checkbox / Checked</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Checkboxes" transform="translate(-580.000000, -300.000000)">
+            <g id="Checkbox-/-Checked" transform="translate(580.000000, 300.000000)">
+                <g id="Group-5">
+                    <g id="Group-16" fill="#5A6464">
+                        <rect id="Rectangle-974" x="0" y="0" width="24" height="24" rx="4"></rect>
+                    </g>
+                    <polyline id="Page-1" stroke="#FDFDFD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="6 12.2729865 10.8581611 17.1311475 18.5744833 7"></polyline>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
