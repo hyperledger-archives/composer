@@ -257,8 +257,6 @@ class BusinessNetworkConnector extends Connector {
                             registry.resolveAll()
                                 .then((result) => {
                                     result.forEach((res) => {
-                                        console.log('RESULT: '+res.$class);
-                                        console.log('RESULT: '+JSON.stringify(res));
                                         results.push(this.serializer.toJSON(res));
                                     });
                                     callback(null, results);
