@@ -5,6 +5,7 @@
 [Coding a Business Network Definition]({{site.baseurl}}/start/getting-started-coding-bnd.html)
 [Generating a REST API]({{site.baseurl}}/start/getting-started-rest-api.html)
 [Writing a node.js Application]({{site.baseurl}}/start/getting-started-nodejs-app.html)
+[Installing and running the playground]({{site.baseurl}}/start/getting-started-playground.html)
 **[Concepts]({{site.baseurl}}/concepts/businessnetwork.html)**
 **[Tasks]({{site.baseurl}}/tasks/prerequisites.html)**
 **[API Documentation]({{site.baseurl}}/jsdoc/index.html)**
