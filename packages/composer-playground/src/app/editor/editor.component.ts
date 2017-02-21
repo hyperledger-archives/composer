@@ -22,8 +22,8 @@ import 'codemirror/addon/scroll/simplescrollbars';
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
-  styles: [
-    require('./editor.component.scss').toString()
+  styleUrls: [
+    './editor.component.scss'.toString()
   ]
 })
 export class EditorComponent implements OnInit {
