@@ -204,7 +204,7 @@ class BusinessNetworkConnector extends Connector {
                     debug('doResolve', doResolve);
                     let filterKeys = Object.keys(filter);
 
-                    if(filterKeys.includes('where')) {
+                    if(filterKeys.indexOf('where') >= 0) {
                         debug('where', JSON.stringify(filter.where));
                         let whereKeys = Object.keys(filter.where);
                         debug('where keys', whereKeys);
@@ -212,7 +212,7 @@ class BusinessNetworkConnector extends Connector {
                         debug('identifierField', identifierField);
 
                         // Check we have the right identifier for the object type
-                        if(whereKeys.includes(identifierField)) {
+                        if(whereKeys.indexOf(identifierField) >= 0) {
                             let objectId = filter.where[identifierField];
                             if(doResolve) {
                                 registry.resolve(objectId)
@@ -223,7 +223,7 @@ class BusinessNetworkConnector extends Connector {
                                 .catch((error) => {
                                     // check the error - it might be ok just an error indicating that the object doesn't exist
                                     debug('all: error ', error);
-                                    if(error.toString().includes('does not exist')) {
+                                    if(error.toString().indexOf('does not exist') >= 0) {
                                         callback(null, {});
                                     } else {
                                         callback(error);
@@ -239,7 +239,7 @@ class BusinessNetworkConnector extends Connector {
                                 .catch((error) => {
                                     // check the error - it might be ok just an error indicating that the object doesn't exist
                                     debug('all: error ', error);
-                                    if(error.toString().includes('does not exist')) {
+                                    if(error.toString().indexOf('does not exist') >= 0) {
                                         callback(null, {});
                                     } else {
                                         callback(error);
@@ -257,8 +257,6 @@ class BusinessNetworkConnector extends Connector {
                             registry.resolveAll()
                                 .then((result) => {
                                     result.forEach((res) => {
-                                        console.log('RESULT: '+res.$class);
-                                        console.log('RESULT: '+JSON.stringify(res));
                                         results.push(this.serializer.toJSON(res));
                                     });
                                     callback(null, results);
@@ -298,7 +296,7 @@ class BusinessNetworkConnector extends Connector {
     isResolveSet(filter) {
         debug('isResolveSet', filter);
         let filterKeys = Object.keys(filter);
-        if(filterKeys.includes('include')) {
+        if(filterKeys.indexOf('include') >= 0) {
             if(filter.include === 'resolve') {
                 return true;
             } else {
