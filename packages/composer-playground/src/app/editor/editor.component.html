@@ -2,26 +2,27 @@
   <h1>Placeholder for sample name</h1>
   <div class="container">
     <section>
-      <!-- file stuff and import/export stuff goes here -->
-      <ul>
-        <li>File 1</li>
-        <li>File 2</li>
-        <!-- This should be just one button -->
-        <li><button type="button" class="primary" (click)="addModelFileModal.show()">
-          <span class="fa fa-plus" aria-hidden="true"></span> Model file
-        </button>
-        </li>
-        <li>
-          <button type="button" class="primary" (click)="addScriptFileModal.show()">
-            <span class="fa fa-plus" aria-hidden="true"></span> Script file
+      <div class="files">
+        <div class="side-bar-nav">
+          <!-- file stuff and import/export stuff goes here -->
+          <ul>
+            <li *ngFor="let file of files" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
+              <h3 *ngIf="file.model">Model File</h3>
+              <h3 *ngIf="file.script">Script File</h3>
+              <h3 *ngIf="file.acl">Access Control</h3>
+              <div>{{file.displayID}}</div>
+            </li>
+          </ul>
+        </div>
+        <div class="add-file">
+          <button class="action" type="button">+ Add a file...</button>
+        </div>
+        <div>
+          <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || currentError">
+            Update
           </button>
-        </li>
-      </ul>
-
-      <button type="button" class="action" (click)="openImportModal()">Import</button>
-      <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || currentError">
-        Update
-      </button>
+        </div>
+      </div>
     </section>
 
     <!-- code goes here --->
@@ -32,5 +33,23 @@
         {{currentError}}
       </div>
     </section>
+  </div>
+  <div>
+    <div class="import-button">
+      <button type="button" class="action" (click)="openImportModal()">
+        <svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-download_32"></use>
+        </svg>
+        Import/Replace
+      </button>
+    </div>
+    <div>
+      <button type="button" class="action" (click)="openImportModal()">
+        <svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-upload_24"></use>
+        </svg>
+        Export
+      </button>
+    </div>
   </div>
 </div>
