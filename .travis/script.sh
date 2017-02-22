@@ -13,7 +13,7 @@ echo ${ME} `date`
 source ${DIR}/build.cfg
 
 if [ "${ABORT_BUILD}" = "true" ]; then
-  echo "-#- exiting early from ${ME}" 
+  echo "-#- exiting early from ${ME}"
   exit ${ABORT_CODE}
 fi
 
@@ -27,7 +27,7 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
-	cd "${DIR}/site"
+	cd "${DIR}/packages/site"
 	npm install
 	npm run full
 # Are we running system tests?

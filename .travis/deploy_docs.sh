@@ -19,7 +19,7 @@ git config user.email "noreply@travis.ibm.com"
 git config push.default simple
 
 echo ${DIR}
-cd "${DIR}/site/out"
+cd "${DIR}/packages/site/out"
 
 export REPO="fabric-composer.github.io"
 
