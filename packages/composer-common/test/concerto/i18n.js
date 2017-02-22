@@ -68,7 +68,7 @@ describe('Globalization', function() {
             let fileName = './test/data/model/concerto.cto';
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
-            modelManager.addModelFile(file);
+            modelManager.addModelFile(file,fileName);
 
             let modelFile = modelManager.getModelFile('concerto');
             modelFile.getNamespace().should.equal('concerto');
@@ -124,7 +124,7 @@ describe('Globalization', function() {
                 invalidFile.should.not.be.null;
 
                 expect(function() {
-                    modelManager.addModelFile(invalidFile);
+                    modelManager.addModelFile(invalidFile,fileName);
                 }).to.throw(IllegalModelException, 'Class foo is identified by field (fooID) but does not contain this property.');
             });
 
@@ -142,7 +142,7 @@ describe('Globalization', function() {
                 let invalidFile = fs.readFileSync(fileName, 'utf8');
                 invalidFile.should.not.be.null;
                 expect(function() {
-                    modelManager.addModelFile(invalidFile);
+                    modelManager.addModelFile(invalidFile,fileName);
                 }).to.throw(IllegalModelException, 'Class foo is identified by field (fooID) but the type of the field is not String.');
             });
         });
@@ -172,7 +172,7 @@ describe('Globalization', function() {
             let invalidFile = fs.readFileSync(fileName, 'utf8');
             invalidFile.should.not.be.null;
             expect(function() {
-                modelManager.addModelFile(invalidFile);
+                modelManager.addModelFile(invalidFile,fileName);
             }).to.throw(IllegalModelException, 'Undeclared type Person in Property type fooProperty');
         });
 
@@ -224,7 +224,7 @@ describe('Globalization', function() {
                 let fileName = './test/concerto/models/factory/newinstance/foo-typenotdeclaredinns.cto';
                 let file = fs.readFileSync(fileName, 'utf8');
                 file.should.not.be.null;
-                modelManager.addModelFile(file);
+                modelManager.addModelFile(file,fileName);
 
                 expect(function() {
                     let factory = new Factory(modelManager);
@@ -260,7 +260,7 @@ describe('Globalization', function() {
                 let fileName = './test/concerto/models/factory/newinstance/foo-typenotdeclaredinns.cto';
                 let file = fs.readFileSync(fileName, 'utf8');
                 file.should.not.be.null;
-                modelManager.addModelFile(file);
+                modelManager.addModelFile(file,fileName);
 
                 expect(function() {
                     let factory = new Factory(modelManager);
@@ -296,7 +296,7 @@ describe('Globalization', function() {
                 let fileName = './test/concerto/models/factory/newrelationship/foo-typenotdeclaredinns.cto';
                 let file = fs.readFileSync(fileName, 'utf8');
                 file.should.not.be.null;
-                modelManager.addModelFile(file);
+                modelManager.addModelFile(file,fileName);
 
                 expect(function() {
                     let factory = new Factory(modelManager);

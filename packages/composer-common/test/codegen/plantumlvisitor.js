@@ -32,7 +32,7 @@ describe('PlantUMLVisitor', function(){
 
             // create and populate the ModelManager with a model file
             const businessNetworkDefinition = new BusinessNetworkDefinition('com.ibm.concerto.mozart.DefraNetwork@1.0.0', 'DEFRA Animal Tracking Network');
-            businessNetworkDefinition.getModelManager().addModelFile(mozartModel);
+            businessNetworkDefinition.getModelManager().addModelFile(mozartModel,'mozart.cto');
             const script = businessNetworkDefinition.getScriptManager().createScript('mozart.cto.js', 'JS', mozartScript);
             businessNetworkDefinition.getScriptManager().addScript(script);
 

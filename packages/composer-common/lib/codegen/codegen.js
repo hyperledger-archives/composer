@@ -50,17 +50,19 @@ console.log('Output directory: ' + program.outputDir);
 // create and populate the ModelManager with a model file
 const businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.MyBusinessNetwork@1.0.0', 'Test Business Network');
 const modelFiles = [];
+const modelFileNames = [];
 
 if (program.args) {
     for(let n=0; n < program.args.length; n++) {
         const modelFile = program.args[n];
         console.log('Parsing: ' + modelFile);
+        modelFileNames.push(modelFile);
         let m = fs.readFileSync(modelFile, 'utf8');
         modelFiles.push(m);
     }
 
     console.log('Loaded ' + modelFiles.length + ' files.');
-    businessNetworkDefinition.getModelManager().addModelFiles(modelFiles);
+    businessNetworkDefinition.getModelManager().addModelFiles(modelFiles,modelFileNames);
 }
 
 let visitor = null;

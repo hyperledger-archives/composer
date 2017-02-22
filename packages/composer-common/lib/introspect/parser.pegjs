@@ -1278,7 +1278,8 @@ AssetDeclaration
         classExtension: classExtension,
         idField: idField,
         body:   body,
-        abstract: abstract
+        abstract: abstract,
+        location: location()
       };
     }
 
@@ -1292,7 +1293,8 @@ ParticipantDeclaration
             classExtension: classExtension,
             idField: idField,
             body:   body,
-            abstract: abstract
+            abstract: abstract,
+            location: location()
           };
         }
 
@@ -1315,7 +1317,8 @@ TransactionDeclaration
         classExtension: classExtension,
         body:   body,
         idField: idField,
-        abstract: abstract
+        abstract: abstract,
+        location: location()
       };
     }
 
@@ -1328,7 +1331,8 @@ ConceptDeclaration
             id:     id,
             classExtension: classExtension,
             body:   body,
-            abstract: abstract
+            abstract: abstract,
+            location: location()
           };
         }
 
@@ -1366,48 +1370,84 @@ ClassDeclarationBody
   = decls:FieldDeclarations* {
       return {
         type: "ClassDeclarationBody",
-        declarations: optionalList(decls)
+        declarations: optionalList(decls),
+        location: location()
       };
     }
 
+CustomType
+ = !"String" !"Integer" !"Double" !"Long" !"DateTime" !"Boolean" id:Identifier {
+    return id
+ }
+
+IntegerType
+ = !CustomType id:"Integer" {
+    return id
+ }
+
+DoubleType
+ = !CustomType id:"Double"{
+    return id
+ }
+
+LongType
+ = !CustomType id:"Long"{
+    return id
+ }
+
+NumberType
+   = IntegerType / DoubleType / LongType
+
+BooleanType
+ = !CustomType "Boolean"
+
+DateTimeType
+ = !CustomType "DateTime"
+
+StringType
+ = !CustomType "String"
+   
 FieldDeclaration
-    = "o" __ propertyType:Identifier __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
+    = "o" __ propertyType:CustomType __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: propertyType,
     		array: array,
-        default: d,
-    		optional: optional
+        	default: d,
+    		optional: optional,
+            location: location()
     	}
     }
 
 BooleanFieldDeclaration
-    = "o" __ "Boolean" __ array:"[]"? __ id:Identifier __  d:BooleanDefault? __ optional:Optional? __ {
+    = "o" __ BooleanType __ array:"[]"? __ id:Identifier __  d:BooleanDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: {name:"Boolean"},
     		array: array,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
 
 DateTimeFieldDeclaration
-    = "o" __ "DateTime" __ array:"[]"? __ id:Identifier __  d:StringDefault? __ optional:Optional? __ {
+    = "o" __ DateTimeType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: {name:"DateTime"},
     		array: array,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
 
 StringFieldDeclaration
-    = "o" __ "String" __ array:"[]"? __ id:Identifier __  d:StringDefault? __ regex:StringRegexValidator? __ optional:Optional? __ {
+    = "o" __ StringType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ regex:StringRegexValidator? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1415,12 +1455,10 @@ StringFieldDeclaration
     		array: array,
     		regex: regex,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
-
-NumberType
-   = "Integer" / "Long" / "Double"
 
 StringRegexValidator
    = "regex" __ "=" __ regex:$RegularExpressionLiteral {
@@ -1444,7 +1482,8 @@ NumberFieldDeclaration
     		array: array,
     		range: range,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
 
@@ -1456,6 +1495,7 @@ EnumDeclaration
         type:   "EnumDeclaration",
         id:     id,
         body:   body,
+        location: location()
       };
     }
 
@@ -1472,7 +1512,8 @@ EnumPropertyDeclaration
     	return {
     		type: "EnumPropertyDeclaration",
     		id: id,
-        optional: optional
+        optional: optional,
+        location: location()
     	}
     }
 
@@ -1483,7 +1524,8 @@ RelationshipDeclaration
     		id: id,
     		propertyType: propertyType,
      		array: array,
-        optional: optional
+        optional: optional,
+        location: location()
     	}
     }
 

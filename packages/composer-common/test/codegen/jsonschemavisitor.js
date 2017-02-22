@@ -37,7 +37,7 @@ describe('JSONSchemaVisitor', () => {
         ajv = new Ajv();
         mockFileWriter = sinon.createStubInstance(FileWriter);
         modelManager = new ModelManager();
-        modelManager.addModelFile(fs.readFileSync(path.resolve(__dirname, '../data/model/model-base.cto'), 'utf8'));
+        modelManager.addModelFile(fs.readFileSync(path.resolve(__dirname, '../data/model/model-base.cto'), 'utf8'), 'model-base.cto');
         visitor = new JSONSchemaVisitor();
         sandbox = sinon.sandbox.create();
     });
