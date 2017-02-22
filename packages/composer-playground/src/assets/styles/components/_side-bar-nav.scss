@@ -1,0 +1,22 @@
+.composer {
+  .side-bar-nav {
+      li {
+        background-color: $third-highlight;
+        padding: $space-smedium;
+        padding-right: $space-large;
+        border-right: 2px solid transparent;
+
+        &:nth-child(even) {
+          background-color: $fourth-highlight;
+        }
+
+        &.active {
+          border-right: 2px solid $first-highlight;
+        }
+
+        &:hover {
+          border-right: 2px solid $second-highlight;
+        }
+      }
+  }
+}

@@ -1,0 +1,31 @@
+.composer {
+  header {
+    height: 50px;
+    display: flex;
+    background-color: $fourth-highlight ;
+    align-items: center;
+
+    & > *:first-child {
+      padding-left: $space-medium;
+      padding-right: $space-large;
+    }
+
+    & > *:last-child {
+      padding-right: $space-medium;
+    }
+
+    nav {
+      display: flex;
+      flex: 1;
+
+      .links {
+        flex: 1;
+      }
+
+      button {
+        line-height: 45px;
+        margin-top: 5px;
+      }
+    }
+  }
+}

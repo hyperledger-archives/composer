@@ -1,0 +1,50 @@
+// Lists
+.composer {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    &.bulleted {
+      list-style: disc;
+      padding-left: 40px;
+    }
+
+    &.inline {
+      display: flex;
+      flex-wrap: wrap;
+
+      li {
+        margin-right: .5em;
+      }
+    }
+  }
+
+  ol {
+    margin: 0;
+
+    li {
+      input[type=text] {
+        padding-top: 0;
+      }
+    }
+
+    &.numbered {
+      li {
+        list-style-type: none;
+        counter-increment: list;
+        position: relative;
+
+        &::before {
+          content: counter(list) ".";
+          position: absolute;
+          left: -2.5em;
+          width: 2em;
+          text-align: right;
+          color: $primary-text;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

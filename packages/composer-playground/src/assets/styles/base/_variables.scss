@@ -1,0 +1,44 @@
+// Variables
+
+// Images
+$composer-images-path: "../img" !default;
+
+// Typography
+$font-stack: 'Open Sans', 'Helvetica Neue for IBM', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$display-font: 'Open Sans';
+$svg-font: 'Source Code Pro';
+
+// Border width
+$border-width-large: 8px;
+$border-width-medium: 4px;
+$border-width-small: 1px;
+
+// Sizes
+$banner-height: 56px;
+$footer-height: 50px;
+$banner-border-width: 1px;
+$sidenav-width: 60px;
+$nav-menu-width: 250px;
+
+// z-indices
+$z-index-tooltip: 1030;
+$z-index-modal: 1050;
+$z-index-modal-backdrop: 1040;
+$z-index-alert: 1060;
+$z-index-banner: 1010;
+$z-index-dropdown: 1000;
+
+// Spacing
+$space-xsmall: 2px;
+$space-small: 4px;
+$space-smedium: 8px;
+$space-medium: 16px;
+$space-large: 32px;
+$space-xlarge: 64px;
+
+// Animation
+@mixin transition($properties...) {
+  transition-property: $properties;
+  transition-duration: .5s;
+  transition-timing-function: ease;
+}
