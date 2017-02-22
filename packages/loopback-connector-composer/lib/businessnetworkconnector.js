@@ -142,7 +142,7 @@ class BusinessNetworkConnector extends Connector {
                 let modelClassDeclarations = this.introspector.getClassDeclarations();
                 modelClassDeclarations
                     .forEach((modelClassDeclaration) => {
-                        if (((modelClassDeclaration instanceof TransactionDeclaration) || (modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
+                        if ((modelClassDeclaration instanceof TransactionDeclaration), ((modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
                             models.push({
                                 type : 'table',
                                 name : modelClassDeclaration.getFullyQualifiedName()
