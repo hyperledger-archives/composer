@@ -475,9 +475,6 @@ BreakToken      = "break"      !IdentifierPart
 CaseToken       = "case"       !IdentifierPart
 CatchToken      = "catch"      !IdentifierPart
 ClassToken      = "class"      !IdentifierPart
-AssetToken      = "asset"      !IdentifierPart
-TransactionToken = "transaction" !IdentifierPart
-ParticipantToken = "participant" !IdentifierPart
 ConstToken      = "const"      !IdentifierPart
 ContinueToken   = "continue"   !IdentifierPart
 DebuggerToken   = "debugger"   !IdentifierPart
@@ -512,9 +509,6 @@ VarToken        = "var"        !IdentifierPart
 VoidToken       = "void"       !IdentifierPart
 WhileToken      = "while"      !IdentifierPart
 WithToken       = "with"       !IdentifierPart
-NamespaceToken  = "namespace"  !IdentifierPart
-AbstractToken  = "abstract"    !IdentifierPart
-ConceptToken  = "concept"    !IdentifierPart
 
 /* Skipped */
 
@@ -1263,6 +1257,55 @@ DebuggerStatement
 
 /* ----- A.5 Functions and Programs ----- */
 
+
+/* Composer Tokens */
+NamespaceToken    = "namespace"   !IdentifierPart
+AbstractToken     = "abstract"    !IdentifierPart
+ConceptToken      = "concept"     !IdentifierPart
+AssetToken        = "asset"       !IdentifierPart
+TransactionToken  = "transaction" !IdentifierPart
+ParticipantToken  = "participant" !IdentifierPart
+
+/* Primitive Types */
+IntegerType       = "Integer"     !IdentifierPart {
+  return "Integer"
+}
+
+DoubleType        = "Double"      !IdentifierPart {
+  return "Double"
+}
+
+LongType          = "Long"        !IdentifierPart {
+  return "Long"
+}
+
+StringType        = "String"      !IdentifierPart {
+  return "String"
+}
+
+DateTimeType      = "DateTime"    !IdentifierPart {
+  return "DateTime"
+}
+
+BooleanType       = "Boolean"     !IdentifierPart {
+  return "Boolean"
+}
+
+NumberType
+   = IntegerType / DoubleType / LongType
+
+PrimitiveType
+ = StringType /
+   NumberType /
+   DateTimeType /
+   BooleanType
+
+/* Object Type */
+ObjectType
+ = !PrimitiveType type:Identifier !IdentifierPart {
+    return type
+ }
+
 IdentifiedByField
     = "identified by" __ idField:Identifier {
         return idField
@@ -1364,7 +1407,7 @@ FieldDeclarations
   / BooleanFieldDeclaration
   / DateTimeFieldDeclaration
   / RelationshipDeclaration
-  / FieldDeclaration
+  / ObjectFieldDeclaration
 
 ClassDeclarationBody
   = decls:FieldDeclarations* {
@@ -1374,49 +1417,17 @@ ClassDeclarationBody
         location: location()
       };
     }
-
-CustomType
- = !"String" !"Integer" !"Double" !"Long" !"DateTime" !"Boolean" id:Identifier {
-    return id
- }
-
-IntegerType
- = !CustomType id:"Integer" {
-    return id
- }
-
-DoubleType
- = !CustomType id:"Double"{
-    return id
- }
-
-LongType
- = !CustomType id:"Long"{
-    return id
- }
-
-NumberType
-   = IntegerType / DoubleType / LongType
-
-BooleanType
- = !CustomType "Boolean"
-
-DateTimeType
- = !CustomType "DateTime"
-
-StringType
- = !CustomType "String"
    
-FieldDeclaration
-    = "o" __ propertyType:CustomType __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
+ObjectFieldDeclaration
+    = "o" __ propertyType:ObjectType __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: propertyType,
     		array: array,
-        	default: d,
+        default: d,
     		optional: optional,
-            location: location()
+        location: location()
     	}
     }
 
