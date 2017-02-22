@@ -23,7 +23,7 @@ First clone the Getting Started repository
 
 ```bash
 git clone http://github.com/fabric-composer/sample-applications
-cd sample-applications/getting-started
+cd sample-applications/packages/getting-started
 ```
 
 Next run the script
