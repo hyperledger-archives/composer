@@ -14,7 +14,7 @@ The essential tools you will need are *npm*, *docker*, *docker-compose* and a co
 
 The recommended versions are:
 *Docker*: v1.12.5
-*Docker-compose*: v1.9.0
+*Docker-compose*: v1.10.0
 *node.js*: v6.9.5
 
 ## Automatic Installation
