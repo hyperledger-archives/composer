@@ -43,6 +43,8 @@ class PlantUMLGenerator {
             fileWriter.openFile(umlFilename);
 
             fileWriter.writeLine(0, '@startuml');
+            console.log('+');
+            fileWriter.writeLine(0, '!include '+ program.outputDir + '/../../jsdoc-template/umlstyle.uml');
             for(let n=0; n < includes.length; n++) {
                 // only include files that exist
                 // the file may not exist if it was empty

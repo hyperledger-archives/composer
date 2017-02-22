@@ -37,7 +37,7 @@ describe('Mozart Model', function(){
 
         mozartModel = fs.readFileSync('./test/data/model/mozart.cto', 'utf8');
         mozartModel.should.not.be.null;
-        modelManager.addModelFile(mozartModel);
+        modelManager.addModelFile(mozartModel, 'mozart.cto');
 
         modelFile = modelManager.getModelFile('com.ibm.concerto.mozart');
         modelFile.should.not.be.null;

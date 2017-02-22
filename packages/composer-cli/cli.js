@@ -22,21 +22,17 @@ let _ = require('lodash');
 yargs
     .commandDir('./lib/cmds')
     .help()
-    .example('composer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
+    .example('composer archive create --inputDir .\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
     .demand(1)
     .wrap(null)
     .strict()
-    .epilogue('For more information: https://pages.github.ibm.com/fabric-composer/fabric-composer/reference')
+    .epilogue('For more information on Fabric Composer: https://fabric-composer.github.io/')
     .alias('v', 'version')
     .version(function() {
-
-
         return getInfo('composer-cli')+'\n'+
           getInfo('composer-admin')+'\n'+getInfo('composer-client')+'\n'+
           getInfo('composer-common')+'\n'+getInfo('composer-runtime-hlf')+
           '\n'+getInfo('composer-connector-hlf')+'\n';
-
-
     })
     .describe('v', 'show version information')
     .argv;

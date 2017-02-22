@@ -41,24 +41,31 @@ class ModelFile {
      * @param {ModelManager} modelManager - the ModelManager that manages this
      * ModelFile
      * @param {string} definitions - The DSL model as a string.
+     * @param {string} fileName - The optional filename for this modelfile
      * @throws {InvalidModelException}
      */
-    constructor(modelManager, definitions) {
+    constructor(modelManager, definitions, fileName) {
         this.modelManager = modelManager;
         this.declarations = [];
         this.imports = [];
+        this.fileName = 'UNKNOWN';
 
         if(!definitions || typeof definitions !== 'string') {
             throw new Error('ModelFile expects a Concerto model as a string as input.');
         }
         this.definitions = definitions;
 
+        if(fileName && typeof fileName !== 'string') {
+            throw new Error('ModelFile expects an (optional) filename as a string.');
+        }
+        this.fileName = fileName;
+
         try {
             this.ast = parser.parse(definitions);
         }
         catch(err) {
             if(err.location && err.location.start) {
-                throw new ParseException( err.message +  ' Line ' + err.location.start.line + ' column ' + err.location.start.column );
+                throw new ParseException( 'Syntax error in file ' + this.fileName + '. ' + err.message +  ' Line ' + err.location.start.line + ' column ' + err.location.start.column );
             }
             else {
                 throw err;
@@ -94,7 +101,7 @@ class ModelFile {
 
                 throw new IllegalModelException(formatter({
                     'type': thing.type,
-                }));
+                }),this.modelFile);
             }
         }
     }
@@ -159,7 +166,7 @@ class ModelFile {
                     throw new IllegalModelException(formatter({
                         'type': type,
                         'context': context
-                    }));
+                    }),this.modelFile);
                 }
             }
             else {
@@ -220,7 +227,7 @@ class ModelFile {
             'type': type,
             'imports': this.imports,
             'namespace': this.getNamespace()
-        }));
+        }),this.modelFile);
     }
 
     /**
@@ -370,6 +377,14 @@ class ModelFile {
      */
     getNamespace() {
         return this.namespace;
+    }
+
+    /**
+     * Get the filename for this model file. Note that this may be null.
+     * @return {string} The filename for this model file
+     */
+    getFileName() {
+        return this.fileName;
     }
 
     /**

@@ -29,7 +29,7 @@ describe('Test Relationships', function(){
 
             let fileName = './test/data/parser/relationshiptoprimitive.cto';
             let model = fs.readFileSync(fileName, 'utf8');
-            assert.throws( function() {modelManager.addModelFile(model);}, /.+Relationship bad cannot be to the primitive type String/, 'did not throw with expected message');
+            assert.throws( function() {modelManager.addModelFile(model,fileName);}, /.+Relationship bad cannot be to the primitive type String/, 'did not throw with expected message');
         });
     });
 });

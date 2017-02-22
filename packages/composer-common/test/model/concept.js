@@ -84,7 +84,7 @@ describe('Concept', function () {
     describe('#toJSON', () => {
         it('should generate JSON for an asset that contains a concept', function () {
             let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
-            modelManager.addModelFile(conceptModel);
+            modelManager.addModelFile(conceptModel, 'concept.cto');
             const factory = new Factory(modelManager);
             const asset = factory.newResource('org.acme.biznet', 'MakerInventory', '123' );
             const inventorySets = factory.newConcept('org.acme.biznet', 'InventorySets' );
@@ -102,7 +102,7 @@ describe('Concept', function () {
     describe('#fromJSON', () => {
         it('should generate an asset from JSON that contains a concept', function () {
             let conceptModel = fs.readFileSync('./test/data/model/concept.cto', 'utf8');
-            modelManager.addModelFile(conceptModel);
+            modelManager.addModelFile(conceptModel, 'concept.cto');
             const factory = new Factory(modelManager);
             const serializer = new Serializer(factory, modelManager);
             const jsObject = JSON.parse('{"$class":"org.acme.biznet.MakerInventory","makerId":"123","invSets":[{"$class":"org.acme.biznet.InventorySets","Make":"Make","Model":"Model","invCount":10,"invType":"NEWBATCH"}]}');
