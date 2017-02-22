@@ -8,6 +8,8 @@ import { ModalModule, TooltipModule } from 'ng2-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageModule } from 'angular-2-local-storage';
 
+import {APP_BASE_HREF} from '@angular/common';
+
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -43,11 +45,11 @@ import { NotificationService } from './notification.service';
 import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from "./services/samplebusinessnetwork.service";
 
-var actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
+let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
-var formattingIcons = require.context('../assets/svg/formatting', false, /.*\.svg$/);
+let formattingIcons = require.context('../assets/svg/formatting', false, /.*\.svg$/);
 formattingIcons.keys().forEach(formattingIcons);
-var objectBasedIcons = require.context('../assets/svg/object-based', false, /.*\.svg$/);
+let objectBasedIcons = require.context('../assets/svg/object-based', false, /.*\.svg$/);
 objectBasedIcons.keys().forEach(objectBasedIcons);
 
 // Application wide providers
@@ -114,6 +116,7 @@ type StoreType = {
   providers: [ // expose our Services and Providers into Angular's dependency injection
     ENV_PROVIDERS,
     APP_PROVIDERS,
+    {provide: APP_BASE_HREF, useValue: '/'},
     AdminService,
     ClientService,
     ConnectionProfileService,
