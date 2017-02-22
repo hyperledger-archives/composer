@@ -48,14 +48,14 @@ class RelationshipDeclaration extends Property {
         super.validate(classDecl);
         // relationship cannot point to primitive types
         if(!this.getType()) {
-            throw new IllegalModelException('Relationship must have a type');
+            throw new IllegalModelException('Relationship must have a type', classDecl.getModelFile(), this.ast.location);
         }
 
         let classDeclaration = null;
 
         // you can't have a relationship with a primitive...
         if(ModelUtil.isPrimitiveType(this.getType())) {
-            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType() );
+            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
         }
         else {
             // we first try to get the type from our own model file
@@ -69,11 +69,11 @@ class RelationshipDeclaration extends Property {
             }
 
             if(classDeclaration === null) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName());
+                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             }
 
             if(classDeclaration.isRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName());
+                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             }
         }
     }

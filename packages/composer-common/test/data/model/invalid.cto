@@ -1,0 +1,10 @@
+/**
+ * Defines an asset that is identified by a missing field
+ */
+
+// define the namespace for this model
+namespace org.acme
+
+asset Test identified by missing {
+  o String name
+}

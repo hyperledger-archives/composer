@@ -41,7 +41,7 @@ describe('TypescriptVisitor', function(){
             let modelManager = new ModelManager();
             modelManager.should.not.be.null;
             modelManager.clearModelFiles();
-            modelManager.addModelFiles([carleaseModel,concertoModel]);
+            modelManager.addModelFiles([carleaseModel,concertoModel], ['carlease.cto', 'concerto.cto']);
 
             let visitor = new TypescriptVisitor();
             let parameters = {};
