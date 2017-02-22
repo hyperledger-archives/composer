@@ -1,12 +1,36 @@
 <div class="editor">
-  <h1>Placeholder for sample name</h1>
-  <div class="container">
+  <div *ngIf="!editActive" class="container business-network-details">
+    <h1 class="business-network-name">{{packageName}}</h1>
+    <div class="business-network-version small">{{packageVersion}}</div>
+    <div>
+      <button type="button" class="action" (click)="toggleEditActive()">
+        <svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-edit_24"></use>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="editActive" class="container business-network-details">
+    <label class="indent-right" for="editName">Name</label>
+    <input class="indent-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
+    <label class="indent-right" for="editVersion">Version</label>
+    <input class="indent-right" id="editVersion" type="text" (blur)="editPackageVersion()" [(ngModel)]="inputPackageVersion">
+    <div class="edit-package-text indent-right">
+      <button type="button" class="action" (click)="setCurrentFile({
+      package: true,
+      id: 'package',
+      displayID: 'package.json'
+    })">View/edit full metadata in package.json</button>
+    </div>
+  </div>
+  <div class="container" (click)="toggleNotEditing()">
     <section>
       <div class="files">
         <div class="side-bar-nav">
           <!-- file stuff and import/export stuff goes here -->
           <ul>
             <li *ngFor="let file of files" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
+              <h3 *ngIf="file.package">Package Details</h3>
               <h3 *ngIf="file.model">Model File</h3>
               <h3 *ngIf="file.script">Script File</h3>
               <h3 *ngIf="file.acl">Access Control</h3>
@@ -24,8 +48,6 @@
         </div>
       </div>
     </section>
-
-    <!-- code goes here --->
     <section>
       <codemirror [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
       </codemirror>
