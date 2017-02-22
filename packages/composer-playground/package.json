@@ -73,6 +73,7 @@
     "is-docker": "^1.1.0",
     "octokat": "^0.6.2",
     "opener": "^1.4.2",
+    "pkginfo": "^0.4.0",
     "socket.io": "^1.7.2"
   },
   "devDependencies": {
