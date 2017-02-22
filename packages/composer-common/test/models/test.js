@@ -35,12 +35,12 @@ describe('Test Model', function(){
             let fileName = './test/data/model/concerto.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
-            modelManager.addModelFile(systemModel);
+            modelManager.addModelFile(systemModel,fileName);
 
             fileName = './test/data/model/carlease.cto';
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
-            modelManager.addModelFile(file);
+            modelManager.addModelFile(file,fileName);
 
             // create a factory
             let factory = new Factory(modelManager);
@@ -73,12 +73,12 @@ describe('Test Model', function(){
             let fileName = './test/data/model/concerto.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
-            modelManager.addModelFile(systemModel);
+            modelManager.addModelFile(systemModel,fileName);
 
             fileName = './test/data/model/carlease.cto';
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
-            modelManager.addModelFile(file);
+            modelManager.addModelFile(file,fileName);
 
             let modelFile = modelManager.getModelFile('org.acme');
             modelFile.getNamespace().should.equal('org.acme');
@@ -140,12 +140,12 @@ describe('Test Model', function(){
             let fileName = './test/data/model/concerto.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
-            modelManager.addModelFile(systemModel);
+            modelManager.addModelFile(systemModel,fileName);
 
             fileName = './test/data/model/carlease.cto';
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
-            modelManager.addModelFile(file);
+            modelManager.addModelFile(file,fileName);
 
             let modelFile = modelManager.getModelFile('org.acme');
             modelFile.getNamespace().should.equal('org.acme');
@@ -223,12 +223,12 @@ describe('Test Model', function(){
             let fileName1 = './test/data/model/concerto.cto';
             let systemModel = fs.readFileSync(fileName1, 'utf8');
             systemModel.should.not.be.null;
-            modelManager.addModelFile(systemModel);
+            modelManager.addModelFile(systemModel,fileName1);
 
             let fileName2 = './test/data/model/carlease.cto';
             let file = fs.readFileSync(fileName2, 'utf8');
             file.should.not.be.null;
-            modelManager.addModelFile(file);
+            modelManager.addModelFile(file,fileName2);
 
             modelManager.getModelFiles().length.should.equal(2);
             let modelFile = modelManager.getModelFiles()[1];
@@ -318,12 +318,12 @@ describe('Test Model', function(){
             let fileName = './test/data/model/concerto.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
-            modelManager.addModelFile(systemModel);
+            modelManager.addModelFile(systemModel,fileName);
 
             fileName = './test/data/model/carlease.cto';
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
-            modelManager.addModelFile(file);
+            modelManager.addModelFile(file,fileName);
 
             let modelFile = modelManager.getModelFile('org.acme');
             modelFile.isLocalType('Participant').should.equal(false);

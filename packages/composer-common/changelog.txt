@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.4.4 {b64498dc085e58b975eebfce7430186a} 2017-02-22
+- Added file name and file location to IllegalModelException
+
 Version 0.3.7 {120eb2d3b0e487c6e95696aadecec93a} 2017-01-24
 - Move to single version
 

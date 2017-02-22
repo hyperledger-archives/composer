@@ -33,7 +33,7 @@ describe('Model Tests', function(){
             let fileName = './test/data/model/model-base.cto';
             let modelBase = fs.readFileSync(fileName, 'utf8');
             modelBase.should.not.be.null;
-            modelManager.addModelFile(modelBase);
+            modelManager.addModelFile(modelBase,fileName);
 
             // check functions can be retrieved
             const modelFile = modelManager.getModelFile('org.acme.base');
