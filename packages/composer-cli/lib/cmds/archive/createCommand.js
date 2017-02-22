@@ -25,7 +25,6 @@ module.exports.builder = function (yargs){
             .option('moduleName',{alias: 'm', required: false, describe: 'Name of the npm module to use '})
             .conflicts('inputDir','moduleName')
             .epilog('Only one of either inputDir or moduleName must be specified.');
-
 };
 
 
