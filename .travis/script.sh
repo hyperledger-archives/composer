@@ -27,6 +27,7 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
+  lerna bootstrap
 	cd "${DIR}/packages/site"
 	npm install
 	npm run full
