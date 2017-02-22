@@ -16,10 +16,10 @@ if [ "${ABORT_BUILD}" = "true" ]; then
 fi
 
 # Check of the task current executing
-if [ "${FC_TASK}" = "docs" ]; then
-  echo Doing Docs - no requirement for installations of other software
-  exit 0;
-fi
+#if [ ${FC_TASK}" = "docs" ]; then
+  #echo Doing Docs - no requirement for installations of other software
+  #exit 0;
+#fi
 
 
 cd ${DIR}
