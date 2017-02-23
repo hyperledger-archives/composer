@@ -2,11 +2,70 @@
 @import '../../assets/styles/base/_variables.scss';
 
 .import {
-  .import-from-github {
-    font-size: 0.95em;
+  width: 660px;
+  height: 450px;
+
+  display: flex;
+  flex-direction: column;
+
+  section {
+    font-size: 0.9em;
+
+    file-importer {
+      margin-top: $space-medium;
+    }
 
     span {
       color: $secondary-text;
+    }
+
+    .chosen-file {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: $third-highlight;
+      padding: $space-medium;
+
+      .title {
+        font-weight: bold;
+      }
+
+      .file-info {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid $fifth-highlight;
+        padding-bottom: $space-medium;
+        align-items: center;
+
+        svg {
+          fill: $first-highlight;
+          width: 76px;
+          height: 76px;
+          margin-right: $space-medium;
+        }
+
+        .file-title {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          span {
+            color: $primary-text;
+            font-style: italic;
+          }
+        }
+      }
+
+      .file-content {
+        margin-top: $space-medium;
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+
+        .network-part {
+          margin-bottom: $space-smedium;
+        }
+      }
     }
 
     .github-spinner {
@@ -57,5 +116,7 @@
     .circle-path {
       stroke: $white;
     }
+
+    width: 100%;
   }
 }
