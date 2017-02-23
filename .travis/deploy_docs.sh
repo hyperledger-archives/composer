@@ -26,7 +26,7 @@ export REPO="fabric-composer.github.io"
 git clone git@github.com:fabric-composer/${REPO}.git
 git remote set-url origin ${REPO}.git
 
-cd "${DIR}/site/out/${REPO}"
+cd "${DIR}/packages/site/out/${REPO}"
 
 rm -rf ${DIR}/packages/site/out/${REPO}/*
 cp -rf ${DIR}/packages/site/jekylldocs/_site/* .
