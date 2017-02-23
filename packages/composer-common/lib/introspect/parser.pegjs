@@ -1306,6 +1306,11 @@ ObjectType
     return type
  }
 
+ SignedNumber
+   = op:$("-")? def:$NumericLiteral {
+      return op + def;
+    }
+
 IdentifiedByField
     = "identified by" __ idField:Identifier {
         return idField
@@ -1392,7 +1397,7 @@ StringDefault
     }
 
 NumberDefault
-   = "default" __ "=" __ def:$DecimalLiteral {
+   = "default" __ "=" __ def:$SignedNumber {
       return def;
     }
 
@@ -1477,7 +1482,7 @@ StringRegexValidator
   }
 
 NumericDomainValidator
-   = "range" __ "=" __ "[" __ lower:DecimalLiteral? __ "," __ upper:DecimalLiteral? __ "]" {
+   = "range" __ "=" __ "[" __ lower:SignedNumber? __ "," __ upper:SignedNumber? __ "]" {
    	return {
     	lower: lower,
       upper: upper

@@ -47,3 +47,22 @@ concept TestConcept {
     o DateTimeValue[] dateoa
     o BooleanValue[] boa
 }
+
+concept Defaults {
+    o String s default="test"
+    o Double d default=1.5
+    o Double d2 default=-1.5
+    o Long l default = 100
+    o Long l2 default = -100
+    o Integer i default = 1
+    o Integer i2 default = -1000
+    o DateTime date default = "FOO"
+    o Boolean b default=true
+    o Boolean b2 default=false
+}
+
+concept Ranges {
+    o Double d range=[-10,10]
+    o Double d2 range=[,10]
+    o Double d3 range=[-10,]
+}
