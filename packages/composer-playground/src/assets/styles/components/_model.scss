@@ -33,7 +33,7 @@
   .modal-dialog {
     margin: 100px auto;
     display: table;
-    min-width: 320px;
+    min-width: 450px;
   }
 
   // Actual modal
@@ -44,6 +44,7 @@
     background-color: $white;
     background-clip: padding-box;
     border: 1px solid $fourth-highlight;
+    border-radius: 1px;
     outline: 0;
   }
 
@@ -70,15 +71,19 @@
   .modal-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: $space-medium;
-    border-bottom: 1px solid $fourth-highlight;
-  }
+    background-color: $third-highlight;
 
-  // Title text within header
-  .modal-title {
-    margin-bottom: 0;
-    line-height: $space-smedium;
+    svg + h1 {
+      margin-left: $space-medium;
+    }
+
+    .modal-exit {
+      position: absolute;
+      top: 0px;
+      right: $space-smedium;
+      color: $primary-text;
+    }
   }
 
   // Modal body
@@ -94,7 +99,7 @@
     align-items: center;
     justify-content: flex-end;
     padding: $space-medium;
-    border-top: 1px solid $fourth-highlight;
+    background-color: $third-highlight;
 
     // Easily place margin between footer elements
     > :not(:first-child) {
