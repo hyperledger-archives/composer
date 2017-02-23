@@ -35,6 +35,7 @@
     "github-deploy": "npm run github-deploy:dev",
     "lint": "npm run tslint \"src/**/*.ts\"",
     "postversion": "git push && git push --tags",
+    "postinstall": " npm list -json --depth=0 > ./src/assets/npmlist.json",
     "prebuild:dev": "npm run clean:dist",
     "prebuild:prod": "npm run clean:dist",
     "preclean:install": "npm run clean",
@@ -73,6 +74,7 @@
     "is-docker": "^1.1.0",
     "octokat": "^0.6.2",
     "opener": "^1.4.2",
+    "pkginfo": "^0.4.0",
     "socket.io": "^1.7.2"
   },
   "devDependencies": {
