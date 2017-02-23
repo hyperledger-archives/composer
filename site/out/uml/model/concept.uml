@@ -1,0 +1,7 @@
+!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/model/typed.uml
+@startuml
+class Concept{
+   + boolean isConcept()
+}
+Concept --|> Typed
+@enduml

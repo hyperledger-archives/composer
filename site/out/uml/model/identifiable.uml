@@ -1,0 +1,12 @@
+!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/model/typed.uml
+@startuml
+class Identifiable{
+   + string getIdentifier()
+   + void setIdentifier(string)
+   + string getFullyQualifiedIdentifier()
+   + String toString()
+   + boolean isRelationship()
+   + boolean isResource()
+}
+Identifiable --|> Typed
+@enduml
