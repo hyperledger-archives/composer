@@ -33,7 +33,6 @@ const composerPackageVersion = require('../../package.json').version;
     require('../assets/styles/composer.scss').toString(),
     require('codemirror/lib/codemirror.css'),
     require('codemirror/addon/scroll/simplescrollbars.css'),
-    require('font-awesome/css/font-awesome.min.css'),
     require('./app.component.scss').toString()
   ],
   templateUrl: './app.component.html'
@@ -144,12 +143,6 @@ export class AppComponent {
     } else {
       console.log('no invitation here');
     }
-
-   /** TODO: put this back in somewhere
-    *  if(this.sampleBusinessNetworkService.OPEN_SAMPLE) {
-      this.sample();
-      this.sampleBusinessNetworkService.OPEN_SAMPLE = false;
-    }**/
 
     // We load the connection profiles now, so we can immediately populate the menu.
     this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
