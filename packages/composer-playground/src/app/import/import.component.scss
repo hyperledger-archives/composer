@@ -1,0 +1,61 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+.import {
+  .import-from-github {
+    font-size: 0.95em;
+
+    span {
+      color: $secondary-text;
+    }
+
+    .github-spinner {
+      height: 200px;
+      width: 465px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .circle-path {
+        stroke: $first-highlight;
+      }
+    }
+
+    form {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: $space-medium;
+    }
+
+    .sample-network-list {
+      background-color: $third-highlight;
+      padding: $space-medium;
+      &:nth-child(even) {
+        background-color: $white;
+      }
+
+      .description {
+        font-style: italic;
+        padding-left: 2em;
+      }
+
+      label.radio-label {
+        font-weight: bold;
+
+        &::before {
+          top: 8px;
+        }
+
+        &::after {
+          top: 13px;
+        }
+      }
+    }
+  }
+
+  footer {
+    .circle-path {
+      stroke: $white;
+    }
+  }
+}
