@@ -1,0 +1,7 @@
+!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/introspect/baseexception.uml
+@startuml
+class IllegalModelException{
+   + void constructor(string)
+}
+IllegalModelException --|> BaseException
+@enduml
