@@ -140,7 +140,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should ensure we\'re connected to a BusinessNetwork if we are connecting', () => {
-            console.log('fish');
             let testConnector = new BusinessNetworkConnector(settings);
             testConnector.connectionPromise = new Promise((resolve, reject) => {
                 resolve('passed');
@@ -699,6 +698,35 @@ describe('BusinessNetworkConnector Unit Test', () => {
 
     });
 
+    describe('#getClassIdentifier', () => {
+
+        beforeEach(() => {
+            testConnector.introspector = introspector;
+        });
+        it('should get the classIdentifier for the given model', () => {
+            testConnector.getClassIdentifier('org.acme.base.BaseAsset').should.equal('theValue');
+        });
+
+    });
+
+    describe('#isResolveSet', () => {
+
+        it('should return true if resolve is set to be true in a filter include', () => {
+            let FILTER = {'include' : 'resolve'};
+            testConnector.isResolveSet(FILTER).should.equal(true);
+        });
+
+        it('should return false if resolve is set to be true in a filter include', () => {
+            let FILTER = {'where' : { 'vin' : '1234' }, 'include' : 'noresolve'};
+            testConnector.isResolveSet(FILTER).should.equal(false);
+        });
+
+        it('should return false if resolve is not set in a filter include', () => {
+            let FILTER = {'where' : { 'vin' : '1234' } };
+            testConnector.isResolveSet(FILTER).should.equal(false);
+        });
+    });
+
     describe('#isValidId', () => {
         beforeEach(() => {
             testConnector.introspector = introspector;
@@ -862,6 +890,25 @@ describe('BusinessNetworkConnector Unit Test', () => {
                 });
         });
 
+        it('should retrieve a fully resolved specific Asset for a given id in a where clause', () => {
+            mockAssetRegistry.resolve.returns(Promise.resolve({theValue : 'mockId'}));
+
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+                .then((result) => {
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
+                    sinon.assert.calledOnce(mockAssetRegistry.resolve);
+                    result[0].theValue.should.equal('mockId');
+                });
+        });
+
         it('should handle an error when an invalid model name is specified', () => {
             mockAssetRegistry.get.returns(Promise.reject('expected test error'));
             return new Promise((resolve, reject) => {
@@ -898,10 +945,45 @@ describe('BusinessNetworkConnector Unit Test', () => {
             });
         });
 
+        it('should handle an error when trying to retrieve a fully resolved specific Asset for a given id in a where clause', () => {
+            mockAssetRegistry.resolve.returns(Promise.reject('expected test error'));
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                error.should.match(/expected test error/);
+            });
+        });
+
+
         it('should return an empty list after an error when trying to retrieve a specific Asset by id if the error just indicates that the asset does not exist', () => {
             mockAssetRegistry.get.returns(Promise.reject('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                result.should.deep.equal({});
+            });
+
+        });
+
+        it('should return an empty list after an error when trying to retrieve a fully resolved specific Asset by id if the error just indicates that the asset does not exist', () => {
+            mockAssetRegistry.resolve.returns(Promise.reject('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve' }, {}, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -953,6 +1035,46 @@ describe('BusinessNetworkConnector Unit Test', () => {
                 result[0].stringValue.should.equal('a big car');
                 result[1].assetId.should.equal('anId');
                 result[1].stringValue.should.equal('a big fox');
+            });
+        });
+
+        it('should retrieve all fully resolved Assets for a given modelname', () => {
+            mockAssetRegistry.resolveAll.returns(Promise.resolve([{assetId : 'mockId', stringValue : 'a big car'}, {assetId : 'mockId2', stringValue : 'a big fox'}]));
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
+                sinon.assert.calledOnce(mockAssetRegistry.resolveAll);
+                result[0].assetId.should.equal('mockId');
+                result[0].stringValue.should.equal('a big car');
+                result[1].assetId.should.equal('mockId2');
+                result[1].stringValue.should.equal('a big fox');
+            });
+        });
+
+        it('should retrieve all fully resolved Assets for a given modelname', () => {
+            mockAssetRegistry.resolveAll.returns(Promise.reject('expected error'));
+
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                error.should.match(/expected error/);
             });
         });
 

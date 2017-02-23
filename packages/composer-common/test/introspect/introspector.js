@@ -49,7 +49,7 @@ describe('Introspector', () => {
             let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
             modelBase.should.not.be.null;
 
-            modelManager.addModelFile(modelBase);
+            modelManager.addModelFile(modelBase, 'model-base.cto');
             const introspector = new Introspector(modelManager);
             introspector.getClassDeclarations().length.should.equal(13);
         });
@@ -65,7 +65,7 @@ describe('Introspector', () => {
             let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
             modelBase.should.not.be.null;
 
-            modelManager.addModelFile(modelBase);
+            modelManager.addModelFile(modelBase, 'model-base.cto');
             const introspector = new Introspector(modelManager);
             introspector.getClassDeclaration('org.acme.base.Person').should.not.be.null;
         });

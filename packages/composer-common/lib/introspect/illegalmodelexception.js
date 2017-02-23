@@ -28,9 +28,41 @@ class IllegalModelException extends BaseException {
     /**
      * Create an IllegalModelException
      * @param {string} message - the message for the exception
+     * @param {string} modelFile - the optional modelfile associated with the exception
+     * @param {string} fileLocation - the optional file location associated with the exception
      */
-    constructor(message) {
-        super(message);
+    constructor(message, modelFile, fileLocation) {
+
+        let messagePrefix = '';
+        if(modelFile && modelFile.getFileName()) {
+            messagePrefix = 'File \'' + modelFile.getFileName() + '\': ' ;
+        }
+
+        if(fileLocation) {
+            messagePrefix = messagePrefix + 'line ' + fileLocation.start.line + ' column ' +
+                fileLocation.start.column + ', to line ' + fileLocation.end.line + ' column ' +
+                fileLocation.end.column + '. ';
+        }
+
+        super(messagePrefix + message);
+        this.modelFile = modelFile;
+        this.fileLocation = fileLocation;
+    }
+
+    /**
+     * Returns the modelfile associated with the exception or null
+     * @return {string} the optional filename associated with the model
+     */
+    getModelFile() {
+        return this.modelFile;
+    }
+
+    /**
+     * Returns the file location associated with the exception or null
+     * @return {string} the optional location associated with the exception
+     */
+    getFileLocation() {
+        return this.fileLocation;
     }
 }
 

@@ -475,9 +475,6 @@ BreakToken      = "break"      !IdentifierPart
 CaseToken       = "case"       !IdentifierPart
 CatchToken      = "catch"      !IdentifierPart
 ClassToken      = "class"      !IdentifierPart
-AssetToken      = "asset"      !IdentifierPart
-TransactionToken = "transaction" !IdentifierPart
-ParticipantToken = "participant" !IdentifierPart
 ConstToken      = "const"      !IdentifierPart
 ContinueToken   = "continue"   !IdentifierPart
 DebuggerToken   = "debugger"   !IdentifierPart
@@ -512,9 +509,6 @@ VarToken        = "var"        !IdentifierPart
 VoidToken       = "void"       !IdentifierPart
 WhileToken      = "while"      !IdentifierPart
 WithToken       = "with"       !IdentifierPart
-NamespaceToken  = "namespace"  !IdentifierPart
-AbstractToken  = "abstract"    !IdentifierPart
-ConceptToken  = "concept"    !IdentifierPart
 
 /* Skipped */
 
@@ -1263,6 +1257,60 @@ DebuggerStatement
 
 /* ----- A.5 Functions and Programs ----- */
 
+
+/* Composer Tokens */
+NamespaceToken    = "namespace"   !IdentifierPart
+AbstractToken     = "abstract"    !IdentifierPart
+ConceptToken      = "concept"     !IdentifierPart
+AssetToken        = "asset"       !IdentifierPart
+TransactionToken  = "transaction" !IdentifierPart
+ParticipantToken  = "participant" !IdentifierPart
+
+/* Primitive Types */
+IntegerType       = "Integer"     !IdentifierPart {
+  return "Integer"
+}
+
+DoubleType        = "Double"      !IdentifierPart {
+  return "Double"
+}
+
+LongType          = "Long"        !IdentifierPart {
+  return "Long"
+}
+
+StringType        = "String"      !IdentifierPart {
+  return "String"
+}
+
+DateTimeType      = "DateTime"    !IdentifierPart {
+  return "DateTime"
+}
+
+BooleanType       = "Boolean"     !IdentifierPart {
+  return "Boolean"
+}
+
+NumberType
+   = IntegerType / DoubleType / LongType
+
+PrimitiveType
+ = StringType /
+   NumberType /
+   DateTimeType /
+   BooleanType
+
+/* Object Type */
+ObjectType
+ = !PrimitiveType type:Identifier !IdentifierPart {
+    return type
+ }
+
+ SignedNumber
+   = op:$("-")? def:$NumericLiteral {
+      return op + def;
+    }
+
 IdentifiedByField
     = "identified by" __ idField:Identifier {
         return idField
@@ -1278,7 +1326,8 @@ AssetDeclaration
         classExtension: classExtension,
         idField: idField,
         body:   body,
-        abstract: abstract
+        abstract: abstract,
+        location: location()
       };
     }
 
@@ -1292,7 +1341,8 @@ ParticipantDeclaration
             classExtension: classExtension,
             idField: idField,
             body:   body,
-            abstract: abstract
+            abstract: abstract,
+            location: location()
           };
         }
 
@@ -1315,7 +1365,8 @@ TransactionDeclaration
         classExtension: classExtension,
         body:   body,
         idField: idField,
-        abstract: abstract
+        abstract: abstract,
+        location: location()
       };
     }
 
@@ -1328,7 +1379,8 @@ ConceptDeclaration
             id:     id,
             classExtension: classExtension,
             body:   body,
-            abstract: abstract
+            abstract: abstract,
+            location: location()
           };
         }
 
@@ -1345,7 +1397,7 @@ StringDefault
     }
 
 NumberDefault
-   = "default" __ "=" __ def:$DecimalLiteral {
+   = "default" __ "=" __ def:$SignedNumber {
       return def;
     }
 
@@ -1360,54 +1412,58 @@ FieldDeclarations
   / BooleanFieldDeclaration
   / DateTimeFieldDeclaration
   / RelationshipDeclaration
-  / FieldDeclaration
+  / ObjectFieldDeclaration
 
 ClassDeclarationBody
   = decls:FieldDeclarations* {
       return {
         type: "ClassDeclarationBody",
-        declarations: optionalList(decls)
+        declarations: optionalList(decls),
+        location: location()
       };
     }
-
-FieldDeclaration
-    = "o" __ propertyType:Identifier __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
+   
+ObjectFieldDeclaration
+    = "o" __ propertyType:ObjectType __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: propertyType,
     		array: array,
         default: d,
-    		optional: optional
+    		optional: optional,
+        location: location()
     	}
     }
 
 BooleanFieldDeclaration
-    = "o" __ "Boolean" __ array:"[]"? __ id:Identifier __  d:BooleanDefault? __ optional:Optional? __ {
+    = "o" __ BooleanType __ array:"[]"? __ id:Identifier __  d:BooleanDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: {name:"Boolean"},
     		array: array,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
 
 DateTimeFieldDeclaration
-    = "o" __ "DateTime" __ array:"[]"? __ id:Identifier __  d:StringDefault? __ optional:Optional? __ {
+    = "o" __ DateTimeType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
     		propertyType: {name:"DateTime"},
     		array: array,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
 
 StringFieldDeclaration
-    = "o" __ "String" __ array:"[]"? __ id:Identifier __  d:StringDefault? __ regex:StringRegexValidator? __ optional:Optional? __ {
+    = "o" __ StringType __ array:"[]"? __ id:Identifier __  d:StringDefault? __ regex:StringRegexValidator? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,
@@ -1415,12 +1471,10 @@ StringFieldDeclaration
     		array: array,
     		regex: regex,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
-
-NumberType
-   = "Integer" / "Long" / "Double"
 
 StringRegexValidator
    = "regex" __ "=" __ regex:$RegularExpressionLiteral {
@@ -1428,7 +1482,7 @@ StringRegexValidator
   }
 
 NumericDomainValidator
-   = "range" __ "=" __ "[" __ lower:DecimalLiteral? __ "," __ upper:DecimalLiteral? __ "]" {
+   = "range" __ "=" __ "[" __ lower:SignedNumber? __ "," __ upper:SignedNumber? __ "]" {
    	return {
     	lower: lower,
       upper: upper
@@ -1444,7 +1498,8 @@ NumberFieldDeclaration
     		array: array,
     		range: range,
     		default: d,
-    		optional: optional
+    		optional: optional,
+            location: location()
     	}
     }
 
@@ -1456,6 +1511,7 @@ EnumDeclaration
         type:   "EnumDeclaration",
         id:     id,
         body:   body,
+        location: location()
       };
     }
 
@@ -1472,7 +1528,8 @@ EnumPropertyDeclaration
     	return {
     		type: "EnumPropertyDeclaration",
     		id: id,
-        optional: optional
+        optional: optional,
+        location: location()
     	}
     }
 
@@ -1483,7 +1540,8 @@ RelationshipDeclaration
     		id: id,
     		propertyType: propertyType,
      		array: array,
-        optional: optional
+        optional: optional,
+        location: location()
     	}
     }
 

@@ -1,0 +1,68 @@
+namespace com.ibm.testing
+
+concept StringValue {
+}
+
+concept DoubleValue {
+}
+
+concept LongValue {
+}
+
+concept IntegerValue {
+}
+
+concept DateTimeValue {
+}
+
+concept BooleanValue {
+}
+
+concept TestConcept {
+    o String s default="test" regex=/test/
+    o Double d default = 1 range=[0,10] optional 
+    o Long l default = 1 range=[0,10]
+    o Integer i default = 1 range=[0,10] optional 
+    o DateTime date default = "" optional
+    o Boolean b default=true optional
+
+    o String[] sa
+    o Double[] da optional 
+    o Long[] la
+    o Integer[] ia optional 
+    o DateTime[] datea optional
+    o Boolean[] ba optional
+
+    o StringValue so
+    o DoubleValue dd
+    o LongValue lo
+    o IntegerValue io
+    o DateTimeValue dateo
+    o BooleanValue bo
+
+    o StringValue[] soa
+    o DoubleValue[] dda
+    o LongValue[] loa
+    o IntegerValue[] ioa
+    o DateTimeValue[] dateoa
+    o BooleanValue[] boa
+}
+
+concept Defaults {
+    o String s default="test"
+    o Double d default=1.5
+    o Double d2 default=-1.5
+    o Long l default = 100
+    o Long l2 default = -100
+    o Integer i default = 1
+    o Integer i2 default = -1000
+    o DateTime date default = "FOO"
+    o Boolean b default=true
+    o Boolean b2 default=false
+}
+
+concept Ranges {
+    o Double d range=[-10,10]
+    o Double d2 range=[,10]
+    o Double d3 range=[-10,]
+}

@@ -20,7 +20,7 @@ const connectorModule = require('..');
 require('chai').should();
 const sinon = require('sinon');
 
-describe('loopback-connector-concerto', () => {
+describe('loopback-connector-composer', () => {
 
     let sandbox;
 
