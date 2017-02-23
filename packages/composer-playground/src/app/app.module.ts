@@ -28,6 +28,7 @@ import { ParticipantRegistryComponent, AddParticipantComponent, UpdateParticipan
 import { TransactionRegistryComponent, SubmitTransactionComponent } from './transactionregistry';
 import { SettingsComponent } from './settings';
 import { AddIdentityComponent } from './addidentity';
+import { AboutComponent } from './about';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
 import { ResetComponent } from './reset';
@@ -43,7 +44,8 @@ import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
 import { NotificationService } from './notification.service';
 import { InitializationService } from './initialization.service';
-import { SampleBusinessNetworkService } from "./services/samplebusinessnetwork.service";
+import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.service';
+import { AboutService } from './services/about.service';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -98,7 +100,8 @@ type StoreType = {
     ResetComponent,
     ImportComponent,
     GithubComponent,
-    NoContentComponent
+    NoContentComponent,
+    AboutComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
@@ -125,7 +128,8 @@ type StoreType = {
     IdentityService,
     NotificationService,
     InitializationService,
-    SampleBusinessNetworkService
+    SampleBusinessNetworkService,
+    AboutService
   ]
 })
 export class AppModule {
