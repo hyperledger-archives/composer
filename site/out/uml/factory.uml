@@ -1,0 +1,16 @@
+@startuml
+!include /Users/Sam/Git/fabric-composer/site/out/uml/./model/relationship.uml
+!include /Users/Sam/Git/fabric-composer/site/out/uml/./model/resource.uml
+!include /Users/Sam/Git/fabric-composer/site/out/uml/./model/validatedresource.uml
+!include /Users/Sam/Git/fabric-composer/site/out/uml/./model/concept.uml
+!include /Users/Sam/Git/fabric-composer/site/out/uml/./model/validatedconcept.uml
+class Factory{
+   + void constructor(ModelManager)
+   + Resource newInstance(string,string,string,Object,boolean,boolean)
+   + Resource newResource(string,string,string,Object,boolean,boolean)
+   + Resource newConcept(string,string,Object,boolean,boolean)
+   + Relationship newRelationship(string,string,string)
+   + Resource newTransaction(string,string,string,Object,boolean)
+   + Object toJSON()
+}
+@enduml
