@@ -891,8 +891,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should retrieve a fully resolved specific Asset for a given id in a where clause', () => {
-            mockAssetRegistry.resolve.returns(Promise.resolve([{theValue : 'mockId'}]));
-            mockSerializer.toJSON.onFirstCall().returns({theValue : 'myId'});
+            mockAssetRegistry.resolve.returns(Promise.resolve({theValue : 'mockId'}));
 
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, {}, (error, result) => {
@@ -906,7 +905,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
                     sinon.assert.calledOnce(mockAssetRegistry.resolve);
-                    result[0].theValue.should.equal('myId');
+                    result[0].theValue.should.equal('mockId');
                 });
         });
 
@@ -1040,10 +1039,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should retrieve all fully resolved Assets for a given modelname', () => {
-            mockAssetRegistry.resolveAll.returns(Promise.resolve([{mock : 'mockId'}, {mock2 : 'mockID2'}]));
-            mockSerializer.toJSON.onFirstCall().returns({assetId : 'myId', stringValue : 'a big car'});
-            mockSerializer.toJSON.onSecondCall().returns({assetId : 'anId', stringValue : 'a big fox'});
-
+            mockAssetRegistry.resolveAll.returns(Promise.resolve([{assetId : 'mockId', stringValue : 'a big car'}, {assetId : 'mockId2', stringValue : 'a big fox'}]));
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.BaseAsset', {'include' : 'resolve'}, {}, (error, result) => {
                     if (error) {
@@ -1056,9 +1052,9 @@ describe('BusinessNetworkConnector Unit Test', () => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
                 sinon.assert.calledOnce(mockAssetRegistry.resolveAll);
-                result[0].assetId.should.equal('myId');
+                result[0].assetId.should.equal('mockId');
                 result[0].stringValue.should.equal('a big car');
-                result[1].assetId.should.equal('anId');
+                result[1].assetId.should.equal('mockId2');
                 result[1].stringValue.should.equal('a big fox');
             });
         });
