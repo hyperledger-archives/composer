@@ -183,7 +183,6 @@ export class SampleBusinessNetworkService {
   public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded to fix this problem you need to setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html"  target="_blank">here</a>';
 
 
-
   constructor(private adminService: AdminService,
               private clientService: ClientService) {
 
@@ -230,7 +229,7 @@ export class SampleBusinessNetworkService {
         }
 
         //if we aren't doing oauth then we need to setup github without token
-        if(!result) {
+        if (!result) {
           this.setUpGithub(null);
         }
         resolve(result);
@@ -251,7 +250,7 @@ export class SampleBusinessNetworkService {
   }
 
   setUpGithub(accessToken: string) {
-    if(accessToken) {
+    if (accessToken) {
       this.octo = new Octokat({token: accessToken});
     } else {
       this.octo = new Octokat();
@@ -279,13 +278,13 @@ export class SampleBusinessNetworkService {
         return results;
       })
       .catch((error) => {
-        if(error.message)
-        throw error
+        if (error.message)
+          throw error
       });
   }
 
   public getModelsInfo(owner: string, repository: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
     let repo = this.octo.repos(owner, repository);
@@ -308,15 +307,16 @@ export class SampleBusinessNetworkService {
   }
 
   public getSampleNetworkInfo(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
     let repo = this.octo.repos(owner, repository);
 
-    return repo.contents(path + 'package.json').read()
+    return repo.contents(path + 'package.json').fetch()
       .then((info) => {
-        let contentInfo = JSON.parse(info);
+        let decodedString = atob(info.content);
+        let contentInfo = JSON.parse(decodedString);
         //needed to know where to look in the repository for the files
         contentInfo.composerPath = path;
         return contentInfo;
@@ -327,7 +327,7 @@ export class SampleBusinessNetworkService {
   }
 
   public getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
@@ -352,7 +352,7 @@ export class SampleBusinessNetworkService {
   }
 
   public getModel(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
@@ -361,12 +361,20 @@ export class SampleBusinessNetworkService {
       .then((models) => {
         let modelFilePromises: Promise<any>[] = [];
         models.items.forEach((model) => {
-          modelFilePromises.push(repo.contents(model.path).read());
+          modelFilePromises.push(repo.contents(model.path).fetch());
         });
         return Promise.all(modelFilePromises);
       })
       .then((modelFiles) => {
-        return modelFiles;
+
+        let fileArray: string[] = [];
+
+        modelFiles.forEach((file) => {
+          let decodedString = atob(file.content);
+          fileArray.push(decodedString);
+        });
+
+        return fileArray;
       })
       .catch((error) => {
         throw error;
@@ -414,7 +422,7 @@ export class SampleBusinessNetworkService {
   }
 
   private getScripts(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
@@ -426,13 +434,14 @@ export class SampleBusinessNetworkService {
         let scriptFilePromises: Promise<any>[] = [];
         scripts.items.forEach((script) => {
           scriptFileData.push({name: script.name});
-          scriptFilePromises.push(repo.contents(script.path).read());
+          scriptFilePromises.push(repo.contents(script.path).fetch());
         });
         return Promise.all(scriptFilePromises);
       })
       .then((scriptFiles) => {
         for (let i = 0; i < scriptFiles.length; i++) {
-          scriptFileData[i].data = scriptFiles[i];
+          let decodedString = atob(scriptFiles[i].content);
+          scriptFileData[i].data = decodedString;
         }
         return scriptFileData;
       })
@@ -446,17 +455,18 @@ export class SampleBusinessNetworkService {
   }
 
   private getAcls(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
     let repo = this.octo.repos(owner, repository);
 
-    return repo.contents(path + 'permissions.acl').read()
+    return repo.contents(path + 'permissions.acl').fetch()
       .then((permissions) => {
+        let decodedString = atob(permissions.content);
         let aclFileData = {
           name: 'permissions.acl',
-          data: permissions
+          data: decodedString
         };
         return aclFileData;
       })

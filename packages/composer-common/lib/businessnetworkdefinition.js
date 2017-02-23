@@ -126,6 +126,7 @@ class BusinessNetworkDefinition {
         return JSZip.loadAsync(Buffer).then(function(zip) {
             const allPromises = [];
             let ctoModelFiles = [];
+            let ctoModelFileNames = [];
             let jsScriptFiles = [];
             let permissionsFiles = [];
             let businessNetworkDefinition;
@@ -150,6 +151,7 @@ class BusinessNetworkDefinition {
             let ctoFiles = zip.file(/models\/.*\.cto$/); //Matches any file which is in the 'models' folder and has a .cto extension
             ctoFiles.forEach(function(file) {
                 LOG.debug(method, 'Found model file, loading it', file.name);
+                ctoModelFileNames.push(file.name);
                 const ctoPromise = file.async('string');
                 allPromises.push(ctoPromise);
                 ctoPromise.then(contents => {
@@ -190,7 +192,7 @@ class BusinessNetworkDefinition {
                 .then(() => {
                     LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
                     LOG.debug(method, 'Adding model files to model manager');
-                    businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles); // Adds all cto files to model manager
+                    businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames); // Adds all cto files to model manager
                     LOG.debug(method, 'Added model files to model manager');
                     // console.log('What are the jsObjectsArray?',jsObjectArray);
                     LOG.debug(method, 'Adding JavaScript files to script manager');
@@ -329,6 +331,7 @@ class BusinessNetworkDefinition {
         // create the business network definition
         const businessNetwork = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription);
         const modelFiles = [];
+        const modelFileNames = [];
 
         // process each module dependency
         // filtering using a glob on the module dependency name
@@ -392,11 +395,12 @@ class BusinessNetworkDefinition {
             },
             process: function(path,contents) {
                 modelFiles.push(contents);
+                modelFileNames.push(path);
                 LOG.debug(method, 'Found model file', path);
             }
         });
 
-        businessNetwork.getModelManager().addModelFiles(modelFiles);
+        businessNetwork.getModelManager().addModelFiles(modelFiles,modelFileNames);
         LOG.debug(method, 'Added model files',  modelFiles.length);
 
         // find script files outside the npm install directory

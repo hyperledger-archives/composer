@@ -14,7 +14,7 @@ The essential tools you will need are *npm*, *docker*, *docker-compose* and a co
 
 The recommended versions are:
 *Docker*: v1.12.5
-*Docker-compose*: v1.9.0
+*Docker-compose*: v1.10.0
 *node.js*: v6.9.5
 
 ## Automatic Installation
@@ -23,7 +23,7 @@ First clone the Getting Started repository
 
 ```bash
 git clone http://github.com/fabric-composer/sample-applications
-cd sample-applications/getting-started
+cd sample-applications/packages/getting-started
 ```
 
 Next run the script

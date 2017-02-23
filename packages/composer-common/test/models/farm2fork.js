@@ -29,12 +29,12 @@ describe('Farm2Fork Model', function() {
             let fileName = './test/data/model/concerto.cto';
             let systemModel = fs.readFileSync(fileName, 'utf8');
             systemModel.should.not.be.null;
-            modelManager.addModelFile(systemModel);
+            modelManager.addModelFile(systemModel,fileName);
 
             fileName = './test/data/model/farm2fork.cto';
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
-            modelManager.addModelFile(file);
+            modelManager.addModelFile(file,fileName);
             modelManager.getModelFiles().length.should.equal(2);
             let modelFile = modelManager.getModelFiles()[1];
             modelFile.getNamespace().should.equal('org.acme');

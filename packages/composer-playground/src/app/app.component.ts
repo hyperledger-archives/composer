@@ -4,19 +4,19 @@
 import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 import {AppState} from './app.service';
 import {AdminService} from './admin.service';
 import {ClientService} from './client.service';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from './wallet.service';
 import {IdentityService} from './identity.service';
-import {NotificationService} from './notification.service';
 import {InitializationService} from './initialization.service';
 import {AddIdentityComponent} from './addidentity';
 import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';
-import {SampleBusinessNetworkService} from "./services/samplebusinessnetwork.service";
 
 const LZString = require('lz-string');
 
@@ -33,7 +33,6 @@ const composerPackageVersion = require('../../package.json').version;
     require('../assets/styles/composer.scss').toString(),
     require('codemirror/lib/codemirror.css'),
     require('codemirror/addon/scroll/simplescrollbars.css'),
-    require('font-awesome/css/font-awesome.min.css'),
     require('./app.component.scss').toString()
   ],
   templateUrl: './app.component.html'
@@ -66,9 +65,8 @@ export class AppComponent {
               private connectionProfileService: ConnectionProfileService,
               private walletService: WalletService,
               private identityService: IdentityService,
-              private notificationService: NotificationService,
               private initializationService: InitializationService,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+              private modalService: NgbModal) {
 
   }
 
@@ -144,12 +142,6 @@ export class AppComponent {
     } else {
       console.log('no invitation here');
     }
-
-   /** TODO: put this back in somewhere
-    *  if(this.sampleBusinessNetworkService.OPEN_SAMPLE) {
-      this.sample();
-      this.sampleBusinessNetworkService.OPEN_SAMPLE = false;
-    }**/
 
     // We load the connection profiles now, so we can immediately populate the menu.
     this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
@@ -280,7 +272,8 @@ export class AppComponent {
 
   private onErrorStatus(errorStatus) {
     if (errorStatus) {
-      this.errorComponent.displayAndWait(errorStatus);
+      const modalRef  = this.modalService.open(ErrorComponent);
+      modalRef.componentInstance.error = errorStatus;
     }
   }
 
