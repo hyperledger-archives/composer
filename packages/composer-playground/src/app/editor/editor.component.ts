@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { ImportComponent } from '../import/import.component';
+import {ImportComponent} from '../import/import.component';
 
-import { AdminService } from '../admin.service';
-import { ClientService } from '../client.service';
-import { InitializationService } from '../initialization.service';
+import {AdminService} from '../admin.service';
+import {ClientService} from '../client.service';
+import {InitializationService} from '../initialization.service';
+import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service'
 
-import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
+import {AclFile, BusinessNetworkDefinition, ModelFile} from 'composer-common';
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';
@@ -39,7 +41,11 @@ export class EditorComponent implements OnInit {
     readOnly: false,
     mode: 'javascript',
     autofocus: true,
-    extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+    extraKeys: {
+      'Ctrl-Q': function (cm) {
+        cm.foldCode(cm.getCursor());
+      }
+    },
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     scrollbarStyle: 'simple'
@@ -72,16 +78,24 @@ export class EditorComponent implements OnInit {
 
   private previousFile;
 
-  constructor(
-    private adminService: AdminService,
-    private clientService: ClientService,
-    private initializationService: InitializationService,
-    private modalService: NgbModal
-  ) {
 
-  }
+  constructor(private adminService: AdminService,
+              private clientService: ClientService,
+              private initializationService: InitializationService,
+              private modalService: NgbModal,
+              private route: ActivatedRoute,
+              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+
+              }
 
   ngOnInit(): Promise<any> {
+    this.route.queryParams.subscribe(() => {
+      if (this.sampleBusinessNetworkService.OPEN_SAMPLE) {
+        this.openImportModal();
+        this.sampleBusinessNetworkService.OPEN_SAMPLE = false;
+      }
+    });
+
     return this.initializationService.initialize()
       .then(() => {
         this.loadBusinessNetwork();
@@ -271,7 +285,7 @@ export class EditorComponent implements OnInit {
     let businessNetworkDefinition = this.businessNetworkDefinition;
     let modelManager = businessNetworkDefinition.getModelManager();
     let code =
-`/**
+      `/**
  * New model file
  */
 
@@ -290,7 +304,7 @@ namespace ${this.addModelNamespace}`;
     let businessNetworkDefinition = this.businessNetworkDefinition;
     let scriptManager = businessNetworkDefinition.getScriptManager();
     let code =
-`/**
+      `/**
  * New script file
  */`;
     let script = scriptManager.createScript(this.addScriptFileName, 'JS', code);
@@ -343,9 +357,22 @@ namespace ${this.addModelNamespace}`;
 
   private openImportModal() {
     this.modalService.open(ImportComponent).result.then((result) => {
-      window.location.reload();
+      this.loadBusinessNetwork();
+      this.updateFiles();
+      if (this.files.length) {
+        let currentFile = this.files.find((file) => {
+          return file.model;
+        });
+        if (!currentFile) {
+          currentFile = this.files[0];
+        }
+        this.setCurrentFile(currentFile);
+      }
     }, (reason) => {
-      //TODO: deal with error case
+      //if no reason then we hit cancel
+      if(reason) {
+         this.adminService.errorStatus$.next(reason);
+      }
     });
   }
 
