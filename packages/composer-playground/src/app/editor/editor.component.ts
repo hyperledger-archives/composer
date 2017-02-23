@@ -54,6 +54,7 @@ export class EditorComponent implements OnInit {
   private businessNetworkDefinition: BusinessNetworkDefinition = null;
 
   private editActive: boolean = false;
+  private editingPackage: boolean = false;
 
   private packageName; // This is the deployed BND's package name
   private packageVersion; // This is the deployed BND's package version
@@ -62,9 +63,15 @@ export class EditorComponent implements OnInit {
   private inputPackageName; // This is the input 'Name' before the BND is updated
   private inputPackageVersion; // This is the input 'Version' before the BND is updated
 
+  private setPackageName;
+  private setPackageVersion;
+
   private currentModelFiles;
   private currentScriptFiles;
   private currentAclFile;
+
+  private previousFile;
+
   constructor(
     private adminService: AdminService,
     private clientService: ClientService,
@@ -84,6 +91,9 @@ export class EditorComponent implements OnInit {
         this.packageName = this.businessNetworkDefinition.getName();
         this.packageVersion = this.businessNetworkDefinition.getVersion();
         this.packageDescription = this.businessNetworkDefinition.getDescription();
+
+        this.setPackageName = this.businessNetworkDefinition.getName();
+        this.setPackageVersion = this.businessNetworkDefinition.getVersion();
 
         this.updateFiles();
         if (this.files.length) {
@@ -124,11 +134,10 @@ export class EditorComponent implements OnInit {
       businessNetworkDefinition.getAclManager().setAclFile(aclFile);
     }
     this.businessNetworkDefinition = businessNetworkDefinition;
-    let tempName = businessNetworkDefinition.getName();
-    let tempVersion = businessNetworkDefinition.getVersion();
-    this.inputPackageName = tempName
-    tempName = "ayyyy";
-    this.inputPackageVersion = tempVersion;
+    this.setPackageName = businessNetworkDefinition.getName();
+    this.setPackageVersion = businessNetworkDefinition.getVersion();
+    this.inputPackageName = businessNetworkDefinition.getName();
+    this.inputPackageVersion = businessNetworkDefinition.getVersion();
   }
 
   private getCurrentCode() {
@@ -188,6 +197,7 @@ export class EditorComponent implements OnInit {
         this.packageName = packageObject.name;
         this.packageVersion = packageObject.version;
         this.packageDescription = packageObject.description;
+        this.editingPackage = true;
       }
       this.currentError = null;
       this.dirty = true;
@@ -200,6 +210,8 @@ export class EditorComponent implements OnInit {
     console.log('what is file?',file)
     this.changingCurrentFile = true;
     try {
+      this.previousFile = this.currentFile;
+
       this.currentFile = file;
       this.code = this.getCurrentCode();
       this.previousCode = this.code;
@@ -366,7 +378,16 @@ namespace ${this.addModelNamespace}`;
         this.updateFiles();
         console.log('What is the BND?',this.businessNetworkDefinition);
         this.inputPackageVersion = this.packageVersion;
-    this.inputPackageName = this.packageName;
+        this.inputPackageName = this.packageName;
+        this.setPackageName = this.businessNetworkDefinition.getName();
+        this.setPackageVersion = this.businessNetworkDefinition.getVersion();
+        this.editingPackage = false;
+        if(this.previousFile == null){
+          this.setCurrentFile(this.currentFile);
+        }
+        else{
+          this.setCurrentFile(this.previousFile);
+        }
         this.clientService.busyStatus$.next(null);
       })
       .catch((error) => {
@@ -436,6 +457,12 @@ namespace ${this.addModelNamespace}`;
   private editPackageName(){
     this.packageName = this.inputPackageName;
     this.deploy().then(()=>{
+      if(this.previousFile == null){
+        this.setCurrentFile(this.currentFile);
+      }
+      else{
+        this.setCurrentFile(this.previousFile);
+      }
       console.log('finished redeploy');
     });
   }
@@ -446,7 +473,19 @@ namespace ${this.addModelNamespace}`;
   private editPackageVersion(){
     this.packageVersion = this.inputPackageVersion;
     this.deploy().then(() => {
+      if(this.previousFile == null){
+        this.setCurrentFile(this.currentFile);
+      }
+      else{
+        this.setCurrentFile(this.previousFile);
+      }
+
       console.log('finished redeploy');
     });
+  }
+
+  private hideEdit(){
+    this.toggleEditActive();
+    this.editingPackage = true;
   }
 }

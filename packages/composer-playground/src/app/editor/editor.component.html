@@ -1,7 +1,10 @@
 <div class="editor">
+  <div *ngIf="editingPackage" class="container business-network-details">
+    <h1>Editing package.json</h1>
+  </div>
   <div *ngIf="!editActive" class="container business-network-details">
-    <h1 class="business-network-name">{{packageName}}</h1>
-    <div class="business-network-version small">{{packageVersion}}</div>
+    <h1 class="business-network-name">{{setPackageName}}</h1>
+    <div class="business-network-version small">{{setPackageVersion}}</div>
     <div>
       <button type="button" class="action" (click)="toggleEditActive()">
         <svg class="ibm-icon" aria-hidden="true">
@@ -20,7 +23,7 @@
       package: true,
       id: 'package',
       displayID: 'package.json'
-    })">View/edit full metadata in package.json</button>
+    });hideEdit();">View/edit full metadata in package.json</button>
     </div>
   </div>
   <div class="container" (click)="toggleNotEditing()">
