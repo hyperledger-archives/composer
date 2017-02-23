@@ -217,7 +217,8 @@ class BusinessNetworkConnector extends Connector {
                             if(doResolve) {
                                 registry.resolve(objectId)
                                 .then((result) => {
-                                    results.push(this.serializer.toJSON(result));
+                                    debug('Got Result:', result);
+                                    results.push(result);
                                     callback(null, results);
                                 })
                                 .catch((error) => {
@@ -233,6 +234,7 @@ class BusinessNetworkConnector extends Connector {
                             } else {
                                 registry.get(objectId)
                                 .then((result) => {
+                                    debug('Got Result:', result);
                                     results.push(this.serializer.toJSON(result));
                                     callback(null, results);
                                 })
@@ -256,8 +258,9 @@ class BusinessNetworkConnector extends Connector {
                             // get all unresolved objects
                             registry.resolveAll()
                                 .then((result) => {
+                                    debug('Got Result:', result);
                                     result.forEach((res) => {
-                                        results.push(this.serializer.toJSON(res));
+                                        results.push(res);
                                     });
                                     callback(null, results);
                                 })
@@ -270,6 +273,7 @@ class BusinessNetworkConnector extends Connector {
                             debug('About to get all');
                             registry.getAll()
                                 .then((result) => {
+                                    debug('Got Result:', result);
                                     result.forEach((res) => {
                                         results.push(this.serializer.toJSON(res));
                                     });
