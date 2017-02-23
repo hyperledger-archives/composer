@@ -71,9 +71,12 @@
   .modal-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: $space-medium;
     background-color: $third-highlight;
+
+    svg + h1 {
+      margin-left: $space-medium;
+    }
 
     .modal-exit {
       position: absolute;

@@ -1,19 +1,15 @@
-<div bsModal #modal="bs-modal" class="modal fade" tabindex="-1" (onHidden)="onHidden();">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" (click)="modal.hide()">
-          <span>&times;</span>
-        </button>
-        <h4 class="modal-title">Error</h4>
-      </div>
-      <div class="modal-body">
-        <!-- allow html in error strings for lniks to the doc -->
-        <div class="w-100" [innerHTML]="error"></div>
-        <button type="button" class="btn btn-primary" (click)="modal.hide();">
-          <span>OK</span>
-        </button>
-      </div>
-    </div>
+<div class="error" tabindex="-1">
+  <div class="modal-header">
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-warn_32"></use>
+    </svg>
+    <h1>An error has occurred</h1>
+    <button class="icon modal-exit" (click)="activeModal.dismiss()">X</button>
   </div>
+  <section>
+    <div>{{error}}</div>
+  </section>
+  <footer>
+    <button type="button" class="primary" (click)="activeModal.close()">OK</button>
+  </footer>
 </div>

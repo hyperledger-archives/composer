@@ -70,7 +70,8 @@ type StoreType = {
 @NgModule({
   bootstrap: [ AppComponent ],
   entryComponents: [
-    ImportComponent
+    ImportComponent,
+    ErrorComponent
   ],
   declarations: [
     AppComponent,
