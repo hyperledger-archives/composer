@@ -1,0 +1,7 @@
+@startuml
+class Introspector{
+   + void constructor(ModelManager)
+   + ClassDeclaration[] getClassDeclarations()
+   + ClassDeclaration getClassDeclaration(String)
+}
+@enduml

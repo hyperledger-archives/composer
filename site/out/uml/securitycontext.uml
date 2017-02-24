@@ -1,0 +1,8 @@
+@startuml
+class SecurityContext{
+   + void constructor(Connection,string)
+   + Connection getConnection()
+   + string getUser()
+   + Object toJSON()
+}
+@enduml
