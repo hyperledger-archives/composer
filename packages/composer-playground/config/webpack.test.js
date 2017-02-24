@@ -102,23 +102,23 @@ module.exports = function (options) {
          *
          * See: https://github.com/s-panferov/awesome-typescript-loader
          */
-        {
-          test: /\.ts$/,
-          loader: 'awesome-typescript-loader',
-          query: {
-            // use inline sourcemaps for "karma-remap-coverage" reporter
-            sourceMap: false,
-            inlineSourceMap: true,
-            compilerOptions: {
+        // {
+        //   test: /\.ts$/,
+        //   loader: 'awesome-typescript-loader',
+        //   query: {
+        //     // use inline sourcemaps for "karma-remap-coverage" reporter
+        //     sourceMap: false,
+        //     inlineSourceMap: true,
+        //     compilerOptions: {
 
-              // Remove TypeScript helpers to be injected
-              // below by DefinePlugin
-              removeComments: true
+        //       // Remove TypeScript helpers to be injected
+        //       // below by DefinePlugin
+        //       removeComments: true
 
-            }
-          },
-          exclude: [/\.e2e\.ts$/]
-        },
+        //     }
+        //   },
+        //   exclude: [/\.e2e\.ts$/]
+        // },
 
         /**
          * Json loader support for *.json files.
@@ -212,7 +212,26 @@ module.exports = function (options) {
           query: {
             presets: ['es2015']
           }
-        }
+        },
+
+        /*
+        * SASS loader support for *.scss files
+        * Returns file content as string
+        *
+        * See: https://github.com/webpack/raw-loader
+        */
+
+        {
+          test: /\.scss$/,
+          exclude: /node_modules/,
+          loaders: ['raw-loader', 'sass-loader'] // sass-loader not scss-loader
+        },
+
+        {
+          test: /\.ts$/,
+          loaders: ['awesome-typescript-loader', 'angular2-template-loader'],
+          exclude: [/\.e2e\.ts$/]
+        },
 
       ]
     },

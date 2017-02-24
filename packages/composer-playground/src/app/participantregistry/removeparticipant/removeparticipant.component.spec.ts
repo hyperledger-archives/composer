@@ -6,23 +6,23 @@ import { DebugElement } from '@angular/core';
 import { RemoveParticipantComponent } from './removeparticipant.component';
 
 describe('RemoveParticipantComponent', () => {
-  let component: RemoveParticipantComponent;
-  let fixture: ComponentFixture<RemoveParticipantComponent>;
+  // let component: RemoveParticipantComponent;
+  // let fixture: ComponentFixture<RemoveParticipantComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ RemoveParticipantComponent ]
-    })
-    .compileComponents();
-  }));
+  // beforeEach(async(() => {
+  //   TestBed.configureTestingModule({
+  //     declarations: [ RemoveParticipantComponent ]
+  //   })
+  //   .compileComponents();
+  // }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RemoveParticipantComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  // beforeEach(() => {
+  //   fixture = TestBed.createComponent(RemoveParticipantComponent);
+  //   component = fixture.componentInstance;
+  //   fixture.detectChanges();
+  // });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  // it('should create', () => {
+  //   expect(component).toBeTruthy();
+  // });
 });

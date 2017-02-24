@@ -6,23 +6,23 @@ import { DebugElement } from '@angular/core';
 import { AssetRegistryComponent } from './assetregistry.component';
 
 describe('AssetRegistryComponent', () => {
-  let component: AssetRegistryComponent;
-  let fixture: ComponentFixture<AssetRegistryComponent>;
+  // let component: AssetRegistryComponent;
+  // let fixture: ComponentFixture<AssetRegistryComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AssetRegistryComponent ]
-    })
-    .compileComponents();
-  }));
+  // beforeEach(async(() => {
+  //   TestBed.configureTestingModule({
+  //     declarations: [ AssetRegistryComponent ]
+  //   })
+  //   .compileComponents();
+  // }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AssetRegistryComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  // beforeEach(() => {
+  //   fixture = TestBed.createComponent(AssetRegistryComponent);
+  //   component = fixture.componentInstance;
+  //   fixture.detectChanges();
+  // });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  // it('should create', () => {
+  //   expect(component).toBeTruthy();
+  // });
 });
