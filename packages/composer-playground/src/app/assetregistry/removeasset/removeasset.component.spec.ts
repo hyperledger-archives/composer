@@ -6,23 +6,23 @@ import { DebugElement } from '@angular/core';
 import { RemoveAssetComponent } from './removeasset.component';
 
 describe('RemoveAssetComponent', () => {
-  let component: RemoveAssetComponent;
-  let fixture: ComponentFixture<RemoveAssetComponent>;
+  // let component: RemoveAssetComponent;
+  // let fixture: ComponentFixture<RemoveAssetComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ RemoveAssetComponent ]
-    })
-    .compileComponents();
-  }));
+  // beforeEach(async(() => {
+  //   TestBed.configureTestingModule({
+  //     declarations: [ RemoveAssetComponent ]
+  //   })
+  //   .compileComponents();
+  // }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RemoveAssetComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  // beforeEach(() => {
+  //   fixture = TestBed.createComponent(RemoveAssetComponent);
+  //   component = fixture.componentInstance;
+  //   fixture.detectChanges();
+  // });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  // it('should create', () => {
+  //   expect(component).toBeTruthy();
+  // });
 });
