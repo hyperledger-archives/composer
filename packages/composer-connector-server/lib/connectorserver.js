@@ -539,6 +539,18 @@ class ConnectorServer {
     }
 
     /**
+     * Get github client id that the user has set
+     * @param {function} callback The callback to call when complete
+     * @returns {promise} A promise that is resolved when complete
+     */
+    getGithubClientId (callback) {
+        const method = 'getGithubClientId';
+        LOG.entry(method);
+
+        return callback(null, config.clientId);
+    }
+
+    /**
      * Exchange access code for a access token from github
      * @param {string} accessCode The code obtained from authenicating with github
      * @param {function} callback The callback to call when complete
