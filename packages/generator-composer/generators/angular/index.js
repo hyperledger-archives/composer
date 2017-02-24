@@ -108,7 +108,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'networkIdentifier',
                         message: 'What is the Business Network Identifier?:',
-                        default: 'org.acme.biznet',
+                        default: 'digitalproperty-network',
                         store: true,
                         when: function(answers) {
                             return !answers.isNpmSameAsNetworkIdentifier;
@@ -125,7 +125,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'connectionProfileName',
                         message: 'What is the Connection Profile to use?',
-                        default: 'newProfile',
+                        default: 'defaultProfile',
                         store: false,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input !== '') {
