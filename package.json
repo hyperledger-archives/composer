@@ -8,7 +8,7 @@
   },
   "name": "fabric-composer",
   "description": "You must install [Lerna](https://lernajs.io) to build this multi-package repository.",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "main": "index.js",
   "private": true,
   "scripts": {
