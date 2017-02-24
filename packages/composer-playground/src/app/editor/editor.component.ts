@@ -4,6 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {ImportComponent} from '../import/import.component';
+import {ExportComponent} from '../export/export.component';
 
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
@@ -11,6 +12,8 @@ import {InitializationService} from '../initialization.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service'
 
 import {AclFile, BusinessNetworkDefinition, ModelFile} from 'composer-common';
+
+import { saveAs } from 'file-saver';
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';
@@ -32,6 +35,7 @@ export class EditorComponent implements OnInit {
 
   private files: any = [];
   private currentFile: any = null;
+  private previousFile;
   private changingCurrentFile: boolean = false;
   private code: string = null;
   private previousCode: string = null;
@@ -59,26 +63,21 @@ export class EditorComponent implements OnInit {
 
   private businessNetworkDefinition: BusinessNetworkDefinition = null;
 
-  private editActive: boolean = false;
-  private editingPackage: boolean = false;
+  private editActive: boolean = false; // Are the input boxes visible?
+  private editingPackage: boolean = false; // Is the package.json being edited?
 
-  private packageName; // This is the deployed BND's package name
-  private packageVersion; // This is the deployed BND's package version
-  private packageDescription; // This is the deployed BND's package description
+  private deployedPackageName; // This is the deployed BND's package name
+  private deployedPackageVersion; // This is the deployed BND's package version
+  private deployedPackageDescription; // This is the deployed BND's package description
 
   private inputPackageName; // This is the input 'Name' before the BND is updated
   private inputPackageVersion; // This is the input 'Version' before the BND is updated
 
-  private setPackageName;
-  private setPackageVersion;
+  private currentModelFiles; // These are the current model files for the deployed BND
+  private currentScriptFiles; // These are the current script files for the deployed BND
+  private currentAclFile; // This is the current ACL file for the deployed BND
 
-  private currentModelFiles;
-  private currentScriptFiles;
-  private currentAclFile;
-
-  private previousFile;
-
-
+  private exportedData;
   constructor(private adminService: AdminService,
               private clientService: ClientService,
               private initializationService: InitializationService,
@@ -100,14 +99,9 @@ export class EditorComponent implements OnInit {
       .then(() => {
         this.loadBusinessNetwork();
 
-
-
-        this.packageName = this.businessNetworkDefinition.getName();
-        this.packageVersion = this.businessNetworkDefinition.getVersion();
-        this.packageDescription = this.businessNetworkDefinition.getDescription();
-
-        this.setPackageName = this.businessNetworkDefinition.getName();
-        this.setPackageVersion = this.businessNetworkDefinition.getVersion();
+        this.deployedPackageName = this.businessNetworkDefinition.getName(); // Set Name
+        this.deployedPackageVersion = this.businessNetworkDefinition.getVersion(); // Set Version
+        this.deployedPackageDescription = this.businessNetworkDefinition.getDescription(); // Set Description
 
         this.updateFiles();
         if (this.files.length) {
@@ -123,13 +117,15 @@ export class EditorComponent implements OnInit {
   }
 
   private createBusinessNetwork(name,version,description){
-    console.log('creating new bnd',arguments)
-    this.businessNetworkDefinition = new BusinessNetworkDefinition(name+'@'+version,description);
+    console.log('Creating new BND',arguments)
+    this.businessNetworkDefinition = new BusinessNetworkDefinition(name+'@'+version,description); // Creates a new BND
   }
 
   private loadBusinessNetwork() {
-    let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
     let sourceBusinessNetworkDefinition = this.clientService.getBusinessNetwork();
+
+    let businessNetworkDefinition = new BusinessNetworkDefinition(sourceBusinessNetworkDefinition.getName()+'@'+sourceBusinessNetworkDefinition.getVersion(), sourceBusinessNetworkDefinition.getDescription());
+    console.log('wtf is this new bnd',businessNetworkDefinition);
     sourceBusinessNetworkDefinition.getModelManager().getModelFiles()
       .map((modelFile) => {
         return modelFile.getDefinitions();
@@ -148,8 +144,8 @@ export class EditorComponent implements OnInit {
       businessNetworkDefinition.getAclManager().setAclFile(aclFile);
     }
     this.businessNetworkDefinition = businessNetworkDefinition;
-    this.setPackageName = businessNetworkDefinition.getName();
-    this.setPackageVersion = businessNetworkDefinition.getVersion();
+    this.deployedPackageName = businessNetworkDefinition.getName();
+    this.deployedPackageVersion = businessNetworkDefinition.getVersion();
     this.inputPackageName = businessNetworkDefinition.getName();
     this.inputPackageVersion = businessNetworkDefinition.getVersion();
   }
@@ -181,7 +177,10 @@ export class EditorComponent implements OnInit {
         return null;
       }
     } else if (this.currentFile.package) {
-      let packageObject = {"name":this.packageName,"version":this.packageVersion,"description":this.packageDescription};
+
+      // This is what's loaded into the editor
+      let packageObject = {"name":this.deployedPackageName,"version":this.deployedPackageVersion,"description":this.deployedPackageDescription};
+
       return JSON.stringify(packageObject);
     } else {
       return null;
@@ -208,9 +207,9 @@ export class EditorComponent implements OnInit {
         aclManager.setAclFile(aclFile);
       } else if (this.currentFile.package){
         let packageObject = JSON.parse(this.code);
-        this.packageName = packageObject.name;
-        this.packageVersion = packageObject.version;
-        this.packageDescription = packageObject.description;
+        this.deployedPackageName = packageObject.name;
+        this.deployedPackageVersion = packageObject.version;
+        this.deployedPackageDescription = packageObject.description;
         this.editingPackage = true;
       }
       this.currentError = null;
@@ -368,12 +367,36 @@ namespace ${this.addModelNamespace}`;
         }
         this.setCurrentFile(currentFile);
       }
+      console.log('what is the new bnd',this.businessNetworkDefinition);
     }, (reason) => {
       //if no reason then we hit cancel
       if(reason) {
          this.adminService.errorStatus$.next(reason);
       }
     });
+  }
+
+  private openExportModal(){
+
+
+    return this.businessNetworkDefinition.toArchive().then((exportedData) => {
+      // let thefile = new Blob(exportedData, { type: "application/octet-stream" });
+      // let file = new File(thefile,'filee.zip');
+
+      // console.log('what is file',file)
+      // let someObject = window.URL.createObjectURL(file);
+      // window.open(someObject);
+
+
+      var file = new File([exportedData], this.deployedPackageName+'.bna', {type: "application/octet-stream"});
+      saveAs(file);
+
+      this.modalService.open(ExportComponent);
+
+    });
+    // this.modalService.open(ExportComponent).result.then((result) => {
+    //   console.log(this.businessNetworkDefinition.toArchive());
+    // })
   }
 
   private deploy(): Promise<any> {
@@ -388,7 +411,7 @@ namespace ${this.addModelNamespace}`;
         }
         this.deploying = true;
         // Creates a new business network with the package name, version and description set. (Will have no definitions)
-        this.createBusinessNetwork(this.packageName,this.packageVersion,this.packageDescription);
+        this.createBusinessNetwork(this.deployedPackageName,this.deployedPackageVersion,this.deployedPackageDescription);
 
         // Sets the business network to use the previous definition files
         this.setCurrentDefinitionFiles();
@@ -403,12 +426,16 @@ namespace ${this.addModelNamespace}`;
       .then(() => {
         // this.loadBusinessNetwork();
         this.updateFiles();
-        console.log('What is the BND?',this.businessNetworkDefinition);
-        this.inputPackageVersion = this.packageVersion;
-        this.inputPackageName = this.packageName;
-        this.setPackageName = this.businessNetworkDefinition.getName();
-        this.setPackageVersion = this.businessNetworkDefinition.getVersion();
+        console.log('What is the new BND?',this.businessNetworkDefinition);
+
+        this.inputPackageVersion = this.deployedPackageVersion;
+        this.inputPackageName = this.deployedPackageName;
+
+        this.deployedPackageName = this.businessNetworkDefinition.getName();
+        this.deployedPackageVersion = this.businessNetworkDefinition.getVersion();
+
         this.editingPackage = false;
+
         if(this.previousFile == null){
           this.setCurrentFile(this.currentFile);
         }
@@ -427,10 +454,9 @@ namespace ${this.addModelNamespace}`;
   * Gets the definition files for the currently deployed business network.
   */
   private getCurrentDefinitionFiles(){
-    let businessNetworkDefinition = this.businessNetworkDefinition;
-    let modelManager = businessNetworkDefinition.getModelManager();
-    let scriptManager = businessNetworkDefinition.getScriptManager();
-    let aclManager = businessNetworkDefinition.getAclManager();
+    let modelManager = this.businessNetworkDefinition.getModelManager();
+    let scriptManager = this.businessNetworkDefinition.getScriptManager();
+    let aclManager = this.businessNetworkDefinition.getAclManager();
     let modelFiles = modelManager.getModelFiles();
     let scriptFiles = scriptManager.getScripts();
     let aclFile = aclManager.getAclFile();
@@ -446,18 +472,15 @@ namespace ${this.addModelNamespace}`;
   private setCurrentDefinitionFiles(){
       this.currentModelFiles.forEach((modelFile) => {
         this.businessNetworkDefinition.getModelManager().addModelFile(modelFile);
-        console.log('added model')
       });
       this.currentScriptFiles.forEach((scriptFile) => {
         let script = this.businessNetworkDefinition.getScriptManager().createScript(scriptFile.getIdentifier(), scriptFile.getLanguage(), scriptFile.getContents());
         this.businessNetworkDefinition.getScriptManager().addScript(script);
-        console.log('added script')
       });
     let aclFile = this.currentAclFile;
     if (aclFile) {
       aclFile = new AclFile('permissions.acl', this.businessNetworkDefinition.getModelManager(), aclFile.getDefinitions());
       this.businessNetworkDefinition.getAclManager().setAclFile(aclFile);
-      console.log('added acl');
     }
   }
 
@@ -482,7 +505,7 @@ namespace ${this.addModelNamespace}`;
   * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
   */
   private editPackageName(){
-    this.packageName = this.inputPackageName;
+    this.deployedPackageName = this.inputPackageName;
     this.deploy().then(()=>{
       if(this.previousFile == null){
         this.setCurrentFile(this.currentFile);
@@ -490,7 +513,7 @@ namespace ${this.addModelNamespace}`;
       else{
         this.setCurrentFile(this.previousFile);
       }
-      console.log('finished redeploy');
+      console.log('Finished redeploy of BND');
     });
   }
 
@@ -498,7 +521,7 @@ namespace ${this.addModelNamespace}`;
   * When user edits the package version (in the input box), the package.json needs to be updated, and the BND needs to be updated
   */
   private editPackageVersion(){
-    this.packageVersion = this.inputPackageVersion;
+    this.deployedPackageVersion = this.inputPackageVersion;
     this.deploy().then(() => {
       if(this.previousFile == null){
         this.setCurrentFile(this.currentFile);
@@ -507,7 +530,7 @@ namespace ${this.addModelNamespace}`;
         this.setCurrentFile(this.previousFile);
       }
 
-      console.log('finished redeploy');
+      console.log('Finished redeploy of BND');
     });
   }
 

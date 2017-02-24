@@ -3,8 +3,8 @@
     <h1>Editing package.json</h1>
   </div>
   <div *ngIf="!editActive" class="container business-network-details">
-    <h1 class="business-network-name">{{setPackageName}}</h1>
-    <div class="business-network-version small">{{setPackageVersion}}</div>
+    <h1 class="margin-right">{{deployedPackageName}}</h1>
+    <div class="business-network-version small">{{deployedPackageVersion}}</div>
     <div>
       <button type="button" class="action" (click)="toggleEditActive()">
         <svg class="ibm-icon" aria-hidden="true">
@@ -14,11 +14,11 @@
     </div>
   </div>
   <div *ngIf="editActive" class="container business-network-details">
-    <label class="indent-right" for="editName">Name</label>
-    <input class="indent-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
-    <label class="indent-right" for="editVersion">Version</label>
-    <input class="indent-right" id="editVersion" type="text" (blur)="editPackageVersion()" [(ngModel)]="inputPackageVersion">
-    <div class="edit-package-text indent-right">
+    <label class="margin-right" for="editName">Name</label>
+    <input class="margin-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
+    <label class="margin-right" for="editVersion">Version</label>
+    <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()" [(ngModel)]="inputPackageVersion">
+    <div class="edit-package-text margin-right">
       <button type="button" class="action" (click)="setCurrentFile({
       package: true,
       id: 'package',
@@ -69,12 +69,12 @@
       </button>
     </div>
     <div>
-      <button type="button" class="action" (click)="openImportModal()">
-        <svg class="ibm-icon" aria-hidden="true">
-          <use xlink:href="#icon-upload_24"></use>
-        </svg>
-        Export
-      </button>
+        <button type="button" class="action" (click)="openExportModal()">
+          <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-upload_24"></use>
+          </svg>
+          Export
+        </button>
     </div>
   </div>
 </div>

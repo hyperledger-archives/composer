@@ -25,29 +25,15 @@
     margin: $space-medium 0;
     padding: $space-smedium 0;
   }
-  .business-network-name{
-    margin-right: $space-smedium;
-  }
 
   .business-network-version{
     margin-right: $space-smedium;
     color:$secondary-text;
   }
-  .business-network-edit{
-    margin-right: $space-smedium;
-  }
-  .indent-right{
+  .margin-right{
     margin-right: $space-smedium;
   }
   .edit-package-text{
     font-style: italic;
-  }
-  .hidden{
-    visibility: hidden;
-    display:none;
-  }
-  .visible{
-    visibility: visible;
-    display: block;
   }
 }

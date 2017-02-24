@@ -71,6 +71,7 @@
     "composer-common": "^0.4.4",
     "composer-connector-server": "^0.4.4",
     "express": "^4.14.0",
+    "file-saver": "^1.3.3",
     "is-docker": "^1.1.0",
     "octokat": "^0.6.2",
     "opener": "^1.4.2",
