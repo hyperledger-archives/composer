@@ -1,0 +1,9 @@
+@startuml
+class Typed{
+   + string getType()
+   + string getFullyQualifiedType()
+   + string getNamespace()
+   + void setPropertyValue(string,string)
+   + void addArrayValue(string,string)
+}
+@enduml
