@@ -107,6 +107,23 @@ describe('ConnectorServer', () => {
         });
     });
 
+    describe('#getGitHubClientId', () => {
+        it('should return the client id', (done) => {
+            connectorServer.getGithubClientId((err, response) => {
+                response.should.equal('myClient');
+                done();
+            });
+        });
+
+        it('should not return the client id if not set', (done) => {
+            configMock.clientId = null;
+            connectorServer.getGithubClientId((err, response) => {
+                should.not.exist(response);
+                done();
+            });
+        });
+    });
+
     describe('#getGitHubAccessToken', () => {
         it('should get the access token from github', (done) => {
             connectorServer.getGitHubAccessToken('1234', (err, response) => {

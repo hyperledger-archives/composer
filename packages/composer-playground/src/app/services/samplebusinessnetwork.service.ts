@@ -180,8 +180,9 @@ export class SampleBusinessNetworkService {
   private connected: boolean = false;
 
   public OPEN_SAMPLE: boolean = false;
-  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded to fix this problem you need to setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html"  target="_blank">here</a>';
-
+  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded, to fix this problem setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public NO_CLIENT_ID = 'The client id for the github api has not been set, to fix this problem setup ouath as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public CLIENT_ID = null;
 
   constructor(private adminService: AdminService,
               private clientService: ClientService) {
@@ -232,8 +233,25 @@ export class SampleBusinessNetworkService {
         if (!result) {
           this.setUpGithub(null);
         }
-        resolve(result);
+        return resolve(result);
       });
+    });
+  }
+
+  getGithubClientId(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (this.CLIENT_ID) {
+        return resolve(this.CLIENT_ID);
+      }
+
+      this.socket.emit('/api/getGithubClientId', (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+
+        this.CLIENT_ID = result;
+        return resolve(this.CLIENT_ID);
+      })
     });
   }
 
