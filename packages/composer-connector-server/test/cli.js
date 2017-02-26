@@ -17,7 +17,7 @@
 /* const ConnectorServer = */ require('..');
 const sinon = require('sinon');
 
-describe('concerto-connector-server CLI unit tests', () => {
+describe('composer-connector-server CLI unit tests', () => {
 
     let sandbox;
 

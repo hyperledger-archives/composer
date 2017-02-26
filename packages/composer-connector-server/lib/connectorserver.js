@@ -14,13 +14,10 @@
 
 'use strict';
 
-const config = require('../config/environment');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Logger = require('composer-common').Logger;
 const realSerializerr = require('serializerr');
 const uuid = require('uuid');
-const exec = require('child_process').exec;
-const request = require('request');
 
 const LOG = Logger.getLog('ConnectorServer');
 
@@ -492,94 +489,6 @@ class ConnectorServer {
             });
     }
 
-    /**
-     * Check if environment has client id and secret in
-     * @param {function} callback The callback to call when complete
-     * @return {Promise} A promise that is resolved when complete.
-     */
-    isOAuthEnabled (callback) {
-        if (config.clientId && config.clientSecret) {
-            return callback(null, true);
-        }
-
-        return callback(null, false);
-    }
-
-    /**
-     * Run npm view to get the details of a npm module
-     * @param {string} moduleName The name of the module
-     * @param {function} callback The callback to call when complete
-     * @return {Promise} A promise that is resolved when complete.
-     */
-    getNpmInfo (moduleName, callback) {
-        const method = 'getNpmInfo';
-        LOG.entry(method, moduleName);
-        let child = exec('npm view ' + moduleName,
-            function (error, stdout, stderr) {
-                if (error !== null) {
-                    LOG.error(error);
-                    LOG.exit(method, null);
-                    return callback(error);
-                } else {
-                    try {
-                        let output = stdout.replace(/\n/g, '');
-                        let sortOfParsed = JSON.stringify(eval('(' + output + ')'));
-                        let result = JSON.parse(sortOfParsed);
-                        LOG.exit(method, result);
-                        return callback(null, result);
-                    } catch (error) {
-                        LOG.error(error);
-                        return callback(error);
-                    }
-                }
-            });
-
-        LOG.exit(method, null);
-        return child;
-    }
-
-    /**
-     * Get github client id that the user has set
-     * @param {function} callback The callback to call when complete
-     * @returns {promise} A promise that is resolved when complete
-     */
-    getGithubClientId (callback) {
-        const method = 'getGithubClientId';
-        LOG.entry(method);
-
-        return callback(null, config.clientId);
-    }
-
-    /**
-     * Exchange access code for a access token from github
-     * @param {string} accessCode The code obtained from authenicating with github
-     * @param {function} callback The callback to call when complete
-     * @return {Promise} A promise that is resolved when complete.
-     */
-    getGitHubAccessToken (accessCode, callback) {
-        const method = 'getGithubAccessToken';
-        LOG.entry(method, accessCode);
-
-        let endpoint = config.githubAccessTokenUrl + '?' +
-            'code=' + accessCode +
-            '&client_id=' + config.clientId +
-            '&client_secret=' + config.clientSecret;
-
-        return request({
-            method : 'POST',
-            url : endpoint,
-            json : true
-        }, function handleResponse (err, response) {
-            if (err || response.body.error) {
-                let error = err || response.body.error;
-                LOG.error({err : error}, 'Error occurred while attempting to exchange code for access token.');
-                return callback(error);
-            }
-
-            return callback(null, response.body);
-        });
-
-    }
 }
 
 module.exports = ConnectorServer;
