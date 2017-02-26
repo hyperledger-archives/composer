@@ -1,9 +1,9 @@
 {
-  "name": "composer-connector-server",
+  "name": "composer-playground-api",
   "version": "0.4.5",
-  "description": "The remote connector server for Fabric Composer",
+  "description": "The REST API for the Fabric Composer Playground",
   "bin": {
-    "concerto-connector-server": "cli.js"
+    "composer-playground-api": "cli.js"
   },
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "git+https://github.com/fabric-composer/fabric-composer.git"
   },
   "keywords": [
     "blockchain",
@@ -40,24 +40,23 @@
     "logInfo": false,
     "logError": true
   },
-  "dependencies": {
-    "composer-common": "^0.4.5",
-    "composer-connector-embedded": "^0.4.5",
-    "composer-connector-hlf": "^0.4.5",
-    "composer-connector-hlfv1": "^0.4.5",
-    "serializerr": "^1.0.3",
-    "socket.io": "^1.7.2",
-    "uuid": "^3.0.1",
-    "yargs": "^6.6.0"
-  },
   "devDependencies": {
     "chai": "^3.5.0",
-    "eslint": "^3.12.2",
+    "chai-http": "^3.0.0",
+    "eslint": "^3.16.1",
     "ink-docstrap": "^1.3.0",
     "istanbul": "^0.4.5",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.2.0",
-    "sinon": "^1.17.7"
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "composer-common": "^0.4.5",
+    "composer-connector-server": "^0.4.5",
+    "express": "^4.14.1",
+    "request": "^2.79.0",
+    "require-directory": "^2.1.1",
+    "socket.io": "^1.7.3"
   }
 }

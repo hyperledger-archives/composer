@@ -69,7 +69,7 @@
   "dependencies": {
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.20",
     "composer-common": "^0.4.5",
-    "composer-connector-server": "^0.4.5",
+    "composer-playground-api": "^0.4.5",
     "express": "^4.14.0",
     "is-docker": "^1.1.0",
     "octokat": "^0.6.2",

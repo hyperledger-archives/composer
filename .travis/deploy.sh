@@ -83,6 +83,13 @@ if [ -z "${TRAVIS_TAG}" ]; then
 
     done
 
+    # Push to public Bluemix.
+    pushd ${DIR}/packages/composer-ui/dist
+    touch Staticfile
+    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
+    cf push fabric-composer-unstable
+    popd
+
 else
 
     # Grab the current version.

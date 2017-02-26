@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +26,10 @@ const argv = require('yargs')
     })
     .argv;
 
-const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const ConnectorServer = require('.');
-const fs = require('fs');
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
-const io = require('socket.io')(argv.port);
 const Logger = require('composer-common').Logger;
 const util = require('util');
+
+const LOG = Logger.getLog('PlaygroundAPI');
 
 Logger.setFunctionalLogger({
     log: (level, method, msg, args) => {
@@ -65,18 +61,7 @@ Logger.setFunctionalLogger({
     }
 });
 
-const LOG = Logger.getLog('ConnectorServer');
-
 const method = 'main';
+LOG.entry(method);
 
-const connectionProfileStore = new FSConnectionProfileStore(fs);
-const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
-
-LOG.info('main', `Connector server started on port ${argv.port}`);
-io.on('connect', (socket) => {
-    LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
-    new ConnectorServer(connectionProfileStore, connectionProfileManager, socket);
-});
-io.on('disconnect', (socket) => {
-    LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
-});
+require('.')(argv.port);
