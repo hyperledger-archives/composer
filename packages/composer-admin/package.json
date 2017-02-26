@@ -44,7 +44,8 @@
   },
   "dependencies": {
     "composer-common": "^0.4.5",
-    "composer-connector-hlf": "^0.4.5"
+    "composer-connector-hlf": "^0.4.5",
+    "composer-connector-hlfv1": "^0.4.5"
   },
   "license-check-config": {
     "src": [
