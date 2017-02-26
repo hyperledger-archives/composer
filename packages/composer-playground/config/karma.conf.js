@@ -42,8 +42,8 @@ module.exports = function(config) {
 
     remapCoverageReporter: {
       'text-summary': null,
-      json: './../coverage/coverage.json',
-      html: './../coverage/html'
+      json: './coverage/coverage.json',
+      html: './coverage/html'
     },
 
     // Webpack please don't spam the console when running in karma!
