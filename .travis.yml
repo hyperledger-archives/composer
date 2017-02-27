@@ -1,13 +1,12 @@
 language: node_js
 node_js:
-    - '4'
     - '6'
 matrix:
     include:
         - env: DOCS=full FC_TASK=docs
           sudo: false
           node_js :
-            - '4'
+            - '6'
         - env: SYSTEST=embedded FC_TASK=systest
         - env: SYSTEST=web FC_TASK=systest
         - env: SYSTEST=hlf SYSTEST_HLF=hlf  FC_TASK=systest

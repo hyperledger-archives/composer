@@ -1,8 +1,0 @@
-!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/baseexception.uml
-@startuml
-!include /Users/Sam/Git/fabric-composer/site/out/uml/./baseexception.uml
-class SecurityException{
-   + void constructor(string)
-}
-SecurityException --|> BaseException
-@enduml
