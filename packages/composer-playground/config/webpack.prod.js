@@ -26,7 +26,7 @@ const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || 8080;
 const DOCKER = !!process.env.DOCKER;
 const DOCKER_COMPOSE = !!process.env.DOCKER_COMPOSE;
-const PLAYGROUND_API = process.env.PLAYGROUND_API || 'http://localhost:15699';
+const PLAYGROUND_API = process.env.PLAYGROUND_API || '';
 const METADATA = webpackMerge(commonConfig({env: ENV}).metadata, {
   host: HOST,
   port: PORT,
