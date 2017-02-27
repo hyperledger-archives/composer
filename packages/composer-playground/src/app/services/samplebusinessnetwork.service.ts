@@ -497,6 +497,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
+
   public deployInitialSample(): Promise<any> {
     this.adminService.busyStatus$.next('Deploying sample business network ...');
     let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
@@ -525,6 +526,7 @@ export class SampleBusinessNetworkService {
     }
     sampleNetworkPromises.push(this.getScripts(owner, repository, path));
     sampleNetworkPromises.push(this.getAcls(owner, repository, path));
+    sampleNetworkPromises.push(this.getSampleNetworkInfo(owner,repository,path));
 
     return Promise.all(sampleNetworkPromises)
       .then((results) => {
@@ -532,8 +534,9 @@ export class SampleBusinessNetworkService {
         let models = results[0];
         let scripts = results[1];
         let acls = results[2];
+        let packageContents = results[3];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
+        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name+'@'+packageContents.version,packageContents.description);
         let modelManager = businessNetworkDefinition.getModelManager();
         models.forEach((model) => {
           modelManager.addModelFile(model);
