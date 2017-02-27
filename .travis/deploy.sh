@@ -84,10 +84,9 @@ if [ -z "${TRAVIS_TAG}" ]; then
     done
 
     # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-ui/dist
-    touch Staticfile
+    pushd ${DIR}/packages/composer-ui
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer-unstable
+    cf push fabric-composer-unstable -c "node cli.js" -i 2 -m 256M
     popd
 
 else
@@ -113,10 +112,9 @@ else
     done
 
     # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-ui/dist
-    touch Staticfile
+    pushd ${DIR}/packages/composer-ui
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer
+    cf push fabric-composer -c "node cli.js" -i 2 -m 256M
     popd
 
     # Configure the Git repository and clean any untracked and unignored build files.
