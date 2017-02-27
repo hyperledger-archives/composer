@@ -3,6 +3,10 @@
   "version": "0.4.5",
   "private": true,
   "description": "System tests and automation for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",

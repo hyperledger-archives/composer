@@ -2,6 +2,10 @@
   "name": "composer-runtime-hlfv1",
   "version": "0.4.5",
   "description": "The Hyperledger Fabric v1.x runtime container for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "scripts": {
     "prepublish": "NODE_PATH=node_modules node ./scripts/build.js",

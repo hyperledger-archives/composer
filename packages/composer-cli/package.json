@@ -2,6 +2,10 @@
   "name": "composer-cli",
   "version": "0.4.5",
   "description": "Fabric Composer command line interfaces (CLIs)",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "bin": {
     "composer": "cli.js"
   },
