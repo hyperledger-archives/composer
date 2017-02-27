@@ -14,28 +14,98 @@
 
 'use strict';
 
-const Util = require('../lib/util');
-
+//const Util = require('../lib/util');
+//const bodyParser = require('body-parser');
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-http'));
+const sinon = require('sinon');
+const proxyquire = require('proxyquire').noPreserveCache().noCallThru();
+const express = require('express');
 
 describe('GitHub routes', () => {
 
+    let npmError;
+    let npmStdout;
+    let npmSterr;
+    let mock;
+    let requestMock = sinon.stub();
+    let configMock;
+
     let app;
 
-    before(() => {
-        app = Util.createApp();
+    beforeEach(() => {
+        //require('../routes/github')();
+
+        let execStub = ((command, execFunction) => {
+            execFunction(npmError, npmStdout, npmSterr);
+        });
+
+        let response = {
+            body : {
+                access_token : 'abcd'
+            }
+        };
+
+        requestMock.callsArgWith(1, null, response);
+
+        configMock = {
+            clientId : 'myClient',
+            clientSecret : 'mySecret'
+        };
+
+        mock = {
+            child_process : {'exec' : execStub},
+            request : requestMock,
+            '../config/environment' : configMock
+        };
+
+        //app = Util.createApp();
+
+        app = express();
+
+        let router = proxyquire('../routes/github', mock);
+
+        router(app);
+
+        //app.use('/', ());
+
+        app.listen();
+
+
     });
 
-    beforeEach(() => {
-        require('../routes/github')();
-    });
+    /**afterEach(function (done) {
+
+    });**/
 
     describe('GET /api/isOAuthEnabled', () => {
 
-        it('should do something vaguely useful', () => {
+        it('should return true if config set', () => {
             return chai.request(app)
+                .get('/api/isOAuthEnabled')
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.be.an('boolean');
+                    res.body.should.be.true;
+                });
+        });
+
+        it('should return false if client id or secret is not set', () => {
+            configMock = {
+                clientId : null,
+                clientSecret : null
+            };
+
+            mock['../config/environment'] = configMock;
+
+            let appErr = express();
+            let router = proxyquire('../routes/github', mock);
+            router(appErr);
+            appErr.listen();
+
+            return chai.request(appErr)
                 .get('/api/isOAuthEnabled')
                 .then((res) => {
                     res.should.have.status(200);
@@ -47,99 +117,98 @@ describe('GitHub routes', () => {
 
     });
 
-    // describe('#getNpmInfo', () => {
-    //     it('should get npm info', (done) => {
-    //         npmError = null;
-    //         npmStdout = '{\n test: 123 \n } \n';
-    //         npmSterr = '';
-    //         connectorServer.getNpmInfo('myModule', (err, response) => {
-    //             should.not.exist(err);
-    //             response.should.deep.equal({test : 123});
-    //             done();
-    //         });
-    //     });
+    describe('#getNpmInfo', () => {
+        it('should get npm info', () => {
+            npmError = null;
+            npmStdout = '{\n test: 123 \n } \n';
+            npmSterr = '';
 
-    //     it('should deal with error with npm info', (done) => {
-    //         npmError = 'some error';
-    //         npmStdout = '';
-    //         npmSterr = '';
-    //         connectorServer.getNpmInfo('myModule', (err) => {
-    //             err.should.equal('some error');
-    //             done();
-    //         });
-    //     });
+            return chai.request(app)
+                .get('/api/getNpmInfo/myModule')
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.deep.equal({test : 123});
+                });
+        });
 
-    //     it('should deal with error in json', (done) => {
-    //         npmError = null;
-    //         npmStdout = '{\n test: 123 \n \n';
-    //         npmSterr = '';
-    //         //  nockExec('npm view myModule').reply(0, '{\n test: 123 \n  \n');
-    //         connectorServer.getNpmInfo('myModule', (err) => {
-    //             err.message.should.equal('Unexpected token )');
-    //             done();
-    //         });
-    //     });
-    // });
+        it('should deal with error with npm info', () => {
+            npmError = 'some error';
+            npmStdout = '';
+            npmSterr = '';
+            return chai.request(app)
+                .get('/api/getNpmInfo/myModule')
+                .then((res) => {
+                    throw new Error('should not have got here');
+                })
+                .catch(err => {
+                    err.response.body.error.should.equal('some error');
 
-    // describe('#getGitHubClientId', () => {
-    //     it('should return the client id', (done) => {
-    //         connectorServer.getGithubClientId((err, response) => {
-    //             response.should.equal('myClient');
-    //             done();
-    //         });
-    //     });
+                });
+        });
 
-    //     it('should not return the client id if not set', (done) => {
-    //         configMock.clientId = null;
-    //         connectorServer.getGithubClientId((err, response) => {
-    //             should.not.exist(response);
-    //             done();
-    //         });
-    //     });
-    // });
+        it('should deal with error in json', () => {
+            npmError = null;
+            npmStdout = '{\n test: 123 \n \n';
+            npmSterr = '';
 
-    // describe('#getGitHubAccessToken', () => {
-    //     it('should get the access token from github', (done) => {
-    //         connectorServer.getGitHubAccessToken('1234', (err, response) => {
-    //             response.access_token.should.equal('abcd');
-    //             done();
-    //         });
-    //     });
+            return chai.request(app)
+                .get('/api/getNpmInfo/myModule')
+                .then((res) => {
+                    throw new Error('should not have got here');
+                })
+                .catch(err => {
+                    err.response.body.error.should.equal('Unexpected token )');
 
-    //     it('should deal with error from github', (done) => {
-    //         requestMock.callsArgWith(1, 'some error');
-    //         connectorServer.getGitHubAccessToken('1234', (err, response) => {
-    //             err.should.equal('some error');
-    //             done();
-    //         });
-    //     });
-    // });
+                });
+        });
+    });
 
-    // describe('#isOAuthEnabled', (done) => {
-    //     it('should return true if client id and secret is set', (done) => {
-    //         connectorServer.isOAuthEnabled((err, response) => {
-    //             response.should.equal(true);
-    //             done();
-    //         });
-    //     });
+    describe('#getGitHubClientId', () => {
+        it('should return the client id', () => {
+            return chai.request(app)
+                .get('/api/getGithubClientId')
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.equal('myClient');
+                });
+        });
 
-    //     it('should return false if client id or secret is not set', (done) => {
-    //         configMock = {
-    //             clientId: null,
-    //             clientSecret: null
-    //         };
+        it('should not return the client id if not set', () => {
+            configMock.clientId = null;
+            return chai.request(app)
+                .get('/api/getGithubClientId')
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    should.not.exist(res.body);
+                });
+        });
+    });
 
-    //         mock['../config/environment'] = configMock;
+    describe('#getGitHubAccessToken', () => {
+        it('should get the access token from github', () => {
+            return chai.request(app)
+                .get('/api/getGitHubAccessToken/1234')
+                .then((res) => {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.access_token.should.equal('abcd');
+                });
+        });
 
-    //         const ConnectorServer = proxyquire('../lib/connectorserver', mock);
+        it('should deal with error from github', () => {
+            requestMock.callsArgWith(1, 'some error');
 
-    //         connectorServer = new ConnectorServer(null, null, socketMock);
-
-    //         connectorServer.isOAuthEnabled((err, response) => {
-    //             response.should.equal(false);
-    //             done();
-    //         });
-    //     });
-    // });
-
+            return chai.request(app)
+                .get('/api/getGitHubAccessToken/1234')
+                .then((res) => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.response.body.error.should.equal('some error');
+                });
+        });
+    });
 });
