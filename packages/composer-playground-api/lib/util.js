@@ -17,7 +17,6 @@
 
 const bodyParser = require('body-parser');
 const express = require('express');
-const requireDirectory = require('require-directory');
 
 /**
  * This class contains a set of utility functions for use within Composer API.
@@ -42,13 +41,6 @@ class Util {
             res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
             res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,HEAD');
             next();
-        });
-
-        // Load all of the routes into the application.
-        requireDirectory(module, '../routes', {
-            visit: (route) => {
-                app.use(route());
-            }
         });
 
         // Set up the default error handler.

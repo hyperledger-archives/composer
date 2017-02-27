@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
+import {Http}    from '@angular/http';
 
 import * as Octokat from 'octokat'
-import * as socketIOClient from 'socket.io-client';
 
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
@@ -185,86 +185,52 @@ export class SampleBusinessNetworkService {
   public CLIENT_ID = null;
 
   constructor(private adminService: AdminService,
-              private clientService: ClientService) {
-
-    const connectorServerURL = 'http://localhost:15699';
-
-    this.connected = false;
-    if (ENV && ENV !== 'development') {
-      this.socket = socketIOClient(window.location.origin);
-    }
-    else {
-      this.socket = socketIOClient(connectorServerURL);
-    }
-
-    this.socket.on('connect', () => {
-      this.connected = true;
-    });
-    this.socket.on('disconnect', () => {
-      this.connected = false;
-    });
+              private clientService: ClientService,
+              private http: Http) {
   }
 
-  /**
-   * Ensure that we are connected to the connector server.
-   * @return {Promise} A promise that will be resolved when we
-   * are connected to the connector server, or rejected with an
-   * error.
-   */
-  ensureConnected() {
-    if (this.connected) {
-      return Promise.resolve();
-    }
-    return new Promise((resolve, reject) => {
-      this.socket.once('connect', () => {
-        resolve();
-      });
-    });
-  }
 
-  isOAuthEnabled() {
-    return new Promise((resolve, reject) => {
-      this.socket.emit('/api/isOAuthEnabled', (error, result) => {
-        if (error) {
-          return reject(error);
-        }
-
+  isOAuthEnabled(): Promise<boolean> {
+    return this.http.get(PLAYGROUND_API + '/api/isOAuthEnabled')
+      .toPromise()
+      .then((response) => {
+        let enabled: boolean = response.json();
         //if we aren't doing oauth then we need to setup github without token
-        if (!result) {
+        if (!enabled) {
           this.setUpGithub(null);
         }
-        return resolve(result);
+        return enabled;
+      })
+      .catch((error) => {
+        throw(error);
       });
-    });
   }
 
   getGithubClientId(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (this.CLIENT_ID) {
-        return resolve(this.CLIENT_ID);
-      }
+    if (this.CLIENT_ID) {
+      return Promise.resolve(this.CLIENT_ID);
+    }
 
-      this.socket.emit('/api/getGithubClientId', (error, result) => {
-        if (error) {
-          return reject(error);
-        }
-
-        this.CLIENT_ID = result;
-        return resolve(this.CLIENT_ID);
+    return this.http.get(PLAYGROUND_API + '/api/getGithubClientId')
+      .toPromise()
+      .then((response) => {
+        this.CLIENT_ID = response.json();
+        return this.CLIENT_ID;
       })
-    });
+      .catch((error) => {
+        throw(error);
+      });
   }
 
-  getNpmInfo(name) {
-    return new Promise((resolve, reject) => {
-      this.socket.emit('/api/getNpmInfo', name, (error, info) => {
-        if (error) {
-          return reject(error);
-        }
-
-        resolve(info);
+  getNpmInfo(name): Promise<any> {
+    return this.http.get(PLAYGROUND_API + '/api/getNpmInfo/' + name)
+      .toPromise()
+      .then((response) => {
+        return response.json();
+      })
+      .catch((error) => {
+        throw error;
       });
-    });
   }
 
   setUpGithub(accessToken: string) {
