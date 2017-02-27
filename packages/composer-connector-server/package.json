@@ -2,8 +2,12 @@
   "name": "composer-connector-server",
   "version": "0.4.5",
   "description": "The remote connector server for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "bin": {
-    "concerto-connector-server": "cli.js"
+    "composer-connector-server": "cli.js"
   },
   "main": "index.js",
   "scripts": {
@@ -26,7 +30,7 @@
     "solutions"
   ],
   "author": "Fabric Composer",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "license-check-config": {
     "src": [
       "**/*.js",

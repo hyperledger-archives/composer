@@ -2,6 +2,10 @@
   "name": "composer-ui",
   "version": "0.4.5",
   "description": "A test harness/UI for the web runtime container for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "bin": {
     "composer-ui": "cli.js"
   },
@@ -15,7 +19,7 @@
     "solutions"
   ],
   "author": "Fabric Composer",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "scripts": {
     "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
     "build:docker": "npm run build:prod && docker build -t angular2-webpack-start:latest .",

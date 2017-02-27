@@ -27,7 +27,7 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
-	cd "${DIR}/packages/site"
+	cd "${DIR}/packages/composer-website"
 	npm install
 	npm run full
 # Are we running system tests?
