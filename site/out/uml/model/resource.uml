@@ -1,8 +1,0 @@
-!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/model/identifiable.uml
-@startuml
-class Resource{
-   + String toString()
-   + boolean isResource()
-}
-Resource --|> Identifiable
-@enduml
