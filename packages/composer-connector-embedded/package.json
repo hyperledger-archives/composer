@@ -2,6 +2,10 @@
   "name": "composer-connector-embedded",
   "version": "0.4.5",
   "description": "The embedded client connector for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
