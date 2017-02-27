@@ -33,8 +33,6 @@ import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
 import { ResetComponent } from './reset';
 import { ImportComponent } from './import';
-import { ExportComponent } from './export';
-
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
@@ -75,7 +73,6 @@ type StoreType = {
   bootstrap: [ AppComponent ],
   entryComponents: [
     ImportComponent,
-    ExportComponent,
     ErrorComponent
   ],
   declarations: [
@@ -102,7 +99,6 @@ type StoreType = {
     ErrorComponent,
     ResetComponent,
     ImportComponent,
-    ExportComponent,
     GithubComponent,
     NoContentComponent,
     AboutComponent

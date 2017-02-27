@@ -31,8 +31,6 @@
   "author": "Fabric Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@angular/cli": "^1.0.0-rc.0",
-    "typings": "^2.1.0",
-    "yeoman-test": "^1.6.0"
+    "typings": "^2.1.0"
   }
 }

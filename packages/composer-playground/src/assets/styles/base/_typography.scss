@@ -1,7 +1,5 @@
 // Typography
 //TODO: check font sizes in ems
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700|Source+Code+Pro');
-
 .composer {
   h1, h2, h3 {
     line-height: 100%;
@@ -10,23 +8,23 @@
     color: $primary-text;
   }
   h1 {
-    font-family: $font-stack;
+    font-family: HelveticaNeue-Light;
     font-size: 1.25em; //should be 20px
     font-weight: 300;
   }
   h2 {
-    font-family: $font-stack;
+    font-family: HelveticaNeue-Light;
     font-size: 1.15em; //should be 18px
-    font-weight: 300;
+    font-weight: 500;
   }
   h3 {
-    font-family: $font-stack;
+    font-family: HelveticaNeue-Medium;
     font-size: 1em;
-    font-weight: 600;
+    font-weight: 300;
   }
 
   p {
-    font-family: $font-stack;
+    font-family: HelveticaNeue;
     font-weight: 400;
     font-size: 1em;
     letter-spacing: 0;
@@ -35,8 +33,7 @@
   }
 
   i {
-    font-family: $font-stack;
-    font-style: italic;
+    font-family: HelveticaNeue-Italic;
     font-weight: 400;
     font-size: 1em;
     letter-spacing: 0;

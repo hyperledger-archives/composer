@@ -33,7 +33,7 @@ const ModelFile = require('./introspect/modelfile');
  * to other Composer services, such as the {@link Serializer} (to convert instances to/from JSON)
  * and {@link Factory} (to create instances).
  * </p>
- * <p><a href="./diagrams-private/modelmanager.svg"><img src="./diagrams-private/modelmanager.svg" style="height:100%;"/></a></p>
+ * <p><a href="./diagrams-private/modelmanager.svg"><img src="./diagrams-private/modelmanager.svg" style="width:100%;"/></a></p>
  * @private
  * @class
  * @memberof module:composer-common
