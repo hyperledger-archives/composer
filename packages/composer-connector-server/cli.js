@@ -21,7 +21,7 @@ const argv = require('yargs')
     .option('p', {
         alias: 'port',
         demand: false,
-        default: 15699,
+        default: process.env.PORT || 15699,
         type: 'number',
         describe: 'The port to start the connector server on'
     })

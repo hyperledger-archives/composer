@@ -19,7 +19,7 @@ const argv = require('yargs')
     .option('p', {
         alias: 'port',
         demand: false,
-        default: 8080,
+        default: process.env.PORT || 8080,
         type: 'number',
         describe: 'The port to start composer on'
     })
