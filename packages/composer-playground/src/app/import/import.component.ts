@@ -23,6 +23,7 @@ export class ImportComponent implements OnInit {
   private repository: string = '';
   private gitHubAuthenticated: boolean = false;
   private oAuthEnabled: boolean = false;
+  private clientId: string = null;
   private chosenNetwork = null;
 
   constructor(private adminService: AdminService,
@@ -42,7 +43,20 @@ export class ImportComponent implements OnInit {
       })
       .then((result) => {
         this.oAuthEnabled = result;
-        this.onShow();
+        if(result) {
+          return this.sampleBusinessNetworkService.getGithubClientId()
+            .then((clientId)=> {
+              if(!clientId) {
+                //shouldn't get here as oauthEnabled should return false if client id not set but just incase
+                return this.activeModal.dismiss(new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID));
+              }
+
+              this.clientId = clientId;
+              this.onShow();
+            })
+        } else {
+          this.onShow();
+        }
       });
 
   }

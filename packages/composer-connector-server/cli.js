@@ -16,15 +16,12 @@
 'use strict';
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
-require('dotenv').config({path: './config/.env'});
-
-const config = require('./config/environment');
 
 const argv = require('yargs')
     .option('p', {
         alias: 'port',
         demand: false,
-        default: config.port,
+        default: process.env.PORT || 15699,
         type: 'number',
         describe: 'The port to start the connector server on'
     })
