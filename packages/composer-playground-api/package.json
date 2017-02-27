@@ -2,6 +2,10 @@
   "name": "composer-playground-api",
   "version": "0.4.5",
   "description": "The REST API for the Fabric Composer Playground",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "bin": {
     "composer-playground-api": "cli.js"
   },
@@ -26,7 +30,7 @@
     "solutions"
   ],
   "author": "Fabric Composer",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "license-check-config": {
     "src": [
       "**/*.js",

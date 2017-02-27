@@ -18,7 +18,7 @@ const BaseException = require('./baseexception');
 
 /**
 * Class representing a security exception
-* <p><a href="./diagrams/securityexception.svg"><img src="./diagrams/securityexception.svg" style="width:100%;"/></a></p>
+* <p><a href="./diagrams/securityexception.svg"><img src="./diagrams/securityexception.svg" style="height:100%;"/></a></p>
 * @extends BaseException
 * @see See [BaseException]{@link module:composer-common.BaseException}
 * @class

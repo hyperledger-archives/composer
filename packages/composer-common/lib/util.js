@@ -20,7 +20,7 @@ const SecurityException = require('./securityexception');
 
 /**
  * Internal Utility Class
- * <p><a href="./diagrams-private/util.svg"><img src="./diagrams-private/util.svg" style="width:100%;"/></a></p>
+ * <p><a href="./diagrams-private/util.svg"><img src="./diagrams-private/util.svg" style="height:100%;"/></a></p>
  * @private
  * @class
  * @memberof module:composer-common

@@ -270,7 +270,7 @@ module.exports = yeoman.Base.extend({
     },
 
     writing: function () {
-        console.log('entered writing')
+        console.log('About to start creating files')
         let self = this;
 
         if(liveNetwork){
@@ -288,7 +288,10 @@ module.exports = yeoman.Base.extend({
                     this.destinationRoot(this.appName);
                     destinationPath = this.destinationPath();
                     createApp();
-                    this.installDependencies();
+                    this.installDependencies({
+                        bower: false,
+                        npm: true
+                    });
                 });
 
         }
@@ -304,8 +307,10 @@ module.exports = yeoman.Base.extend({
                     this.destinationRoot(this.appName);
                     destinationPath = this.destinationPath();
                     createApp();
-                    this.installDependencies();
-
+                    this.installDependencies({
+                        bower: false,
+                        npm: true
+                    });
                 });
             });
         }
@@ -427,7 +432,10 @@ module.exports = yeoman.Base.extend({
 
 
     install: function () {
-        return this.installDependencies();
+        return this.installDependencies({
+            bower: false,
+            npm: true
+        });
     },
 
     _generateTemplateModel: function() {
@@ -450,6 +458,5 @@ module.exports = yeoman.Base.extend({
 
     end: function() {
         console.log('Complete');
-        process.exit(0);
     }
 });

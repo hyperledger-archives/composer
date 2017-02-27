@@ -1,8 +1,0 @@
-!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/model/identifiable.uml
-@startuml
-class Relationship{
-   + String toString()
-   + boolean isRelationship()
-}
-Relationship --|> Identifiable
-@enduml
