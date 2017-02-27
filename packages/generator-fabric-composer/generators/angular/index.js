@@ -245,9 +245,13 @@ module.exports = yeoman.Base.extend({
       // To access props later use this.props.someAnswer;
 
                 this.appName = answers.appName;
+                console.log('Set application name:',this.appName);
                 this.appDescription = answers.appDescription;
+                console.log('Set application description:',this.appDescription);
                 this.authorName = answers.authorName;
+                console.log('Set author name:',this.authorName);
                 this.authorEmail = answers.authorEmail;
+                console.log('Set author email:',this.authorEmail);
                 if(liveNetwork){
                     this.networkIdentifier = answers.networkIdentifier;
                     this.connectionProfileName = answers.connectionProfileName;
@@ -256,6 +260,7 @@ module.exports = yeoman.Base.extend({
                 }
                 else{
                     this.fileName = answers.fileName;
+                    console.log('Set bna:',this.fileName);
                 }
 
 
