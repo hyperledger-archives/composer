@@ -20,6 +20,7 @@ const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin')
 const ENV = process.env.ENV = process.env.NODE_ENV = 'test';
 const DOCKER = !!process.env.DOCKER;
 const DOCKER_COMPOSE = !!process.env.DOCKER_COMPOSE;
+const PLAYGROUND_API = process.env.PLAYGROUND_API;
 
 /**
  * Webpack configuration
@@ -257,7 +258,8 @@ module.exports = function (options) {
         'ENV': JSON.stringify(ENV),
         'HMR': false,
         'DOCKER': DOCKER,
-        'DOCKER_COMPOSE': DOCKER_COMPOSE
+        'DOCKER_COMPOSE': DOCKER_COMPOSE,
+        'PLAYGROUND_API' : PLAYGROUND_API
         /* 'process.env': {
           'ENV': JSON.stringify(ENV),
           'NODE_ENV': JSON.stringify(ENV),
