@@ -176,20 +176,20 @@ found modelDefinition = {"type":"table","name":"net.biz.digitalPropertyNetwork.P
 
 Launch your browser and go to the URL given (http://0.0.0.0:3000/explorer).  You'll see a screen similar to this.
 
-![LoopBack-1](../images/loopback-1.png)
+![LoopBack-1](./images/loopback-1.png)
 
 Select the Land Title asset, and you can see all the REST APIs that have generated for this asset. At present get and put are fully implemented, with transactions  - so lets try and get a list of all the land titles.;
 
 
-![LoopBack-2](../images/loopback-2.png)
+![LoopBack-2](./images/loopback-2.png)
 
 Expand the get and click on *Try it Out* to try it out.
 
-![LoopBack-3](../images/loopback-3.png)
+![LoopBack-3](./images/loopback-3.png)
 
 You'll see a list of land titles presented as a set of JSON
 
-![LoopBack-4](../images/loopback-4.png)
+![LoopBack-4](./images/loopback-4.png)
 
 Similarly it's quite easy to issue the curl command from a terminal prompt. This can be copied from the LoopBack web page.
 
@@ -224,7 +224,7 @@ $ curl -X GET --header "Accept: application/json" "http://0.0.0.0:3000/api/net.b
 If you go back to the main page and search down to the register property for sale, we can mark the other property for sale.
 In this example, we've specified the other landtitle in the data box, we've also had to specify the transaction id and the timestamp (the last two will change shortly).
 
-![LoopBack-5](../images/loopback-5.png)
+![LoopBack-5](./images/loopback-5.png)
 
 Click on the *Try it out!* button to submit the transaction. You'll see a succesful return code, but if you now return to your terminal prompt in the Getting Started directory, you can run the list assets command again.
 
