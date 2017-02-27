@@ -73,7 +73,7 @@ class JavaScriptParser {
             }
             else if (statement.type === 'FunctionDeclaration') {
                 //console.log(JSON.stringify(statement));
-                let closestComment = findCommentBefore(statement.start, statement.end, comments);
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, comments);
                 let returnType = '';
                 let visibility = '+';
                 let parameterTypes = [];
@@ -84,12 +84,12 @@ class JavaScriptParser {
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
                     //console.log('Found comment: ' + comment );
-                    returnType = getReturnType(comment);
-                    visibility = getVisibility(comment);
-                    parameterTypes = getMethodArguments(comment);
-                    throws = getThrows(comment);
-                    decorators = getDecorators(comment);
-                    example = getExample(comment);
+                    returnType = JavaScriptParser.getReturnType(comment);
+                    visibility = JavaScriptParser.getVisibility(comment);
+                    parameterTypes = JavaScriptParser.getMethodArguments(comment);
+                    throws = JavaScriptParser.getThrows(comment);
+                    decorators = JavaScriptParser.getDecorators(comment);
+                    example = JavaScriptParser.getExample(comment);
                 }
 
                 if(visibility === '+' || includePrivates) {
@@ -104,18 +104,18 @@ class JavaScriptParser {
                         parameterNames: parameterNames,
                         throws: throws,
                         decorators: decorators,
-                        functionText : getText(statement.start, statement.end, fileContents),
+                        functionText : JavaScriptParser.getText(statement.start, statement.end, fileContents),
                         example: example
                     };
                     //console.log('Function: ' + JSON.stringify(func));
                     this.functions.push(func);
                 }
             } else if (statement.type === 'ClassDeclaration') {
-                let closestComment = findCommentBefore(statement.start, statement.end, comments);
+                let closestComment = JavaScriptParser.findCommentBefore(statement.start, statement.end, comments);
                 let privateClass = false;
                 if(closestComment >= 0) {
                     let comment = comments[closestComment].value;
-                    privateClass = getVisibility(comment) === '-';
+                    privateClass = JavaScriptParser.getVisibility(comment) === '-';
                 }
 
                 if(privateClass === false || includePrivates) {
@@ -128,7 +128,7 @@ class JavaScriptParser {
 
                         if (thing.type === 'MethodDefinition') {
 
-                            let closestComment = findCommentBefore(thing.key.start, thing.key.end, comments);
+                            let closestComment = JavaScriptParser.findCommentBefore(thing.key.start, thing.key.end, comments);
                             let returnType = '';
                             let visibility = '+';
                             let methodArgs = [];
@@ -137,12 +137,12 @@ class JavaScriptParser {
                             let example = '';
                             if(closestComment >= 0) {
                                 let comment = comments[closestComment].value;
-                                returnType = getReturnType(comment);
-                                visibility = getVisibility(comment);
-                                methodArgs = getMethodArguments(comment);
-                                decorators = getDecorators(comment);
-                                throws = getThrows(comment);
-                                example = getExample(comment);
+                                returnType = JavaScriptParser.getReturnType(comment);
+                                visibility = JavaScriptParser.getVisibility(comment);
+                                methodArgs = JavaScriptParser.getMethodArguments(comment);
+                                decorators = JavaScriptParser.getDecorators(comment);
+                                throws = JavaScriptParser.getThrows(comment);
+                                example = JavaScriptParser.getExample(comment);
                             }
 
                             if(visibility === '+' || includePrivates) {
@@ -196,215 +196,219 @@ class JavaScriptParser {
     getFunctions() {
         return this.functions;
     }
-}
 
-/**
- * Grab the text between a range§
- *
- * @param {integer} rangeStart - the start of the range
- * @param {integer} rangeEnd - the end of the range
- * @param {string} source - the source text
- * @return {string} the text between start and end
- * @private
- */
-function getText(rangeStart, rangeEnd, source) {
-    return source.substring(rangeStart, rangeEnd);
-}
 
-/**
- * Find the comments that is above and closest to the start of the range.
- *
- * @param {integer} rangeStart - the start of the range
- * @param {integer} rangeEnd - the end of the range
- * @param {string[]} comments - the end of the range
- * @return {integer} the comment index or -1 if there are no comments
- * @private
- */
-function findCommentBefore(rangeStart, rangeEnd, comments) {
-    let foundIndex = -1;
-    let distance = -1;
-
-    for(let n=0; n < comments.length; n++) {
-        let comment = comments[n];
-        let endComment = comment.end;
-        if(rangeStart > endComment ) {
-            if(distance === -1 || rangeStart - endComment < distance) {
-                distance = rangeStart - endComment;
-                foundIndex = n;
-            }
-        }
+    /**
+     * Grab the text between a range§
+     *
+     * @param {integer} rangeStart - the start of the range
+     * @param {integer} rangeEnd - the end of the range
+     * @param {string} source - the source text
+     * @return {string} the text between start and end
+     * @private
+     */
+    static getText(rangeStart, rangeEnd, source) {
+        return source.substring(rangeStart, rangeEnd);
     }
 
-    return foundIndex;
-}
+    /**
+     * Find the comments that is above and closest to the start of the range.
+     *
+     * @param {integer} rangeStart - the start of the range
+     * @param {integer} rangeEnd - the end of the range
+     * @param {string[]} comments - the end of the range
+     * @return {integer} the comment index or -1 if there are no comments
+     * @private
+     */
+    static findCommentBefore(rangeStart, rangeEnd, comments) {
+        let foundIndex = -1;
+        let distance = -1;
 
-/**
- * Grabs all the @ prefixed decorators from a comment block.
- * @param {string} comment - the comment block
- * @return {string[]} the @ prefixed decorators within the comment block
- * @private
- */
-function getDecorators(comment) {
-    const re = /(?:^|\W)@(\w+)/g;
-    let match;
-    const matches = [];
-    match = re.exec(comment);
-    while (match) {
-        matches.push(match[1]);
+        for(let n=0; n < comments.length; n++) {
+            let comment = comments[n];
+            let endComment = comment.end;
+            if(rangeStart > endComment ) {
+                if(distance === -1 || rangeStart - endComment < distance) {
+                    distance = rangeStart - endComment;
+                    foundIndex = n;
+                }
+            }
+        }
+
+        return foundIndex;
+    }
+
+    /**
+     * Grabs all the @ prefixed decorators from a comment block.
+     * @param {string} comment - the comment block
+     * @return {string[]} the @ prefixed decorators within the comment block
+     * @private
+     */
+    static getDecorators(comment) {
+        const re = /(?:^|\W)@(\w+)/g;
+        let match;
+        const matches = [];
         match = re.exec(comment);
-    }
-    return matches;
-}
-
-/**
- * Extracts the visibilty from a comment block
- * @param {string} comment - the comment block
- * @return {string} the return visibility (either + for public, or - for private)
- * @private
- */
-function getVisibility(comment) {
-    const PRIVATE = 'private';
-    let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE]});
-    const tags = parsedComment.tags;
-
-    if (tags.length > 0) {
-        return '-';
-    }
-    return '+';
-}
-
-/**
- * Extracts the return type from a comment block.
- * @param {string} comment - the comment block
- * @return {string} the return type of the comment
- * @private
- */
-function getReturnType(comment) {
-    const RETURN = 'return';
-    const RETURNS = 'returns';
-
-    let result = 'void';
-    let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [RETURN, RETURNS]});
-
-    const tags = parsedComment.tags;
-
-    if (tags.length > 1) {
-        throw new Error('Malformed JSDoc comment. More than one returns: ' + comment );
+        while (match) {
+            matches.push(match[1]);
+            match = re.exec(comment);
+        }
+        return matches;
     }
 
-    tags.forEach((tag) => {
-        if (!tag.type.name && !tag.type) {
-            throw new Error('Malformed JSDoc comment. ' + comment );
+    /**
+     * Extracts the visibilty from a comment block
+     * @param {string} comment - the comment block
+     * @return {string} the return visibility (either + for public, or - for private)
+     * @private
+     */
+    static getVisibility(comment) {
+        const PRIVATE = 'private';
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [PRIVATE]});
+        const tags = parsedComment.tags;
+
+        if (tags.length > 0) {
+            return '-';
+        }
+        return '+';
+    }
+
+    /**
+     * Extracts the return type from a comment block.
+     * @param {string} comment - the comment block
+     * @return {string} the return type of the comment
+     * @private
+     */
+    static getReturnType(comment) {
+        const RETURN = 'return';
+        const RETURNS = 'returns';
+
+        let result = 'void';
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [RETURN, RETURNS]});
+
+        const tags = parsedComment.tags;
+
+        if (tags.length > 1) {
+            throw new Error('Malformed JSDoc comment. More than one returns: ' + comment );
         }
 
-        if (tag.type.name) {
-            result = tag.type.name;
-        } else if (tag.type.applications){
-            result = tag.type.applications[0].name + '[]';
-        } else if (tag.type.expression) {
-            result = tag.type.expression.name;
-
-        }
-    });
-    return result;
-}
-
-/**
- * Extracts the return type from a comment block.
- * @param {string} comment - the comment block
- * @return {string} the return type of the comment
- * @private
- */
-function getThrows(comment) {
-    const THROWS = 'throws';
-    const EXCEPTION = 'exception';
-    let result = '';
-    let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [THROWS, EXCEPTION]});
-
-    const tags = parsedComment.tags;
-
-    if (tags.length > 1) {
-        throw new Error('Malformed JSDoc comment. More than one throws/exception: ' + comment );
-    }
-
-    tags.forEach((tag) => {
-        if (!tag.type.type || !tag.type.name) {
-            throw new Error('Malformed JSDoc comment. ' + comment );
-        }
-        result = tag.type.name;
-    });
-
-    return result;
-}
-
-/**
- * Extracts the method arguments from a comment block.
- * @param {string} comment - the comment block
- * @return {string} the the argument types
- * @private
- */
-function getMethodArguments(comment) {
-    const TAG = 'param';
-    let paramTypes = [];
-    let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [TAG]});
-
-    const tags = parsedComment.tags;
-
-    // param is mentined but not picked up by parser
-    if (comment.indexOf('@'+TAG) !== -1 && tags.length === 0) {
-        throw new Error('Malformed JSDoc comment: ' + comment );
-    }
-
-    tags.forEach((tag) => {
-            //If description starts with }
-        if (tag.description.trim().indexOf('}') === 0 ||
-            !tag.type ||
-            !tag.name ) {
-            throw new Error('Malformed JSDoc comment: ' + comment );
-        } else if(tag.type.name) {
-            if (tag.type.name.indexOf(' ') !== -1) {
-                throw new Error('Malformed JSDoc comment: ' + comment );
+        tags.forEach((tag) => {
+            if (!tag.type.name && !tag.type) {
+                throw new Error('Malformed JSDoc comment. ' + comment );
             }
-        }
 
-        if (tag.type.name) {
-            paramTypes.push(tag.type.name);
-        } else if (tag.type.applications){
-            paramTypes.push(tag.type.applications[0].name + '[]');
-        } else if (tag.type.expression) {
-            paramTypes.push(tag.type.expression.name);
+            if (tag.type.name) {
+                result = tag.type.name;
+            } else if (tag.type.applications){
+                result = tag.type.applications[0].name + '[]';
+            } else if (tag.type.expression) {
+                result = tag.type.expression.name;
 
-        }
-    });
-    return paramTypes;
-}
-
-/**
- * Extracts the example tag from a comment block.
- * @param {string} comment - the comment block
- * @return {string} the the argument types
- * @private
- */
-function getExample(comment) {
-    const EXAMPLE = 'example';
-    let result = '';
-    let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [EXAMPLE]});
-
-    const tags = parsedComment.tags;
-
-    if (tags.length > 0) {
-        result = tags[0].description;
+            }
+        });
+        return result;
     }
 
-    try {
-        // Pass as a function so that return statements are valid
-        let program = 'function testSyntax() {' + result + '}';
-        esprima.parse(program);
-    } catch (e) {
-        throw Error('Malformed JSDoc Comment. Invalid @example tag: ' + comment);
+    /**
+     * Extracts the return type from a comment block.
+     * @param {string} comment - the comment block
+     * @return {string} the return type of the comment
+     * @private
+     */
+    static getThrows(comment) {
+        const THROWS = 'throws';
+        const EXCEPTION = 'exception';
+        let result = '';
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [THROWS, EXCEPTION]});
+
+        const tags = parsedComment.tags;
+
+        if (tags.length > 1) {
+            throw new Error('Malformed JSDoc comment. More than one throws/exception: ' + comment );
+        }
+
+        tags.forEach((tag) => {
+            if (!tag.type.type || !tag.type.name) {
+                throw new Error('Malformed JSDoc comment. ' + comment );
+            }
+            result = tag.type.name;
+        });
+
+        return result;
     }
 
-    return result;
+    /**
+     * Extracts the method arguments from a comment block.
+     * @param {string} comment - the comment block
+     * @return {string} the the argument types
+     * @private
+     */
+    static getMethodArguments(comment) {
+        const TAG = 'param';
+        let paramTypes = [];
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [TAG]});
+
+        const tags = parsedComment.tags;
+
+        // param is mentined but not picked up by parser
+        if (comment.indexOf('@'+TAG) !== -1 && tags.length === 0) {
+            throw new Error('Malformed JSDoc comment: ' + comment );
+        }
+
+        tags.forEach((tag) => {
+            if (tag.description) {
+                //If description starts with }
+                if (tag.description.trim().indexOf('}') === 0 ||
+                    !tag.type ||
+                    !tag.name ) {
+                    throw new Error('Malformed JSDoc comment: ' + comment );
+                }
+            }
+            if(tag.type.name) {
+                if (tag.type.name.indexOf(' ') !== -1) {
+                    throw new Error('Malformed JSDoc comment: ' + comment );
+                }
+            }
+
+            if (tag.type.name) {
+                paramTypes.push(tag.type.name);
+            } else if (tag.type.applications){
+                paramTypes.push(tag.type.applications[0].name + '[]');
+            } else if (tag.type.expression) {
+                paramTypes.push(tag.type.expression.name);
+
+            }
+        });
+        return paramTypes;
+    }
+
+    /**
+     * Extracts the example tag from a comment block.
+     * @param {string} comment - the comment block
+     * @return {string} the the argument types
+     * @private
+     */
+    static getExample(comment) {
+        const EXAMPLE = 'example';
+        let result = '';
+        let parsedComment = doctrine.parse(comment, {unwrap: true, sloppy: true, tags: [EXAMPLE]});
+
+        const tags = parsedComment.tags;
+
+        if (tags.length > 0) {
+            result = tags[0].description;
+        }
+
+        try {
+            // Pass as a function so that return statements are valid
+            let program = 'function testSyntax() {' + result + '}';
+            esprima.parse(program);
+        } catch (e) {
+            throw Error('Malformed JSDoc Comment. Invalid @example tag: ' + comment);
+        }
+
+        return result;
+    }
 }
 
 module.exports = JavaScriptParser;
