@@ -17,7 +17,7 @@ if [ "${ABORT_BUILD}" = "true" ]; then
 fi
 
 # Check that this is the right node.js version.
-if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "4" ]; then
+if [ "${TRAVIS_NODE_VERSION}" != "" -a "${TRAVIS_NODE_VERSION}" != "6" ]; then
     echo Not executing as not running primary node.js version.
     exit 0
 fi
@@ -68,7 +68,7 @@ if [ -z "${TRAVIS_TAG}" ]; then
 
     # Publish with unstable tag. These are development builds.
     echo "Pushing with tag unstable"
-    lerna exec --ignore 'composer-systests' -- npm publish --tag=unstable 2>&1 | tee
+    lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish --tag=unstable 2>&1 | tee
 
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do
@@ -96,7 +96,7 @@ else
 
     # Publish with latest tag (default). These are release builds.
     echo "Pushing with tag latest"
-    lerna exec --ignore 'composer-systests' -- npm publish 2>&1 | tee
+    lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish 2>&1 | tee
 
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do

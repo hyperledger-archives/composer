@@ -2,6 +2,10 @@
   "name": "composer-rest-server",
   "version": "0.4.5",
   "description": "Fabric Composer REST server that uses the Fabric Composer LoopBack connector",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "bin": {
     "composer-rest-server": "server/server.js"
   },
@@ -19,7 +23,7 @@
     "hyperledger",
     "solutions"
   ],
-  "author": "",
+  "author": "Fabric Composer",
   "license": "Apache-2.0",
   "dependencies": {
     "chalk": "^1.1.3",

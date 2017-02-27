@@ -1,7 +1,12 @@
 {
-  "name": "fabric-composer-site",
+  "name": "composer-website",
   "version": "0.4.5",
+  "private": true,
   "description": "Fabric Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "scripts": {
     "install": "npm run doc",
     "doc": "npm run docpub   && ./scripts/generate-uml.sh",
@@ -20,8 +25,8 @@
     "hyperledger",
     "solutions"
   ],
-  "author": "IBM",
-  "license": "ISC",
+  "author": "Fabric Composer",
+  "license": "Apache-2.0",
   "devDependencies": {
     "composer-admin": "^0.4.5",
     "composer-client": "^0.4.5",
