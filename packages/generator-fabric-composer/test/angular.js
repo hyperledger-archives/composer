@@ -38,19 +38,23 @@ describe('fabric-composer:angular', function () {
     });
 
     it('creates LandTitle component typescript', function () {
-        assert.file(tmpDir+"/test-app/src/app/SalesAgreement/SalesAgreement.component.ts");
+        assert.file(tmpDir+"/test-app/src/app/LandTitle/LandTitle.component.ts");
     });
 
     it('creates LandTitle component test', function () {
-        assert.file(tmpDir+"/test-app/src/app/SalesAgreement/SalesAgreement.component.spec.ts");
+        assert.file(tmpDir+"/test-app/src/app/LandTitle/LandTitle.component.spec.ts");
+    });
+
+    it('creates LandTitle service', function () {
+        assert.file(tmpDir+"/test-app/src/app/LandTitle/LandTitle.service.ts");
     });
 
     it('creates LandTitle component html', function () {
-        assert.file(tmpDir+"/test-app/src/app/SalesAgreement/SalesAgreement.component.html");
+        assert.file(tmpDir+"/test-app/src/app/LandTitle/LandTitle.component.html");
     });
 
     it('creates LandTitle component css', function () {
-        assert.file(tmpDir+"/test-app/src/app/SalesAgreement/SalesAgreement.component.css");
+        assert.file(tmpDir+"/test-app/src/app/LandTitle/LandTitle.component.css");
     });
 
     it('creates SalesAgreement component typescript', function () {
@@ -59,6 +63,10 @@ describe('fabric-composer:angular', function () {
 
     it('creates SalesAgreement component test', function () {
         assert.file(tmpDir+"/test-app/src/app/SalesAgreement/SalesAgreement.component.spec.ts");
+    });
+
+    it('creates SalesAgreement service', function () {
+        assert.file(tmpDir+"/test-app/src/app/SalesAgreement/SalesAgreement.service.ts");
     });
 
     it('creates SalesAgreement component html', function () {
