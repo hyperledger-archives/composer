@@ -194,7 +194,7 @@ You'll see a list of land titles presented as a set of JSON
 Similarly it's quite easy to issue the curl command from a terminal prompt. This can be copied from the LoopBack web page.
 
 ```bash
-$ curl -X GET --header "Accept: application/json" "http://0.0.0.0:3000/api/net.biz.digitalProperTitle" | prettyjson
+$ curl -X GET --header "Accept: application/json" "http://0.0.0.0:3000/api/net.biz.digitalPropertyNetwork.LandTitle" | prettyjson
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100   518  100   518    0     0    549      0 --:--:-- --:--:-- --:--:--   548
