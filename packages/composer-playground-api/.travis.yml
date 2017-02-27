@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+    - '4'
+    - '6'
+dist: trusty
+before_install: |
+    set -ev
+    npm install -g npm
+deploy:
+    provider: script
+    script: ./scripts/deploy.sh
+    skip_cleanup: true
+    on:
+        all_branches: true
