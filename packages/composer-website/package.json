@@ -1,5 +1,5 @@
 {
-  "name": "fabric-composer-site",
+  "name": "composer-website",
   "version": "0.4.5",
   "private": true,
   "description": "Fabric Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
