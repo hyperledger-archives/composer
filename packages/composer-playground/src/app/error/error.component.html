@@ -6,8 +6,8 @@
     <h1>An error has occurred</h1>
     <button class="icon modal-exit" (click)="activeModal.dismiss()">X</button>
   </div>
-  <section>
-    <div>{{error}}</div>
+  <section class="modal-body">
+    <div [innerHTML]="error"></div>
   </section>
   <footer>
     <button type="button" class="primary" (click)="activeModal.close()">OK</button>

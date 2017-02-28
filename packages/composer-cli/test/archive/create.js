@@ -72,7 +72,8 @@ describe('composer archive create unit tests', function () {
         it('Good path, all parms correctly specified.', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
-                       ,inputDir: '/home/mwhite/biznet'};
+                        , sourceType: 'dir'
+                       ,sourceName: '/home/mwhite/biznet'};
 
             return Create.handler(argv)
             .then ((result) => {
@@ -85,7 +86,8 @@ describe('composer archive create unit tests', function () {
         it('Good path, all parms correctly specified & cwd ', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip'
-                       ,inputDir: '.'};
+            ,sourceType: 'dir'
+           ,sourceName:  '.'};
 
             return Create.handler(argv)
             .then ((result) => {
@@ -97,7 +99,8 @@ describe('composer archive create unit tests', function () {
 
         it('Good path, all parms correctly specified - no archive', function () {
 
-            let argv = {inputDir: '/home/mwhite/biznet'};
+            let argv = {sourceType: 'dir'
+           ,sourceName:  '/home/mwhite/biznet'};
 
             return Create.handler(argv)
             .then ((result) => {
@@ -123,7 +126,7 @@ describe('composer archive create unit tests', function () {
         it('Good path, module name - archivefile & modulename that does not exists', function () {
 
             let argv = {archiveFile: 'testArchiveFile.zip',
-                moduleName: 'fake'};
+                sourceType: 'module', sourceName: 'fake'};
 
             try{
                 return Create.handler(argv)

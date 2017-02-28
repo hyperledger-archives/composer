@@ -117,7 +117,6 @@ export class EditorComponent implements OnInit {
   }
 
   private createBusinessNetwork(name,version,description){
-    console.log('Creating new BND',arguments)
     this.businessNetworkDefinition = new BusinessNetworkDefinition(name+'@'+version,description); // Creates a new BND
   }
 
@@ -125,7 +124,6 @@ export class EditorComponent implements OnInit {
     let sourceBusinessNetworkDefinition = this.clientService.getBusinessNetwork();
 
     let businessNetworkDefinition = new BusinessNetworkDefinition(sourceBusinessNetworkDefinition.getName()+'@'+sourceBusinessNetworkDefinition.getVersion(), sourceBusinessNetworkDefinition.getDescription());
-    console.log('wtf is this new bnd',businessNetworkDefinition);
     sourceBusinessNetworkDefinition.getModelManager().getModelFiles()
       .map((modelFile) => {
         return modelFile.getDefinitions();
@@ -220,7 +218,6 @@ export class EditorComponent implements OnInit {
   }
 
   private setCurrentFile(file) {
-    console.log('what is file?',file)
     this.changingCurrentFile = true;
     try {
       this.previousFile = this.currentFile;
@@ -367,11 +364,10 @@ namespace ${this.addModelNamespace}`;
         }
         this.setCurrentFile(currentFile);
       }
-      console.log('what is the new bnd',this.businessNetworkDefinition);
     }, (reason) => {
       //if no reason then we hit cancel
-      if(reason) {
-         this.adminService.errorStatus$.next(reason);
+      if (reason) {
+        this.adminService.errorStatus$.next(reason);
       }
     });
   }
@@ -380,23 +376,12 @@ namespace ${this.addModelNamespace}`;
 
 
     return this.businessNetworkDefinition.toArchive().then((exportedData) => {
-      // let thefile = new Blob(exportedData, { type: "application/octet-stream" });
-      // let file = new File(thefile,'filee.zip');
-
-      // console.log('what is file',file)
-      // let someObject = window.URL.createObjectURL(file);
-      // window.open(someObject);
-
-
-      var file = new File([exportedData], this.deployedPackageName+'.bna', {type: "application/octet-stream"});
+         var file = new File([exportedData], this.deployedPackageName+'.bna', {type: "application/octet-stream"});
       saveAs(file);
 
       this.modalService.open(ExportComponent);
 
     });
-    // this.modalService.open(ExportComponent).result.then((result) => {
-    //   console.log(this.businessNetworkDefinition.toArchive());
-    // })
   }
 
   private deploy(): Promise<any> {
@@ -426,7 +411,6 @@ namespace ${this.addModelNamespace}`;
       .then(() => {
         // this.loadBusinessNetwork();
         this.updateFiles();
-        console.log('What is the new BND?',this.businessNetworkDefinition);
 
         this.inputPackageVersion = this.deployedPackageVersion;
         this.inputPackageName = this.deployedPackageName;
@@ -513,7 +497,6 @@ namespace ${this.addModelNamespace}`;
       else{
         this.setCurrentFile(this.previousFile);
       }
-      console.log('Finished redeploy of BND');
     });
   }
 
@@ -529,8 +512,6 @@ namespace ${this.addModelNamespace}`;
       else{
         this.setCurrentFile(this.previousFile);
       }
-
-      console.log('Finished redeploy of BND');
     });
   }
 
