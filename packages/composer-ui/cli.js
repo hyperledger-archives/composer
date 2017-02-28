@@ -71,7 +71,11 @@ if (process.env.COMPOSER_CONFIG) {
   });
 }
 
-app.use(express.static(path.resolve(__dirname, 'dist')));
+const dist = path.resolve(__dirname, 'dist');
+app.use(express.static(dist));
+app.all('/*', (req, res, next) => {
+  res.sendFile('index.html', { root: dist });
+});
 
 const LOG = Logger.getLog('Composer');
 

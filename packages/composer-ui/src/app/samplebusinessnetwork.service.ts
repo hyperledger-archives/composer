@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
+import {Http}    from '@angular/http';
 
 import * as Octokat from 'octokat'
-import * as socketIOClient from 'socket.io-client';
 
 import {AdminService} from './admin.service';
 import {ClientService} from './client.service';
@@ -180,78 +180,63 @@ export class SampleBusinessNetworkService {
   private connected: boolean = false;
 
   public OPEN_SAMPLE: boolean = false;
-  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded to fix this problem you need to setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html"  target="_blank">here</a>';
-
-
+  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded, to fix this problem setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public NO_CLIENT_ID = 'The client id for the github api has not been set, to fix this problem setup ouath as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public CLIENT_ID = null;
 
   constructor(private adminService: AdminService,
-              private clientService: ClientService) {
-
-    const connectorServerURL = 'http://localhost:15699';
-
-    this.connected = false;
-    if (ENV && ENV !== 'development') {
-      this.socket = socketIOClient(window.location.origin);
-    }
-    else {
-      this.socket = socketIOClient(connectorServerURL);
-    }
-
-    this.socket.on('connect', () => {
-      this.connected = true;
-    });
-    this.socket.on('disconnect', () => {
-      this.connected = false;
-    });
+              private clientService: ClientService,
+              private http: Http) {
   }
 
-  /**
-   * Ensure that we are connected to the connector server.
-   * @return {Promise} A promise that will be resolved when we
-   * are connected to the connector server, or rejected with an
-   * error.
-   */
-  ensureConnected() {
-    if (this.connected) {
-      return Promise.resolve();
-    }
-    return new Promise((resolve, reject) => {
-      this.socket.once('connect', () => {
-        resolve();
-      });
-    });
-  }
 
-  isOAuthEnabled() {
-    return new Promise((resolve, reject) => {
-      this.socket.emit('/api/isOAuthEnabled', (error, result) => {
-        if (error) {
-          return reject(error);
-        }
-
+  isOAuthEnabled(): Promise<boolean> {
+    console.log(PLAYGROUND_API);
+    //let bob = PLAYGROUND_API;
+    return this.http.get(PLAYGROUND_API + '/api/isOAuthEnabled')
+      .toPromise()
+      .then((response) => {
+        let enabled: boolean = response.json();
         //if we aren't doing oauth then we need to setup github without token
-        if(!result) {
+        if (!enabled) {
           this.setUpGithub(null);
         }
-        resolve(result);
+        return enabled;
+      })
+      .catch((error) => {
+        throw(error);
       });
-    });
   }
 
-  getNpmInfo(name) {
-    return new Promise((resolve, reject) => {
-      this.socket.emit('/api/getNpmInfo', name, (error, info) => {
-        if (error) {
-          return reject(error);
-        }
+  getGithubClientId(): Promise<string> {
+    if (this.CLIENT_ID) {
+      return Promise.resolve(this.CLIENT_ID);
+    }
 
-        resolve(info);
+    return this.http.get(PLAYGROUND_API + '/api/getGithubClientId')
+      .toPromise()
+      .then((response) => {
+        this.CLIENT_ID = response.json();
+        return this.CLIENT_ID;
+      })
+      .catch((error) => {
+        throw(error);
       });
-    });
+  }
+
+  getNpmInfo(name): Promise<any> {
+    return this.http.get(PLAYGROUND_API + '/api/getNpmInfo/' + name)
+      .toPromise()
+      .then((response) => {
+        return response.json();
+      })
+      .catch((error) => {
+        throw error;
+      });
   }
 
   setUpGithub(accessToken: string) {
-    if(accessToken) {
+    if (accessToken) {
       this.octo = new Octokat({token: accessToken});
     } else {
       this.octo = new Octokat();
@@ -279,13 +264,13 @@ export class SampleBusinessNetworkService {
         return results;
       })
       .catch((error) => {
-        if(error.message)
-        throw error
+        if (error.message)
+          throw error
       });
   }
 
   public getModelsInfo(owner: string, repository: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
     let repo = this.octo.repos(owner, repository);
@@ -308,15 +293,16 @@ export class SampleBusinessNetworkService {
   }
 
   public getSampleNetworkInfo(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
     let repo = this.octo.repos(owner, repository);
 
-    return repo.contents(path + 'package.json').read()
+    return repo.contents(path + 'package.json').fetch()
       .then((info) => {
-        let contentInfo = JSON.parse(info);
+        let decodedString = atob(info.content);
+        let contentInfo = JSON.parse(decodedString);
         //needed to know where to look in the repository for the files
         contentInfo.composerPath = path;
         return contentInfo;
@@ -327,7 +313,7 @@ export class SampleBusinessNetworkService {
   }
 
   public getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
@@ -352,7 +338,7 @@ export class SampleBusinessNetworkService {
   }
 
   public getModel(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
@@ -361,12 +347,20 @@ export class SampleBusinessNetworkService {
       .then((models) => {
         let modelFilePromises: Promise<any>[] = [];
         models.items.forEach((model) => {
-          modelFilePromises.push(repo.contents(model.path).read());
+          modelFilePromises.push(repo.contents(model.path).fetch());
         });
         return Promise.all(modelFilePromises);
       })
       .then((modelFiles) => {
-        return modelFiles;
+
+        let fileArray: string[] = [];
+
+        modelFiles.forEach((file) => {
+          let decodedString = atob(file.content);
+          fileArray.push(decodedString);
+        });
+
+        return fileArray;
       })
       .catch((error) => {
         throw error;
@@ -414,7 +408,7 @@ export class SampleBusinessNetworkService {
   }
 
   private getScripts(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
@@ -426,13 +420,14 @@ export class SampleBusinessNetworkService {
         let scriptFilePromises: Promise<any>[] = [];
         scripts.items.forEach((script) => {
           scriptFileData.push({name: script.name});
-          scriptFilePromises.push(repo.contents(script.path).read());
+          scriptFilePromises.push(repo.contents(script.path).fetch());
         });
         return Promise.all(scriptFilePromises);
       })
       .then((scriptFiles) => {
         for (let i = 0; i < scriptFiles.length; i++) {
-          scriptFileData[i].data = scriptFiles[i];
+          let decodedString = atob(scriptFiles[i].content);
+          scriptFileData[i].data = decodedString;
         }
         return scriptFileData;
       })
@@ -446,17 +441,18 @@ export class SampleBusinessNetworkService {
   }
 
   private getAcls(owner: string, repository: string, path: string): Promise<any> {
-    if(!this.octo) {
+    if (!this.octo) {
       return Promise.reject('no connection to github');
     }
 
     let repo = this.octo.repos(owner, repository);
 
-    return repo.contents(path + 'permissions.acl').read()
+    return repo.contents(path + 'permissions.acl').fetch()
       .then((permissions) => {
+        let decodedString = atob(permissions.content);
         let aclFileData = {
           name: 'permissions.acl',
-          data: permissions
+          data: decodedString
         };
         return aclFileData;
       })
