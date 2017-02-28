@@ -173,7 +173,7 @@ class JavaScriptParser {
     /**
      * Return the includes that were extracted from the JS file.
      *
-     * @return {Object[]} information about each include
+     * @return {Object[]} information about each invlude
      */
     getIncludes() {
         return this.includes;
@@ -199,7 +199,7 @@ class JavaScriptParser {
 
 
     /**
-     * Grab the text between a range§
+     * Grab the text between a range
      *
      * @param {integer} rangeStart - the start of the range
      * @param {integer} rangeEnd - the end of the range
@@ -212,7 +212,7 @@ class JavaScriptParser {
     }
 
     /**
-     * Find the comments that is above and closest to the start of the range.
+     * Find the comments that are above and closest to the start of the range.
      *
      * @param {integer} rangeStart - the start of the range
      * @param {integer} rangeEnd - the end of the range
@@ -293,17 +293,21 @@ class JavaScriptParser {
         }
 
         tags.forEach((tag) => {
-            if (!tag.type.name && !tag.type) {
+            if (tag.type) {
+                if (!tag.type.name && !tag.type) {
+                    throw new Error('Malformed JSDoc comment. ' + comment );
+                }
+
+                if (tag.type.name) {
+                    result = tag.type.name;
+                } else if (tag.type.applications){
+                    result = tag.type.applications[0].name + '[]';
+                } else if (tag.type.expression) {
+                    result = tag.type.expression.name;
+
+                }
+            } else {
                 throw new Error('Malformed JSDoc comment. ' + comment );
-            }
-
-            if (tag.type.name) {
-                result = tag.type.name;
-            } else if (tag.type.applications){
-                result = tag.type.applications[0].name + '[]';
-            } else if (tag.type.expression) {
-                result = tag.type.expression.name;
-
             }
         });
         return result;
@@ -328,10 +332,14 @@ class JavaScriptParser {
         }
 
         tags.forEach((tag) => {
-            if (!tag.type.type || !tag.type.name) {
-                throw new Error('Malformed JSDoc comment. ' + comment );
+            if (tag.type) {
+                if (!tag.type.type || !tag.type.name) {
+                    throw new Error('Malformed JSDoc comment. ' + comment );
+                }
+                result = tag.type.name;
+            } else {
+                throw new Error('Malformed JSDoc comment. ' + comment);
             }
-            result = tag.type.name;
         });
 
         return result;

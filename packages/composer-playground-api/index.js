@@ -21,8 +21,8 @@ const FSConnectionProfileStore = require('composer-common').FSConnectionProfileS
 const http = require('http');
 const socketIO = require('socket.io');
 const Logger = require('composer-common').Logger;
-const requireDirectory = require('require-directory');
 const Util = require('./lib/util');
+const githubRoute = require('./routes/github');
 
 const LOG = Logger.getLog('PlaygroundAPI');
 
@@ -38,15 +38,10 @@ function createServer(port) {
 
     const app = Util.createApp();
 
+    githubRoute(app);
+
     const connectionProfileStore = new FSConnectionProfileStore(fs);
     const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
-
-    // Load all of the routes.
-    requireDirectory(module, './routes', {
-        visit: (route) => {
-            route();
-        }
-    });
 
     // Create the Express server.
     const server = http.createServer(app);
