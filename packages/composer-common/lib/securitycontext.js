@@ -17,7 +17,7 @@
 /**
  * SecurityContext is used to authenticate and manage
  * user credentials to the underlying blockchain fabric.
- * <p><a href="./diagrams/securitycontext.svg"><img src="./diagrams/securitycontext.svg" style="width:100%;"/></a></p>
+ * <p><a href="./diagrams/securitycontext.svg"><img src="./diagrams/securitycontext.svg" style="height:100%;"/></a></p>
  * @abstract
  * @class
  * @memberof module:composer-common

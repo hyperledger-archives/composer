@@ -1,7 +1,11 @@
 {
   "name": "composer-connector-embedded",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "The embedded client connector for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
@@ -49,8 +53,8 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.4.4",
-    "composer-runtime": "^0.4.4",
-    "composer-runtime-embedded": "^0.4.4"
+    "composer-common": "^0.4.5",
+    "composer-runtime": "^0.4.5",
+    "composer-runtime-embedded": "^0.4.5"
   }
 }

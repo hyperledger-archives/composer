@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
+import {Http}    from '@angular/http';
 
 import * as Octokat from 'octokat'
-import * as socketIOClient from 'socket.io-client';
 
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
@@ -9,168 +9,48 @@ import {ClientService} from '../client.service';
 import {BusinessNetworkDefinition} from 'composer-admin';
 import {AclFile} from 'composer-common';
 
-const initialModelFile = `/**
- * Defines a data model for a blind vehicle auction
+const initialModelFile =
+  `/**
+ * Sample business network definition.
  */
-namespace org.acme.vehicle.auction
+namespace org.acme.biznet
 
-asset Vehicle identified by vin {
-  o String vin
-  --> Member owner
+asset SampleAsset identified by assetId {
+  o String assetId
+  --> SampleParticipant owner
+  o String value
 }
 
-enum ListingState {
-  o FOR_SALE
-  o RESERVE_NOT_MET
-  o SOLD
-}
-
-asset VehicleListing identified by listingId {
-  o String listingId
-  o Double reservePrice
-  o String description
-  o ListingState state
-  o Offer[] offers optional
-  --> Vehicle vehicle
-}
-
-abstract participant User identified by email {
-  o String email
+participant SampleParticipant identified by participantId {
+  o String participantId
   o String firstName
   o String lastName
 }
 
-participant Member extends User {
-  o Double balance
-}
-
-participant Auctioneer extends User {
-}
-
-transaction Offer identified by transactionId {
+transaction SampleTransaction identified by transactionId {
   o String transactionId
-  o Double bidPrice
-  --> VehicleListing listing
-  --> Member member
+  --> SampleAsset asset
+  o String newValue
 }
+`
 
-transaction CloseBidding identified by transactionId {
-  o String transactionId
-  --> VehicleListing listing
-}`;
-
-const initialScriptFile = `/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+const initialScriptFile =
+  `/**
+ * Sample transaction processor function.
  */
+function onSampleTransaction(sampleTransaction) {
+  sampleTransaction.asset.value = sampleTransaction.newValue;
+  return getAssetRegistry('org.acme.biznet.SampleAsset')
+    .then(function (assetRegistry) {
+      return assetRegistry.update(sampleTransaction.asset);
+    });
+}`
 
-/**
- * Close the bidding for a vehicle listing and choose the
- * highest bid that is over the asking price
- * @param {org.acme.vehicle.auction.CloseBidding} closeBidding - the closeBidding transaction
- * @transaction
+const initialAclFile =
+  `/**
+ * Sample access control list.
  */
-function closeBidding(closeBidding) {
-    var listing = closeBidding.listing;
-    if (listing.state !== 'FOR_SALE') {
-        throw new Error('Listing is not FOR SALE');
-    }
-    // by default we mark the listing as RESERVE_NOT_MET
-    listing.state = 'RESERVE_NOT_MET';
-    var highestOffer = null;
-    var buyer = null;
-    var seller = null;
-    if (listing.offers) {
-        // sort the bids by bidPrice
-        listing.offers.sort(function(a, b) {
-            return (b.bidPrice - a.bidPrice);
-        });
-        highestOffer = listing.offers[0];
-        if (highestOffer.bidPrice >= listing.reservePrice) {
-            // mark the listing as SOLD
-            listing.state = 'SOLD';
-            buyer = highestOffer.member;
-            seller = listing.vehicle.owner;
-            // update the balance of the seller
-            console.log('#### seller balance before: ' + seller.balance);
-            seller.balance += highestOffer.bidPrice;
-            console.log('#### seller balance after: ' + seller.balance);
-            // update the balance of the buyer
-            console.log('#### buyer balance before: ' + buyer.balance);
-            buyer.balance -= highestOffer.bidPrice;
-            console.log('#### buyer balance after: ' + buyer.balance);
-            // transfer the vehicle to the buyer
-            listing.vehicle.owner = buyer;
-            // clear the offers
-            listing.offers = null;
-        }
-    }
-    return getAssetRegistry('org.acme.vehicle.auction.Vehicle')
-        .then(function(vehicleRegistry) {
-            // save the vehicle
-            if (highestOffer) {
-                return vehicleRegistry.update(listing.vehicle);
-            } else {
-                return true;
-            }
-        })
-        .then(function() {
-            return getAssetRegistry('org.acme.vehicle.auction.VehicleListing')
-        })
-        .then(function(vehicleListingRegistry) {
-            // save the vehicle listing
-            return vehicleListingRegistry.update(listing);
-        })
-        .then(function() {
-            return getParticipantRegistry('org.acme.vehicle.auction.Member')
-        })
-        .then(function(userRegistry) {
-            // save the buyer
-            if (listing.state == 'SOLD') {
-                return userRegistry.updateAll([buyer, seller]);
-            } else {
-                return true;
-            }
-        });
-}
-
-/**
- * Make an Offer for a VehicleListing
- * @param {org.acme.vehicle.auction.Offer} offer - the offer
- * @transaction
- */
-function makeOffer(offer) {
-    var listing = offer.listing;
-    if (listing.state !== 'FOR_SALE') {
-        throw new Error('Listing is not FOR SALE');
-    }
-    if (listing.offers == null) {
-        listing.offers = [];
-    }
-    listing.offers.push(offer);
-    return getAssetRegistry('org.acme.vehicle.auction.VehicleListing')
-        .then(function(vehicleListingRegistry) {
-            // save the vehicle listing
-            return vehicleListingRegistry.update(listing);
-        });
-}`;
-
-const initialAclFile = `/**
- * Access Control List for the auction network.
- */
-Auctioneer | org.acme.vehicle.auction | ALL | org.acme.vehicle.auction.Auctioneer | (true) | ALLOW | Allow the auctioneer full access
-Member | org.acme.vehicle.auction | READ | org.acme.vehicle.auction.Member | (true) | ALLOW | Allow the member read access
-VehicleOwner | org.acme.vehicle.auction.Vehicle:v | ALL | org.acme.vehicle.auction.Member:u | (v.owner.getIdentifier() == u.getIdentifier()) | ALLOW | Allow the owner of a vehicle total access
-VehicleListingOwner | org.acme.vehicle.auction.VehicleListing:v | ALL | org.acme.vehicle.auction.Member:u | (v.vehicle.owner.getIdentifier() == u.getIdentifier()) | ALLOW | Allow the owner of a vehicle total access to their vehicle listing\n`;
+Default | org.acme.biznet | ALL | ANY | (true) | ALLOW | Allow all participants access to all resources\n`
 
 @Injectable()
 export class SampleBusinessNetworkService {
@@ -180,73 +60,57 @@ export class SampleBusinessNetworkService {
   private connected: boolean = false;
 
   public OPEN_SAMPLE: boolean = false;
-  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded to fix this problem you need to setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html"  target="_blank">here</a>';
-
+  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded, to fix this problem setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public NO_CLIENT_ID = 'The client id for the github api has not been set, to fix this problem setup ouath as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public CLIENT_ID = null;
 
   constructor(private adminService: AdminService,
-              private clientService: ClientService) {
-
-    const connectorServerURL = 'http://localhost:15699';
-
-    this.connected = false;
-    if (ENV && ENV !== 'development') {
-      this.socket = socketIOClient(window.location.origin);
-    }
-    else {
-      this.socket = socketIOClient(connectorServerURL);
-    }
-
-    this.socket.on('connect', () => {
-      this.connected = true;
-    });
-    this.socket.on('disconnect', () => {
-      this.connected = false;
-    });
+              private clientService: ClientService,
+              private http: Http) {
   }
 
-  /**
-   * Ensure that we are connected to the connector server.
-   * @return {Promise} A promise that will be resolved when we
-   * are connected to the connector server, or rejected with an
-   * error.
-   */
-  ensureConnected() {
-    if (this.connected) {
-      return Promise.resolve();
-    }
-    return new Promise((resolve, reject) => {
-      this.socket.once('connect', () => {
-        resolve();
-      });
-    });
-  }
 
-  isOAuthEnabled() {
-    return new Promise((resolve, reject) => {
-      this.socket.emit('/api/isOAuthEnabled', (error, result) => {
-        if (error) {
-          return reject(error);
-        }
-
+  isOAuthEnabled(): Promise<boolean> {
+    return this.http.get(PLAYGROUND_API + '/api/isOAuthEnabled')
+      .toPromise()
+      .then((response) => {
+        let enabled: boolean = response.json();
         //if we aren't doing oauth then we need to setup github without token
-        if (!result) {
+        if (!enabled) {
           this.setUpGithub(null);
         }
-        resolve(result);
+        return enabled;
+      })
+      .catch((error) => {
+        throw(error);
       });
-    });
   }
 
-  getNpmInfo(name) {
-    return new Promise((resolve, reject) => {
-      this.socket.emit('/api/getNpmInfo', name, (error, info) => {
-        if (error) {
-          return reject(error);
-        }
+  getGithubClientId(): Promise<string> {
+    if (this.CLIENT_ID) {
+      return Promise.resolve(this.CLIENT_ID);
+    }
 
-        resolve(info);
+    return this.http.get(PLAYGROUND_API + '/api/getGithubClientId')
+      .toPromise()
+      .then((response) => {
+        this.CLIENT_ID = response.json();
+        return this.CLIENT_ID;
+      })
+      .catch((error) => {
+        throw(error);
       });
-    });
+  }
+
+  getNpmInfo(name): Promise<any> {
+    return this.http.get(PLAYGROUND_API + '/api/getNpmInfo/' + name)
+      .toPromise()
+      .then((response) => {
+        return response.json();
+      })
+      .catch((error) => {
+        throw error;
+      });
   }
 
   setUpGithub(accessToken: string) {
@@ -391,7 +255,7 @@ export class SampleBusinessNetworkService {
     return Promise.all(dependencyPromises)
       .then((results) => {
         let modelsPromises: Promise<any>[] = [];
-        results.forEach((npmInfo)=> {
+        results.forEach((npmInfo) => {
           //TODO: remove hacky stuff to make work with url
           const github = 'git+https://github.com/';
           const git = '.git';
@@ -428,21 +292,21 @@ export class SampleBusinessNetworkService {
 
     let repo = this.octo.repos(owner, repository);
 
-    let scriptFileData = [];
     return repo.contents(path + 'lib').fetch()
       .then((scripts) => {
         let scriptFilePromises: Promise<any>[] = [];
         scripts.items.forEach((script) => {
-          scriptFileData.push({name: script.name});
           scriptFilePromises.push(repo.contents(script.path).fetch());
         });
         return Promise.all(scriptFilePromises);
       })
       .then((scriptFiles) => {
-        for (let i = 0; i < scriptFiles.length; i++) {
-          let decodedString = atob(scriptFiles[i].content);
-          scriptFileData[i].data = decodedString;
-        }
+        let scriptFileData = [];
+        scriptFiles.forEach((scriptFile) => {
+          let decodedString = atob(scriptFile.content);
+          scriptFileData.push({name: scriptFile.name, data: decodedString});
+        });
+
         return scriptFileData;
       })
       .catch((error) => {
@@ -465,7 +329,7 @@ export class SampleBusinessNetworkService {
       .then((permissions) => {
         let decodedString = atob(permissions.content);
         let aclFileData = {
-          name: 'permissions.acl',
+          name: permissions.name,
           data: decodedString
         };
         return aclFileData;
@@ -493,6 +357,10 @@ export class SampleBusinessNetworkService {
     return this.deployBusinessNetwork(businessNetworkDefinition);
   }
 
+  public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
+    return BusinessNetworkDefinition.fromArchive(buffer);
+  }
+
   public deploySample(owner: string, repository: string, chosenNetwork: any): Promise < any > {
     this.adminService.busyStatus$.next('Deploying sample business network ...');
 
@@ -507,6 +375,7 @@ export class SampleBusinessNetworkService {
     }
     sampleNetworkPromises.push(this.getScripts(owner, repository, path));
     sampleNetworkPromises.push(this.getAcls(owner, repository, path));
+    sampleNetworkPromises.push(this.getSampleNetworkInfo(owner, repository, path));
 
     return Promise.all(sampleNetworkPromises)
       .then((results) => {
@@ -514,8 +383,9 @@ export class SampleBusinessNetworkService {
         let models = results[0];
         let scripts = results[1];
         let acls = results[2];
+        let packageContents = results[3];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
+        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description);
         let modelManager = businessNetworkDefinition.getModelManager();
         models.forEach((model) => {
           modelManager.addModelFile(model);

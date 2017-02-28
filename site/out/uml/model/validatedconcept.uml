@@ -1,9 +1,0 @@
-!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/model/concept.uml
-@startuml
-class ValidatedConcept{
-   + void setPropertyValue(string,string)
-   + void addArrayValue(string,string)
-   + void validate()
-}
-ValidatedConcept --|> Concept
-@enduml

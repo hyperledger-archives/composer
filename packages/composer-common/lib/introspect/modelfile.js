@@ -51,7 +51,7 @@ class ModelFile {
         this.fileName = 'UNKNOWN';
 
         if(!definitions || typeof definitions !== 'string') {
-            throw new Error('ModelFile expects a Concerto model as a string as input.');
+            throw new Error('ModelFile expects a Composer model as a string as input.');
         }
         this.definitions = definitions;
 

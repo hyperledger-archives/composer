@@ -1,7 +1,11 @@
 {
   "name": "composer-client",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "The node.js client library for Fabric Composer, a development framework for Hyperledger Fabric",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
@@ -39,8 +43,9 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.4.4",
-    "composer-connector-hlf": "^0.4.4",
+    "composer-common": "^0.4.5",
+    "composer-connector-hlf": "^0.4.5",
+    "composer-connector-hlfv1": "^0.4.5",
     "uuid": "^3.0.0"
   },
   "devDependencies": {

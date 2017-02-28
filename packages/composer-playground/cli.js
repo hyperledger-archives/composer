@@ -19,36 +19,14 @@ const argv = require('yargs')
     .option('p', {
         alias: 'port',
         demand: false,
-        default: 8080,
+        default: process.env.PORT || 8080,
         type: 'number',
         describe: 'The port to start composer on'
     })
     .argv;
 
-const express = require('express');
-const app = express();
-const server = require('http').Server(app);
-
-const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const ConnectorServer = require('composer-connector-server');
-const fs = require('fs');
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
-const io = require('socket.io')(server);
-const isDocker = require('is-docker');
 const Logger = require('composer-common').Logger;
-const opener = require('opener');
-const path = require('path');
 const util = require('util');
-
-if (process.env.COMPOSER_CONFIG) {
-  const config = JSON.parse(process.env.COMPOSER_CONFIG);
-  app.get('/config.json', (req, res, next) => {
-    res.json(config);
-  });
-}
-
-app.use(express.static(path.resolve(__dirname, 'dist')));
-server.listen(argv.port);
 
 Logger.setFunctionalLogger({
     log: (level, method, msg, args) => {
@@ -80,21 +58,29 @@ Logger.setFunctionalLogger({
     }
 });
 
+const app = require('composer-playground-api')(argv.port);
+const express = require('express');
+const isDocker = require('is-docker');
+const opener = require('opener');
+const path = require('path');
+
+if (process.env.COMPOSER_CONFIG) {
+  const config = JSON.parse(process.env.COMPOSER_CONFIG);
+  app.get('/config.json', (req, res, next) => {
+    res.json(config);
+  });
+}
+
+const dist = path.resolve(__dirname, 'dist');
+app.use(express.static(dist));
+app.all('/*', (req, res, next) => {
+  res.sendFile('index.html', { root: dist });
+});
+
 const LOG = Logger.getLog('Composer');
 
 const method = 'main';
-
-const connectionProfileStore = new FSConnectionProfileStore(fs);
-const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
-
-LOG.info('main', `Composer started on port ${argv.port}`);
-io.on('connect', (socket) => {
-    LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
-    new ConnectorServer(connectionProfileStore, connectionProfileManager, socket);
-});
-io.on('disconnect', (socket) => {
-    LOG.info(method, `Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
-});
+LOG.entry(method);
 
 if (!isDocker()) {
     opener(`http://localhost:${argv.port}`);

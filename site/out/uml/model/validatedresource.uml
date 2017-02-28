@@ -1,9 +1,0 @@
-!include /Users/Sam/Git/fabric-composer/site/node_modules/composer-common/lib/model/resource.uml
-@startuml
-class ValidatedResource{
-   + void setPropertyValue(string,string)
-   + void addArrayValue(string,string)
-   + void validate()
-}
-ValidatedResource --|> Resource
-@enduml

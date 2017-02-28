@@ -33,7 +33,7 @@ const uuid = require('uuid');
 /**
  * Use the Factory to create instances of Resource: transactions, participants
  * and assets.
- * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="width:100%;"/></a></p>
+ * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="height:100%;"/></a></p>
  * @class
  * @memberof module:composer-common
  */

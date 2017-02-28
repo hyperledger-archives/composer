@@ -1,7 +1,11 @@
 {
   "name": "composer-runtime",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "The runtime execution environment for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
@@ -62,7 +66,7 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.4.4",
+    "composer-common": "^0.4.5",
     "debug": "^2.4.4",
     "fast-json-patch": "^1.1.2",
     "jsonata": "1.0.10",
