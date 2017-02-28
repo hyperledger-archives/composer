@@ -13,6 +13,8 @@ You must run the following commands in order to pull the Hyperledger fabric chai
 
 You should see messages indicating that the required git repositories have been cloned into the correct vendor subdirectory.
 
+> The git submodule should not be required now, they have been added to the npm install step. When this has been confirmed as working well, this will be updated. 
+
 You must install [Lerna](https://lernajs.io) to build this multi-package repository:
 
     $ npm install -g lerna
