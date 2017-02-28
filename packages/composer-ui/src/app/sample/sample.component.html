@@ -9,7 +9,7 @@
       </div>
       <div class="modal-body">
         <div *ngIf="!gitHubAuthenticated && oAuthEnabled">
-          <a href="https://github.com/login/oauth/authorize?client_id=dca17eadbdb10b65bc3f">Authenticate With Github</a>
+          <a href="https://github.com/login/oauth/authorize?client_id={{client_id}}">Authenticate With Github</a>
           <div class="card">
             <div id="githubDescription" class="card-block">
               To be able to see the samples you need to authenticate with github.

@@ -55,6 +55,8 @@ export class SampleComponent implements OnInit {
                 this.error$.emit(new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID));
                 this.adminService.errorStatus$.next(this.sampleBusinessNetworkService.NO_CLIENT_ID);
               }
+
+              this.clientId = clientId;
             });
 
         }
