@@ -382,7 +382,8 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name+'Component');
             });
-
+            console.log('---------ASSETLIST-----------',assetList);
+            console.log('---------assetComponentNames--------',assetComponentNames);
             let model = self._generateTemplateModel();
             self.fs.copyTpl(self.templatePath('**/!(node_modules|typings|asset|Transaction)*'), self.destinationPath(), model);
 
@@ -424,6 +425,11 @@ module.exports = yeoman.Base.extend({
             let parameters = {};
             parameters.fileWriter = new FileWriter(self.destinationPath()+'/src/app');
             modelManager.accept(visitor, parameters);
+
+
+            assetList = [];
+            assetComponentNames = [];
+            assetServiceNames = [];
         }
 
 
@@ -455,7 +461,7 @@ module.exports = yeoman.Base.extend({
             enrollmentSecret: this.enrollmentSecret
         };
     },
-
+    
     end: function() {
         console.log('Complete');
     }
