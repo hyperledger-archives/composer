@@ -62,7 +62,6 @@ module.exports = (app) => {
         let child = exec('npm view ' + moduleName,
             function (error, stdout, stderr) {
                 if (error !== null) {
-                    console.log('BANANA');
                     LOG.error(error);
                     LOG.exit(method, null);
                     res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error : error});
