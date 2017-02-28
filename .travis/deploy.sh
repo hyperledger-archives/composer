@@ -86,7 +86,10 @@ if [ -z "${TRAVIS_TAG}" ]; then
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-ui
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer-unstable -c "node cli.js" -i 2 -m 256M
+    cf push fabric-composer-unstable -c "node cli.js" -i 2 -m 256M --no-start
+    cf set-env fabric-composer-unstable CLIENT_ID ${GH_UNSTABLE_OAUTH_CLIENT_ID}
+    cf set-env fabric-composer-unstable CLIENT_SECRET ${GH_UNSTABLE_OAUTH_CLIENT_SECRET}
+    cf start fabric-composer-unstable
     popd
 
 else
@@ -114,7 +117,10 @@ else
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-ui
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer -c "node cli.js" -i 2 -m 256M
+    cf push fabric-composer -c "node cli.js" -i 2 -m 256M --no-start
+    cf set-env fabric-composer CLIENT_ID ${GH_OAUTH_CLIENT_ID}
+    cf set-env fabric-composer CLIENT_SECRET ${GH_OAUTH_CLIENT_SECRET}
+    cf start fabric-composer
     popd
 
     # Configure the Git repository and clean any untracked and unignored build files.
