@@ -17,6 +17,7 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template",
     "postdoc": "npm run lint",
     "lint": "eslint .",
+    "start": "node cli.js",
     "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage"
   },
