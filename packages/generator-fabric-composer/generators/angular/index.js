@@ -382,8 +382,7 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name+'Component');
             });
-            console.log('---------ASSETLIST-----------',assetList);
-            console.log('---------assetComponentNames--------',assetComponentNames);
+            
             let model = self._generateTemplateModel();
             self.fs.copyTpl(self.templatePath('**/!(node_modules|typings|asset|Transaction)*'), self.destinationPath(), model);
 
