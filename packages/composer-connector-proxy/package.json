@@ -1,7 +1,11 @@
 {
   "name": "composer-connector-proxy",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "The proxying client connector for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
@@ -23,7 +27,7 @@
     "solutions"
   ],
   "author": "Fabric Composer",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "license-check-config": {
     "src": [
       "**/*.js",
@@ -50,7 +54,7 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.4.4",
+    "composer-common": "^0.4.5",
     "socket.io-client": "^1.7.2"
   }
 }

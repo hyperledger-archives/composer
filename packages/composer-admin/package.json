@@ -1,7 +1,11 @@
 {
   "name": "composer-admin",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Fabric Composer Admin, code that manages business networks deployed to Hyperledger Fabric",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
@@ -43,8 +47,9 @@
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "composer-common": "^0.4.4",
-    "composer-connector-hlf": "^0.4.4"
+    "composer-common": "^0.4.5",
+    "composer-connector-hlf": "^0.4.5",
+    "composer-connector-hlfv1": "^0.4.5"
   },
   "license-check-config": {
     "src": [

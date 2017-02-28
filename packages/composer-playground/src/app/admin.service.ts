@@ -11,49 +11,6 @@ import { AclFile, ConnectionProfileManager, Logger } from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
 
-const sampleModelCode =
-`/**
- * Sample business network definition.
- */
-namespace org.acme.biznet
-
-asset SampleAsset identified by assetId {
-  o String assetId
-  --> SampleParticipant owner
-  o String value
-}
-
-participant SampleParticipant identified by participantId {
-  o String participantId
-  o String firstName
-  o String lastName
-}
-
-transaction SampleTransaction identified by transactionId {
-  o String transactionId
-  --> SampleAsset asset
-  o String newValue
-}
-`
-
-const sampleScriptCode =
-`/**
- * Sample transaction processor function.
- */
-function onSampleTransaction(sampleTransaction) {
-  sampleTransaction.asset.value = sampleTransaction.newValue;
-  return getAssetRegistry('org.acme.biznet.SampleAsset')
-    .then(function (assetRegistry) {
-      return assetRegistry.update(sampleTransaction.asset);
-    });
-}`
-
-const sampleAclCode =
-`/**
- * Sample access control list.
- */
-Default | org.acme.biznet | ALL | ANY | (true) | ALLOW | Allow all participants access to all resources\n`
-
 @Injectable()
 export class AdminService {
 

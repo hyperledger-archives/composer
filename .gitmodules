@@ -8,3 +8,9 @@
 [submodule "packages/composer-runtime-hlf/vendor/github.com/robertkrimen/otto"]
 	path = packages/composer-runtime-hlf/vendor/github.com/robertkrimen/otto
 	url = https://github.com/robertkrimen/otto
+[submodule "packages/composer-runtime-hlfv1/vendor/github.com/robertkrimen/otto"]
+	path = packages/composer-runtime-hlfv1/vendor/github.com/robertkrimen/otto
+	url = https://github.com/robertkrimen/otto.git
+[submodule "packages/composer-runtime-hlfv1/vendor/gopkg.in/sourcemap.v1"]
+	path = packages/composer-runtime-hlfv1/vendor/gopkg.in/sourcemap.v1
+	url = https://gopkg.in/sourcemap.v1.git

@@ -32,10 +32,16 @@ import { AboutComponent } from './about';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
 import { ResetComponent } from './reset';
+import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
+import { ExportComponent } from './export';
+
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
+
+
+import { FileDragDropDirective } from './directives/file-drag-drop';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
@@ -53,6 +59,8 @@ let formattingIcons = require.context('../assets/svg/formatting', false, /.*\.sv
 formattingIcons.keys().forEach(formattingIcons);
 let objectBasedIcons = require.context('../assets/svg/object-based', false, /.*\.svg$/);
 objectBasedIcons.keys().forEach(objectBasedIcons);
+let otherIcons = require.context('../assets/svg/other', false, /.*\.svg$/);
+otherIcons.keys().forEach(otherIcons);
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -73,10 +81,12 @@ type StoreType = {
   bootstrap: [ AppComponent ],
   entryComponents: [
     ImportComponent,
+    ExportComponent,
     ErrorComponent
   ],
   declarations: [
     AppComponent,
+    FileImporterComponent,
     EditorComponent,
     TestComponent,
     AssetRegistriesComponent,
@@ -99,9 +109,11 @@ type StoreType = {
     ErrorComponent,
     ResetComponent,
     ImportComponent,
+    ExportComponent,
     GithubComponent,
     NoContentComponent,
-    AboutComponent
+    AboutComponent,
+    FileDragDropDirective
   ],
   imports: [ // import Angular's modules
     BrowserModule,

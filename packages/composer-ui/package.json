@@ -1,7 +1,11 @@
 {
   "name": "composer-ui",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "A test harness/UI for the web runtime container for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "bin": {
     "composer-ui": "cli.js"
   },
@@ -15,7 +19,7 @@
     "solutions"
   ],
   "author": "Fabric Composer",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "scripts": {
     "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
     "build:docker": "npm run build:prod && docker build -t angular2-webpack-start:latest .",
@@ -45,8 +49,8 @@
     "rimraf": "rimraf",
     "server:dev:hmr": "npm run server:dev -- --inline --hot",
     "server:dev": "webpack-dev-server --config config/webpack.dev.js --progress --profile --watch --content-base src/",
-    "server:prod": "http-server dist --cors",
-    "server:prod:ci": "http-server dist -p 3000 --cors",
+    "server:prod": "http-server dist --cors --push-state",
+    "server:prod:ci": "http-server dist -p 3000 --cors --push-state",
     "server": "npm run server:dev",
     "start:hmr": "npm run server:dev:hmr",
     "start": "npm run server:dev",
@@ -66,8 +70,8 @@
     "webpack": "webpack"
   },
   "dependencies": {
-    "composer-common": "^0.4.4",
-    "composer-connector-server": "^0.4.4",
+    "composer-common": "^0.4.5",
+    "composer-playground-api": "^0.4.5",
     "express": "^4.14.0",
     "is-docker": "^1.1.0",
     "opener": "^1.4.2",
@@ -75,12 +79,12 @@
     "octokat": "^0.6.2"
   },
   "devDependencies": {
-    "composer-admin": "^0.4.4",
-    "composer-client": "^0.4.4",
-    "composer-connector-proxy": "^0.4.4",
-    "composer-connector-web": "^0.4.4",
-    "composer-runtime": "^0.4.4",
-    "composer-runtime-web": "^0.4.4",
+    "composer-admin": "^0.4.5",
+    "composer-client": "^0.4.5",
+    "composer-connector-proxy": "^0.4.5",
+    "composer-connector-web": "^0.4.5",
+    "composer-runtime": "^0.4.5",
+    "composer-runtime-web": "^0.4.5",
     "@angular/common": "^2.4.1",
     "@angular/compiler": "^2.4.1",
     "@angular/core": "^2.4.1",
@@ -128,7 +132,7 @@
     "gh-pages": "^0.12.0",
     "homedir": "^0.6.0",
     "html-webpack-plugin": "^2.25.0",
-    "http-server": "^0.9.0",
+    "spa-http-server": "^0.9.0",
     "ie-shim": "^0.1.0",
     "imports-loader": "^0.7.0",
     "istanbul-instrumenter-loader": "^1.2.0",

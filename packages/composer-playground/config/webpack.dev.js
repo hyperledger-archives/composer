@@ -22,11 +22,12 @@ const PORT = process.env.PORT || 3000;
 const HMR = helpers.hasProcessFlag('hot');
 const DOCKER = !!process.env.DOCKER;
 const DOCKER_COMPOSE = !!process.env.DOCKER_COMPOSE;
-const METADATA = webpackMerge(commonConfig({env: ENV}).metadata, {
-  host: HOST,
-  port: PORT,
-  ENV: ENV,
-  HMR: HMR
+const PLAYGROUND_API = process.env.PLAYGROUND_API || 'http://localhost:15699';
+const METADATA = webpackMerge(commonConfig({env : ENV}).metadata, {
+  host : HOST,
+  port : PORT,
+  ENV : ENV,
+  HMR : HMR
 });
 
 /**
@@ -35,7 +36,7 @@ const METADATA = webpackMerge(commonConfig({env: ENV}).metadata, {
  * See: http://webpack.github.io/docs/configuration.html#cli
  */
 module.exports = function (options) {
-  return webpackMerge(commonConfig({env: ENV}), {
+  return webpackMerge(commonConfig({env : ENV}), {
 
     /**
      * Developer tool to enhance debugging
@@ -43,21 +44,21 @@ module.exports = function (options) {
      * See: http://webpack.github.io/docs/configuration.html#devtool
      * See: https://github.com/webpack/docs/wiki/build-performance#sourcemaps
      */
-    devtool: 'cheap-module-source-map',
+    devtool : 'cheap-module-source-map',
 
     /**
      * Options affecting the output of the compilation.
      *
      * See: http://webpack.github.io/docs/configuration.html#output
      */
-    output: {
+    output : {
 
       /**
        * The output directory as absolute path (required).
        *
        * See: http://webpack.github.io/docs/configuration.html#output-path
        */
-      path: helpers.root('dist'),
+      path : helpers.root('dist'),
 
       /**
        * Specifies the name of each output file on disk.
@@ -65,7 +66,7 @@ module.exports = function (options) {
        *
        * See: http://webpack.github.io/docs/configuration.html#output-filename
        */
-      filename: '[name].bundle.js',
+      filename : '[name].bundle.js',
 
       /**
        * The filename of the SourceMaps for the JavaScript files.
@@ -73,20 +74,20 @@ module.exports = function (options) {
        *
        * See: http://webpack.github.io/docs/configuration.html#output-sourcemapfilename
        */
-      sourceMapFilename: '[name].map',
+      sourceMapFilename : '[name].map',
 
       /** The filename of non-entry chunks as relative path
        * inside the output.path directory.
        *
        * See: http://webpack.github.io/docs/configuration.html#output-chunkfilename
        */
-      chunkFilename: '[id].chunk.js',
+      chunkFilename : '[id].chunk.js',
 
-      library: 'ac_[name]',
-      libraryTarget: 'var',
+      library : 'ac_[name]',
+      libraryTarget : 'var',
     },
 
-    plugins: [
+    plugins : [
 
       /**
        * Plugin: DefinePlugin
@@ -99,15 +100,16 @@ module.exports = function (options) {
        */
       // NOTE: when adding more properties, make sure you include them in custom-typings.d.ts
       new DefinePlugin({
-        'ENV': JSON.stringify(METADATA.ENV),
-        'HMR': METADATA.HMR,
-        'DOCKER': DOCKER,
-        'DOCKER_COMPOSE': DOCKER_COMPOSE
+        'ENV' : JSON.stringify(METADATA.ENV),
+        'HMR' : METADATA.HMR,
+        'DOCKER' : DOCKER,
+        'DOCKER_COMPOSE' : DOCKER_COMPOSE,
+        'PLAYGROUND_API' : JSON.stringify(PLAYGROUND_API)
         /* 'process.env': {
-          'ENV': JSON.stringify(METADATA.ENV),
-          'NODE_ENV': JSON.stringify(METADATA.ENV),
-          'HMR': METADATA.HMR,
-        } */
+         'ENV': JSON.stringify(METADATA.ENV),
+         'NODE_ENV': JSON.stringify(METADATA.ENV),
+         'HMR': METADATA.HMR,
+         } */
       }),
 
       /**
@@ -124,10 +126,8 @@ module.exports = function (options) {
        * See: https://gist.github.com/sokra/27b24881210b56bbaff7
        */
       new LoaderOptionsPlugin({
-        debug: true,
-        options: {
-
-        }
+        debug : true,
+        options : {}
       }),
 
     ],
@@ -140,13 +140,13 @@ module.exports = function (options) {
      *
      * See: https://webpack.github.io/docs/webpack-dev-server.html
      */
-    devServer: {
-      port: METADATA.port,
-      host: METADATA.host,
-      historyApiFallback: true,
-      watchOptions: {
-        aggregateTimeout: 300,
-        poll: 1000
+    devServer : {
+      port : METADATA.port,
+      host : METADATA.host,
+      historyApiFallback : true,
+      watchOptions : {
+        aggregateTimeout : 300,
+        poll : 1000
       }
     },
 
@@ -156,13 +156,13 @@ module.exports = function (options) {
      *
      * See: https://webpack.github.io/docs/configuration.html#node
      */
-    node: {
-      global: true,
-      crypto: 'empty',
-      process: true,
-      module: false,
-      clearImmediate: false,
-      setImmediate: false
+    node : {
+      global : true,
+      crypto : 'empty',
+      process : true,
+      module : false,
+      clearImmediate : false,
+      setImmediate : false
     }
 
   });

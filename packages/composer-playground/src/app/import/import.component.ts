@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
@@ -11,7 +10,7 @@ const fabricComposerRepository = 'sample-networks';
 
 @Component({
   selector: 'sample-model',
-  templateUrl: 'import.component.html',
+  templateUrl: './import.component.html',
   styleUrls: ['./import.component.scss'.toString()]
 })
 export class ImportComponent implements OnInit {
@@ -23,7 +22,14 @@ export class ImportComponent implements OnInit {
   private repository: string = '';
   private gitHubAuthenticated: boolean = false;
   private oAuthEnabled: boolean = false;
+  private clientId: string = null;
   private chosenNetwork = null;
+  private expandInput: boolean = false;
+
+  private maxFileSize: number = 5242880;
+  private supportedFileTypes: string[] = ['.bna'];
+
+  private currentBusinessNetwork = null;
 
   constructor(private adminService: AdminService,
               private clientService: ClientService,
@@ -33,6 +39,9 @@ export class ImportComponent implements OnInit {
   }
 
   ngOnInit(): Promise<any> {
+    //TODO: try and do this when we close modal
+    this.currentBusinessNetwork = null;
+
     return this.adminService.ensureConnected()
       .then(() => {
         return this.clientService.ensureConnected();
@@ -42,7 +51,20 @@ export class ImportComponent implements OnInit {
       })
       .then((result) => {
         this.oAuthEnabled = result;
-        this.onShow();
+        if (result) {
+          return this.sampleBusinessNetworkService.getGithubClientId()
+            .then((clientId) => {
+              if (!clientId) {
+                //shouldn't get here as oauthEnabled should return false if client id not set but just incase
+                return this.activeModal.dismiss(new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID));
+              }
+
+              this.clientId = clientId;
+              this.onShow();
+            })
+        } else {
+          this.onShow();
+        }
       });
 
   }
@@ -66,33 +88,55 @@ export class ImportComponent implements OnInit {
     }
   }
 
+  private fileDetected(count) {
+    this.expandInput = true;
+  }
+
+
+  private fileLeft(count) {
+    if (count === 0) {
+      this.expandInput = false;
+    }
+  }
+
+  private fileAccepted(file: File) {
+    let fileReader = new FileReader();
+    fileReader.onload = () => {
+      let dataBuffer = Buffer.from(fileReader.result);
+      this.sampleBusinessNetworkService.getBusinessNetworkFromArchive(dataBuffer)
+        .then((businessNetwork) => {
+          this.currentBusinessNetwork = businessNetwork;
+          //needed for if browse file
+          this.expandInput = true;
+        })
+    };
+
+    fileReader.readAsArrayBuffer(file);
+  }
+
+  private fileRejected(reason: string) {
+    this.adminService.errorStatus$.next(reason);
+  }
+
+  private removeFile() {
+    this.expandInput = false;
+    this.currentBusinessNetwork = null;
+  }
+
   private deploy() {
     this.deployInProgress = true;
+    let deployPromise;
 
-    let deployPromise = new Promise((resolve) => {
+    if (this.currentBusinessNetwork) {
+      deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork)
+    } else {
+      deployPromise = this.deployFromGitHub();
+    }
 
-      if (this.owner !== '' && this.repository !== '') {
-        //This is for connecting to your own repository
-        return this.sampleBusinessNetworkService.getModelsInfo(this.owner, this.repository);
-      } else {
-        // we must be using fabric composer github
-        let chosenSampleNetwork = this.sampleNetworks.find((sampleNetwork) => {
-          return sampleNetwork.name === this.chosenNetwork;
-        });
-
-        resolve(chosenSampleNetwork);
-      }
-    });
-
-    deployPromise.then((chosenSampleNetwork) => {
-      let chosenOwner = this.owner !== '' ? this.owner : fabricComposerOwner;
-      let chosenRepository = this.repository !== '' ? this.repository : fabricComposerRepository;
-      return this.sampleBusinessNetworkService.deploySample(chosenOwner, chosenRepository, chosenSampleNetwork)
+    deployPromise.then(() => {
+      this.deployInProgress = false;
+      this.activeModal.close();
     })
-      .then(() => {
-        this.deployInProgress = false;
-        this.activeModal.close();
-      })
       .catch((error) => {
         if (error.message.includes('API rate limit exceeded')) {
           error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
@@ -102,6 +146,18 @@ export class ImportComponent implements OnInit {
         this.activeModal.dismiss(error);
       });
 
+
     return deployPromise;
+  }
+
+
+  private deployFromGitHub(): Promise < any > {
+    let chosenSampleNetwork = this.sampleNetworks.find((sampleNetwork) => {
+      return sampleNetwork.name === this.chosenNetwork;
+    });
+
+    let chosenOwner = this.owner !== '' ? this.owner : fabricComposerOwner;
+    let chosenRepository = this.repository !== '' ? this.repository : fabricComposerRepository;
+    return this.sampleBusinessNetworkService.deploySample(chosenOwner, chosenRepository, chosenSampleNetwork)
   }
 }

@@ -1,0 +1,10 @@
+instrumentation:
+    excludes:
+        - out/**
+        - scripts/**
+check:
+    global:
+        statements: 40
+        branches: 40
+        function: 50
+        lines: 40

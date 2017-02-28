@@ -1,7 +1,11 @@
 {
   "name": "composer-connector-web",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "The web client connector for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
@@ -59,8 +63,8 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.4.4",
-    "composer-runtime": "^0.4.4",
-    "composer-runtime-web": "^0.4.4"
+    "composer-common": "^0.4.5",
+    "composer-runtime": "^0.4.5",
+    "composer-runtime-web": "^0.4.5"
   }
 }
