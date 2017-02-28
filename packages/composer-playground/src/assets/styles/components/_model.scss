@@ -31,12 +31,12 @@
   }
 
   .modal-dialog {
-    margin: 100px auto;
+    margin: 30px auto;
     display: table;
     min-width: 450px;
+    max-width: 600px;
   }
 
-  // Actual modal
   .modal-content {
     position: relative;
     display: flex;
@@ -87,10 +87,12 @@
   }
 
   // Modal body
-  section {
+  .modal-body {
     position: relative;
     flex: 1 1 auto;
     padding: $space-medium;
+    display: flex;
+    flex-direction: column;
   }
 
   // Footer (for actions)

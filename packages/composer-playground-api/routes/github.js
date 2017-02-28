@@ -20,12 +20,13 @@ const express = require('express');
 const exec = require('child_process').exec;
 const Logger = require('composer-common').Logger;
 const request = require('request');
+const httpstatus = require('http-status');
 
 const LOG = Logger.getLog('github');
 
 let router = null;
 
-module.exports = () => {
+module.exports = (app) => {
 
     // Did we already create a router?
     if (router !== null) {
@@ -34,6 +35,8 @@ module.exports = () => {
 
     // Create a new router.
     router = express.Router();
+
+    app.use('/', router);
 
     /**
      * Check if environment has client id and secret in
@@ -61,7 +64,7 @@ module.exports = () => {
                 if (error !== null) {
                     LOG.error(error);
                     LOG.exit(method, null);
-                    next(error);
+                    res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error : error});
                 } else {
                     try {
                         let output = stdout.replace(/\n/g, '');
@@ -71,7 +74,7 @@ module.exports = () => {
                         res.status(200).json(result);
                     } catch (error) {
                         LOG.error(error);
-                        next(error);
+                        res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error : error.message});
                     }
                 }
             });
@@ -110,7 +113,7 @@ module.exports = () => {
             if (err || response.body.error) {
                 let error = err || response.body.error;
                 LOG.error({err : error}, 'Error occurred while attempting to exchange code for access token.');
-                return next(err);
+                return res.status(httpstatus.INTERNAL_SERVER_ERROR).json({error: err});
             }
 
             res.status(200).json(response.body);

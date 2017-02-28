@@ -23,6 +23,7 @@ export class SampleComponent implements OnInit {
   private repository: string = '';
   private gitHubAuthenticated: boolean = false;
   private oAuthEnabled: boolean = false;
+  private clientId: string = null;
 
   @ViewChild('modal') private modal;
 
@@ -47,6 +48,18 @@ export class SampleComponent implements OnInit {
       })
       .then((result) => {
         this.oAuthEnabled = result;
+        if(result) {
+          return this.sampleBusinessNetworkService.getGithubClientId()
+            .then((clientId)=> {
+              if (!clientId) {
+                this.error$.emit(new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID));
+                this.adminService.errorStatus$.next(this.sampleBusinessNetworkService.NO_CLIENT_ID);
+              }
+
+              this.clientId = clientId;
+            });
+
+        }
       });
 
   }
