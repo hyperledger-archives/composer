@@ -16,7 +16,6 @@
     "pretest": "npm run lint",
     "postlint": "npm run licchk",
     "licchk": "license-check",
-    "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage"
   },
   "repository": {
