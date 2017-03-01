@@ -11,8 +11,13 @@
   },
   "main": "server/server.js",
   "scripts": {
+    "start": "node .",
     "lint": "eslint .",
-    "start": "node ."
+    "pretest": "npm run lint",
+    "postlint": "npm run licchk",
+    "licchk": "license-check",
+    "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
+    "posttest": "istanbul check-coverage"
   },
   "repository": {
     "type": "git",
@@ -43,5 +48,29 @@
     "strong-error-handler": "^1.0.1",
     "touch": "^1.0.0",
     "yargs": "^6.6.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.8.1",
+    "ink-docstrap": "^1.3.0",
+    "jsdoc": "^3.4.2",
+    "license-check": "^1.1.5",
+    "loopback": "^2.35.0",
+    "mocha": "^3.1.2",
+    "sinon": "^1.17.6",
+    "sleep-promise": "^2.0.0"
+  },
+  "license-check-config": {
+    "src": [
+      "**/*.js",
+      "!./server/server.js",
+      "!./coverage/**/*",
+      "!./node_modules/**/*",
+      "!./out/**/*"
+    ],
+    "path": "header.txt",
+    "blocking": true,
+    "logInfo": false,
+    "logError": true
   }
 }
