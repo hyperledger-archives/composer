@@ -382,8 +382,17 @@ class ModelFile {
     /**
      * Get the filename for this model file. Note that this may be null.
      * @return {string} The filename for this model file
+     * @deprecated
      */
     getFileName() {
+        return this.fileName;
+    }
+
+    /**
+     * Get the filename for this model file. Note that this may be null.
+     * @return {string} The filename for this model file
+     */
+    getName() {
         return this.fileName;
     }
 
