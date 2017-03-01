@@ -246,14 +246,19 @@ class HLFConnectionManager extends ConnectionManager {
             .then((store) => {
                 client.setStateStore(store);
                 return store;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
             });
-
         }
 
         return result.then((store) => {
 
             // Create a CA client.
-            const caClient = HLFConnectionManager.createCAClient(connectOptions.ca, store);
+            const caClient = HLFConnectionManager.createCAClient(connectOptions.ca, {
+                path: connectOptions.keyValStore
+            });
 
             // Now we can create the connection.
             let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHub, caClient);
