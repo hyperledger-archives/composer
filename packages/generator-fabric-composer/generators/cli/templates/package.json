@@ -9,7 +9,7 @@
     "setupHLF": "scripts/setup.sh",
     "teardownHLF": "scripts/teardown.sh",
     "deployNetwork": "composer archive create --archiveFile <%= networkIdentifier %>.bna --moduleName <%= npmNetworkDependancy %> && composer network deploy --archiveFile  <%= networkIdentifier %>.bna  --enrollId <%= enrollmentId %> --enrollSecret <%= enrollmentSecret %> ",
-    "postinstall":"npm run teardownHLF && npm run setupHLF && npm run deployNetwork"
+    "install":"npm run teardownHLF && npm run setupHLF && npm run deployNetwork"
   },
   "keywords": [
     "blockchain",
