@@ -3,18 +3,31 @@
     <section>
       <h2>Assests</h2>
       <ul>
-        <li>
-          <h3>Vehicle</h3>
-          <div>org.acme.vehicle.auction</div>
+        <li *ngFor="let assetRegistry of assetRegistries" (click)="setChosenRegistry(assetRegistry)">
+          <h3>{{assetRegistry.name}}</h3>
+          <div>{{assetRegistry.id}}</div>
         </li>
-        <li>
-          <h3>Vehicle Listing</h3>
-          <div>org.acme.vehicle.auction</div>
+      </ul>
+    </section>
+    <section>
+      <h2>Participants</h2>
+      <ul>
+        <li *ngFor="let participantRegistry of participantRegistries" (click)="setChosenRegistry(participantRegistry)">
+          <h3>{{participantRegistry.name}}</h3>
+          <div>{{participantRegistry.id}}</div>
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h2>Transactions</h2>
+      <ul>
+        <li (click)="setChosenRegistry(transactionRegistry)">
+          <h3>All Transactions</h3>
         </li>
       </ul>
     </section>
   </section>
   <section>
-    <h1>Placeholder for test stuff</h1>
+   <registry [registry]="chosenRegistry"></registry>
   </section>
 </div>

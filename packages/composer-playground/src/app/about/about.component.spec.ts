@@ -3,12 +3,13 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
+
 import { AboutComponent } from './addidentity.component';
 
 describe('AboutComponent', () => {
     it ('is a test so tests pass', () => {
-      expect(true).toBeTruthy();
-    })
+      true.should.equal(true);
+    });
   // let component: AddIdentityComponent;
   // let fixture: ComponentFixture<AddIdentityComponent>;
 

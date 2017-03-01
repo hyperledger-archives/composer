@@ -1,9 +1,10 @@
-import { Component, ViewChild, EventEmitter, Input, Output } from '@angular/core';
+import {Component, ViewChild, EventEmitter, Input, Output} from '@angular/core';
 
-import { ClientService } from '../client.service';
-import { ConnectionProfileService } from '../connectionprofile.service';
-import { WalletService } from '../wallet.service';
-import { NotificationService } from '../notification.service';
+import {ClientService} from '../client.service';
+import {ConnectionProfileService} from '../connectionprofile.service';
+import {WalletService} from '../wallet.service';
+import {NotificationService} from '../notification.service';
+import {AlertService} from '../services/alert.service';
 
 @Component({
   selector: 'add-identity',
@@ -23,12 +24,11 @@ export class AddIdentityComponent {
   @Output('onHidden') private hidden$ = new EventEmitter();
   @Output('onError') private error$ = new EventEmitter();
 
-  constructor(
-    private clientService: ClientService,
-    private connectionProfileService: ConnectionProfileService,
-    private walletService: WalletService,
-    private notificationService: NotificationService
-  ) {
+  constructor(private clientService: ClientService,
+              private connectionProfileService: ConnectionProfileService,
+              private walletService: WalletService,
+              private notificationService: NotificationService,
+              private alertService: AlertService) {
 
   }
 
@@ -43,7 +43,7 @@ export class AddIdentityComponent {
 
   private add() {
     this.addInProgress = true;
-    this.clientService.busyStatus$.next('Adding identity ...');
+    this.alertService.busyStatus$.next('Adding identity ...');
     let connectionProfile;
     if (this.connectionProfileOverride) {
       connectionProfile = this.connectionProfileOverride;
@@ -60,13 +60,14 @@ export class AddIdentityComponent {
         }
       })
       .then(() => {
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
         this.added$.emit(this.userID);
         this.addInProgress = false;
       })
       .catch((error) => {
-        this.clientService.busyStatus$.next(null);
-        this.clientService.errorStatus$.next(error);
+        //TODO: is this needed?
+        this.alertService.busyStatus$.next(null);
+        this.alertService.errorStatus$.next(error);
         this.error$.emit(error);
         this.addInProgress = false;
       })
@@ -79,7 +80,9 @@ export class AddIdentityComponent {
         let subs = [
           this.hidden$.subscribe(() => {
             resolve();
-            subs.forEach((sub) => { sub.unsubscribe(); });
+            subs.forEach((sub) => {
+              sub.unsubscribe();
+            });
           })
         ];
         this.modal.show();
@@ -90,16 +93,22 @@ export class AddIdentityComponent {
         this.hidden$.subscribe(() => {
           if (!this.addInProgress) {
             resolve(null);
-            subs.forEach((sub) => { sub.unsubscribe(); });
+            subs.forEach((sub) => {
+              sub.unsubscribe();
+            });
           }
         }),
         this.added$.subscribe(() => {
           resolve(this.userID);
-          subs.forEach((sub) => { sub.unsubscribe(); });
+          subs.forEach((sub) => {
+            sub.unsubscribe();
+          });
         }),
         this.error$.subscribe((error) => {
           resolve(null);
-          subs.forEach((sub) => { sub.unsubscribe(); });
+          subs.forEach((sub) => {
+            sub.unsubscribe();
+          });
         })
       ];
     });

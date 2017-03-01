@@ -1,0 +1,8 @@
+<h1 *ngIf="_registry">{{_registry.name}}</h1>
+
+<div *ngIf="_registry" class="registryList">
+  <div *ngFor="let resource of resources">
+    <div>{{resource.getIdentifier()}}</div>
+    <div><pre>{{serialize(resource)}}</pre></div>
+  </div>
+</div>

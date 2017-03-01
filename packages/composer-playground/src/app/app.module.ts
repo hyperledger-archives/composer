@@ -21,6 +21,7 @@ import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { EditorComponent } from './editor';
 import { TestComponent } from './test';
+import { RegistryComponent } from './registry';
 import { AssetRegistriesComponent } from './assetregistries';
 import { AssetRegistryComponent, AddAssetComponent, UpdateAssetComponent, RemoveAssetComponent } from './assetregistry';
 import { ParticipantRegistriesComponent } from './participantregistries';
@@ -52,6 +53,7 @@ import { NotificationService } from './notification.service';
 import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.service';
 import { AboutService } from './services/about.service';
+import { AlertService } from './services/alert.service';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -89,6 +91,7 @@ type StoreType = {
     FileImporterComponent,
     EditorComponent,
     TestComponent,
+    RegistryComponent,
     AssetRegistriesComponent,
     AssetRegistryComponent,
     AddAssetComponent,
@@ -141,7 +144,8 @@ type StoreType = {
     NotificationService,
     InitializationService,
     SampleBusinessNetworkService,
-    AboutService
+    AboutService,
+    AlertService
   ]
 })
 export class AppModule {

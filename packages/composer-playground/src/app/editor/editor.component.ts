@@ -10,6 +10,7 @@ import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
 import {InitializationService} from '../initialization.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service'
+import {AlertService} from '../services/alert.service';
 
 import {AclFile, BusinessNetworkDefinition, ModelFile} from 'composer-common';
 
@@ -83,7 +84,8 @@ export class EditorComponent implements OnInit {
               private initializationService: InitializationService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+              private sampleBusinessNetworkService: SampleBusinessNetworkService,
+              private alertService: AlertService) {
 
               }
 
@@ -367,7 +369,7 @@ namespace ${this.addModelNamespace}`;
     }, (reason) => {
       //if no reason then we hit cancel
       if (reason) {
-        this.adminService.errorStatus$.next(reason);
+        this.alertService.errorStatus$.next(reason);
       }
     });
   }
@@ -388,7 +390,7 @@ namespace ${this.addModelNamespace}`;
     // Gets the definition for the currently deployed business network
 
     this.getCurrentDefinitionFiles();
-    this.clientService.busyStatus$.next('Deploying updated business network ...');
+    this.alertService.busyStatus$.next('Deploying updated business network ...');
     return Promise.resolve()
       .then(() => {
         if (this.deploying) {
@@ -426,11 +428,11 @@ namespace ${this.addModelNamespace}`;
         else{
           this.setCurrentFile(this.previousFile);
         }
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
       })
       .catch((error) => {
         this.deploying = false;
-        this.clientService.errorStatus$.next(error);
+        this.alertService.errorStatus$.next(error);
       });
   }
 

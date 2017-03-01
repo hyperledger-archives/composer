@@ -3,6 +3,19 @@
 
 .test {
   display: flex;
+  padding: $space-medium;
+
+  .side-bar-nav {
+    margin-right: $space-large;
+
+    h2 {
+      margin-bottom: $space-smedium;
+    }
+
+    section {
+      margin-bottom: $space-medium;
+    }
+  }
 
 
 }
