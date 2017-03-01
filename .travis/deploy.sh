@@ -125,8 +125,8 @@ else
 
     # Configure the Git repository and clean any untracked and unignored build files.
     git config user.name "Travis CI"
-    git config user.email "noreply@travis.ibm.com"
-    git checkout -b develop
+    git config user.email "noreply@travis-ci.org"
+    git checkout -b master
     git reset --hard
     git clean -d -f
 
@@ -137,7 +137,7 @@ else
     # Add the version number changes and push them to Git.
     git add .
     git commit -m "Automatic version bump to ${NEW_VERSION}"
-    git push origin develop
+    git push origin master
 
 fi
 date
