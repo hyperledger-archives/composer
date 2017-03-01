@@ -1,64 +1,57 @@
-/* tslint:disable:no-unused-variable */
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-//import {By}              from '@angular/platform-browser';
-//import {DebugElement}    from '@angular/core';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {
+  inject,
+  async,
+  TestBed,
+  ComponentFixture
+} from '@angular/core/testing';
+import {Component} from '@angular/core';
 
-import * as sinon from 'sinon';
-
+// Load the implementations that should be tested
 import {RegistryComponent} from './registry.component';
-//import {ClientService} from '../client.service';
+import {ClientService} from '../client.service';
 
-describe('RegistryComponent', () => {
-  let component: RegistryComponent;
+describe(`Registry`, () => {
+ /** let comp: RegistryComponent;
   let fixture: ComponentFixture<RegistryComponent>;
 
-  /** beforeEach(async(() => {
-     TestBed.configureTestingModule({
-       declarations: [ RegistryComponent ]
-     })
-     .compileComponents();
-   }));
+  let mockClientService;
+  let clientServiceStub;
 
-   beforeEach(() => {
-     fixture = TestBed.createComponent(RegistryComponent);
-     component = fixture.componentInstance;
-     fixture.detectChanges();
-   });**/
-
-  class MockClientService {
-
-    getBusinessNetwork = sinon.stub().returns({
-      getSerialiser: sinon.stub().returns({
-        toJson: sinon.stub().returns('a string')
-      })
-    });
-  }
-
+  // async beforeEach
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [RegistryComponent], // declare the test component
-      providers: [
-     //   { provide: ClientService, useValue: MockClientService },
-      ]
-    })
+    mockClientService = {
+      getCaz: () => {
+        return 'BOB'
+      }
+      // getBusinessNetwork : () => {
+      //   return {};
+      // }
+      //  user: { name: 'Test User'}
+    };
 
-   /**   .overrideComponent(RegistryComponent, {
-        set: {
-          providers: [
-            {provide: ClientService, useClass: MockClientService}
-          ]
-        }
-      })**/
+    //clientServiceStub = sinon.createStubInstance(ClientService);
+    //console.log(clientServiceStub);
+    // stub UserService for test purposes
+    /** let mockServiceStub = {
+      isLoggedIn: true,
+      user: { name: 'Test User'}
+    };**/
 
-      .compileComponents();
-
+  /**  TestBed.configureTestingModule({
+      declarations: [RegistryComponent],
+     providers: [{provide: ClientService, useValue: mockClientService}]
+    });
 
     fixture = TestBed.createComponent(RegistryComponent);
+    comp = fixture.componentInstance;
 
-    component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('should have default data', () => {
+   // let result = comp.loadResources();
+    console.log('CAZ BANANA CAKE');
+    //expect(result).toBe('BOB');
+   // result.should.equal('BOB');
+  });**/
 });

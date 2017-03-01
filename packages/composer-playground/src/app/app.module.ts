@@ -44,6 +44,7 @@ import { CodemirrorModule } from 'ng2-codemirror';
 
 
 import { FileDragDropDirective } from './directives/file-drag-drop';
+//import { CheckOverFlowDirective } from './directives/check-overflow';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';

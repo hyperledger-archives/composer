@@ -1,6 +1,57 @@
 @import '../../assets/styles/base/_colors.scss';
 @import '../../assets/styles/base/_variables.scss';
 
-.registry {
+registry {
+  .resource-list {
+    margin: $space-large 0;
 
+    .id {
+      width: 25%
+    }
+
+    .data {
+      width: 75%
+    }
+
+    .title {
+      display: flex;
+      padding: 0 $space-medium;
+    }
+
+    .resource-container {
+      background-color: $white;
+      margin: $space-small 0;
+      padding: $space-medium;
+      position: relative;
+
+      .resource-content {
+        display: flex;
+
+        pre {
+          margin: 0;
+          margin-top: $space-small;
+          max-height: 100px;
+          overflow: hidden;
+
+          @include transition(all);
+        }
+
+        &.expanded {
+          pre {
+            max-height: 500px;
+            overflow: visible;
+
+            @include transition(all);
+          }
+        }
+
+      }
+
+      button {
+        position: absolute;
+        left: 40%;
+        bottom: 5%;
+      }
+    }
+  }
 }
