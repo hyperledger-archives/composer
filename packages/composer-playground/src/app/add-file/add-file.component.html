@@ -23,7 +23,7 @@
        </div>
      </div>
    </div>
-   <form class="file-types-list" #f="ngForm" *ngIf="(!fileType && !currentFile) || (fileType && currentFile)">
+   <form class="file-types-list" #f="ngForm" *ngIf="((!fileType && !currentFile) || (fileType && currentFile)) && !expandInput">
     <div class="file-types-list-item">
       <input type="radio" id="file-type-cto" name="file-type" [(ngModel)]="fileType" value="cto"(change)="changeCurrentFileType()">
       <label class="radio-label" for="file-type-cto">Model File (.cto)</label>

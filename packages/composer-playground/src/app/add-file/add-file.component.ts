@@ -21,7 +21,7 @@ export class AddFileComponent implements OnInit {
   private expandInput: boolean = false;
 
   private maxFileSize: number = 5242880;
-  private supportedFileTypes: string[] = ['.js', '.cto', '.acl'];
+  private supportedFileTypes: string[] = ['.js', '.cto'];
 
   private addModelNamespace: string = 'org.acme.model';
   private addModelFileName: string = 'lib/org.acme.model.cto';
@@ -43,8 +43,9 @@ export class AddFileComponent implements OnInit {
 
   private fileLeft(count) {
     if (count === 0) {
-      this.expandInput = false;
+
     }
+    this.expandInput = false;
   }
 
   private fileAccepted(file: File) {
@@ -68,7 +69,7 @@ export class AddFileComponent implements OnInit {
             break;
         }
       } catch (error) {
-        this.activeModal.dismiss();
+        // this.activeModal.dismiss();
         return this.fileRejected(error);
       }
 
