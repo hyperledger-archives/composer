@@ -13,7 +13,7 @@ excerpt: Quickstart
 
 Check that your system has the required software (at the required versions) installed:
 
-**Operating Systems:** Ubuntu Linux 14.04 LTS (64-bit) or Mac OS 10.12
+**Operating Systems:** Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
 
 **Docker Engine:** Version 1.12.x
 
