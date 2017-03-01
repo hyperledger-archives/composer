@@ -42,3 +42,28 @@ $space-xlarge: 64px;
   transition-duration: .5s;
   transition-timing-function: ease;
 }
+
+@mixin gradient-text($gradient) {
+  @supports(mix-blend-mode: lighten) {
+    display: inline-block;
+    position: relative;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+
+      background: unquote($gradient);
+      pointer-events: none;
+    }
+
+    color: #000;
+    background: #fff;
+    mix-blend-mode: multiply;
+
+    &::before {
+      mix-blend-mode: screen;
+    }
+  }
+}
