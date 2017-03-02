@@ -19,17 +19,24 @@ Check that your system has the required software (at the required versions) inst
 
 **Docker-Compose:** Version 1.8.x
 
-**Node:** 4.6.x or 6.x
+**Node:** 6.x (note version 7 is not supported)
 
 **npm:** 4.0.x
+
+**git:** 2.9.x
 
 If you need to update or install anything please refer to the install guides:
 [Installing Prerequisites](../tasks/prerequisites.md)
 
-**Clone the Sample Applications Repository:**
+**Install the command line tools:**
 
 ```
 npm install -g composer-cli
+```
+
+**Clone the Sample Applications Repository:**
+
+```
 git clone https://github.com/fabric-composer/sample-applications.git
 ```
 
@@ -44,15 +51,16 @@ npm install
 
 ***npm install***
 
-`npm install` will run several scripts that are packaged into the getting-started repository. 
-
-<small>[Reference material](https://fabric-composer.github.io/reference/commands.html) for Composer CLI</small>
+`npm install` will run several scripts that are packaged into the getting-started repository.
 
 1. *scripts/download-hyperledger.sh* - This kills any docker images started with the */scripts/docker-compose.yml* file, remove the current default connection profile, *~/.composer-connection-profiles/defaultProfile* and pull the required Hyperledger Fabric base image.
 2. *scripts/start-hyperledger.sh* - This uses the */scripts/docker-compose.yml* by running `docker-compose up -d --build` to create a Hyperledger Fabric peer and memebership service docker container.
-3. `composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna` - using Composer CLI, create an archive of the *npm* module *digitalproperty-network* and *archive* it into a `digitalPropertyNetwork.bna`.
-4. `composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d` - Deploy the `digitalPropertyNetwork.bna` business network to the deployed fabric using the *defaultProfile* connection progfile.
-5. `composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d` - Lists the contents of a deployed business network.
+3. *composer archive create* - using Composer CLI, create an archive of the *npm* module *digitalproperty-network* and *archive* it into a *digitalPropertyNetwork.bna*.
+4. *composer network deploy* - Deploy the `digitalPropertyNetwork.bna` business network to the deployed fabric using the *defaultProfile* connection progfile.
+5. *composer network list* - Lists the contents of a deployed business network.
+
+
+There is [Reference material](https://fabric-composer.github.io/reference/commands.html) for Composer CLI
 
 **Run the Getting Started Application:**
 
@@ -115,7 +123,6 @@ info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition ob
 info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
 info: [Composer-GettingStarted] updateForSale Submitting transaction
 info: [Composer-GettingStarted] Transaction Submitted
-undefined
 info: [Composer-GettingStarted] Command completed successfully.
 info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.1
@@ -141,3 +148,7 @@ info: [Composer-GettingStarted] Command completed successfully.
 2. `node cli.js landregistry bootstrap` - Run the boostrap command included in getting-started to create two land titles owned by Fred Bloggs.
 3. `node cli.js landregistry list` - Run the list command included the getting-started to lists all of the assets in the LandTitles asset registry.
 4. `node cli.js landregistry submit` - Run the submit command included the getting-started to submit a transaction that changes LandTitle *LID:6789*'s *ForSale* property to *Yes*.
+
+**Where next?**
+
+* Learn more about the Digital Property Network and running the tests in the first [Getting Started Tutorial](./getting-started-cmd-line.md)
