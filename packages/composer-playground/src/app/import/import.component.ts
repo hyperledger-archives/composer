@@ -41,7 +41,7 @@ export class ImportComponent implements OnInit {
   }
 
   ngOnInit(): Promise<any> {
-    //TODO: try and do this when we close modal
+    // TODO: try and do this when we close modal
     this.currentBusinessNetwork = null;
 
     return this.adminService.ensureConnected()
@@ -57,8 +57,11 @@ export class ImportComponent implements OnInit {
           return this.sampleBusinessNetworkService.getGithubClientId()
             .then((clientId) => {
               if (!clientId) {
-                //shouldn't get here as oauthEnabled should return false if client id not set but just incase
-                return this.activeModal.dismiss(new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID));
+                // shouldn't get here as oauthEnabled should return false
+                // if client id not set but just incase
+                return this.activeModal.dismiss(
+                  new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID)
+                );
               }
 
               this.clientId = clientId;
@@ -75,7 +78,8 @@ export class ImportComponent implements OnInit {
     this.gitHubInProgress = true;
     this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
     if (this.gitHubAuthenticated) {
-      return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner, fabricComposerRepository)
+      return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner,
+                                                             fabricComposerRepository)
         .then((modelsInfo) => {
           this.sampleNetworks = modelsInfo;
           this.gitHubInProgress = false;
@@ -86,7 +90,7 @@ export class ImportComponent implements OnInit {
           }
 
           this.activeModal.dismiss(error);
-        })
+        });
     }
   }
 
@@ -108,9 +112,9 @@ export class ImportComponent implements OnInit {
       this.sampleBusinessNetworkService.getBusinessNetworkFromArchive(dataBuffer)
         .then((businessNetwork) => {
           this.currentBusinessNetwork = businessNetwork;
-          //needed for if browse file
+          // needed for if browse file
           this.expandInput = true;
-        })
+        });
     };
 
     fileReader.readAsArrayBuffer(file);
