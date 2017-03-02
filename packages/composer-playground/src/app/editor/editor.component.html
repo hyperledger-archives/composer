@@ -42,7 +42,7 @@
           </ul>
         </div>
         <div class="add-file">
-          <button class="action" type="button">+ Add a file...</button>
+          <button class="action" type="button" (click)="openAddFileModal()">+ Add a file...</button>
         </div>
         <div>
           <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || currentError">
