@@ -21,24 +21,25 @@ Let's check the assets that are in the Digital Land Title registries. From your 
 ```bash
 $ npm run listAssets
 
-> concerto-gettingstarted@1.0.0 listAssets /home/matthew/git17/Concerto-GettingStarted
+> getting-started@1.0.0 listAssets /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry list
 
-info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
-info: [Handel] listTitles Getting the asset registry
-info: [Handel] listTitles Getting all assest from the registry.
-info: [Handel] listTitles Current Land Titles
-info: [Handel] Titles listed
-info: [Handel]
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ Yes     │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: [Handel] Command completed successfully.
+info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
+info: [Composer-GettingStarted] listTitles Getting the asset registry
+info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
+info: [Composer-GettingStarted] listTitles Current Land Titles
+info: [Composer-GettingStarted] Titles listed
+info: [Composer-GettingStarted]
+┌──────────┬────────────────┬────────────┬─────────┬──────────────────────────────────────────────────────────┬─────────┐
+│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                                              │ ForSale │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country Updated at: Thu, 02 Mar 2017 │ Yes     │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city                                 │ No      │
+└──────────┴────────────────┴────────────┴─────────┴──────────────────────────────────────────────────────────┴─────────┘
+info: [Composer-GettingStarted] Command completed successfully.
+
 
 ```
 
@@ -56,6 +57,7 @@ npm install -g composer-rest-server
 
 ## Running the REST server
 You should now be able to run the Fabric Composer REST server.
+
 ```bash
 composer-rest-server
 ```
@@ -64,7 +66,7 @@ You will then be asked to enter a few simple details about your business network
 
 ```bash
   _____           _              _                   ____                                                         
- |  ___|   __ _  | |__    _ __  (_)   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __ 
+ |  ___|   __ _  | |__    _ __  (_)   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __
  | |_     / _` | | '_ \  | '__| | |  / __|  _____  | |      / _ \  | '_ ` _ \  | '_ \   / _ \  / __|  / _ \ | '__|
  |  _|   | (_| | | |_) | | |    | | | (__  |_____| | |___  | (_) | | | | | | | | |_) | | (_) | \__ \ |  __/ | |   
  |_|      \__,_| |_.__/  |_|    |_|  \___|          \____|  \___/  |_| |_| |_| | .__/   \___/  |___/  \___| |_|   
@@ -73,9 +75,6 @@ You will then be asked to enter a few simple details about your business network
 ? Enter your Business Network Identifier : digitalproperty-network
 ? Enter your Fabric username : WebAppAdmin
 ? Enter your secret: DJY27pEnl16d
-WARNING: No configurations found in configuration directory:/Users/samsmith/Projects/BlockChain/Composer/fabric-composer/packages/composer-rest-server/config
-WARNING: To disable this warning set SUPPRESS_NO_CONFIG_WARNING in the environment.
-CONNECTING...{"name":"Composer","connector":"loopback-connector-composer","connectionProfileName":"defaultProfile","businessNetworkIdentifier":"digitalproperty-network","participantId":"WebAppAdmin","participantPwd":"DJY27pEnl16d","debug":false}
 Loopback Connector for Fabric Composer
 Models Loaded Now
 Browse your REST API at http://0.0.0.0:3000/explorer
@@ -100,7 +99,14 @@ You'll see a list of land titles presented as a set of JSON
 
 ![LoopBack-4](./images/loopback-4.png)
 
-Similarly it's quite easy to issue the curl command from a terminal prompt. This can be copied from the LoopBack web page.
+Similarly it's quite easy to issue the curl command from a terminal prompt. This can be copied from the LoopBack web page. To help format the JSON ouptut so it's easier to read install the *prettyjson* package.
+
+```bash
+$ npm install -g prettyjson
+```
+
+Then issue the curl command.
+
 
 ```bash
 $ curl -X GET --header "Accept: application/json" "http://0.0.0.0:3000/api/net.biz.digitalPropertyNetwork.LandTitle" | prettyjson
@@ -114,7 +120,7 @@ $ curl -X GET --header "Accept: application/json" "http://0.0.0.0:3000/api/net.b
     personId:  PID:1234567890
     firstName: Fred
     lastName:  Bloggs
-  information: A nice house in the country
+  information: A nice house in the country Updated at: Thu, 02 Mar 2017
   forSale:     true
   $class:      net.biz.digitalPropertyNetwork.LandTitle
 -
@@ -142,25 +148,24 @@ You'll see now that the other land title has been marked for sale.
 ```bash
 $ npm run listAssets
 
-> concerto-gettingstarted@1.0.0 listAssets /home/matthew/git17/Concerto-GettingStarted
+> getting-started@1.0.0 listAssets /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry list
 
-info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
-info: [Handel] listTitles Getting the asset registry
-info: [Handel] listTitles Getting all assest from the registry.
-info: [Handel] listTitles Current Land Titles
-info: [Handel] Titles listed
-info: [Handel]
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ Yes     │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ Yes     │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: [Handel] Command completed successfully.
-
+info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
+info: [Composer-GettingStarted] listTitles Getting the asset registry
+info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
+info: [Composer-GettingStarted] listTitles Current Land Titles
+info: [Composer-GettingStarted] Titles listed
+info: [Composer-GettingStarted]
+┌──────────┬────────────────┬────────────┬─────────┬──────────────────────────────────────────────────────────┬─────────┐
+│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                                              │ ForSale │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country Updated at: Thu, 02 Mar 2017 │ Yes     │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city Updated at: Thu, 02 Mar 2017    │ Yes     │
+└──────────┴────────────────┴────────────┴─────────┴──────────────────────────────────────────────────────────┴─────────┘
+info: [Composer-GettingStarted] Command completed successfully.
 ```
 
 #Summary

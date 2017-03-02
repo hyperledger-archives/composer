@@ -1,32 +1,69 @@
 /* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
+import { AboutComponent } from './about.component';
+import { AboutService } from '../services/about.service';
 
-import { AboutComponent } from './addidentity.component';
+const MOCK_RETURN = {
+          'playground': {
+            name: 'playground',
+            version: '1'
+          },
+          'common': {
+            name: 'composer-common',
+            version: '2'
+          },
+          'client': {
+            name: 'composer-client',
+            version: '3'
+          },
+          'admin': {
+            name: 'composer-admin',
+            version: '4'
+          }
+};
+
+class MockAboutService {
+    public getVersions(): Promise<any> {
+        return Promise.resolve(MOCK_RETURN);
+    }
+}
 
 describe('AboutComponent', () => {
-    it ('is a test so tests pass', () => {
-      true.should.equal(true);
+
+    let component: AboutComponent;
+    let fixture: ComponentFixture<AboutComponent>;
+    let de: DebugElement;
+    let el: HTMLElement;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+            declarations: [ AboutComponent ],
+            providers: [{ provide: AboutService, useClass: MockAboutService }]
+        });
+
+      fixture = TestBed.createComponent(AboutComponent);
+
+      // query for the title <h2> by CSS element selector
+      de = fixture.debugElement.query(By.css('h2'));
+      el = de.nativeElement;
     });
-  // let component: AddIdentityComponent;
-  // let fixture: ComponentFixture<AddIdentityComponent>;
 
-  // beforeEach(async(() => {
-  //   TestBed.configureTestingModule({
-  //     declarations: [ AddIdentityComponent ]
-  //   })
-  //   .compileComponents();
-  // }));
+    it ('Should display the correct title for the AboutComponent', () => {
+        fixture.detectChanges();
+        expect(el.textContent).toContain('About');
+    })
 
-  // beforeEach(() => {
-  //   fixture = TestBed.createComponent(AddIdentityComponent);
-  //   component = fixture.componentInstance;
-  //   fixture.detectChanges();
-  // });
-
-  // it('should create', () => {
-  //   expect(component).toBeTruthy();
-  // });
+    it ('Should call getVersions when the component is created', fakeAsync(() => {
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+        expect(fixture.componentInstance.playground).toBe(MOCK_RETURN.playground);
+        expect(fixture.componentInstance.common).toBe(MOCK_RETURN.common);
+        expect(fixture.componentInstance.client).toBe(MOCK_RETURN.client);
+        expect(fixture.componentInstance.admin).toBe(MOCK_RETURN.admin);
+    }))
 });
