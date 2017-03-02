@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage",
-    "postinstall": "node copysdk.js && cd node_modules/fabric-client && npm install && cd ../fabric-ca-client && npm install"
+    "postinstall": "cd node_modules/fabric-sdk-node && npm install && gulp ca && cd ../.. && node copysdk.js && cd node_modules/fabric-client && npm install && cd ../fabric-ca-client && npm install && npm install grpc"
   },
   "repository": {
     "type": "git",
@@ -63,6 +63,7 @@
     "mocha": "^3.1.2",
     "moment": "^2.16.0",
     "sinon": "^1.17.6",
-    "sinon-as-promised": "^4.0.2"
+    "sinon-as-promised": "^4.0.2",
+    "gulp": "3.9.1"
   }
 }
