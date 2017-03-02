@@ -62,7 +62,7 @@ All the resources and scripts you'll need are in a git repository that we'll clo
 
 The first thing to do is to ensure that you have a suitable system ready for development.
 
-**Ensure that you have followed the steps in our [Quickstart](./quickstart.md) before continuing!** 
+**Ensure that you have followed the steps in our [Quickstart](./quickstart.md) before continuing!**
 
 Let's go ahead and make a change to start to show how easy it is to develop with Fabric Composer.
 
@@ -113,9 +113,9 @@ Looking for package.json of Business Network Definition in /home/matthew/git17/D
 
 Description:Digital Property Network
 Name:digitalproperty-network
-Identifier:digitalproperty-network-0.0.1
+Identifier:digitalproperty-network-0.0.22
 
-Written Business Network Definition Archive file to digitalproperty-network-0.0.1.bna
+Written Business Network Definition Archive file to digitalproperty-network-0.0.22.bna
 Command completed successfully.
 ```
 
@@ -124,10 +124,10 @@ We now have a new file that is the digital business network archive.
 ### Update the deployed business network
 
 ```bash
-$ composer network update --archiveFile digitalproperty-network@0.0.1.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-Deploying business network from archive digitalproperty-network-0.0.1.bna
+$ composer network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+Deploying business network from archive digitalproperty-network-0.0.22.bna
 Business network definition:
-	Identifier: digitalproperty-network-0.0.1
+	Identifier: digitalproperty-network-0.0.22
 	Description: Digital Property Network
 Updating business network definition. This may take a few seconds...
 Command completed successfully.
@@ -138,7 +138,7 @@ If you go back to the getting started directory now - and list all the commands 
 
 ```bash
 $ npm run
-Lifecycle scripts included in composer-gettingstarted:
+Lifecycle scripts included in getting-started:
   test
     mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
   install
@@ -158,7 +158,7 @@ available via `npm run-script`:
   teardownHLF
     scripts/teardown.sh
   deployNetwork
-    composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna && composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+    composer archive create --sourceName digitalproperty-network --sourceType module --archiveFile digitalPropertyNetwork.bna && composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d && composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
 ```
 
@@ -167,17 +167,31 @@ If you issue this command, that will submit a transaction as before - but import
 ```
 $ npm run submitTransaction
 
-> composer-gettingstarted@1.0.0 submitTransaction
+> getting-started@1.0.0 submitTransaction /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry submit && node cli.js landregistry list
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started application
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
+info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
 info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
 info: [Composer-GettingStarted] updateForSale Submitting transaction
 info: [Composer-GettingStarted] Transaction Submitted
+undefined
 info: [Composer-GettingStarted] Command completed successfully.
-info: [Composer-GettingStarted] Fabric Composer: Getting Started application
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network-0.0.11
+info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
+info: [Composer-GettingStarted] listTitles Getting the asset registry
+info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
+info: [Composer-GettingStarted] listTitles Current Land Titles
+info: [Composer-GettingStarted] Titles listed
+info: [Composer-GettingStarted]
+┌──────────┬────────────────┬────────────┬─────────┬──────────────────────────────────────────────────────────┬─────────┐
+│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                                              │ ForSale │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country Updated at: Thu, 02 Mar 2017 │ Yes     │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city                                 │ No      │
+└──────────┴────────────────┴────────────┴─────────┴──────────────────────────────────────────────────────────┴─────────┘
+
 ```
 
 ## Digging Deeper
