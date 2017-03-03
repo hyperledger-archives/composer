@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Fabric Composer Participant Add Command | Fabric Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Merriweather:300|Open+Sans:300,400,700|PT+Sans:400,700|Playfair+Display|Source+Code+Pro" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-91314349-1', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <!-- <link href="/assets/css/new-style.min.css" rel="stylesheet"> -->
+  
+
+  <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
+</head>
+
+
+<body class="">
+
+  
+  
+
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html">Fabric Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="/start/quickstart.html">Quickstart</a>
+                </li>
+                <li>
+                    <a href="/overview/overview.html">Documentation</a>
+                </li>
+                <!-- <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/overview/overview.html">Overview</a>
+                        </li>
+                        <li>
+                            <a href="/start/index.html">Getting Started</a>
+                        </li>
+                        <li>
+                            <a href="/concepts/index.html">Concepts</a>
+                        </li>
+                        <li>
+                            <a href="/tasks/index.html">Tasks</a>
+                        </li>
+                        <li>
+                            <a href="/reference/index.html">Reference</a>
+                        </li>
+                        <li>
+                            <a href="/jsdoc/index.html">API Documentation</a>
+                        </li>
+                    </ul>
+                </li> -->
+                <li>
+                    <a href="/support/index.html">Support</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-2">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="/start/quickstart.html">Quickstart</a></strong>
+<strong><a href="/overview/overview.html">Overview</a></strong>
+<strong><a href="/start/getting-started-cmd-line.html">Getting Started</a></strong>
+<strong><a href="/concepts/businessnetwork.html">Concepts</a></strong>
+<strong><a href="/tasks/prerequisites.html">Tasks</a></strong>
+<strong><a href="/jsdoc/index.html">API Documentation</a></strong>
+<strong><a href="/reference/MeetTheModules.html">Reference</a></strong>
+<a href="/reference/MeetTheModules.html">Meet the Modules</a>
+<a href="/reference/platforms.html">Supported Platforms</a>
+<a href="/reference/cto_language.html">Modeling Language</a>
+<a href="/reference/acl_language.html">Access Control Language</a>
+<a href="/reference/connectionprofile.html">Connection Profile</a>
+<a href="/reference/js_scripts.html">Transaction Processor Functions</a>
+<a href="/reference/commands.html">Command Line Interface</a>
+<a href="/reference/composer.generator.tests.html">Application Generator</a>
+<a href="/reference/composer.participant.add.html">CLI Add Participant</a>
+<a href="/reference/composer.identity.issue.html">CLI Issue Identity </a>
+<a href="/reference/composer.identity.revoke.html">CLI Revoke Identity</a>
+<a href="/jsdoc/index.html">API Documentation</a>
+<a href="/reference/glossary.html">Glossary</a>
+<strong><a href="/support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-10">
+          <section class="content-chunk">
+            
+              <h1 id="composer-participant-add">Composer participant add</h1>
+
+<hr>
+
+<p>The <code>composer participant add</code> command adds a new instance of a participant to a
+participant registry. See the task <a href="../tasks/participant-add.html">Add a Participant</a>
+for a walkthrough of using this command or the API.</p>
+
+<h2 id="syntax">Syntax</h2>
+<div class="highlight"><pre><code class="language-" data-lang="">$ composer participant add
+composer participant add [options]
+
+Options:
+  --help                       Show help  [boolean]
+  --connectionProfileName, -p  The connection profile name  [string]
+  --businessNetworkName, -n    The business network name  [string] [required]
+  --enrollId, -i               The enrollment ID of the user  [string] [required]
+  --enrollSecret, -s           The enrollment secret of the user  [string]
+  --data, -d                   Serialized participant JSON object as a string  [string] [required]
+</code></pre></div>
+<h2 id="options">Options</h2>
+
+<p><code>--connectionProfileName, -p</code></p>
+
+<p>The connection profile name.<br>
+Example: <code>defaultProfile</code></p>
+
+<p><code>--businessNetworkName, -n</code></p>
+
+<p>The name of the deployed Business Network to connect to.<br>
+Example:
+<code>digitalproperty-network</code></p>
+
+<p><code>--enrollId, -i</code></p>
+
+<p>The enrollment ID of the identity that should be used to connect to the deployed
+Business Network.
+Example: <code>maeid1</code></p>
+
+<p><code>--enrollSecret, -s</code></p>
+
+<p>The enrollment secret of the identity that should be used to connect to deployed
+Business Network.<br>
+Example: <code>Xurw3yU9zI0l</code></p>
+
+<p><code>--data, -d</code></p>
+
+<p>The serialized JSON representation of the participant to add to the participant
+registry. The data must be valid according to the model of the participant.<br>
+Example: <code>{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Person&quot;,&quot;personId&quot;:&quot;mae@biznet.org&quot;,&quot;firstName&quot;:&quot;Mae&quot;,&quot;lastName&quot;:&quot;Smith&quot;}</code></p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+    </article>
+</div>
+
+    
+
+    
+    
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+    <div class="container">
+      <div class="navbar-fixed-bottom">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+      </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+          <ul class="nav navbar-nav navbar-left">
+            <li>
+              <a href="https://twitter.com/ibmblockchain" class="icon">
+                <img src="/assets/img/social-twitter.svg" class="SiteFooter-icon" alt="Twitter">
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/fabric-composer/fabric-composer" class="icon">
+                <img src="/assets/img/social-github.svg" class="SiteFooter-icon" alt="Github">
+              </a>
+            </li>
+            <li>
+              <a href="http://stackoverflow.com/questions/tagged/fabric-composer" class="icon">
+              <i class="fa fa-stack-overflow icon" aria-hidden="true"></i>
+              </a>
+            </li>
+            <li>
+              <a href="/jsdoc/index.html">APIs</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+              <li>
+                  <a>Copyright 2017 IBM Corp. All Rights Reserved</a>
+              </li>
+          </ul>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+      new Clipboard(".btn");
+  });
+
+</script>
+
+</html>

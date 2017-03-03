@@ -4,6 +4,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
+import {AlertService} from '../services/alert.service';
 
 const fabricComposerOwner = 'fabric-composer';
 const fabricComposerRepository = 'sample-networks';
@@ -34,12 +35,13 @@ export class ImportComponent implements OnInit {
   constructor(private adminService: AdminService,
               private clientService: ClientService,
               public activeModal: NgbActiveModal,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+              private sampleBusinessNetworkService: SampleBusinessNetworkService,
+              private alertService: AlertService) {
 
   }
 
   ngOnInit(): Promise<any> {
-    //TODO: try and do this when we close modal
+    // TODO: try and do this when we close modal
     this.currentBusinessNetwork = null;
 
     return this.adminService.ensureConnected()
@@ -55,8 +57,11 @@ export class ImportComponent implements OnInit {
           return this.sampleBusinessNetworkService.getGithubClientId()
             .then((clientId) => {
               if (!clientId) {
-                //shouldn't get here as oauthEnabled should return false if client id not set but just incase
-                return this.activeModal.dismiss(new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID));
+                // shouldn't get here as oauthEnabled should return false
+                // if client id not set but just incase
+                return this.activeModal.dismiss(
+                  new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID)
+                );
               }
 
               this.clientId = clientId;
@@ -73,7 +78,8 @@ export class ImportComponent implements OnInit {
     this.gitHubInProgress = true;
     this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
     if (this.gitHubAuthenticated) {
-      return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner, fabricComposerRepository)
+      return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner,
+                                                             fabricComposerRepository)
         .then((modelsInfo) => {
           this.sampleNetworks = modelsInfo;
           this.gitHubInProgress = false;
@@ -84,7 +90,7 @@ export class ImportComponent implements OnInit {
           }
 
           this.activeModal.dismiss(error);
-        })
+        });
     }
   }
 
@@ -106,16 +112,16 @@ export class ImportComponent implements OnInit {
       this.sampleBusinessNetworkService.getBusinessNetworkFromArchive(dataBuffer)
         .then((businessNetwork) => {
           this.currentBusinessNetwork = businessNetwork;
-          //needed for if browse file
+          // needed for if browse file
           this.expandInput = true;
-        })
+        });
     };
 
     fileReader.readAsArrayBuffer(file);
   }
 
   private fileRejected(reason: string) {
-    this.adminService.errorStatus$.next(reason);
+    this.alertService.errorStatus$.next(reason);
   }
 
   private removeFile() {

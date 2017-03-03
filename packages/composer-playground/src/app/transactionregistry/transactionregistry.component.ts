@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import leftPad = require('left-pad');
 
 import { SubmitTransactionComponent } from './submittransaction';
 import { ClientService } from '../client.service';
 import { InitializationService } from '../initialization.service';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-transactionregistry',
@@ -20,9 +20,9 @@ export class TransactionRegistryComponent implements OnInit {
   @ViewChild(SubmitTransactionComponent) private submitTransactionComponent: SubmitTransactionComponent;
 
   constructor(
-    private route: ActivatedRoute,
     private clientService: ClientService,
-    private initializationService: InitializationService
+    private initializationService: InitializationService,
+    private alertService: AlertService
   ) {
 
   }
@@ -49,7 +49,7 @@ export class TransactionRegistryComponent implements OnInit {
         });
       })
       .catch((error) => {
-        this.clientService.errorStatus$.next(error);
+        this.alertService.errorStatus$.next(error);
       });
   }
 

@@ -1,27 +1,42 @@
-<div class="test">
-  <section class="side-bar-nav">
-    <section>
-      <h2>Assets</h2>
+<section class="side-bar">
+  <div class="registries">
+    <span>Assests</span>
+    <section class="side-bar-nav">
       <ul>
-        <li>
-          <h3>Vehicle</h3>
-          <div>org.acme.vehicle.auction</div>
-        </li>
-        <li>
-          <h3>Vehicle Listing</h3>
-          <div>org.acme.vehicle.auction</div>
+        <li *ngFor="let assetRegistry of assetRegistries">
+          <h3>{{assetRegistry.displayName}}</h3>
+          <div>{{assetRegistry.id}}</div>
         </li>
       </ul>
     </section>
-  </section>
-  <section>
-    <div>
-      <h1>Placeholder for test stuff</h1>
+
+    <span>Participants</span>
+    <section class="side-bar-nav">
+      <ul>
+        <li *ngFor="let participantRegistry of participantRegistries">
+          <h3>{{participantRegistry.displayName}}</h3>
+          <div>{{participantRegistry.id}}</div>
+        </li>
+      </ul>
+    </section>
+
+    <span>Transactions</span>
+    <section class="side-bar-nav">
+      <ul>
+        <li>
+          <h3>All Transactions</h3>
+        </li>
+      </ul>
+    </section>
+  </div>
+</section>
+<section class="main-view">
+  <div>
+      <h1>Registry</h1>
     </div>
     <div class="create-resource-button">
       <button type="button" class="secondary" (click)="openNewResourceModal()">
-        <span>+ Create New Resource</span>
+        <span>+ Create New</span>
       </button>
    </div>
-  </section>
-</div>
+</section>

@@ -4,6 +4,7 @@ import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { AdminService } from './admin.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
+import { AlertService } from './services/alert.service'
 
 import { BusinessNetworkConnection } from 'composer-client';
 import { BusinessNetworkDefinition, Util } from 'composer-common';
@@ -15,13 +16,11 @@ export class ClientService {
   private isConnected: boolean = false;
   private connectingPromise: Promise<any> = null;
 
-  public busyStatus$: Subject<string> = new BehaviorSubject<string>(null);
-  public errorStatus$: Subject<string> = new BehaviorSubject<string>(null);
-
   constructor(
     private adminService: AdminService,
     private connectionProfileService: ConnectionProfileService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private alertService: AlertService
   ) {
     this.businessNetworkConnection = new BusinessNetworkConnection();
   }
@@ -41,7 +40,7 @@ export class ClientService {
       return this.connectingPromise;
     }
     let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-    this.busyStatus$.next('Establishing client connection ...');
+    this.alertService.busyStatus$.next('Establishing client connection ...');
     console.log('Connecting to connection profile', connectionProfile);
     let userID;
     this.connectingPromise = this.adminService.ensureConnected()
@@ -62,7 +61,7 @@ export class ClientService {
         this.connectingPromise = null;
       })
       .catch((error) => {
-        this.busyStatus$.next(`Failed to connect: ${error}`);
+        this.alertService.busyStatus$.next(`Failed to connect: ${error}`);
         this.isConnected = false;
         this.connectingPromise = null;
         throw error;

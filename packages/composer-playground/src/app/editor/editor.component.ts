@@ -1,17 +1,19 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import {ImportComponent} from '../import/import.component';
-import {ExportComponent} from '../export/export.component';
+import { ImportComponent } from '../import/import.component';
+import { ExportComponent } from '../export/export.component';
+import { AddFileComponent } from '../add-file/add-file.component';
 
-import {AdminService} from '../admin.service';
-import {ClientService} from '../client.service';
-import {InitializationService} from '../initialization.service';
-import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service'
+import { AdminService } from '../admin.service';
+import { ClientService } from '../client.service';
+import { InitializationService } from '../initialization.service';
+import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
+import { AlertService } from '../services/alert.service';
 
-import {AclFile, BusinessNetworkDefinition, ModelFile} from 'composer-common';
+import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
 
 import { saveAs } from 'file-saver';
 
@@ -83,7 +85,8 @@ export class EditorComponent implements OnInit {
               private initializationService: InitializationService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+              private sampleBusinessNetworkService: SampleBusinessNetworkService,
+              private alertService: AlertService) {
 
               }
 
@@ -277,15 +280,21 @@ export class EditorComponent implements OnInit {
     this.files = newFiles;
   }
 
-  private addModelFile() {
+  private addModelFile(contents = null) {
     let businessNetworkDefinition = this.businessNetworkDefinition;
     let modelManager = businessNetworkDefinition.getModelManager();
-    let code =
-      `/**
- * New model file
- */
+    let code;
+    if (!contents) {
+      code =
+        `/**
+  * New model file
+  */
 
-namespace ${this.addModelNamespace}`;
+  namespace ${this.addModelNamespace}`;
+    } else {
+      code = contents;
+    }
+
     modelManager.addModelFile(code);
     this.updateFiles();
     this.files.forEach((file) => {
@@ -296,14 +305,21 @@ namespace ${this.addModelNamespace}`;
     this.dirty = true;
   }
 
-  private addScriptFile() {
+  private addScriptFile(scriptFile = null) {
     let businessNetworkDefinition = this.businessNetworkDefinition;
     let scriptManager = businessNetworkDefinition.getScriptManager();
-    let code =
-      `/**
- * New script file
- */`;
-    let script = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+    let code;
+    let script;
+    if (!scriptFile) {
+      code =
+        `/**
+  * New script file
+  */`;
+      script = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+    } else {
+      script = scriptFile;
+    }
+
     scriptManager.addScript(script);
     this.updateFiles();
     this.files.forEach((file) => {
@@ -365,18 +381,18 @@ namespace ${this.addModelNamespace}`;
         this.setCurrentFile(currentFile);
       }
     }, (reason) => {
-      //if no reason then we hit cancel
+      // if no reason then we hit cancel
       if (reason) {
-        this.adminService.errorStatus$.next(reason);
+        this.alertService.errorStatus$.next(reason);
       }
     });
   }
 
   private openExportModal(){
-
-
     return this.businessNetworkDefinition.toArchive().then((exportedData) => {
-         var file = new File([exportedData], this.deployedPackageName+'.bna', {type: "application/octet-stream"});
+         let file = new File([exportedData],
+                             this.deployedPackageName + '.bna',
+                             { type: 'application/octet-stream' });
       saveAs(file);
 
       this.modalService.open(ExportComponent);
@@ -384,11 +400,26 @@ namespace ${this.addModelNamespace}`;
     });
   }
 
+  private openAddFileModal() {
+    let modalRef = this.modalService.open(AddFileComponent);
+    modalRef.componentInstance.businessNetwork = this.businessNetworkDefinition;
+    modalRef.result
+    .then((result) => {;
+      if (result !== 0) {
+        if (result instanceof ModelFile) {
+          this.addModelFile(result);
+        } else {
+          this.addScriptFile(result);
+        }
+      }
+    }).catch(() => {}); // Ignore this, only there to prevent crash when closed
+  }
+
   private deploy(): Promise<any> {
     // Gets the definition for the currently deployed business network
 
     this.getCurrentDefinitionFiles();
-    this.clientService.busyStatus$.next('Deploying updated business network ...');
+    this.alertService.busyStatus$.next('Deploying updated business network ...');
     return Promise.resolve()
       .then(() => {
         if (this.deploying) {
@@ -426,11 +457,11 @@ namespace ${this.addModelNamespace}`;
         else{
           this.setCurrentFile(this.previousFile);
         }
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
       })
       .catch((error) => {
         this.deploying = false;
-        this.clientService.errorStatus$.next(error);
+        this.alertService.errorStatus$.next(error);
       });
   }
 
@@ -477,15 +508,6 @@ namespace ${this.addModelNamespace}`;
   }
 
   /*
-  * Swaps the toggle state if editing. Used for when the user selects outside of input boxes.
-  */
-  private toggleNotEditing(){
-    if(this.editActive){
-      this.editActive = !this.editActive;
-    }
-  }
-
-  /*
   * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
   */
   private editPackageName(){
@@ -498,6 +520,8 @@ namespace ${this.addModelNamespace}`;
         this.setCurrentFile(this.previousFile);
       }
     });
+
+    this.editActive = false;
   }
 
   /*
@@ -513,6 +537,8 @@ namespace ${this.addModelNamespace}`;
         this.setCurrentFile(this.previousFile);
       }
     });
+
+    this.editActive = false;
   }
 
   private hideEdit(){

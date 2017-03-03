@@ -36,6 +36,7 @@ import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
+import { AddFileComponent } from './add-file';
 
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
@@ -53,6 +54,7 @@ import { NotificationService } from './notification.service';
 import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.service';
 import { AboutService } from './services/about.service';
+import { AlertService } from './services/alert.service';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -84,7 +86,8 @@ type StoreType = {
     ImportComponent,
     ExportComponent,
     ErrorComponent,
-    ResourceComponent
+    ResourceComponent,
+    AddFileComponent
   ],
   declarations: [
     AppComponent,
@@ -116,7 +119,8 @@ type StoreType = {
     NoContentComponent,
     AboutComponent,
     FileDragDropDirective,
-    ResourceComponent
+    ResourceComponent,
+    AddFileComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
@@ -144,7 +148,8 @@ type StoreType = {
     NotificationService,
     InitializationService,
     SampleBusinessNetworkService,
-    AboutService
+    AboutService,
+    AlertService
   ]
 })
 export class AppModule {
