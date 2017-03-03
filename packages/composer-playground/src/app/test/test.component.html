@@ -1,33 +1,35 @@
-<div class="test">
-  <section class="side-bar-nav">
-    <section>
-      <h2>Assests</h2>
+<section class="side-bar">
+  <div class="registries">
+    <span>Assests</span>
+    <section class="side-bar-nav">
       <ul>
-        <li *ngFor="let assetRegistry of assetRegistries" (click)="setChosenRegistry(assetRegistry)">
-          <h3>{{assetRegistry.name}}</h3>
+        <li *ngFor="let assetRegistry of assetRegistries">
+          <h3>{{assetRegistry.displayName}}</h3>
           <div>{{assetRegistry.id}}</div>
         </li>
       </ul>
     </section>
-    <section>
-      <h2>Participants</h2>
+
+    <span>Participants</span>
+    <section class="side-bar-nav">
       <ul>
-        <li *ngFor="let participantRegistry of participantRegistries" (click)="setChosenRegistry(participantRegistry)">
-          <h3>{{participantRegistry.name}}</h3>
+        <li *ngFor="let participantRegistry of participantRegistries">
+          <h3>{{participantRegistry.displayName}}</h3>
           <div>{{participantRegistry.id}}</div>
         </li>
       </ul>
     </section>
-    <section>
-      <h2>Transactions</h2>
+
+    <span>Transactions</span>
+    <section class="side-bar-nav">
       <ul>
-        <li (click)="setChosenRegistry(transactionRegistry)">
+        <li>
           <h3>All Transactions</h3>
         </li>
       </ul>
     </section>
-  </section>
-  <section>
-   <registry [registry]="chosenRegistry"></registry>
-  </section>
-</div>
+  </div>
+</section>
+<section class="main-view">
+</section>
+

@@ -508,15 +508,6 @@ export class EditorComponent implements OnInit {
   }
 
   /*
-  * Swaps the toggle state if editing. Used for when the user selects outside of input boxes.
-  */
-  private toggleNotEditing(){
-    if(this.editActive){
-      this.editActive = !this.editActive;
-    }
-  }
-
-  /*
   * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
   */
   private editPackageName(){
@@ -529,6 +520,8 @@ export class EditorComponent implements OnInit {
         this.setCurrentFile(this.previousFile);
       }
     });
+
+    this.editActive = false;
   }
 
   /*
@@ -544,6 +537,8 @@ export class EditorComponent implements OnInit {
         this.setCurrentFile(this.previousFile);
       }
     });
+
+    this.editActive = false;
   }
 
   private hideEdit(){

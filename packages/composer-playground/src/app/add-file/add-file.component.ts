@@ -1,9 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AdminService } from '../admin.service';
-import { ClientService } from '../client.service';
 import { BusinessNetworkDefinition, ModelFile } from 'composer-common';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'add-file-model',
@@ -28,8 +27,7 @@ export class AddFileComponent implements OnInit {
   private addScriptFileName: string = 'lib/script.js';
 
   private error = null;
-  constructor(private adminService: AdminService,
-              private clientService: ClientService,
+  constructor(private alertService: AlertService,
               public activeModal: NgbActiveModal) {
 
   }
@@ -80,7 +78,7 @@ export class AddFileComponent implements OnInit {
   }
 
   private fileRejected(reason: string) {
-    this.adminService.errorStatus$.next(reason);
+    this.alertService.errorStatus$.next(reason);
   }
 
   private removeFile() {

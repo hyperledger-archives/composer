@@ -1,21 +1,39 @@
 @import '../../assets/styles/base/_colors.scss';
 @import '../../assets/styles/base/_variables.scss';
 
-.test {
+app-test {
   display: flex;
-  padding: $space-medium;
+  width: 100%;
+  height: 100vh;
 
-  .side-bar-nav {
-    margin-right: $space-large;
+  .side-bar {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
-    h2 {
-      margin-bottom: $space-smedium;
-    }
+    box-shadow: 5px 0 5px -5px #333;
 
-    section {
-      margin-bottom: $space-medium;
+    .registries {
+      & > * {
+        padding: $space-medium $space-large;
+      }
+      margin-top: $space-large;
+
+      span {
+        color: $secondary-text;
+        display: inline-block;
+      }
+
+      .side-bar-nav {
+        padding: 0;
+      }
     }
   }
 
-
+  .main-view {
+    background-color: $fourth-highlight;
+    width: 75%;
+    padding: $space-large $space-large $space-medium $space-large;
+  }
 }

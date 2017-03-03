@@ -1,21 +1,20 @@
 .composer {
   .side-bar-nav {
       li {
-        background-color: $third-highlight;
-        padding: $space-smedium;
-        padding-right: $space-large;
-        border-right: 2px solid transparent;
-
-        &:nth-child(even) {
-          background-color: $fourth-highlight;
-        }
+        padding: $space-smedium $space-large;
+        border-left: $space-small solid transparent;
 
         &.active {
-          border-right: 2px solid $first-highlight;
+          border-left: $space-small solid $first-highlight;
         }
 
         &:hover {
-          border-right: 2px solid $second-highlight;
+          border-left: $space-small solid $second-highlight;
+        }
+
+        div {
+          border-bottom: 1px solid $fourth-highlight;
+          padding-bottom: $space-medium;
         }
       }
   }
