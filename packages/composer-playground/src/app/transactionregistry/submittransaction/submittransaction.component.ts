@@ -3,10 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import leftPad = require('left-pad');
 
 import { ClientService } from '../../client.service';
-import { ConnectionProfileService } from '../../connectionprofile.service';
-import { WalletService } from '../../wallet.service';
 import { NotificationService } from '../../notification.service';
 import { InitializationService } from '../../initialization.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'submit-transaction',
@@ -28,10 +27,10 @@ export class SubmitTransactionComponent implements OnInit {
   @Output('onError') private error$ = new EventEmitter();
 
   constructor(
-    private route: ActivatedRoute,
     private clientService: ClientService,
     private notificationService: NotificationService,
-    private initializationService: InitializationService
+    private initializationService: InitializationService,
+    private alertService: AlertService
   ) {
 
   }
@@ -100,7 +99,7 @@ export class SubmitTransactionComponent implements OnInit {
 
   private submit() {
     this.submitInProgress = true;
-    this.clientService.busyStatus$.next('Submitting transaction ...');
+    this.alertService.busyStatus$.next('Submitting transaction ...');
     return Promise.resolve()
       .then(() => {
         let json = JSON.parse(this.data);
@@ -109,13 +108,13 @@ export class SubmitTransactionComponent implements OnInit {
         return this.clientService.getBusinessNetworkConnection().submitTransaction(resource);
       })
       .then(() => {
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
         this.submited$.emit();
         this.submitInProgress = false;
       })
       .catch((error) => {
-        this.clientService.busyStatus$.next(null);
-        this.clientService.errorStatus$.next(error);
+        this.alertService.busyStatus$.next(null);
+        this.alertService.errorStatus$.next(error);
         this.error$.emit(error);
         this.submitInProgress = false;
       })
@@ -152,5 +151,4 @@ export class SubmitTransactionComponent implements OnInit {
       ];
     });
   }
-
 }

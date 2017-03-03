@@ -3,10 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import leftPad = require('left-pad');
 
 import { ClientService } from '../../client.service';
-import { ConnectionProfileService } from '../../connectionprofile.service';
-import { WalletService } from '../../wallet.service';
 import { NotificationService } from '../../notification.service';
 import { InitializationService } from '../../initialization.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'add-asset',
@@ -33,7 +32,8 @@ export class AddAssetComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private clientService: ClientService,
     private notificationService: NotificationService,
-    private initializationService: InitializationService
+    private initializationService: InitializationService,
+    private alertService: AlertService
   ) {
 
   }
@@ -110,7 +110,7 @@ export class AddAssetComponent implements OnInit, OnDestroy {
 
   private add() {
     this.addInProgress = true;
-    this.clientService.busyStatus$.next('Adding asset ...');
+    this.alertService.busyStatus$.next('Adding asset ...');
     return this.clientService.getBusinessNetworkConnection().getAssetRegistry(this.registryID)
       .then((registry) => {
         let json = JSON.parse(this.data);
@@ -119,13 +119,14 @@ export class AddAssetComponent implements OnInit, OnDestroy {
         return registry.add(resource);
       })
       .then(() => {
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
         this.added$.emit();
         this.addInProgress = false;
       })
       .catch((error) => {
-        this.clientService.busyStatus$.next(null);
-        this.clientService.errorStatus$.next(error);
+        //TODO: is this needed
+        this.alertService.busyStatus$.next(null);
+        this.alertService.errorStatus$.next(error);
         this.error$.emit(error);
         this.addInProgress = false;
       })

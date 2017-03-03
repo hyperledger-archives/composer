@@ -4,6 +4,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
+import {AlertService} from '../services/alert.service';
 
 const fabricComposerOwner = 'fabric-composer';
 const fabricComposerRepository = 'sample-networks';
@@ -34,7 +35,8 @@ export class ImportComponent implements OnInit {
   constructor(private adminService: AdminService,
               private clientService: ClientService,
               public activeModal: NgbActiveModal,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+              private sampleBusinessNetworkService: SampleBusinessNetworkService,
+              private alertService: AlertService) {
 
   }
 
@@ -119,7 +121,7 @@ export class ImportComponent implements OnInit {
   }
 
   private fileRejected(reason: string) {
-    this.adminService.errorStatus$.next(reason);
+    this.alertService.errorStatus$.next(reason);
   }
 
   private removeFile() {

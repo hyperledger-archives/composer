@@ -3,10 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import leftPad = require('left-pad');
 
 import { ClientService } from '../../client.service';
-import { ConnectionProfileService } from '../../connectionprofile.service';
-import { WalletService } from '../../wallet.service';
 import { NotificationService } from '../../notification.service';
 import { InitializationService } from '../../initialization.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'remove-participant',
@@ -30,7 +29,8 @@ export class RemoveParticipantComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private clientService: ClientService,
     private notificationService: NotificationService,
-    private initializationService: InitializationService
+    private initializationService: InitializationService,
+    private alertService: AlertService
   ) {
 
   }
@@ -60,19 +60,19 @@ export class RemoveParticipantComponent implements OnInit, OnDestroy {
 
   private remove() {
     this.removeInProgress = true;
-    this.clientService.busyStatus$.next('Removing participant ...');
+    this.alertService.busyStatus$.next('Removing participant ...');
     return this.clientService.getBusinessNetworkConnection().getParticipantRegistry(this.registryID)
       .then((registry) => {
         return registry.remove(this.resourceID);
       })
       .then(() => {
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
         this.removed$.emit();
         this.removeInProgress = false;
       })
       .catch((error) => {
-        this.clientService.busyStatus$.next(null);
-        this.clientService.errorStatus$.next(error);
+        this.alertService.busyStatus$.next(null);
+        this.alertService.errorStatus$.next(error);
         this.error$.emit(error);
         this.removeInProgress = false;
       })
