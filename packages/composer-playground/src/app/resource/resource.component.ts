@@ -61,7 +61,7 @@ export class ResourceComponent implements OnInit {
     return this.initializationService.initialize()
       .then(() => {
 
-        // Determine what resource declaration we are using and stub json decription 
+        // Determine what resource declaration we are using and stub json decription
         let introspector = this.clientService.getBusinessNetwork().getIntrospector();
         let modelClassDeclarations = introspector.getClassDeclarations();
 
@@ -84,7 +84,7 @@ export class ResourceComponent implements OnInit {
             this.onDefinitionChanged();
           }
         });
-        
+
       });
   }
 
@@ -116,12 +116,12 @@ export class ResourceComponent implements OnInit {
    */
   private createResource(): void {
     this.addInProgress = true;
-    console.log('get registry with id: ' + this.registryID);
     return this.retrieveResourceRergistry(this.resourceType)
       .then((participantRegistry) => {
         let json = JSON.parse(this.resourceDefinition);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
+        resource.validate();
         return participantRegistry.add(resource);
       })
       .then(() => {
@@ -129,6 +129,7 @@ export class ResourceComponent implements OnInit {
         this.activeModal.close();
       })
       .catch((error) => {
+        this.defitionError = error.toString();
         this.addInProgress = false;
       })
   }
