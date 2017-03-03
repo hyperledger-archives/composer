@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage",
-    "postinstall": "cd node_modules/fabric-sdk-node && npm install && gulp ca && cd ../.. && node copysdk.js && cd node_modules/fabric-client && npm install && cd ../fabric-ca-client && npm install && npm install grpc"
+    "postinstall": "cd node_modules/fabric-sdk-node && npm install && gulp ca && cd ../.. && node scripts/copysdk.js && cd node_modules/fabric-client && npm install && cd ../fabric-ca-client && npm install && npm install grpc"
   },
   "repository": {
     "type": "git",
@@ -50,7 +50,8 @@
     "temp": "^0.8.3",
     "thenify-all": "^1.6.0",
     "uuid": "^3.0.0",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "gulp": "3.9.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -63,7 +64,6 @@
     "mocha": "^3.1.2",
     "moment": "^2.16.0",
     "sinon": "^1.17.6",
-    "sinon-as-promised": "^4.0.2",
-    "gulp": "3.9.1"
+    "sinon-as-promised": "^4.0.2"
   }
 }
