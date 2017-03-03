@@ -11,6 +11,7 @@ import { AdminService } from '../admin.service';
 import { ClientService } from '../client.service';
 import { InitializationService } from '../initialization.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
+import { AlertService } from '../services/alert.service';
 
 import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
 
@@ -84,7 +85,8 @@ export class EditorComponent implements OnInit {
               private initializationService: InitializationService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+              private sampleBusinessNetworkService: SampleBusinessNetworkService,
+              private alertService: AlertService) {
 
               }
 
@@ -381,7 +383,7 @@ export class EditorComponent implements OnInit {
     }, (reason) => {
       // if no reason then we hit cancel
       if (reason) {
-        this.adminService.errorStatus$.next(reason);
+        this.alertService.errorStatus$.next(reason);
       }
     });
   }
@@ -417,7 +419,7 @@ export class EditorComponent implements OnInit {
     // Gets the definition for the currently deployed business network
 
     this.getCurrentDefinitionFiles();
-    this.clientService.busyStatus$.next('Deploying updated business network ...');
+    this.alertService.busyStatus$.next('Deploying updated business network ...');
     return Promise.resolve()
       .then(() => {
         if (this.deploying) {
@@ -455,11 +457,11 @@ export class EditorComponent implements OnInit {
         else{
           this.setCurrentFile(this.previousFile);
         }
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
       })
       .catch((error) => {
         this.deploying = false;
-        this.clientService.errorStatus$.next(error);
+        this.alertService.errorStatus$.next(error);
       });
   }
 
@@ -506,15 +508,6 @@ export class EditorComponent implements OnInit {
   }
 
   /*
-  * Swaps the toggle state if editing. Used for when the user selects outside of input boxes.
-  */
-  private toggleNotEditing(){
-    if(this.editActive){
-      this.editActive = !this.editActive;
-    }
-  }
-
-  /*
   * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
   */
   private editPackageName(){
@@ -527,6 +520,8 @@ export class EditorComponent implements OnInit {
         this.setCurrentFile(this.previousFile);
       }
     });
+
+    this.editActive = false;
   }
 
   /*
@@ -542,6 +537,8 @@ export class EditorComponent implements OnInit {
         this.setCurrentFile(this.previousFile);
       }
     });
+
+    this.editActive = false;
   }
 
   private hideEdit(){

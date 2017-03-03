@@ -9,6 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {AppState} from './app.service';
 import {AdminService} from './admin.service';
 import {ClientService} from './client.service';
+import {AlertService} from './services/alert.service';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from './wallet.service';
 import {IdentityService} from './identity.service';
@@ -66,6 +67,7 @@ export class AppComponent {
               private walletService: WalletService,
               private identityService: IdentityService,
               private initializationService: InitializationService,
+              private alertService: AlertService,
               private modalService: NgbModal) {
 
   }
@@ -74,16 +76,10 @@ export class AppComponent {
     console.log('Initial App State', this.appState.state);
     // Subscribe for status updates.
     this.subs = [
-      this.adminService.busyStatus$.subscribe((busyStatus) => {
+      this.alertService.busyStatus$.subscribe((busyStatus) => {
         this.onBusyStatus(busyStatus);
       }),
-      this.adminService.errorStatus$.subscribe((errorStatus) => {
-        this.onErrorStatus(errorStatus);
-      }),
-      this.clientService.busyStatus$.subscribe((busyStatus) => {
-        this.onBusyStatus(busyStatus);
-      }),
-      this.clientService.errorStatus$.subscribe((errorStatus) => {
+      this.alertService.errorStatus$.subscribe((errorStatus) => {
         this.onErrorStatus(errorStatus);
       }),
       this.adminService.connectionProfileChanged$.subscribe(() => {
@@ -137,7 +133,7 @@ export class AppComponent {
             });
         })
         .catch((error) => {
-          this.clientService.errorStatus$.next(error);
+          this.alertService.errorStatus$.next(error);
         });
     } else {
       console.log('no invitation here');
