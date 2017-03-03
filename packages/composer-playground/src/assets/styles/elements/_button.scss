@@ -90,6 +90,17 @@
       }
     }
 
+    &.expand {
+      background-color: $white;
+      border: 1px solid $fourth-highlight;
+      border-radius: 25px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 0;
+      font-size: 0.75em;
+      line-height: 25px;
+      color: $secondary-text;
+    }
+
     &.action {
       border: none;
       border-bottom: 2px solid transparent;
