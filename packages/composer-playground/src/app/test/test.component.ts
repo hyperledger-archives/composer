@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ResourceComponent } from '../resource/resource.component';
-import {ClientService} from '../client.service';
-import {InitializationService} from '../initialization.service';
-import {AlertService} from '../services/alert.service';
+import { ClientService } from '../client.service';
+import { InitializationService } from '../initialization.service';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-test',
@@ -23,8 +21,7 @@ export class TestComponent implements OnInit {
 
   constructor(private clientService: ClientService,
               private initializationService: InitializationService,
-              private alertService: AlertService,
-              private modalService: NgbModal) {
+              private alertService: AlertService) {
   }
 
   ngOnInit(): Promise<any> {
@@ -64,11 +61,6 @@ export class TestComponent implements OnInit {
       .catch((error) => {
         this.alertService.errorStatus$.next(error);
       });
-  }
-
-  openNewResourceModal() {
-    const modalRef = this.modalService.open(ResourceComponent);
-    modalRef.componentInstance.registryID = 'org.acme.biznet.SampleParticipant';
   }
 
   setChosenRegistry(chosenRegistry) {

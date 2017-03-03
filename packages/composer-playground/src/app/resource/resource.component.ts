@@ -66,8 +66,6 @@ export class ResourceComponent implements OnInit {
         let modelClassDeclarations = introspector.getClassDeclarations();
 
         modelClassDeclarations.forEach((modelClassDeclaration) => {
-          console.log('registry Id: ' + this.registryID);
-          console.log('FQDN: ' + modelClassDeclaration.getFullyQualifiedName());
           if (this.registryID === modelClassDeclaration.getFullyQualifiedName()) {
 
             // Set resource declaration
@@ -118,24 +116,19 @@ export class ResourceComponent implements OnInit {
    */
   private createResource(): void {
     this.addInProgress = true;
-    this.clientService.busyStatus$.next('Adding ' + this.registryID + ' ...');
     console.log('get registry with id: ' + this.registryID);
     return this.retrieveResourceRergistry(this.resourceType)
       .then((participantRegistry) => {
         let json = JSON.parse(this.resourceDefinition);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
-        console.log('about to add resource');
         return participantRegistry.add(resource);
       })
       .then(() => {
-        this.clientService.busyStatus$.next(null);
         this.addInProgress = false;
         this.activeModal.close();
       })
       .catch((error) => {
-        this.clientService.busyStatus$.next(null);
-        this.clientService.errorStatus$.next(error);
         this.addInProgress = false;
       })
   }
