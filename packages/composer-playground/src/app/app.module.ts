@@ -36,6 +36,7 @@ import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ExportComponent } from './export';
 import { AddFileComponent } from './add-file';
+import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
 
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
@@ -116,7 +117,9 @@ type StoreType = {
     NoContentComponent,
     AboutComponent,
     FileDragDropDirective,
+    ConnectionProfileComponent,
     AddFileComponent
+
   ],
   imports: [ // import Angular's modules
     BrowserModule,
