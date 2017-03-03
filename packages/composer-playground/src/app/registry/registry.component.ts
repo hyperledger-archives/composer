@@ -16,6 +16,7 @@ export class RegistryComponent {
   private resources = [];
 
   private expandedResource = null;
+  private showExpand = true;
 
   @Input()
   set registry(registry) {
@@ -53,6 +54,10 @@ export class RegistryComponent {
     } else {
       this.expandedResource = resourceToExpand.getIdentifier();
     }
+  }
+
+  hasOverFlow(overflow: boolean) {
+    this.showExpand = overflow;
   }
 }
 

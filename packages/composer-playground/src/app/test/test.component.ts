@@ -38,6 +38,9 @@ export class TestComponent implements OnInit {
               return a.id.localeCompare(b.id);
             });
 
+            if(this.assetRegistries.length > 0) {
+              this.chosenRegistry = this.assetRegistries[0];
+            }
             return this.clientService.getBusinessNetworkConnection().getAllParticipantRegistries()
           })
           .then((participantRegistries) => {
@@ -50,6 +53,10 @@ export class TestComponent implements OnInit {
             this.participantRegistries = participantRegistries.sort((a, b) => {
               return a.id.localeCompare(b.id);
             });
+
+            if(this.assetRegistries.length == 0) {
+              this.chosenRegistry = this.participantRegistries[0];
+            }
 
             return this.clientService.getBusinessNetworkConnection().getTransactionRegistry()
           })
