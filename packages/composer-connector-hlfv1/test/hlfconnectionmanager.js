@@ -354,7 +354,7 @@ describe('HLFConnectionManager', () => {
             return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
-                    sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', mockKeyValueStore);
+                    sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', {'path' : connectOptions.keyValStore});
                 });
         });
 
