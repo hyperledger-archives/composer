@@ -5,6 +5,7 @@ import * as Octokat from 'octokat'
 
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
+import {AlertService} from './alert.service';
 
 import {BusinessNetworkDefinition} from 'composer-admin';
 import {AclFile} from 'composer-common';
@@ -66,6 +67,7 @@ export class SampleBusinessNetworkService {
 
   constructor(private adminService: AdminService,
               private clientService: ClientService,
+              private alertService: AlertService,
               private http: Http) {
   }
 
@@ -344,7 +346,7 @@ export class SampleBusinessNetworkService {
   }
 
   public deployInitialSample(): Promise<any> {
-    this.adminService.busyStatus$.next('Deploying sample business network ...');
+    this.alertService.busyStatus$.next('Deploying sample business network ...');
     let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
     let modelManager = businessNetworkDefinition.getModelManager();
     modelManager.addModelFile(initialModelFile);
@@ -362,7 +364,7 @@ export class SampleBusinessNetworkService {
   }
 
   public deploySample(owner: string, repository: string, chosenNetwork: any): Promise < any > {
-    this.adminService.busyStatus$.next('Deploying sample business network ...');
+    this.alertService.busyStatus$.next('Deploying sample business network ...');
 
     let sampleNetworkPromises: Promise<any>[] = [];
     let path = chosenNetwork.composerPath;

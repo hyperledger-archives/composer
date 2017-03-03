@@ -7,6 +7,7 @@ import { UpdateAssetComponent } from './updateasset';
 import { RemoveAssetComponent } from './removeasset';
 import { ClientService } from '../client.service';
 import { InitializationService } from '../initialization.service';
+import {AlertService} from '../services/alert.service';
 
 @Component({
   selector: 'app-assetregistry',
@@ -27,7 +28,8 @@ export class AssetRegistryComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private clientService: ClientService,
-    private initializationService: InitializationService
+    private initializationService: InitializationService,
+    private alertService: AlertService
   ) {
 
   }
@@ -63,7 +65,7 @@ export class AssetRegistryComponent implements OnInit, OnDestroy {
         });
       })
       .catch((error) => {
-        this.clientService.errorStatus$.next(error);
+        this.alertService.errorStatus$.next(error);
       });
   }
 

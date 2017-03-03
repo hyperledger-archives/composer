@@ -1,12 +1,11 @@
-import { Component, ViewChild, EventEmitter, Input, Output, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, ViewChild, EventEmitter, Input, Output, OnInit, OnDestroy} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import leftPad = require('left-pad');
 
-import { ClientService } from '../../client.service';
-import { ConnectionProfileService } from '../../connectionprofile.service';
-import { WalletService } from '../../wallet.service';
-import { NotificationService } from '../../notification.service';
-import { InitializationService } from '../../initialization.service';
+import {ClientService} from '../../client.service';
+import {NotificationService} from '../../notification.service';
+import {InitializationService} from '../../initialization.service';
+import {AlertService} from '../../services/alert.service';
 
 @Component({
   selector: 'remove-asset',
@@ -26,12 +25,11 @@ export class RemoveAssetComponent implements OnInit, OnDestroy {
   @Output('onHidden') private hidden$ = new EventEmitter();
   @Output('onError') private error$ = new EventEmitter();
 
-  constructor(
-    private route: ActivatedRoute,
-    private clientService: ClientService,
-    private notificationService: NotificationService,
-    private initializationService: InitializationService
-  ) {
+  constructor(private route: ActivatedRoute,
+              private clientService: ClientService,
+              private notificationService: NotificationService,
+              private initializationService: InitializationService,
+              private alertService: AlertService) {
 
   }
 
@@ -47,7 +45,9 @@ export class RemoveAssetComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subs.forEach((sub) => { sub.unsubscribe(); });
+    this.subs.forEach((sub) => {
+      sub.unsubscribe();
+    });
   }
 
   private onShow() {
@@ -60,19 +60,19 @@ export class RemoveAssetComponent implements OnInit, OnDestroy {
 
   private remove() {
     this.removeInProgress = true;
-    this.clientService.busyStatus$.next('Removing asset ...');
+    this.alertService.busyStatus$.next('Removing asset ...');
     return this.clientService.getBusinessNetworkConnection().getAssetRegistry(this.registryID)
       .then((registry) => {
         return registry.remove(this.resourceID);
       })
       .then(() => {
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
         this.removed$.emit();
         this.removeInProgress = false;
       })
       .catch((error) => {
-        this.clientService.busyStatus$.next(null);
-        this.clientService.errorStatus$.next(error);
+        this.alertService.busyStatus$.next(null);
+        this.alertService.errorStatus$.next(error);
         this.error$.emit(error);
         this.removeInProgress = false;
       })
@@ -85,7 +85,9 @@ export class RemoveAssetComponent implements OnInit, OnDestroy {
         let subs = [
           this.hidden$.subscribe(() => {
             resolve();
-            subs.forEach((sub) => { sub.unsubscribe(); });
+            subs.forEach((sub) => {
+              sub.unsubscribe();
+            });
           })
         ];
         this.modal.show();
@@ -96,16 +98,22 @@ export class RemoveAssetComponent implements OnInit, OnDestroy {
         this.hidden$.subscribe(() => {
           if (!this.removeInProgress) {
             resolve(false);
-            subs.forEach((sub) => { sub.unsubscribe(); });
+            subs.forEach((sub) => {
+              sub.unsubscribe();
+            });
           }
         }),
         this.removed$.subscribe(() => {
           resolve(true);
-          subs.forEach((sub) => { sub.unsubscribe(); });
+          subs.forEach((sub) => {
+            sub.unsubscribe();
+          });
         }),
         this.error$.subscribe((error) => {
           resolve(false);
-          subs.forEach((sub) => { sub.unsubscribe(); });
+          subs.forEach((sub) => {
+            sub.unsubscribe();
+          });
         })
       ];
     });
