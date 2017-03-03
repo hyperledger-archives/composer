@@ -36,6 +36,7 @@ import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ExportComponent } from './export';
+import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
 
 import { GithubComponent } from './github';
@@ -87,6 +88,7 @@ type StoreType = {
     ImportComponent,
     ExportComponent,
     ErrorComponent,
+    ResourceComponent,
     AddFileComponent
   ],
   declarations: [
@@ -120,6 +122,7 @@ type StoreType = {
     NoContentComponent,
     AboutComponent,
     FileDragDropDirective,
+    ResourceComponent,
     CheckOverFlowDirective,
     AddFileComponent
   ],
@@ -192,4 +195,3 @@ export class AppModule {
   }
 
 }
-

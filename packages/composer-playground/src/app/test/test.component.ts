@@ -1,8 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-
-import {ClientService} from '../client.service';
-import {InitializationService} from '../initialization.service';
-import {AlertService} from '../services/alert.service';
+import { Component, OnInit } from '@angular/core';
+import { ClientService } from '../client.service';
+import { InitializationService } from '../initialization.service';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-test',
@@ -11,6 +10,8 @@ import {AlertService} from '../services/alert.service';
     './test.component.scss'.toString()
   ]
 })
+
+
 export class TestComponent implements OnInit {
 
   private assetRegistries = [];

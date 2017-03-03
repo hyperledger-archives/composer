@@ -1,6 +1,6 @@
 <section class="side-bar">
   <div class="registries">
-    <span>Assests</span>
+    <span>Assets</span>
     <section class="side-bar-nav">
       <ul>
         <li *ngFor="let assetRegistry of assetRegistries"
@@ -35,6 +35,5 @@
   </div>
 </section>
 <section class="main-view">
-  <registry [registry]="chosenRegistry"></registry>
+    <registry [registry]="chosenRegistry"></registry>
 </section>
-
