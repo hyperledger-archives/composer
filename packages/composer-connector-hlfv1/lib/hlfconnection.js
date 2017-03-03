@@ -242,14 +242,15 @@ class HLFConnection extends Connection {
         // The chaincode path is the portion of the GOPATH after 'src'.
         const chaincodePath = 'composer';
 
-        // Generate a transaction ID.
-        const txId = utils.buildTransactionID();
-
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
         // must copy the chaincode to a temporary directory. We need to do this
         // to handle the case where Composer is installed into the global directory
         // (npm install -g) and is therefore owned by the root user.
         let tempDirectoryPath;
+        let finalTxId;
+        let nonce = utils.getNonce();
+        let businessNetworkArchive;
+
         return this.temp.mkdir('composer')
             .then((tempDirectoryPath_) => {
 
@@ -283,32 +284,67 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-
-                // Serialize the business network into an archive.
-                return businessNetwork.toArchive();
-
+                // generate the transaction id
+                return this.chain.buildTransactionID_getUserContext(nonce);
             })
-            .then((businessNetworkArchive) => {
+            .then((txId) => {
 
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
 
-                // Submit the transaction to the endorsers.
+                // Submit the install proposal to the endorsers.
                 const request = {
                     chaincodePath: chaincodePath,
+                    chaincodeVersion: '1.0',
                     chaincodeId: businessNetwork.getName(),
                     chainId: this.connectOptions.channel,
                     txId: txId,
-                    nonce: utils.getNonce(),
-                    fcn: 'init',
-                    args: [businessNetworkArchive.toString('base64')]
+                    nonce: nonce,
                 };
-                return this.chain.sendDeploymentProposal(request);
+                return this.chain.sendInstallProposal(request);
 
             })
             .then((results) => {
+                // Validate the proposal results.
+                LOG.debug(method, `Received ${results.length} results(s) from deploying the chaincode`, results);
+                const proposalResponses = results[0];
+                if (!proposalResponses.length) {
+                    throw new Error('No results were returned from the deploy request');
+                }
+                proposalResponses.forEach((proposalResponse) => {
+                    if (proposalResponse instanceof Error) {
+                        throw proposalResponse;
+                    } else if (proposalResponse.response.status === 200) {
+                        return true;
+                    }
+                    throw new Error(proposalResponse.response.payload);
+                });
 
-                // Validate the endorsement results.
+                // serialise the business network
+                return businessNetwork.toArchive();
+            })
+            .then((bna) => {
+                businessNetworkArchive = bna;
+                nonce = utils.getNonce();
+                return this.chain.buildTransactionID_getUserContext(nonce);
+            })
+            .then((txId) => {
+                // prepare and send the instantiate proposal
+                finalTxId = txId;
+                const request = {
+                    chaincodePath: chaincodePath,
+                    chaincodeVersion: '1.0',
+                    chaincodeId: businessNetwork.getName(),
+                    chainId: this.connectOptions.channel,
+                    txId: txId,
+                    nonce: nonce,
+                    fcn: 'init',
+                    args: [businessNetworkArchive.toString('base64')]
+                };
+                return this.chain.sendInstantiateProposal(request);
+            })
+            .then((results) => {
+                // Validate the instantiate proposal results
                 LOG.debug(method, `Received ${results.length} results(s) from deploying the chaincode`, results);
                 const proposalResponses = results[0];
                 if (!proposalResponses.length) {
@@ -340,15 +376,15 @@ class HLFConnection extends Connection {
                 if (response.status === 'SUCCESS') {
                     return new Promise((resolve, reject) => {
                         const handle = setTimeout(() => {
-                            reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
+                            reject(new Error(`Failed to receive commit notification for transaction '${finalTxId}' within the timeout period`));
                         }, this.connectOptions.deployWaitTime * 1000);
-                        this.eventHub.registerTxEvent(txId.toString(), () => {
+                        this.eventHub.registerTxEvent(finalTxId.toString(), () => {
                             clearTimeout(handle);
                             resolve();
                         });
                     });
                 } else {
-                    throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
+                    throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
                 }
 
             })
@@ -501,17 +537,21 @@ class HLFConnection extends Connection {
             }
         });
 
-        // Submit the query request.
-        const request = {
-            chaincodeId: this.businessNetworkIdentifier,
-            chainId: this.connectOptions.channel,
-            txId: utils.buildTransactionID(),
-            nonce: utils.getNonce(),
-            fcn: functionName,
-            args: args,
-            attrs: ['userID']
-        };
-        return this.chain.queryByChaincode(request)
+        let nonce = utils.getNonce();
+        return this.chain.buildTransactionID_getUserContext(nonce)
+            .then((txId) => {
+                // Submit the query request.
+                const request = {
+                    chaincodeId: this.businessNetworkIdentifier,
+                    chainId: this.connectOptions.channel,
+                    txId: txId,
+                    nonce: nonce,
+                    fcn: functionName,
+                    args: args,
+                    attrs: ['userID']
+                };
+                return this.chain.queryByChaincode(request);
+            })
             .then((payloads) => {
                 LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the chaincode`, payloads);
                 if (!payloads.length) {
@@ -557,20 +597,23 @@ class HLFConnection extends Connection {
             }
         });
 
-        // Generate a transaction ID.
-        const txId = utils.buildTransactionID();
-
-        // Submit the transaction to the endorsers.
-        const request = {
-            chaincodeId: this.businessNetworkIdentifier,
-            chainId: this.connectOptions.channel,
-            txId: txId,
-            nonce: utils.getNonce(),
-            fcn: functionName,
-            args: args,
-            attrs: ['userID']
-        };
-        return this.chain.sendTransactionProposal(request)
+        let nonce = utils.getNonce();
+        let txId;
+        return this.chain.buildTransactionID_getUserContext(nonce)
+            .then((id) => {
+                txId = id;
+                // Submit the transaction to the endorsers.
+                const request = {
+                    chaincodeId: this.businessNetworkIdentifier,
+                    chainId: this.connectOptions.channel,
+                    txId: txId,
+                    nonce: nonce,
+                    fcn: functionName,
+                    args: args,
+                    attrs: ['userID']
+                };
+                return this.chain.sendTransactionProposal(request);
+            })
             .then((results) => {
 
                 // Validate the endorsement results.
