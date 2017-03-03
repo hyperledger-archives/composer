@@ -3,7 +3,7 @@
     <span>Assests</span>
     <section class="side-bar-nav">
       <ul>
-        <li *ngFor="let assetRegistry of assetRegistries">
+        <li *ngFor="let assetRegistry of assetRegistries" (click)="setChosenRegistry(assetRegistry)">
           <h3>{{assetRegistry.displayName}}</h3>
           <div>{{assetRegistry.id}}</div>
         </li>
@@ -13,7 +13,8 @@
     <span>Participants</span>
     <section class="side-bar-nav">
       <ul>
-        <li *ngFor="let participantRegistry of participantRegistries">
+        <li *ngFor="let participantRegistry of participantRegistries"
+            (click)="setChosenRegistry(participantRegistry)">
           <h3>{{participantRegistry.displayName}}</h3>
           <div>{{participantRegistry.id}}</div>
         </li>
@@ -23,7 +24,7 @@
     <span>Transactions</span>
     <section class="side-bar-nav">
       <ul>
-        <li>
+        <li (click)="setChosenRegistry(transactionRegistry)">
           <h3>All Transactions</h3>
         </li>
       </ul>
@@ -31,5 +32,6 @@
   </div>
 </section>
 <section class="main-view">
+  <registry [registry]="chosenRegistry"></registry>
 </section>
 

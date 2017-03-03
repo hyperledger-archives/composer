@@ -61,4 +61,8 @@ export class TestComponent implements OnInit {
         this.alertService.errorStatus$.next(error);
       });
   }
+
+  setChosenRegistry(chosenRegistry) {
+    this.chosenRegistry = chosenRegistry;
+  }
 }

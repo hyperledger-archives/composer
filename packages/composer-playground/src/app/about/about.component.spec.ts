@@ -33,7 +33,7 @@ class MockAboutService {
 }
 
 describe('AboutComponent', () => {
-    
+
     let component: AboutComponent;
     let fixture: ComponentFixture<AboutComponent>;
     let de: DebugElement;

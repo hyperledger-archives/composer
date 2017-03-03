@@ -1,0 +1,15 @@
+<h1 *ngIf="_registry">{{_registry.name}}</h1>
+
+<div *ngIf="_registry" class="resource-list">
+  <div class="title">
+    <div class="id">ID</div>
+    <div class="data">DATA</div>
+  </div>
+  <div *ngFor="let resource of resources" class="resource-container">
+    <div class="resource-content" [ngClass]="{'expanded' : resource.getIdentifier() === expandedResource}">
+      <div class="id">{{resource.getIdentifier()}}</div>
+      <pre class="data">{{serialize(resource)}}</pre>
+    </div>
+    <button class="expand" type="button" (click)="expandResource(resource)">{{resource.getIdentifier() === expandedResource ? 'Collapse' : 'Show All'}}</button>
+  </div>
+</div>
