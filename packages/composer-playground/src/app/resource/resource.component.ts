@@ -73,13 +73,8 @@ export class ResourceComponent implements OnInit {
             this.resourceType = this.retrieveResourceType(modelClassDeclaration)
 
             // Stub out json definition
-            this.resourceDefinition = "{\n";
-            this.resourceDefinition += '  "$class": "' + this.registryID + '"';
-            let resourceProperties = modelClassDeclaration.getProperties();
-            resourceProperties.forEach((property) => {
-              this.resourceDefinition += ',\n  "' + property.getName() + '": ""';
-            });
-            this.resourceDefinition += '\n}';
+            this.resourceDefinition = this.generateDefinitionStub(this.registryID, modelClassDeclaration);
+
             // Run validator on json definition
             this.onDefinitionChanged();
           }
@@ -104,10 +99,10 @@ export class ResourceComponent implements OnInit {
       let json = serializer.toJSON(resource);
       this.resourceDefinition = JSON.stringify(json, null, 2);
       this.onDefinitionChanged();
-    } catch (e) {
+    } catch (error) {
       // We can't generate a sample instance for some reason.
-      console.error(e);
-      this.resourceDefinition = '';
+      this.defitionError = error.toString();
+      this.resourceDefinition = this.generateDefinitionStub(this.registryID, this.resourceDeclaration);
     }
   }
 
@@ -160,6 +155,20 @@ export class ResourceComponent implements OnInit {
     } else if (modelClassDeclaration instanceof ParticipantDeclaration) {
       return "Participant";
     }
+  }
+
+  /**
+   * Generate a stub resource definition
+   */
+  private generateDefinitionStub(registryID, modelClassDeclaration)  : string {
+    let stub = '';
+    stub = '{\n  "$class": "' + registryID + '"';
+    let resourceProperties = modelClassDeclaration.getProperties();
+    resourceProperties.forEach((property) => {
+      stub += ',\n  "' + property.getName() + '": ""';
+    });
+    stub += '\n}';
+    return stub;
   }
 
   /**

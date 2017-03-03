@@ -12,12 +12,14 @@ import { ResourceComponent } from '../resource/resource.component';
     './registry.component.scss'.toString()
   ]
 })
+
 export class RegistryComponent {
 
   private _registry = null;
   private resources = [];
 
   private expandedResource = null;
+  private showExpand = true;
 
   @Input()
   set registry(registry) {
@@ -64,6 +66,10 @@ export class RegistryComponent {
       // refresh current resource list
       this.loadResources();
     });
+  }
+
+  hasOverFlow(overflow: boolean) {
+    this.showExpand = overflow;
   }
 }
 
