@@ -34,8 +34,7 @@ fs.copy('node_modules/fabric-sdk-node/fabric-client', 'node_modules/fabric-clien
                 return console.error(err);
             }
         });
-});
-
+    });
 });
 
 
