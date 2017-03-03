@@ -21,6 +21,7 @@ import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { EditorComponent } from './editor';
 import { TestComponent } from './test';
+import { RegistryComponent } from './registry';
 import { AssetRegistriesComponent } from './assetregistries';
 import { AssetRegistryComponent, AddAssetComponent, UpdateAssetComponent, RemoveAssetComponent } from './assetregistry';
 import { ParticipantRegistriesComponent } from './participantregistries';
@@ -44,6 +45,7 @@ import { CodemirrorModule } from 'ng2-codemirror';
 
 
 import { FileDragDropDirective } from './directives/file-drag-drop';
+//import { CheckOverFlowDirective } from './directives/check-overflow';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
@@ -94,6 +96,7 @@ type StoreType = {
     FileImporterComponent,
     EditorComponent,
     TestComponent,
+    RegistryComponent,
     AssetRegistriesComponent,
     AssetRegistryComponent,
     AddAssetComponent,

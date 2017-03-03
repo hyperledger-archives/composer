@@ -71,4 +71,7 @@ export class TestComponent implements OnInit {
     modalRef.componentInstance.registryID = 'org.acme.biznet.SampleParticipant';
   }
 
+  setChosenRegistry(chosenRegistry) {
+    this.chosenRegistry = chosenRegistry;
+  }
 }
