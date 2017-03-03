@@ -258,8 +258,7 @@ describe('HLFConnection', () => {
         });
 
         it('should deploy the business network', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
@@ -269,7 +268,10 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendDeploymentProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
@@ -287,9 +289,19 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
                     sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledOnce(mockChain.sendDeploymentProposal);
-                    sinon.assert.calledWith(mockChain.sendDeploymentProposal, {
+                    sinon.assert.calledOnce(mockChain.sendInstallProposal);
+                    sinon.assert.calledOnce(mockChain.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockChain.sendInstallProposal, {
                         chaincodePath: 'composer',
+                        chaincodeVersion: '1.0',
+                        chaincodeId: 'org.acme.biznet',
+                        chainId: connectOptions.channel,
+                        txId: '00000000-0000-0000-0000-000000000000',
+                        nonce: '11111111-1111-1111-1111-111111111111',
+                    });
+                    sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: '1.0',
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -297,6 +309,7 @@ describe('HLFConnection', () => {
                         fcn: 'init',
                         args: ['aGVsbG8gd29ybGQ=']
                     });
+
                     sinon.assert.calledOnce(mockChain.sendTransaction);
                 });
         });
@@ -304,8 +317,7 @@ describe('HLFConnection', () => {
         it('should add the certificate into the deployment package', () => {
             // Add the certificate into the connect options.
             connection.connectOptions = { type: 'hlfv1', certificate: 'such cert' };
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
@@ -315,7 +327,10 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendDeploymentProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
@@ -331,14 +346,16 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if no endorsement responses are returned', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendDeploymentProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
@@ -351,14 +368,16 @@ describe('HLFConnection', () => {
         });
 
         it('should throw any endorsement responses that are errors', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [ new Error('such error') ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendDeploymentProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
@@ -371,8 +390,7 @@ describe('HLFConnection', () => {
         });
 
         it('should throw any endorsement responses that have a non-200 status code', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
@@ -383,7 +401,10 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendDeploymentProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
@@ -396,8 +417,7 @@ describe('HLFConnection', () => {
         });
 
         it('should throw an error if the commit of the transaction times out', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
@@ -407,7 +427,10 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendDeploymentProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
@@ -421,8 +444,7 @@ describe('HLFConnection', () => {
         });
 
         it('should throw an error if the commit throws an error', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
@@ -432,7 +454,10 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendDeploymentProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'FAILURE'
@@ -611,9 +636,10 @@ describe('HLFConnection', () => {
         });
 
         it('should submit a query request to the chaincode', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the response from the chaincode.
             const response = Buffer.from('hello world');
             mockChain.queryByChaincode.resolves([response]);
@@ -634,9 +660,10 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if no responses are returned', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the response from the chaincode.
             mockChain.queryByChaincode.resolves([]);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
@@ -666,9 +693,10 @@ describe('HLFConnection', () => {
         });
 
         it('should submit an invoke request to the chaincode', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -702,9 +730,10 @@ describe('HLFConnection', () => {
         });
 
         it('should throw if no endorsement responses are returned', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [];
             const proposal = { proposal: 'i do' };
@@ -722,9 +751,10 @@ describe('HLFConnection', () => {
         });
 
         it('should throw any endorsement responses that are errors', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [ new Error('such error') ];
             const proposal = { proposal: 'i do' };
@@ -742,9 +772,10 @@ describe('HLFConnection', () => {
         });
 
         it('should throw any endorsement responses that have a non-200 status code', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -767,9 +798,10 @@ describe('HLFConnection', () => {
         });
 
         it('should throw an error if the commit of the transaction times out', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -792,9 +824,10 @@ describe('HLFConnection', () => {
         });
 
         it('should throw an error if the commit throws an error', () => {
-            // This is the generated transaction ID and nonce.
-            sandbox.stub(utils, 'buildTransactionID').returns('00000000-0000-0000-0000-000000000000');
+            // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
