@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { AdminService } from '../admin.service';
-import { ClientService } from '../client.service';
-import { InitializationService } from '../initialization.service';
-
-import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
-
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ResourceComponent } from '../resource/resource.component';
 
 @Component({
   selector: 'app-test',
@@ -14,14 +10,11 @@ import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
     './test.component.scss'.toString()
   ]
 })
+
 export class TestComponent implements OnInit {
 
-  private businessNetworkDefinition: BusinessNetworkDefinition = null;
-
   constructor(
-    private adminService: AdminService,
-    private clientService: ClientService,
-    private initializationService: InitializationService
+    private modalService: NgbModal
   ) {
 
   }
@@ -29,4 +22,10 @@ export class TestComponent implements OnInit {
   ngOnInit() {
 
   }
+
+  openNewResourceModal() {
+    const modalRef = this.modalService.open(ResourceComponent);
+    modalRef.componentInstance.registryID = 'org.acme.biznet.SampleParticipant';
+  }
+
 }

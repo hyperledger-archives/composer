@@ -35,6 +35,7 @@ import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ExportComponent } from './export';
+import { ResourceComponent } from './resource';
 
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
@@ -82,7 +83,8 @@ type StoreType = {
   entryComponents: [
     ImportComponent,
     ExportComponent,
-    ErrorComponent
+    ErrorComponent,
+    ResourceComponent
   ],
   declarations: [
     AppComponent,
@@ -113,7 +115,8 @@ type StoreType = {
     GithubComponent,
     NoContentComponent,
     AboutComponent,
-    FileDragDropDirective
+    FileDragDropDirective,
+    ResourceComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
@@ -183,4 +186,3 @@ export class AppModule {
   }
 
 }
-
