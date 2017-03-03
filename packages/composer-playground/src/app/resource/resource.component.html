@@ -24,7 +24,9 @@
       <span>Cancel</span>
     </button>
     <button type="button" class="primary" (click)="createResource()" [disabled]="defitionError!=null || addInProgress">
-      <span>Create</span>
+      <div *ngIf="!addInProgress">
+        <span>Create</span>
+      </div>
       <div *ngIf="addInProgress" class="ibm-spinner-indeterminate small loop">
         <div class="loader">
           <svg class="circular" viewBox="25 25 50 50">
