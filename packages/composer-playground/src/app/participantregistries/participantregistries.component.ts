@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { ClientService } from '../client.service';
 import { InitializationService } from '../initialization.service';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-participantregistries',
@@ -14,7 +15,8 @@ export class ParticipantRegistriesComponent implements OnInit {
 
   constructor(
     private clientService: ClientService,
-    private initializationService: InitializationService
+    private initializationService: InitializationService,
+    private alertService: AlertService
   ) {
 
   }
@@ -30,7 +32,7 @@ export class ParticipantRegistriesComponent implements OnInit {
           });
       })
       .catch((error) => {
-        this.clientService.errorStatus$.next(error);
+        this.alertService.errorStatus$.next(error);
       });
   }
 
