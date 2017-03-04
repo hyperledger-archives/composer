@@ -41,13 +41,16 @@ describe('RegistryManager', () => {
     let mockSerializer;
     let mockAccessController;
     let registryManager;
+    let mockSystemRegistries;
 
     beforeEach(() => {
         mockDataService = sinon.createStubInstance(DataService);
         mockIntrospector = sinon.createStubInstance(Introspector);
         mockSerializer = sinon.createStubInstance(Serializer);
         mockAccessController = sinon.createStubInstance(AccessController);
-        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer, mockAccessController);
+        mockSystemRegistries = sinon.createStubInstance(DataCollection);
+        mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
+        registryManager = new RegistryManager(mockDataService, mockIntrospector, mockSerializer, mockAccessController, mockSystemRegistries);
     });
 
     describe('#constructor', () => {
@@ -181,8 +184,7 @@ describe('RegistryManager', () => {
     describe('#getAll', () => {
 
         it('should get all the registries of the specified type', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.getAll.returns([{
+            mockSystemRegistries.getAll.resolves([{
                 type: 'Asset',
                 id: 'cats',
                 name: 'The cats registry'
@@ -191,7 +193,6 @@ describe('RegistryManager', () => {
                 id: 'doges',
                 name: 'The doges registry'
             }]);
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('Asset:cats').resolves(mockCatsCollection);
@@ -213,15 +214,12 @@ describe('RegistryManager', () => {
         });
 
         it('should return errors from the data service', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.getAll.rejects();
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            mockSystemRegistries.getAll.rejects();
             registryManager.getAll('Asset').should.be.rejected;
         });
 
         it('should filter out registries not of the specified type', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.getAll.returns([{
+            mockSystemRegistries.getAll.resolves([{
                 type: 'Asset',
                 id: 'cats',
                 name: 'The cats registry'
@@ -230,7 +228,6 @@ describe('RegistryManager', () => {
                 id: 'doges',
                 name: 'The doges registry'
             }]);
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             let mockCatsCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('Asset:cats').resolves(mockCatsCollection);
             return registryManager.getAll('Asset')
@@ -250,13 +247,11 @@ describe('RegistryManager', () => {
     describe('#get', () => {
 
         it('should get the registry with the specified ID', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.get.withArgs('Asset:doges').returns({
+            mockSystemRegistries.get.withArgs('Asset:doges').resolves({
                 type: 'Asset',
                 id: 'doges',
                 name: 'The doges registry'
             });
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
             return registryManager.get('Asset', 'doges')
@@ -271,9 +266,7 @@ describe('RegistryManager', () => {
         });
 
         it('should return errors from the data service', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.get.rejects();
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            mockSystemRegistries.get.rejects();
             return registryManager.get('Asset', 'doges').should.be.rejected;
         });
 
@@ -282,9 +275,7 @@ describe('RegistryManager', () => {
     describe('#exists', () => {
 
         it('should determine the existence of a registry with the specified ID', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.exists.withArgs('Asset:doges').returns(true);
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            mockSystemRegistries.exists.withArgs('Asset:doges').resolves(true);
             return registryManager.exists('Asset', 'doges')
                 .then((exists) => {
                     exists.should.equal.true;
@@ -292,9 +283,7 @@ describe('RegistryManager', () => {
         });
 
         it('should return errors from the data service', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.exists.rejects();
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            mockSystemRegistries.exists.rejects();
             return registryManager.exists('Asset', 'doges').should.be.rejected;
         });
 
@@ -303,21 +292,19 @@ describe('RegistryManager', () => {
     describe('#add', () => {
 
         it('should add a new registry with the specified ID', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.add.withArgs('Asset:doges', {
+            mockSystemRegistries.add.withArgs('Asset:doges', {
                 type: 'Asset',
                 id: 'doges',
                 name: 'The doges registry'
             }).resolves();
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
             let mockDogesCollection = sinon.createStubInstance(DataCollection);
             mockDataService.createCollection.withArgs('Asset:doges').resolves(mockDogesCollection);
             let mockEventHandler = sinon.stub();
             registryManager.on('registryadded', mockEventHandler);
             return registryManager.add('Asset', 'doges', 'The doges registry')
                 .then((registry) => {
-                    sinon.assert.calledOnce(mockDataCollection.add);
-                    sinon.assert.calledWith(mockDataCollection.add, 'Asset:doges', {
+                    sinon.assert.calledOnce(mockSystemRegistries.add);
+                    sinon.assert.calledWith(mockSystemRegistries.add, 'Asset:doges', {
                         type: 'Asset',
                         id: 'doges',
                         name: 'The doges registry'
@@ -340,9 +327,7 @@ describe('RegistryManager', () => {
         });
 
         it('should return errors from the data service', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataCollection.add.rejects();
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockDataCollection);
+            mockSystemRegistries.add.rejects();
             return registryManager.add('Asset', 'doges', 'The doges registry').should.be.rejected;
         });
 

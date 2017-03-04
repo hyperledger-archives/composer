@@ -103,7 +103,7 @@ describe('EngineBusinessNetworks', () => {
                     // Initialize.
                     sinon.assert.calledWith(mockContext.initialize);
                     // Reinitialize.
-                    sinon.assert.calledWith(mockContext.initialize, true);
+                    sinon.assert.calledWith(mockContext.initialize, { businessNetworkDefinition: mockBusinessNetwork, reinitialize: true });
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                 });
         });
