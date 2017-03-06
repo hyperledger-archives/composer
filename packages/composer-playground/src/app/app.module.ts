@@ -38,6 +38,7 @@ import { ImportComponent } from './import';
 import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
+import { WelcomeComponent } from './welcome';
 
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
@@ -89,7 +90,8 @@ type StoreType = {
     ExportComponent,
     ErrorComponent,
     ResourceComponent,
-    AddFileComponent
+    AddFileComponent,
+    WelcomeComponent
   ],
   declarations: [
     AppComponent,
@@ -124,7 +126,8 @@ type StoreType = {
     FileDragDropDirective,
     ResourceComponent,
     CheckOverFlowDirective,
-    AddFileComponent
+    AddFileComponent,
+    WelcomeComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,

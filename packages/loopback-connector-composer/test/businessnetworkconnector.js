@@ -353,6 +353,12 @@ describe('BusinessNetworkConnector Unit Test', () => {
                     },
                     'plural' : 'org.acme.base.BaseAsset',
                     'properties' : {
+                        '$class' : {
+                            'default': 'org.acme.base.BaseAsset',
+                            'description': 'The class identifier for this type',
+                            'required': false,
+                            'type': 'string'
+                        },
                         'theValue' : {
                             'description' : 'The instance identifier for this type',
                             'id' : true,
