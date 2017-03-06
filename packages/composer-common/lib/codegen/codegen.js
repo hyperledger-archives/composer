@@ -20,7 +20,6 @@ const JSONSchemaVisitor = require('./fromcto/jsonschema/jsonschemavisitor');
 const PlantUMLVisitor = require('./fromcto/plantuml/plantumlvisitor');
 const TypescriptVisitor = require('./fromcto/typescript/typescriptvisitor');
 const FileWriter = require('./filewriter');
-const fs = require('fs');
 const program = require('commander');
 
 /**
