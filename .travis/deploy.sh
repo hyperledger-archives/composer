@@ -96,8 +96,8 @@ if [ -z "${TRAVIS_TAG}" ]; then
     pushd ${DIR}/packages/composer-playground
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
     cf push fabric-composer-next-unstable -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env fabric-composer-next-unstable CLIENT_ID ${GH_UNSTABLE_OAUTH_CLIENT_ID}
-    cf set-env fabric-composer-next-unstable CLIENT_SECRET ${GH_UNSTABLE_OAUTH_CLIENT_SECRET}
+    cf set-env fabric-composer-next-unstable CLIENT_ID ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_ID}
+    cf set-env fabric-composer-next-unstable CLIENT_SECRET ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_SECRET}
     cf start fabric-composer-next-unstable
     popd
 
@@ -136,8 +136,8 @@ else
     pushd ${DIR}/packages/composer-playground
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
     cf push fabric-composer-next -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env fabric-composer-next CLIENT_ID ${GH_OAUTH_CLIENT_ID}
-    cf set-env fabric-composer-next CLIENT_SECRET ${GH_OAUTH_CLIENT_SECRET}
+    cf set-env fabric-composer-next CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
+    cf set-env fabric-composer-next CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
     cf start fabric-composer-next
     popd
 
