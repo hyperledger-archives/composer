@@ -1,13 +1,23 @@
 .composer {
-  .side-bar-nav {
+  .side-bar {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 100;
+    box-shadow: 2px 0 4px -1px $fifth-highlight;
+
+    .side-bar-nav {
       li {
 
-        padding: $space-smedium $space-large;
+        padding: $space-medium $space-large;
         border-left: $space-small solid transparent;
+        border-bottom: 1px solid $fourth-highlight;
 
         &.active {
           background-color: $third-highlight;
           border-left: $space-small solid $first-highlight;
+          background-color: $third-highlight;
         }
 
         &:hover {
@@ -17,6 +27,14 @@
         div {
           padding: $space-small 0 $space-small 0;
         }
+
       }
+    }
+  }
+
+  .main-view {
+    background-color: $fourth-highlight;
+    width: 80%;
+    padding: $space-large $space-large $space-medium $space-large;
   }
 }
