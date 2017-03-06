@@ -31,22 +31,20 @@ If you need to update or install anything please refer to the install guides:
 **Install the command line tools:**
 
 ```
-npm install -g composer-cli
+$ npm install -g composer-cli
 ```
 
 **Clone the Sample Applications Repository:**
 
 ```
-git clone https://github.com/fabric-composer/sample-applications.git
+$ git clone https://github.com/fabric-composer/sample-applications.git
 ```
 
 **Install the Getting Started Application:**
 
 ```
-cd sample-applications/
-cd packages
-cd getting-started
-npm install
+$ cd sample-applications/packages/getting-started
+$ npm install
 ```
 
 ***npm install***
@@ -66,7 +64,8 @@ There is [Reference material](https://fabric-composer.github.io/reference/comman
 
 Run the `npm test` command. You should see output as below.
 
-```
+```bash
+$ npm test
 > getting-started@1.0.0 test /Users/dselman/dev/git/sample-applications/packages/getting-started
 > mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
 
