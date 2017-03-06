@@ -32,6 +32,7 @@ import { AddIdentityComponent } from './addidentity';
 import { AboutComponent } from './about';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
+import { SuccessComponent } from './success';
 import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
@@ -88,6 +89,7 @@ type StoreType = {
     ImportComponent,
     ExportComponent,
     ErrorComponent,
+    SuccessComponent,
     ResourceComponent,
     AddFileComponent
   ],
@@ -115,6 +117,7 @@ type StoreType = {
     AddIdentityComponent,
     BusyComponent,
     ErrorComponent,
+    SuccessComponent,
     ResetComponent,
     ImportComponent,
     ExportComponent,
