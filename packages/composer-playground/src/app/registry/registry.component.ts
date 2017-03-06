@@ -1,7 +1,9 @@
-import {Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import {ClientService} from '../client.service';
-import {AlertService} from '../services/alert.service'
+import { ClientService } from '../client.service';
+import { AlertService } from '../services/alert.service'
+import { ResourceComponent } from '../resource/resource.component';
 
 @Component({
   selector: 'registry',
@@ -10,12 +12,14 @@ import {AlertService} from '../services/alert.service'
     './registry.component.scss'.toString()
   ]
 })
+
 export class RegistryComponent {
 
   private _registry = null;
   private resources = [];
 
   private expandedResource = null;
+  private showExpand = true;
 
   @Input()
   set registry(registry) {
@@ -26,9 +30,9 @@ export class RegistryComponent {
   }
 
   constructor(private clientService: ClientService,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private modalService: NgbModal) {
   }
-
 
   loadResources() {
     this._registry.getAll()
@@ -53,6 +57,19 @@ export class RegistryComponent {
     } else {
       this.expandedResource = resourceToExpand.getIdentifier();
     }
+  }
+
+  openNewResourceModal() {
+    const modalRef = this.modalService.open(ResourceComponent);
+    modalRef.componentInstance.registryID = this._registry.id;
+    modalRef.result.then(()=>{
+      // refresh current resource list
+      this.loadResources();
+    });
+  }
+
+  hasOverFlow(overflow: boolean) {
+    this.showExpand = overflow;
   }
 }
 

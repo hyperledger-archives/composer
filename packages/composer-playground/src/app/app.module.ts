@@ -36,6 +36,7 @@ import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ExportComponent } from './export';
+import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
 import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
 
@@ -45,7 +46,7 @@ import { CodemirrorModule } from 'ng2-codemirror';
 
 
 import { FileDragDropDirective } from './directives/file-drag-drop';
-//import { CheckOverFlowDirective } from './directives/check-overflow';
+import { CheckOverFlowDirective } from './directives/check-overflow';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
@@ -88,6 +89,7 @@ type StoreType = {
     ImportComponent,
     ExportComponent,
     ErrorComponent,
+    ResourceComponent,
     AddFileComponent
   ],
   declarations: [
@@ -122,6 +124,8 @@ type StoreType = {
     AboutComponent,
     FileDragDropDirective,
     ConnectionProfileComponent,
+    ResourceComponent,
+    CheckOverFlowDirective,
     AddFileComponent
 
   ],
@@ -194,4 +198,3 @@ export class AppModule {
   }
 
 }
-

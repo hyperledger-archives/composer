@@ -1,0 +1,68 @@
+<section class="side-bar">
+  <div class="profiles" style="flex:2">
+    <span class="uppercase">Connection Profiles</span>
+    <div class="side-bar-nav">
+      <ul>
+        <li *ngFor="let profile of profiles" [class.active]="profile.id === currentProfile.id" (click)="setCurrentProfile(profile)">
+          <div style="display: flex">
+            <div style="flex:1;">
+            {{profile.displayID}}
+            </div>
+            <div style="flex:1;text-align:right">
+            <svg class="ibm-icon" aria-hidden="true">
+              <use xlink:href="#icon-confirm_24"></use>
+            </svg>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div style="flex:2;display:flex;justify-content: flex-end;flex-direction:column;">
+    <div class="about" style="flex:1">
+      <h2>About</h2>
+      <about></about>
+    </div>
+    <div class="contact" style="flex:1">
+      <h2>Contact Us</h2>
+      <p><svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-world_24"></use>
+        </svg> Ask questions on Stackoverflow with the tag <u>fabric-composer</u></p>
+      <p><svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-world_24"></use>
+        </svg> Join the discussion in the fabric-composer channel on the Hyperledger-hosted <u>Rocket.chat</u></p>
+    </div>
+  </div>
+</section>
+<section class="main-view">
+  <div class="playground-profile-warning" *ngIf="warningVisible">
+    <div style="display:flex;">
+      <div style="margin-right:8px;">
+        <svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-world_24"></use>
+        </svg>
+      </div>
+      <div>
+        <h3>Connection Profiles are not available in Web Playground</h3>
+        <p>
+          It is not possible to add Connection Profiles in the Web Playground version of Fabric Composer.
+          If you like what you see, you can install a a local version of Fabric Composer.
+          The local version offers the same UI, or a CLI experience, and can be used to deploy Business Network Definitions to real Hyperleder Fabrics.
+        </p>
+        <p>And of course it's still 100% open source</p>
+        <p><a href="http://fabric-composer.org/">Learn more in the docs</a></p>
+      </div>
+      <div style="flex:1;text-align:right;">
+        <button type="button" class="button basic" (click)="hideWarning()">Hide</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="current-profile">
+    <h1>{{currentProfile.displayID}}</h1>
+    <p>{{currentProfile.details}}</p>
+    <button class="button basic" type="button" disabled>Delete this profile</button>
+    <button class="button" type="button" disabled>Use this profile</button>
+  </div>
+</section>

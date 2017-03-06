@@ -104,12 +104,31 @@ class Engine {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive']));
         }
         let dataService = context.getDataService();
+        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
+        let sysregistries, sysidentities;
         return Promise.resolve()
             .then(() => {
 
-                // Create the $sysdata collection if it does not exist.
-                return dataService
-                    .getCollection('$sysdata')
+                // Load, validate, and hash the business network definition.
+                LOG.debug(method, 'Loading business network definition');
+                businessNetworkBase64 = args[0];
+                let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
+                let sha256 = createHash('sha256');
+                businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
+                LOG.debug(method, 'Calculated business network definition hash', businessNetworkHash);
+                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+
+            })
+            .then((businessNetworkDefinition_) => {
+
+                // Cache the business network.
+                businessNetworkDefinition = businessNetworkDefinition_;
+                LOG.debug(method, 'Loaded business network definition, storing in cache');
+                Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
+
+                // Get the sysdata collection where the business network definition is stored.
+                LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
+                return dataService.getCollection('$sysdata')
                     .then((sysdata) => {
                         LOG.debug(method, 'The $sysdata collection already exists');
                         return sysdata;
@@ -122,20 +141,46 @@ class Engine {
             })
             .then((sysdata) => {
 
-                // Validate the business network archive and store it.
-                let businessNetworkBase64 = args[0];
-                let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
-                let sha256 = createHash('sha256');
-                let businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
-                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
-                    .then((businessNetworkDefinition) => {
-                        LOG.debug(method, 'Loaded business network definition, storing in cache');
-                        Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
-                        LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-                        return sysdata.add('businessnetwork', {
-                            data: businessNetworkBase64,
-                            hash: businessNetworkHash
-                        });
+                // Add the business network definition to the sysdata collection.
+                return sysdata.add('businessnetwork', {
+                    data: businessNetworkBase64,
+                    hash: businessNetworkHash
+                });
+
+            })
+            .then(() => {
+
+                // Ensure that the system registries collection exists.
+                LOG.debug(method, 'Ensuring that sysregistries collection exists');
+                return dataService.getCollection('$sysregistries')
+                    .then((sysregistries_) => {
+                        LOG.debug(method, 'The $sysregistries collection already exists');
+                        return sysregistries_;
+                    })
+                    .catch((error) => {
+                        LOG.debug(method, 'The $sysregistries collection does not exist, creating');
+                        return dataService.createCollection('$sysregistries');
+                    })
+                    .then((sysregistries_) => {
+                        sysregistries = sysregistries_;
+                    });
+
+            })
+            .then(() => {
+
+                // Ensure that the system identities collection exists.
+                LOG.debug(method, 'Ensuring that sysidentities collection exists');
+                return dataService.getCollection('$sysidentities')
+                    .then((sysidentities_) => {
+                        LOG.debug(method, 'The $sysidentities collection already exists');
+                        return sysidentities_;
+                    })
+                    .catch((error) => {
+                        LOG.debug(method, 'The $sysidentities collection does not exist, creating');
+                        return dataService.createCollection('$sysidentities');
+                    })
+                    .then((sysidentities_) => {
+                        sysidentities = sysidentities_;
                     });
 
             })
@@ -143,28 +188,11 @@ class Engine {
 
                 // Initialize the context.
                 LOG.debug(method, 'Initializing context');
-                return context.initialize();
-
-            })
-            .then(() => {
-
-                // Create the other system collections if they do not exist.
-                let systemRegistries = ['$sysidentities', '$sysregistries'];
-                return systemRegistries.reduce((result, systemRegistry) => {
-                    return result.then(() => {
-                        return dataService
-                            .getCollection(systemRegistry)
-                            .then((sysdata) => {
-                                LOG.debug(method, `The ${systemRegistry} collection already exists`);
-                                return sysdata;
-                            })
-                            .catch((error) => {
-                                LOG.debug(method, `The ${systemRegistry} collection does not exist, creating`);
-                                return dataService.createCollection(systemRegistry);
-                            });
-
-                    });
-                }, Promise.resolve());
+                return context.initialize({
+                    businessNetworkDefinition: businessNetworkDefinition,
+                    sysregistries: sysregistries,
+                    sysidentities: sysidentities
+                });
 
             })
             .then(() => {
@@ -226,7 +254,7 @@ class Engine {
      * with an error.
      */
     invoke(context, fcn, args) {
-        const method = 'invoke_m';
+        const method = 'invoke';
         LOG.entry(method, context, fcn, args);
         if (this[fcn]) {
             LOG.debug(method, 'Initializing context');
@@ -239,8 +267,9 @@ class Engine {
                     LOG.error(method, 'Caught error, rethrowing', error);
                     throw error;
                 })
-                .then(() => {
-                    LOG.exit(method);
+                .then((result) => {
+                    LOG.exit(method, result);
+                    return result;
                 });
         } else {
             LOG.error(method, 'Unsupported function', fcn, args);

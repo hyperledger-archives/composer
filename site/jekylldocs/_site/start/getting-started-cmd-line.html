@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Getting Started with Fabric Composer | Fabric Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Merriweather:300|Open+Sans:300,400,700|PT+Sans:400,700|Playfair+Display|Source+Code+Pro" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-91314349-1', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <!-- <link href="/assets/css/new-style.min.css" rel="stylesheet"> -->
+  
+
+  <!--link href="/blog/atom.xml" type="application/atom+xml" rel="alternate" title="Concerto Blog Atom Feed">-->
+</head>
+
+
+<body class="">
+
+  
+  
+
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html">Fabric Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="/start/quickstart.html">Quickstart</a>
+                </li>
+                <li>
+                    <a href="/overview/overview.html">Documentation</a>
+                </li>
+                <!-- <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/overview/overview.html">Overview</a>
+                        </li>
+                        <li>
+                            <a href="/start/index.html">Getting Started</a>
+                        </li>
+                        <li>
+                            <a href="/concepts/index.html">Concepts</a>
+                        </li>
+                        <li>
+                            <a href="/tasks/index.html">Tasks</a>
+                        </li>
+                        <li>
+                            <a href="/reference/index.html">Reference</a>
+                        </li>
+                        <li>
+                            <a href="/jsdoc/index.html">API Documentation</a>
+                        </li>
+                    </ul>
+                </li> -->
+                <li>
+                    <a href="/support/index.html">Support</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-2">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="/start/quickstart.html">Quickstart</a></strong>
+<strong><a href="/overview/overview.html">Overview</a></strong>
+<strong><a href="/start/getting-started-cmd-line.html">Getting Started</a></strong>
+<a href="/start/getting-started-cmd-line.html">Running a sample with the CLI</a>
+<a href="/start/getting-started-coding-bnd.html">Coding a Business Network Definition</a>
+<a href="/start/getting-started-rest-api.html">Generating a REST API</a>
+<a href="/start/getting-started-nodejs-app.html">Writing a node.js Application</a>
+<strong><a href="/concepts/businessnetwork.html">Concepts</a></strong>
+<strong><a href="/tasks/prerequisites.html">Tasks</a></strong>
+<strong><a href="/jsdoc/index.html">API Documentation</a></strong>
+<strong><a href="/reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="/support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-10">
+          <section class="content-chunk">
+            
+              <h1 id="running-a-sample-with-the-cli">Running a sample with the CLI</h1>
+
+<hr>
+
+<p>Before you follow these instructions, make sure you&#39;ve completed the
+<a href="./quickstart.html">Quickstart</a>!</p>
+
+<p>To help get started with application development using the Fabric Composer Framework, this guide will talk you through downloading Fabric Composer, starting a Fabric, deploying a simple business network and submitting transactions.</p>
+
+<p>This is all done using a simple business network  <strong>Digital Property Network</strong></p>
+
+<h2 id="what-is-the-digital-property-network">What is the Digital Property Network?</h2>
+
+<p>This network will be expanded for other tutorials, but for this getting started we&#39;ll keep it simple.</p>
+
+<p>We going to model <em>Land Titles</em>, each of which has an owner, description, and a boolean saying if this property/land is up for sale.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">asset</span> <span class="nx">LandTitle</span> <span class="nx">identified</span> <span class="nx">by</span> <span class="nx">titleId</span> <span class="p">{</span>
+  <span class="nx">o</span> <span class="nb">String</span>   <span class="nx">titleId</span>
+  <span class="o">--&gt;</span> <span class="nx">Person</span>   <span class="nx">owner</span>
+  <span class="nx">o</span> <span class="nb">String</span>   <span class="nx">information</span>
+  <span class="nx">o</span> <span class="nb">Boolean</span>  <span class="nx">forSale</span>   <span class="nx">optional</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>We&#39;ll also model the <em>Owner</em> as a Person (First,Last name).</p>
+<div class="highlight"><pre><code class="language-" data-lang="">participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+</code></pre></div>
+<p>We want to be able to mark one of the titles for sale so we&#39;ll create a <em>RegisterPropertyForSale</em> transaction that will update the for sale flag.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction RegisterPropertyForSale identified by transactionId{
+  o String transactionId
+  --&gt; Person seller
+  --&gt; LandTitle title
+}
+</code></pre></div>
+<p>The applications we&#39;re going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the Fabric Composer backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.</p>
+
+<h2 id="but-what-is-an-asset">But what is an asset?</h2>
+
+<p>An asset is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.</p>
+
+<p>It&#39;s worth reading the <a href="../overview/overview.html">Overview</a> page to get an idea of how everything fits together. The <a href="../reference/glossary.html">Glossary</a> provides a detailed description of each term.</p>
+
+<h2 id="what-are-we-going-to-do">What are we going to do?</h2>
+
+<p>All the resources and scripts you&#39;ll need are in a git repository that we&#39;ll clone, this will have the code for the applications along with the scripts to get the Hyperledger setup and ready to go.</p>
+
+<p>The first thing to do is to ensure that you have a suitable system ready for development.</p>
+
+<p><strong>Ensure that you have followed the steps in our Quickstart before continuing!</strong>  (Quickstart available <a href="./quickstart.html">here</a>)</p>
+
+<p>Let&#39;s go ahead and make a change to start to show how easy it is to develop with Fabric Composer.</p>
+
+<h2 id="updating-the-business-network">Updating the Business Network</h2>
+
+<p>We are going to make a simple change to the business logic for the business network definition.</p>
+
+<h3 id="clone-the-repository-and-install-dependencies">Clone the Repository and Install Dependencies</h3>
+
+<p>First clone the repository:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">git clone https://github.com/fabric-composer/sample-networks.git
+</code></pre></div><div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd </span>sample-networks/packages/DigitalProperty-Network
+</code></pre></div><div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install
+</code></pre></div>
+<h3 id="update-the-transaction-processor-function">Update the Transaction Processor Function</h3>
+
+<p>Open the file <code>lib/DigitalLandTitle.js</code> in a text editor and replace the contents with:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">
+<span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="cm">/** Process a property that is held for sale
+ * @param {net.biz.digitalPropertyNetwork.RegisterPropertyForSale} propertyForSale the property to be sold
+ * @transaction
+ */</span>
+<span class="kd">function</span> <span class="nx">onRegisterPropertyForSale</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'### onRegisterPropertyForSale '</span> <span class="o">+</span> <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
+    <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">forSale</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="cm">/* new line is here to update the information */</span>
+    <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">information</span> <span class="o">=</span> <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">information</span> <span class="o">+</span> <span class="s1">' Updated at: '</span> <span class="o">+</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">toDateString</span><span class="p">();</span>
+
+    <span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="update-the-business-network-definition">Update the Business Network Definition</h3>
+
+<p>In a real-life scenario at this point you would edit <code>package.json</code> to increment the version number in the <code>DigitalProperty-Network</code> directory and publish this to npm. But please don&#39;t publish to the DigitalProperty-Network in npm - otherwise we&#39;ll have version numbers in the 1000s :-)</p>
+
+<p>What we&#39;ll do therefore is adopt a different approach to create the Business Network Archive that is deployed to the Hyperledger.
+From within the DigitalProperty-Network directory..</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer archive create --inputDir .
+Creating Business Network Archive
+Looking <span class="k">for </span>package.json of Business Network Definition <span class="k">in</span> /home/matthew/git17/DigitalProperty-Network
+
+Description:Digital Property Network
+Name:digitalproperty-network
+Identifier:digitalproperty-network-0.0.1
+
+Written Business Network Definition Archive file to digitalproperty-network-0.0.1.bna
+Command completed successfully.
+</code></pre></div>
+<p>We now have a new file that is the digital business network archive.</p>
+
+<h3 id="update-the-deployed-business-network">Update the deployed business network</h3>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer network update --archiveFile digitalproperty-network@0.0.1.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+Deploying business network from archive digitalproperty-network-0.0.1.bna
+Business network definition:
+    Identifier: digitalproperty-network-0.0.1
+    Description: Digital Property Network
+Updating business network definition. This may take a few seconds...
+Command completed successfully.
+</code></pre></div>
+<h3 id="rerun-the-test">Rerun the Test</h3>
+
+<p>If you go back to the getting started directory now - and list all the commands that available, you&#39;ll see one called <code>submitTransaction</code></p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>npm run
+Lifecycle scripts included <span class="k">in </span>composer-gettingstarted:
+  <span class="nb">test
+    </span>mocha --recursive <span class="o">&amp;&amp;</span> npm run bootstrapAssets <span class="o">&amp;&amp;</span> npm run listAssets <span class="o">&amp;&amp;</span> npm run submitTransaction
+  install
+    scripts/download-hyperledger.sh <span class="o">&amp;&amp;</span> scripts/start-hyperledger.sh <span class="o">&amp;&amp;</span> npm run deployNetwork
+
+available via <span class="sb">`</span>npm run-script<span class="sb">`</span>:
+  submitTransaction
+    node cli.js landregistry submit <span class="o">&amp;&amp;</span> node cli.js landregistry list
+  listAssets
+    node cli.js landregistry list
+  bootstrapAssets
+    node cli.js landregistry bootstrap
+  startHLF
+    scripts/start-hyperledger.sh
+  stopHLF
+    scripts/stop-hyperledger.sh
+  teardownHLF
+    scripts/teardown.sh
+  deployNetwork
+    composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna <span class="o">&amp;&amp;</span> composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d <span class="o">&amp;&amp;</span> composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+
+</code></pre></div>
+<p>If you issue this command, that will submit a transaction as before - but importantly this is the updated transaction function. You should now see:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">$ npm run submitTransaction
+
+&gt; composer-gettingstarted@1.0.0 submitTransaction
+&gt; node cli.js landregistry submit &amp;&amp; node cli.js landregistry list
+
+info: [Composer-GettingStarted] Fabric Composer: Getting Started application
+info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network-0.0.11
+info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
+info: [Composer-GettingStarted] updateForSale Submitting transaction
+info: [Composer-GettingStarted] Transaction Submitted
+info: [Composer-GettingStarted] Command completed successfully.
+info: [Composer-GettingStarted] Fabric Composer: Getting Started application
+info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network-0.0.11
+=======
+</code></pre></div>
+<h2 id="digging-deeper">Digging Deeper</h2>
+
+<ul>
+<li><code>scripts/download-hyperledger.sh</code> This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Fabric Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.</li>
+</ul>
+
+<p><code>npm install</code> uses this script.</p>
+
+<ul>
+<li><code>scripts/start-hyperledger.sh</code> This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger fabric has started.
+<code>npm run startHLF</code> can also be used to call this script.</li>
+<li><code>scripts/stop-hyperledger.sh</code> This is the opposite of the start script, and will stop the Hyperledger Fabric - but it critically does not delete or remove any state. Therefore it canbe restarted with the start script.  <code>npm run stopHLF</code> can also be used to call this script.</li>
+<li><code>scripts/teardown.sh</code> This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Fabric Composer Connection Profiles.</li>
+</ul>
+
+<p><strong>Composer CLI</strong></p>
+
+<ul>
+<li><p><code>composer archive create -m digitalproperty-network --archiveFile digitalPropertyNetwork.bna</code>
+This command is used to create a Business Network Archive. <code>--archiveFile</code> is the name of the file. The <code>-m</code> is the npm module name of the business network to use. There is also a -d option to specify the directory the business network is in. Useful whilst developing the business network transactions functions.</p></li>
+<li><p><code>composer network deploy --archiveFile digitalPropertyNetwork.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d</code>
+This deploys the business network to the HyperLedger runtime; the archive is specified but also the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)</p></li>
+<li><p><code>composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d</code>
+This lists the deployed business network details. <code>-n</code> is the name of the business network. With the same options for the Hyperledger Entrollment Id and Secret (the secret if not included in the command line will be prompted for)</p></li>
+</ul>
+
+<p><strong>Sample Applications</strong></p>
+
+<p>There are 3 sample Javascript applications that use the Fabric Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.</p>
+
+<ul>
+<li><code>node cli.js landregistry submit</code>  This applications connects, and submits a transaction.</li>
+<li><code>node cli.js landregistry list</code>   This lists the contents of the asset registries that have been defined in the business network.</li>
+<li><code>node cli.js landregistry bootstrap</code> This applications puts some pretend assets into the registries to work with.</li>
+</ul>
+
+<h3 id="nice-one">Nice one!</h3>
+
+<p>We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Fabric Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.</p>
+
+<p>If you want to continue exploring, check out our other Getting Started guides:</p>
+
+<p><a href="./getting-started-coding-bnd.html">Coding a Business Network Definition</a></p>
+
+<p><a href="./getting-started-rest-api.html">Generating a REST API</a></p>
+
+<p><a href="./getting-started-nodejs-app.html">Writing a Node.js App</a></p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+    </article>
+</div>
+
+    
+
+    
+    
+
+
+
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navbar-fixed-bottom">
+    <div class="container">
+      <div class="navbar-fixed-bottom">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+      </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+          <ul class="nav navbar-nav navbar-left">
+            <li>
+              <a href="https://twitter.com/ibmblockchain" class="icon">
+                <img src="/assets/img/social-twitter.svg" class="SiteFooter-icon" alt="Twitter">
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/fabric-composer/fabric-composer" class="icon">
+                <img src="/assets/img/social-github.svg" class="SiteFooter-icon" alt="Github">
+              </a>
+            </li>
+            <li>
+              <a href="http://stackoverflow.com/questions/tagged/fabric-composer" class="icon">
+              <i class="fa fa-stack-overflow icon" aria-hidden="true"></i>
+              </a>
+            </li>
+            <li>
+              <a href="/jsdoc/index.html">APIs</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+              <li>
+                  <a>Copyright 2017 IBM Corp. All Rights Reserved</a>
+              </li>
+          </ul>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+      new Clipboard(".btn");
+  });
+
+</script>
+
+</html>
