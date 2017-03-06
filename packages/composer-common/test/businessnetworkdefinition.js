@@ -40,6 +40,10 @@ describe('BusinessNetworkDefinition', () => {
             }).should.throw(/Version number is invalid/);
         });
 
+        it('should accept README', () => {
+            const bnd = new BusinessNetworkDefinition('id@1.0.0', 'description', 'readme');
+            bnd.getMetadata().getREADME().should.equal('readme');
+        });
     });
 
     describe('#accessors', () => {
@@ -92,6 +96,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getName().should.equal('test-archive');
                 businessNetwork.getVersion().should.equal('0.0.1');
                 businessNetwork.getDescription().should.equal('A test business network.');
+                businessNetwork.getMetadata().getREADME().should.equal('This is a test');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
                 businessNetwork.aclManager.getAclRules().should.have.length(5);
@@ -138,6 +143,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
                 businessNetwork.identifier.should.equal('test-archive@0.0.1');
                 businessNetwork.description.should.equal('A test business network.');
+                businessNetwork.getMetadata().getREADME().should.equal('This is a test');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
