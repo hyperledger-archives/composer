@@ -104,31 +104,49 @@ class EngineBusinessNetworks {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'updateBusinessNetwork', ['businessNetworkArchive']));
         }
         let dataService = context.getDataService();
-        return dataService.getCollection('$sysdata')
-            .then((sysdata) => {
+        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
+        return Promise.resolve()
+            .then(() => {
 
-                // Validate the business network archive and store it.
-                let businessNetworkBase64 = args[0];
+                // Load, validate, and hash the business network definition.
+                LOG.debug(method, 'Loading business network definition');
+                businessNetworkBase64 = args[0];
                 let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
                 let sha256 = createHash('sha256');
-                let businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
-                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
-                    .then((businessNetworkDefinition) => {
-                        LOG.debug(method, 'Loaded business network definition, storing in cache');
-                        Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
-                        LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
-                        return sysdata.update('businessnetwork', {
-                            data: businessNetworkBase64,
-                            hash: businessNetworkHash
-                        });
-                    });
+                businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
+                LOG.debug(method, 'Calculated business network definition hash', businessNetworkHash);
+                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+
+            })
+            .then((businessNetworkDefinition_) => {
+
+                // Cache the business network.
+                businessNetworkDefinition = businessNetworkDefinition_;
+                LOG.debug(method, 'Loaded business network definition, storing in cache');
+                Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
+
+                // Get the sysdata collection where the business network definition is stored.
+                LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
+                return dataService.getCollection('$sysdata');
+
+            })
+            .then((sysdata) => {
+
+                // Update the business network definition in the sysdata collection.
+                return sysdata.update('businessnetwork', {
+                    data: businessNetworkBase64,
+                    hash: businessNetworkHash
+                });
 
             })
             .then(() => {
 
                 // Reinitialize the context to reload the business network.
                 LOG.debug(method, 'Reinitializing context');
-                return context.initialize(true);
+                return context.initialize({
+                    businessNetworkDefinition: businessNetworkDefinition,
+                    reinitialize: true
+                });
 
             })
             .then(() => {

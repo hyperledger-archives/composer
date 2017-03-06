@@ -46,6 +46,10 @@ else
     cd "${DIR}/packages/composer-ui"
     npm run build:prod
 
+    # Build the Composer Playground.
+    cd "${DIR}/packages/composer-playground"
+    npm run build:prod
+
 fi
 
 echo ${ME} `date`
