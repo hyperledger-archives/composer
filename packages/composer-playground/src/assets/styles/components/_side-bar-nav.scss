@@ -1,10 +1,12 @@
 .composer {
   .side-bar-nav {
       li {
+
         padding: $space-smedium $space-large;
         border-left: $space-small solid transparent;
 
         &.active {
+          background-color: $third-highlight;
           border-left: $space-small solid $first-highlight;
         }
 
@@ -13,8 +15,7 @@
         }
 
         div {
-          border-bottom: 1px solid $fourth-highlight;
-          padding-bottom: $space-medium;
+          padding: $space-small 0 $space-small 0;
         }
       }
   }

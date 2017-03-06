@@ -94,15 +94,14 @@ export class ImportComponent implements OnInit {
     }
   }
 
-  private fileDetected(count) {
+  private fileDetected() {
     this.expandInput = true;
   }
 
 
-  private fileLeft(count) {
-    if (count === 0) {
+  private fileLeft() {
       this.expandInput = false;
-    }
+
   }
 
   private fileAccepted(file: File) {

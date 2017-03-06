@@ -10,7 +10,6 @@ connection-profile {
     width: 25%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 
     box-shadow: 5px 0 5px -5px #333;
 
@@ -31,11 +30,8 @@ connection-profile {
     }
 
     .about {
-      padding: $space-medium $space-large;
-    }
-
-
-    .contact {
+      flex:1;
+      justify-content: flex-end;
       padding: $space-medium $space-large;
     }
   }

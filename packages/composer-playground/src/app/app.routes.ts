@@ -9,6 +9,7 @@ import {TransactionRegistryComponent} from './transactionregistry';
 import {SettingsComponent} from './settings';
 import {NoContentComponent} from './no-content';
 import {GithubComponent} from './github';
+import {ConnectionProfileComponent} from './connectionprofile/connectionprofile.component.ts';
 
 export const ROUTES: Routes = [
   {path: 'editor', component: EditorComponent},
@@ -19,6 +20,7 @@ export const ROUTES: Routes = [
   {path: 'participantregistries/:id', component: ParticipantRegistryComponent},
   {path: 'transactionregistry', component: TransactionRegistryComponent},
   {path: 'settings', component: SettingsComponent},
+  {path: 'profile', component: ConnectionProfileComponent},
   {path: 'github', component: GithubComponent},
   {path: '', redirectTo: 'editor', pathMatch: 'full'},
   {path: '**', component: NoContentComponent}
