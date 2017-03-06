@@ -16,8 +16,11 @@ RUN adduser -S composer
 # Run as the composer user ID.
 USER composer
 
+# Run in the composer users home directory.
+WORKDIR /home/composer
+
 # Run supervisor to start the application.
-CMD [ "pm2-docker", "composer-ui", "-p", "8080" ]
+CMD [ "pm2-docker", "composer-ui" ]
 
 # Expose port 8080.
 EXPOSE 8080
