@@ -38,7 +38,7 @@ console.log('Input dir ' + program.inputDir);
 processDirectory(program.inputDir);
 
 /**
- * Processes all the Javascript files within a directory.
+ * Processes all the UML files within a directory.
  *
  * @param {string} path - the path to process
  * @private
@@ -63,7 +63,7 @@ function processDirectory(path) {
 }
 
 /**
- * Processes a single Javascript file (.js extension)
+ * Processes a single UML file (.uml extension)
  *
  * @param {string} file - the file to process
  * @private
