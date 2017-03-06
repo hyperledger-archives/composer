@@ -59,9 +59,10 @@ describe('AboutComponent', () => {
     it ('Should display the correct title for the AboutComponent', () => {
         fixture.detectChanges();
         expect(el.textContent).toContain('About');
-    })
+    });
 
     it ('Should call getVersions when the component is created', fakeAsync(() => {
+<<<<<<< HEAD
         return component.ngOnInit()
         .then(() => {
           fixture.detectChanges();
@@ -73,4 +74,14 @@ describe('AboutComponent', () => {
           expect(component.admin).toBe(MOCK_RETURN.admin);
         });
     }))
+=======
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+        expect(fixture.componentInstance.playground).toBe(MOCK_RETURN.playground);
+        expect(fixture.componentInstance.common).toBe(MOCK_RETURN.common);
+        expect(fixture.componentInstance.client).toBe(MOCK_RETURN.client);
+        expect(fixture.componentInstance.admin).toBe(MOCK_RETURN.admin);
+    }));
+>>>>>>> 0083ef1ec22edcfd662b2818a05d56fb5f2f2d64
 });

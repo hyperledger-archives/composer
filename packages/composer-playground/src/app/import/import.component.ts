@@ -10,7 +10,7 @@ const fabricComposerOwner = 'fabric-composer';
 const fabricComposerRepository = 'sample-networks';
 
 @Component({
-  selector: 'sample-model',
+  selector: 'import-modal',
   templateUrl: './import.component.html',
   styleUrls: ['./import.component.scss'.toString()]
 })
