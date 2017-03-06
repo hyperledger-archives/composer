@@ -79,7 +79,7 @@ export class ImportComponent implements OnInit {
     this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
     if (this.gitHubAuthenticated) {
       return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner,
-                                                             fabricComposerRepository)
+        fabricComposerRepository)
         .then((modelsInfo) => {
           this.sampleNetworks = modelsInfo;
           this.gitHubInProgress = false;
@@ -113,6 +113,10 @@ export class ImportComponent implements OnInit {
           this.currentBusinessNetwork = businessNetwork;
           // needed for if browse file
           this.expandInput = true;
+        })
+        .catch((error) => {
+          this.alertService.errorStatus$.next(error);
+          this.expandInput = false;
         });
     };
 
@@ -121,6 +125,7 @@ export class ImportComponent implements OnInit {
 
   private fileRejected(reason: string) {
     this.alertService.errorStatus$.next(reason);
+    this.expandInput = false;
   }
 
   private removeFile() {
