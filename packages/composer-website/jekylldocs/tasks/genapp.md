@@ -30,7 +30,7 @@ npm install -g typings
 
 npm install -g bower
 
-npm install -g angular-cli
+npm install -g @angular/cli
 ```
 
 

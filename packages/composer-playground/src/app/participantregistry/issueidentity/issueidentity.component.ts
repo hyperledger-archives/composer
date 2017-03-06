@@ -8,9 +8,9 @@ const LZString = require('lz-string');
 import { AdminService } from '../../admin.service';
 import { ConnectionProfileService } from '../../connectionprofile.service';
 import { ClientService } from '../../client.service';
-import { WalletService } from '../../wallet.service';
 import { NotificationService } from '../../notification.service';
 import { InitializationService } from '../../initialization.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'issue-identity',
@@ -39,7 +39,8 @@ export class IssueIdentityComponent implements OnInit, OnDestroy {
     private initializationService: InitializationService,
     private adminService: AdminService,
     private connectionProfileService: ConnectionProfileService,
-    private http: Http
+    private http: Http,
+    private alertService: AlertService
   ) {
 
   }
@@ -70,7 +71,7 @@ export class IssueIdentityComponent implements OnInit, OnDestroy {
 
   private issue() {
     this.issueInProgress = true;
-    this.clientService.busyStatus$.next('Issuing identity ...');
+    this.alertService.busyStatus$.next('Issuing identity ...');
     let businessNetworkConnection = this.clientService.getBusinessNetworkConnection();
     let connectionProfileName = this.connectionProfileService.getCurrentConnectionProfile();
     let userID, userSecret, invitationURL;
@@ -112,7 +113,7 @@ export class IssueIdentityComponent implements OnInit, OnDestroy {
       })
       .then((response: Response) => {
         invitationURL = response.json().url;
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
         this.issued$.emit({
           userID: userID,
           userSecret: userSecret,
@@ -121,8 +122,8 @@ export class IssueIdentityComponent implements OnInit, OnDestroy {
         this.issueInProgress = false;
       })
       .catch((error) => {
-        this.clientService.busyStatus$.next(null);
-        this.clientService.errorStatus$.next(error);
+        this.alertService.busyStatus$.next(null);
+        this.alertService.errorStatus$.next(error);
         this.error$.emit(error);
         this.issueInProgress = false;
       })

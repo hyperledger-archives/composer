@@ -165,6 +165,12 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(mockRegistryManager.add);
                     sinon.assert.calledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
+                    sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledWith(mockContext.initialize, {
+                        businessNetworkDefinition: mockBusinessNetwork,
+                        sysregistries: sysregistries,
+                        sysidentities: sysidentities
+                    });
                 });
         });
 
@@ -194,14 +200,21 @@ describe('Engine', () => {
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             let sysregistries = sinon.createStubInstance(DataCollection);
+            let sysidentities = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysregistries').resolves(sysregistries);
             mockDataService.getCollection.withArgs('$sysidentities').rejects();
-            mockDataService.createCollection.withArgs('$sysidentities').resolves();
+            mockDataService.createCollection.withArgs('$sysidentities').resolves(sysidentities);
             mockRegistryManager.get.rejects();
             mockRegistryManager.add.resolves();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysregistries');
+                    sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledWith(mockContext.initialize, {
+                        businessNetworkDefinition: mockBusinessNetwork,
+                        sysregistries: sysregistries,
+                        sysidentities: sysidentities
+                    });
                 });
         });
 
@@ -211,14 +224,22 @@ describe('Engine', () => {
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
+            let sysregistries = sinon.createStubInstance(DataCollection);
+            let sysidentities = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysregistries').rejects();
-            mockDataService.createCollection.withArgs('$sysregistries').resolves();
-            mockDataService.getCollection.withArgs('$sysidentities').resolves();
+            mockDataService.createCollection.withArgs('$sysregistries').resolves(sysregistries);
+            mockDataService.getCollection.withArgs('$sysidentities').resolves(sysidentities);
             mockRegistryManager.get.rejects();
             mockRegistryManager.add.resolves();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysidentities');
+                    sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledWith(mockContext.initialize, {
+                        businessNetworkDefinition: mockBusinessNetwork,
+                        sysregistries: sysregistries,
+                        sysidentities: sysidentities
+                    });
                 });
         });
 

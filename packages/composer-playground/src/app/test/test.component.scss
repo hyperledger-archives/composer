@@ -1,8 +1,25 @@
 @import '../../assets/styles/base/_colors.scss';
 @import '../../assets/styles/base/_variables.scss';
 
-.test {
+app-test {
   display: flex;
+  width: 100%;
 
+  .side-bar {
+    .registries {
+      & > * {
+        padding: $space-smedium $space-large;
+      }
+      margin-top: $space-large;
 
+      span {
+        color: $secondary-text;
+        display: inline-block;
+      }
+
+      .side-bar-nav {
+        padding: 0;
+      }
+    }
+  }
 }

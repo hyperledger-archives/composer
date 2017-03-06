@@ -10,7 +10,7 @@ excerpt: Supported platforms (operating environment)
 
 ---
 
-- Ubuntu Linux 14.04 LTS (64-bit)
+- Ubuntu Linux 14.04, 16.04 LTS (64-bit)
 - Mac OS 10.12
 
 # Docker Engine

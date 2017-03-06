@@ -1,0 +1,12 @@
+instrumentation:
+    excludes:
+        - ".vscode/*"
+        - "config/*"
+        - "dist/*"
+        - "docker/*"
+check:
+    global:
+        statements: 96
+        branches: 50
+        functions: 94
+        lines: 95

@@ -1,58 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { BehaviorSubject, Subject } from 'rxjs/Rx';
+import {Injectable} from '@angular/core';
+import {Http, Response} from '@angular/http';
+import {BehaviorSubject, Subject} from 'rxjs/Rx';
 
-import { ConnectionProfileService } from './connectionprofile.service';
-import { WalletService } from './wallet.service';
-import { IdentityService } from './identity.service';
+import {ConnectionProfileService} from './connectionprofile.service';
+import {WalletService} from './wallet.service';
+import {IdentityService} from './identity.service';
+import {AlertService} from './services/alert.service';
 
-import { AdminConnection, BusinessNetworkDefinition } from 'composer-admin';
-import { AclFile, ConnectionProfileManager, Logger } from 'composer-common';
+import {AdminConnection, BusinessNetworkDefinition} from 'composer-admin';
+import {AclFile, ConnectionProfileManager, Logger} from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
-
-const sampleModelCode =
-`/**
- * Sample business network definition.
- */
-namespace org.acme.biznet
-
-asset SampleAsset identified by assetId {
-  o String assetId
-  --> SampleParticipant owner
-  o String value
-}
-
-participant SampleParticipant identified by participantId {
-  o String participantId
-  o String firstName
-  o String lastName
-}
-
-transaction SampleTransaction identified by transactionId {
-  o String transactionId
-  --> SampleAsset asset
-  o String newValue
-}
-`
-
-const sampleScriptCode =
-`/**
- * Sample transaction processor function.
- */
-function onSampleTransaction(sampleTransaction) {
-  sampleTransaction.asset.value = sampleTransaction.newValue;
-  return getAssetRegistry('org.acme.biznet.SampleAsset')
-    .then(function (assetRegistry) {
-      return assetRegistry.update(sampleTransaction.asset);
-    });
-}`
-
-const sampleAclCode =
-`/**
- * Sample access control list.
- */
-Default | org.acme.biznet | ALL | ANY | (true) | ALLOW | Allow all participants access to all resources\n`
 
 @Injectable()
 export class AdminService {
@@ -63,13 +21,12 @@ export class AdminService {
   private initialDeploy: boolean = false;
   private config: any = null;
 
-  public busyStatus$: Subject<string> = new BehaviorSubject<string>(null);
-  public errorStatus$: Subject<string> = new BehaviorSubject<string>(null);
   public connectionProfileChanged$: Subject<string> = new BehaviorSubject<string>(null);
 
-  constructor(private connectionProfileService: ConnectionProfileService, private walletService: WalletService, private identityService: IdentityService, private http: Http) {
+  constructor(private connectionProfileService: ConnectionProfileService, private walletService: WalletService, private identityService: IdentityService, private http: Http, private alertService: AlertService) {
     Logger.setFunctionalLogger({
-      log: () => { }
+      log: () => {
+      }
     });
     this.adminConnection = new AdminConnection();
     // The proxy connection manager defaults to http://localhost:15699,
@@ -94,14 +51,14 @@ export class AdminService {
     let deployed = false;
     let madeItToConnect = false;
     let connectionProfile, userID, userSecret;
-    this.busyStatus$.next('Establishing admin connection ...');
+    this.alertService.busyStatus$.next('Establishing admin connection ...');
     console.log('Establishing admin connection ...');
     this.connectingPromise = Promise.resolve()
       .then(() => {
 
         // Load the config data.
         return this.http.get('/config.json')
-          .map((res:Response) => res.json())
+          .map((res: Response) => res.json())
           .toPromise();
 
       })
@@ -116,7 +73,7 @@ export class AdminService {
           .catch((error) => {
             // It doesn't exist, so create it.
             console.log('$default connection profile does not exist, creating');
-            return this.adminConnection.createProfile('$default', { type: 'web' })
+            return this.adminConnection.createProfile('$default', {type: 'web'})
               .then(() => {
                 return this.walletService.getWallet('$default').add('admin', 'adminpw');
               });
@@ -150,17 +107,17 @@ export class AdminService {
             console.log('Creating credentials for connection profile', connectionProfileName);
             return this.walletService.getWallet(connectionProfileName)
           })
-          .then((wallet) => {
-            const connectionProfileCredentials = credentials[connectionProfileName];
-            const credentialNames = Object.keys(connectionProfileCredentials).sort();
-            return credentialNames.reduce((result2, credentialName) => {
-              return wallet.get(credentialName)
-                .catch((error) => {
-                  console.log('Adding credential', credentialName);
-                  return wallet.add(credentialName, connectionProfileCredentials[credentialName]);
-                });
-            }, Promise.resolve());
-          })
+            .then((wallet) => {
+              const connectionProfileCredentials = credentials[connectionProfileName];
+              const credentialNames = Object.keys(connectionProfileCredentials).sort();
+              return credentialNames.reduce((result2, credentialName) => {
+                return wallet.get(credentialName)
+                  .catch((error) => {
+                    console.log('Adding credential', credentialName);
+                    return wallet.add(credentialName, connectionProfileCredentials[credentialName]);
+                  });
+              }, Promise.resolve());
+            })
         }, Promise.resolve());
 
       })
@@ -184,9 +141,9 @@ export class AdminService {
                 deployWaitTime: 5 * 60,
                 invokeWaitTime: 30
               })
-              .then(() => {
-                return this.walletService.getWallet('hlfabric').add('admin', 'Xurw3yU9zI0l');
-              });
+                .then(() => {
+                  return this.walletService.getWallet('hlfabric').add('admin', 'Xurw3yU9zI0l');
+                });
             });
         } else {
           console.log('Not in Docker Compose environment, not checking for hlfabric connection profile');
@@ -224,7 +181,7 @@ export class AdminService {
               return businessNetwork === 'org.acme.biznet';
             });
             if (!deployed) {
-              this.busyStatus$.next('Deploying sample business network ...');
+              this.alertService.busyStatus$.next('Deploying sample business network ...');
               console.log('Deploying sample business network');
               let businessNetworkDefinition = this.generateDefaultBusinessNetwork();
               return this.adminConnection.deploy(businessNetworkDefinition)
@@ -248,12 +205,12 @@ export class AdminService {
         this.connectingPromise = null;
       })
       .catch((error) => {
-        this.busyStatus$.next(`Failed to connect: ${error}`);
+        this.alertService.busyStatus$.next(`Failed to connect: ${error}`);
         this.isConnected = false;
         this.connectingPromise = null;
         throw error;
-      })
-      return this.connectingPromise;
+      });
+    return this.connectingPromise;
   }
 
   deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {

@@ -1,0 +1,35 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+.import {
+
+  .file-types-list {
+    max-height: 200px;
+    margin-top: 16px;
+
+    .file-types-list-item {
+      background-color: $third-highlight;
+      padding: $space-medium;
+      &:nth-child(even) {
+        background-color: $white;
+      }
+
+      .description {
+        font-style: italic;
+        padding-left: 2em;
+      }
+
+      label.radio-label {
+        font-weight: bold;
+
+        &::before {
+          top: 8px;
+        }
+
+        &::after {
+          top: 13px;
+        }
+      }
+    }
+  }
+}

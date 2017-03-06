@@ -31,13 +31,15 @@ class RegistryManager extends EventEmitter {
      * @param {Introspector} introspector The introspector to use.
      * @param {Serializer} serializer The serializer to use.
      * @param {AccessController} accessController The access controller to use.
+     * @param {DataCollection} sysregistries The system registries collection to use.
      */
-    constructor(dataService, introspector, serializer, accessController) {
+    constructor(dataService, introspector, serializer, accessController, sysregistries) {
         super();
         this.dataService = dataService;
         this.introspector = introspector;
         this.serializer = serializer;
         this.accessController = accessController;
+        this.sysregistries = sysregistries;
     }
 
     /**
@@ -107,10 +109,7 @@ class RegistryManager extends EventEmitter {
      * objects when complete, or rejected with an error.
      */
     getAll(type) {
-        return this.dataService.getCollection('$sysregistries')
-            .then((sysregistries) => {
-                return sysregistries.getAll();
-            })
+        return this.sysregistries.getAll()
             .then((registries) => {
                 registries = registries.filter((registry) => {
                     return registry.type === type;
@@ -137,10 +136,7 @@ class RegistryManager extends EventEmitter {
      */
     get(type, id) {
         let collectionID = type + ':' + id;
-        return this.dataService.getCollection('$sysregistries')
-            .then((sysregistries) => {
-                return sysregistries.get(collectionID);
-            })
+        return this.sysregistries.get(collectionID)
             .then((registry) => {
                 return this.dataService.getCollection(collectionID)
                     .then((dataCollection) => {
@@ -158,10 +154,7 @@ class RegistryManager extends EventEmitter {
      */
     exists(type, id) {
         let collectionID = type + ':' + id;
-        return this.dataService.getCollection('$sysregistries')
-            .then((sysregistries) => {
-                return sysregistries.exists(collectionID);
-            })
+        return this.sysregistries.exists(collectionID)
             .then((exists) => {
                 return exists;
             });
@@ -188,14 +181,7 @@ class RegistryManager extends EventEmitter {
      */
     add(type, id, name) {
         let collectionID = type + ':' + id;
-        return this.dataService.getCollection('$sysregistries')
-            .then((sysregistries) => {
-                return sysregistries.add(collectionID, {
-                    type: type,
-                    id: id,
-                    name: name
-                });
-            })
+        return this.sysregistries.add(collectionID, { type: type, id: id, name: name })
             .then(() => {
                 return this.dataService.createCollection(collectionID);
             })
