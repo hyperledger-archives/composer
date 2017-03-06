@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Task - Installing Development Pre-requisites
+title: Task - Installing Development Pre-requisites Manually
 category: tasks
 sidebar: sidebars/tasks.md
-excerpt: How to install the development pre-requisites
+excerpt: How to install the development pre-requisites manually
 ---
 
 # Installing Development Pre-requisites
@@ -12,45 +12,29 @@ excerpt: How to install the development pre-requisites
 
 The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in Github so *git* will be needed as well.
 
+Automatic installations scripts are available for [Ubuntu 14.04](./prerequisites.md)
+
 The recommended versions are:
 *Docker*: v1.12.5
 *Docker-compose*: v1.10.0
 *node.js*: v6.9.5
 
+## Manual Installation
 
+### 1. Installing NVM
+We highly recommend installing NVM to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version higher than v4.6.0.
 
-## Installation for Ubuntu 14.04 LTS
+[Official nvm Github repository](https://github.com/creationix/nvm)
 
-There is an automated installation script that will install *node* *docker* *docker-compose*.  
-If some of the tools are already installed or to do the installation step-by-step follow the [manual instructions](./manual_prerequisites.md).
+### 2. Installing Docker Engine
+The Docker Engine is essential for running system tests and running the HyperLedger Fabric.
 
+[Official Docker Engine Installation Guide](https://docs.docker.com/engine/installation/)
 
-```bash
-$ curl -O https://raw.githubusercontent.com/mbwhite/sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
-$ chmod u+x prereqs-ubuntu.sh
-```
+### 3. Installing Docker Compose
+[Docker Compose](https://docs.docker.com/compose/overview/) is used for easily configuring and starting HyperLedger Fabric.
 
-Next run the script - as this uses sudo you will be prompted for your password.
-
-```bash
-$ ./prereqs-ubuntu.sh
-```
-
-**Important:** You will then need to logout and login again before running the next command
-
-The end of the script does print out the versions installed, if you wish to check here are the version commands.
-
-```bash
-$ node --version
-v6.10.0
-$ npm --version
-4.3.0
-$ docker --version
-Docker version 1.13.1, build 092cba3
-$ docker-compose --version
-docker-compose version 1.11.1, build 7c5d5e4
-```
-
+[Official Docker Compose Installation guide](https://docs.docker.com/compose/install/)
 
 ## Optional Installs
 
