@@ -19,6 +19,8 @@ import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';
 
+import {WelcomeComponent} from './welcome';
+
 const LZString = require('lz-string');
 
 const composerPackageVersion = require('../../package.json').version;
@@ -89,6 +91,8 @@ export class AppComponent {
         this.queryParamsUpdated(queryParams);
       })
     ];
+
+    this.openWelcomeModal();
   }
 
   ngOnDestroy() {
@@ -271,6 +275,10 @@ export class AppComponent {
       const modalRef  = this.modalService.open(ErrorComponent);
       modalRef.componentInstance.error = errorStatus;
     }
+  }
+
+  private openWelcomeModal() {
+    this.modalService.open(WelcomeComponent);
   }
 
 }
