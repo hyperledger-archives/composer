@@ -39,14 +39,18 @@ describe('AboutComponent', () => {
     let de: DebugElement;
     let el: HTMLElement;
 
+    beforeEach(async(() => {
+      return TestBed.configureTestingModule({
+        declarations: [ AboutComponent ],
+        providers: [{ provide: AboutService, useClass: MockAboutService }]
+      })
+      .compileComponents();
+    }));
+
     beforeEach(() => {
-      TestBed.configureTestingModule({
-            declarations: [ AboutComponent ],
-            providers: [{ provide: AboutService, useClass: MockAboutService }]
-        });
-
       fixture = TestBed.createComponent(AboutComponent);
-
+      component = fixture.componentInstance;
+      fixture.detectChanges();
       // query for the title <h2> by CSS element selector
       de = fixture.debugElement.query(By.css('h2'));
       el = de.nativeElement;
@@ -58,12 +62,15 @@ describe('AboutComponent', () => {
     })
 
     it ('Should call getVersions when the component is created', fakeAsync(() => {
-        fixture.detectChanges();
-        tick();
-        fixture.detectChanges();
-        expect(fixture.componentInstance.playground).toBe(MOCK_RETURN.playground);
-        expect(fixture.componentInstance.common).toBe(MOCK_RETURN.common);
-        expect(fixture.componentInstance.client).toBe(MOCK_RETURN.client);
-        expect(fixture.componentInstance.admin).toBe(MOCK_RETURN.admin);
+        return component.ngOnInit()
+        .then(() => {
+          fixture.detectChanges();
+          tick();
+          fixture.detectChanges();
+          expect(component.playground).toBe(MOCK_RETURN.playground);
+          expect(component.common).toBe(MOCK_RETURN.common);
+          expect(component.client).toBe(MOCK_RETURN.client);
+          expect(component.admin).toBe(MOCK_RETURN.admin);
+        });
     }))
 });

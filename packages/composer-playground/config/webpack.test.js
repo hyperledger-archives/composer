@@ -5,6 +5,7 @@
 const webpack = require('webpack');
 const helpers = require('./helpers');
 const path = require('path');
+const webpackMerge = require('webpack-merge'); // used to merge webpack configs
 
 /**
  * Webpack Plugins
@@ -43,19 +44,21 @@ module.exports = function (options) {
      *
      * See: http://webpack.github.io/docs/configuration.html#resolve
      */
+   /*
+     * Options affecting the resolving of modules.
+     *
+     * See: http://webpack.github.io/docs/configuration.html#resolve
+     */
     resolve: {
-
-      /**
+      /*
        * An array of extensions that should be used to resolve modules.
        *
        * See: http://webpack.github.io/docs/configuration.html#resolve-extensions
        */
-      extensions: ['.ts', '.js', '.json'],
+      extensions: ['.ts', '.js', '.json', '.html'],
 
-      /**
-       * Make sure root is src
-       */
-      modules: [ path.resolve(__dirname, 'src'), 'node_modules' ],
+      // An array of directory names to be resolved to the current directory
+      modules: [helpers.root('src'), helpers.root('node_modules')],
 
       // Use our versions of Node modules.
       alias: {
@@ -80,6 +83,33 @@ module.exports = function (options) {
     module: {
 
       rules: [
+        /*
+         * Typescript loader support for .ts and Angular 2 async routes via .async.ts
+         * Replace templateUrl and stylesUrl with require()
+         *
+         * See: https://github.com/s-panferov/awesome-typescript-loader
+         * See: https://github.com/TheLarkInn/angular2-template-loader
+         */
+        {
+          test: /\.ts$/,
+          use: [
+            {
+              loader: 'awesome-typescript-loader',
+              query: {
+                // use inline sourcemaps for "karma-remap-coverage" reporter
+                sourceMap: false,
+                inlineSourceMap: true,
+                compilerOptions: {
+
+                  // Remove TypeScript helpers to be injected
+                  // below by DefinePlugin
+                  removeComments: true
+
+                }
+              }
+            },
+            'angular2-template-loader']
+        },
 
         /**
          * Source map loader support for *.js files
@@ -88,38 +118,13 @@ module.exports = function (options) {
          * See: https://github.com/webpack/source-map-loader
          */
         {
-          enforce: 'pre',
           test: /\.js$/,
-          loader: 'source-map-loader',
-          exclude: [
-            // these packages have problems with their sourcemaps
-            helpers.root('node_modules/rxjs'),
-            helpers.root('node_modules/@angular')
-          ]
+          exclude: /(node_modules|bower_components)/,
+          loader: 'babel-loader',
+          query: {
+            presets: [require.resolve('babel-preset-es2015')]
+          }
         },
-
-        /**
-         * Typescript loader support for .ts and Angular 2 async routes via .async.ts
-         *
-         * See: https://github.com/s-panferov/awesome-typescript-loader
-         */
-        // {
-        //   test: /\.ts$/,
-        //   loader: 'awesome-typescript-loader',
-        //   query: {
-        //     // use inline sourcemaps for "karma-remap-coverage" reporter
-        //     sourceMap: false,
-        //     inlineSourceMap: true,
-        //     compilerOptions: {
-
-        //       // Remove TypeScript helpers to be injected
-        //       // below by DefinePlugin
-        //       removeComments: true
-
-        //     }
-        //   },
-        //   exclude: [/\.e2e\.ts$/]
-        // },
 
         /**
          * Json loader support for *.json files.
@@ -142,6 +147,17 @@ module.exports = function (options) {
           test: /\.css$/,
           loader: ['to-string-loader', 'css-loader'],
           exclude: [helpers.root('src/index.html')]
+        },
+
+        /**
+         * Raw loader support for *.scss files
+         *
+         * See: https://github.com/webpack/raw-loader
+         */
+        {
+            test: /\.scss$/,
+            loader: ['raw-loader', 'sass-loader'],
+            exclude: [helpers.root('src/index.html')]
         },
 
         /**
@@ -168,7 +184,7 @@ module.exports = function (options) {
           loader: 'istanbul-instrumenter-loader',
           include: helpers.root('src'),
           exclude: [
-            /\.(e2e|spec)\.ts$/,
+            /\.ts$/,
             /node_modules/
           ]
         },
@@ -204,35 +220,7 @@ module.exports = function (options) {
         {
           test: /browserfs.*\.js$/,
           loader: 'imports-loader?importedSetImmediate=setimmediate'
-        },
-
-        {
-          test: /\.js$/,
-          exclude: /(node_modules(?!\composer)|bower_components)/,
-          loader: 'babel-loader',
-          query: {
-            presets: ['es2015']
-          }
-        },
-
-        /*
-        * SASS loader support for *.scss files
-        * Returns file content as string
-        *
-        * See: https://github.com/webpack/raw-loader
-        */
-
-        {
-          test: /\.scss$/,
-          exclude: /node_modules/,
-          loaders: ['raw-loader', 'sass-loader'] // sass-loader not scss-loader
-        },
-
-        {
-          test: /\.ts$/,
-          loaders: ['awesome-typescript-loader', 'angular2-template-loader'],
-          exclude: [/\.e2e\.ts$/]
-        },
+        }
 
       ]
     },
@@ -258,8 +246,7 @@ module.exports = function (options) {
         'ENV': JSON.stringify(ENV),
         'HMR': false,
         'DOCKER': DOCKER,
-        'DOCKER_COMPOSE': DOCKER_COMPOSE,
-        'PLAYGROUND_API' : PLAYGROUND_API
+        'DOCKER_COMPOSE': DOCKER_COMPOSE
         /* 'process.env': {
           'ENV': JSON.stringify(ENV),
           'NODE_ENV': JSON.stringify(ENV),
@@ -317,7 +304,7 @@ module.exports = function (options) {
       crypto: 'empty',
       module: false,
       clearImmediate: false,
-      setImmediate: false
+      setImmediate: true
     }
 
   };

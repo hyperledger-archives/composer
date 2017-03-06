@@ -16,6 +16,7 @@ export class AddFileComponent implements OnInit {
   private currentFile = null;
   private currentFileName = null;
   private fileType = '';
+  private newFile = false;
 
   private expandInput: boolean = false;
 
@@ -47,6 +48,7 @@ export class AddFileComponent implements OnInit {
   }
 
   private fileAccepted(file: File) {
+    this.newFile = false;
     let type = file.name.substr(file.name.lastIndexOf('.') + 1);
     let fileReader = new FileReader();
     fileReader.onload = () => {
@@ -54,11 +56,13 @@ export class AddFileComponent implements OnInit {
       try {
         switch (type) {
           case 'js':
+            this.fileType = 'js';
             let scriptManager = this.businessNetwork.getScriptManager();
             this.currentFile = scriptManager.createScript(file.name, 'JS', dataBuffer.toString());
             this.currentFileName = this.currentFile.getIdentifier();
             break;
           case 'cto':
+            this.fileType = 'cto';
             let modelManager = this.businessNetwork.getScriptManager();
             this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name);
             this.currentFileName = this.currentFile.getFileName();
@@ -66,12 +70,11 @@ export class AddFileComponent implements OnInit {
           default:
             break;
         }
+        this.expandInput = true;
       } catch (error) {
         // this.activeModal.dismiss();
         return this.fileRejected(error);
       }
-
-      this.expandInput = true;
     };
 
     fileReader.readAsArrayBuffer(file);
@@ -87,6 +90,7 @@ export class AddFileComponent implements OnInit {
   }
 
   private changeCurrentFileType() {
+    this.newFile = true;
     if (this.fileType === 'js') {
       let code =
         `/**

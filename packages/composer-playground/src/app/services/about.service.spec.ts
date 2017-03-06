@@ -36,14 +36,14 @@ describe('AboutService', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
             imports: [HttpModule],
-            providers: [ 
-                          AboutService,
-                          { provide: XHRBackend, useClass: MockBackend }
-                       ]
+            providers: [
+              AboutService,
+              { provide: XHRBackend, useClass: MockBackend }
+            ]
         });
     });
 
-    it ('it should make an http call to retrieve the json that shows the versions', 
+    it ('it should make an http call to retrieve the json that shows the versions',
           inject([AboutService, XHRBackend], (aboutService, mockBackend) =>  {
 
           // setup a mocked response
