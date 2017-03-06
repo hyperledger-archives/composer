@@ -277,6 +277,14 @@ class LoopbackVisitor {
             jsonSchema.description = `An instance of ${classDeclaration.getFullyQualifiedName()}`;
         }
 
+        // Every class declaration has a $class property.
+        jsonSchema.properties.$class = {
+            type: 'string',
+            default: classDeclaration.getFullyQualifiedName(),
+            required: false,
+            description: 'The class identifier for this type'
+        };
+
         // Walk over all of the properties of this class and its super classes.
         classDeclaration.getProperties().forEach((property) => {
 
