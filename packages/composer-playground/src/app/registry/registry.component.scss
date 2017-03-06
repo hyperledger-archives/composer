@@ -39,9 +39,10 @@ registry {
 
     .resource-container {
       background-color: $white;
-      margin: $space-small 0;
+      margin: $space-smedium 0;
       padding: $space-medium;
       position: relative;
+      box-shadow: 0 2px 5px -1px $fifth-highlight;
 
       .resource-content {
         display: flex;

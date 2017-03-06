@@ -20,50 +20,29 @@ const JSONSchemaVisitor = require('./fromcto/jsonschema/jsonschemavisitor');
 const PlantUMLVisitor = require('./fromcto/plantuml/plantumlvisitor');
 const TypescriptVisitor = require('./fromcto/typescript/typescriptvisitor');
 const FileWriter = require('./filewriter');
-const fs = require('fs');
 const program = require('commander');
 
 /**
- * Runs a Code Generator over the ModelManager. Code Generators are pluggable
+ * Runs a Code Generator over a BusinessNetworkDefinition. Code Generators are pluggable
  * and may be specified using the --format command line argument.
  *
  * node ./lib/codegen/codegen.js --format Go
  * --outputDir /Users/dselman/dev/git/Fabric-Composer/chaincode/src/fabric-composer/gen
- * /Users/dselman/dev/git/Fabric-Composer/test/data/model/fabric-composer.cto
- * /Users/dselman/dev/git/Fabric-Composer/test/data/model/carlease.cto
+ * --archiveFile mynetwork.bna
  */
 program
     .version('1.0')
-    .description('convert a set of Composer models to code')
+    .description('convert a Business Network Definition to code')
     .usage('[options] <input model files ...>')
-    .option('-f, --format <format>', 'Format of code to generate. Defaults to Go.', 'Go')
+    .option('-f, --format <format>', 'Format of code to generate: Go, PlantUML, Typescript, JSONSchema. Defaults to Go.', 'Go')
     .option('-o, --outputDir <outputDir>', 'Output directory')
-    .parse(process.argv);
-
-if (!program.args || !program.args.length) {
-    program.help();
-}
+    .option('-a, --archiveFile <businessNetworkArchive>', 'Business Network Archive');
 
 console.log('Code generation format: ' + program.format);
 console.log('Output directory: ' + program.outputDir);
 
-// create and populate the ModelManager with a model file
-const businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.MyBusinessNetwork@1.0.0', 'Test Business Network');
-const modelFiles = [];
-const modelFileNames = [];
-
-if (program.args) {
-    for(let n=0; n < program.args.length; n++) {
-        const modelFile = program.args[n];
-        console.log('Parsing: ' + modelFile);
-        modelFileNames.push(modelFile);
-        let m = fs.readFileSync(modelFile, 'utf8');
-        modelFiles.push(m);
-    }
-
-    console.log('Loaded ' + modelFiles.length + ' files.');
-    businessNetworkDefinition.getModelManager().addModelFiles(modelFiles,modelFileNames);
-}
+// create the BusinessNetworkDefinition from an archive on disk
+const businessNetworkDefinition = BusinessNetworkDefinition.fromArchive(process.businessNetworkArchive);
 
 let visitor = null;
 
