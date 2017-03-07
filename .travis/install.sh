@@ -15,10 +15,11 @@ if [ "${ABORT_BUILD}" = "true" ]; then
   exit ${ABORT_CODE}
 fi
 
-# Install the travis command line 
+# Install the travis command line
 gem install travis -v 1.8.8 --no-rdoc --no-ri
 travis version
 
+travis login --no-interactive --token kaDRQfepw_WN4eY393tkOQ --auto
 
 
 # Check of the task current executing
