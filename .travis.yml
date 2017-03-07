@@ -39,4 +39,6 @@ deploy:
         all_branches: true
 cache: false
 sudo: required
-after_failure: ./.travis/abort-entire-build.sh
+notifications:
+  pushover:
+    api_key: ayq7zvsxc641sfna65njkik1x9y25b

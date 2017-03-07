@@ -15,12 +15,6 @@ if [ "${ABORT_BUILD}" = "true" ]; then
   exit ${ABORT_CODE}
 fi
 
-# Install the travis command line
-gem install travis -v 1.8.8 --no-rdoc --no-ri
-travis version
-travis login --no-interactive --github-token f6008654988371c41ccc1661eaa800fcbe520420 --org
-travis whoami
-
 # Check of the task current executing
 #if [ ${FC_TASK}" = "docs" ]; then
   #echo Doing Docs - no requirement for installations of other software

@@ -25,15 +25,9 @@ if [ -r "/etc/init.d/xvfb" ]; then
 fi
 
 
-
-
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
 	cd "${DIR}/packages/composer-website"
-
-  # PANIC PANIC PANIC PANIC PANIC
-  exit 1
-
 	npm install
 	npm run full
 # Are we running system tests?
