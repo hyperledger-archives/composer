@@ -33,11 +33,12 @@ describe('ModelBinding', () => {
     let mockModelFile;
     let mockClassDeclaration;
     let sandbox;
-    const ast = {'type':'Binding','qualifiedName':'org.acme.Car','instanceId':{'type':'Identifier','name':'ABC123'},'variableName':{'type':'Identifier','name':'dan'}};
-    const missingClass = {'type':'Binding','qualifiedName':'org.acme.Missing','instanceId':{'type':'Identifier','name':'ABC123'},'variableName':{'type':'Identifier','name':'dan'}};
+    const ast = {'type':'Binding','qualifiedName':'org.acme.Car','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
+    const variableAst = {'type':'Identifier','name':'dan'};
+    const missingClass = {'type':'Binding','qualifiedName':'org.acme.Missing','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
     const missingNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing'};
-    const missingProperty = {'type':'Binding','qualifiedName':'org.acme.Car.missing','instanceId':{'type':'Identifier','name':'ABC123'},'variableName':{'type':'Identifier','name':'dan'}};
-    const missing = {'type':'Binding','qualifiedName':'org.missing.Missing','instanceId':{'type':'Identifier','name':'ABC123'},'variableName':{'type':'Identifier','name':'dan'}};
+    const missingProperty = {'type':'Binding','qualifiedName':'org.acme.Car.missing','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
+    const missing = {'type':'Binding','qualifiedName':'org.missing.Missing','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
 
     beforeEach(() => {
         mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
@@ -85,7 +86,7 @@ describe('ModelBinding', () => {
     describe('#validate', () => {
 
         it('should validate correct contents', () => {
-            modelBinding = new ModelBinding( aclRule, ast );
+            modelBinding = new ModelBinding( aclRule, ast, variableAst );
             modelBinding.validate();
             modelBinding.toString().should.equal('ModelBinding org.acme.Car#ABC123:dan');
         });
