@@ -47,41 +47,14 @@ function onSampleTransaction(sampleTransaction) {
     });
 }`
 
-const initialAclFile = `
-/**
- * Access Control List for the auction network.
+const initialAclFile = `/**
+ * Sample Access Control List
  */
-rule Auctioneer {
-    description: "Allow the auctioneer full access"
-    participant: "org.acme.vehicle.auction.Auctioneer"
+rule Everyone {
+    description: "Allows any participant in the namespace full access to all resources in the namespace"
+    participant: "org.acme.biznet"
     operation: ALL
-    resource: "org.acme.vehicle.auction"
-    action: ALLOW
-}
-
-rule Member {
-    description: "Allow the member read access"
-    participant: "org.acme.vehicle.auction.Member"
-    operation: READ
-    resource: "org.acme.vehicle.auction"
-    action: ALLOW
-}
-
-rule VehicleOwner {
-    description: "Allow the owner of a vehicle total access"
-    participant(m): "org.acme.vehicle.auction.Member"
-    operation: ALL
-    resource(v): "org.acme.vehicle.auction.Vehicle"
-    condition: (v.owner.getIdentifier() == m.getIdentifier())
-    action: ALLOW
-}
-
-rule VehicleListingOwner {
-    description: "Allow the owner of a vehicle total access to their vehicle listing"
-    participant(m): "org.acme.vehicle.auction.Member"
-    operation: ALL
-    resource(v): "org.acme.vehicle.auction.VehicleListing"
-    condition: (v.vehicle.owner.getIdentifier() == m.getIdentifier())
+    resource: "org.acme.biznet"
     action: ALLOW
 }
 `;
