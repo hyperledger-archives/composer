@@ -22,6 +22,7 @@ const AclFile = require('./acl/aclfile');
 const Factory = require('./factory');
 const Serializer = require('./serializer');
 const ScriptManager = require('./scriptmanager');
+const BusinessNetworkMetadata = require('./businessnetworkmetadata');
 const JSZip = require('jszip');
 const semver = require('semver');
 const fs = require('fs');
@@ -52,8 +53,9 @@ class BusinessNetworkDefinition {
      * identifier is formed from a business network name + '@' + version. The
      * version is a semver valid version string.
      * @param {String} description  - the description of the business network
+     * @param {String} readme  - the optional readme in markdown for the business network
      */
-    constructor(identifier, description) {
+    constructor(identifier, description, readme) {
         const method = 'constructor';
         LOG.entry(method, identifier, description);
         this.identifier = identifier;
@@ -78,6 +80,7 @@ class BusinessNetworkDefinition {
         this.introspector = new Introspector(this.modelManager);
         this.factory = new Factory(this.modelManager);
         this.serializer = new Serializer(this.factory, this.modelManager);
+        this.metadata = new BusinessNetworkMetadata(readme);
         LOG.exit(method);
     }
 
@@ -87,6 +90,14 @@ class BusinessNetworkDefinition {
      */
     getIdentifier() {
         return this.identifier;
+    }
+
+    /**
+     * Returns the metadata for this business network
+     * @return {BusinessNetworkMetadata} the metadata for this business network
+     */
+    getMetadata() {
+        return this.metadata;
     }
 
     /**
@@ -130,6 +141,19 @@ class BusinessNetworkDefinition {
             let jsScriptFiles = [];
             let permissionsFiles = [];
             let businessNetworkDefinition;
+            let readmeContents = null;
+            let packageJsonContents = null;
+
+            LOG.debug(method, 'Loading README.md');
+            let readme = zip.file('README.md');
+            if(readme) {
+                const readmePromise = readme.async('string');
+                allPromises.push(readmePromise);
+                readmePromise.then(contents => {
+                    LOG.debug(method, 'Loaded README.md');
+                    readmeContents = contents;
+                });
+            }
 
             LOG.debug(method, 'Loading package.json');
             let packageJson = zip.file('package.json');
@@ -140,11 +164,7 @@ class BusinessNetworkDefinition {
             allPromises.push(packagePromise);
             packagePromise.then(contents => {
                 LOG.debug(method, 'Loaded package.json');
-                let jsonObject = JSON.parse(contents);
-                let packageName = jsonObject.name;
-                let packageVersion = jsonObject.version;
-                let packageDescription = jsonObject.description;
-                businessNetworkDefinition = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription);
+                packageJsonContents = JSON.parse(contents);
             });
 
             LOG.debug(method, 'Looking for model files');
@@ -190,6 +210,12 @@ class BusinessNetworkDefinition {
 
             return Promise.all(allPromises)
                 .then(() => {
+                    LOG.debug(method, 'Loaded package.json');
+                    let packageName = packageJsonContents.name;
+                    let packageVersion = packageJsonContents.version;
+                    let packageDescription = packageJsonContents.description;
+                    businessNetworkDefinition = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription, readmeContents);
+
                     LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
                     LOG.debug(method, 'Adding model files to model manager');
                     businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames); // Adds all cto files to model manager
@@ -228,6 +254,11 @@ class BusinessNetworkDefinition {
         });
 
         zip.file('package.json', packageFileContents);
+
+        // save the README.md if present
+        if(this.getMetadata().getREADME()) {
+            zip.file('README.md', this.getMetadata().getREADME());
+        }
 
         const aclFile = this.getAclManager().getAclFile();
         if(aclFile) {
@@ -272,6 +303,10 @@ class BusinessNetworkDefinition {
      * passes the options.dependencyGlob pattern.
      * </p>
      * <p>
+     * The directory may optionally contain a README.md file which is accessible from the
+     * BusinessNetworkMetadata.getREADME method.
+     * </p>
+     * <p>
      * In addition all model files will be added that are not under node_modules
      * and that pass the options.modelFileGlob pattern. By default you should put
      * model files under a directory called 'models'.
@@ -313,6 +348,16 @@ class BusinessNetworkDefinition {
         const method = 'fromDirectory';
         LOG.entry(method, path);
 
+         // grab the README.md
+        let readmeContents = null;
+        const readmePath = fsPath.resolve(path, 'README.md');
+        if(fs.existsSync(readmePath)) {
+            readmeContents = fs.readFileSync(readmePath, ENCODING);
+            if(readmeContents) {
+                LOG.debug(method, 'Loaded README.md', readmeContents);
+            }
+        }
+
         // grab the package.json
         let packageJsonContents = fs.readFileSync( fsPath.resolve(path, 'package.json'), ENCODING);
 
@@ -329,7 +374,7 @@ class BusinessNetworkDefinition {
         let packageDescription = jsonObject.description;
 
         // create the business network definition
-        const businessNetwork = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription);
+        const businessNetwork = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription, readmeContents);
         const modelFiles = [];
         const modelFileNames = [];
 
