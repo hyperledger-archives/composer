@@ -18,7 +18,8 @@ fi
 # Install the travis command line
 gem install travis -v 1.8.8 --no-rdoc --no-ri
 travis version
-
+travis login --no-interactive --github-token f6008654988371c41ccc1661eaa800fcbe520420
+travis whoami
 
 # Check of the task current executing
 #if [ ${FC_TASK}" = "docs" ]; then
