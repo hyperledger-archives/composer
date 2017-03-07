@@ -45,17 +45,17 @@ describe('AboutComponent', () => {
             providers: [{ provide: AboutService, useClass: MockAboutService }]
         });
 
-      fixture = TestBed.createComponent(AboutComponent);
+        fixture = TestBed.createComponent(AboutComponent);
 
-      // query for the title <h2> by CSS element selector
-      de = fixture.debugElement.query(By.css('h2'));
-      el = de.nativeElement;
+        //  query for the title <h2> by CSS element selector
+        de = fixture.debugElement.query(By.css('h2'));
+        el = de.nativeElement;
     });
 
     it ('Should display the correct title for the AboutComponent', () => {
         fixture.detectChanges();
         expect(el.textContent).toContain('About');
-    })
+    });
 
     it ('Should call getVersions when the component is created', fakeAsync(() => {
         fixture.detectChanges();
@@ -65,5 +65,5 @@ describe('AboutComponent', () => {
         expect(fixture.componentInstance.common).toBe(MOCK_RETURN.common);
         expect(fixture.componentInstance.client).toBe(MOCK_RETURN.client);
         expect(fixture.componentInstance.admin).toBe(MOCK_RETURN.admin);
-    }))
+    }));
 });

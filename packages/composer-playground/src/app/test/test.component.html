@@ -7,7 +7,6 @@
             [class.active]="chosenRegistry.id === assetRegistry.id"
             (click)="setChosenRegistry(assetRegistry)">
           <h3>{{assetRegistry.displayName}}</h3>
-          <div>{{assetRegistry.id}}</div>
         </li>
       </ul>
     </section>
@@ -19,7 +18,6 @@
             [class.active]="chosenRegistry.id === participantRegistry.id"
             (click)="setChosenRegistry(participantRegistry)">
           <h3>{{participantRegistry.displayName}}</h3>
-          <div>{{participantRegistry.id}}</div>
         </li>
       </ul>
     </section>

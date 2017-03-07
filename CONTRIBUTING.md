@@ -1,30 +1,35 @@
-# Contributing to Concerto
-We welcome contributions to Concerto!
+# Contributing to Fabric Composer
+We welcome contributions to Fabric Composer!
 
-This document explains how you should work with the Concerto repository.  More information is in the 'contrib-docs' directory.
+This document explains how you should work with the Fabric Composer repositories.  More information is in the 'contrib-docs' directory for specific topics
 
-* [Suggested ATOM setup](./contrib-notes/atom-setup.md)
-* [Step-by-step developement environmnet setup](./contrib-notes/getting-started.md)
+* [Suggested ide setup](./contrib-notes/ide-setup.md)
+* [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
 
-## Our development process
+There is a contributors [RocketChat channel](https://chat.hyperledger.org/channel/fabric-composer-dev) it is worth introducing yourself on.
 
-All work on Concerto is performed on GitHub Enterprise. Changes should be developed in a fork of the Concerto repository, and the changes submitted for approval in the form of pull requests.
+## Github Repositories
 
-| Workflow |
-| :-----: |
-|![Workflow diagram](docs/source/png/Contributing.Diagram.png)|
+The following is a list of the repositories that are part of the Fabric Composer project, the fabric-composer repository itself is a monorepo and holds all the source code in multiple npm modules.
 
-### `develop` branch
+| fabric-composer  | Main monorepo with the project source code, including tests and documetnation |
+| fabric-composer.github.io | The built HTML for the organisation website, DO NOT EDIT OR ENABLE BUILDS on this |
+| sample-applications | Sample applications for Fabric Composer; including the 'Getting Started' tutorial |
+| sample-networks     | Sample Fabric Composer Business Networks |
+| sample-models       | Sample Fabric Composer Models |
+| composer-atom-plugin | A syntax checker for the Atom.io editor |
+| composer-vscode-plugin | A syntax checker for the VSCode editor |
+| tools                  | Tools for use with Fabric Composser    |
 
-All changes and pull requests should be targeted at the `develop` branch. The `develop` branch has been configured as the default branch for the Concerto repository. When you create a pull request, a Travis CI build will automatically run to confirm that your changes build cleanly and pass all known tests. Your changes will **not** be merged into the `develop` branch unless this build runs cleanly.
+### Our development process
 
-### `master` branch
+The source and issue tracking system for Fabric Composer is [github](https://github.com/fabric-composer). All changes should be developed in a fork of the Fabric Composer repository, and the changes submitted for approval in the form of pull requests. Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
-We try to keep the `master` branch as stable as possible. Changes are regularly pushed from the `develop` branch up to the `master` branch once they have been confirmed to be *good*. Only specific members of the IBM Blockchain WW Labs team have permission to push to the `master` branch.
+The master branches are currently being used, a release build is run weekly to fix the release at a new level.  See the [release process](./contrib-notes/release-process.md)
 
 ### Testing
 
-All changes pushed to Concerto should include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes which are not covered by automated unit tests will **not** be accepted.
+All changes pushed to Fabric Composer must include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes which are not covered by automated unit tests will **not** be accepted.
 
 Unit testing is for ensuring that small units of code *Do The Right Thing*, with an extremely quick turnaround time. An example of this might be the `AssetRegistryFactory.create()` method. The code in this method *probably* needs to do two things; send the correct invoke request to the chain-code, and correctly handle all of the possible responses from that chain-code.
 
@@ -36,7 +41,7 @@ Obviously, unit testing is not sufficient, and we do need to test the framework 
 
 We use **mocha** to execute our JavaScript unit tests, and these unit tests can be executed locally with `npm test`. All JavaScript code should include unit tests that can be run without requiring a running Hyperledger Fabric. Tests within composer-connector-web and composer-runtime-web use **karma** to launch a browser, and consequently **chrome** must be installed to prevent test failures.
 
-We use the testing package built into Go for our Go unit tests, and these unit tests can be executed with `go test`. All Go code (primarily chain-code) should include unit tests that can be run without requiring a running Hyperledger Fabric.
+<!-- We use the testing package built into Go for our Go unit tests, and these unit tests can be executed with `go test`. All Go code (primarily chain-code) should include unit tests that can be run without requiring a running Hyperledger Fabric. -->
 
 Unit tests should aim for 100% code coverage. For JavaScript code, we use Istanbul is used to ensure that the unit tests meet minimum levels of code coverage.
 
@@ -51,19 +56,24 @@ documented.
 
 *Before* submitting a pull request, please make sure the following is done:
 
-1. Fork the repo and create your branch from `develop`.
-2. If you've added code that should be tested (always), add tests!
+1. Fork the repo and create your branch from `master`.
+2. If you've added code, add tests!
 3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes (`npm test` and `go test`).
+4. Ensure the test suite passes (`npm test`).
 5. Make sure your code lints.
+6. Pull requests that have associated builds that are not 100% clean will be closed.
 
-## Style guide
+### Style guide
 
 Our linter **eslint** will catch most styling issues that may exist in your code. You can check the status of your code styling by simply running `npm lint`.
-
-### Code conventions
 
 * 4 spaces for indentation (no tabs)
 * Prefer `'` over `"`
 * `'use strict';`
 * JSDoc comments are required
+
+
+### Issue Management
+Issues are tracked in Github. If you are looking for a place to start with the code then it might be worth [tackling a] defect(https://github.com/fabric-composer/fabric-composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/fabric-composer/fabric-composer/issues?q=is%3Aissue+label%3A%22help+wanted%22)
+
+Please try and use the [issue template](./ISSUE_TEMPLATED.md) when raising new issues.

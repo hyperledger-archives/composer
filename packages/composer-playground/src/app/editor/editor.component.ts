@@ -7,8 +7,8 @@ import { ImportComponent } from '../import/import.component';
 import { ExportComponent } from '../export/export.component';
 import { AddFileComponent } from '../add-file/add-file.component';
 
-import { AdminService } from '../admin.service';
-import { ClientService } from '../client.service';
+import { AdminService } from '../services/admin.service';
+import { ClientService } from '../services/client.service';
 import { InitializationService } from '../initialization.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../services/alert.service';
@@ -458,6 +458,7 @@ export class EditorComponent implements OnInit {
           this.setCurrentFile(this.previousFile);
         }
         this.alertService.busyStatus$.next(null);
+        this.alertService.successStatus$.next('Business Network Deployed Successfully');
       })
       .catch((error) => {
         this.deploying = false;

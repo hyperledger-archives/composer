@@ -22,16 +22,12 @@ import { AppState, InternalStateType } from './app.service';
 import { EditorComponent } from './editor';
 import { TestComponent } from './test';
 import { RegistryComponent } from './registry';
-import { AssetRegistriesComponent } from './assetregistries';
-import { AssetRegistryComponent, AddAssetComponent, UpdateAssetComponent, RemoveAssetComponent } from './assetregistry';
-import { ParticipantRegistriesComponent } from './participantregistries';
-import { ParticipantRegistryComponent, AddParticipantComponent, UpdateParticipantComponent, RemoveParticipantComponent, IssueIdentityComponent, IssuedIdentityComponent } from './participantregistry';
-import { TransactionRegistryComponent, SubmitTransactionComponent } from './transactionregistry';
 import { SettingsComponent } from './settings';
 import { AddIdentityComponent } from './addidentity';
 import { AboutComponent } from './about';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
+import { SuccessComponent } from './success';
 import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
@@ -39,17 +35,17 @@ import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
 import { TransactionComponent } from './registry/transaction';
-
+import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
+import { WelcomeComponent } from './welcome';
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
 
-
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
 
-import { AdminService } from './admin.service';
-import { ClientService } from './client.service';
+import { AdminService } from './services/admin.service';
+import { ClientService } from './services/client.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
@@ -89,9 +85,13 @@ type StoreType = {
     ImportComponent,
     ExportComponent,
     ErrorComponent,
+    SuccessComponent,
     ResourceComponent,
     TransactionComponent,
-    AddFileComponent
+    AddFileComponent,
+    WelcomeComponent,
+    ResetComponent,
+    BusyComponent
   ],
   declarations: [
     AppComponent,
@@ -99,24 +99,11 @@ type StoreType = {
     EditorComponent,
     TestComponent,
     RegistryComponent,
-    AssetRegistriesComponent,
-    AssetRegistryComponent,
-    AddAssetComponent,
-    UpdateAssetComponent,
-    RemoveAssetComponent,
-    ParticipantRegistriesComponent,
-    ParticipantRegistryComponent,
-    AddParticipantComponent,
-    UpdateParticipantComponent,
-    RemoveParticipantComponent,
-    IssueIdentityComponent,
-    IssuedIdentityComponent,
-    TransactionRegistryComponent,
-    SubmitTransactionComponent,
     SettingsComponent,
     AddIdentityComponent,
     BusyComponent,
     ErrorComponent,
+    SuccessComponent,
     ResetComponent,
     ImportComponent,
     ExportComponent,
@@ -124,10 +111,12 @@ type StoreType = {
     NoContentComponent,
     AboutComponent,
     FileDragDropDirective,
+    ConnectionProfileComponent,
     ResourceComponent,
     TransactionComponent,
     CheckOverFlowDirective,
-    AddFileComponent
+    AddFileComponent,
+    WelcomeComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,

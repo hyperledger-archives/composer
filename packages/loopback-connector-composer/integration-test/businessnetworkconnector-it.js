@@ -212,6 +212,12 @@ describe('BusinessNetworkConnector Integration Test', () => {
                         },
                         'plural' : 'systest.loopback.SimpleStringAsset',
                         'properties' : {
+                            '$class' : {
+                                'default': 'systest.loopback.SimpleStringAsset',
+                                'description': 'The class identifier for this type',
+                                'required': false,
+                                'type': 'string'
+                            },
                             'assetId' : {
                                 'description' : 'The instance identifier for this type',
                                 'id' : true,
@@ -254,6 +260,12 @@ describe('BusinessNetworkConnector Integration Test', () => {
                         },
                         'plural' : 'systest.loopback.SimpleConceptAsset',
                         'properties' : {
+                            '$class' : {
+                                'default': 'systest.loopback.SimpleConceptAsset',
+                                'description': 'The class identifier for this type',
+                                'required': false,
+                                'type': 'string'
+                            },
                             'assetId' : {
                                 'description' : 'The instance identifier for this type',
                                 'id' : true,
@@ -376,6 +388,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
                 });
             })
                 .then((result) => {
+                    result.$class.should.equal('systest.loopback.SimpleParticipant');
                     result.participantId.should.equal('myParticipant');
                     result.stringValue.should.equal('Caroline');
                     result.stringValues.should.deep.equal(['Caroline', 'Church']);
@@ -456,9 +469,11 @@ describe('BusinessNetworkConnector Integration Test', () => {
 
             Promise.all([assetPromise, participantPromise])
                 .then(results => {
+                    results[0].$class.should.equal('systest.loopback.SimpleStringAsset');
                     results[0].assetId.should.equal('updateAsset');
                     results[0].stringValue.should.equal('a big car');
 
+                    results[1].$class.should.equal('systest.loopback.SimpleParticipant');
                     results[1].participantId.should.equal('updateParticipant');
                     results[1].stringValue.should.equal('Caroline');
                 })
@@ -489,6 +504,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
                 });
             })
                 .then((result) => {
+                    result.$class.should.equal('systest.loopback.SimpleStringAsset');
                     result.assetId.should.equal('updateAsset');
                     result.stringValue.should.equal('a bigger car');
                 })
@@ -531,6 +547,7 @@ describe('BusinessNetworkConnector Integration Test', () => {
                 });
             })
                 .then((result) => {
+                    result.$class.should.equal('systest.loopback.SimpleParticipant');
                     result.participantId.should.equal('updateParticipant');
                     result.stringValue.should.equal('update Caroline');
                 })
@@ -597,9 +614,11 @@ describe('BusinessNetworkConnector Integration Test', () => {
 
             Promise.all([assetPromise, participantPromise])
                 .then(results => {
+                    results[0].$class.should.equal('systest.loopback.SimpleStringAsset');
                     results[0].assetId.should.equal('deleteAsset');
                     results[0].stringValue.should.equal('a big car');
 
+                    results[1].$class.should.equal('systest.loopback.SimpleParticipant');
                     results[1].participantId.should.equal('deleteParticipant');
                     results[1].stringValue.should.equal('Caroline');
                 })

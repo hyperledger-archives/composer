@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ClientService } from '../client.service';
-import { AlertService } from '../services/alert.service';
+import { ClientService } from '../services/client.service';
+import { AlertService } from '../services/alert.service'
 import { ResourceComponent } from '../resource/resource.component';
 
 @Component({

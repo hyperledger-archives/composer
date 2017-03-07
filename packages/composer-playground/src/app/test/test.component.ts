@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ClientService } from '../client.service';
+import { ClientService } from '../services/client.service';
 import { InitializationService } from '../initialization.service';
 import { AlertService } from '../services/alert.service';
 import { TransactionComponent } from '../registry/transaction/transaction.component';

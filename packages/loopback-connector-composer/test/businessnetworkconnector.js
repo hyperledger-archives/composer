@@ -339,14 +339,26 @@ describe('BusinessNetworkConnector Unit Test', () => {
                     'acls' : [],
                     'base' : 'PersistedModel',
                     'description' : 'An asset named BaseAsset',
-                    'idInjection' : true,
+                    'idInjection' : false,
                     'methods' : [],
                     'name' : 'BaseAsset',
                     'options' : {
-                        'validateUpsert' : true
+                        'validateUpsert' : true,
+                        'composer': {
+                            'type': 'asset',
+                            'namespace': 'org.acme.base',
+                            'name': 'BaseAsset',
+                            'fqn': 'org.acme.base.BaseAsset'
+                        }
                     },
                     'plural' : 'org.acme.base.BaseAsset',
                     'properties' : {
+                        '$class' : {
+                            'default': 'org.acme.base.BaseAsset',
+                            'description': 'The class identifier for this type',
+                            'required': false,
+                            'type': 'string'
+                        },
                         'theValue' : {
                             'description' : 'The instance identifier for this type',
                             'id' : true,
