@@ -19,7 +19,7 @@
     "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public .",
     "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private .",
     "postdoc": "npm run browserify",
-    "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/concerto-common.js",
+    "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/composer-common.js",
     "test": "./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage",
     "systest": "mocha -t 0 systest && cucumber-js systest"
