@@ -4,9 +4,16 @@ Fabric Composer is an application development framework which simplifies and exp
 
 [![Build Status](https://travis-ci.org/fabric-composer/fabric-composer.svg?branch=master)](https://travis-ci.org/fabric-composer/fabric-composer)
 
-# Using this repository
+For additional help with Fabric Composer the following are good places
 
-Clone this repository.
+- Ask a question on [Stack Overflow](http://stackoverflow.com/questions/tagged/fabric-composer)
+- Chat on the RocketChat [discussion channels](https://chat.hyperledger.org/channel/fabric-composer)
+
+# Contributing to this repository
+
+*Please read the contributing notes before starting. There is a [specific channel](https://chat.hyperledger.org/channel/fabric-composer-dev) on RocketChat for contributors*
+
+To start development of Fabric Composer, first clone this repository.
 
 You must run the following commands in order to pull the Hyperledger fabric chaincode dependencies from their repositories:
 
@@ -15,11 +22,11 @@ You must run the following commands in order to pull the Hyperledger fabric chai
 
 You should see messages indicating that the required git repositories have been cloned into the correct vendor subdirectory.
 
-> The git submodule should not be required now, they have been added to the npm install step. When this has been confirmed as working well, this will be updated. 
+> The git submodule should not be required now, they have been added to the npm install step. When this has been confirmed as working well, this will be updated.
 
 You must install [Lerna](https://lernajs.io) to build this multi-package repository:
 
-    $ npm install -g lerna
+    $ npm install -g lerna@2.0.0-beta.32
 
 You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
 

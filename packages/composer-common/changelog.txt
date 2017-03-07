@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.4.4 {7c78f7d15b222c507f9840f344f42bff} 2017-03-06
+- Added getBusinessNetworkMetadata to BusinessNetworkDefinition
+
 Version 0.4.4 {b64498dc085e58b975eebfce7430186a} 2017-02-22
 - Added file name and file location to IllegalModelException
 
