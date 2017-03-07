@@ -27,12 +27,14 @@ import { AddIdentityComponent } from './addidentity';
 import { AboutComponent } from './about';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
+import { SuccessComponent } from './success';
 import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
+import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
 import { WelcomeComponent } from './welcome';
 
 import { GithubComponent } from './github';
@@ -84,6 +86,7 @@ type StoreType = {
     ImportComponent,
     ExportComponent,
     ErrorComponent,
+    SuccessComponent,
     ResourceComponent,
     AddFileComponent,
     WelcomeComponent,
@@ -100,6 +103,7 @@ type StoreType = {
     AddIdentityComponent,
     BusyComponent,
     ErrorComponent,
+    SuccessComponent,
     ResetComponent,
     ImportComponent,
     ExportComponent,
@@ -107,6 +111,7 @@ type StoreType = {
     NoContentComponent,
     AboutComponent,
     FileDragDropDirective,
+    ConnectionProfileComponent,
     ResourceComponent,
     CheckOverFlowDirective,
     AddFileComponent,

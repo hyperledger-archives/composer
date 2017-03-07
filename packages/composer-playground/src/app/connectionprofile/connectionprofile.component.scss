@@ -1,12 +1,19 @@
 @import '../../assets/styles/base/_colors.scss';
 @import '../../assets/styles/base/_variables.scss';
 
-app-editor {
+connection-profile {
   display: flex;
   width: 100%;
+  height: 100vh;
 
   .side-bar {
-    .files {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: 5px 0 5px -5px #333;
+
+    .profiles {
       & > * {
         padding: $space-medium $space-large;
       }
@@ -19,14 +26,21 @@ app-editor {
       .side-bar-nav {
         padding: 0;
       }
+
     }
 
-    .actions {
+    .about {
+      flex:1;
+      justify-content: flex-end;
       padding: $space-medium $space-large;
     }
   }
 
   .main-view {
+    background-color: $fourth-highlight;
+    width: 75%;
+    padding: $space-large $space-large $space-medium $space-large;
+
     .business-network-details {
       display: flex;
 
@@ -41,10 +55,19 @@ app-editor {
         font-style: italic;
       }
     }
-
-    .readme {
-      background-color: $white;
-      padding: $space-large;
-    }
   }
+
+  .playground-profile-warning{
+    background-color:$white;
+    border: 1px solid $fourth-highlight;
+    border-radius: 0.25em;
+    padding: $space-medium;
+    margin-bottom: $space-large;
+
+  }
+
+  .current-profile{
+
+  }
+
 }

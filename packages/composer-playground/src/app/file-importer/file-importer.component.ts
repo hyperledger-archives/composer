@@ -21,9 +21,14 @@ export class FileImporterComponent {
   }
 
   private onFileChange($event) {
+    console.log('file changed',$event);
     let file: File = $event.target.files[0];
 
     this.dragFileAccepted.emit(file);
+  }
+
+  private test(){
+    console.log('Focused on something');
   }
 
 }

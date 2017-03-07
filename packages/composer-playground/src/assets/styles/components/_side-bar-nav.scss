@@ -9,11 +9,13 @@
 
     .side-bar-nav {
       li {
+
         padding: $space-medium $space-large;
         border-left: $space-small solid transparent;
         border-bottom: 1px solid $fourth-highlight;
 
         &.active {
+          background-color: $third-highlight;
           border-left: $space-small solid $first-highlight;
           background-color: $third-highlight;
         }
@@ -21,6 +23,11 @@
         &:hover {
           border-left: $space-small solid $second-highlight;
         }
+
+        div {
+          padding: $space-small 0 $space-small 0;
+        }
+
       }
     }
   }
@@ -28,6 +35,6 @@
   .main-view {
     background-color: $fourth-highlight;
     width: 80%;
-    padding: $space-large $space-large $space-medium $space-large;
+    padding: $space-large;
   }
 }
