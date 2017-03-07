@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {ClientService} from '../client.service';
+import {ClientService} from '../services/client.service';
 
 @Component({
   selector: 'export-modal',

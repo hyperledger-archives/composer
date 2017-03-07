@@ -22,11 +22,6 @@ import { AppState, InternalStateType } from './app.service';
 import { EditorComponent } from './editor';
 import { TestComponent } from './test';
 import { RegistryComponent } from './registry';
-import { AssetRegistriesComponent } from './assetregistries';
-import { AssetRegistryComponent, AddAssetComponent, UpdateAssetComponent, RemoveAssetComponent } from './assetregistry';
-import { ParticipantRegistriesComponent } from './participantregistries';
-import { ParticipantRegistryComponent, AddParticipantComponent, UpdateParticipantComponent, RemoveParticipantComponent, IssueIdentityComponent, IssuedIdentityComponent } from './participantregistry';
-import { TransactionRegistryComponent, SubmitTransactionComponent } from './transactionregistry';
 import { SettingsComponent } from './settings';
 import { AddIdentityComponent } from './addidentity';
 import { AboutComponent } from './about';
@@ -49,8 +44,8 @@ import { CodemirrorModule } from 'ng2-codemirror';
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
 
-import { AdminService } from './admin.service';
-import { ClientService } from './client.service';
+import { AdminService } from './services/admin.service';
+import { ClientService } from './services/client.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
@@ -92,7 +87,9 @@ type StoreType = {
     ErrorComponent,
     ResourceComponent,
     AddFileComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    ResetComponent,
+    BusyComponent
   ],
   declarations: [
     AppComponent,
@@ -100,20 +97,6 @@ type StoreType = {
     EditorComponent,
     TestComponent,
     RegistryComponent,
-    AssetRegistriesComponent,
-    AssetRegistryComponent,
-    AddAssetComponent,
-    UpdateAssetComponent,
-    RemoveAssetComponent,
-    ParticipantRegistriesComponent,
-    ParticipantRegistryComponent,
-    AddParticipantComponent,
-    UpdateParticipantComponent,
-    RemoveParticipantComponent,
-    IssueIdentityComponent,
-    IssuedIdentityComponent,
-    TransactionRegistryComponent,
-    SubmitTransactionComponent,
     SettingsComponent,
     AddIdentityComponent,
     BusyComponent,
