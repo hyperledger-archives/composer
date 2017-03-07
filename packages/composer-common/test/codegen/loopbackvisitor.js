@@ -140,6 +140,12 @@ describe('LoopbackVisitor', () => {
                 },
                 plural: 'org.acme.MyAsset',
                 properties: {
+                    $class: {
+                        default: 'org.acme.MyAsset',
+                        description: 'The class identifier for this type',
+                        required: false,
+                        type: 'string'
+                    },
                     assetId: {
                         description: 'The instance identifier for this type',
                         id: true,
@@ -178,6 +184,12 @@ describe('LoopbackVisitor', () => {
                 },
                 plural: 'org.acme.MyParticipant',
                 properties: {
+                    $class: {
+                        default: 'org.acme.MyParticipant',
+                        description: 'The class identifier for this type',
+                        required: false,
+                        type: 'string'
+                    },
                     participantId: {
                         description: 'The instance identifier for this type',
                         id: true,
@@ -216,6 +228,12 @@ describe('LoopbackVisitor', () => {
                 },
                 plural: 'org.acme.MyTransaction',
                 properties: {
+                    $class: {
+                        default: 'org.acme.MyTransaction',
+                        description: 'The class identifier for this type',
+                        required: false,
+                        type: 'string'
+                    },
                     timestamp: {
                         required: true,
                         type: 'date'
