@@ -36,6 +36,14 @@ elif [ "${SYSTEST}" != "" ]; then
     # Run the system tests.
     ${DIR}/packages/composer-systests/scripts/run-system-tests.sh
 
+# Are we running Angular generator tests?
+elif [ "${ANGULARTEST}" != "" ]; then
+
+    # Run the system tests.
+    cd "${DIR}/packages/generator-fabric-composer"
+    npm install
+    npm run generatorTests
+
 # We must be running unit tests.
 else
 

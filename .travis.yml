@@ -17,6 +17,12 @@ matrix:
           sudo: required
           services:
             - docker
+        - env: ANGULARTEST=test FC_TASK=test
+        sudo: required
+        services:
+        - docker
+        node_js :
+            - '6'
 dist: trusty
 addons:
     apt:
