@@ -1,0 +1,51 @@
+<div class="import" fileDragDrop (fileDragDropFileAccepted)="fileAccepted($event)"
+     (fileDragDropFileRejected)="fileRejected($event)"
+     (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
+     [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
+  <div class="modal-header">
+    <h1>Add a file</h1>
+    <button class="icon modal-exit" (click)="activeModal.dismiss()">X</button>
+  </div>
+  <section class="modal-body">
+    <span>Upload a file from your computer...</span>
+    <file-importer *ngIf="(!currentFile || fileType)" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
+                   [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-BNA_Upload'"></file-importer>
+
+   <div class="chosen-file" *ngIf="expandInput && currentFile">
+     <div class="file-info">
+       <div class="flex-container">
+         <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-BNA_File"></use>
+          </svg>
+          <div class="file-title">
+            <div class="title">{{currentFileName}}</div>
+          </div>
+       </div>
+     </div>
+   </div>
+   <form class="file-types-list" #f="ngForm" *ngIf="((!fileType && !currentFile) || (fileType && currentFile)) && !expandInput">
+    <div class="file-types-list-item">
+      <input type="radio" id="file-type-cto" name="file-type" [(ngModel)]="fileType" value="cto"(change)="changeCurrentFileType()">
+      <label class="radio-label" for="file-type-cto">Model File (.cto)</label>
+      <div class="description">
+        Define Assets, Participants and Transactions using Fabric Composer modelling langauge.
+      </div>
+    </div>
+     <div class="file-types-list-item">
+      <input type="radio" id="file-type-js"name="file-type" [(ngModel)]="fileType" value="js" (change)="changeCurrentFileType()">
+      <label class="radio-label" for="file-type-js">Script File (.js)</label>
+      <div class="description">
+        Define the logic of transaction executions using Javascript.
+      </div>
+    </div>
+   </form>
+  </section>
+  <footer>
+    <button type="button" class="secondary" (click)="activeModal.dismiss();">
+      <span>Cancel</span>
+    </button>
+    <button type="button" class="primary" (click)="activeModal.close(currentFile);" [disabled]="!currentFile">
+      <span>Add</span>
+    </button>
+  </footer>
+</div>

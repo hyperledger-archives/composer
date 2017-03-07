@@ -7,8 +7,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import {AppState} from './app.service';
-import {AdminService} from './admin.service';
-import {ClientService} from './client.service';
+import {AdminService} from './services/admin.service';
+import {ClientService} from './services/client.service';
+import {AlertService} from './services/alert.service';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from './wallet.service';
 import {IdentityService} from './identity.service';
@@ -17,6 +18,8 @@ import {AddIdentityComponent} from './addidentity';
 import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';
+
+import {WelcomeComponent} from './welcome';
 
 const LZString = require('lz-string');
 
@@ -66,6 +69,7 @@ export class AppComponent {
               private walletService: WalletService,
               private identityService: IdentityService,
               private initializationService: InitializationService,
+              private alertService: AlertService,
               private modalService: NgbModal) {
 
   }
@@ -74,16 +78,10 @@ export class AppComponent {
     console.log('Initial App State', this.appState.state);
     // Subscribe for status updates.
     this.subs = [
-      this.adminService.busyStatus$.subscribe((busyStatus) => {
+      this.alertService.busyStatus$.subscribe((busyStatus) => {
         this.onBusyStatus(busyStatus);
       }),
-      this.adminService.errorStatus$.subscribe((errorStatus) => {
-        this.onErrorStatus(errorStatus);
-      }),
-      this.clientService.busyStatus$.subscribe((busyStatus) => {
-        this.onBusyStatus(busyStatus);
-      }),
-      this.clientService.errorStatus$.subscribe((errorStatus) => {
+      this.alertService.errorStatus$.subscribe((errorStatus) => {
         this.onErrorStatus(errorStatus);
       }),
       this.adminService.connectionProfileChanged$.subscribe(() => {
@@ -93,6 +91,8 @@ export class AppComponent {
         this.queryParamsUpdated(queryParams);
       })
     ];
+
+    this.openWelcomeModal();
   }
 
   ngOnDestroy() {
@@ -137,7 +137,7 @@ export class AppComponent {
             });
         })
         .catch((error) => {
-          this.clientService.errorStatus$.next(error);
+          this.alertService.errorStatus$.next(error);
         });
     } else {
       console.log('no invitation here');
@@ -239,17 +239,19 @@ export class AppComponent {
   }
 
   private addIdentity(connectionProfile?: string): Promise<string> {
-    return this.addIdentityComponent.displayAndWait(connectionProfile)
-      .then((result) => {
-        if (result) {
-          return this.updateConnectionData()
-            .then(() => {
-              return result;
-            });
-        } else {
-          return result;
-        }
-      });
+    let modalRef = this.modalService.open(AddIdentityComponent);
+    modalRef.componentInstance.connectionProfileOverride = connectionProfile;
+
+    return modalRef.result.then((result) => {
+      if (result) {
+        return this.updateConnectionData()
+          .then(() => {
+            return result;
+          });
+      } else {
+        return result;
+      }
+    });
   }
 
   private changeCurrentIdentity(identity) {
@@ -264,9 +266,8 @@ export class AppComponent {
       return;
     }
     if (busyStatus) {
-      this.busyComponent.displayAndWait(busyStatus);
-    } else {
-      this.busyComponent.close();
+      const modalRef = this.modalService.open(BusyComponent);
+      modalRef.componentInstance.busy = busyStatus;
     }
   }
 
@@ -275,6 +276,10 @@ export class AppComponent {
       const modalRef  = this.modalService.open(ErrorComponent);
       modalRef.componentInstance.error = errorStatus;
     }
+  }
+
+  private openWelcomeModal() {
+    this.modalService.open(WelcomeComponent);
   }
 
 }

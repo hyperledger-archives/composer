@@ -48,7 +48,6 @@
     "composer-common": "^0.4.5",
     "composer-connector-embedded": "^0.4.5",
     "composer-connector-hlf": "^0.4.5",
-    "composer-connector-hlfv1": "^0.4.5",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.2",
     "uuid": "^3.0.1",

@@ -21,155 +21,63 @@ Let's check the assets that are in the Digital Land Title registries. From your 
 ```bash
 $ npm run listAssets
 
-> concerto-gettingstarted@1.0.0 listAssets /home/matthew/git17/Concerto-GettingStarted
+> getting-started@1.0.0 listAssets /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry list
 
-info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
-info: [Handel] listTitles Getting the asset registry
-info: [Handel] listTitles Getting all assest from the registry.
-info: [Handel] listTitles Current Land Titles
-info: [Handel] Titles listed
-info: [Handel]
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ Yes     │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: [Handel] Command completed successfully.
+info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
+info: [Composer-GettingStarted] listTitles Getting the asset registry
+info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
+info: [Composer-GettingStarted] listTitles Current Land Titles
+info: [Composer-GettingStarted] Titles listed
+info: [Composer-GettingStarted]
+┌──────────┬────────────────┬────────────┬─────────┬──────────────────────────────────────────────────────────┬─────────┐
+│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                                              │ ForSale │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country Updated at: Thu, 02 Mar 2017 │ Yes     │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city                                 │ No      │
+└──────────┴────────────────┴────────────┴─────────┴──────────────────────────────────────────────────────────┴─────────┘
+info: [Composer-GettingStarted] Command completed successfully.
+
 
 ```
 
 We can see the two sample land titles listed.
 
-## Install LoopBack
+## Install the general purpose Composer REST Server
 
-We need to install LoopBack; this is two npm modules `loopback` and `loopback-cli`.
+We need to install the Fabric Composer REST server; this is an npm module named `composer-rest-server``.
 
->You might need to issue both of these using sudo.
-
-```bash
-npm install -g loopback
-npm install -g loopback-cli
-```
-
-## Creating the LoopBack server application
-
-We need to have a LoopBack server running to serve the REST api. As this is an application itself, it's worth creating a new directory for this.  So assuming you're still in the Getting Started directory create a new directory as follows.
+>You might need to issue this command using sudo.
 
 ```bash
-cd ..
-mkdir loopback-server
-cd loopback-server
+npm install -g composer-rest-server
 ```
 
-You can now create the loop back server. Issue the command `lb` in this new directory. This is the output you'll see together with the answers to the questions you'll be asked.
+## Running the REST server
+You should now be able to run the Fabric Composer REST server.
 
 ```bash
-$ lb
-
-     _-----_
-    |       |    ╭──────────────────────────╮
-    |--(o)--|    │  Let's create a LoopBack │
-   `---------´   │       application!       │
-    ( _´U`_ )    ╰──────────────────────────╯
-    /___A___\   /
-     |  ~  |
-   __'.___.'__
- ´   `  |° ´ Y `
-
-? What's the name of your application? rest
-? Which version of LoopBack would you like to use? 2.x (long term support)
-? What kind of application do you have in mind? api-server (A LoopBack API server with local User auth)
-Generating .yo-rc.json
-
-
-I'm all done. Running npm install for you to install the required dependencies. If this fails, try running the command yourself.
-
-
-   create .editorconfig
-   create .eslintignore
-   create .eslintrc
-   create server/boot/root.js
-   create server/middleware.development.json
-   create server/middleware.json
-   create server/server.js
-   create README.md
-   create server/boot/authentication.js
-   create .gitignore
-   create client/README.md
-
+composer-rest-server
 ```
 
-That is now all created - the next step is to add an adapter to link with the Fabric Composer runtime.
+You will then be asked to enter a few simple details about your business network.
 
 ```bash
-npm install --save loopback-connector-composer
-```
-
-Last step before trying things out is to add a function in the `server/boot` boot directory. This function is below - the key parts are in the `datasource` variable.  These have been filled out with the same settings of the Getting Started guide.
-Create a new file in this directory with the following contents, the name of the file is not important, so for example `loopback-composer.js`.
-
-
-```javascript
-
-'use strict';
-
-module.exports = function (server) {
-
-  const dataSource = server.loopback.createDataSource('Concerto', {
-    "name": "Concerto",
-    "connector": "loopback-connector-composer",
-    "connectionProfileName" : 'defaultProfile',
-    "businessNetworkIdentifier" : 'digitalproperty-network',
-    "participantId" : 'WebAppAdmin',
-    "participantPwd" : 'DJY27pEnl16d'
-  });
-
-  dataSource.discoverModelDefinitions({}, (error, modelDefinitions) => {
-    console.log('Concerto Loopback Connector');
-
-    if (error) {
-      throw error;
-    }
-    modelDefinitions.forEach((modelDefinition) => {
-      console.log('found modelDefinition = ' + JSON.stringify(modelDefinition))
-      dataSource.discoverSchemas(modelDefinition.name, {visited: {}, associations: true}, (error, modelSchema) => {
-        if (error) {
-          throw error;
-        }
-        // this is required because LoopBack doesn't like dots in model schema names
-        modelSchema.name = modelSchema.plural.replace(/\./g, '_');
-        modelSchema.idInjection = false;
-        let model = server.loopback.createModel(modelSchema);
-        server.model(model, {
-          dataSource: dataSource,
-          public: true
-        });
-      });
-    });
-  });
-};
-```
-
-## Run LoopBack server
-
-Go back to the `loopback-server` directory and start the server as follows.
-
-```bash
-$cd ../..
-$ node .
-WARNING: No configurations found in configuration directory:/home/matthew/git17/rest/config
-WARNING: To disable this warning set SUPPRESS_NO_CONFIG_WARNING in the environment.
-Web server listening at: http://0.0.0.0:3000
+  _____           _              _                   ____                                                         
+ |  ___|   __ _  | |__    _ __  (_)   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __
+ | |_     / _` | | '_ \  | '__| | |  / __|  _____  | |      / _ \  | '_ ` _ \  | '_ \   / _ \  / __|  / _ \ | '__|
+ |  _|   | (_| | | |_) | | |    | | | (__  |_____| | |___  | (_) | | | | | | | | |_) | | (_) | \__ \ |  __/ | |   
+ |_|      \__,_| |_.__/  |_|    |_|  \___|          \____|  \___/  |_| |_| |_| | .__/   \___/  |___/  \___| |_|   
+                                                                               |_|                                
+? Enter your Fabric Connection Profile Name: defaultProfile
+? Enter your Business Network Identifier : digitalproperty-network
+? Enter your Fabric username : WebAppAdmin
+? Enter your secret: DJY27pEnl16d
+Loopback Connector for Fabric Composer
+Models Loaded Now
 Browse your REST API at http://0.0.0.0:3000/explorer
-Concerto Loopback Connector
-found modelDefinition = {"type":"table","name":"net.biz.digitalPropertyNetwork.LandTitle"}
-found modelDefinition = {"type":"table","name":"net.biz.digitalPropertyNetwork.SalesAgreement"}
-found modelDefinition = {"type":"table","name":"net.biz.digitalPropertyNetwork.Person"}
-
 ```
 
 ## Looking at the generated APIs
@@ -191,7 +99,14 @@ You'll see a list of land titles presented as a set of JSON
 
 ![LoopBack-4](./images/loopback-4.png)
 
-Similarly it's quite easy to issue the curl command from a terminal prompt. This can be copied from the LoopBack web page.
+Similarly it's quite easy to issue the curl command from a terminal prompt. This can be copied from the LoopBack web page. To help format the JSON ouptut so it's easier to read install the *prettyjson* package.
+
+```bash
+$ npm install -g prettyjson
+```
+
+Then issue the curl command.
+
 
 ```bash
 $ curl -X GET --header "Accept: application/json" "http://0.0.0.0:3000/api/net.biz.digitalPropertyNetwork.LandTitle" | prettyjson
@@ -205,7 +120,7 @@ $ curl -X GET --header "Accept: application/json" "http://0.0.0.0:3000/api/net.b
     personId:  PID:1234567890
     firstName: Fred
     lastName:  Bloggs
-  information: A nice house in the country
+  information: A nice house in the country Updated at: Thu, 02 Mar 2017
   forSale:     true
   $class:      net.biz.digitalPropertyNetwork.LandTitle
 -
@@ -233,25 +148,24 @@ You'll see now that the other land title has been marked for sale.
 ```bash
 $ npm run listAssets
 
-> concerto-gettingstarted@1.0.0 listAssets /home/matthew/git17/Concerto-GettingStarted
+> getting-started@1.0.0 listAssets /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry list
 
-info: [Handel] IBM Concerto: Handel appliation
-info: [Handel] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22-20170116133558
-info: [Handel] listTitles Getting the asset registry
-info: [Handel] listTitles Getting all assest from the registry.
-info: [Handel] listTitles Current Land Titles
-info: [Handel] Titles listed
-info: [Handel]
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ Yes     │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ Yes     │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: [Handel] Command completed successfully.
-
+info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
+info: [Composer-GettingStarted] listTitles Getting the asset registry
+info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
+info: [Composer-GettingStarted] listTitles Current Land Titles
+info: [Composer-GettingStarted] Titles listed
+info: [Composer-GettingStarted]
+┌──────────┬────────────────┬────────────┬─────────┬──────────────────────────────────────────────────────────┬─────────┐
+│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                                              │ ForSale │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country Updated at: Thu, 02 Mar 2017 │ Yes     │
+├──────────┼────────────────┼────────────┼─────────┼──────────────────────────────────────────────────────────┼─────────┤
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city Updated at: Thu, 02 Mar 2017    │ Yes     │
+└──────────┴────────────────┴────────────┴─────────┴──────────────────────────────────────────────────────────┴─────────┘
+info: [Composer-GettingStarted] Command completed successfully.
 ```
 
 #Summary

@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 
-import {AdminService} from './admin.service';
-import {ClientService} from './client.service';
+import {AdminService} from './services/admin.service';
+import {ClientService} from './services/client.service';
+import {AlertService} from './services/alert.service';
 import {SampleBusinessNetworkService} from './services/samplebusinessnetwork.service';
 
 const fabricComposerOwner = 'fabric-composer';
@@ -15,7 +16,8 @@ export class InitializationService {
 
   constructor(private adminService: AdminService,
               private clientService: ClientService,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService) {
+              private sampleBusinessNetworkService: SampleBusinessNetworkService,
+              private alertService: AlertService) {
 
   }
 
@@ -40,15 +42,14 @@ export class InitializationService {
         }
       })
       .then(() => {
-        this.adminService.busyStatus$.next(null);
-        this.clientService.busyStatus$.next(null);
+        this.alertService.busyStatus$.next(null);
         this.initialized = true;
         this.initializingPromise = null;
       })
       .catch((error) => {
-        this.adminService.busyStatus$.next(null);
-        this.clientService.busyStatus$.next(null);
-        this.adminService.errorStatus$.next(error);
+        //TODO: Is this needed?
+        this.alertService.busyStatus$.next(null);
+        this.alertService.errorStatus$.next(error);
         this.initialized = false;
         this.initializingPromise = null;
       });
