@@ -7,8 +7,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import {AppState} from './app.service';
-import {AdminService} from './admin.service';
-import {ClientService} from './client.service';
+import {AdminService} from './services/admin.service';
+import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from './wallet.service';
@@ -20,6 +20,8 @@ import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';
 import {SuccessComponent} from './success';
 
+
+import {WelcomeComponent} from './welcome';
 
 const LZString = require('lz-string');
 
@@ -94,6 +96,8 @@ export class AppComponent {
         this.queryParamsUpdated(queryParams);
       })
     ];
+
+    this.openWelcomeModal();
   }
 
   ngOnDestroy() {
@@ -240,17 +244,19 @@ export class AppComponent {
   }
 
   private addIdentity(connectionProfile?: string): Promise<string> {
-    return this.addIdentityComponent.displayAndWait(connectionProfile)
-      .then((result) => {
-        if (result) {
-          return this.updateConnectionData()
-            .then(() => {
-              return result;
-            });
-        } else {
-          return result;
-        }
-      });
+    let modalRef = this.modalService.open(AddIdentityComponent);
+    modalRef.componentInstance.connectionProfileOverride = connectionProfile;
+
+    return modalRef.result.then((result) => {
+      if (result) {
+        return this.updateConnectionData()
+          .then(() => {
+            return result;
+          });
+      } else {
+        return result;
+      }
+    });
   }
 
   private changeCurrentIdentity(identity) {
@@ -265,9 +271,8 @@ export class AppComponent {
       return;
     }
     if (busyStatus) {
-      this.busyComponent.displayAndWait(busyStatus);
-    } else {
-      this.busyComponent.close();
+      const modalRef = this.modalService.open(BusyComponent);
+      modalRef.componentInstance.busy = busyStatus;
     }
   }
 
@@ -283,6 +288,9 @@ export class AppComponent {
       const modalRef  = this.modalService.open(SuccessComponent);
       modalRef.componentInstance.success = successStatus;
     }
+  }
+  private openWelcomeModal() {
+    this.modalService.open(WelcomeComponent);
   }
 
 }

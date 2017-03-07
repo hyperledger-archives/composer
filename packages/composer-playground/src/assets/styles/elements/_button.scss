@@ -153,5 +153,11 @@
         right: 3px;
       }
     }
+
+    &.basic {
+      background-color:#FDFDFD;
+      border:1px solid $fourth-highlight;
+      border-radius: 0.25em;
+    }
   }
 }

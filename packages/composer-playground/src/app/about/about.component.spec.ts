@@ -55,7 +55,7 @@ describe('AboutComponent', () => {
     it ('Should display the correct title for the AboutComponent', () => {
         fixture.detectChanges();
         expect(el.textContent).toContain('About');
-    })
+    });
 
     it ('Should call getVersions when the component is created', fakeAsync(() => {
         fixture.detectChanges();
@@ -65,5 +65,5 @@ describe('AboutComponent', () => {
         expect(fixture.componentInstance.common).toBe(MOCK_RETURN.common);
         expect(fixture.componentInstance.client).toBe(MOCK_RETURN.client);
         expect(fixture.componentInstance.admin).toBe(MOCK_RETURN.admin);
-    }))
+    }));
 });

@@ -10,56 +10,47 @@ excerpt: How to install the development pre-requisites
 
 ---
 
-The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*.
+The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in Github so *git* will be needed as well.
 
 The recommended versions are:
 *Docker*: v1.12.5
 *Docker-compose*: v1.10.0
 *node.js*: v6.9.5
 
-## Automatic Installation
 
-First clone the Getting Started repository
+
+## Installation for Ubuntu 14.04 LTS
+
+There is an automated installation script that will install *node* *docker* *docker-compose*.  
+If some of the tools are already installed or to do the installation step-by-step follow the [manual instructions](./manual_prerequisites.md).
+
 
 ```bash
-git clone http://github.com/fabric-composer/sample-applications
-cd sample-applications/packages/getting-started
+$ curl -O https://raw.githubusercontent.com/mbwhite/sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+$ chmod u+x prereqs-ubuntu.sh
 ```
 
-Next run the script
+Next run the script - as this uses sudo you will be prompted for your password.
 
 ```bash
-user@ubuntu:~/getting-started$ ./scripts/prereqs-ubuntu.sh
+$ ./prereqs-ubuntu.sh
 ```
 
 **Important:** You will then need to logout and login again before running the next command
 
-This command completes the installation process
+The end of the script does print out the versions installed, if you wish to check here are the version commands.
 
 ```bash
-user@ubuntu:~/getting-started$ ./scripts/prereqs-ubuntu.sh docker
+$ node --version
+v6.10.0
+$ npm --version
+4.3.0
+$ docker --version
+Docker version 1.13.1, build 092cba3
+$ docker-compose --version
+docker-compose version 1.11.1, build 7c5d5e4
 ```
 
-**Additional Notes:**
-
-The installation commands have been tested on Ubuntu 14.04 (trusty), 64-bit. For other versions of Ubuntu, please check the official installation guides found under each instruction.
-
-## Manual Installation
-
-### 1. Installing NVM
-We highly recommend installing NVM to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version higher than v4.6.0.
-
-[Official nvm Github repository](https://github.com/creationix/nvm)
-
-### 2. Installing Docker Engine
-The Docker Engine is essential for running system tests and running the HyperLedger Fabric.
-
-[Official Docker Engine Installation Guide](https://docs.docker.com/engine/installation/)
-
-### 3. Installing Docker Compose
-[Docker Compose](https://docs.docker.com/compose/overview/) is used for easily configuring and starting HyperLedger Fabric.
-
-[Official Docker Compose Installation guide](https://docs.docker.com/compose/install/)
 
 ## Optional Installs
 

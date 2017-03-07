@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {AdminService} from '../admin.service';
-import {ClientService} from '../client.service';
+import {AdminService} from '../services/admin.service';
+import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
 
@@ -10,7 +10,7 @@ const fabricComposerOwner = 'fabric-composer';
 const fabricComposerRepository = 'sample-networks';
 
 @Component({
-  selector: 'sample-model',
+  selector: 'import-modal',
   templateUrl: './import.component.html',
   styleUrls: ['./import.component.scss'.toString()]
 })
@@ -94,15 +94,14 @@ export class ImportComponent implements OnInit {
     }
   }
 
-  private fileDetected(count) {
+  private fileDetected() {
     this.expandInput = true;
   }
 
 
-  private fileLeft(count) {
-    if (count === 0) {
+  private fileLeft() {
       this.expandInput = false;
-    }
+
   }
 
   private fileAccepted(file: File) {

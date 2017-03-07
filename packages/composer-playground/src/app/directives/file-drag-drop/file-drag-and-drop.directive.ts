@@ -11,39 +11,33 @@ export class FileDragDropDirective {
   @Output()
   public fileDragDropFileRejected: EventEmitter<string> = new EventEmitter<string>();
   @Output()
-  public fileDragDropDragOver: EventEmitter<number> = new EventEmitter<number>();
+  public fileDragDropDragOver: EventEmitter<string> = new EventEmitter<string>();
   @Output()
-  public fileDragDropDragLeave: EventEmitter<number> = new EventEmitter<number>();
+  public fileDragDropDragLeave: EventEmitter<string> = new EventEmitter<string>();
 
   @Input()
   public supportedFileTypes: string[] = [];
   @Input()
   maxFileSize: number = 0;
 
-  private count: number = 0;
-
   public constructor() {
   }
 
   @HostListener('dragenter', ['$event'])
   public onDragOver(event: Event): void {
-    this.count++;
-    this.fileDragDropDragOver.emit(this.count);
+    this.fileDragDropDragOver.emit('entered');
 
     this.preventAndStopEventPropagation(event);
   }
 
-  @HostListener('dragleave', ['$event'])
+  @HostListener('dragexit', ['$event'])
   public onDragLeave(event: Event): void {
-    this.count--;
-    this.fileDragDropDragLeave.emit(this.count);
-
+    this.fileDragDropDragLeave.emit('exited');
     this.preventAndStopEventPropagation(event);
   }
 
   @HostListener('drop', ['$event'])
   public onDrop(event: Event): void {
-    this.count = 0;
     let data = this.getDataTransferObject(event);
 
     // Get the file
