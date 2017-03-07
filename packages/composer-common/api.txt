@@ -2,8 +2,9 @@ class BaseException extends Error {
    + void constructor(string) 
 }
 class BusinessNetworkDefinition {
-   + void constructor(String,String) 
+   + void constructor(String,String,String) 
    + String getIdentifier() 
+   + BusinessNetworkMetadata getMetadata() 
    + String getName() 
    + String getVersion() 
    + String getDescription() 
@@ -13,6 +14,10 @@ class BusinessNetworkDefinition {
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
+}
+class BusinessNetworkMetadata {
+   + void constructor(String) 
+   + String getREADME() 
 }
 class Factory {
    + void constructor(ModelManager) 
