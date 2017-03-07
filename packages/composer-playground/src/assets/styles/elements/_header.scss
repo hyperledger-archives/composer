@@ -74,14 +74,24 @@
                   margin-left: 1rem;
                   margin-right: 1rem;
                   flex-direction: column;
-                  color: $white;
+                  fill: $white;
+                  &:hover {
+                    border-radius: 0px;
+                    border-bottom: 3px solid $white;
+                    transition: none;
+                  }
+                  &.active {
+                    border-bottom: 3px solid white;
+                    border-radius: 0px;
+                  }
                 svg.ibm-icon {
                     fill: $white;
                     // &:hover {§
                     //   border-bottom: 3px solid $white;
                     // }
               }
-              }
+
+            }
             }
           }
       }
