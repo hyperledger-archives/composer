@@ -40,6 +40,7 @@
               {{scriptFile.getIdentifier()}}
             </li>
             <li *ngIf="currentBusinessNetwork.getAclManager().getAclFile()">{{currentBusinessNetwork.getAclManager().getAclFile().getIdentifier()}}</li>
+            <li *ngIf="currentBusinessNetwork.getMetadata().getREADME()">README.md</li>
           </ul>
         </div>
         <div>

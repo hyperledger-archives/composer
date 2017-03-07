@@ -10,14 +10,14 @@
     user-select: none;
     background-image: none;
     border: 1px solid transparent;
-    border-radius: 1px;
+    border-radius: 5px;
     margin: 0;
     box-shadow: none;
     line-height: 30px;
     cursor: pointer;
 
     //height: 3rem;
-    background-color: $primary-text;
+    background-color: $white;
     flex-basis: auto;
     width: auto;
     padding-right: 30px;
@@ -25,7 +25,7 @@
     font-family: $font-stack;
     font-size: 0.9rem;
     font-weight: 400;
-    letter-spacing: 0.4px;
+    // letter-spacing: 0.4px;
     transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
     min-width: 100px;
 
@@ -55,10 +55,10 @@
       color: $white;
 
       &:hover {
-        background-color: $second-highlight;
+        background-color: $sixth-highlight;
       }
       &.active, &:active, &:focus {
-        background-color: $second-highlight;
+        background-color: $sixth-highlight;
       }
 
       &[disabled], &[disabled]:hover {
@@ -70,7 +70,7 @@
     &.secondary {
       background-color: $white;
       color: $first-highlight;
-      border-color: $first-highlight;
+      border-color: $keyline-highlight;
 
       &:hover {
         background-color: $second-highlight;
@@ -81,7 +81,7 @@
       &.active, &:active, &:focus {
         background-color: $second-highlight;
         border-color: $second-highlight;
-        color: $second-highlight
+        color: $white;
       }
 
       &[disabled], &[disabled]:hover {
@@ -152,6 +152,12 @@
         top: 3px;
         right: 3px;
       }
+    }
+
+    &.basic {
+      background-color:#FDFDFD;
+      border:1px solid $fourth-highlight;
+      border-radius: 0.25em;
     }
   }
 }

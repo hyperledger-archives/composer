@@ -9,7 +9,7 @@ import {Component} from '@angular/core';
 
 // Load the implementations that should be tested
 import {RegistryComponent} from './registry.component';
-import {ClientService} from '../client.service';
+import {ClientService} from '../services/client.service';
 
 describe(`Registry`, () => {
  /** let comp: RegistryComponent;

@@ -1,0 +1,9 @@
+@import '../../assets/styles/base/_colors.scss';
+
+.busy {
+  .modal-header {
+    svg {
+      fill: green
+    }
+  }
+}

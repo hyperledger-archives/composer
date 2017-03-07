@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {AdminService} from '../admin.service';
-import {ClientService} from '../client.service';
+import {AdminService} from '../services/admin.service';
+import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
 
@@ -79,7 +79,7 @@ export class ImportComponent implements OnInit {
     this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
     if (this.gitHubAuthenticated) {
       return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner,
-                                                             fabricComposerRepository)
+        fabricComposerRepository)
         .then((modelsInfo) => {
           this.sampleNetworks = modelsInfo;
           this.gitHubInProgress = false;
@@ -94,15 +94,14 @@ export class ImportComponent implements OnInit {
     }
   }
 
-  private fileDetected(count) {
+  private fileDetected() {
     this.expandInput = true;
   }
 
 
-  private fileLeft(count) {
-    if (count === 0) {
+  private fileLeft() {
       this.expandInput = false;
-    }
+
   }
 
   private fileAccepted(file: File) {
@@ -114,6 +113,10 @@ export class ImportComponent implements OnInit {
           this.currentBusinessNetwork = businessNetwork;
           // needed for if browse file
           this.expandInput = true;
+        })
+        .catch((error) => {
+          this.alertService.errorStatus$.next(error);
+          this.expandInput = false;
         });
     };
 
@@ -122,6 +125,7 @@ export class ImportComponent implements OnInit {
 
   private fileRejected(reason: string) {
     this.alertService.errorStatus$.next(reason);
+    this.expandInput = false;
   }
 
   private removeFile() {
