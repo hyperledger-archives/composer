@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbActiveModal, NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
-import { ClientService } from '../../client.service';
+import { ClientService } from '../../services/client.service';
 import { InitializationService } from '../../initialization.service';
 import { ClassDeclaration,  TransactionDeclaration } from 'composer-common';
 import leftPad = require('left-pad');
