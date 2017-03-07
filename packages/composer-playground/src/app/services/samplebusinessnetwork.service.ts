@@ -3,8 +3,8 @@ import {Http}    from '@angular/http';
 
 import * as Octokat from 'octokat'
 
-import {AdminService} from '../admin.service';
-import {ClientService} from '../client.service';
+import {AdminService} from './admin.service';
+import {ClientService} from './client.service';
 import {AlertService} from './alert.service';
 
 import {BusinessNetworkDefinition} from 'composer-admin';
