@@ -1,23 +1,26 @@
 rule R1 {
     description: "The owner of a vehicle can read the vehicle"
-    participant: "systest.accesscontrols.SampleParticipant:p"
+    participant(p): "systest.accesscontrols.SampleParticipant"
     operation: READ
-    resource: "systest.accesscontrols.SampleAsset:a"
-    condition: if(a.owner.getIdentifier() === p.getIdentifier()) then ALLOW
+    resource(a): "systest.accesscontrols.SampleAsset"
+    condition: (a.owner.getIdentifier() === p.getIdentifier())
+    action: ALLOW
 }
 
 rule R2 {
     description: "Nobody except the participant can see the participant"
-    participant: "systest.accesscontrols.SampleParticipant:po"
+    participant(po): "systest.accesscontrols.SampleParticipant"
     operation: READ
-    resource: "systest.accesscontrols.SampleAsset:a"
-    condition: if(p.getIdentifier() !== po.getIdentifier()) then DENY
+    resource(p): "systest.accesscontrols.SampleAsset"
+    condition: (p.getIdentifier() !== po.getIdentifier())
+    action: DENY
 }
 
 rule R3 {
     description: "Nobody except the participant can see the participant"
-    participant: "systest.accesscontrols.SampleParticipant:po"
+    participant(po): "systest.accesscontrols.SampleParticipant"
     operation: READ
-    resource: "systest.accesscontrols.SampleParticipant:p"
-    condition: if(p.getIdentifier() === po.getIdentifier()) then ALLOW
+    resource(p): "systest.accesscontrols.SampleParticipant"
+    condition: (p.getIdentifier() === po.getIdentifier())
+    action: ALLOW
 }
