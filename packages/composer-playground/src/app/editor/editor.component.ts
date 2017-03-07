@@ -458,6 +458,7 @@ export class EditorComponent implements OnInit {
           this.setCurrentFile(this.previousFile);
         }
         this.alertService.busyStatus$.next(null);
+        this.alertService.successStatus$.next('Business Network Deployed Successfully');
       })
       .catch((error) => {
         this.deploying = false;
