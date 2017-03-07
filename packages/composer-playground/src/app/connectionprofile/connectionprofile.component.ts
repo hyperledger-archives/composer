@@ -3,8 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AdminService } from '../admin.service';
-import { ClientService } from '../client.service';
+import { AdminService } from '../services/admin.service';
+import { ClientService } from '../services/client.service';
 
 import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
 
