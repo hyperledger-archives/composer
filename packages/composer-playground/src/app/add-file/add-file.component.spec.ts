@@ -7,6 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
+import { ModelFile } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
 import { FileImporterComponent } from './../file-importer';
@@ -15,6 +16,8 @@ import { FileDragDropDirective } from './../directives/file-drag-drop';
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { AlertService } from '../services/alert.service';
+
+const fs = require('fs');
 
 
 class MockAdminService {
@@ -61,7 +64,7 @@ describe('AddFileComponent', () => {
   let component: AddFileComponent;
   let fixture: ComponentFixture<AddFileComponent>;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
         FileImporterComponent,
@@ -76,33 +79,52 @@ describe('AddFileComponent', () => {
         { provide: AlertService , useClass: MockAlertService },
         NgbActiveModal
       ]
-    })
-    .compileComponents();
+    });
 
     fixture = TestBed.createComponent(AddFileComponent);
     component = fixture.componentInstance;
-  });
+  }));
 
 
   describe('#fileDetected', () => {
-    it ('should change this.expandInput to true', () => {
+    it('should change this.expandInput to true', () => {
+      expect(() => {
+        component.fileDetected();
+      }).not.toThrow();
+      expect(component.expandInput).toBe(true);
     });
   });
 
   describe('#fileLeft', () => {
-    it('should change this.expectedInput to false' ,() => {
-
+    it('should change this.expectedInput to false', () => {
+      component.fileLeft();
+      expect(component.expandInput).toBe(false);
     });
   });
 
   describe('#fileAccepted', () => {
     it('should set this.currentFile to a ModelFile', () => {
 
+      let b = new Blob(['/**CTO File*/'], { type: 'text/plain'});
+      let file = new File([b], 'newfile.cto');
+
+      return component.fileAccepted(file)
+      .then(() => {
+        expect(component.createModel).toHaveBeenCalled();
+      })
+      .catch((err) => {
+        spyOn(component, 'fileRejected');
+        expect(component.fileRejected).not.toHaveBeenCalled();
+      });
     });
 
-    it('should set this.currentFile to a ScriptFile', () => {
-
-    });
+    // it('should set this.currentFile to a ScriptFile', () => {
+    //   spyOn(component, 'createScript');
+    //   // component.fileRejected = jasmine.createSpy('fileRejected spy')
+    //   let file = new File(['/**CTO File*/'], 'newfile.cto');
+    //   component.fileAccepted(file);
+    //   expect(component.createScript).toHaveBeenCalled();
+    // });
 
     it('should set currentFile name to the name of the imported file', () => {
 

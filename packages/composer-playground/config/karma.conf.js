@@ -80,6 +80,13 @@ module.exports = function(config) {
       'Chrome'
     ],
 
+    client : {
+        captureConsole : true
+    },
+    browserConsoleLogOptions: {
+      level: 'log'
+    },
+
     customLaunchers: {
       ChromeTravisCi: {
         base: 'Chrome',

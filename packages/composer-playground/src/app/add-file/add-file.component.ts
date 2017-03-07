@@ -9,25 +9,26 @@ import { AlertService } from '../services/alert.service';
   templateUrl: './add-file.component.html',
   styleUrls: ['./add-file.component.scss'.toString()]
 })
-export class AddFileComponent implements OnInit {
+export class AddFileComponent implements OnInit {b
 
   @Input() businessNetwork: BusinessNetworkDefinition;
 
-  private currentFile = null;
-  private currentFileName = null;
-  private fileType = '';
-  private newFile = false;
+  currentFile = null;
+  currentFileName = null;
+  fileType = '';
+  newFile = false;
 
-  private expandInput: boolean = false;
+  expandInput: boolean = false;
 
-  private maxFileSize: number = 5242880;
-  private supportedFileTypes: string[] = ['.js', '.cto'];
+  maxFileSize: number = 5242880;
+  supportedFileTypes: string[] = ['.js', '.cto'];
 
-  private addModelNamespace: string = 'org.acme.model';
-  private addModelFileName: string = 'lib/org.acme.model.cto';
-  private addScriptFileName: string = 'lib/script.js';
+  addModelNamespace: string = 'org.acme.model';
+  addModelFileName: string = 'lib/org.acme.model.cto';
+  addScriptFileName: string = 'lib/script.js';
 
-  private error = null;
+  error = null;
+
   constructor(private alertService: AlertService,
               public activeModal: NgbActiveModal) {
 
@@ -36,60 +37,78 @@ export class AddFileComponent implements OnInit {
   ngOnInit() {
   }
 
-  private fileDetected(count) {
+ fileDetected() {
     this.expandInput = true;
   }
 
-  private fileLeft(count) {
-    if (count === 0) {
-
-    }
+ fileLeft() {
     this.expandInput = false;
   }
 
-  private fileAccepted(file: File) {
+ fileAccepted(file: File): Promise<any> {
     this.newFile = false;
     let type = file.name.substr(file.name.lastIndexOf('.') + 1);
-    let fileReader = new FileReader();
-    fileReader.onload = () => {
-      let dataBuffer = Buffer.from(fileReader.result);
-      try {
+    return this.getDataBuffer(file)
+      .then((data) => {
         switch (type) {
           case 'js':
-            this.fileType = 'js';
-            let scriptManager = this.businessNetwork.getScriptManager();
-            this.currentFile = scriptManager.createScript(file.name, 'JS', dataBuffer.toString());
-            this.currentFileName = this.currentFile.getIdentifier();
+            this.createScript(file, data);
             break;
           case 'cto':
-            this.fileType = 'cto';
-            let modelManager = this.businessNetwork.getScriptManager();
-            this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name);
-            this.currentFileName = this.currentFile.getFileName();
+            this.createModel(file, data);
             break;
           default:
-            break;
+            throw new Error('Unexpected File Type');
         }
         this.expandInput = true;
-      } catch (error) {
-        // this.activeModal.dismiss();
-        return this.fileRejected(error);
-      }
-    };
-
-    fileReader.readAsArrayBuffer(file);
+      })
+      .catch((err) => {
+        this.fileRejected(err);
+      });
   }
 
-  private fileRejected(reason: string) {
+  getDataBuffer(file: File) {
+    return new Promise((resolve, reject) => {
+      let fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(file);
+      fileReader.onload = () => {
+        let dataBuffer = Buffer.from(fileReader.result);
+        resolve(dataBuffer);
+      };
+
+      fileReader.onerror = (err) => {
+        reject(err);
+      };
+    });
+  }
+
+  createScript(file: File, dataBuffer) {
+    this.newFile = true;
+    this.fileType = 'js';
+    let scriptManager = this.businessNetwork.getScriptManager();
+    this.currentFile = scriptManager.createScript(file.name, 'JS', dataBuffer.toString());
+    this.currentFileName = this.currentFile.getIdentifier();
+  }
+
+  createModel(file: File, dataBuffer) {
+    this.newFile = true;
+    this.fileType = 'cto';
+    let modelManager = this.businessNetwork.getScriptManager();
+    this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name);
+    this.currentFileName = this.currentFile.getFileName();
+  }
+
+
+ fileRejected(reason: string) {
     this.alertService.errorStatus$.next(reason);
   }
 
-  private removeFile() {
+ removeFile() {
     this.expandInput = false;
     this.currentFile = null;
   }
 
-  private changeCurrentFileType() {
+ changeCurrentFileType() {
     this.newFile = true;
     if (this.fileType === 'js') {
       let code =

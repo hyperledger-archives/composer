@@ -28,7 +28,7 @@
   p {
     font-family: $font-stack;
     font-weight: 400;
-    font-size: 1em;
+    font-size: 0.9rem;
     letter-spacing: 0;
     //TODO: check this
     margin-bottom: 1.3em;
@@ -57,5 +57,11 @@
   label {
     font-size: .8em;
     color: $primary-text;
+  }
+
+  header {
+    p {
+      color: $white;
+    }
   }
 }
