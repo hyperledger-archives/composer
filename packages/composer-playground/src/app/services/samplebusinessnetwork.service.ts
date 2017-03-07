@@ -3,8 +3,8 @@ import {Http}    from '@angular/http';
 
 import * as Octokat from 'octokat'
 
-import {AdminService} from '../admin.service';
-import {ClientService} from '../client.service';
+import {AdminService} from './admin.service';
+import {ClientService} from './client.service';
 import {AlertService} from './alert.service';
 
 import {BusinessNetworkDefinition} from 'composer-admin';
@@ -345,6 +345,31 @@ export class SampleBusinessNetworkService {
       });
   }
 
+  private getMetaData(owner: string, repository: string, path: string): Promise<any> {
+    if (!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
+    let repo = this.octo.repos(owner, repository);
+
+    return repo.contents(path + 'README.md').fetch()
+      .then((readme) => {
+        let decodedString = atob(readme.content);
+        let readmeData = {
+          name: readme.name,
+          data: decodedString
+        };
+        return readmeData;
+      })
+      .catch((error) => {
+        //don't need to have a readme file to be valid
+        if (error.status == '404') {
+          return Promise.resolve();
+        }
+        throw error
+      });
+  }
+
   public deployInitialSample(): Promise<any> {
     this.alertService.busyStatus$.next('Deploying sample business network ...');
     let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
@@ -377,6 +402,7 @@ export class SampleBusinessNetworkService {
     }
     sampleNetworkPromises.push(this.getScripts(owner, repository, path));
     sampleNetworkPromises.push(this.getAcls(owner, repository, path));
+    sampleNetworkPromises.push(this.getMetaData(owner, repository, path));
     sampleNetworkPromises.push(this.getSampleNetworkInfo(owner, repository, path));
 
     return Promise.all(sampleNetworkPromises)
@@ -385,13 +411,13 @@ export class SampleBusinessNetworkService {
         let models = results[0];
         let scripts = results[1];
         let acls = results[2];
-        let packageContents = results[3];
+        let metaData = results[3];
+        let packageContents = results[4];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description);
+        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description, metaData.data);
         let modelManager = businessNetworkDefinition.getModelManager();
-        models.forEach((model) => {
-          modelManager.addModelFile(model);
-        });
+
+        modelManager.addModelFiles(models);
 
         let scriptManager = businessNetworkDefinition.getScriptManager();
         scripts.forEach((script) => {
@@ -404,6 +430,7 @@ export class SampleBusinessNetworkService {
           let aclFile = new AclFile(acls.name, modelManager, acls.data);
           aclManager.setAclFile(aclFile);
         }
+
         return this.deployBusinessNetwork(businessNetworkDefinition);
       });
   }
