@@ -8,6 +8,7 @@
           <h3 *ngIf="file.model">Model File</h3>
           <h3 *ngIf="file.script">Script File</h3>
           <h3 *ngIf="file.acl">Access Control</h3>
+          <h3 *ngIf="file.readme">About</h3>
           <div>{{file.displayID}}</div>
         </li>
       </ul>
@@ -72,7 +73,9 @@
       </div>
     </div>
   </div>
-  <codemirror [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
+  <div class="readme" *ngIf="readme" [innerHTML]="readme">
+  </div>
+    <codemirror *ngIf="!readme" [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
   </codemirror>
   <div class="alert alert-danger mt-2" role="alert" *ngIf="currentError">
     {{currentError}}
