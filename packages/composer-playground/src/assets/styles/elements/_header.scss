@@ -5,7 +5,7 @@
       flex-direction: row;
       width: 100vw;
       background-color: $second-highlight;
-      z-index: 11;
+      z-index: 10000;
       box-shadow: 0 1px 4px 0 rgba(0,0,0,0.20);
           .navcontent {
             font-size: 0.9rem;
@@ -86,9 +86,6 @@
                   }
                 svg.ibm-icon {
                     fill: $white;
-                    // &:hover {§
-                    //   border-bottom: 3px solid $white;
-                    // }
               }
 
             }
