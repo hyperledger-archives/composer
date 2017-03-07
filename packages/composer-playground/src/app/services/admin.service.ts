@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {BehaviorSubject, Subject} from 'rxjs/Rx';
 
-import {ConnectionProfileService} from './connectionprofile.service';
-import {WalletService} from './wallet.service';
-import {IdentityService} from './identity.service';
-import {AlertService} from './services/alert.service';
+import {ConnectionProfileService} from '../connectionprofile.service';
+import {WalletService} from '../wallet.service';
+import {IdentityService} from '../identity.service';
+import {AlertService} from './alert.service';
 
 import {AdminConnection, BusinessNetworkDefinition} from 'composer-admin';
-import {AclFile, ConnectionProfileManager, Logger} from 'composer-common';
+import {ConnectionProfileManager, Logger} from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
 

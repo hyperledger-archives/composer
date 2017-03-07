@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 
-import {AdminService} from './admin.service';
-import {ClientService} from './client.service';
+import {AdminService} from './services/admin.service';
+import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
 import {SampleBusinessNetworkService} from './services/samplebusinessnetwork.service';
 
