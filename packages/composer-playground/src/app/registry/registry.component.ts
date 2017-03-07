@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientService } from '../client.service';
-import { AlertService } from '../services/alert.service'
+import { AlertService } from '../services/alert.service';
 import { ResourceComponent } from '../resource/resource.component';
 
 @Component({
@@ -16,6 +16,7 @@ import { ResourceComponent } from '../resource/resource.component';
 export class RegistryComponent {
 
   private _registry = null;
+  private _reload = false;
   private resources = [];
 
   private expandedResource = null;
@@ -26,6 +27,15 @@ export class RegistryComponent {
     this._registry = registry;
     if (this._registry) {
       this.loadResources();
+    }
+  }
+
+ @Input()
+ set reload(reload) {
+    this._reload = reload;
+    if (this._reload) {
+      this.loadResources();
+      this._reload = false;
     }
   }
 

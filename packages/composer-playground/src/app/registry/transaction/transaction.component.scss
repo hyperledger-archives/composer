@@ -1,0 +1,36 @@
+@import '../../../assets/styles/base/_colors.scss';
+@import '../../../assets/styles/base/_variables.scss';
+
+transaction-modal {
+
+  .transaction-bound {
+      max-height: 350px;
+      margin-top: $space-medium;
+    }
+
+ .transaction-select{
+    display: flex;
+    color:$secondary-text;
+    align-content: flex-start;
+
+    .transaction-select-item{
+      order: 1;
+      margin: auto 1rem;
+    }
+  }
+
+  .transaction-preview{
+    color:$secondary-text;
+  }
+
+  .transaction-error{
+    min-height: 30px;
+  }
+
+  .CodeMirror,
+  .CodeMirror-scroll {
+    min-height: 250px;
+    max-height: 450px;
+  }
+
+}

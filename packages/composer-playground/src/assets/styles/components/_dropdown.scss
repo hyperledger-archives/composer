@@ -1,0 +1,153 @@
+
+// The dropdown wrapper (`<div>`)
+.dropup,
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  // Generate the caret automatically
+  &::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 10px;
+    vertical-align: middle;
+    content: "";
+    border-top: 10px solid;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+  }
+
+  // Prevent the focus on the dropdown toggle when closing dropdowns
+  &:focus {
+    outline: 0;
+  }
+}
+
+.dropup {
+  .dropdown-toggle {
+    &::after {
+      border-top: 0;
+      border-bottom: 10px solid;
+    }
+  }
+}
+
+// The dropdown menu
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none; // none by default, but block on "open" of the menu
+  float: left;
+  min-width: 40px;
+  padding: 0 0;
+  margin: 0 0 0; // override default ul
+  font-size: 12pt; // Redeclare because nesting can cause inheritance issues
+  color: grey;
+  text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
+  list-style: none;
+  background-color: white;
+  background-clip: padding-box;
+  border: 0px solid lightgray;
+
+
+
+  // Links, buttons, and more within the dropdown menu
+  //
+  // `<button>`-specific styles are denoted with `// For <button>s`
+  .dropdown-item {
+    display: block;
+    width: 100%; // For `<button>`s
+    padding: 1rem 0;
+    clear: both;
+    font-weight: 12pt;
+    color: lightgray;
+    text-align: left; // For `<button>`s
+    white-space: nowrap; // prevent links from randomly breaking onto new lines
+    background: none; // For `<button>`s
+    border: 0; // For `<button>`s
+    margin-left:0;
+
+      .action {
+        padding: 0 1rem;
+      }
+
+    &.active,
+    &:active {
+      color: grey;
+      text-decoration: none;
+      background-color: grey;
+    }
+
+    &.disabled,
+    &:disabled {
+      color: lightgray;
+      cursor: true;
+      background-color: transparent;
+      background-image: none;
+    }
+  }
+
+}
+// Open state for the dropdown
+.show {
+  // Show the menu
+  > .dropdown-menu {
+    display: block;
+  }
+
+  // Remove the outline when :focus is triggered
+  > a {
+    outline: 0;
+  }
+}
+
+// Menu positioning
+//
+// Add extra class to `.dropdown-menu` to flip the alignment of the dropdown
+// menu with the parent.
+.dropdown-menu-right {
+  right: 0;
+  left: auto; // Reset the default from `.dropdown-menu`
+}
+
+.dropdown-menu-left {
+  right: auto;
+  left: 0;
+}
+
+// Dropdown section headers
+.dropdown-header {
+  display: block;
+  padding: 0 0;
+  margin-bottom: 0; // for use with heading elements
+  font-size: 8pt;
+  color: darkgray;
+  white-space: nowrap; // as with > li > a
+}
+
+// Backdrop to catch body clicks on mobile, etc.
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+}
+
+// Allow for dropdowns to go bottom up (aka, dropup-menu)
+//
+// Just add .dropup after the standard .dropdown class and you're set.
+
+.dropup {
+  // Different positioning for bottom up menu
+  .dropdown-menu {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 0;
+  }
+}

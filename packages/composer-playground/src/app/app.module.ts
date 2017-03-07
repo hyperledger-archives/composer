@@ -38,6 +38,7 @@ import { ImportComponent } from './import';
 import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
+import { TransactionComponent } from './registry/transaction';
 
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
@@ -89,6 +90,7 @@ type StoreType = {
     ExportComponent,
     ErrorComponent,
     ResourceComponent,
+    TransactionComponent,
     AddFileComponent
   ],
   declarations: [
@@ -123,6 +125,7 @@ type StoreType = {
     AboutComponent,
     FileDragDropDirective,
     ResourceComponent,
+    TransactionComponent,
     CheckOverFlowDirective,
     AddFileComponent
   ],
