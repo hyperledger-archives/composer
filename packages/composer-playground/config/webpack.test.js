@@ -184,7 +184,6 @@ module.exports = function (options) {
           loader: 'istanbul-instrumenter-loader',
           include: helpers.root('src'),
           exclude: [
-            /\.ts$/,
             /node_modules/
           ]
         },
