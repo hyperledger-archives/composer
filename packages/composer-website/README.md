@@ -1,28 +1,21 @@
 # Fabric Composer Documentation
 
-This directory ( fabric-composer/site ) hold the documentation for Fabric Composer and the tools to create the static website for Fabric Composer. This static site is hosted on an organization static site in GitHub (https://github.com/fabric-composer/fabric-composer.github.io).
+This directory ( fabric-composer/composer-website ) hold the documentation for Fabric Composer and the tools to create the static website for Fabric Composer. This static site is hosted on an organization static site in GitHub (https://github.com/fabric-composer/fabric-composer.github.io).
 
 # Getting Started for local work
-- Assume that you have a clone of the fabric-composer repo locally.
-- Install Jeykll, jekyll-sitemap, redcarpet.  The scripts directory contains a setup-jekyll script that does setup these within the travis build. However the travis vms used for building are already preconfigured to use ruby. If you don't have ruby the offical installations notes are at (https://www.ruby-lang.org/en/documentation/installation.)
+- Assume that you have a clone of the fabric-composer repository locally.
+- Install Ruby;  a good guide to installing ruby is [here](https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04) but *stop* before installing Rails.  Ruby and Gem are all that are required.
+- Install Jeykll, jekyll-sitemap, redcarpet.  The scripts directory contains a setup-jekyll script that does setup these . But you must have done the Ruby installation first.
+
 ```
-echo "Attempting to install jekyll"
-gem install jekyll
-echo "Attempting to install jekyll-sitemap"
-gem install jekyll-sitemap
-echo "Attempting to install redcarpet"
-gem install redcarpet
+$ ./scripts/setup-jekyll.sh
 ```
 
-- Next step is to run `npm install` in the site directory. This brings in the JSDoc tool, fabric-composer source and other utilities needed. It also runs the jsdoc and uml generation tools after pull in in all dependencies. The output of this is put in the jsdoc directory under jekylldocs
-- Make the changes you want to any of the md files under the jekylldocs directories. Be careful if modifing anything in a directory starting with an underscore. Those are the template
+- Next step is to run or rerun the `lerna bootstrap` in the root of the fabric-composer repoistory.
+- Make the changes you want to any of the md files under the jekylldocs directories. Be careful if modifing anything in a directory starting with an underscore. Those are the template files.
 - Issue `npm run jeykllserve` and then go to the url that you get given at the end.
-- (or you can just  `cd jekylldocs`  and then `jekyll serve`)
-- What you can do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser)
+- What you can do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser).
 - Then push your changes as per usual.
-
-
-
 
 # Reference information
 
@@ -37,7 +30,7 @@ In summary the documentation is generated using both Jekyll and the jsdoc tool. 
     * The `.travis.yml` does control some of the order the script execution
 * An out directory is created during build - this is only used for temporary working files.
 
-Important:  We are producing static html, (with css and web based javascript) and pushing that. There are many sites on line that talk about how github uses and (prohibits) in some aspects of Jekyll. These include various plugins, and relative paths. However a lot of that doesn't apply as we are using static html that github does not need to render, just acts as a webserver.
+*Important:*  We are producing static html, (with css and web based javascript) and pushing that. There are many sites on line that talk about how github uses and (prohibits) in some aspects of Jekyll. These include various plugins, and relative paths. However a lot of that doesn't apply as we are using static html that github does not need to render, just acts as a webserver.
 
 The key to getting this it work is the `site.baseurl` of the jekyll config. This should be set to NOTHING  [if we had a gh-pages branch on a private repo this would need to be modified]
 
@@ -48,7 +41,7 @@ We'll look at the process in more detail, firstly the jsdocs tool.
 
 ## generator uml
 
-to write... note that a Java Runtime is required for the plantuml even though it's being invoked from node.js
+_to write... note that a Java Runtime is required for the plantuml even though it's being invoked from node.js_
 
 ## jsdocs
 
@@ -70,15 +63,10 @@ to write... note that a Java Runtime is required for the plantuml even though it
 
 3. `jsdoc.conf` is the configuration file - where to change footers and copyright etc.
 4. Note the output location which is important - also the `-R JSDOC-README.md`   this is the front page of the JSDOC tools.
-
+5. By using the lerna bootstrap it allows JSDocs to be correctly pointed to the current source code.
 
 ##Jekyll Configuration
-The setup-jekyll.sh script is used in travis to setup jekyll. This is for travis' use. For local use install
-
-1. Ruby & the Gem package manager
-2. Install jekyll
-3. Install redcarpet
-
+The setup-jekyll.sh script is used in travis to setup jekyll. This can be used locally after Ruby installation
 
 ### Jekyll Template
 
@@ -99,7 +87,7 @@ The jekyll template and files are stored in this tree
 
 * 404 and index.html are the 404 and index.html page as pure html
 * assets is the css, javascript, and some basic images that are used
-* _config.yml is the configuration of jekyll.
-* _includes has files that are pulled into the templates at key points. This is primary the header, sidebars, and the footer.
-* _layouts are the liquid templates that control the overall structure of each page. There are a few here and I believe that only the base and default are used
-* _plugins this is where the plugins to the jekyll engine are held. These are in ruby; we have a very simple one that converts any markdown reference page  eg  `[Concepts Outline](../concepts/outline.md)` will be converted into a link that refers to `../concepts/outline.html`
+* \_config.yml is the configuration of jekyll.
+* \_includes has files that are pulled into the templates at key points. This is primary the header, sidebars, and the footer.
+* \_layouts are the liquid templates that control the overall structure of each page. There are a few here and I believe that only the base and default are used
+* \_plugins this is where the plugins to the jekyll engine are held. These are in ruby; we have a very simple one that converts any markdown reference page  eg  `[Concepts Outline](../concepts/outline.md)` will be converted into a link that refers to `../concepts/outline.html`

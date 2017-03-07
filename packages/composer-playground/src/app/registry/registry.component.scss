@@ -1,0 +1,98 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+registry {
+
+  .resource-header{
+    display: flex;
+    color:$secondary-text;
+  }
+
+  .resource-header-left{
+    flex:1;
+  }
+
+  .resource-header-right{
+    flex:1;
+    text-align: right;
+  }
+
+  .resource-list {
+    margin: $space-large 0;
+
+    .id {
+      width: 25%
+    }
+
+    .data {
+      width: 75%
+    }
+
+    .title {
+      display: flex;
+      padding: 0 $space-medium;
+
+      &.resource-empty {
+        border-bottom: 1px solid $fifth-highlight;
+      }
+    }
+
+    .resource-container {
+      background-color: $white;
+      margin: $space-smedium 0;
+      padding: $space-medium;
+      position: relative;
+      box-shadow: 0 2px 5px -1px $fifth-highlight;
+
+      .resource-content {
+        display: flex;
+
+        &.expanded {
+          pre {
+            max-height: 500px;
+            overflow: visible;
+
+            @include transition(all);
+          }
+
+          padding-bottom: $space-large;
+        }
+
+        pre {
+          margin: 0;
+          margin-top: $space-small;
+          max-height: 100px;
+          overflow: hidden;
+
+          @include transition(all);
+
+          &.gradient {
+            @include gradient-text('linear-gradient(to top, #f3f3f3 0%,#19273c 30%)');
+          }
+
+          //needed so you don't see the background change when gradient isn't needed
+          &.tiny-gradient {
+            @include gradient-text('linear-gradient(to top, #f3f3f3 0%,#19273c 1%)');
+          }
+        }
+      }
+
+      button {
+        position: absolute;
+        left: 40%;
+        bottom: 5%;
+      }
+    }
+
+    .no-resources {
+      width: 50%;
+      margin: 0 auto;
+      text-align: center;
+
+      svg {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  }
+}

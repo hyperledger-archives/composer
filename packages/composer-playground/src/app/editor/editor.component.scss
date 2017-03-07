@@ -1,39 +1,45 @@
 @import '../../assets/styles/base/_colors.scss';
 @import '../../assets/styles/base/_variables.scss';
 
-.editor {
-  padding: $space-medium;
-  .container {
-    display: flex;
+app-editor {
+  display: flex;
+  width: 100%;
 
+  .side-bar {
     .files {
-      flex: 1;
+      & > * {
+        padding: $space-medium $space-large;
+      }
+      margin-top: $space-large;
+
+      span {
+        color: $secondary-text;
+      }
+
+      .side-bar-nav {
+        padding: 0;
+      }
     }
 
-    .add-file {
-      margin: $space-medium 0;
-      padding: $space-smedium 0;
-      border-top: 1px solid $fourth-highlight;
-      border-bottom: 1px solid $fourth-highlight;
+    .actions {
+      padding: $space-medium $space-large;
     }
   }
 
-  .import-button {
-    margin-bottom: $space-smedium;
-  }
-  .business-network-details{
-    margin: $space-medium 0;
-    padding: $space-smedium 0;
-  }
+  .main-view {
+    .business-network-details {
+      display: flex;
 
-  .business-network-version{
-    margin-right: $space-smedium;
-    color:$secondary-text;
-  }
-  .margin-right{
-    margin-right: $space-smedium;
-  }
-  .edit-package-text{
-    font-style: italic;
+      .business-network-version {
+        margin-right: $space-smedium;
+        color: $secondary-text;
+      }
+      .margin-right {
+        margin-right: $space-smedium;
+      }
+      .edit-package-text {
+        font-style: italic;
+      }
+    }
   }
 }

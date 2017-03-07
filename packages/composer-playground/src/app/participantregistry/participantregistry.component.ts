@@ -10,6 +10,7 @@ import { IssuedIdentityComponent } from './issuedidentity';
 import { ClientService } from '../client.service';
 import { ConnectionProfileService } from '../connectionprofile.service';
 import { InitializationService } from '../initialization.service';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-participantregistry',
@@ -34,7 +35,8 @@ export class ParticipantRegistryComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private clientService: ClientService,
     private connectionProfileService: ConnectionProfileService,
-    private initializationService: InitializationService
+    private initializationService: InitializationService,
+    private alertService: AlertService
   ) {
 
   }
@@ -71,7 +73,7 @@ export class ParticipantRegistryComponent implements OnInit, OnDestroy {
         });
       })
       .catch((error) => {
-        this.clientService.errorStatus$.next(error);
+        this.alertService.errorStatus$.next(error);
       });
   }
 

@@ -13,21 +13,6 @@ $border-width-large: 8px;
 $border-width-medium: 4px;
 $border-width-small: 1px;
 
-// Sizes
-$banner-height: 56px;
-$footer-height: 50px;
-$banner-border-width: 1px;
-$sidenav-width: 60px;
-$nav-menu-width: 250px;
-
-// z-indices
-$z-index-tooltip: 1030;
-$z-index-modal: 1050;
-$z-index-modal-backdrop: 1040;
-$z-index-alert: 1060;
-$z-index-banner: 1010;
-$z-index-dropdown: 1000;
-
 // Spacing
 $space-xsmall: 2px;
 $space-small: 4px;
@@ -41,4 +26,29 @@ $space-xlarge: 64px;
   transition-property: $properties;
   transition-duration: .5s;
   transition-timing-function: ease;
+}
+
+@mixin gradient-text($gradient) {
+  @supports(mix-blend-mode: lighten) {
+    display: inline-block;
+    position: relative;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+
+      background: unquote($gradient);
+      pointer-events: none;
+    }
+
+    color: #000;
+    background: #fff;
+    mix-blend-mode: multiply;
+
+    &::before {
+      mix-blend-mode: screen;
+    }
+  }
 }

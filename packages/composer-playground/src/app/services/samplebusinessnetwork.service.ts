@@ -5,172 +5,53 @@ import * as Octokat from 'octokat'
 
 import {AdminService} from '../admin.service';
 import {ClientService} from '../client.service';
+import {AlertService} from './alert.service';
 
 import {BusinessNetworkDefinition} from 'composer-admin';
 import {AclFile} from 'composer-common';
 
-const initialModelFile = `/**
- * Defines a data model for a blind vehicle auction
+const initialModelFile =
+  `/**
+ * Sample business network definition.
  */
-namespace org.acme.vehicle.auction
+namespace org.acme.biznet
 
-asset Vehicle identified by vin {
-  o String vin
-  --> Member owner
+asset SampleAsset identified by assetId {
+  o String assetId
+  --> SampleParticipant owner
+  o String value
 }
 
-enum ListingState {
-  o FOR_SALE
-  o RESERVE_NOT_MET
-  o SOLD
-}
-
-asset VehicleListing identified by listingId {
-  o String listingId
-  o Double reservePrice
-  o String description
-  o ListingState state
-  o Offer[] offers optional
-  --> Vehicle vehicle
-}
-
-abstract participant User identified by email {
-  o String email
+participant SampleParticipant identified by participantId {
+  o String participantId
   o String firstName
   o String lastName
 }
 
-participant Member extends User {
-  o Double balance
-}
-
-participant Auctioneer extends User {
-}
-
-transaction Offer identified by transactionId {
+transaction SampleTransaction identified by transactionId {
   o String transactionId
-  o Double bidPrice
-  --> VehicleListing listing
-  --> Member member
+  --> SampleAsset asset
+  o String newValue
 }
+`
 
-transaction CloseBidding identified by transactionId {
-  o String transactionId
-  --> VehicleListing listing
-}`;
-
-const initialScriptFile = `/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+const initialScriptFile =
+  `/**
+ * Sample transaction processor function.
  */
+function onSampleTransaction(sampleTransaction) {
+  sampleTransaction.asset.value = sampleTransaction.newValue;
+  return getAssetRegistry('org.acme.biznet.SampleAsset')
+    .then(function (assetRegistry) {
+      return assetRegistry.update(sampleTransaction.asset);
+    });
+}`
 
-/**
- * Close the bidding for a vehicle listing and choose the
- * highest bid that is over the asking price
- * @param {org.acme.vehicle.auction.CloseBidding} closeBidding - the closeBidding transaction
- * @transaction
+const initialAclFile =
+  `/**
+ * Sample access control list.
  */
-function closeBidding(closeBidding) {
-    var listing = closeBidding.listing;
-    if (listing.state !== 'FOR_SALE') {
-        throw new Error('Listing is not FOR SALE');
-    }
-    // by default we mark the listing as RESERVE_NOT_MET
-    listing.state = 'RESERVE_NOT_MET';
-    var highestOffer = null;
-    var buyer = null;
-    var seller = null;
-    if (listing.offers) {
-        // sort the bids by bidPrice
-        listing.offers.sort(function(a, b) {
-            return (b.bidPrice - a.bidPrice);
-        });
-        highestOffer = listing.offers[0];
-        if (highestOffer.bidPrice >= listing.reservePrice) {
-            // mark the listing as SOLD
-            listing.state = 'SOLD';
-            buyer = highestOffer.member;
-            seller = listing.vehicle.owner;
-            // update the balance of the seller
-            console.log('#### seller balance before: ' + seller.balance);
-            seller.balance += highestOffer.bidPrice;
-            console.log('#### seller balance after: ' + seller.balance);
-            // update the balance of the buyer
-            console.log('#### buyer balance before: ' + buyer.balance);
-            buyer.balance -= highestOffer.bidPrice;
-            console.log('#### buyer balance after: ' + buyer.balance);
-            // transfer the vehicle to the buyer
-            listing.vehicle.owner = buyer;
-            // clear the offers
-            listing.offers = null;
-        }
-    }
-    return getAssetRegistry('org.acme.vehicle.auction.Vehicle')
-        .then(function(vehicleRegistry) {
-            // save the vehicle
-            if (highestOffer) {
-                return vehicleRegistry.update(listing.vehicle);
-            } else {
-                return true;
-            }
-        })
-        .then(function() {
-            return getAssetRegistry('org.acme.vehicle.auction.VehicleListing')
-        })
-        .then(function(vehicleListingRegistry) {
-            // save the vehicle listing
-            return vehicleListingRegistry.update(listing);
-        })
-        .then(function() {
-            return getParticipantRegistry('org.acme.vehicle.auction.Member')
-        })
-        .then(function(userRegistry) {
-            // save the buyer
-            if (listing.state == 'SOLD') {
-                return userRegistry.updateAll([buyer, seller]);
-            } else {
-                return true;
-            }
-        });
-}
-
-/**
- * Make an Offer for a VehicleListing
- * @param {org.acme.vehicle.auction.Offer} offer - the offer
- * @transaction
- */
-function makeOffer(offer) {
-    var listing = offer.listing;
-    if (listing.state !== 'FOR_SALE') {
-        throw new Error('Listing is not FOR SALE');
-    }
-    if (listing.offers == null) {
-        listing.offers = [];
-    }
-    listing.offers.push(offer);
-    return getAssetRegistry('org.acme.vehicle.auction.VehicleListing')
-        .then(function(vehicleListingRegistry) {
-            // save the vehicle listing
-            return vehicleListingRegistry.update(listing);
-        });
-}`;
-
-const initialAclFile = `/**
- * Access Control List for the auction network.
- */
-Auctioneer | org.acme.vehicle.auction | ALL | org.acme.vehicle.auction.Auctioneer | (true) | ALLOW | Allow the auctioneer full access
-Member | org.acme.vehicle.auction | READ | org.acme.vehicle.auction.Member | (true) | ALLOW | Allow the member read access
-VehicleOwner | org.acme.vehicle.auction.Vehicle:v | ALL | org.acme.vehicle.auction.Member:u | (v.owner.getIdentifier() == u.getIdentifier()) | ALLOW | Allow the owner of a vehicle total access
-VehicleListingOwner | org.acme.vehicle.auction.VehicleListing:v | ALL | org.acme.vehicle.auction.Member:u | (v.vehicle.owner.getIdentifier() == u.getIdentifier()) | ALLOW | Allow the owner of a vehicle total access to their vehicle listing\n`;
+Default | org.acme.biznet | ALL | ANY | (true) | ALLOW | Allow all participants access to all resources\n`
 
 @Injectable()
 export class SampleBusinessNetworkService {
@@ -186,6 +67,7 @@ export class SampleBusinessNetworkService {
 
   constructor(private adminService: AdminService,
               private clientService: ClientService,
+              private alertService: AlertService,
               private http: Http) {
   }
 
@@ -375,7 +257,7 @@ export class SampleBusinessNetworkService {
     return Promise.all(dependencyPromises)
       .then((results) => {
         let modelsPromises: Promise<any>[] = [];
-        results.forEach((npmInfo)=> {
+        results.forEach((npmInfo) => {
           //TODO: remove hacky stuff to make work with url
           const github = 'git+https://github.com/';
           const git = '.git';
@@ -412,21 +294,21 @@ export class SampleBusinessNetworkService {
 
     let repo = this.octo.repos(owner, repository);
 
-    let scriptFileData = [];
     return repo.contents(path + 'lib').fetch()
       .then((scripts) => {
         let scriptFilePromises: Promise<any>[] = [];
         scripts.items.forEach((script) => {
-          scriptFileData.push({name: script.name});
           scriptFilePromises.push(repo.contents(script.path).fetch());
         });
         return Promise.all(scriptFilePromises);
       })
       .then((scriptFiles) => {
-        for (let i = 0; i < scriptFiles.length; i++) {
-          let decodedString = atob(scriptFiles[i].content);
-          scriptFileData[i].data = decodedString;
-        }
+        let scriptFileData = [];
+        scriptFiles.forEach((scriptFile) => {
+          let decodedString = atob(scriptFile.content);
+          scriptFileData.push({name: scriptFile.name, data: decodedString});
+        });
+
         return scriptFileData;
       })
       .catch((error) => {
@@ -449,7 +331,7 @@ export class SampleBusinessNetworkService {
       .then((permissions) => {
         let decodedString = atob(permissions.content);
         let aclFileData = {
-          name: 'permissions.acl',
+          name: permissions.name,
           data: decodedString
         };
         return aclFileData;
@@ -463,9 +345,8 @@ export class SampleBusinessNetworkService {
       });
   }
 
-
   public deployInitialSample(): Promise<any> {
-    this.adminService.busyStatus$.next('Deploying sample business network ...');
+    this.alertService.busyStatus$.next('Deploying sample business network ...');
     let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
     let modelManager = businessNetworkDefinition.getModelManager();
     modelManager.addModelFile(initialModelFile);
@@ -478,8 +359,12 @@ export class SampleBusinessNetworkService {
     return this.deployBusinessNetwork(businessNetworkDefinition);
   }
 
+  public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
+    return BusinessNetworkDefinition.fromArchive(buffer);
+  }
+
   public deploySample(owner: string, repository: string, chosenNetwork: any): Promise < any > {
-    this.adminService.busyStatus$.next('Deploying sample business network ...');
+    this.alertService.busyStatus$.next('Deploying sample business network ...');
 
     let sampleNetworkPromises: Promise<any>[] = [];
     let path = chosenNetwork.composerPath;
@@ -492,7 +377,7 @@ export class SampleBusinessNetworkService {
     }
     sampleNetworkPromises.push(this.getScripts(owner, repository, path));
     sampleNetworkPromises.push(this.getAcls(owner, repository, path));
-    sampleNetworkPromises.push(this.getSampleNetworkInfo(owner,repository,path));
+    sampleNetworkPromises.push(this.getSampleNetworkInfo(owner, repository, path));
 
     return Promise.all(sampleNetworkPromises)
       .then((results) => {
@@ -502,7 +387,7 @@ export class SampleBusinessNetworkService {
         let acls = results[2];
         let packageContents = results[3];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name+'@'+packageContents.version,packageContents.description);
+        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description);
         let modelManager = businessNetworkDefinition.getModelManager();
         models.forEach((model) => {
           modelManager.addModelFile(model);

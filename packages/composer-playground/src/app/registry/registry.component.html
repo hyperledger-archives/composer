@@ -1,0 +1,35 @@
+
+<div *ngIf="_registry" class="resource-header">
+  <div class="resource-header-left">
+    <h1 >{{_registry.name}}</h1>
+  </div>
+  <div class="resource-header-right">
+    <button type="button" class="primary" (click)="openNewResourceModal()">
+      <span>+ Create New {{_registry.registryType}}</span>
+    </button>
+  </div>      
+</div>
+<div *ngIf="_registry" class="resource-list">
+  <div class="title"  [ngClass]="{'resource-empty' : !resources || resources.length === 0}">
+    <div class="id">ID</div>
+    <div class="data">DATA</div>
+  </div>
+    <div *ngFor="let resource of resources" class="resource-container">
+      <div class="resource-content" [ngClass]="{'expanded' : resource.getIdentifier() === expandedResource}">
+        <div class="id">{{resource.getIdentifier()}}</div>
+        <pre checkOverFlow [changed]="resource.getIdentifier()" (hasOverFlow)=hasOverFlow($event)
+             [ngClass]="{'gradient' : resource.getIdentifier() !== expandedResource && showExpand, 'tiny-gradient' : resource.getIdentifier() === expandedResource || !showExpand}" class="data">{{serialize(resource)}}</pre>
+
+      </div>
+      <button *ngIf="showExpand" class="expand" type="button" (click)="expandResource(resource)">
+        {{resource.getIdentifier() === expandedResource ? 'Collapse' : 'Show All'}}
+      </button>
+    </div>
+    <div *ngIf="!resources || resources.length === 0" class="no-resources">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-Empty_State"></use>
+      </svg>
+      <h3>This registry is empty!</h3>
+      <p>To create resources in this registry click create new at the top of this page</p>
+    </div>
+</div>

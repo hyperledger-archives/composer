@@ -21,6 +21,7 @@ import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { EditorComponent } from './editor';
 import { TestComponent } from './test';
+import { RegistryComponent } from './registry';
 import { AssetRegistriesComponent } from './assetregistries';
 import { AssetRegistryComponent, AddAssetComponent, UpdateAssetComponent, RemoveAssetComponent } from './assetregistry';
 import { ParticipantRegistriesComponent } from './participantregistries';
@@ -32,12 +33,20 @@ import { AboutComponent } from './about';
 import { BusyComponent } from './busy';
 import { ErrorComponent } from './error';
 import { ResetComponent } from './reset';
+import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ExportComponent } from './export';
+import { ResourceComponent } from './resource';
+import { AddFileComponent } from './add-file';
+import { WelcomeComponent } from './welcome';
 
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
+
+
+import { FileDragDropDirective } from './directives/file-drag-drop';
+import { CheckOverFlowDirective } from './directives/check-overflow';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
@@ -48,6 +57,7 @@ import { NotificationService } from './notification.service';
 import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.service';
 import { AboutService } from './services/about.service';
+import { AlertService } from './services/alert.service';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -55,6 +65,8 @@ let formattingIcons = require.context('../assets/svg/formatting', false, /.*\.sv
 formattingIcons.keys().forEach(formattingIcons);
 let objectBasedIcons = require.context('../assets/svg/object-based', false, /.*\.svg$/);
 objectBasedIcons.keys().forEach(objectBasedIcons);
+let otherIcons = require.context('../assets/svg/other', false, /.*\.svg$/);
+otherIcons.keys().forEach(otherIcons);
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -76,12 +88,17 @@ type StoreType = {
   entryComponents: [
     ImportComponent,
     ExportComponent,
-    ErrorComponent
+    ErrorComponent,
+    ResourceComponent,
+    AddFileComponent,
+    WelcomeComponent
   ],
   declarations: [
     AppComponent,
+    FileImporterComponent,
     EditorComponent,
     TestComponent,
+    RegistryComponent,
     AssetRegistriesComponent,
     AssetRegistryComponent,
     AddAssetComponent,
@@ -105,7 +122,12 @@ type StoreType = {
     ExportComponent,
     GithubComponent,
     NoContentComponent,
-    AboutComponent
+    AboutComponent,
+    FileDragDropDirective,
+    ResourceComponent,
+    CheckOverFlowDirective,
+    AddFileComponent,
+    WelcomeComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
@@ -133,7 +155,8 @@ type StoreType = {
     NotificationService,
     InitializationService,
     SampleBusinessNetworkService,
-    AboutService
+    AboutService,
+    AlertService
   ]
 })
 export class AppModule {
@@ -175,4 +198,3 @@ export class AppModule {
   }
 
 }
-
