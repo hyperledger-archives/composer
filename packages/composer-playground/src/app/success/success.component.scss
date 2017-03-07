@@ -1,0 +1,9 @@
+@import '../../assets/styles/base/_colors.scss';
+
+.success {
+  .modal-header {
+    svg {
+      fill: $success-colour
+    }
+  }
+}
