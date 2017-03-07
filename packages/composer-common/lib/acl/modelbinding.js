@@ -34,15 +34,22 @@ class ModelBinding {
      *
      * @param {AclRule} aclRule - the AclRule for this ModelBinding
      * @param {Object} ast - the AST created by the parser
+     * @param {Object} variableAst - the variable binding AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(aclRule, ast) {
+    constructor(aclRule, ast, variableAst) {
         if(!aclRule || !ast) {
             throw new IllegalModelException('Invalid AclRule or AST');
         }
 
         this.ast = ast;
         this.aclRule = aclRule;
+        if(variableAst) {
+            this.variableAst = variableAst;
+        }
+        else {
+            this.variableAst = null;
+        }
         this.process();
     }
 
@@ -77,12 +84,12 @@ class ModelBinding {
         this.instanceId = null;
 
         if(this.ast.instanceId) {
-            this.instanceId = this.ast.instanceId.name;
+            this.instanceId = this.ast.instanceId;
         }
 
         this.variableName = null;
-        if(this.ast.variableName) {
-            this.variableName = this.ast.variableName.name;
+        if(this.variableAst) {
+            this.variableName = this.variableAst.name;
         }
     }
 

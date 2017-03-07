@@ -1,5 +1,41 @@
-R1 | org.acme.Car#ABC123 | DELETE | org.acme.Driver#Fred | (true) | ALLOW | Fred can DELETE the car ABC123
-R2 | org.acme.Car:c | UPDATE | org.acme.Regulator#Bill:r | (c.owner == r) | DENY | regulator with ID Bill can not update a Car if they own it
-R3 | org.acme.Car.owner:o | UPDATE | org.acme.Driver:d | (o == d) | ALLOW | Driver can change the ownership of a car that they own
-R4 | org.acme.Car | ALL | org.acme.Regulator | (true) | ALLOW | regulators can perform all operations on Cars
-R5 | org.acme | READ | ANY | (true) | ALLOW | Everyone can read all resources in the org.acme namespace
+rule R1 {
+    description: "Fred can DELETE the car ABC123"
+    participant: "org.acme.Driver#Fred"
+    operation: DELETE
+    resource: "org.acme.Car#ABC123"
+    action: ALLOW
+}
+
+rule R2 {
+    description: "regulator with ID Bill can not update a Car if they own it"
+    participant(r): "org.acme.Regulator#Bill"
+    operation: UPDATE
+    resource(c): "org.acme.Car"
+    condition: (c.owner == r)
+    action: DENY
+}
+
+rule R3 {
+    description: "Driver can change the ownership of a car that they own"
+    participant(d): "org.acme.Driver"
+    operation: UPDATE
+    resource(o): "org.acme.Car.owner"
+    condition: (o == d)
+    action: ALLOW
+}
+
+rule R4 {
+    description: "regulators can perform all operations on Cars"
+    participant: "org.acme.Regulator"
+    operation: ALL
+    resource: "org.acme.Car"
+    action: ALLOW
+}
+
+rule R5 {
+    description: "Everyone can read all resources in the org.acme namespace"
+    participant: "ANY"
+    operation: READ
+    resource: "org.acme"
+    action: ALLOW
+}
