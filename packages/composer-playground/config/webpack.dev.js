@@ -16,10 +16,10 @@ const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
 /**
  * Webpack Constants
  */
+const HMR = helpers.hasProcessFlag('hot');
 const ENV = process.env.ENV = process.env.NODE_ENV = 'development';
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 3000;
-const HMR = helpers.hasProcessFlag('hot');
 const DOCKER = !!process.env.DOCKER;
 const DOCKER_COMPOSE = !!process.env.DOCKER_COMPOSE;
 const PLAYGROUND_API = process.env.PLAYGROUND_API || 'http://localhost:15699';
