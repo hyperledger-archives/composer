@@ -1,3 +1,26 @@
-R1 | systest.accesscontrols.SampleAsset:a | READ | systest.accesscontrols.SampleParticipant:p | (a.owner.getIdentifier() === p.getIdentifier()) | ALLOW | The owner of a vehicle can read the vehicle
-R2 | systest.accesscontrols.SampleParticipant:p | READ | systest.accesscontrols.SampleParticipant:po | (p.getIdentifier() !== po.getIdentifier()) | DENY | Nobody except the participant can see the participant
-R3 | systest.accesscontrols.SampleParticipant:p | READ | systest.accesscontrols.SampleParticipant:po | (p.getIdentifier() === po.getIdentifier()) | ALLOW | Nobody except the participant can see the participant
+rule R1 {
+    description: "The owner of a vehicle can read the vehicle"
+    participant(p): "systest.accesscontrols.SampleParticipant"
+    operation: READ
+    resource(a): "systest.accesscontrols.SampleAsset"
+    condition: (a.owner.getIdentifier() === p.getIdentifier())
+    action: ALLOW
+}
+
+rule R2 {
+    description: "Nobody except the participant can see the participant"
+    participant(po): "systest.accesscontrols.SampleParticipant"
+    operation: READ
+    resource(p): "systest.accesscontrols.SampleAsset"
+    condition: (p.getIdentifier() !== po.getIdentifier())
+    action: DENY
+}
+
+rule R3 {
+    description: "Nobody except the participant can see the participant"
+    participant(po): "systest.accesscontrols.SampleParticipant"
+    operation: READ
+    resource(p): "systest.accesscontrols.SampleParticipant"
+    condition: (p.getIdentifier() === po.getIdentifier())
+    action: ALLOW
+}

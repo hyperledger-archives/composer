@@ -164,13 +164,44 @@ function makeOffer(offer) {
         });
 }`;
 
-const initialAclFile = `/**
+const initialAclFile = `
+/**
  * Access Control List for the auction network.
  */
-Auctioneer | org.acme.vehicle.auction | ALL | org.acme.vehicle.auction.Auctioneer | (true) | ALLOW | Allow the auctioneer full access
-Member | org.acme.vehicle.auction | READ | org.acme.vehicle.auction.Member | (true) | ALLOW | Allow the member read access
-VehicleOwner | org.acme.vehicle.auction.Vehicle:v | ALL | org.acme.vehicle.auction.Member:u | (v.owner.getIdentifier() == u.getIdentifier()) | ALLOW | Allow the owner of a vehicle total access
-VehicleListingOwner | org.acme.vehicle.auction.VehicleListing:v | ALL | org.acme.vehicle.auction.Member:u | (v.vehicle.owner.getIdentifier() == u.getIdentifier()) | ALLOW | Allow the owner of a vehicle total access to their vehicle listing\n`;
+rule Auctioneer {
+    description: "Allow the auctioneer full access"
+    participant: "org.acme.vehicle.auction.Auctioneer"
+    operation: ALL
+    resource: "org.acme.vehicle.auction"
+    action: ALLOW
+}
+
+rule Member {
+    description: "Allow the member read access"
+    participant: "org.acme.vehicle.auction.Member"
+    operation: READ
+    resource: "org.acme.vehicle.auction"
+    action: ALLOW
+}
+
+rule VehicleOwner {
+    description: "Allow the owner of a vehicle total access"
+    participant(m): "org.acme.vehicle.auction.Member"
+    operation: ALL
+    resource(v): "org.acme.vehicle.auction.Vehicle"
+    condition: (v.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+
+rule VehicleListingOwner {
+    description: "Allow the owner of a vehicle total access to their vehicle listing"
+    participant(m): "org.acme.vehicle.auction.Member"
+    operation: ALL
+    resource(v): "org.acme.vehicle.auction.VehicleListing"
+    condition: (v.vehicle.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+`;
 
 @Injectable()
 export class SampleBusinessNetworkService {
