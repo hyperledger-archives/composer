@@ -6,8 +6,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
 
 import { AddFileComponent } from './add-file.component';
-import { AdminService } from '../admin.service';
-import { ClientService } from '../client.service';
+import { AdminService } from '../services/admin.service';
+import { ClientService } from '../services/client.service';
 
 
 class MockAdminService {
@@ -49,15 +49,11 @@ describe('AddFileComponent', () => {
     let component: AddFileComponent;
     let fixture: ComponentFixture<AddFileComponent>;
 
-    beforeEach(async(() => {
-      return TestBed.configureTestingModule({
+    beforeEach(() => {
+      TestBed.configureTestingModule({
         declarations: [ AddFileComponent ],
         providers: [{ provide: AdminService, useClass: MockAdminService }, NgbActiveModal]
-      })
-      .compileComponents();
-    }));
-
-    beforeEach(() => {
+      });
       fixture = TestBed.createComponent(AddFileComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
