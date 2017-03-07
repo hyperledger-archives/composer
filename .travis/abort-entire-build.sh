@@ -9,5 +9,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 echo Build to abort is ${TRAVIS_BUILD_NUMBER}
 
+travis login --no-interactive --github-token f6008654988371c41ccc1661eaa800fcbe520420
 
 travis cancel ${TRAVIS_BUILD_NUMBER} --no-interactive --repo ${TRAVIS_REPO_SLUG}
