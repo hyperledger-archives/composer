@@ -15,7 +15,8 @@
     "yeoman-generator"
   ],
   "scripts": {
-      "test": "npm run archiveTest && npm run liveNetworkTest",
+
+      "generatorTests": "npm run archiveTest && npm run liveNetworkTest",
 
       "archiveTest": "mocha -t 0 test/angular-archive.js",
 
