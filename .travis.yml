@@ -39,3 +39,4 @@ deploy:
         all_branches: true
 cache: false
 sudo: required
+after_failure: ./.travis/abort-entire-build.sh

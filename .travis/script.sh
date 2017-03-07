@@ -25,6 +25,9 @@ if [ -r "/etc/init.d/xvfb" ]; then
 fi
 
 
+# PANIC PANIC PANIC PANIC PANIC
+exit 1
+
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
 	cd "${DIR}/packages/composer-website"
