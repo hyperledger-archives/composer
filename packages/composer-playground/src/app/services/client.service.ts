@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { AdminService } from './admin.service';
-import { ConnectionProfileService } from './connectionprofile.service';
-import { IdentityService } from './identity.service';
-import { AlertService } from './services/alert.service'
+import { ConnectionProfileService } from '../connectionprofile.service';
+import { IdentityService } from '../identity.service';
+import { AlertService } from './alert.service'
 
 import { BusinessNetworkConnection } from 'composer-client';
 import { BusinessNetworkDefinition, Util } from 'composer-common';
@@ -65,7 +64,7 @@ export class ClientService {
         this.isConnected = false;
         this.connectingPromise = null;
         throw error;
-      })
+      });
       return this.connectingPromise;
   }
 

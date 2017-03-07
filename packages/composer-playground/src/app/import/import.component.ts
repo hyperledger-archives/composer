@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {AdminService} from '../admin.service';
-import {ClientService} from '../client.service';
+import {AdminService} from '../services/admin.service';
+import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
 

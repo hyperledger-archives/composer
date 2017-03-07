@@ -2,13 +2,13 @@ import { Component, ViewChild, EventEmitter, Input, Output, OnInit } from '@angu
 import { ActivatedRoute } from '@angular/router';
 import leftPad = require('left-pad');
 
-import { ClientService } from '../client.service';
+import { ClientService } from '../services/client.service';
 import { NotificationService } from '../notification.service';
 import { InitializationService } from '../initialization.service';
 import { AlertService } from '../services/alert.service';
 
 @Component({
-  selector: 'reset',
+  selector: 'reset-modal',
   templateUrl: './reset.component.html',
   styleUrls: ['./reset.component.css']
 })
