@@ -25,13 +25,23 @@
     <span>Transactions</span>
     <section class="side-bar-nav">
       <ul>
-        <li (click)="setChosenRegistry(transactionRegistry)">
+        <li
+            [class.active]="chosenRegistry === transactionRegistry"
+            (click)="setChosenRegistry(transactionRegistry)">
           <h3>All Transactions</h3>
         </li>
       </ul>
     </section>
   </div>
+
+<div class="side-button">
+  <button type="button" class="primary" (click)="submitTransaction()">
+         <span>Submit Transaction</span>
+      </button>
+</div>
+
 </section>
+
 <section class="main-view">
-    <registry [registry]="chosenRegistry"></registry>
+    <registry [registry]="chosenRegistry" [reload]="registryReload"></registry>
 </section>

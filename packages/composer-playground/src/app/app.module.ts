@@ -34,13 +34,13 @@ import { ImportComponent } from './import';
 import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
+import { TransactionComponent } from './transaction';
 import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
 import { WelcomeComponent } from './welcome';
-
+import { ConfirmComponent } from './confirm';
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
-
 
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
@@ -87,7 +87,9 @@ type StoreType = {
     ExportComponent,
     ErrorComponent,
     SuccessComponent,
+    ConfirmComponent,
     ResourceComponent,
+    TransactionComponent,
     AddFileComponent,
     WelcomeComponent,
     ResetComponent,
@@ -104,6 +106,7 @@ type StoreType = {
     BusyComponent,
     ErrorComponent,
     SuccessComponent,
+    ConfirmComponent,
     ResetComponent,
     ImportComponent,
     ExportComponent,
@@ -113,6 +116,7 @@ type StoreType = {
     FileDragDropDirective,
     ConnectionProfileComponent,
     ResourceComponent,
+    TransactionComponent,
     CheckOverFlowDirective,
     AddFileComponent,
     WelcomeComponent

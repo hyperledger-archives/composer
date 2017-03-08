@@ -27,11 +27,13 @@ const fabricComposerRepository = 'sample-networks';
 export class ResourceComponent implements OnInit {
 
   @Input() registryID: string;
+  @Input() resource: any = null;
 
+  private resourceAction: string = null;
   private resourceType: string = null;
   private resourceDefinition: string = null;
   private resourceDeclaration: ClassDeclaration = null;
-  private addInProgress: boolean = false;
+  private actionInProgress: boolean = false;
   private defitionError: string = null;
 
   private codeConfig = {
@@ -57,6 +59,10 @@ export class ResourceComponent implements OnInit {
     private initializationService: InitializationService) {
   }
 
+  private editMode(): boolean {
+      return (this.resource ? true : false);
+  }
+
   ngOnInit(): Promise<any> {
     return this.initializationService.initialize()
       .then(() => {
@@ -72,8 +78,14 @@ export class ResourceComponent implements OnInit {
             this.resourceDeclaration = modelClassDeclaration;
             this.resourceType = this.retrieveResourceType(modelClassDeclaration)
 
-            // Stub out json definition
-            this.resourceDefinition = this.generateDefinitionStub(this.registryID, modelClassDeclaration);
+            if (this.editMode()) {
+                this.resourceAction = 'Update';
+                this.resourceDefinition = this.getResourceJSON();
+            } else {
+                // Stub out json definition
+                this.resourceAction = 'Create New';
+                this.resourceDefinition = this.generateDefinitionStub(this.registryID, modelClassDeclaration);
+            }
 
             // Run validator on json definition
             this.onDefinitionChanged();
@@ -106,28 +118,38 @@ export class ResourceComponent implements OnInit {
     }
   }
 
+  private getResourceJSON(): any {
+    let serializer = this.clientService.getBusinessNetwork().getSerializer();
+    return JSON.stringify(serializer.toJSON(this.resource), null, 2);
+  }
+
   /**
    *  Create resource via json serialisation
    */
-  private createResource(): void {
-    this.addInProgress = true;
-    return this.retrieveResourceRergistry(this.resourceType)
-      .then((participantRegistry) => {
+  private addOrUpdateResource(): void {
+    this.actionInProgress = true;
+    return this.retrieveResourceRegistry(this.resourceType)
+      .then((registry) => {
         let json = JSON.parse(this.resourceDefinition);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
         resource.validate();
-        return participantRegistry.add(resource);
+        if(this.editMode()) {
+            return registry.update(resource);
+        } else {
+            return registry.add(resource);
+        }
       })
       .then(() => {
-        this.addInProgress = false;
+        this.actionInProgress = false;
         this.activeModal.close();
       })
       .catch((error) => {
         this.defitionError = error.toString();
-        this.addInProgress = false;
+        this.actionInProgress = false;
       })
   }
+
 
   /**
    * Validate json definition of resource
@@ -174,7 +196,7 @@ export class ResourceComponent implements OnInit {
   /**
    * Retrieve a ResourceRegistry for the passed string resource type instance
    */
-  private retrieveResourceRergistry(type) {
+  private retrieveResourceRegistry(type) {
 
     let client =this.clientService;
     let id = this.registryID;
