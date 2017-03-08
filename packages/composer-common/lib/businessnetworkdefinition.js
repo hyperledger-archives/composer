@@ -51,36 +51,49 @@ class BusinessNetworkDefinition {
      * </p>
      * @param {String} identifier  - the identifier of the business network. The
      * identifier is formed from a business network name + '@' + version. The
-     * version is a semver valid version string.
-     * @param {String} description  - the description of the business network
-     * @param {String} readme  - the optional readme in markdown for the business network
+     * version is a semver valid version string. If package.json is passed this is ignored.
+     * @param {String} description  - the description of the business network. If package.json is passed then this is ignored.
+     * @param {object} packageJson  - the JS object for package.json (optional)
+     * @param {String} readme  - the readme in markdown for the business network (optional)
      */
-    constructor(identifier, description, readme) {
+    constructor(identifier, description, packageJson, readme) {
         const method = 'constructor';
         LOG.entry(method, identifier, description);
-        this.identifier = identifier;
 
-        const atIndex = this.identifier.lastIndexOf('@');
+        // if package.json is not present we generate one based on the metadata passed
+        if(!packageJson) {
+            const atIndex = identifier.lastIndexOf('@');
+            let name = null;
 
-        if (atIndex >= 0) {
-            this.name = this.identifier.substring(0, atIndex);
-        } else {
-            throw new Error('Malformed business network identifier. It must be "name@major.minor.micro"');
+            if (atIndex >= 0) {
+                name = identifier.substring(0, atIndex);
+            } else {
+                throw new Error('Malformed business network identifier. It must be "name@major.minor.micro"');
+            }
+
+            const version = identifier.substring(atIndex + 1);
+            if (!semver.valid(version)) {
+                throw new Error('Version number is invalid. Should be valid according to semver but found: ' + version);
+            }
+
+            packageJson = {};
+            packageJson.name = name;
+            packageJson.version = version;
+            packageJson.description = description;
+            LOG.debug(method, 'Created package.json' + JSON.stringify(packageJson));
+        }
+        else {
+            LOG.debug(method, 'Using package.json' + JSON.stringify(packageJson));
         }
 
-        this.version = this.identifier.substring(atIndex + 1);
-        if (!semver.valid(this.version)) {
-            throw new Error('Version number is invalid. Should be valid according to semver but found: ' + this.version);
-        }
-
-        this.description = description;
         this.modelManager = new ModelManager();
         this.aclManager = new AclManager(this.modelManager);
         this.scriptManager = new ScriptManager(this.modelManager);
         this.introspector = new Introspector(this.modelManager);
         this.factory = new Factory(this.modelManager);
         this.serializer = new Serializer(this.factory, this.modelManager);
-        this.metadata = new BusinessNetworkMetadata(readme);
+
+        this.metadata = new BusinessNetworkMetadata(packageJson,readme);
         LOG.exit(method);
     }
 
@@ -89,7 +102,7 @@ class BusinessNetworkDefinition {
      * @return {String} the identifier of this business network
      */
     getIdentifier() {
-        return this.identifier;
+        return this.getMetadata().getIdentifier();
     }
 
     /**
@@ -105,7 +118,7 @@ class BusinessNetworkDefinition {
      * @return {String} the name of this business network
      */
     getName() {
-        return this.name;
+        return this.getMetadata().getName();
     }
 
     /**
@@ -114,7 +127,7 @@ class BusinessNetworkDefinition {
      * to parse.
      */
     getVersion() {
-        return this.version;
+        return this.getMetadata().getVersion();
     }
 
 
@@ -123,7 +136,7 @@ class BusinessNetworkDefinition {
      * @return {String} the description of this business network
      */
     getDescription() {
-        return this.description;
+        return this.getMetadata().getDescription();
     }
 
     /**
@@ -211,10 +224,7 @@ class BusinessNetworkDefinition {
             return Promise.all(allPromises)
                 .then(() => {
                     LOG.debug(method, 'Loaded package.json');
-                    let packageName = packageJsonContents.name;
-                    let packageVersion = packageJsonContents.version;
-                    let packageDescription = packageJsonContents.description;
-                    businessNetworkDefinition = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription, readmeContents);
+                    businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageJsonContents, readmeContents);
 
                     LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
                     LOG.debug(method, 'Adding model files to model manager');
@@ -247,12 +257,7 @@ class BusinessNetworkDefinition {
 
         let zip = new JSZip();
 
-        let packageFileContents = JSON.stringify({
-            name: this.name,
-            version: this.version,
-            description: this.description
-        });
-
+        let packageFileContents = JSON.stringify(this.getMetadata().getPackageJson());
         zip.file('package.json', packageFileContents);
 
         // save the README.md if present
@@ -370,11 +375,9 @@ class BusinessNetworkDefinition {
         // parse the package.json
         let jsonObject = JSON.parse(packageJsonContents);
         let packageName = jsonObject.name;
-        let packageVersion = jsonObject.version;
-        let packageDescription = jsonObject.description;
 
         // create the business network definition
-        const businessNetwork = new BusinessNetworkDefinition(packageName + '@' + packageVersion, packageDescription, readmeContents);
+        const businessNetwork = new BusinessNetworkDefinition(null, null, jsonObject, readmeContents);
         const modelFiles = [];
         const modelFileNames = [];
 
