@@ -14,7 +14,7 @@ Fabric Composer is a set of APIs, a modeling language and
 a programming model to quickly define and deploy business networks and applications
 that allow **participants** to send **transactions** that exchange **assets**.
 
-The IBM Blockchain, based on Open Source [Hyperledger Fabric](http://www.hyperledger.org) technology, is used to store the state of assets in asset registries, while the blockchain consensus protocol ensure that transactions
+The IBM Blockchain, based on Open Source [Hyperledger Fabric](https://www.hyperledger.org) technology, is used to store the state of assets in asset registries, while the blockchain consensus protocol ensure that transactions
 are validated by concerned organizations in the business network.
 
 ## Framework Features
@@ -38,7 +38,7 @@ Definition, which contains a data model that defines the name and structure of a
 and transactions in the business network. The business network also specifies *transaction processor functions*
 (written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
 
-Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/develop/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
+Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
 
 ### Roles, Responsibilities and Tasks
 
