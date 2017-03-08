@@ -75,18 +75,21 @@ class AclRule {
      */
     process() {
         this.name = this.ast.id.name;
-        this.noun = new ModelBinding(this, this.ast.noun);
+        this.noun = new ModelBinding(this, this.ast.noun, this.ast.nounVariable);
         this.verb = this.ast.verb;
 
         this.participant = null;
 
         if(this.ast.participant && this.ast.participant !== 'ANY') {
-            this.participant = new ModelBinding(this, this.ast.participant);
+            this.participant = new ModelBinding(this, this.ast.participant, this.ast.participantVariable);
         }
         this.predicate = null;
 
         if(this.ast.predicate) {
             this.predicate = new Predicate(this, this.ast.predicate);
+        }
+        else {
+            this.predicate = new Predicate(this, 'true');
         }
 
         this.action = this.ast.action;

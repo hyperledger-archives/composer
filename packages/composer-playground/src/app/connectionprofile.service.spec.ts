@@ -22,15 +22,15 @@ describe('ConnectionProfileService', () => {
     });
   });
 
-  it('should return $default when no connection profile has been set', 
-    inject([ConnectionProfileService, LocalStorageService], 
+  it('should return $default when no connection profile has been set',
+    inject([ConnectionProfileService, LocalStorageService],
             (connectionProfileService, mockLocalStorage) => {
     expect(connectionProfileService).toBeTruthy();
     expect(connectionProfileService.getCurrentConnectionProfile()).toBe('$default');
   }));
 
-  it('should set the connection profile', 
-    inject([ConnectionProfileService, LocalStorageService], 
+  it('should set the connection profile',
+    inject([ConnectionProfileService, LocalStorageService],
             (connectionProfileService, mockLocalStorage) => {
     expect(connectionProfileService).toBeTruthy();
     connectionProfileService.setCurrentConnectionProfile('new');
