@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
 import { AlertService } from '../services/alert.service'
 import { ResourceComponent } from '../resource/resource.component';
+import { ConfirmComponent } from '../confirm/confirm.component';
 
 @Component({
   selector: 'registry',
@@ -20,9 +21,10 @@ export class RegistryComponent {
 
   private expandedResource = null;
   private showExpand = true;
+  private resourceType: string = null;
 
   @Input()
-  set registry(registry) {
+  set registry(registry: any) {
     this._registry = registry;
     if (this._registry) {
       this.loadResources();
@@ -71,5 +73,37 @@ export class RegistryComponent {
   hasOverFlow(overflow: boolean) {
     this.showExpand = overflow;
   }
+
+  editResource(resource: any) {
+    const editModalRef = this.modalService.open(ResourceComponent);
+    editModalRef.componentInstance.registryID = this._registry.id;
+    editModalRef.componentInstance.resource = resource;
+    editModalRef.result.then(()=>{
+      // refresh current resource list
+      this.loadResources();
+    });
+  }
+  
+  openDeleteResourceModal(resource: any) {
+    const confirmModalRef = this.modalService.open(ConfirmComponent);
+    confirmModalRef.componentInstance.confirmMessage='Please confirm that you want to delete Asset: '+resource.getIdentifier();
+    confirmModalRef.result.then((result)=>{
+        if(result) {
+            this._registry.remove(resource)
+              .then(() => {
+                  this.loadResources();
+              })
+              .catch((error) => {
+                  console.log('ERR: '+error);
+                  this.alertService.errorStatus$.next('Removing the selected item from the registry failed:'+ error);
+              });
+        } else {
+            //todo - some error handling - we should always get called with a code for this usage of the 
+            // modal but will that always be true
+        } 
+    });
+  }
+
+
 }
 

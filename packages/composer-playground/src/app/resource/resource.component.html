@@ -1,7 +1,7 @@
 <div class="resource-modal">
   <div class="modal-header">
-    <h1>Create New {{resourceType}}</h1>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">X</button>
+    <h1>{{resourceAction}} {{resourceType}}</h1>
+    <button class="icon modal-exit" (click)="activeModal.close()">X</button>
   </div>
   <section class="modal-body">    
     <h2>In registry: <b>{{registryID}}</b></h2>    
@@ -19,15 +19,15 @@
     </section>
   </section>
   <footer>
-    <h2>Just need quick test data? <button class="action" type="button" (click)="generateResource()">Generate Random Data</button></h2>
-    <button type="button" class="secondary" (click)="activeModal.dismiss();">
+    <h2 *ngIf="!editMode()">Just need quick test data? <button class="action" type="button" (click)="generateResource()">Generate Random Data</button></h2>
+    <button type="button" class="secondary" (click)="activeModal.close();">
       <span>Cancel</span>
     </button>
-    <button type="button" class="primary" (click)="createResource()" [disabled]="defitionError!=null || addInProgress">
-      <div *ngIf="!addInProgress">
-        <span>Create</span>
+    <button type="button" class="primary" (click)="addOrUpdateResource()" [disabled]="defitionError!=null || actionInProgress ">
+      <div *ngIf="!actionInProgress">
+        <span>{{resourceAction}}</span>
       </div>
-      <div *ngIf="addInProgress" class="ibm-spinner-indeterminate small loop">
+      <div *ngIf="actionInProgress" class="ibm-spinner-indeterminate small loop">
         <div class="loader">
           <svg class="circular" viewBox="25 25 50 50">
             <circle class="circle-path" cx="50" cy="50" r="20"/>

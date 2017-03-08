@@ -36,6 +36,7 @@ import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
 import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
 import { WelcomeComponent } from './welcome';
+import { ConfirmComponent } from './confirm';
 
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
@@ -87,6 +88,7 @@ type StoreType = {
     ExportComponent,
     ErrorComponent,
     SuccessComponent,
+    ConfirmComponent,
     ResourceComponent,
     AddFileComponent,
     WelcomeComponent,
@@ -104,6 +106,7 @@ type StoreType = {
     BusyComponent,
     ErrorComponent,
     SuccessComponent,
+    ConfirmComponent,
     ResetComponent,
     ImportComponent,
     ExportComponent,
