@@ -47,11 +47,17 @@ function onSampleTransaction(sampleTransaction) {
     });
 }`
 
-const initialAclFile =
-  `/**
- * Sample access control list.
+const initialAclFile = `/**
+ * Sample Access Control List
  */
-Default | org.acme.biznet | ALL | ANY | (true) | ALLOW | Allow all participants access to all resources\n`
+rule Everyone {
+    description: "Allows any participant in the namespace full access to all resources in the namespace"
+    participant: "org.acme.biznet"
+    operation: ALL
+    resource: "org.acme.biznet"
+    action: ALLOW
+}
+`;
 
 @Injectable()
 export class SampleBusinessNetworkService {
