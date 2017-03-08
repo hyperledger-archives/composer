@@ -16,64 +16,65 @@
 
 const inquirer    = require('inquirer');
 
-module.exports = {
-    getFabricDetails : function(callback) {
-
-        let questions = [
-            {
-                name: 'profilename',
-                type: 'input',
-                message: 'Enter your Fabric Connection Profile Name:',
-                validate: function (value) {
-                    if (value.length) {
-                        return true;
-                    } else {
-                        return `Please enter the name of the Fabric Connection Profile you wish to use \n \ 
-                               (hint: this is usually the name of the directory in $HOME containing the connection.json file)`;
-                    }
-                }
-            },
-            {
-                name: 'businessNetworkId',
-                type: 'input',
-                message: 'Enter your Business Network Identifier :',
-                validate: function (value) {
-                    if (value.length) {
-                        return true;
-                    } else {
-                        return 'Please enter your Business Network Identifier';
-                    }
-                }
-            },
-            {
-                name: 'userid',
-                type: 'input',
-                message: 'Enter your Fabric username :',
-                validate: function (value) {
-                    if (value.length) {
-                        return true;
-                    } else {
-                        return 'Please enter your Fabric username';
-                    }
-                }
-            },
-            {
-                name: 'secret',
-                type: 'secret',
-                message: 'Enter your secret:',
-                validate: function (value) {
-                    if (value.length) {
-                        return true;
-                    } else {
-                        return 'Please enter your secret';
-                    }
+/**
+ * Get the required connection information for the business network - namely
+ * the connection profile name, business network identifier, and identity.
+ * @returns {Promise} A promise that will be resolved with the required
+ * connection information.
+ */
+function getFabricDetails() {
+    let questions = [
+        {
+            name: 'profilename',
+            type: 'input',
+            message: 'Enter your Fabric Connection Profile Name:',
+            validate: function (value) {
+                if (value.length) {
+                    return true;
+                } else {
+                    return 'Please enter the name of the Fabric Connection Profile you wish to use \n \
+                            (hint: this is usually the name of the directory in $HOME containing the connection.json file)';
                 }
             }
-        ];
+        },
+        {
+            name: 'businessNetworkId',
+            type: 'input',
+            message: 'Enter your Business Network Identifier :',
+            validate: function (value) {
+                if (value.length) {
+                    return true;
+                } else {
+                    return 'Please enter your Business Network Identifier';
+                }
+            }
+        },
+        {
+            name: 'userid',
+            type: 'input',
+            message: 'Enter your Fabric username :',
+            validate: function (value) {
+                if (value.length) {
+                    return true;
+                } else {
+                    return 'Please enter your Fabric username';
+                }
+            }
+        },
+        {
+            name: 'secret',
+            type: 'secret',
+            message: 'Enter your secret:',
+            validate: function (value) {
+                if (value.length) {
+                    return true;
+                } else {
+                    return 'Please enter your secret';
+                }
+            }
+        }
+    ];
 
-        inquirer.prompt(questions)
-            .then(function (answers) {
-                callback(answers);
-            });
-    }
-};
+    return inquirer.prompt(questions);
+}
+module.exports.getFabricDetails = getFabricDetails;

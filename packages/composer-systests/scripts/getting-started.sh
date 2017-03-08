@@ -93,7 +93,7 @@ function onRegisterPropertyForSale(propertyForSale) {
 }
 EOF
 
-composer archive create --inputDir . --archiveFile digitalproperty-network.bna
+composer archive create --sourceType dir --sourceName . --archiveFile digitalproperty-network.bna
 
 composer network update --archiveFile digitalproperty-network.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
