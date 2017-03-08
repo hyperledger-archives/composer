@@ -1,0 +1,5 @@
+machine:
+  node:
+    version: 6.9.5
+
+
