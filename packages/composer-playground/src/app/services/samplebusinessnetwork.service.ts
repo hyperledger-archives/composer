@@ -420,7 +420,7 @@ export class SampleBusinessNetworkService {
         let metaData = results[3];
         let packageContents = results[4];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description, metaData.data);
+        let businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageContents, metaData.data);
         let modelManager = businessNetworkDefinition.getModelManager();
 
         modelManager.addModelFiles(models);
