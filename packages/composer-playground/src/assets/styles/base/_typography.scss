@@ -21,7 +21,7 @@
   }
   h3 {
     font-family: $font-stack;
-    font-size: 1em;
+    font-size: 0.9rem;
     font-weight: 600;
   }
 
@@ -38,7 +38,7 @@
     font-family: $font-stack;
     font-style: italic;
     font-weight: 400;
-    font-size: 1em;
+    font-size: 0.9rem;
     letter-spacing: 0;
   }
 
@@ -63,5 +63,24 @@
     p {
       color: $white;
     }
+  }
+
+  .side-bar {
+    .files, .registries, .profiles {
+      span {
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      margin-top: 1.5rem;
+    }
+    }
+    li {
+      div {
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+    }
+
   }
 }
