@@ -31,6 +31,9 @@
 ## Context
 <!--- How has this bug affected you? What were you trying to accomplish? -->
 
+## Documentation Impact
+<!-- Will this affect documentation, either by invalidating existing docs, or requiring the creation of new documentation? If yes, give a brief outline below and add the "Docs" label to this issue. -->
+
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
 * Version used:
