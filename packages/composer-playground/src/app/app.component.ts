@@ -1,10 +1,7 @@
-/*
- * Angular 2 decorators and services
- */
-import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Component, ViewEncapsulation} from '@angular/core';
+import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {AppState} from './app.service';
 import {AdminService} from './services/admin.service';
@@ -34,7 +31,7 @@ const composerPackageVersion = require('../../package.json').version;
 @Component({
   selector: 'app',
   encapsulation: ViewEncapsulation.None,
- styles: [
+  styles: [
     require('../assets/styles/composer.scss').toString(),
     require('codemirror/lib/codemirror.css'),
     require('codemirror/addon/scroll/simplescrollbars.css'),
@@ -56,11 +53,6 @@ export class AppComponent {
   private composerPackageVersion = composerPackageVersion;
   private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
-
-  @ViewChild(BusyComponent) private busyComponent: BusyComponent;
-  @ViewChild(ErrorComponent) private errorComponent: ErrorComponent;
-  @ViewChild(ResetComponent) private resetComponent: ResetComponent;
-  @ViewChild(AddIdentityComponent) private addIdentityComponent: AddIdentityComponent;
 
   constructor(public appState: AppState,
               private route: ActivatedRoute,
@@ -94,10 +86,13 @@ export class AppComponent {
       }),
       this.route.queryParams.subscribe((queryParams) => {
         this.queryParamsUpdated(queryParams);
-      })
-    ];
-
-    this.openWelcomeModal();
+      }),
+      this.router.events
+        .filter(e => e instanceof NavigationEnd).subscribe((e) => {
+          if(e.url === '/') {
+            this.openWelcomeModal();
+          }
+      })];
   }
 
   ngOnDestroy() {
@@ -106,7 +101,7 @@ export class AppComponent {
     });
   }
 
-  queryParamsUpdated(queryParams: Object): Promise<any> {
+  queryParamsUpdated(queryParams: Object): Promise <any> {
     // Check for the invitation if specified.
     let invitation = queryParams['invitation'];
     if (invitation) {
@@ -172,16 +167,15 @@ export class AppComponent {
       });
   }
 
-  reset(): Promise<any> {
-    return this.resetComponent.displayAndWait()
-      .then((result) => {
-        if (result) {
-          window.location.reload();
-        }
-      });
+  reset(): Promise <any> {
+    return this.modalService.open(ResetComponent).result.then((result) => {
+      if (result) {
+        window.location.reload();
+      }
+    });
   }
 
-  private updateConnectionData(): Promise<any> {
+  private updateConnectionData(): Promise <any > {
     let newConnectionProfiles = [];
     return this.adminService.getAdminConnection().getAllProfiles()
       .then((connectionProfiles) => {
@@ -202,7 +196,7 @@ export class AppComponent {
       });
   }
 
-  private changeCurrentConnectionProfile(connectionProfile): Promise<any> {
+  private changeCurrentConnectionProfile(connectionProfile): Promise <any> {
     console.log('Changing current connection profile', connectionProfile.name);
     return this.identityService.getIdentities(connectionProfile.name)
       .then((credentials) => {
@@ -243,7 +237,7 @@ export class AppComponent {
       });
   }
 
-  private addIdentity(connectionProfile?: string): Promise<string> {
+  private addIdentity(connectionProfile ?: string): Promise < string > {
     let modalRef = this.modalService.open(AddIdentityComponent);
     modalRef.componentInstance.connectionProfileOverride = connectionProfile;
 
@@ -278,7 +272,7 @@ export class AppComponent {
 
   private onErrorStatus(errorStatus) {
     if (errorStatus) {
-      const modalRef  = this.modalService.open(ErrorComponent);
+      const modalRef = this.modalService.open(ErrorComponent);
       modalRef.componentInstance.error = errorStatus;
     }
   }
