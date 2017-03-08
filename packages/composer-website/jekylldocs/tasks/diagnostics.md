@@ -14,7 +14,7 @@ If something should ever go wrong with an application, what should you do about 
 
 Let's look at the Getting Started application, and use that to explain how to get diagnostics out of the Framework.
 
-Key Point: This is a framework - so your application will need to have it's own logging framework. Plus, your application could also have configuration information to control Fabric Composer's own logging. Concerto does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
+Key Point: This is a framework - so your application will need to have it's own logging framework. Plus, your application could also have configuration information to control Fabric Composer's own logging. Composer does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
 
 Note that the config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
 
