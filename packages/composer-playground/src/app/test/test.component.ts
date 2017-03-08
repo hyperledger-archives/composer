@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../initialization.service';
 import { AlertService } from '../services/alert.service';
+import { TransactionComponent } from '../transaction/transaction.component';
 
 @Component({
   selector: 'app-test',
@@ -18,10 +20,12 @@ export class TestComponent implements OnInit {
   private participantRegistries = [];
   private transactionRegistry = null;
   private chosenRegistry = null;
+  private registryReload = false;
 
   constructor(private clientService: ClientService,
               private initializationService: InitializationService,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private modalService: NgbModal) {
   }
 
   ngOnInit(): Promise<any> {
@@ -72,5 +76,17 @@ export class TestComponent implements OnInit {
 
   setChosenRegistry(chosenRegistry) {
     this.chosenRegistry = chosenRegistry;
+  }
+
+  submitTransaction() {
+    const modalRef = this.modalService.open(TransactionComponent);
+    modalRef.result.then(()=>{
+      // refresh current resource list
+      if (this.chosenRegistry===this.transactionRegistry) {
+        this.registryReload = !this.registryReload;
+      } else {
+        this.chosenRegistry=this.transactionRegistry;
+      }
+    });
   }
 }

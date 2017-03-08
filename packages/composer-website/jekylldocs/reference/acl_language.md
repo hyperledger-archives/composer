@@ -20,43 +20,102 @@ ACL rules are defined in a file called `permissions.acl` in the root of the busi
 
 ### Access Control Rule Grammer
 
-ACL rules follow a tabular format, of the form:
+There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
+
+For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset`.
 
 ````
-ID | NOUN | VERB | PARTICIPANT | PREDICATE  | ACTION
+rule SimpleRule {
+    description: "Description of the ACL rule"
+    participant: "org.acme.SampleParticipant"
+    operation: ALL
+    resource: "org.acme.SampeAsset"
+    action: ALLOW
+}
+````
+
+Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean Javascript expression, which, when true, can either ALLOW or DENY access to the resource by the participant. 
+
+For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset` IF the participant is the owner of the asset.
+
+````
+rule SampleConditionalRule {
+    description: "Description of the ACL rule"
+    participant(m): "org.acme.SampleParticipant"
+    operation: ALL
+    resource(v): "org.acme.SampeAsset"
+    condition: (v.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
 ````
 
 Multiple ACL rules may be defined that conceptually define a decision table. The actions of the decision tree define access control decisions (ALLOW or DENY). If the decision table fails to match then by default access is denied.
 
-**NOUN** defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class, or a property on an instance of a class.
+**Resource** defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class, or a property on an instance of a class.
 
-Noun Examples:
+Resource Examples:
 - Namespace: org.acme
 - Class in namespace: org.acme.Car
 - Property on class: org.acme.Car.owner
 - Instance of a class: org.acme.Car#ABC123
 - Property on an instance of a class: org.acme.Car.owner#ABC123
 
-**VERB** identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.
+**Operation** identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.
 
-**PARTICIPANT** defines the person or entity that has submitted a transaction for processing. If a Participant is specified they must exist in the Participant Registry. The PARTICIPANT may optionally be bound to a variable for use in a PREDICATE. The special value 'EVERYONE' may be used to denote that participant type checking is not enforced for a rule.
+**Participant** defines the person or entity that has submitted a transaction for processing. If a Participant is specified they must exist in the Participant Registry. The PARTICIPANT may optionally be bound to a variable for use in a PREDICATE. The special value 'ANY' may be used to denote that participant type checking is not enforced for a rule.
 
-**PREDICATE** is a Boolean Javascript expression over bound variables. Any Javascript expression that is legal with the an `if(...)` expression may be used here.
+**Condition** is a Boolean Javascript expression over bound variables. Any Javascript expression that is legal with the an `if(...)` expression may be used here.
 
-**ACTION** identifies the action of the rule. It must be one of: ALLOW, DENY.
+**Action** identifies the action of the rule. It must be one of: ALLOW, DENY.
 
 ### Examples
 
 Example ACL rules (in evaluation order):
 
 ```
-R1 | org.acme.Car#ABC123 | DELETE | org.acme.Driver#Fred | NONE | ALLOW | Fred can DELETE the car ABC123
-R2 | org.acme.Car | UPDATE | org.acme.Regulator#Bill:r | org.acme.Car.owner == r | DENY | regulator with ID Bill can not update a Car if they own it
-R3 | org.acme.Car.owner | UPDATE | org.acme.Driver:d | org.acme.Car.owner == d  | ALLOW | Driver can change the ownership of a car that they own
-R4 | org.acme.Car | ALL | org.acme.Regulator | TRUE | ALLOW | regulators can perform all operations on Cars
-R5 | org.acme | READ | EVERYONE | TRUE | ALLOW | Everyone can read all resources in the org.acme namespace
+rule R1 {
+    description: "Fred can DELETE the car ABC123"
+    participant: "org.acme.Driver#Fred"
+    operation: DELETE
+    resource: "org.acme.Car#ABC123"
+    action: ALLOW
+}
+
+rule R2 {
+    description: "regulator with ID Bill can not update a Car if they own it"
+    participant(r): "org.acme.Regulator#Bill"
+    operation: UPDATE
+    resource(c): "org.acme.Car"
+    condition: (c.owner == r)
+    action: DENY
+}
+
+rule R3 {
+    description: "Driver can change the ownership of a car that they own"
+    participant(d): "org.acme.Driver"
+    operation: UPDATE
+    resource(o): "org.acme.Car.owner"
+    condition: (o == d)
+    action: ALLOW
+}
+
+rule R4 {
+    description: "regulators can perform all operations on Cars"
+    participant: "org.acme.Regulator"
+    operation: ALL
+    resource: "org.acme.Car"
+    action: ALLOW
+}
+
+rule R5 {
+    description: "Everyone can read all resources in the org.acme namespace"
+    participant: "ANY"
+    operation: READ
+    resource: "org.acme"
+    action: ALLOW
+}
 ```
 
-Rules are evaluated from top (most specific) to bottom (least specific). As soon as a the Noun, Verb and Predicate match for a rule then subsequent rules are not evaluated.
+Rules are evaluated from top (most specific) to bottom (least specific). As soon as the Participant, Operation and Resource match for a rule then subsequent rules are not evaluated.
 
-This ordering makes the decision table faster to scan for both humans and computers. If no ACL rule fires then the access control decision must be DENY.
+This ordering makes the decision table faster to scan for both humans and computers. If no ACL rule fires then the access control decision is DENY.

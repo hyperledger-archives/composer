@@ -3,13 +3,13 @@
     <h1>{{resourceAction}} {{resourceType}}</h1>
     <button class="icon modal-exit" (click)="activeModal.close()">X</button>
   </div>
-  <section class="modal-body">    
-    <h2>In registry: <b>{{registryID}}</b></h2>    
+  <section class="modal-body">
+    <h2>In registry: <b>{{registryID}}</b></h2>
     <section>
       <div>
         <h4 class="resource-preview">JSON Data Preview</h4>
       </div>
-      <div class="resource-bound">     
+      <div class="resource-bound">
         <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
         </codemirror>
         <div class="resource-error" ng-if="defitionError!=null">

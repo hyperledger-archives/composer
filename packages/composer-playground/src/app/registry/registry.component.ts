@@ -5,6 +5,7 @@ import { ClientService } from '../services/client.service';
 import { AlertService } from '../services/alert.service'
 import { ResourceComponent } from '../resource/resource.component';
 import { ConfirmComponent } from '../confirm/confirm.component';
+import { TransactionRegistry } from 'composer-client';
 
 @Component({
   selector: 'registry',
@@ -17,6 +18,7 @@ import { ConfirmComponent } from '../confirm/confirm.component';
 export class RegistryComponent {
 
   private _registry = null;
+  private _reload = null;
   private resources = [];
 
   private expandedResource = null;
@@ -31,6 +33,14 @@ export class RegistryComponent {
     }
   }
 
+  @Input()
+  set reload(reload) {
+    if (this._reload!==null) {
+      this.loadResources();
+    }
+    this._reload = reload;
+  }
+
   constructor(private clientService: ClientService,
               private alertService: AlertService,
               private modalService: NgbModal) {
@@ -39,9 +49,15 @@ export class RegistryComponent {
   loadResources() {
     this._registry.getAll()
       .then((resources) => {
-        this.resources = resources.sort((a, b) => {
-          return a.getIdentifier().localeCompare(b.getIdentifier());
-        });
+        if (this._registry instanceof TransactionRegistry){
+          this.resources = resources.sort((a, b) => {
+            return b.timestamp - a.timestamp;
+          });
+        } else {
+          this.resources = resources.sort((a, b) => {
+            return a.getIdentifier().localeCompare(b.getIdentifier());
+          });
+        }
       })
       .catch((error) => {
         this.alertService.errorStatus$.next(error);
