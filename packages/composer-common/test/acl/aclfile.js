@@ -80,7 +80,7 @@ describe('AclFile', () => {
         it('should throw a ParseException on invalid input', () => {
             (() => {
                 new AclFile('test.acl', modelManager, invalidAcl);
-            }).should.throw(/Line 1/);
+            }).should.throw(/Line 5/);
         });
     });
 
@@ -105,6 +105,7 @@ describe('AclFile', () => {
             r5.getName().should.equal('R5');
 
             // check nouns
+            console.log('**** ' + JSON.stringify(r1));
             r1.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
             r1.getNoun().getInstanceIdentifier().should.equal('ABC123');
             r2.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');

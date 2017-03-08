@@ -1,31 +1,94 @@
+//New Style Nav
+
 .composer {
-  header {
-    height: 50px;
-    display: flex;
-    background-color: $fourth-highlight ;
-    align-items: center;
+    .indexnav {
+      flex-direction: row;
+      width: 100vw;
+      background-color: $second-highlight;
+      z-index: 10000;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.20);
+          .navcontent {
+            font-size: 0.9rem;
+            display: flex;
+              .navlogo {
+                    flex-grow: 1;
+                    flex-basis: 20%;
+                    max-width: 20rem;
+                    min-width: 17rem;
+                    flex-shrink: 1;
+                    background-color: $first-highlight;
+                    padding-left: 2rem;
+                    padding-right: 2rem;
+                    .brand {
+                      line-height: 30px;
+                    }
+              }
 
-    & > *:first-child {
-      padding-left: $space-medium;
-      padding-right: $space-large;
-    }
+              .links {
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: flex-start;
+                  flex-basis: 70%;
+                  flex-grow: 1;
+                  flex-shrink: 1;
+                  margin-left: 2rem;
+                  .action {
+                    display: flex;
+                    flex-direction: row;
+                    height: 100%;
+                    margin-left: 1rem;
+                    margin-right: 1rem;
+                    flex-direction: column;
+                    line-height: 60px;
+                    color: $white;
+                    transition: none;
+                    &:hover {
+                      border-radius: 0px;
+                      border-bottom: 3px solid $white;
+                    }
+                    &.active {
+                          border: none;
+                          border-bottom: 3px solid $white;
+                          background-color: transparent;
+                          color: $white;
+                          min-width: 0;
+                          padding: 0;
+                          border-radius: 0px;
+                        }
+                    }
+                  }
+                }
 
-    & > *:last-child {
-      padding-right: $space-medium;
-    }
+              .icon-links {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                flex-basis: 10%;
+                flex-shrink: 1;
+                margin-right: 2rem;
+                margin-top: 1rem;
+                .action {
+                  display: flex;
+                  flex-direction: row;
+                  height: 100%;
+                  margin-left: 1rem;
+                  margin-right: 1rem;
+                  flex-direction: column;
+                  fill: $white;
+                  &:hover {
+                    border-radius: 0px;
+                    border-bottom: 3px solid $white;
+                    transition: none;
+                  }
+                  &.active {
+                    border-bottom: 3px solid white;
+                    border-radius: 0px;
+                  }
+                svg.ibm-icon {
+                    fill: $white;
+              }
 
-    nav {
-      display: flex;
-      flex: 1;
-
-      .links {
-        flex: 1;
+            }
+            }
+          }
       }
-
-      button {
-        line-height: 45px;
-        margin-top: 5px;
-      }
-    }
-  }
-}

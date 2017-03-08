@@ -47,11 +47,17 @@ function onSampleTransaction(sampleTransaction) {
     });
 }`
 
-const initialAclFile =
-  `/**
- * Sample access control list.
+const initialAclFile = `/**
+ * Sample Access Control List
  */
-Default | org.acme.biznet | ALL | ANY | (true) | ALLOW | Allow all participants access to all resources\n`
+rule Everyone {
+    description: "Allows any participant in the namespace full access to all resources in the namespace"
+    participant: "org.acme.biznet"
+    operation: ALL
+    resource: "org.acme.biznet"
+    action: ALLOW
+}
+`;
 
 @Injectable()
 export class SampleBusinessNetworkService {
@@ -345,6 +351,31 @@ export class SampleBusinessNetworkService {
       });
   }
 
+  private getMetaData(owner: string, repository: string, path: string): Promise<any> {
+    if (!this.octo) {
+      return Promise.reject('no connection to github');
+    }
+
+    let repo = this.octo.repos(owner, repository);
+
+    return repo.contents(path + 'README.md').fetch()
+      .then((readme) => {
+        let decodedString = atob(readme.content);
+        let readmeData = {
+          name: readme.name,
+          data: decodedString
+        };
+        return readmeData;
+      })
+      .catch((error) => {
+        //don't need to have a readme file to be valid
+        if (error.status == '404') {
+          return Promise.resolve();
+        }
+        throw error
+      });
+  }
+
   public deployInitialSample(): Promise<any> {
     this.alertService.busyStatus$.next('Deploying sample business network ...');
     let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
@@ -377,6 +408,7 @@ export class SampleBusinessNetworkService {
     }
     sampleNetworkPromises.push(this.getScripts(owner, repository, path));
     sampleNetworkPromises.push(this.getAcls(owner, repository, path));
+    sampleNetworkPromises.push(this.getMetaData(owner, repository, path));
     sampleNetworkPromises.push(this.getSampleNetworkInfo(owner, repository, path));
 
     return Promise.all(sampleNetworkPromises)
@@ -385,13 +417,13 @@ export class SampleBusinessNetworkService {
         let models = results[0];
         let scripts = results[1];
         let acls = results[2];
-        let packageContents = results[3];
+        let metaData = results[3];
+        let packageContents = results[4];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description);
+        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description, metaData.data);
         let modelManager = businessNetworkDefinition.getModelManager();
-        models.forEach((model) => {
-          modelManager.addModelFile(model);
-        });
+
+        modelManager.addModelFiles(models);
 
         let scriptManager = businessNetworkDefinition.getScriptManager();
         scripts.forEach((script) => {
@@ -404,6 +436,7 @@ export class SampleBusinessNetworkService {
           let aclFile = new AclFile(acls.name, modelManager, acls.data);
           aclManager.setAclFile(aclFile);
         }
+
         return this.deployBusinessNetwork(businessNetworkDefinition);
       });
   }

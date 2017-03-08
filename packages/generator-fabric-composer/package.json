@@ -15,7 +15,19 @@
     "yeoman-generator"
   ],
   "scripts": {
-      "systest": "mocha -t 0"
+
+      "generatorTests": "npm run archiveTest && npm run liveNetworkTest",
+
+      "archiveTest": "mocha -t 0 test/angular-archive.js",
+
+      "preliveNetworkTest": "npm run downloadHLF && npm run stopHLF && npm run startHLF && composer network deploy -a test/data/digitalPropertyNetwork.bna -i WebAppAdmin -s DJY27pEnl16d",
+      "liveNetworkTest":"mocha -t 0 test/angular-network.js",
+      "postliveNetworkTest": "npm run stopHLF",
+
+      "downloadHLF": "scripts/download-hyperledger.sh",
+      "startHLF": "scripts/start-hyperledger.sh",
+      "stopHLF": "scripts/stop-hyperledger.sh",
+      "teardownHLF": "scripts/teardown.sh"
   },
   "dependencies": {
     "bower": "^1.8.0",

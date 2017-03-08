@@ -270,14 +270,14 @@ module.exports = yeoman.Base.extend({
     },
 
     writing: function () {
-        console.log('About to start creating files')
+        console.log('About to start creating files');
         let self = this;
 
         if(liveNetwork){
 
-                console.log('About to connect to a running business network');
+            console.log('About to connect to a running business network');
 
-                return businessNetworkConnection.connect(this.connectionProfileName, this.networkIdentifier, this.enrollmentId, this.enrollmentSecret)
+            return businessNetworkConnection.connect(this.connectionProfileName, this.networkIdentifier, this.enrollmentId, this.enrollmentSecret)
                 .then((result) => {
                     console.log('Connected to:',this.networkIdentifier);
                     businessNetworkDefinition = result;
@@ -382,7 +382,7 @@ module.exports = yeoman.Base.extend({
             assetList.forEach((asset) => {
                 assetComponentNames.push(asset.name+'Component');
             });
-            
+
             let model = self._generateTemplateModel();
             self.fs.copyTpl(self.templatePath('**/!(node_modules|typings|asset|Transaction)*'), self.destinationPath(), model);
 
@@ -460,8 +460,9 @@ module.exports = yeoman.Base.extend({
             enrollmentSecret: this.enrollmentSecret
         };
     },
-    
+
     end: function() {
         console.log('Complete');
+        process.exit(0);
     }
 });

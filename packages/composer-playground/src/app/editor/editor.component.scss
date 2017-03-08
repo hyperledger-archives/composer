@@ -41,6 +41,11 @@ app-editor {
         font-style: italic;
       }
     }
+
+    .readme {
+      background-color: $white;
+      padding: $space-large;
+    }
   }
 
   .CodeMirror, .CodeMirror-scroll{

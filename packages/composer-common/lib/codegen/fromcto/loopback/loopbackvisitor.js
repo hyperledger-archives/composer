@@ -140,9 +140,12 @@ class LoopbackVisitor {
                 description: `An asset named ${assetDeclaration.getName()}`,
                 plural: assetDeclaration.getFullyQualifiedName(),
                 base: 'PersistedModel',
-                idInjection: true,
+                idInjection: false,
                 options: {
-                    validateUpsert: true
+                    validateUpsert: true,
+                    composer: {
+                        type: 'asset'
+                    }
                 },
                 properties: {},
                 validations: [],
@@ -179,9 +182,12 @@ class LoopbackVisitor {
                 description: `A participant named ${participantDeclaration.getName()}`,
                 plural: participantDeclaration.getFullyQualifiedName(),
                 base: 'PersistedModel',
-                idInjection: true,
+                idInjection: false,
                 options: {
-                    validateUpsert: true
+                    validateUpsert: true,
+                    composer: {
+                        type: 'participant'
+                    }
                 },
                 properties: {},
                 validations: [],
@@ -236,9 +242,12 @@ class LoopbackVisitor {
                 description: `A transaction named ${transactionDeclaration.getName()}`,
                 plural: transactionDeclaration.getFullyQualifiedName(),
                 base: 'PersistedModel',
-                idInjection: true,
+                idInjection: false,
                 options: {
-                    validateUpsert: true
+                    validateUpsert: true,
+                    composer: {
+                        type: 'transaction'
+                    }
                 },
                 properties: {},
                 validations: [],
@@ -266,6 +275,13 @@ class LoopbackVisitor {
      */
     visitClassDeclarationCommon(classDeclaration, parameters, jsonSchema) {
         debug('entering visitClassDeclarationCommon', classDeclaration.getName());
+
+        // Add information from the class declaration into the composer section.
+        if (jsonSchema.options && jsonSchema.options.composer) {
+            jsonSchema.options.composer.namespace = classDeclaration.getModelFile().getNamespace();
+            jsonSchema.options.composer.name = classDeclaration.getName();
+            jsonSchema.options.composer.fqn = classDeclaration.getFullyQualifiedName();
+        }
 
         // Set the required properties into the schema.
         Object.assign(jsonSchema, {

@@ -18,7 +18,7 @@ export class AboutComponent implements OnInit {
   constructor(private aboutService: AboutService) {}
 
   ngOnInit() {
-    this.aboutService.getVersions()
+    return this.aboutService.getVersions()
       .then((modules) => {
         this.playground = modules.playground;
         this.common = modules.common;
