@@ -37,6 +37,7 @@ import { AddFileComponent } from './add-file';
 import { TransactionComponent } from './transaction';
 import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
 import { WelcomeComponent } from './welcome';
+import { ConfirmComponent } from './confirm';
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
@@ -86,6 +87,7 @@ type StoreType = {
     ExportComponent,
     ErrorComponent,
     SuccessComponent,
+    ConfirmComponent,
     ResourceComponent,
     TransactionComponent,
     AddFileComponent,
@@ -104,6 +106,7 @@ type StoreType = {
     BusyComponent,
     ErrorComponent,
     SuccessComponent,
+    ConfirmComponent,
     ResetComponent,
     ImportComponent,
     ExportComponent,
