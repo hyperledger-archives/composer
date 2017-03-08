@@ -81,7 +81,9 @@
     "marked": "^0.3.6",
     "octokat": "^0.6.2",
     "opener": "^1.4.2",
-    "socket.io": "^1.7.2"
+    "socket.io": "^1.7.2",
+    "typescript": "^2.2.1",
+    "webpack": "^2.2.1"
   },
   "devDependencies": {
     "@angular/common": "^2.4.8",
@@ -176,6 +178,7 @@
     "thenify-all": "^1.6.0",
     "to-string-loader": "^1.1.5",
     "ts-helpers": "^1.1.2",
+    "ts-loader": "^2.0.1",
     "ts-node": "^2.0.0",
     "tslint": "^4.2.0",
     "tslint-loader": "^3.3.0",
