@@ -79,11 +79,11 @@ export class TestComponent implements OnInit {
   }
 
   submitTransaction() {
-    const modalRef = this.modalService.open(TransactionComponent)
+    const modalRef = this.modalService.open(TransactionComponent);
     modalRef.result.then(()=>{
       // refresh current resource list
       if (this.chosenRegistry===this.transactionRegistry) {
-        this.registryReload = true;
+        this.registryReload = !this.registryReload;
       } else {
         this.chosenRegistry=this.transactionRegistry;
       }

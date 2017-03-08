@@ -39,6 +39,7 @@ require('composer-common').ConnectionProfileManager.registerConnectionManagerLoa
 */
 
 module.exports.BusinessNetworkConnection = require('./lib/businessnetworkconnection');
+module.exports.TransactionRegistry = require('./lib/transactionregistry');
 
 /**
  * Expose key composer-common classes to simplify client application dependencies
