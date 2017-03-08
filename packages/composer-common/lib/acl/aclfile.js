@@ -58,7 +58,9 @@ class AclFile {
 
         for(let n=0; n < this.ast.rules.length; n++ ) {
             let thing = this.ast.rules[n];
-            this.rules.push( new AclRule(this, thing));
+            const aclRule = new AclRule(this, thing);
+            // TODO (DCS) check that the id of the AclRule does not already exist
+            this.rules.push(aclRule);
         }
 
         // console.log(JSON.stringify(this.ast));
