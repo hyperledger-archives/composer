@@ -21,16 +21,24 @@ describe('BusinessNetworkMetadata', () => {
 
     describe('#constructor', () => {
 
+        it('should throw if package.json not specified', () => {
+            (() => {
+                new BusinessNetworkMetadata();
+            }).should.throw(/package.json is required/);
+        });
+
         it('should throw if readme not specified', () => {
             (() => {
-                new BusinessNetworkMetadata({});
+                new BusinessNetworkMetadata({}, {});
             }).should.throw(/README must be a string/);
         });
 
-        it('should store README', () => {
+        it('should store package.json and README', () => {
             const readme = 'TEST README';
-            let metadata = new BusinessNetworkMetadata(readme);
+            const packageJson = {name: 'Foo'};
+            let metadata = new BusinessNetworkMetadata(packageJson,readme);
             metadata.getREADME().should.equal(readme);
+            metadata.getPackageJson().should.equal(packageJson);
         });
     });
 });
