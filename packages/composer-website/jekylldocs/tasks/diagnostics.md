@@ -59,7 +59,7 @@ For example
        "businessNetworkIdentifier" : "digitalproperty-network",
        "connectionProfile" :"defaultProfile"
     },
-    "ConcertoConfig": {
+    "ComposerConfig": {
        "debug": {
          "logger": "default",
          "config": {
@@ -79,7 +79,7 @@ For example
 
 }
 ```
-The first section is specific to the Getting Started application, the second `ConcertoConfig` section is for the Fabric Composer.
+The first section is specific to the Getting Started application, the second `ComposerConfig` section is for the Fabric Composer.
 
 - `logger` is used to refer the module that does actual logging. default is implying that this is the winston framework
 - `config` is passed to the logger to control what it does.  So this section is specific to the logger in use.
@@ -89,7 +89,7 @@ The first section is specific to the Getting Started application, the second `Co
 The standard way of enabling node.js applications for debug is to use the `DEBUG` environment variable. So therefore
 
 ```
-DEBUG=concerto:* node myApplication.js
+DEBUG=composer:* node myApplication.js
 ```
 
 Will enabled more tracing - this then will use the levels marked as `enabledLevel` in the configuration above.
@@ -117,7 +117,7 @@ matthew@matthew-VirtualBox:~$ cat ~/.composer-connection-profiles/defaultProfile
     "membershipServicesURL": "grpc://localhost:7054",
     "peerURL": "grpc://localhost:7051",
     "eventHubURL": "grpc://localhost:7053",
-    "keyValStore": "/home/matthew/.concerto-credentials",
+    "keyValStore": "/home/matthew/.composer-credentials",
     "deployWaitTime": "300",
     "invokeWaitTime": "100",
     "networks": {

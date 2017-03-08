@@ -22,7 +22,7 @@ composer generator tests -d <project-directory> -a <business-network-archive> -i
 ### Options
 ```
 --help                        Show help  [boolean]
---projectDir, -d              The directory of your your concerto project  [string] [required]
+--projectDir, -d              The directory of your your composer project  [string] [required]
 --networkArchiveLocation, -a  The location of the network archive zip file  [string] [required]
 --testDirName -t              The name of the projects test directory  [string] [optional] default: test
 --enrollId, -i                The enrollment ID of the user  [string] [required]
