@@ -72,10 +72,9 @@
       </div>
     </div>
   </div>
-  <codemirror [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
+  <codemirror [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height='.codeview'>
   </codemirror>
   <div class="alert alert-danger mt-2" role="alert" *ngIf="currentError">
     {{currentError}}
   </div>
 </section>
-
