@@ -34,7 +34,7 @@ import { ImportComponent } from './import';
 import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
-import { TransactionComponent } from './registry/transaction';
+import { TransactionComponent } from './transaction';
 import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
 import { WelcomeComponent } from './welcome';
 import { GithubComponent } from './github';
