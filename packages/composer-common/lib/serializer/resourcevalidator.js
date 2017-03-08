@@ -144,6 +144,13 @@ class ResourceValidator {
         }
 
         if(obj instanceof Identifiable) {
+            const id = obj.getIdentifier();
+
+            // prevent empty identifiers
+            if(!id || id.trim().length === 0) {
+                ResourceValidator.reportEmptyIdentifier(parameters.rootResourceIdentifier);
+            }
+
             this.currentIdentifier = obj.getFullyQualifiedIdentifier();
         }
 
@@ -474,6 +481,19 @@ class ResourceValidator {
         throw new ValidationException(formatter({
             resourceId: id,
             fieldName: field.getName()
+        }));
+    }
+
+    /**
+     * Throw a new error for a missing, but required field.
+     * @param {string} id - the identifier of this instance.
+     * @param {Field} field - the field/
+     * @private
+     */
+    static reportEmptyIdentifier(id) {
+        let formatter = Globalize.messageFormatter('resourcevalidator-emptyidentifier');
+        throw new ValidationException(formatter({
+            resourceId: id
         }));
     }
 

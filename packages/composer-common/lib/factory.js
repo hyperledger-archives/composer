@@ -83,6 +83,23 @@ class Factory {
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
+
+        if(!id || typeof(id) !== 'string') {
+            let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        if(id.trim().length === 0) {
+            let formatter = Globalize.messageFormatter('factory-newinstance-missingidentifier');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
         let modelFile = this.modelManager.getModelFile(ns);
         if(!modelFile) {
             let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
