@@ -1,16 +1,16 @@
 .composer {
   .side-bar {
     width: 20%;
+    max-width: 20rem;
+    min-width: 17rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     z-index: 100;
-    // background: #FFFFFF;
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
 
     .side-bar-nav {
       li {
-
         padding: $space-medium $space-large;
         border-left: $space-small solid transparent;
         border-bottom: 1px solid $fourth-highlight;
@@ -35,7 +35,7 @@
 
   .main-view {
     background-color: $fourth-highlight;
-    width: 80%;
+    width: 100%;
     padding: $space-large;
   }
 }
