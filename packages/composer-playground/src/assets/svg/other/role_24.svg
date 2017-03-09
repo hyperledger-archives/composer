@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="18px" viewBox="0 0 14 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>role 24</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="v4.1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Fabric-Composer-Playground-Define-2-Copy-50" transform="translate(-1350.000000, -25.000000)" fill-rule="nonzero" fill="#FFFFFF">
+            <g id="role-24" transform="translate(1350.000000, 25.000000)">
+                <g id="Icon">
+                    <g id="Group">
+                        <path d="M0,0 L0,18 L13.0909091,18 L13.0909091,0 L0,0 Z M11.4545455,16.3636364 L1.63636364,16.3636364 L1.63636364,1.63636364 L11.4545455,1.63636364 L11.4545455,16.3636364 Z" id="Shape"></path>
+                        <path d="M4.5,10.6363636 C3.84545455,10.6363636 3.27272727,11.2090909 3.27272727,11.8636364 L3.27272727,13.0909091 L9.81818182,13.0909091 L9.81818182,11.8636364 C9.81818182,11.2090909 9.24545455,10.6363636 8.59090909,10.6363636 L4.5,10.6363636 Z" id="Shape"></path>
+                    </g>
+                    <path d="M6.54545455,4.90909091 C5.15454545,4.90909091 4.09090909,5.97272727 4.09090909,7.36363636 C4.09090909,8.75454545 5.15454545,9.81818182 6.54545455,9.81818182 C7.93636364,9.81818182 9,8.75454545 9,7.36363636 C9,5.97272727 7.93636364,4.90909091 6.54545455,4.90909091 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
