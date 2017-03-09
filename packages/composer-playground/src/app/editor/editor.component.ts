@@ -86,9 +86,6 @@ export class EditorComponent implements OnInit {
 
   private exportedData;
 
-
-  private noError: boolean = true;
-
   constructor(private adminService: AdminService,
               private clientService: ClientService,
               private initializationService: InitializationService,
