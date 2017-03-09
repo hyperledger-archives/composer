@@ -125,10 +125,8 @@ export class EditorComponent implements OnInit {
   }
 
   private createBusinessNetwork(name, version, description, packageJson, readme) {
-    console.log('created use business network definition',name, version, description, packageJson, readme);
     this.businessNetworkDefinition = new BusinessNetworkDefinition(name + '@' + version, description, packageJson, readme); // Creates a new BND
     this.deployedPackageName = name;
-    console.log('new deployed name',this.deployedPackageName);
     this.deployedPackageVersion = version;
     this.deployedPackageDescription = description;
   }
@@ -195,8 +193,6 @@ export class EditorComponent implements OnInit {
     } else if (this.currentFile.package) {
       // This is what's loaded into the editor
 
-      console.log('wtf is packageObject',this.newPackageJson)
-
       return JSON.stringify(this.newPackageJson);
     } else if (this.currentFile.readme) {
       let readme = this.businessNetworkDefinition.getMetadata().getREADME();
@@ -261,7 +257,6 @@ export class EditorComponent implements OnInit {
   }
 
   private onCodeChanged() {
-    console.log('onCodechanged')
     if (this.changingCurrentFile) {
       return;
     } else if (this.code === this.previousCode) {
@@ -420,7 +415,6 @@ export class EditorComponent implements OnInit {
         }
         this.setCurrentFile(currentFile);
         this.alertService.successStatus$.next('Business Network successfully imported and deployed');
-        console.log('what is the new bnd?',this.businessNetworkDefinition);
         this.newPackageJson = this.businessNetworkDefinition.getMetadata().getPackageJson();
         this.inputPackageName = this.businessNetworkDefinition.getName();
         this.inputPackageVersion = this.businessNetworkDefinition.getVersion();
@@ -607,7 +601,6 @@ export class EditorComponent implements OnInit {
 
   private stopEditing(){
     if(this.editingPackage){
-      console.log('ran stopEditing');
       this.editActive = false;
       this.editingPackage = false;
       this.setCurrentFile(this.previousFile);
