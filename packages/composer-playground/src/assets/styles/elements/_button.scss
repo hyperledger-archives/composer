@@ -144,11 +144,13 @@
       background-color: transparent;
       min-width: 0;
       padding: 0;
+      &:hover{
+        color: $first-highlight;
+        background-color: transparent;
 
-      svg.ibm-icon {
-        position: absolute;
-        top: 3px;
-        right: 3px;
+        svg.ibm-icon {
+          fill: $first-highlight;
+        }
       }
     }
 

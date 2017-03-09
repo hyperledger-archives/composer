@@ -36,6 +36,8 @@
 
         "factory-newinstance-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
         "factory-newinstance-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
+        "factory-newinstance-missingidentifier": "Missing identifier for Type {type} in namespace {namespace}",
+        "factory-newinstance-invalididentifier": "Invalid or missing identifier for Type {type} in namespace {namespace}",
 
         "factory-newrelationship-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
         "factory-newrelationship-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
@@ -62,6 +64,7 @@
         "resourcevalidator-invalidenumvalue": "Instance {resourceId} invalid enum value {value} for field {fieldName}",
         "resourcevalidator-abstractclass": "The class {className} is abstract. Should not have an instance!",
         "resourcevalidator-undeclaredfield": "Instance {resourceId} has a property named {propertyName} which is not declared in {fullyQualifiedTypeName}",
-        "resourcevalidator-invalidfieldassignment": "Instance {resourceId} has property {propertyName} with type {objectType} that is not derived from {fieldType}"
+        "resourcevalidator-invalidfieldassignment": "Instance {resourceId} has property {propertyName} with type {objectType} that is not derived from {fieldType}",
+        "resourcevalidator-emptyidentifier": "Instance {resourceId} has an empty identifier."
     }
 }
