@@ -421,7 +421,7 @@ export class SampleBusinessNetworkService {
         let packageContents = results[4];
 
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageContents, metaData.data);
+        let businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageContents, readme.data);
         let modelManager = businessNetworkDefinition.getModelManager();
 
         modelManager.addModelFiles(models);

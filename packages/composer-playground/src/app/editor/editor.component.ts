@@ -420,6 +420,15 @@ export class EditorComponent implements OnInit {
         }
         this.setCurrentFile(currentFile);
         this.alertService.successStatus$.next('Business Network successfully imported and deployed');
+        console.log('what is the new bnd?',this.businessNetworkDefinition);
+        this.newPackageJson = this.businessNetworkDefinition.getMetadata().getPackageJson();
+        this.inputPackageName = this.businessNetworkDefinition.getName();
+        this.inputPackageVersion = this.businessNetworkDefinition.getVersion();
+        this.deployedPackageName = this.businessNetworkDefinition.getName();
+        this.deployedPackageVersion = this.businessNetworkDefinition.getVersion();
+        this.deployedPackageDescription = this.businessNetworkDefinition.getDescription();
+        this.readme = this.businessNetworkDefinition.getMetadata().getREADME();
+
       }
     }, (reason) => {
       // if no reason then we hit cancel
