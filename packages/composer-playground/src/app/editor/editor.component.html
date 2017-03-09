@@ -46,7 +46,7 @@
     <div *ngIf="editingPackage" class="business-network-details">
       <h1>Editing package.json</h1>
     </div>
-    <div *ngIf="!editActive" class="business-network-details">
+    <div *ngIf="!editActive && !editingPackage" class="business-network-details">
       <h1 class="margin-right">{{deployedPackageName}}</h1>
       <div class="business-network-version small">{{deployedPackageVersion}}</div>
       <div>
@@ -75,7 +75,7 @@
   </div>
   <div class="readme" *ngIf="readme" [innerHTML]="readme">
   </div>
-    <codemirror *ngIf="!readme" [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
+    <codemirror *ngIf="!readme" [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%" (blur)="stopEditing()">
   </codemirror>
   <div class="alert alert-danger mt-2" role="alert" *ngIf="currentError">
     {{currentError}}
