@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="21px" viewBox="0 0 19 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>spell check 24</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="v4.1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Fabric-Composer-Playground-Define-2-Copy-79" transform="translate(-331.000000, -913.000000)">
+            <g id="spell-check-24" transform="translate(331.000000, 913.000000)">
+                <g id="Icon">
+                    <rect id="Rectangle-path" fill="#323232" fill-rule="nonzero" x="0" y="0" width="11" height="2"></rect>
+                    <rect id="Rectangle-path-Copy" fill="#323232" fill-rule="nonzero" x="0" y="8" width="8" height="2"></rect>
+                    <rect id="Rectangle-path" fill="#FF5C49" fill-rule="nonzero" x="0" y="4" width="10" height="2"></rect>
+                    <path d="M14.464,17.304 L14.464,21 L18.232,21 L18.232,17.304 L14.464,17.304 Z M18.112,8.472 L18.112,3.864 L14.56,3.864 L14.56,8.472 L15.472,15.864 L17.176,15.864 L18.112,8.472 Z" id="!" fill="#FF5C49"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
