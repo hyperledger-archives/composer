@@ -7,8 +7,7 @@ import {AdminService} from './admin.service';
 import {ClientService} from './client.service';
 import {AlertService} from './alert.service';
 
-import {BusinessNetworkDefinition} from 'composer-admin';
-import {AclFile} from 'composer-common';
+import {BusinessNetworkDefinition, AclFile} from 'composer-common';
 
 const initialModelFile =
   `/**
@@ -33,7 +32,7 @@ transaction SampleTransaction identified by transactionId {
   --> SampleAsset asset
   o String newValue
 }
-`
+`;
 
 const initialScriptFile =
   `/**
@@ -45,7 +44,7 @@ function onSampleTransaction(sampleTransaction) {
     .then(function (assetRegistry) {
       return assetRegistry.update(sampleTransaction.asset);
     });
-}`
+}`;
 
 const initialAclFile = `/**
  * Sample Access Control List
@@ -63,8 +62,6 @@ rule Everyone {
 export class SampleBusinessNetworkService {
 
   private octo;
-  private socket;
-  private connected: boolean = false;
 
   public OPEN_SAMPLE: boolean = false;
   public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded, to fix this problem setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
@@ -77,8 +74,18 @@ export class SampleBusinessNetworkService {
               private http: Http) {
   }
 
+  //horrible hack for tests
+  createBusinessNetworkInstance(identifier, description, packageJson, readme) {
+    return new BusinessNetworkDefinition(identifier, description, packageJson, readme);
+  }
 
-  isOAuthEnabled(): Promise<boolean> {
+  //horrible hack for tests
+  createAclFileInstance(name, modelManager, data) {
+    return new AclFile(name, modelManager, data);
+  }
+
+
+  public isOAuthEnabled(): Promise<boolean> {
     return this.http.get(PLAYGROUND_API + '/api/isOAuthEnabled')
       .toPromise()
       .then((response) => {
@@ -94,7 +101,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  getGithubClientId(): Promise<string> {
+  public getGithubClientId(): Promise<string> {
     if (this.CLIENT_ID) {
       return Promise.resolve(this.CLIENT_ID);
     }
@@ -121,7 +128,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  setUpGithub(accessToken: string) {
+  public setUpGithub(accessToken: string) {
     if (accessToken) {
       this.octo = new Octokat({token: accessToken});
     } else {
@@ -129,7 +136,7 @@ export class SampleBusinessNetworkService {
     }
   }
 
-  isAuthenticatedWithGitHub(): boolean {
+  public isAuthenticatedWithGitHub(): boolean {
     return this.octo ? true : false;
   }
 
@@ -198,7 +205,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  public getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
+  getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -223,7 +230,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  public getModel(owner: string, repository: string, path: string): Promise<any> {
+  getModel(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -285,15 +292,14 @@ export class SampleBusinessNetworkService {
             });
 
             return allModels;
-          })
+          });
       })
-      //TODO: do something more sensible with this
       .catch((error) => {
         throw error
       });
   }
 
-  private getScripts(owner: string, repository: string, path: string): Promise<any> {
+  getScripts(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -326,7 +332,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  private getAcls(owner: string, repository: string, path: string): Promise<any> {
+  getAcls(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -351,7 +357,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  private getReadme(owner: string, repository: string, path: string): Promise<any> {
+  getReadme(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -421,7 +427,7 @@ export class SampleBusinessNetworkService {
         let packageContents = results[4];
 
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageContents, readme.data);
+        let businessNetworkDefinition = this.createBusinessNetworkInstance(null, null, packageContents, readme.data);
         let modelManager = businessNetworkDefinition.getModelManager();
 
         modelManager.addModelFiles(models);
@@ -434,7 +440,7 @@ export class SampleBusinessNetworkService {
 
         if (acls) {
           let aclManager = businessNetworkDefinition.getAclManager();
-          let aclFile = new AclFile(acls.name, modelManager, acls.data);
+          let aclFile = this.createAclFileInstance(acls.name, modelManager, acls.data);
           aclManager.setAclFile(aclFile);
         }
 
