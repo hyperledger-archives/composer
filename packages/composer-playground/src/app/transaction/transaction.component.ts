@@ -64,8 +64,8 @@ export class TransactionComponent implements OnInit {
         let modelClassDeclarations = introspector.getClassDeclarations();
 
         modelClassDeclarations.forEach((modelClassDeclaration) => {
-          // Generate list of all known transaction types
-          if (modelClassDeclaration instanceof TransactionDeclaration) {
+          // Generate list of all known (non-abstract) transaction types
+          if (!modelClassDeclaration.isAbstract() && modelClassDeclaration instanceof TransactionDeclaration) {
             this.transactionTypes.push(modelClassDeclaration);
           }
         });
