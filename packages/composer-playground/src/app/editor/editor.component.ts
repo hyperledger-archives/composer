@@ -63,6 +63,7 @@ export class EditorComponent implements OnInit {
   private addModelFileName: string = 'lib/org.acme.model.cto';
   private addScriptFileName: string = 'lib/script.js';
   private currentError: string = null;
+  private noError: boolean = true;
   private dirty: boolean = false;
   private deploying: boolean = false;
 
@@ -232,9 +233,11 @@ export class EditorComponent implements OnInit {
         this.editingPackage = true;
       }
       this.currentError = null;
+      this.noError = true;
       this.dirty = true;
     } catch (e) {
       this.currentError = e.toString();
+      this.noError = false;
     }
   }
 
@@ -383,6 +386,7 @@ export class EditorComponent implements OnInit {
         this.dirty = true;
       } catch (e) {
         this.currentError = e.toString();
+        this.noError = false;
       }
     } else if (file.script) {
       try {
@@ -398,6 +402,7 @@ export class EditorComponent implements OnInit {
         this.dirty = true;
       } catch (e) {
         this.currentError = e.toString();
+        this.noError = false;
       }
     }
   }
@@ -606,5 +611,6 @@ export class EditorComponent implements OnInit {
       this.setCurrentFile(this.previousFile);
     }
   }
+
 
 }
