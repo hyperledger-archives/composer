@@ -63,6 +63,7 @@ export class EditorComponent implements OnInit {
   private addModelFileName: string = 'lib/org.acme.model.cto';
   private addScriptFileName: string = 'lib/script.js';
   private currentError: string = null;
+  private noError: boolean = true;
   private dirty: boolean = false;
   private deploying: boolean = false;
 

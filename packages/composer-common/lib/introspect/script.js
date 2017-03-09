@@ -78,6 +78,14 @@ class Script {
     }
 
     /**
+     * Returns the identifier of the script
+     * @return {string} the identifier of the script
+     */
+    getName() {
+        return this.identifier;
+    }
+
+    /**
      * Returns the language of the script
      * @return {string} the identifier of the script
      */

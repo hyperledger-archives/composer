@@ -9,7 +9,7 @@
             {{profile.displayID}}
             </div>
             <div style="flex:1;text-align:right">
-            <svg class="ibm-icon" aria-hidden="true">
+            <svg class="ibm-icon blue-icon" aria-hidden="true">
               <use xlink:href="#icon-confirm_24"></use>
             </svg>
             </div>
@@ -23,13 +23,13 @@
     <h2>Contact Us</h2>
     <p>
       <svg class="ibm-icon" aria-hidden="true">
-        <use xlink:href="#icon-tools_24"></use>
+        <use xlink:href="#icon-stackoverflow"></use>
       </svg>
       Ask questions on Stackoverflow with the tag <a href="http://stackoverflow.com/questions/tagged/fabric-composer">fabric-composer</a>
       </p>
     <p>
       <svg class="ibm-icon" aria-hidden="true">
-        <use xlink:href="#icon-forum_24"></use>
+        <use xlink:href="#icon-rocket"></use>
       </svg>
       Join the discussion in the fabric-composer channel on the Hyperledger-hosted <a href="https://chat.hyperledger.org/channel/fabric-composer">RocketChat</a>
     </p>
@@ -39,7 +39,7 @@
   <div class="playground-profile-warning" *ngIf="warningVisible">
     <div style="display:flex;">
       <div style="margin-right:8px;">
-        <svg class="ibm-icon" aria-hidden="true">
+        <svg class="ibm-icon blue-icon" aria-hidden="true">
           <use xlink:href="#icon-world_24"></use>
         </svg>
       </div>
@@ -54,7 +54,7 @@
         <p><a href="http://fabric-composer.org/">Learn more in the docs</a></p>
       </div>
       <div style="flex:1;text-align:right;">
-        <button type="button" class="button basic" (click)="hideWarning()">Hide</button>
+        <button type="button" class="button secondary" (click)="hideWarning()">Hide</button>
       </div>
     </div>
 
@@ -63,7 +63,7 @@
   <div class="current-profile">
     <h1>{{currentProfile.displayID}}</h1>
     <p>{{currentProfile.details}}</p>
-    <button class="button basic" type="button" disabled>Delete this profile</button>
-    <button class="button" type="button" disabled>Use this profile</button>
+    <button class="button secondary" type="button" disabled>Delete this profile</button>
+    <button class="button primary" type="button" disabled>Use this profile</button>
   </div>
 </section>
