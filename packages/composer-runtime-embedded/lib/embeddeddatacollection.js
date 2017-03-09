@@ -68,6 +68,20 @@ class EmbeddedDataCollection extends DataCollection {
     }
 
     /**
+     * Check to see if the specified object exists in this collection.
+     * @param {string} id The ID of the object.
+     * @return {Promise} A promise that will be resolved with an boolean which will
+     * be true if the specified object exists in this collection, or rejected with
+     * an error.
+     */
+    exists(id) {
+        return this.db.objects.where('[id+collectionId]').equals([id, this.collectionId]).first()
+            .then((object) => {
+                return !!object;
+            });
+    }
+
+    /**
      * Add an object to the collection.
      * @abstract
      * @param {string} id The ID of the object.

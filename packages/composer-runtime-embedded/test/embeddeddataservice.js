@@ -147,4 +147,25 @@ describe('EmbeddedDataService', () => {
 
     });
 
+    describe('#existsCollection', () => {
+
+        it('should return true if a collection exists', () => {
+            sinon.stub(dataService.db.collections, 'get').withArgs('doge').resolves({ id: 'doge' });
+            return dataService.existsCollection('doge')
+                .then((exists) => {
+                    exists.should.equal.true;
+                });
+        });
+
+        it('should return false if a collection does not exist', () => {
+            sinon.stub(dataService.db.collections, 'get').withArgs('doge').resolves({ id: 'doge' });
+            return dataService.existsCollection('doge2')
+                .then((exists) => {
+                    exists.should.equal.false;
+                });
+        });
+
+
+    });
+
 });
