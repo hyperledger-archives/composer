@@ -228,7 +228,7 @@ describe('Globalization', function() {
 
                 expect(function() {
                     let factory = new Factory(modelManager);
-                    factory.newInstance('foo', 'bar', 123);
+                    factory.newInstance('foo', 'bar', '123');
                 }).to.throw(Error, 'Type bar is not declared in namespace foo');
             });
         });
@@ -264,7 +264,7 @@ describe('Globalization', function() {
 
                 expect(function() {
                     let factory = new Factory(modelManager);
-                    factory.newResource('foo', 'bar', 123);
+                    factory.newResource('foo', 'bar', '123');
                 }).to.throw(Error, 'Type bar is not declared in namespace foo');
             });
         });

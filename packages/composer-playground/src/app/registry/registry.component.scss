@@ -47,6 +47,10 @@ registry {
       .resource-content {
         display: flex;
 
+        .resource-icon {
+          align-self: flex-end;
+        }
+
         &.expanded {
           pre {
             max-height: 500px;
@@ -77,7 +81,7 @@ registry {
         }
       }
 
-      button {
+      button.expand {
         position: absolute;
         left: 40%;
         bottom: 5%;

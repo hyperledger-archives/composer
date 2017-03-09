@@ -47,4 +47,10 @@ app-editor {
       padding: $space-large;
     }
   }
+
+  .CodeMirror, .CodeMirror-scroll{
+      min-height:80vh;
+      max-height:80vh;
+    }
+
 }

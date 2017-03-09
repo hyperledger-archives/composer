@@ -285,6 +285,7 @@ describe('ResourceValidator', function () {
     });
 
     describe('#visitClassDeclaration', function() {
+
         it('should detect visiting a non resource', function () {
             const typedStack = new TypedStack('Invalid');
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
@@ -351,5 +352,20 @@ describe('ResourceValidator', function () {
                 assetDeclaration.accept(resourceValidator,parameters );
             }).should.throw(/Instance ABC has a property named foo which is not declared in org.acme.l3.Car/);
         });
+
+        it('should detect an empty identifier', function () {
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'foo');
+            vehicle.$identifier = ''; // empty the identifier
+            vehicle.model = 'Ford';
+            vehicle.numberOfWheels = 4;
+            const typedStack = new TypedStack(vehicle);
+            const assetDeclaration = modelManager.getType('org.acme.l3.Car');
+            const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
+
+            (function () {
+                assetDeclaration.accept(resourceValidator,parameters );
+            }).should.throw(/has an empty identifier/);
+        });
+
     });
 });
