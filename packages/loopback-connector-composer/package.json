@@ -45,6 +45,7 @@
     "loopback": "^2.35.0",
     "mocha": "^3.1.2",
     "sinon": "^1.17.6",
+    "sinon-as-promised": "^4.0.2",
     "sleep-promise": "^2.0.0"
   },
   "license-check-config": {

@@ -23,6 +23,7 @@ const TestUtil = require('./testutil');
 
 const chai = require('chai');
 chai.should();
+chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
 describe('Asset system tests', function () {
@@ -180,6 +181,24 @@ describe('Asset system tests', function () {
             }).catch(function (error) {
                 error.should.match(/Object with ID '.+?' in collection with ID '.+?' does not exist/);
             });
+    });
+
+    it('should throw when getting a non-existent asset in an asset registry', function () {
+        return client
+            .getAssetRegistry('systest.assets.SimpleAsset')
+            .then(function (assetRegistry) {
+                return assetRegistry.get('doesnotexist');
+            })
+            .should.be.rejectedWith(/does not exist/);
+    });
+
+    it('should return false for an asset that does not exist', function () {
+        return client
+            .getAssetRegistry('systest.assets.SimpleAsset')
+            .then(function (assetRegistry) {
+                return assetRegistry.exists('doesnotexist');
+            })
+            .should.eventually.equal(false);
     });
 
     it('should add an asset registry', function () {

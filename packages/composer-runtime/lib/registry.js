@@ -70,10 +70,7 @@ class Registry extends EventEmitter {
      * object when complete, or rejected with an error.
      */
     get(id) {
-        return Promise.resolve()
-            .then(() => {
-                return this.dataCollection.get(id);
-            })
+        return this.dataCollection.get(id)
             .then((resource) => {
                 let result = this.serializer.fromJSON(resource);
                 try {
@@ -94,18 +91,19 @@ class Registry extends EventEmitter {
     exists(id) {
         return this.dataCollection.exists(id)
             .then((exists) => {
-                if (exists) {
-                    return this.dataCollection.get(id)
-                        .then((resource) => {
-                            let result = this.serializer.fromJSON(resource);
-                            try {
-                                this.accessController.check(result, 'READ');
-                                return true;
-                            } catch (e) {
-                                return false;
-                            }
-                        });
+                if (!exists) {
+                    return false;
                 }
+                return this.dataCollection.get(id)
+                    .then((resource) => {
+                        let result = this.serializer.fromJSON(resource);
+                        try {
+                            this.accessController.check(result, 'READ');
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    });
             });
     }
 

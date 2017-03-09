@@ -77,10 +77,7 @@ class WebDataCollection extends DataCollection {
     exists(id) {
         return this.db.objects.where('[id+collectionId]').equals([id, this.collectionId]).first()
             .then((object) => {
-                if (!object) {
-                    return false;
-                }
-                return true;
+                return !!object;
             });
     }
 
