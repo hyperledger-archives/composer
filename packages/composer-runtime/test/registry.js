@@ -154,6 +154,7 @@ describe('Registry', () => {
 
         beforeEach(() => {
             mockDataCollection.exists.withArgs('doge1').resolves(true);
+            mockDataCollection.exists.withArgs('doge2').resolves(false);
             mockDataCollection.get.withArgs('doge1').resolves({
                 $class: 'org.doge.Doge',
                 assetId: 'doge1'
@@ -171,6 +172,13 @@ describe('Registry', () => {
                     exists.should.equal.true;
                     sinon.assert.calledOnce(mockAccessController.check);
                     sinon.assert.calledWith(mockAccessController.check, mockResource, 'READ');
+                });
+        });
+
+        it('should determine whether a specific resource does not exist in the registry', () => {
+            return registry.exists('doge2')
+                .then((exists) => {
+                    exists.should.equal.false;
                 });
         });
 

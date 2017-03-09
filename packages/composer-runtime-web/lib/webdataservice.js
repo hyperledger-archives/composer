@@ -123,10 +123,7 @@ class WebDataService extends DataService {
                 return this.db.collections.get(id);
             })
             .then((collection) => {
-                if (!collection) {
-                    return false;
-                }
-                return true;
+                return !!collection;
             });
     }
 
