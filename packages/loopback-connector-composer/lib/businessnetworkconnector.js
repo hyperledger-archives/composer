@@ -62,10 +62,14 @@ class BusinessNetworkConnector extends Connector {
     connect (callback) {
         this.connectInternal()
             .then(() => {
-                callback();
+                if (callback) {
+                    callback();
+                }
             })
             .catch((error) => {
-                callback(error);
+                if (callback) {
+                    callback(error);
+                }
             });
     }
 
@@ -465,6 +469,42 @@ class BusinessNetworkConnector extends Connector {
 
     }
 
+    /**
+     * Updates the properties of the specified object in the Business Network.
+     * This function is called by the PUT API.
+     * @param {string} lbModelName The name of the model.
+     * @param {string} objectId The id of the object to update
+     * @param {Object} data The object data to use for modification
+     * @param {Object} options the options provided by Loopback.
+     * @param {Object} callback The object data to use for modification
+     */
+    replaceById(lbModelName, objectId, data, options, callback) {
+        debug('replaceById', lbModelName, objectId, data, options);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        // If the $class property has not been provided, add it now.
+        if (!data.$class) {
+            data.$class = composerModelName;
+        }
+
+        this.ensureConnected()
+            .then(() => {
+                let resource = this.serializer.fromJSON(data);
+                this.getRegistryForModel(composerModelName, (error, registry) => {
+                    registry.update(resource)
+                    .then(() => {
+                        callback();
+                    })
+                    .catch((error) => {
+                        callback(error);
+                    });
+                });
+            })
+            .catch((error) => {
+                debug('create', 'error thrown doing update', error);
+                callback(error);
+            });
+
+    }
 
     /**
      * Create an instance of an object in Composer. For assets, this method
