@@ -54,6 +54,7 @@ module.exports.BaseException = require('./lib/baseexception');
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
 module.exports.Concept = require('./lib/model/concept');
+module.exports.ConceptDeclaration = require('./lib/introspect/conceptdeclaration');
 module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
 module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanager');

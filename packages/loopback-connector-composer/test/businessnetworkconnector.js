@@ -161,7 +161,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
         it('should connect to a BusinessNetwork if we aren\'t', () => {
             let testConnector = new BusinessNetworkConnector(settings);
             testConnector.connected = false;
-            let stub = sinon.stub(testConnector, 'connect');
+            let stub = sinon.stub(testConnector, 'connectInternal');
             testConnector.ensureConnected();
             sinon.assert.called(stub);
         });
@@ -341,7 +341,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
                     'description' : 'An asset named BaseAsset',
                     'idInjection' : false,
                     'methods' : [],
-                    'name' : 'BaseAsset',
+                    'name' : 'org_acme_base_BaseAsset',
                     'options' : {
                         'validateUpsert' : true,
                         'composer': {
