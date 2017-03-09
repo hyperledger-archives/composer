@@ -15,11 +15,12 @@
 'use strict';
 
 const AssetDeclaration = require('composer-common').AssetDeclaration;
-const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const ConceptDeclaration = require('composer-common').ConceptDeclaration;
 const Connector = require('loopback-connector').Connector;
 const debug = require('debug')('loopback:connector:businessnetworkconnector');
 const LoopbackVisitor = require('composer-common/lib/codegen/fromcto/loopback/loopbackvisitor');
+const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common/lib/introspect/transactiondeclaration');
 
 /**
@@ -50,17 +51,30 @@ class BusinessNetworkConnector extends Connector {
         } else if (this.connecting) {
             return this.connectionPromise;
         } else {
-            return this.connect();
+            return this.connectInternal();
         }
     }
 
     /**
      * Connect to the Business Network
      * @param {function} callback the callback to call when complete.
-     * @return {Promise} A promise that is resolved when the connector has connected.
      */
     connect (callback) {
-        debug('connect', callback);
+        this.connectInternal()
+            .then(() => {
+                callback();
+            })
+            .catch((error) => {
+                callback(error);
+            });
+    }
+
+    /**
+     * Connect to the Business Network
+     * @return {Promise} A promise that is resolved when the connector has connected.
+     */
+    connectInternal() {
+        debug('connectInternal');
         debug('settings', JSON.stringify(this.settings));
         this.connecting = true;
         this.connected = false;
@@ -80,15 +94,9 @@ class BusinessNetworkConnector extends Connector {
             .then(() => {
                 this.connected = true;
                 this.connecting = false;
-                if (callback) {
-                    callback();
-                }
             })
             .catch((error) => {
                 this.connected = this.connecting = false;
-                if (callback) {
-                    callback(error);
-                }
                 throw error;
             });
         return this.connectionPromise;
@@ -142,7 +150,15 @@ class BusinessNetworkConnector extends Connector {
                 let modelClassDeclarations = this.introspector.getClassDeclarations();
                 modelClassDeclarations
                     .forEach((modelClassDeclaration) => {
-                        if (((modelClassDeclaration instanceof TransactionDeclaration) || (modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
+                        if (
+                            (
+                                (modelClassDeclaration instanceof AssetDeclaration) ||
+                                (modelClassDeclaration instanceof ConceptDeclaration) ||
+                                (modelClassDeclaration instanceof ParticipantDeclaration) ||
+                                (modelClassDeclaration instanceof TransactionDeclaration)
+                            ) &&
+                            !modelClassDeclaration.isAbstract()
+                        ) {
                             models.push({
                                 type : 'table',
                                 name : modelClassDeclaration.getFullyQualifiedName()
