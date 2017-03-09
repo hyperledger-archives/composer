@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>api 24</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="v4.1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Fabric-Composer-Playground-Define-2-Copy-61" transform="translate(-1185.000000, -110.000000)" fill-rule="nonzero" fill="#5068C2">
+            <g id="Group-7" transform="translate(1171.000000, 94.000000)">
+                <g id="api-24" transform="translate(14.000000, 16.000000)">
+                    <g id="Icon">
+                        <g id="Group">
+                            <polygon id="Shape" points="21 9 21 7 18 7 18 9 16 9 16 7 13 7 13 9 0 9 0 15 22 15 22 9"></polygon>
+                            <polygon id="Shape" points="10 2 9 2 9 0 6 0 6 2 4 2 4 0 1 0 1 2 0 2 0 8 10 8"></polygon>
+                            <rect id="Rectangle-path" x="11" y="16" width="11" height="6"></rect>
+                            <rect id="Rectangle-path" x="0" y="16" width="10" height="6"></rect>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
