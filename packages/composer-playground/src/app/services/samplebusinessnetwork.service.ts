@@ -419,7 +419,9 @@ export class SampleBusinessNetworkService {
         let acls = results[2];
         let readme = results[3];
         let packageContents = results[4];
-        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description, packageContents, readme.data);
+
+
+        let businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageContents, metaData.data);
         let modelManager = businessNetworkDefinition.getModelManager();
 
         modelManager.addModelFiles(models);

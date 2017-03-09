@@ -141,6 +141,7 @@ export class EditorComponent implements OnInit {
 
 
     let businessNetworkDefinition = new BusinessNetworkDefinition(sourceBusinessNetworkDefinition.getMetadata().getName() + '@' + sourceBusinessNetworkDefinition.getMetadata().getVersion(), sourceBusinessNetworkDefinition.getMetadata().getDescription(), packageJson, readme);
+
     sourceBusinessNetworkDefinition.getModelManager().getModelFiles()
       .map((modelFile) => {
         return modelFile.getDefinitions();
