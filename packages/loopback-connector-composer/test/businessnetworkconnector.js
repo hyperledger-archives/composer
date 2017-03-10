@@ -31,6 +31,7 @@ const TransactionDeclaration = require('composer-common/lib/introspect/transacti
 
 require('chai').should();
 const sinon = require('sinon');
+require('sinon-as-promised');
 
 describe('BusinessNetworkConnector Unit Test', () => {
 
@@ -922,7 +923,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should handle an error when an invalid model name is specified', () => {
-            mockAssetRegistry.get.returns(Promise.reject('expected test error'));
+            mockAssetRegistry.get.rejects(new Error('expected test error'));
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.WrongBaseAsset', {'where':{'theValue':'mockId'}}, {}, (error, result) => {
                     if (error) {
@@ -1236,6 +1237,88 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
     });
 
+    describe('#replaceById',  () => {
+
+        let mockAssetRegistry;
+        let mockResourceToUpdate;
+
+        beforeEach(() => {
+            sinon.spy(testConnector, 'ensureConnected');
+            sinon.spy(testConnector, 'getRegistryForModel');
+            testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.modelManager = modelManager;
+            testConnector.introspector = introspector;
+            testConnector.serializer = mockSerializer;
+            testConnector.connected = true;
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            testConnector.businessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
+            mockResourceToUpdate = sinon.createStubInstance(Resource);
+        });
+
+        it('should update the attributes for the given object id on the blockchain', () => {
+            return new Promise((resolve, reject) => {
+                mockSerializer.fromJSON.returns(mockResourceToUpdate);
+                mockAssetRegistry.update.returns(Promise.resolve());
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, {}, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .then((result) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledOnce(testConnector.getRegistryForModel);
+                sinon.assert.calledOnce(mockAssetRegistry.update);
+            });
+        });
+
+        it('should handle the error when an invalid model is specified', () => {
+            return new Promise((resolve, reject) => {
+                mockSerializer.fromJSON.returns(mockResourceToUpdate);
+                mockAssetRegistry.update.returns(Promise.resolve());
+                testConnector.replaceById('org.acme.base.WrongBaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, {}, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledOnce(testConnector.getRegistryForModel);
+                error.should.match(/Error: No type org.acme.base.WrongBaseAsset in namespace org.acme.base/);
+
+            });
+        });
+
+        it('should handle an update error from the composer api', () => {
+            return new Promise((resolve, reject) => {
+                mockSerializer.fromJSON.returns(mockResourceToUpdate);
+                mockAssetRegistry.update.returns(Promise.reject('Update error from Composer'));
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, {}, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledOnce(testConnector.getRegistryForModel);
+                sinon.assert.calledOnce(mockAssetRegistry.update);
+                error.should.match(/Update error from Composer/);
+
+            });
+        });
+    });
 
     describe('#destroyAll', () => {
 
@@ -1274,7 +1357,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should handle an error when an invalid Object identifier is specified', () => {
-            mockAssetRegistry.get.returns(Promise.reject('get error'));
+            mockAssetRegistry.get.rejects(new Error('get error'));
             return new Promise((resolve, reject) => {
                 testConnector.destroyAll('org.acme.base.BaseAsset', { 'theWrongValue' : 'foo' }, {}, (error) => {
                     if(error) {
