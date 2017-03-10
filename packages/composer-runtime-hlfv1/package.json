@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-hlfv1",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "description": "The Hyperledger Fabric v1.x runtime container for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -24,7 +24,7 @@
   "license": "Apache-2.0",
   "dependencies": {},
   "devDependencies": {
-    "composer-runtime": "^0.4.5",
+    "composer-runtime": "^0.5.0",
     "babel-polyfill": "^6.20.0",
     "babel-preset-es2015": "^6.18.0",
     "babelify": "^7.3.0",
