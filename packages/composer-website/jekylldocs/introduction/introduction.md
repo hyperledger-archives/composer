@@ -6,13 +6,6 @@ sidebar: sidebars/overview.md
 excerpt: Fabric Composer overview
 ---
 
-
-Key Concepts and elevator pitch:
-
-Define Business Network -> Deploy -> Generate Application
-Assets, Transactions, Business Networks, Smart Contracts
-
-
 # Welcome to Fabric Composer
 
 ---
