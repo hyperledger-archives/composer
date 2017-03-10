@@ -1,6 +1,6 @@
 {
   "name": "composer-playground-api",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "description": "The REST API for the Fabric Composer Playground",
   "engines": {
     "node": ">=6",
@@ -59,8 +59,8 @@
   },
   "dependencies": {
     "body-parser": "^1.16.1",
-    "composer-common": "^0.4.5",
-    "composer-connector-server": "^0.4.5",
+    "composer-common": "^0.5.0",
+    "composer-connector-server": "^0.5.0",
     "dotenv": "^4.0.0",
     "express": "^4.14.1",
     "http-status": "^1.0.1",
