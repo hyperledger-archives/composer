@@ -1,0 +1,18 @@
+<div class="version-check">
+  <div class="modal-header">
+    <button class="icon modal-exit" (click)="activeModal.close()">X</button>
+  </div>
+  <section class="modal-body">
+    <h1>Invalid version!</h1>
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-Empty_State"></use>
+    </svg>
+    <p>Invalid Version!
+    </p>
+  </section>
+  <footer>
+    <button type="button" class="primary centre" (click)="clearLocalStorage();activeModal.close();">
+      <span>Clear local storage!</span>
+    </button>
+  </footer>
+</div>
