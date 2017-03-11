@@ -4,7 +4,7 @@ instrumentation:
         - scripts/**
 check:
     global:
-        statements: 95
-        branches: 95
-        lines: 95
-        functions: 90
+        statements: 100
+        branches: 100
+        lines: 100
+        functions: 100
