@@ -403,6 +403,18 @@ describe('HFCConnection', () => {
                 });
             }).should.throw(/Business network id must be specified/);
         });
+
+        it('should make the correct call to the runtime', () => {
+            connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain, connectOptions);
+            sandbox.stub(HFCUtil, 'invokeChainCode');
+
+            return connection.undeploy(mockSecurityContext, 'testnetwork')
+            .then(() => {
+                sinon.assert.calledOnce(HFCUtil.invokeChainCode);
+                sinon.assert.calledWith(HFCUtil.invokeChainCode, mockSecurityContext, 'undeployBusinessNetwork', []);
+            });
+
+        });
     });
 
     describe('#update', function() {
