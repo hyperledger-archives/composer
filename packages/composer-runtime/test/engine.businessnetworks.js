@@ -78,6 +78,30 @@ describe('EngineBusinessNetworks', () => {
 
     });
 
+    describe('#undeployBusinessNetwork', () => {
+
+        it('should throw for invalid arguments', () => {
+            let result = engine.invoke(mockContext, 'undeployBusinessNetwork', ['no', 'args', 'supported']);
+            return result.should.be.rejectedWith(/Invalid arguments "\["no","args","supported"\]" to function "undeployBusinessNetwork", expecting "\[\]"/);
+        });
+
+        it('should set the undeploy flag on a business network', () => {
+            let businessNetwork = {data:'data', hash: 'hash'};
+            let sysdata = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
+            sysdata.get.withArgs('businessnetwork').resolves(businessNetwork);
+
+            return engine.invoke(mockContext, 'undeployBusinessNetwork', [])
+            .then(() => {
+                sinon.assert.calledOnce(sysdata.get);
+                sinon.assert.calledWith(sysdata.get, 'businessnetwork');
+                businessNetwork.undeploy = true;
+                sinon.assert.calledOnce(sysdata.update);
+                sinon.assert.calledWith(sysdata.update, 'businessnetwork', businessNetwork);
+            });
+        });
+    });
+
     describe('#updateBusinessNetwork', () => {
 
         it('should throw for invalid arguments', () => {
