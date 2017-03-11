@@ -42,18 +42,18 @@ Fabric Composer has been developed to permit architects and developers to use a 
 
 **Model** which describes, using a domain specific language, the business assets and the participants in the Business Network. This model is in effect the entity-relationship or static object structure of the overall business network.  To provide dynamic behaviour this is coupled with a
 
-**Transaction Processor Functions** written in JavaScript that act on assets and participants to either create, update or delete properties on assets and participants. The set of scripts that define transaction processor functions, and Model (which may be split between multiple source files) form the Business Network Definition. In order to use these with the Concerto system, they are bundled together to form a
+**Transaction Processor Functions** written in JavaScript that act on assets and participants to either create, update or delete properties on assets and participants. The set of scripts that define transaction processor functions, and Model (which may be split between multiple source files) form the Business Network Definition. In order to use these with the Composer system, they are bundled together to form a
 
-**Business Network Archive** that can be deployed as an administrative action to the Concerto system running on a Hyperledger fabric.
+**Business Network Archive** that can be deployed as an administrative action to the Composer system running on a Hyperledger fabric.
 
 # Development of a system using Fabric Composer
 
-There are two 'phases' to running an application using the Concerto framework; the Business Network Definition should be deployed to a Hyperledger Fabric; then the application will run against this fabric, but using APIs applicable to the business model.
+There are two 'phases' to running an application using the Composer framework; the Business Network Definition should be deployed to a Hyperledger Fabric; then the application will run against this fabric, but using APIs applicable to the business model.
 
-The Concerto system is defined in a number of [modules](MeetTheModules.html).
+The Composer system is defined in a number of [modules](MeetTheModules.html).
 
 **Fabric Composer Client API** This is the API that is used by applications to connect to a business network and submit transactions. These end applications might be either command line, gui web applications using for example Angular-2.  These APIs permit CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets for example.
 
-**Fabric Composer Admin API** is an administrative API to build admin applications. This can deploy and update business network definitions on the concerto fabric runtime.
+**Fabric Composer Admin API** is an administrative API to build admin applications. This can deploy and update business network definitions on the Composer fabric runtime.
 
 To facilitate the application development process there are helper tools to permit the development.
