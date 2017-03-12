@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-server",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "The remote connector server for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -45,9 +45,9 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.5.1",
-    "composer-connector-embedded": "^0.5.1",
-    "composer-connector-hlf": "^0.5.1",
+    "composer-common": "^0.5.2",
+    "composer-connector-embedded": "^0.5.2",
+    "composer-connector-hlf": "^0.5.2",
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.2",
     "uuid": "^3.0.1",

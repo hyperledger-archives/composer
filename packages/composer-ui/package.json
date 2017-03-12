@@ -1,6 +1,6 @@
 {
   "name": "composer-ui",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A test harness/UI for the web runtime container for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -70,8 +70,8 @@
     "webpack": "webpack"
   },
   "dependencies": {
-    "composer-common": "^0.5.1",
-    "composer-playground-api": "^0.5.1",
+    "composer-common": "^0.5.2",
+    "composer-playground-api": "^0.5.2",
     "express": "^4.14.0",
     "is-docker": "^1.1.0",
     "opener": "^1.4.2",
@@ -79,12 +79,12 @@
     "octokat": "^0.6.2"
   },
   "devDependencies": {
-    "composer-admin": "^0.5.1",
-    "composer-client": "^0.5.1",
-    "composer-connector-proxy": "^0.5.1",
-    "composer-connector-web": "^0.5.1",
-    "composer-runtime": "^0.5.1",
-    "composer-runtime-web": "^0.5.1",
+    "composer-admin": "^0.5.2",
+    "composer-client": "^0.5.2",
+    "composer-connector-proxy": "^0.5.2",
+    "composer-connector-web": "^0.5.2",
+    "composer-runtime": "^0.5.2",
+    "composer-runtime-web": "^0.5.2",
     "@angular/common": "^2.4.1",
     "@angular/compiler": "^2.4.1",
     "@angular/core": "^2.4.1",
