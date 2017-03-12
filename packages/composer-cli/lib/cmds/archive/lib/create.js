@@ -19,9 +19,9 @@ const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const fs = require('fs');
 const sanitize = require('sanitize-filename');
 /**
- * <p>
  * Composer Create Archive command
- * </p>
+ *
+ * composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network
  *
  * @private
  */
@@ -35,38 +35,44 @@ class Create {
     */
     static handler(argv) {
 
-        console.log('Creating Business Network Archive');
-        if (!argv.inputDir){
+        let inputDir = '';
+
+        console.log('Creating Business Network Archive\n');
+        if (argv.sourceType === 'module'){
+            // using a npm module name
+            //
+            let moduleName = argv.sourceName;
             const path = require('path');
-
-
-
-            console.log(process.env.NODE_PATH);
-            console.log('About to do the required');
+            console.log('Node module search path : \n'+process.env.NODE_PATH+' \n');
             let moduleIndexjs;
             try {
-                moduleIndexjs=require.resolve(argv.moduleName);
-
+                moduleIndexjs=require.resolve(moduleName);
             } catch (err){
                 if (err.code==='MODULE_NOT_FOUND'){
-                    console.log('Main node_module search path empty - trying cwd');
-                    moduleIndexjs=require.resolve(process.cwd()+'/node_modules/'+argv.moduleName);
+                    let localName = process.cwd()+'/node_modules/'+moduleName;
+                    console.log('Not found in main node_module search path, trying current directory :'+localName);
+                    moduleIndexjs=require.resolve(localName);
                 }else {
-                    console.log('Unable to locate the npm moodule specified');
-                    throw err;
+                    console.log('Unable to locate the npm module specified');
+                    return Promise.reject(err);
                 }
 
             }
 
-            argv.inputDir = path.dirname(moduleIndexjs);
-            console.log('Resolving module name '+argv.moduleName);
-        }else if (argv.inputDir==='.'){
-            argv.inputDir = process.cwd();
+            inputDir = path.dirname(moduleIndexjs);
+            // console.log('Resolved module name '+argv.sourceName+ '  to '+inputDir);
+        }else {
+          // loading from a file directory given by user
+            if (argv.sourceName==='.'){
+                inputDir = process.cwd();
+            } else {
+                inputDir = argv.sourceName;
+            }
         }
-        console.log('Looking for package.json of Business Network Definition in '+argv.inputDir);
+        console.log('Looking for package.json of Business Network Definition in '+inputDir);
 
-        return BusinessNetworkDefinition.fromDirectory(argv.inputDir).then( (result)=> {
-            console.log('\nDescription:'+result.getDescription());
+        return BusinessNetworkDefinition.fromDirectory(inputDir).then( (result)=> {
+            console.log('\nFound:\nDescription:'+result.getDescription());
             console.log('Name:'+result.getName());
             console.log('Identifier:'+result.getIdentifier());
 

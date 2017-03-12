@@ -107,6 +107,43 @@ describe('ConnectionProfileManager', () => {
             return cpm.getConnectionManager( 'baz' ).should.eventually.be.an.instanceOf(TestConnectionManager);
         });
 
+        it('should dynamically load the connection manager from a registered connection manager module', () => {
+            /** test class */
+            class TestConnectionManager extends ConnectionManager { }
+            const module = {
+                require: sinon.stub()
+            };
+            module.require.withArgs('composer-connector-foo').returns(TestConnectionManager);
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            ConnectionProfileManager.registerConnectionManagerLoader(module);
+            return cpm.getConnectionManager( 'baz' ).should.eventually.be.an.instanceOf(TestConnectionManager);
+        });
+
+        it('should handle an error loading the connection manager from a registered connection manager module', () => {
+            /** test class */
+            class TestConnectionManager extends ConnectionManager { }
+            const module = {
+                require: sinon.stub()
+            };
+            const module2 = {
+                require: sinon.stub()
+            };
+            module.require.withArgs('composer-connector-foo').throws(new Error('such error'));
+            module2.require.withArgs('composer-connector-foo').returns(TestConnectionManager);
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data'};
+            store.load.returns( Promise.resolve(profile) );
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            ConnectionProfileManager.registerConnectionManagerLoader(module);
+            ConnectionProfileManager.registerConnectionManagerLoader(module2);
+            return cpm.getConnectionManager( 'baz' ).should.eventually.be.an.instanceOf(TestConnectionManager);
+        });
+
     });
 
     describe('#connect', () => {

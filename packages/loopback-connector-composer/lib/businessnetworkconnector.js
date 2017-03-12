@@ -15,11 +15,12 @@
 'use strict';
 
 const AssetDeclaration = require('composer-common').AssetDeclaration;
-const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const ConceptDeclaration = require('composer-common').ConceptDeclaration;
 const Connector = require('loopback-connector').Connector;
 const debug = require('debug')('loopback:connector:businessnetworkconnector');
 const LoopbackVisitor = require('composer-common/lib/codegen/fromcto/loopback/loopbackvisitor');
+const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common/lib/introspect/transactiondeclaration');
 
 /**
@@ -50,18 +51,35 @@ class BusinessNetworkConnector extends Connector {
         } else if (this.connecting) {
             return this.connectionPromise;
         } else {
-            return this.connect();
+            return this.connectInternal();
         }
     }
 
     /**
      * Connect to the Business Network
      * @param {function} callback the callback to call when complete.
-     * @return {Promise} A promise that is resolved when the connector has connected.
      */
     connect (callback) {
-        debug('connect', callback);
-        console.log('CONNECTING...'+JSON.stringify(this.settings));
+        this.connectInternal()
+            .then(() => {
+                if (callback) {
+                    callback();
+                }
+            })
+            .catch((error) => {
+                if (callback) {
+                    callback(error);
+                }
+            });
+    }
+
+    /**
+     * Connect to the Business Network
+     * @return {Promise} A promise that is resolved when the connector has connected.
+     */
+    connectInternal() {
+        debug('connectInternal');
+        debug('settings', JSON.stringify(this.settings));
         this.connecting = true;
         this.connected = false;
         this.connectionPromise = this.businessNetworkConnection
@@ -80,15 +98,9 @@ class BusinessNetworkConnector extends Connector {
             .then(() => {
                 this.connected = true;
                 this.connecting = false;
-                if (callback) {
-                    callback();
-                }
             })
             .catch((error) => {
                 this.connected = this.connecting = false;
-                if (callback) {
-                    callback(error);
-                }
                 throw error;
             });
         return this.connectionPromise;
@@ -142,7 +154,15 @@ class BusinessNetworkConnector extends Connector {
                 let modelClassDeclarations = this.introspector.getClassDeclarations();
                 modelClassDeclarations
                     .forEach((modelClassDeclaration) => {
-                        if ((modelClassDeclaration instanceof TransactionDeclaration), ((modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
+                        if (
+                            (
+                                (modelClassDeclaration instanceof AssetDeclaration) ||
+                                (modelClassDeclaration instanceof ConceptDeclaration) ||
+                                (modelClassDeclaration instanceof ParticipantDeclaration) ||
+                                (modelClassDeclaration instanceof TransactionDeclaration)
+                            ) &&
+                            !modelClassDeclaration.isAbstract()
+                        ) {
                             models.push({
                                 type : 'table',
                                 name : modelClassDeclaration.getFullyQualifiedName()
@@ -187,54 +207,101 @@ class BusinessNetworkConnector extends Connector {
     /**
      * Retrieves all the instances of objects in the Business Network.
      * @param {string} lbModelName The name of the model.
-     * @param {string} whereFilter The filter of which objects to get
+     * @param {string} filter The filter of which objects to get
      * @param {Object} options The options provided by Loopback.
      * @param {function} callback The callback to call when complete.
      */
-    all(lbModelName, whereFilter, options, callback) {
-        debug('all', lbModelName, whereFilter, options);
+    all(lbModelName, filter, options, callback) {
+        debug('all', lbModelName, filter, options);
         let composerModelName = lbModelName.replace(/_/g, '.');
         let results = [];
         this.ensureConnected()
             .then(() => {
                 this.getRegistryForModel(composerModelName, (error, registry) => {
 
-                    // No filter so get all
-                    if(Object.keys(whereFilter).length === 0) {
-                        registry.getAll()
-                            .then((result) => {
-                                result.forEach((res) => {
-                                    results.push(this.serializer.toJSON(res));
-                                });
-                                callback(null, results);
-                            })
-                            .catch((error) => {
-                                callback(error);
-                            });
+                    // check for resolve include filter
+                    let doResolve = this.isResolveSet(filter);
+                    debug('doResolve', doResolve);
+                    let filterKeys = Object.keys(filter);
 
-                    } else {
+                    if(filterKeys.indexOf('where') >= 0) {
+                        debug('where', JSON.stringify(filter.where));
+                        let whereKeys = Object.keys(filter.where);
+                        debug('where keys', whereKeys);
+                        let identifierField = this.getClassIdentifier(composerModelName);
+                        debug('identifierField', identifierField);
+
                         // Check we have the right identifier for the object type
-                        let identifierFieldName = Object.keys(whereFilter.where)[0];
-                        if(this.isValidId(composerModelName, identifierFieldName)) {
-                            let objectId = whereFilter.where[identifierFieldName];
-                            registry.get(objectId)
+                        if(whereKeys.indexOf(identifierField) >= 0) {
+                            let objectId = filter.where[identifierField];
+                            if(doResolve) {
+                                registry.resolve(objectId)
                                 .then((result) => {
-                                    results.push(this.serializer.toJSON(result));
+                                    debug('Got Result:', result);
+                                    results.push(result);
                                     callback(null, results);
                                 })
                                 .catch((error) => {
-
                                     // check the error - it might be ok just an error indicating that the object doesn't exist
                                     debug('all: error ', error);
-                                    if(error.toString().includes('does not exist')) {
+                                    if(error.toString().indexOf('does not exist') >= 0) {
                                         callback(null, {});
                                     } else {
                                         callback(error);
                                     }
                                 });
 
+                            } else {
+                                registry.get(objectId)
+                                .then((result) => {
+                                    debug('Got Result:', result);
+                                    results.push(this.serializer.toJSON(result));
+                                    callback(null, results);
+                                })
+                                .catch((error) => {
+                                    // check the error - it might be ok just an error indicating that the object doesn't exist
+                                    debug('all: error ', error);
+                                    if(error.toString().indexOf('does not exist') >= 0) {
+                                        callback(null, {});
+                                    } else {
+                                        callback(error);
+                                    }
+                                });
+                            }
                         } else {
                             callback('ERROR: the specified filter does not match the identifier in the model');
+                        }
+                    } else {
+                        debug('no where filter');
+                        if(doResolve) {
+                            debug('About to resolve on all');
+                            // get all unresolved objects
+                            registry.resolveAll()
+                                .then((result) => {
+                                    debug('Got Result:', result);
+                                    result.forEach((res) => {
+                                        results.push(res);
+                                    });
+                                    callback(null, results);
+                                })
+                                .catch((error) => {
+                                    callback(error);
+                                });
+
+                        } else {
+                            // get all unresolved objects
+                            debug('About to get all');
+                            registry.getAll()
+                                .then((result) => {
+                                    debug('Got Result:', result);
+                                    result.forEach((res) => {
+                                        results.push(this.serializer.toJSON(res));
+                                    });
+                                    callback(null, results);
+                                })
+                                .catch((error) => {
+                                    callback(error);
+                                });
                         }
                     }
                 });
@@ -244,6 +311,37 @@ class BusinessNetworkConnector extends Connector {
                 callback(error);
             });
     }
+
+    /**
+     * check if the filter contains an Include filter
+     * @param {string} filter The filter of which objects to get
+     * @return {boolean} true if there is an include that specifies to resolve
+     */
+    isResolveSet(filter) {
+        debug('isResolveSet', filter);
+        let filterKeys = Object.keys(filter);
+        if(filterKeys.indexOf('include') >= 0) {
+            if(filter.include === 'resolve') {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get the identifier for the given class
+     * @param {string} modelName The fully qualified Composer name of the class.
+     * @return {string} the identifier for this class
+     */
+    getClassIdentifier(modelName) {
+        debug('getClassIdentifier', modelName);
+        let classDeclaration = this.introspector.getClassDeclaration(modelName);
+        return classDeclaration.getIdentifierFieldName();
+    }
+
 
     /**
      * Check that the identifier provided matches that in the model.
@@ -371,6 +469,42 @@ class BusinessNetworkConnector extends Connector {
 
     }
 
+    /**
+     * Updates the properties of the specified object in the Business Network.
+     * This function is called by the PUT API.
+     * @param {string} lbModelName The name of the model.
+     * @param {string} objectId The id of the object to update
+     * @param {Object} data The object data to use for modification
+     * @param {Object} options the options provided by Loopback.
+     * @param {Object} callback The object data to use for modification
+     */
+    replaceById(lbModelName, objectId, data, options, callback) {
+        debug('replaceById', lbModelName, objectId, data, options);
+        let composerModelName = lbModelName.replace(/_/g, '.');
+        // If the $class property has not been provided, add it now.
+        if (!data.$class) {
+            data.$class = composerModelName;
+        }
+
+        this.ensureConnected()
+            .then(() => {
+                let resource = this.serializer.fromJSON(data);
+                this.getRegistryForModel(composerModelName, (error, registry) => {
+                    registry.update(resource)
+                    .then(() => {
+                        callback();
+                    })
+                    .catch((error) => {
+                        callback(error);
+                    });
+                });
+            })
+            .catch((error) => {
+                debug('create', 'error thrown doing update', error);
+                callback(error);
+            });
+
+    }
 
     /**
      * Create an instance of an object in Composer. For assets, this method

@@ -1,0 +1,40 @@
+.composer {
+  .side-bar {
+    width: 20%;
+    max-width: 20rem;
+    min-width: 17rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
+
+    .side-bar-nav {
+      li {
+        padding: $space-medium $space-large;
+        border-left: $space-small solid transparent;
+        border-bottom: 1px solid $fourth-highlight;
+
+        &.active {
+          background-color: $third-highlight;
+          border-left: $space-small solid $first-highlight;
+          background-color: $third-highlight;
+        }
+
+        &:hover {
+          border-left: $space-small solid $second-highlight;
+        }
+
+        div {
+          padding: $space-small 0 $space-small 0;
+        }
+
+      }
+    }
+  }
+
+  .main-view {
+    background-color: $fourth-highlight;
+    width: 100%;
+    padding: $space-large;
+  }
+}

@@ -59,6 +59,21 @@ describe('ModelManager', () => {
             res.should.be.an.instanceOf(ModelFile);
         });
 
+        it('should support associating a file name with a model file', () => {
+            // create and populate the ModelManager with a model file
+            let modelManager = new ModelManager();
+            modelManager.should.not.be.null;
+            modelManager.clearModelFiles();
+
+            let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
+            modelBase.should.not.be.null;
+
+            let res = modelManager.addModelFile(modelBase, 'model-base.cto');
+            modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
+            res.should.be.an.instanceOf(ModelFile);
+            res.getFileName().should.equal('model-base.cto');
+        });
+
         it('should add a model file from an object', () => {
             let mm = new ModelManager();
             let mf1 = sinon.createStubInstance(ModelFile);

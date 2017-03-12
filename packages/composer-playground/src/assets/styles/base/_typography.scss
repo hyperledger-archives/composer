@@ -1,0 +1,86 @@
+// Typography
+//TODO: check font sizes in ems
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700|Source+Code+Pro');
+
+.composer {
+  h1, h2, h3 {
+    line-height: 100%;
+    margin: 0;
+    letter-spacing: 0;
+    color: $primary-text;
+  }
+  h1 {
+    font-family: $font-stack;
+    font-size: 1.25em; //should be 20px
+    font-weight: 300;
+  }
+  h2 {
+    font-family: $font-stack;
+    font-size: 1.15em; //should be 18px
+    font-weight: 300;
+  }
+  h3 {
+    font-family: $font-stack;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  p {
+    font-family: $font-stack;
+    font-weight: 400;
+    font-size: 0.9rem;
+    letter-spacing: 0;
+    //TODO: check this
+    margin-bottom: 1.3em;
+  }
+
+  i {
+    font-family: $font-stack;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.9rem;
+    letter-spacing: 0;
+  }
+
+  small {
+    font-size: 0.8em;
+  }
+
+  .uppercase {
+    text-transform: uppercase;
+  }
+
+  .error-text {
+    color: $error-colour-1;
+  }
+
+  label {
+    font-size: .8em;
+    color: $primary-text;
+  }
+
+  header {
+    p {
+      color: $white;
+    }
+  }
+
+  .side-bar {
+    .files, .registries, .profiles {
+      span {
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+      margin-top: 1.5rem;
+    }
+    }
+    li {
+      div {
+        font-style: italic;
+        font-size: 0.9rem;
+      }
+    }
+
+  }
+}

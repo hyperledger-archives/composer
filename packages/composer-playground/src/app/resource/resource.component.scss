@@ -1,0 +1,25 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+resource-modal {
+ 
+  .resource-bound {
+      max-height: 350px;
+      margin-top: $space-medium;
+    }
+
+  .resource-preview{
+    color:$secondary-text;
+  }
+
+  .resource-error{
+    min-height: 30px;
+  }
+
+  .CodeMirror,
+  .CodeMirror-scroll {
+    min-height: 250px;
+    max-height: 450px;
+  }
+
+}

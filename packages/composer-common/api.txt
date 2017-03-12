@@ -2,8 +2,9 @@ class BaseException extends Error {
    + void constructor(string) 
 }
 class BusinessNetworkDefinition {
-   + void constructor(String,String) 
+   + void constructor(String,String,object,String) 
    + String getIdentifier() 
+   + BusinessNetworkMetadata getMetadata() 
    + String getName() 
    + String getVersion() 
    + String getDescription() 
@@ -13,6 +14,15 @@ class BusinessNetworkDefinition {
    + Introspector getIntrospector() 
    + Factory getFactory() 
    + Serializer getSerializer() 
+}
+class BusinessNetworkMetadata {
+   + void constructor(object,String) 
+   + String getREADME() 
+   + object getPackageJson() 
+   + string getName() 
+   + string getDescription() 
+   + string getVersion() 
+   + string getIdentifier() 
 }
 class Factory {
    + void constructor(ModelManager) 
@@ -34,7 +44,9 @@ class FileWallet extends Wallet {
    + Promise remove(string) 
 }
 class IllegalModelException extends BaseException {
-   + void constructor(string) 
+   + void constructor(string,string,string) 
+   + string getModelFile() 
+   + string getFileLocation() 
 }
 class Introspector {
    + void constructor(ModelManager) 

@@ -1,0 +1,83 @@
+<section class="side-bar">
+  <div class="files">
+    <span>Files</span>
+    <div class="side-bar-nav">
+      <ul>
+        <li *ngFor="let file of files" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
+          <h3 *ngIf="file.package">Package Details</h3>
+          <h3 *ngIf="file.model">Model File</h3>
+          <h3 *ngIf="file.script">Script File</h3>
+          <h3 *ngIf="file.acl">Access Control</h3>
+          <h3 *ngIf="file.readme">About</h3>
+          <div>{{file.displayID}}</div>
+        </li>
+      </ul>
+    </div>
+    <div class="add-file">
+      <button class="action" type="button" (click)="openAddFileModal()">+ Add a file...</button>
+    </div>
+    <div>
+      <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || currentError">
+        Update
+      </button>
+    </div>
+  </div>
+  <div class="actions">
+    <div>
+      <button type="button" class="action" (click)="openImportModal()">
+        <svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-download_32"></use>
+        </svg>
+        Import/Replace
+      </button>
+    </div>
+    <div>
+      <button type="button" class="action" (click)="openExportModal()">
+        <svg class="ibm-icon" aria-hidden="true">
+          <use xlink:href="#icon-upload_24"></use>
+        </svg>
+        Export
+      </button>
+    </div>
+  </div>
+</section>
+<section class="main-view">
+  <div>
+    <div *ngIf="editingPackage" class="business-network-details">
+      <h1>Editing package.json</h1>
+    </div>
+    <div *ngIf="!editActive && !editingPackage" class="business-network-details">
+      <h1 class="margin-right">{{deployedPackageName}}</h1>
+      <div class="business-network-version small">{{deployedPackageVersion}}</div>
+      <div>
+        <button type="button" class="action" (click)="toggleEditActive()">
+          <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-edit_24"></use>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div *ngIf="editActive" class="business-network-details">
+      <label class="margin-right" for="editName">Name</label>
+      <input class="margin-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
+      <label class="margin-right" for="editVersion">Version</label>
+      <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
+             [(ngModel)]="inputPackageVersion">
+      <div class="edit-package-text margin-right">
+        <button type="button" class="action" (click)="setCurrentFile({
+      package: true,
+      id: 'package',
+      displayID: 'package.json'
+    });hideEdit();">View/edit full metadata in package.json
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="readme" *ngIf="readme" [innerHTML]="readme">
+  </div>
+    <codemirror *ngIf="!readme" [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%" (blur)="stopEditing()">
+  </codemirror>
+  <div class="alert alert-danger mt-2" role="alert" *ngIf="currentError">
+    {{currentError}}
+  </div>
+</section>

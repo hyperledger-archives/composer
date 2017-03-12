@@ -107,6 +107,10 @@ class EngineResources {
         return context.getRegistryManager().get(registryType, registryId)
             .then((registry) => {
                 return registry.exists(resourceId);
+            })
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
             });
     }
 

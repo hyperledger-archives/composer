@@ -1,7 +1,11 @@
 {
   "name": "composer-connector-hlf",
-  "version": "0.4.2",
+  "version": "0.5.2",
   "description": "The Hyperledger Fabric Client connector for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "scripts": {
     "pretest": "npm run licchk",
@@ -37,8 +41,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.4.2",
-    "composer-runtime-hlf": "^0.4.2",
+    "composer-common": "^0.5.2",
+    "composer-runtime-hlf": "^0.5.2",
     "fs-extra": "^1.0.0",
     "hfc": "^0.6.5",
     "semver": "^5.3.0",

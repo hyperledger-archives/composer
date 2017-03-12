@@ -25,7 +25,7 @@ const JSONWriter = require('./codegen/jsonwriter');
 /**
  * Serialize Resources instances to/from various formats for long-term storage
  * (e.g. on the blockchain).
- * <p><a href="./diagrams/serializer.svg"><img src="./diagrams/serializer.svg" style="width:100%;"/></a></p>
+ * <p><a href="./diagrams/serializer.svg"><img src="./diagrams/serializer.svg" style="height:100%;"/></a></p>
  * @class
  * @memberof module:composer-common
  */
@@ -138,7 +138,7 @@ class Serializer {
         options = options || {};
 
         // create a new instance, using the identifier field name as the ID.
-        let resource = this.factory.newInstance( classDeclaration.getModelFile().getNamespace(),
+        let resource = this.factory.newResource( classDeclaration.getModelFile().getNamespace(),
           classDeclaration.getName(), jsonObject[classDeclaration.getIdentifierFieldName()] );
 
         // populate the resource based on the jsonObject

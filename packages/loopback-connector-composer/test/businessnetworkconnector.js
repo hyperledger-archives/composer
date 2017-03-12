@@ -31,6 +31,7 @@ const TransactionDeclaration = require('composer-common/lib/introspect/transacti
 
 require('chai').should();
 const sinon = require('sinon');
+require('sinon-as-promised');
 
 describe('BusinessNetworkConnector Unit Test', () => {
 
@@ -140,7 +141,6 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should ensure we\'re connected to a BusinessNetwork if we are connecting', () => {
-            console.log('fish');
             let testConnector = new BusinessNetworkConnector(settings);
             testConnector.connectionPromise = new Promise((resolve, reject) => {
                 resolve('passed');
@@ -162,7 +162,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
         it('should connect to a BusinessNetwork if we aren\'t', () => {
             let testConnector = new BusinessNetworkConnector(settings);
             testConnector.connected = false;
-            let stub = sinon.stub(testConnector, 'connect');
+            let stub = sinon.stub(testConnector, 'connectInternal');
             testConnector.ensureConnected();
             sinon.assert.called(stub);
         });
@@ -340,14 +340,26 @@ describe('BusinessNetworkConnector Unit Test', () => {
                     'acls' : [],
                     'base' : 'PersistedModel',
                     'description' : 'An asset named BaseAsset',
-                    'idInjection' : true,
+                    'idInjection' : false,
                     'methods' : [],
-                    'name' : 'BaseAsset',
+                    'name' : 'org_acme_base_BaseAsset',
                     'options' : {
-                        'validateUpsert' : true
+                        'validateUpsert' : true,
+                        'composer': {
+                            'type': 'asset',
+                            'namespace': 'org.acme.base',
+                            'name': 'BaseAsset',
+                            'fqn': 'org.acme.base.BaseAsset'
+                        }
                     },
                     'plural' : 'org.acme.base.BaseAsset',
                     'properties' : {
+                        '$class' : {
+                            'default': 'org.acme.base.BaseAsset',
+                            'description': 'The class identifier for this type',
+                            'required': false,
+                            'type': 'string'
+                        },
                         'theValue' : {
                             'description' : 'The instance identifier for this type',
                             'id' : true,
@@ -699,6 +711,35 @@ describe('BusinessNetworkConnector Unit Test', () => {
 
     });
 
+    describe('#getClassIdentifier', () => {
+
+        beforeEach(() => {
+            testConnector.introspector = introspector;
+        });
+        it('should get the classIdentifier for the given model', () => {
+            testConnector.getClassIdentifier('org.acme.base.BaseAsset').should.equal('theValue');
+        });
+
+    });
+
+    describe('#isResolveSet', () => {
+
+        it('should return true if resolve is set to be true in a filter include', () => {
+            let FILTER = {'include' : 'resolve'};
+            testConnector.isResolveSet(FILTER).should.equal(true);
+        });
+
+        it('should return false if resolve is set to be true in a filter include', () => {
+            let FILTER = {'where' : { 'vin' : '1234' }, 'include' : 'noresolve'};
+            testConnector.isResolveSet(FILTER).should.equal(false);
+        });
+
+        it('should return false if resolve is not set in a filter include', () => {
+            let FILTER = {'where' : { 'vin' : '1234' } };
+            testConnector.isResolveSet(FILTER).should.equal(false);
+        });
+    });
+
     describe('#isValidId', () => {
         beforeEach(() => {
             testConnector.introspector = introspector;
@@ -862,8 +903,27 @@ describe('BusinessNetworkConnector Unit Test', () => {
                 });
         });
 
+        it('should retrieve a fully resolved specific Asset for a given id in a where clause', () => {
+            mockAssetRegistry.resolve.returns(Promise.resolve({theValue : 'mockId'}));
+
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+                .then((result) => {
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
+                    sinon.assert.calledOnce(mockAssetRegistry.resolve);
+                    result[0].theValue.should.equal('mockId');
+                });
+        });
+
         it('should handle an error when an invalid model name is specified', () => {
-            mockAssetRegistry.get.returns(Promise.reject('expected test error'));
+            mockAssetRegistry.get.rejects(new Error('expected test error'));
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.WrongBaseAsset', {'where':{'theValue':'mockId'}}, {}, (error, result) => {
                     if (error) {
@@ -898,10 +958,45 @@ describe('BusinessNetworkConnector Unit Test', () => {
             });
         });
 
+        it('should handle an error when trying to retrieve a fully resolved specific Asset for a given id in a where clause', () => {
+            mockAssetRegistry.resolve.returns(Promise.reject('expected test error'));
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                error.should.match(/expected test error/);
+            });
+        });
+
+
         it('should return an empty list after an error when trying to retrieve a specific Asset by id if the error just indicates that the asset does not exist', () => {
             mockAssetRegistry.get.returns(Promise.reject('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
             return new Promise((resolve, reject) => {
                 testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                result.should.deep.equal({});
+            });
+
+        });
+
+        it('should return an empty list after an error when trying to retrieve a fully resolved specific Asset by id if the error just indicates that the asset does not exist', () => {
+            mockAssetRegistry.resolve.returns(Promise.reject('Error: Object with ID \'1112\' in collection with ID \'Asset:org.acme.vehicle.auction.Vehicle\' does not exist'));
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'where':{'theValue':'mockId'}, 'include' : 'resolve' }, {}, (error, result) => {
                     if (error) {
                         return reject(error);
                     }
@@ -953,6 +1048,46 @@ describe('BusinessNetworkConnector Unit Test', () => {
                 result[0].stringValue.should.equal('a big car');
                 result[1].assetId.should.equal('anId');
                 result[1].stringValue.should.equal('a big fox');
+            });
+        });
+
+        it('should retrieve all fully resolved Assets for a given modelname', () => {
+            mockAssetRegistry.resolveAll.returns(Promise.resolve([{assetId : 'mockId', stringValue : 'a big car'}, {assetId : 'mockId2', stringValue : 'a big fox'}]));
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then((result) => {
+                sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
+                sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
+                sinon.assert.calledOnce(mockAssetRegistry.resolveAll);
+                result[0].assetId.should.equal('mockId');
+                result[0].stringValue.should.equal('a big car');
+                result[1].assetId.should.equal('mockId2');
+                result[1].stringValue.should.equal('a big fox');
+            });
+        });
+
+        it('should retrieve all fully resolved Assets for a given modelname', () => {
+            mockAssetRegistry.resolveAll.returns(Promise.reject('expected error'));
+
+            return new Promise((resolve, reject) => {
+                testConnector.all('org.acme.base.BaseAsset', {'include' : 'resolve'}, {}, (error, result) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(result);
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                error.should.match(/expected error/);
             });
         });
 
@@ -1102,6 +1237,88 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
     });
 
+    describe('#replaceById',  () => {
+
+        let mockAssetRegistry;
+        let mockResourceToUpdate;
+
+        beforeEach(() => {
+            sinon.spy(testConnector, 'ensureConnected');
+            sinon.spy(testConnector, 'getRegistryForModel');
+            testConnector.businessNetworkConnection = mockBusinessNetworkConnection;
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.modelManager = modelManager;
+            testConnector.introspector = introspector;
+            testConnector.serializer = mockSerializer;
+            testConnector.connected = true;
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            testConnector.businessNetworkConnection.getAssetRegistry.returns(Promise.resolve(mockAssetRegistry));
+            mockResourceToUpdate = sinon.createStubInstance(Resource);
+        });
+
+        it('should update the attributes for the given object id on the blockchain', () => {
+            return new Promise((resolve, reject) => {
+                mockSerializer.fromJSON.returns(mockResourceToUpdate);
+                mockAssetRegistry.update.returns(Promise.resolve());
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, {}, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .then((result) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledOnce(testConnector.getRegistryForModel);
+                sinon.assert.calledOnce(mockAssetRegistry.update);
+            });
+        });
+
+        it('should handle the error when an invalid model is specified', () => {
+            return new Promise((resolve, reject) => {
+                mockSerializer.fromJSON.returns(mockResourceToUpdate);
+                mockAssetRegistry.update.returns(Promise.resolve());
+                testConnector.replaceById('org.acme.base.WrongBaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, {}, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledOnce(testConnector.getRegistryForModel);
+                error.should.match(/Error: No type org.acme.base.WrongBaseAsset in namespace org.acme.base/);
+
+            });
+        });
+
+        it('should handle an update error from the composer api', () => {
+            return new Promise((resolve, reject) => {
+                mockSerializer.fromJSON.returns(mockResourceToUpdate);
+                mockAssetRegistry.update.returns(Promise.reject('Update error from Composer'));
+                testConnector.replaceById('org.acme.base.BaseAsset', '1', { 'assetId': '1', 'theValue' : 'updated' }, {}, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledOnce(testConnector.getRegistryForModel);
+                sinon.assert.calledOnce(mockAssetRegistry.update);
+                error.should.match(/Update error from Composer/);
+
+            });
+        });
+    });
 
     describe('#destroyAll', () => {
 
@@ -1140,7 +1357,7 @@ describe('BusinessNetworkConnector Unit Test', () => {
         });
 
         it('should handle an error when an invalid Object identifier is specified', () => {
-            mockAssetRegistry.get.returns(Promise.reject('get error'));
+            mockAssetRegistry.get.rejects(new Error('get error'));
             return new Promise((resolve, reject) => {
                 testConnector.destroyAll('org.acme.base.BaseAsset', { 'theWrongValue' : 'foo' }, {}, (error) => {
                     if(error) {

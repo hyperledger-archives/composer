@@ -48,6 +48,33 @@ class Factory {
         LOG.entry(method, factory);
 
         /**
+         * Create a new resource (an instance of an asset, participant, or transaction). The
+         * properties of the new instance should be set as standard JavaScript
+         * object properties. The new instance can then be stored in a registry
+         * using the appropriate registry APIs, for example {@link
+         * module:composer-runtime.AssetRegistry AssetRegistry}.
+         * @example
+         * // Get the factory.
+         * var factory = getFactory();
+         * // Create a new vehicle.
+         * var vehicle = factory.newResource('org.acme', 'Vehicle', 'VEHICLE_1');
+         * // Set the properties of the new vehicle.
+         * vehicle.colour = 'BLUE';
+         * vehicle.manufacturer = 'Toyota';
+         * @public
+         * @method module:composer-runtime.Factory#newResource
+         * @param {string} ns The namespace of the resource to create.
+         * @param {string} type The type of the resource to create.
+         * @param {string} id The identifier of the new resource.
+         * @return {Resource} The new instance of the resource.
+         * @throws {Error} If the specified type (specified by the namespace and
+         * type) is not defined in the current version of the business network.
+         */
+        this.newResource = function newResource(ns, type, id) {
+            return factory.newResource(ns, type, id);
+        };
+
+        /**
          * Create a new instance of an asset, participant, or transaction. The
          * properties of the new instance should be set as standard JavaScript
          * object properties. The new instance can then be stored in a registry
@@ -68,6 +95,7 @@ class Factory {
          * @param {string} id The identifier of the new resource.
          * @return {Resource} The new instance of the resource.
          * @throws {Error} If the specified type (specified by the namespace and
+         * @deprecated
          * type) is not defined in the current version of the business network.
          */
         this.newInstance = function newInstance(ns, type, id) {
@@ -100,6 +128,30 @@ class Factory {
          */
         this.newRelationship = function newRelationship(ns, type, id) {
             return factory.newRelationship(ns, type, id);
+        };
+
+        /**
+         * Create a new concept with a given namespace, type, and identifier.
+         * A concept is an advanced data structure
+         * @example
+         * // The existing driver of the vehicle.
+         * var person;
+         * // Get the factory.
+         * var factory = getFactory();
+         * // Create a new relationship to the vehicle.
+         * var record = factory.newConcept('org.acme', 'Record', 'RECORD_1');
+         * // Add the record to the persons array of records.
+         * person.records.push(record);
+         * @public
+         * @method module:composer-runtime.Factory#newConcept
+         * @param {string} ns The namespace of the concept.
+         * @param {string} type The type of the concept.
+         * @return {Concept} The new instance of the concept.
+         * @throws {Error} If the specified type (specified by the namespace and
+         * type) is not defined in the current version of the business network.
+         */
+        this.newConcept = function newConcept(ns, type) {
+            return factory.newConcept(ns, type);
         };
 
         Object.freeze(this);

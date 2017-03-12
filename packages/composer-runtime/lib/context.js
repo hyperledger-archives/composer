@@ -66,33 +66,31 @@ class Context {
         this.transaction = null;
         this.transactionExecutors = [];
         this.accessController = null;
+        this.sysregistries = null;
+        this.sysidentities = null;
     }
 
     /**
-     * Initialize the context for use.
-     * @param {boolean} [reinitialize] Set to true if being reinitialized as a result
-     * of an upgrade to the business network, falsey value if not.
-     * @return {Promise} A promise that will be resolved when complete, or rejected
-     * with an error.
+     * Load the business network definition.
+     * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
+     * when complete, or rejected with an error.
      */
-    initialize(reinitialize) {
-        const method = 'initialize';
-        LOG.entry(method, !!reinitialize);
-
-        // Load the business network from the archive.
-        LOG.debug(method, 'Getting $sysdata collection');
+    loadBusinessNetworkDefinition() {
+        const method = 'loadBusinessNetworkDefinition';
+        LOG.entry(method);
         return this.getDataService().getCollection('$sysdata')
             .then((collection) => {
-
-                // check if the network has been undeployed first. if is has throw exception.
-                if (collection.undeployed){
-                    throw new Error('Network has already been undeployed');
-                }
 
                 LOG.debug(method, 'Getting business network archive from the $sysdata collection');
                 return collection.get('businessnetwork');
             })
             .then((object) => {
+
+                // check if the network has been undeployed first. if is has throw exception.
+                if (object.undeployed){
+                    throw new Error('Network has already been undeployed');
+                }
+
                 LOG.debug(method, 'Looking in cache for business network', object.hash);
                 let businessNetworkDefinition = businessNetworkCache.get(object.hash);
                 if (businessNetworkDefinition) {
@@ -108,28 +106,107 @@ class Context {
                     });
             })
             .then((businessNetworkDefinition) => {
+                LOG.exit(method, businessNetworkDefinition);
+                return businessNetworkDefinition;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
+    }
+
+    /**
+     * Load the current participant.
+     * @return {Promise} A promise that will be resolved with a {@link Resource}
+     * when complete, or rejected with an error.
+     */
+    loadCurrentParticipant() {
+        const method = 'loadCurrentParticipant';
+        LOG.entry(method);
+        let currentUserID = this.getIdentityService().getCurrentUserID();
+        LOG.debug(method, 'Got current user ID', currentUserID);
+        if (currentUserID) {
+            return this.getIdentityManager().getParticipant(currentUserID)
+                .then((participant) => {
+                    LOG.debug(method, 'Found current participant', participant.getFullyQualifiedIdentifier());
+                    LOG.exit(method, participant);
+                    return participant;
+                })
+                .catch((error) => {
+                    LOG.error(method, 'Could not find current participant', error);
+                    throw new Error(`Could not determine the participant for identity '${currentUserID}'. The identity may be invalid or may have been revoked.`);
+                });
+        } else {
+            // TODO: this is temporary whilst we migrate to requiring all
+            // users to have identities that are mapped to participants.
+            LOG.debug(method, 'Could not determine current user ID');
+            LOG.exit(method, null);
+            return Promise.resolve(null);
+        }
+    }
+
+    /**
+     * Initialize the context for use.
+     * @param {Object} [options] The options to use.
+     * @param {BusinessNetworkDefinition} [options.businessNetworkDefinition] The business network definition to use.
+     * @param {boolean} [options.reinitialize] Set to true if being reinitialized as a result of an upgrade to the
+     * business network, falsey value if not.
+     * @param {DataCollection} [options.sysregistries] The system registries collection to use.
+     * @param {DataCollection} [options.sysidentities] The system identities collection to use.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    initialize(options) {
+        const method = 'initialize';
+        LOG.entry(method, options);
+        options = options || {};
+        return Promise.resolve()
+            .then(() => {
+                if (options.businessNetworkDefinition) {
+                    LOG.debug(method, 'Business network definition already specified');
+                    return options.businessNetworkDefinition;
+                } else {
+                    LOG.debug(method, 'Business network definition not specified, loading from world state');
+                    return this.loadBusinessNetworkDefinition();
+                }
+            })
+            .then((businessNetworkDefinition) => {
                 LOG.debug(method, 'Loaded business network archive');
                 this.businessNetworkDefinition = businessNetworkDefinition;
-                let currentUserID = this.getIdentityService().getCurrentUserID();
-                LOG.debug(method, 'Got current user ID', currentUserID);
-                if (currentUserID) {
-                    return this.getIdentityManager().getParticipant(currentUserID)
-                        .then((participant) => {
-                            LOG.debug(method, 'Found current participant', participant.getFullyQualifiedIdentifier());
-                            if (!reinitialize) {
-                                this.setParticipant(participant);
-                            } else {
-                                LOG.debug(method, 'Not setting current participant as we are reinitializing');
-                            }
-                        })
-                        .catch((error) => {
-                            LOG.error(method, 'Could not find current participant', error);
-                            throw new Error(`Could not determine the participant for identity '${currentUserID}'. The identity may be invalid or may have been revoked.`);
-                        });
+            })
+            .then(() => {
+                LOG.debug(method, 'Loading sysregistries collection', options.sysregistries);
+                if (options.sysregistries) {
+                    this.sysregistries = options.sysregistries;
                 } else {
-                    // TODO: this is temporary whilst we migrate to requiring all
-                    // users to have identities that are mapped to participants.
-                    LOG.debug(method, 'Could not determine current user ID');
+                    return this.getDataService().getCollection('$sysregistries')
+                        .then((sysregistries) => {
+                            this.sysregistries = sysregistries;
+                        });
+                }
+            })
+            .then(() => {
+                LOG.debug(method, 'Loading sysidentities collection', options.sysidentities);
+                if (options.sysidentities) {
+                    this.sysidentities = options.sysidentities;
+                } else {
+                    return this.getDataService().getCollection('$sysidentities')
+                        .then((sysidentities) => {
+                            this.sysidentities = sysidentities;
+                        });
+                }
+            })
+            .then(() => {
+                LOG.debug(method, 'Loading current participant');
+                return this.loadCurrentParticipant();
+            })
+            .then((participant) => {
+                if (!options.reinitialize) {
+                    LOG.debug(method, 'Setting current participant', participant);
+                    this.setParticipant(participant);
+                } else {
+                    // We don't want to change the participant in the middle of a update.
+                    LOG.debug(method, 'Reinitializing, not setting current participant', participant);
                 }
             })
             .then(() => {
@@ -232,7 +309,7 @@ class Context {
      */
     getRegistryManager() {
         if (!this.registryManager) {
-            this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer(), this.getAccessController());
+            this.registryManager = new RegistryManager(this.getDataService(), this.getIntrospector(), this.getSerializer(), this.getAccessController(), this.getSystemRegistries());
         }
         return this.registryManager;
     }
@@ -276,7 +353,7 @@ class Context {
      */
     getIdentityManager() {
         if (!this.identityManager) {
-            this.identityManager = new IdentityManager(this.getDataService(), this.getRegistryManager());
+            this.identityManager = new IdentityManager(this.getDataService(), this.getRegistryManager(), this.getSystemIdentities());
         }
         return this.identityManager;
     }
@@ -361,6 +438,28 @@ class Context {
             this.accessController = new AccessController(this.getAclManager());
         }
         return this.accessController;
+    }
+
+    /**
+     * Get the system registries collection.
+     * @return {DataCollection} The system registries collection.
+     */
+    getSystemRegistries() {
+        if (!this.sysregistries) {
+            throw new Error('must call initialize before calling this function');
+        }
+        return this.sysregistries;
+    }
+
+    /**
+     * Get the system identities collection.
+     * @return {DataCollection} The system registries collection.
+     */
+    getSystemIdentities() {
+        if (!this.sysidentities) {
+            throw new Error('must call initialize before calling this function');
+        }
+        return this.sysidentities;
     }
 
     /**

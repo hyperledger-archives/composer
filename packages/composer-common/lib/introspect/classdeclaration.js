@@ -115,7 +115,7 @@ class ClassDeclaration {
                 let formatter = Globalize.messageFormatter('classdeclaration-process-unrecmodelelem');
                 throw new IllegalModelException(formatter({
                     'type': thing.type
-                }));
+                }), this.modelFile, this.ast.location);
             }
         }
     }
@@ -144,7 +144,7 @@ class ClassDeclaration {
             }
 
             if(classDecl===null) {
-                throw new IllegalModelException('Could not find super type ' + this.superType);
+                throw new IllegalModelException('Could not find super type ' + this.superType, this.modelFile, this.ast.location);
             }
             // TODO (DCS)
             // else {
@@ -162,7 +162,7 @@ class ClassDeclaration {
                 throw new IllegalModelException(formatter({
                     'class': this.name,
                     'idField': this.idField
-                }));
+                }), this.modelFile, this.ast.location);
             }
             else {
                 // check that identifiers are strings
@@ -171,11 +171,11 @@ class ClassDeclaration {
                     throw new IllegalModelException( formatter({
                         'class': this.name,
                         'idField': this.idField
-                    }));
+                    }),this.modelFile, this.ast.location);
                 }
 
                 if(field.isOptional()) {
-                    throw new IllegalModelException('Identifying fields cannot be optional.');
+                    throw new IllegalModelException('Identifying fields cannot be optional.',this.modelFile, this.ast.location);
                 }
             }
         }
@@ -185,7 +185,7 @@ class ClassDeclaration {
                     let formatter = Globalize('en').messageFormatter('classdeclaration-validate-missingidentifier');
                     throw new IllegalModelException( formatter({
                         'class': this.name
-                    }));
+                    }),this.modelFile, this.ast.location);
                 }
             }
         }
@@ -203,7 +203,7 @@ class ClassDeclaration {
                     throw new IllegalModelException( formatter({
                         'class': this.name,
                         'fieldName': field.getName()
-                    }));
+                    }),this.modelFile, this.ast.location);
                 }
             }
 
@@ -387,7 +387,7 @@ class ClassDeclaration {
             }
 
             if(classDecl===null) {
-                throw new IllegalModelException('Could not find super type ' + this.superType);
+                throw new IllegalModelException('Could not find super type ' + this.superType,this.modelFile, this.ast.location);
             }
 
             // go get the fields from the super type

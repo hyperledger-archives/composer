@@ -1,0 +1,56 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+app-editor {
+  display: flex;
+  width: 100%;
+
+  .side-bar {
+    .files {
+      & > * {
+        padding: $space-medium $space-large;
+      }
+      margin-top: $space-large;
+
+      span {
+        color: $secondary-text;
+      }
+
+      .side-bar-nav {
+        padding: 0;
+      }
+    }
+
+    .actions {
+      padding: $space-medium $space-large;
+    }
+  }
+
+  .main-view {
+    .business-network-details {
+      display: flex;
+
+      .business-network-version {
+        margin-right: $space-smedium;
+        color: $secondary-text;
+      }
+      .margin-right {
+        margin-right: $space-smedium;
+      }
+      .edit-package-text {
+        font-style: italic;
+      }
+    }
+
+    .readme {
+      background-color: $white;
+      padding: $space-large;
+    }
+  }
+
+  .CodeMirror, .CodeMirror-scroll{
+      min-height:80vh;
+      max-height:80vh;
+    }
+
+}

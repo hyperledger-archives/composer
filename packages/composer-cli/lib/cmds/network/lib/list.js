@@ -97,7 +97,6 @@ class List {
                         ,assets : {}
                         };
                     listOutput.registries[registry.id] = entry;
-
                     return List.getMatchingAssets(registry, argv, businessNetworkConnection)
                     .then ((result) => {
                         let assetSet = result;
@@ -115,7 +114,19 @@ class List {
         })
         .then ((result) => {
             return businessNetworkConnection.disconnect();
+        })
+        .catch(error => {
+            console.log(List.getError(error));
         });
+    }
+
+    /**
+     * Get message from an error object if one is given
+     * @param {Error|String} error Error to be examined
+     * @return {String} error message
+     */
+    static getError(error) {
+        return error.message ? error.message : error;
     }
 
     /**
@@ -161,26 +172,21 @@ class List {
 
     /**
       * Get required assets from a specific registry
-      * @param {registry} registry to search for assets
+      * @param {Registry} registry to search for assets
       * @param {argv} argv program arguments
-      * @param {businessNetworkConnectionargv} businessNetworkConnection program arguments
+      * @param {BusinessNetworkConnection} businessNetworkConnection program arguments
       * @return {Promise} promise with array of registries matching the requested registry
       */
     static getMatchingAssets(registry, argv, businessNetworkConnection) {
-        if (argv.asset === undefined) {
-            return Promise.resolve([]);
-        } else if (argv.asset === '') {
+        if (!argv.asset) {
             return registry.getAll();
         } else {
-            return registry.exists(argv.asset)
-            .then ((exists) => {
-                if (exists === true) {
-                    return registry.get(argv.asset)
-                    .then ((asset) => {
-                        return [asset];
-                    });
+            return registry.get(argv.asset)
+            .then ((asset) => {
+                if (asset === true) {
+                    return [asset];
                 } else {
-                    throw new Error('Asset '+argv.asset+' does not exist');
+                    throw new Error('Asset '+registry.id+' does not exist');
                 }
             });
         }

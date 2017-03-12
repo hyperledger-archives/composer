@@ -1355,55 +1355,79 @@ Program
       rules: rules
     };
   }
-
- AclRule
-  = ruleId:RuleId _ Seperator _
-  	noun:Noun _ Seperator _
-    verb:Verb _ Seperator _
-    participant:Participant _ Seperator _
-    predicate:Predicate _ Seperator _
-	  action:Action _ Seperator _
-    description:Description
-    LineTerminator
-    {
+  
+AclRule
+ = SimpleRule / ConditionalRule
+  
+SimpleRule
+ = "rule" __ ruleId:RuleId __ "{" __
+  	"description:" __ "\"" description:StringSequence "\"" __
+    "participant:" __ "\"" participant:Participant "\"" __
+    "operation:" __ verb:Verb __
+    "resource:" __ "\"" noun:Noun "\"" __
+    "action:" __ action:Action __
+ "}" __
+ {
       return {
-        type: "AclRule",
+        type: "SimpleRule",
         id: ruleId,
         noun: noun,
         verb: verb,
         participant: participant,
+        action: action,
+        description: description,
+        location: location()
+      };
+    }
+
+VariableBinding
+= "(" __ id:Identifier __ ")"
+{
+  return id;
+}
+ 
+ ConditionalRule
+ = "rule" __ ruleId:RuleId __ "{" __
+  	"description:" __ "\"" description:StringSequence "\"" __
+    "participant" __ participantVariable:VariableBinding? __ ":" __ "\"" participant:Participant "\"" __
+    "operation:" __ verb:Verb __
+    "resource" __ nounVariable:VariableBinding? __ ":" __ "\"" noun:Noun "\"" __
+    "condition:" __ predicate:Predicate __
+    "action:" __ action:Action __
+ "}" __
+ {
+      return {
+        type: "ConditionalRule",
+        id: ruleId,
+        noun: noun,
+        nounVariable: nounVariable,
+        verb: verb,
+        participant: participant,
+        participantVariable: participantVariable,
         predicate: predicate,
         action: action,
-        description: description
+        description: description,
+        location: location()
       };
     }
 
 RuleId
   = Identifier
 
-Seperator
-  = '|'
-
 InstanceId
-  = '#' id:Identifier
+  = '#' id:StringSequence
 {
  return id;
 }
 
-VariableName
-  = ':' id:Identifier
-{
-  return id;
-}
-
 Binding
-  = qualifiedName:QualifiedName instanceId:InstanceId? variableName:VariableName?
+  = qualifiedName:QualifiedName instanceId:InstanceId?
 {
   return {
     type: "Binding",
     qualifiedName: qualifiedName,
     instanceId: instanceId,
-    variableName: variableName
+    location: location()
   };
 }
 
@@ -1426,7 +1450,7 @@ Predicate
 Action
  = 'ALLOW' / 'DENY'
 
-Description "string"
+StringSequence "string"
     = chars:DoubleStringCharacter* {
         return chars.join("");
       }

@@ -27,7 +27,7 @@ describe('FunctionDeclaration', () => {
     const modelManager = new ModelManager();
     modelManager.addModelFile('namespace org.acme transaction TestTransaction identified by id {o String id}');
     let mozartModel = fs.readFileSync('test/data/model/mozart.cto', 'utf8');
-    modelManager.addModelFile(mozartModel);
+    modelManager.addModelFile(mozartModel, 'mozart.cto');
 
     let loadFunctionDeclaration = (scriptFileName) => {
         let scriptText = fs.readFileSync(scriptFileName, 'utf8');

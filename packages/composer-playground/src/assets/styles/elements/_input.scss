@@ -1,0 +1,17 @@
+// Inputs
+.composer {
+	input[type=text],
+	input[type=username],
+	input[type=password],
+	input[type=email],
+	input[type=url],
+	input[type=search] {
+		@extend %input;
+		width: 100%;
+		margin-bottom: 1rem;
+
+    & + label {
+      //TODO: check if need this
+    }
+	}
+}

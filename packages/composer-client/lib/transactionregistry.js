@@ -21,7 +21,7 @@ const REGISTRY_TYPE = 'Transaction';
 
 /**
  * The TransactionRegistry is used to store a set of transactions on the blockchain.
- * <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="width:100%;"/></a></p>
+ * <p><a href="./diagrams/transactionregistry.svg"><img src="./diagrams/transactionregistry.svg" style="height:100%;"/></a></p>
  * @extends Registry
  * @see See [Registry]{@link module:composer-client.Registry}
  * @class
@@ -32,7 +32,6 @@ class TransactionRegistry extends Registry {
     /**
      * Get a list of all existing transaction registries.
      *
-     * @protected
      * @param {SecurityContext} securityContext The user's security context.
      * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
      * @param {Factory} factory The factory to use for this transaction registry.
@@ -60,7 +59,6 @@ class TransactionRegistry extends Registry {
     /**
      * Get an existing transaction registry.
      *
-     * @protected
      * @param {SecurityContext} securityContext The user's security context.
      * @param {string} id The unique identifier of the transaction registry.
      * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
@@ -89,7 +87,6 @@ class TransactionRegistry extends Registry {
     /**
      * Add a new transaction registry.
      *
-     * @protected
      * @param {SecurityContext} securityContext The user's security context.
      * @param {string} id The unique identifier of the transaction registry.
      * @param {string} name The name of the transaction registry.
@@ -124,13 +121,13 @@ class TransactionRegistry extends Registry {
      * retrieve instances from {@link BusinessNetworkConnection}</strong>
      * </p>
      *
-     * @protected
      * @param {string} id The unique identifier of the transaction registry.
      * @param {string} name The display name for the transaction registry.
      * @param {SecurityContext} securityContext The security context to use for this asset registry.
      * @param {ModelManager} modelManager The ModelManager to use for this transaction registry.
      * @param {Factory} factory The factory to use for this transaction registry.
      * @param {Serializer} serializer The Serializer to use for this transaction registry.
+     * @private
      */
     constructor(id, name, securityContext, modelManager, factory, serializer) {
         super(REGISTRY_TYPE, id, name, securityContext, modelManager, factory, serializer);
@@ -142,6 +139,7 @@ class TransactionRegistry extends Registry {
      *
      * @param {Resource} resource The resource to be added to the registry.
      * @param {string} data The data for the resource.
+     * @private
      */
     add(resource) {
         throw new Error('cannot add transactions to a transaction registry');
@@ -152,6 +150,7 @@ class TransactionRegistry extends Registry {
      * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
      *
      * @param {Resource[]} resources The resources to be added to the registry.
+     * @private
      */
     addAll(resources) {
         throw new Error('cannot add transactions to a transaction registry');
@@ -162,6 +161,7 @@ class TransactionRegistry extends Registry {
      * registry. This method will always throw an exception when called.
      *
      * @param {Resource} resource The resource to be updated in the registry.
+     * @private
      */
     update(resource) {
         throw new Error('cannot update transactions in a transaction registry');
@@ -172,6 +172,7 @@ class TransactionRegistry extends Registry {
      * registry. Call {@link BusinessNetworkConnection.submitTransaction} to submit a transaction.
      *
      * @param {Resource[]} resources The resources to be updated in the asset registry.
+     * @private
      */
     updateAll(resources) {
         throw new Error('cannot update transactions in a transaction registry');
@@ -182,6 +183,7 @@ class TransactionRegistry extends Registry {
      * registry. This method will always throw an exception when called.
      *
      * @param {(Resource|string)} resource The resource, or the unique identifier of the resource.
+     * @private
      */
     remove(resource) {
         throw new Error('cannot remove transactions from a transaction registry');
@@ -192,6 +194,7 @@ class TransactionRegistry extends Registry {
      * registry. This method will always throw an exception when called.
      *
      * @param {(Resource[]|string[])} resources The resources, or the unique identifiers of the resources.
+     * @private
      */
     removeAll(resources) {
         throw new Error('cannot remove transactions from a transaction registry');

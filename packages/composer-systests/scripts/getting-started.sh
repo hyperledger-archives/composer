@@ -25,19 +25,19 @@ docker rm -f $(docker ps -aq) || true
 # Install cli
 npm install -g composer-cli
 
-cd $DIR
+cd "$DIR"
 
 TMP=$DIR/tmp
 
-mkdir -p $TMP
+mkdir -p "$TMP"
 
-cd $TMP
+cd "$TMP"
 
 git clone https://github.com/fabric-composer/sample-applications
 
 GETTING_STARTED=$TMP/sample-applications/packages/getting-started
 
-cd $GETTING_STARTED
+cd "$GETTING_STARTED"
 
 npm install
 
@@ -46,21 +46,21 @@ npm test
 composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
 # Leave Composer-GettingStarted back to tmp
-cd $TMP
+cd "$TMP"
 
 git clone https://github.com/fabric-composer/sample-networks
 
-cd $TMP/sample-networks/packages/DigitalProperty-Network
+cd "$TMP/sample-networks/packages/DigitalProperty-Network"
 
 npm install
 
 TRANSACTION_FILE=$TMP/sample-networks/packages/DigitalProperty-Network/lib/DigitalLandTitle.js
 
-rm $TRANSACTION_FILE
+rm "$TRANSACTION_FILE"
 
-touch $TRANSACTION_FILE
+touch "$TRANSACTION_FILE"
 
-cat <<EOF > $TRANSACTION_FILE
+cat <<EOF > "$TRANSACTION_FILE"
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,14 +93,14 @@ function onRegisterPropertyForSale(propertyForSale) {
 }
 EOF
 
-composer archive create --inputDir . --archiveFile digitalproperty-network.bna
+composer archive create --sourceType dir --sourceName . --archiveFile digitalproperty-network.bna
 
 composer network update --archiveFile digitalproperty-network.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 
 npm test
 
-cd $GETTING_STARTED
+cd "$GETTING_STARTED"
 
 npm run submitTransaction
 
-rm -rf $TMP
+rm -rf "$TMP"

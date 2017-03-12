@@ -27,7 +27,7 @@ const LOG = Logger.getLog('ConnectorServer');
  * @param {Error} error The error to serialize with serializerr.
  * @return {Object} The error serialized by serializerr.
  */
-function serializerr(error) {
+function serializerr (error) {
     if (error instanceof Error) {
         return realSerializerr(error);
     } else {
@@ -47,7 +47,7 @@ class ConnectorServer {
      * @param {ConnectionProfileManager} connectionProfileManager The connection profile manager to use.
      * @param {Socket} socket The connected socket to use for communicating with the client.
      */
-    constructor(connectionProfileStore, connectionProfileManager, socket) {
+    constructor (connectionProfileStore, connectionProfileManager, socket) {
         const method = 'constructor';
         LOG.entry(method, connectionProfileStore, connectionProfileManager, socket);
         this.connectionProfileStore = connectionProfileStore;
@@ -76,7 +76,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
+    connectionManagerConnect (connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
         const method = 'connectionManagerConnect';
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
         return this.connectionProfileStore.load(connectionProfile, connectionOptions)
@@ -111,7 +111,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDisconnect(connectionID, callback) {
+    connectionDisconnect (connectionID, callback) {
         const method = 'connectionDisconnect';
         LOG.entry(method, connectionID);
         let connection = this.connections[connectionID];
@@ -142,7 +142,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionLogin(connectionID, enrollmentID, enrollmentSecret, callback) {
+    connectionLogin (connectionID, enrollmentID, enrollmentSecret, callback) {
         const method = 'connectionLogin';
         LOG.entry(method, connectionID, enrollmentID, enrollmentSecret);
         let connection = this.connections[connectionID];
@@ -176,7 +176,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDeploy(connectionID, securityContextID, force, businessNetworkBase64, callback) {
+    connectionDeploy (connectionID, securityContextID, force, businessNetworkBase64, callback) {
         const method = 'connectionDeploy';
         LOG.entry(method, connectionID, securityContextID, force, businessNetworkBase64);
         let connection = this.connections[connectionID];
@@ -219,7 +219,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionUpdate(connectionID, securityContextID, businessNetworkBase64, callback) {
+    connectionUpdate (connectionID, securityContextID, businessNetworkBase64, callback) {
         const method = 'connectionUpdate';
         LOG.entry(method, connectionID, securityContextID, businessNetworkBase64);
         let connection = this.connections[connectionID];
@@ -262,7 +262,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionUndeploy(connectionID, securityContextID, businessNetworkIdentifier, callback) {
+    connectionUndeploy (connectionID, securityContextID, businessNetworkIdentifier, callback) {
         const method = 'connectionUndeploy';
         LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier);
         let connection = this.connections[connectionID];
@@ -300,7 +300,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionPing(connectionID, securityContextID, callback) {
+    connectionPing (connectionID, securityContextID, callback) {
         const method = 'connectionPing';
         LOG.entry(method, connectionID, securityContextID);
         let connection = this.connections[connectionID];
@@ -340,7 +340,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionQueryChainCode(connectionID, securityContextID, functionName, args, callback) {
+    connectionQueryChainCode (connectionID, securityContextID, functionName, args, callback) {
         const method = 'connectionQueryChainCode';
         LOG.entry(method, connectionID, securityContextID, functionName, args);
         let connection = this.connections[connectionID];
@@ -380,7 +380,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionInvokeChainCode(connectionID, securityContextID, functionName, args, callback) {
+    connectionInvokeChainCode (connectionID, securityContextID, functionName, args, callback) {
         const method = 'connectionInvokeChainCode';
         LOG.entry(method, connectionID, securityContextID, functionName, args);
         let connection = this.connections[connectionID];
@@ -420,7 +420,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionCreateIdentity(connectionID, securityContextID, userID, options, callback) {
+    connectionCreateIdentity (connectionID, securityContextID, userID, options, callback) {
         const method = 'connectionCreateIdentity';
         LOG.entry(method, connectionID, securityContextID, userID, options);
         let connection = this.connections[connectionID];
@@ -458,7 +458,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionList(connectionID, securityContextID, callback) {
+    connectionList (connectionID, securityContextID, callback) {
         const method = 'connectionList';
         LOG.entry(method, connectionID, securityContextID);
         let connection = this.connections[connectionID];

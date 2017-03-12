@@ -1,7 +1,11 @@
 {
   "name": "composer-runtime",
-  "version": "0.4.2",
+  "version": "0.5.2",
   "description": "The runtime execution environment for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
@@ -13,7 +17,7 @@
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "postlint": "npm run browserify",
-    "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/concerto-runtime.js",
+    "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/composer-runtime.js",
     "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
     "posttest": "istanbul check-coverage"
   },
@@ -62,10 +66,10 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.4.2",
+    "composer-common": "^0.5.2",
     "debug": "^2.4.4",
     "fast-json-patch": "^1.1.2",
-    "jsonata": "^1.0.10",
+    "jsonata": "1.0.10",
     "lru-cache": "^4.0.2",
     "sha.js": "^2.4.8"
   }

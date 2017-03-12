@@ -29,10 +29,12 @@ class IdentityManager {
      * Constructor.
      * @param {DataService} dataService The data service to use.
      * @param {RegistryManager} registryManager The registry manager to use.
+     * @param {DataCollection} sysidentities The system identities collection.
      */
-    constructor(dataService, registryManager) {
+    constructor(dataService, registryManager, sysidentities) {
         this.dataService = dataService;
         this.registryManager = registryManager;
+        this.sysidentities = sysidentities;
     }
 
     /**
@@ -68,22 +70,18 @@ class IdentityManager {
                 return participantRegistry.get(participantID);
             })
             .then((participant) => {
-                LOG.debug(method, 'Found participant, getting $sysidentities collection');
-                return this.dataService.getCollection('$sysidentities');
-            })
-            .then((sysidentities) => {
                 LOG.debug(method, 'Got $sysidentities collection, checking for existing mapping');
-                return sysidentities.exists(userID)
-                    .then((exists) => {
-                        if (exists) {
-                            LOG.error(method, 'Found an existing mapping for user ID', userID);
-                            throw new Error(`Found an existing mapping for user ID '${userID}'`);
-                        }
-                        LOG.debug(method, 'No existing mapping exists for user ID, adding');
-                        return sysidentities.add(userID, {
-                            participant: participantFQI
-                        });
-                    });
+                return this.sysidentities.exists(userID);
+            })
+            .then((exists) => {
+                if (exists) {
+                    LOG.error(method, 'Found an existing mapping for user ID', userID);
+                    throw new Error(`Found an existing mapping for user ID '${userID}'`);
+                }
+                LOG.debug(method, 'No existing mapping exists for user ID, adding');
+                return this.sysidentities.add(userID, {
+                    participant: participantFQI
+                });
             })
             .then(() => {
                 LOG.exit(method);
@@ -100,18 +98,14 @@ class IdentityManager {
     removeIdentityMapping(userID) {
         const method = 'removeIdentityMapping';
         LOG.entry(method, userID);
-        LOG.debug(method, 'Getting $sysidentities collection');
-        return this.dataService.getCollection('$sysidentities')
-            .then((sysidentities) => {
-                LOG.debug(method, 'Got $sysidentities collection, checking for existing mapping');
-                return sysidentities.exists(userID)
-                    .then((exists) => {
-                        if (!exists) {
-                            LOG.debug('No existing mapping exists for user ID, ignoring');
-                            return;
-                        }
-                        return sysidentities.remove(userID);
-                    });
+        LOG.debug(method, 'Got $sysidentities collection, checking for existing mapping');
+        return this.sysidentities.exists(userID)
+            .then((exists) => {
+                if (!exists) {
+                    LOG.debug('No existing mapping exists for user ID, ignoring');
+                    return;
+                }
+                return this.sysidentities.remove(userID);
             })
             .then(() => {
                 LOG.exit(method);
@@ -129,11 +123,8 @@ class IdentityManager {
         LOG.entry(method, userID);
         LOG.debug(method, 'Getting $sysidentities collection');
         let participantFQI, participantFQT, participantID;
-        return this.dataService.getCollection('$sysidentities')
-            .then((sysidentities) => {
-                LOG.debug(method, 'Got $sysidentities collection, checking for existing mapping');
-                return sysidentities.get(userID);
-            })
+        LOG.debug(method, 'Got $sysidentities collection, checking for existing mapping');
+        return this.sysidentities.get(userID)
             .then((mapping) => {
                 participantFQI = mapping.participant;
                 LOG.debug(method, 'Found mapping, participant is', participantFQI);

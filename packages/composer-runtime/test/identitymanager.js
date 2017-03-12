@@ -32,7 +32,7 @@ require('sinon-as-promised');
 describe('IdentityManager', () => {
 
     let mockDataService;
-    let mockDataCollection;
+    let mockSystemIdentities;
     let mockRegistryManager;
     let mockRegistry;
     let identityManager;
@@ -40,12 +40,12 @@ describe('IdentityManager', () => {
 
     beforeEach(() => {
         mockDataService = sinon.createStubInstance(DataService);
-        mockDataCollection = sinon.createStubInstance(DataCollection);
-        mockDataService.getCollection.withArgs('$sysidentities').resolves(mockDataCollection);
+        mockSystemIdentities = sinon.createStubInstance(DataCollection);
+        mockDataService.getCollection.withArgs('$sysidentities').resolves(mockSystemIdentities);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockRegistry = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').resolves(mockRegistry);
-        identityManager = new IdentityManager(mockDataService, mockRegistryManager);
+        identityManager = new IdentityManager(mockDataService, mockRegistryManager, mockSystemIdentities);
         mockParticipant = sinon.createStubInstance(Resource);
         mockParticipant.getIdentifier.returns('DOGE_1');
         mockParticipant.getType.returns('Doge');
@@ -60,11 +60,11 @@ describe('IdentityManager', () => {
             // The participant exists.
             mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
             // An existing mapping for this user ID does not exist.
-            mockDataCollection.exists.withArgs('dogeid1').resolves(false);
+            mockSystemIdentities.exists.withArgs('dogeid1').resolves(false);
             return identityManager.addIdentityMapping(mockParticipant, 'dogeid1')
                 .then(() => {
-                    sinon.assert.calledOnce(mockDataCollection.add);
-                    sinon.assert.calledWith(mockDataCollection.add, 'dogeid1', {
+                    sinon.assert.calledOnce(mockSystemIdentities.add);
+                    sinon.assert.calledWith(mockSystemIdentities.add, 'dogeid1', {
                         participant: 'org.doge.Doge#DOGE_1'
                     });
                 });
@@ -74,11 +74,11 @@ describe('IdentityManager', () => {
             // The participant exists.
             mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
             // An existing mapping for this user ID does not exist.
-            mockDataCollection.exists.withArgs('dogeid1').resolves(false);
+            mockSystemIdentities.exists.withArgs('dogeid1').resolves(false);
             return identityManager.addIdentityMapping('org.doge.Doge#DOGE_1', 'dogeid1')
                 .then(() => {
-                    sinon.assert.calledOnce(mockDataCollection.add);
-                    sinon.assert.calledWith(mockDataCollection.add, 'dogeid1', {
+                    sinon.assert.calledOnce(mockSystemIdentities.add);
+                    sinon.assert.calledWith(mockSystemIdentities.add, 'dogeid1', {
                         participant: 'org.doge.Doge#DOGE_1'
                     });
                 });
@@ -88,7 +88,7 @@ describe('IdentityManager', () => {
             // The participant does not exist.
             mockRegistry.get.withArgs('DOGE_1').rejects(new Error('does not exist'));
             // An existing mapping for this user ID does not exist.
-            mockDataCollection.exists.withArgs('dogeid1').resolves(false);
+            mockSystemIdentities.exists.withArgs('dogeid1').resolves(false);
             return identityManager.addIdentityMapping('org.doge.Doge#DOGE_1', 'dogeid1')
                 .should.be.rejectedWith(/does not exist/);
         });
@@ -97,7 +97,7 @@ describe('IdentityManager', () => {
             // The participant does not exist.
             mockRegistry.get.withArgs('DOGE_1').rejects(new Error('does not exist'));
             // An existing mapping for this user ID does not exist.
-            mockDataCollection.exists.withArgs('dogeid1').resolves(false);
+            mockSystemIdentities.exists.withArgs('dogeid1').resolves(false);
             (() => {
                 identityManager.addIdentityMapping('org.doge.Doge$DOGE_1', 'dogeid1');
             }).should.throw(/Invalid fully qualified participant identifier/);
@@ -107,7 +107,7 @@ describe('IdentityManager', () => {
             // The participant exists.
             mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
             // An existing mapping for this user ID does exist.
-            mockDataCollection.exists.withArgs('dogeid1').resolves(true);
+            mockSystemIdentities.exists.withArgs('dogeid1').resolves(true);
             return identityManager.addIdentityMapping('org.doge.Doge#DOGE_1', 'dogeid1')
                 .should.be.rejectedWith(/Found an existing mapping for user ID/);
         });
@@ -118,17 +118,17 @@ describe('IdentityManager', () => {
 
         it('should remove an existing mapping for a user ID to a participant', () => {
             // An existing mapping for this user ID does exist.
-            mockDataCollection.exists.withArgs('dogeid1').resolves(true);
+            mockSystemIdentities.exists.withArgs('dogeid1').resolves(true);
             return identityManager.removeIdentityMapping('dogeid1')
                 .then(() => {
-                    sinon.assert.calledOnce(mockDataCollection.remove);
-                    sinon.assert.calledWith(mockDataCollection.remove, 'dogeid1');
+                    sinon.assert.calledOnce(mockSystemIdentities.remove);
+                    sinon.assert.calledWith(mockSystemIdentities.remove, 'dogeid1');
                 });
         });
 
         it('should not throw if an existing mapping for a user ID does not exist', () => {
             // An existing mapping for this user ID does not exist.
-            mockDataCollection.exists.withArgs('dogeid1').resolves(false);
+            mockSystemIdentities.exists.withArgs('dogeid1').resolves(false);
             return identityManager.removeIdentityMapping('dogeid1');
         });
 
@@ -138,7 +138,7 @@ describe('IdentityManager', () => {
 
         it('should resolve to a participant for an existing mapping and participant', () => {
             // An existing mapping for this user ID does exist.
-            mockDataCollection.get.withArgs('dogeid1').resolves({
+            mockSystemIdentities.get.withArgs('dogeid1').resolves({
                 participant: 'org.doge.Doge#DOGE_1'
             });
             // The participant exists.
@@ -151,7 +151,7 @@ describe('IdentityManager', () => {
 
         it('should throw an error for a missing mapping', () => {
             // An existing mapping for this user ID does not exist.
-            mockDataCollection.get.withArgs('dogeid1').rejects(new Error('no such mapping'));
+            mockSystemIdentities.get.withArgs('dogeid1').rejects(new Error('no such mapping'));
             // The participant exists.
             mockRegistry.get.withArgs('DOGE_1').resolves(mockParticipant);
             return identityManager.getParticipant('dogeid1')
@@ -160,7 +160,7 @@ describe('IdentityManager', () => {
 
         it('should throw an error for an invalid mapping', () => {
             // An existing mapping for this user ID does not exist.
-            mockDataCollection.get.withArgs('dogeid1').resolves({
+            mockSystemIdentities.get.withArgs('dogeid1').resolves({
                 participant: 'org.doge.Doge@DOGE_1'
             });
             // The participant exists.
@@ -171,7 +171,7 @@ describe('IdentityManager', () => {
 
         it('should throw an error for an existing mapping but missing participant', () => {
             // An existing mapping for this user ID does exist.
-            mockDataCollection.get.withArgs('dogeid1').resolves({
+            mockSystemIdentities.get.withArgs('dogeid1').resolves({
                 participant: 'org.doge.Doge#DOGE_1'
             });
             // The participant does not exist.

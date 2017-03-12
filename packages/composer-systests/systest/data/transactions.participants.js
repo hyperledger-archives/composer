@@ -194,7 +194,7 @@ function onAddNewParticipantToParticipantRegistryTransaction(transaction) {
     return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            var a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             a.stringValue = 'party parrot in hursley';
             return ar.add(a);
         });
@@ -205,7 +205,7 @@ function onAddNewParticipantWithRelationshipToParticipantRegistryTransaction(tra
     return getParticipantRegistry('systest.transactions.participants.SimpleRelationshipParticipant')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+            var a = f.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
             a.stringParticipant = f.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             return ar.add(a);
         });
@@ -232,7 +232,7 @@ function onUpdateNewParticipantInParticipantRegistryTransaction(transaction) {
     return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            var a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             a.stringValue = 'party parrot in san francisco';
             return ar.update(a);
         });
@@ -243,7 +243,7 @@ function onUpdateNewParticipantWithRelationshipToParticipantRegistryTransaction(
     return getParticipantRegistry('systest.transactions.participants.SimpleRelationshipParticipant')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+            var a = f.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
             a.stringParticipant = f.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant2');
             return ar.update(a);
         });
@@ -270,7 +270,7 @@ function onRemoveNewParticipantInParticipantRegistryTransaction(transaction) {
     return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            var a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             a.stringValue = 'party parrot in san francisco';
             return ar.remove(a);
         });
@@ -281,7 +281,7 @@ function onRemoveNewParticipantWithRelationshipInParticipantRegistryTransaction(
     return getParticipantRegistry('systest.transactions.participants.SimpleRelationshipParticipant')
         .then(function (ar) {
             var f = getFactory();
-            var a = f.newInstance('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
+            var a = f.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
             a.stringParticipant = f.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             return ar.remove(a);
         });

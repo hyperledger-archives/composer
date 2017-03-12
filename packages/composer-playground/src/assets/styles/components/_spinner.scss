@@ -1,0 +1,183 @@
+$spinner-circle-size: 8em;
+$spinner-circle-background: transparent;
+$spinner-circle-color: $primary-text;
+$spinner-track-color: #E0E0E0;
+$spinner-transition-length: 1s;
+$spinner-easing: cubic-bezier(0.5, 0.5, 0, 1);
+$spinnerInitSpinDuration:      1.0s; // duration of the starting animation of the rotation and angle
+$spinnerLoopSpinDuration:      0.5s; // duration of the one rotation in the loop animation
+$spinnerEndSpinDuration:       0.7s; // duration of the ending animation of the rotation and angle
+$spinnerInitRotationEase:      cubic-bezier(.6, .0, 1.0, 1.0);
+$spinnerInitAngleEase:         cubic-bezier(.6, .0, .5, 1.0);
+$spinnerEndFirstRotationEase:  cubic-bezier(.0, .0, .7, 1.1);
+$spinnerEndSecondRotationEase: cubic-bezier(.0, .0, 1.0, 1.1);
+$spinnerEndAngleEase:          cubic-bezier(.0, .0, 1.0, 1.0);
+$spinner-small-size: 1.4rem;
+$spinner-medium-size: 3rem;
+$spinner-large-size: 5rem;
+
+.ibm-spinner-indeterminate {
+  bottom: 0;
+  left: 0;
+  padding: 5%;
+  position: relative;
+  right: 0;
+  top: 0;
+
+  .loader {
+    margin: 0 auto;
+    position: relative;
+
+    &:before {
+      content: '';
+      display: block;
+      padding-top: 100%;
+    }
+  }
+
+  &.small .loader {
+    height: $spinner-small-size;
+    width: $spinner-small-size;
+  }
+
+  &.medium .loader {
+    height: $spinner-medium-size;
+    width: $spinner-medium-size;
+  }
+
+  &.large .loader {
+    width: $spinner-large-size;
+  }
+
+  .circular {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform-origin: center center;
+    width: 100%;
+  }
+
+  .circle-path {
+    fill: transparent;
+    stroke: $spinner-circle-color;
+    stroke-dasharray: 100, 200;
+    stroke-linecap: butt;
+    stroke-width: .25em;
+  }
+
+  // loop init & infinite looping animations
+
+  &.loop .circular {
+    animation: init-rotation $spinnerInitSpinDuration $spinnerInitRotationEase forwards,
+    rotate-loop $spinnerLoopSpinDuration linear $spinnerInitSpinDuration infinite;
+  }
+
+  &.loop .circle-path {
+    animation: init-dash $spinnerInitSpinDuration linear forwards;
+  }
+
+  &.ie-loop .circular {
+    animation: init-rotation $spinnerInitSpinDuration $spinnerInitRotationEase forwards,
+    fade-in $spinnerInitSpinDuration $spinnerInitRotationEase forwards,
+    rotate-loop $spinnerLoopSpinDuration linear $spinnerInitSpinDuration infinite;
+  }
+
+  // loop end animations
+
+  &.loop-end .circular {
+    animation: rotate-end-p1 $spinnerEndSpinDuration $spinnerEndFirstRotationEase forwards, rotate-end-p2 $spinnerEndSpinDuration $spinnerEndSecondRotationEase $spinnerEndSpinDuration forwards;
+  }
+
+  &.loop-end .circle-path {
+    animation: end-dash $spinnerEndSpinDuration $spinnerEndSecondRotationEase $spinnerEndSpinDuration forwards;
+  }
+
+  &.ie-loop-end .circular {
+    animation: rotate-end-p1 $spinnerEndSpinDuration $spinnerEndFirstRotationEase forwards,
+    fade-out $spinnerEndSpinDuration $spinnerInitRotationEase forwards;
+  }
+
+  // keyframe animation: loop inti animation
+
+  @keyframes init-rotation {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes init-dash {
+    0% {
+      stroke-dasharray: 1, 200;
+    }
+
+    100% {
+      stroke-dasharray: 100, 200;
+    }
+  }
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes rotate-loop {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  // keyframe animation: loop end animation
+
+  @keyframes end-dash {
+    0% {
+      opacity: 1;
+      stroke-dasharray: 100, 200;
+    }
+
+    99% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      stroke-dasharray: 1, 200;
+    }
+  }
+
+  @keyframes end-rotation {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes rotate-end-p1 {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes rotate-end-p2 {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  @keyframes fade-out {
+    100% {
+      opacity: 0;
+    }
+  }
+}

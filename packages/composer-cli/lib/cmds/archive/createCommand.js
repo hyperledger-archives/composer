@@ -17,16 +17,14 @@
 const Create = require ('./lib/create.js');
 
 module.exports.command = 'create [options]';
-module.exports.describe = 'Create the details of a Business Network Archive';
+module.exports.describe = 'Create a Business Network Archive';
 module.exports.builder = function (yargs){
 
-    return yargs.option('archiveFile',{alias: 'a', required: false, describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
-            .option('inputDir',{alias: 'd', required: false, describe: 'Location to create the archive from e.g. NPM module directory'})
-            .option('moduleName',{alias: 'm', required: false, describe: 'Name of the npm module to use '})
-            .conflicts('inputDir','moduleName')
-            .epilog('Only one of either inputDir or moduleName must be specified.');
+    return yargs.option('archiveFile',{alias: 'a', required: false,  describe: 'Business network archive file name. Default is based on the Identifier of the BusinessNetwork', type: 'string' })
+            .option('sourceType',{alias: 't', required: true, describe:'The type of the input containg the files used to create the archive [ module | dir ]'})
+            .option('sourceName',{alias: 'n', required: true, describe:'The Location to create the archive from e.g. NPM module directory or Name of the npm module to use'})
+            .usage('composer archive create --archiveFile digitialPropertyNetwork.zip --sourceType module --sourceName digitalproperty-network');
 };
-
 
 module.exports.handler = (argv) => {
 
@@ -36,6 +34,7 @@ module.exports.handler = (argv) => {
         process.exit(0);
     })
     .catch((error) => {
+
         console.log(error+ '\nCommand failed.');
         process.exit(1);
     });

@@ -1,0 +1,97 @@
+// Radio buttons
+.composer {
+ .radio-label {
+    display: block;
+    position: relative;
+    padding-left: $space-large;
+    cursor: pointer;
+    font-size: 0.95em;
+  }
+
+  input[type=radio] {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+  }
+
+  .radio-label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: $space-medium;
+    width: $space-medium;
+    background: #fff;
+    border: 1px solid $first-highlight;
+  }
+
+  .radio-label::before {
+    border-radius: 50%;
+  }
+
+  input[type=radio] + .radio-label,
+  input[type=radio]:focus + .radio-label {
+    &::before {
+      border: 1px solid $first-highlight;
+      transition: all 0.2s ease-in-out;
+    }
+  }
+
+  input[type=radio]:checked + .radio-label {
+    &::before {
+      border: 1px solid $first-highlight;
+    }
+  }
+
+  input[type=radio]:not([disabled]):checked + .radio-label,
+  input[type=radio]:checked:focus + .radio-label {
+    &:hover {
+      &::before {
+        border: 1px solid $first-highlight;
+      }
+    }
+  }
+
+  input[type=radio]:disabled + .radio-label {
+    &::before {
+      background: $third-highlight;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+  .radio-label::after {
+    content: '';
+    position: absolute;
+    display: block;
+    transform: scale(0.5);
+    opacity: 0;
+    transition: 0.3s;
+  }
+
+  input[type=radio]:checked + .radio-label {
+    &::after {
+      display: block;
+      background-color: $first-highlight;
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .radio-label::after {
+    left: 5px;
+    top: 5px;
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  input[type=radio]:disabled + .radio-label {
+    &::after {
+      background: $fourth-highlight;
+    }
+  }
+}
+
+
+

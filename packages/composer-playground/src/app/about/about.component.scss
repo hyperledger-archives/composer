@@ -1,0 +1,10 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+about {
+  padding: 15px;
+  flex: 1 1 auto;
+  p {
+    color: $secondary-text;
+  }
+}

@@ -54,9 +54,9 @@ describe('JSTransactionExecutor', () => {
             o String transactionId
         }`);
         factory = new Factory(modelManager);
-        transaction = factory.newInstance('org.acme', 'TestTransaction', '1');
-        resolvedTransaction = factory.newInstance('org.acme', 'TestTransaction', '1_RESOLVED');
-        participant = factory.newInstance('org.acme', 'TestParticipant', '1');
+        transaction = factory.newResource('org.acme', 'TestTransaction', '1');
+        resolvedTransaction = factory.newResource('org.acme', 'TestTransaction', '1_RESOLVED');
+        participant = factory.newResource('org.acme', 'TestParticipant', '1');
         scriptManager = new ScriptManager(modelManager);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         api = new Api(factory, participant, mockRegistryManager);

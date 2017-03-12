@@ -33,7 +33,7 @@ const uuid = require('uuid');
 /**
  * Use the Factory to create instances of Resource: transactions, participants
  * and assets.
- * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="width:100%;"/></a></p>
+ * <p><a href="./diagrams/factory.svg"><img src="./diagrams/factory.svg" style="height:100%;"/></a></p>
  * @class
  * @memberof module:composer-common
  */
@@ -83,6 +83,23 @@ class Factory {
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
+
+        if(!id || typeof(id) !== 'string') {
+            let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        if(id.trim().length === 0) {
+            let formatter = Globalize.messageFormatter('factory-newinstance-missingidentifier');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
         let modelFile = this.modelManager.getModelFile(ns);
         if(!modelFile) {
             let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
@@ -132,7 +149,7 @@ class Factory {
             newObj[idField] = id;
         }
 
-        debug('Factory.newInstance created %s', id );
+        debug('Factory.newResource created %s', id );
         return newObj;
     }
 
@@ -251,7 +268,7 @@ class Factory {
             throw new Error('type not specified');
         }
         id = id || uuid.v4();
-        let transaction = this.newInstance(ns, type, id, options);
+        let transaction = this.newResource(ns, type, id, options);
         const classDeclaration = transaction.getClassDeclaration();
 
         if (!(classDeclaration instanceof TransactionDeclaration)) {

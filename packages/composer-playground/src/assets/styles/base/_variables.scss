@@ -1,0 +1,54 @@
+// Variables
+
+// Images
+$composer-images-path: "../img" !default;
+
+// Typography
+$font-stack: 'Open Sans', 'Helvetica Neue for IBM', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$display-font: 'Open Sans';
+$svg-font: 'Source Code Pro';
+
+// Border width
+$border-width-large: 8px;
+$border-width-medium: 4px;
+$border-width-small: 1px;
+
+// Spacing
+$space-xsmall: 2px;
+$space-small: 4px;
+$space-smedium: 8px;
+$space-medium: 16px;
+$space-large: 32px;
+$space-xlarge: 64px;
+
+// Animation
+@mixin transition($properties...) {
+  transition-property: $properties;
+  transition-duration: .5s;
+  transition-timing-function: ease;
+}
+
+@mixin gradient-text($gradient) {
+  @supports(mix-blend-mode: lighten) {
+    display: inline-block;
+    position: relative;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+
+      background: unquote($gradient);
+      pointer-events: none;
+    }
+
+    color: #000;
+    background: #fff;
+    mix-blend-mode: multiply;
+
+    &::before {
+      mix-blend-mode: screen;
+    }
+  }
+}

@@ -16,38 +16,98 @@
 
 module.exports = function (app, callback) {
 
-    const dataSource = app.loopback.createDataSource('Composer', {
-        'name': 'Composer',
-        'connector': 'loopback-connector-composer',
-        'connectionProfileName': app.cfg.connectionProfileName,
-        'businessNetworkIdentifier': app.cfg.businessNetworkIdentifier,
-        'participantId': app.cfg.participantId,
-        'participantPwd': app.cfg.participantPwd
+    const composer = app.get('composer');
+
+    const dataSource = app.loopback.createDataSource('composer', {
+        name: 'composer',
+        connector: 'loopback-connector-composer',
+        connectionProfileName: composer.connectionProfileName,
+        businessNetworkIdentifier: composer.businessNetworkIdentifier,
+        participantId: composer.participantId,
+        participantPwd: composer.participantPwd
     });
 
-    dataSource.discoverModelDefinitions({}, (error, modelDefinitions) => {
-        console.log('Loopback Connector for Fabric Composer');
-        if (error) {
-            throw error;
-        }
-        modelDefinitions.forEach((modelDefinition) => {
-            //console.log('Process model: '+JSON.stringify(modelDefinition));
-            dataSource.discoverSchemas(modelDefinition.name, { visited: {}, associations: true }, (error, modelSchema) => {
-                if (error) {
-                    throw error;
-                }
-                // this is required because LoopBack doesn't like dots in model schema names
-                modelSchema.name = modelSchema.plural.replace(/\./g, '_');
-                modelSchema.idInjection = false;
-                let model = app.loopback.createModel(modelSchema);
-                app.model(model, {
-                    dataSource: dataSource,
-                    public: true
+    new Promise((resolve, reject) => {
+
+        // Discover the model definitions (types) from the connector.
+        // This will go and find all of the non-abstract types in the business network definition.
+        console.log('Discovering types from business network definition ...');
+        dataSource.discoverModelDefinitions({}, (error, modelDefinitions) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(modelDefinitions);
+        });
+
+    })
+    .then((modelDefinitions) => {
+
+        // For each model definition (type), we need to generate a Loopback model definition JSON file.
+        console.log('Discovered types from business network definition');
+        console.log('Generating schemas for all types in business network definition ...');
+        return modelDefinitions.reduce((promise, modelDefinition) => {
+            return promise.then((schemas) => {
+                return new Promise((resolve, reject) => {
+                    dataSource.discoverSchemas(modelDefinition.name, { visited: {}, associations: true }, (error, modelSchema) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        schemas.push(modelSchema);
+                        resolve(schemas);
+                    });
                 });
             });
+        }, Promise.resolve([]));
+
+    })
+    .then((modelSchemas) => {
+
+        // Now we have all the schemas, we need to fix them up and add them to Loopback.
+        console.log('Generated schemas for all types in business network definition');
+        console.log('Adding schemas for all types to Loopback ...');
+        modelSchemas.forEach((modelSchema) => {
+
+            // this call creates the model class from the model schema.
+            let model = app.loopback.createModel(modelSchema);
+
+            // we now want to filter out methods that we haven't implemented or don't want.
+            // we use a whitelist of method names to do this.
+            let whitelist;
+            if (modelSchema.options.composer.type === 'concept') {
+                whitelist = [ ];
+            } else if (modelSchema.options.composer.type === 'transaction') {
+                whitelist = [ 'create' ];
+            } else {
+                whitelist = [ 'create', 'deleteById', 'find', 'findById', 'exists', 'replaceById' ];
+            }
+            model.sharedClass.methods().forEach((method) => {
+                const name = (method.isStatic ? '' : 'prototype.') + method.name;
+                if (whitelist.indexOf(name) === -1) {
+                    model.disableRemoteMethodByName(name);
+                } else if (name === 'exists') {
+                    // we want to remove the /:id/exists method
+                    method.http = [{verb: 'head', path: '/:id'}];
+                } else if (name === 'replaceById') {
+                    // we want to remove the /:id/replace method
+                    method.http = [{verb: 'put', path: '/:id'}];
+                }
+            });
+
+            // now we register the model against the data source
+            app.model(model, {
+                dataSource: dataSource,
+                public: true
+            });
+
         });
-        console.log('Models Loaded Now');
+
+    })
+    .then(() => {
+        console.log('Added schemas for all types to Loopback');
         callback();
+    })
+    .catch((error) => {
+        callback(error);
     });
 };
 

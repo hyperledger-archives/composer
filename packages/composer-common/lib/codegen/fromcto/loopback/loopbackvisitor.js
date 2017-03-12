@@ -27,6 +27,17 @@ const TransactionDeclaration = require('../../../introspect/transactiondeclarati
 const debug = require('debug')('concerto:jsonschemavisitor');
 
 /**
+ * Convert a fully qualified type name, for example org.acme.MyAsset,
+ * into a name that is safe for use as a LoopBack model name.
+ * @private
+ * @param {String} fqn The fully qualified type name.
+ * @returns {String} A name that is safe for use as a LoopBack model name.
+ */
+function loopbackify(fqn) {
+    return fqn.replace(/\./g, '_');
+}
+
+/**
  * Convert the contents of a {@link ModelManager} instance to a set of LoopBack
  * Definition Language model files - one per concrete asset and transaction type.
  * Set a fileWriter property (instance of {@link FileWriter}) on the parameters
@@ -108,8 +119,9 @@ class LoopbackVisitor {
         // Visit all of the asset and transaction declarations, but ignore the abstract ones.
         let jsonSchemas = [];
         modelFile.getAssetDeclarations()
-            .concat(modelFile.getTransactionDeclarations())
+            .concat(modelFile.getConceptDeclarations())
             .concat(modelFile.getParticipantDeclarations())
+            .concat(modelFile.getTransactionDeclarations())
             .filter((declaration) => {
                 return !declaration.isAbstract();
             })
@@ -136,13 +148,16 @@ class LoopbackVisitor {
         if (parameters.first) {
             jsonSchema = {
                 $first: true,
-                name: assetDeclaration.getName(),
+                name: loopbackify(assetDeclaration.getFullyQualifiedName()),
                 description: `An asset named ${assetDeclaration.getName()}`,
                 plural: assetDeclaration.getFullyQualifiedName(),
                 base: 'PersistedModel',
-                idInjection: true,
+                idInjection: false,
                 options: {
-                    validateUpsert: true
+                    validateUpsert: true,
+                    composer: {
+                        type: 'asset'
+                    }
                 },
                 properties: {},
                 validations: [],
@@ -175,13 +190,16 @@ class LoopbackVisitor {
         if (parameters.first) {
             jsonSchema = {
                 $first: true,
-                name: participantDeclaration.getName(),
+                name: loopbackify(participantDeclaration.getFullyQualifiedName()),
                 description: `A participant named ${participantDeclaration.getName()}`,
                 plural: participantDeclaration.getFullyQualifiedName(),
                 base: 'PersistedModel',
-                idInjection: true,
+                idInjection: false,
                 options: {
-                    validateUpsert: true
+                    validateUpsert: true,
+                    composer: {
+                        type: 'participant'
+                    }
                 },
                 properties: {},
                 validations: [],
@@ -209,9 +227,33 @@ class LoopbackVisitor {
     visitConceptDeclaration(conceptDeclaration, parameters) {
         debug('entering visitConceptDeclaration', conceptDeclaration.getName());
 
-        // If this is the first declaration, then we are building a schema for this participant.
+        // If this is the top declaration, then we are building a schema for this concept.
         let jsonSchema = {};
-        jsonSchema.type = 'Object';
+        if (parameters.first) {
+            jsonSchema = {
+                $first: true,
+                name: loopbackify(conceptDeclaration.getFullyQualifiedName()),
+                description: `A concept named ${conceptDeclaration.getName()}`,
+                plural: conceptDeclaration.getFullyQualifiedName(),
+                // Concepts are not PersistedModel instances as they cannot exist by themselves.
+                // base: 'PersistedModel',
+                idInjection: false,
+                options: {
+                    validateUpsert: true,
+                    composer: {
+                        type: 'concept'
+                    }
+                },
+                properties: {},
+                validations: [],
+                relations: {},
+                acls: [],
+                methods: []
+            };
+            parameters.first = false;
+        } else {
+            jsonSchema.type = 'Object';
+        }
 
         // Apply all the common schema elements.
         return this.visitClassDeclarationCommon(conceptDeclaration, parameters, jsonSchema);
@@ -232,13 +274,16 @@ class LoopbackVisitor {
         if (parameters.first) {
             jsonSchema = {
                 $first: true,
-                name: transactionDeclaration.getName(),
+                name: loopbackify(transactionDeclaration.getFullyQualifiedName()),
                 description: `A transaction named ${transactionDeclaration.getName()}`,
                 plural: transactionDeclaration.getFullyQualifiedName(),
                 base: 'PersistedModel',
-                idInjection: true,
+                idInjection: false,
                 options: {
-                    validateUpsert: true
+                    validateUpsert: true,
+                    composer: {
+                        type: 'transaction'
+                    }
                 },
                 properties: {},
                 validations: [],
@@ -267,6 +312,13 @@ class LoopbackVisitor {
     visitClassDeclarationCommon(classDeclaration, parameters, jsonSchema) {
         debug('entering visitClassDeclarationCommon', classDeclaration.getName());
 
+        // Add information from the class declaration into the composer section.
+        if (jsonSchema.options && jsonSchema.options.composer) {
+            jsonSchema.options.composer.namespace = classDeclaration.getModelFile().getNamespace();
+            jsonSchema.options.composer.name = classDeclaration.getName();
+            jsonSchema.options.composer.fqn = classDeclaration.getFullyQualifiedName();
+        }
+
         // Set the required properties into the schema.
         Object.assign(jsonSchema, {
             properties: {}
@@ -276,6 +328,14 @@ class LoopbackVisitor {
         if (!jsonSchema.description) {
             jsonSchema.description = `An instance of ${classDeclaration.getFullyQualifiedName()}`;
         }
+
+        // Every class declaration has a $class property.
+        jsonSchema.properties.$class = {
+            type: 'string',
+            default: classDeclaration.getFullyQualifiedName(),
+            required: false,
+            description: 'The class identifier for this type'
+        };
 
         // Walk over all of the properties of this class and its super classes.
         classDeclaration.getProperties().forEach((property) => {
@@ -368,11 +428,16 @@ class LoopbackVisitor {
         // Not primitive, so must be a class or enumeration!
         } else {
 
+            // Render the type as JSON Schema.
+            jsonSchema = {
+                type: loopbackify(field.getFullyQualifiedTypeName())
+            };
+
             // Look up the type of the property.
             let type = parameters.modelFile.getType(field.getType());
 
-            // Render the type as JSON Schema.
-            jsonSchema = type.accept(this, parameters);
+            // Visit it, but ignore the response.
+            type.accept(this, parameters);
 
         }
 

@@ -1,9 +1,14 @@
 # Fabric Composer REST Server
 
-Set up the Composer REST Server with
+Set up the Composer REST Server with this command
 
 ```
-npm install composer-rest-server
+npm install composer-rest-server -g
+```
+
+You may need to prefix this with a `sudo` command in order to have the necessary permissions ie.
+```
+sudo npm install composer-rest-server -g
 ```
 
 ## Overview
@@ -17,7 +22,7 @@ Executing those APIs will then have a real effect on the business network to whi
 ## Usage
 
 ```bash  
-npm start
+composer-rest-server
 ```
 
 ## Hints and Tips

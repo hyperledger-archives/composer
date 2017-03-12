@@ -67,7 +67,7 @@ describe('Context', () => {
 
     });
 
-    describe('#initialize', () => {
+    describe('#loadBusinessNetworkDefinition', () => {
 
         it('should load the business network if it is not already in the cache', () => {
             let mockDataService = sinon.createStubInstance(DataService);
@@ -75,12 +75,9 @@ describe('Context', () => {
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
             mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
             sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockIdentityService = sinon.createStubInstance(IdentityService);
-            mockIdentityService.getCurrentUserID.returns('');
-            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            return context.initialize()
+            return context.loadBusinessNetworkDefinition()
                 .then(() => {
                     sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                     sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
@@ -95,95 +92,143 @@ describe('Context', () => {
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
             mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
             sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockIdentityService = sinon.createStubInstance(IdentityService);
-            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             Context.cacheBusinessNetwork('dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetwork);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').rejects();
-            return context.initialize()
+            return context.loadBusinessNetworkDefinition()
                 .then(() => {
                     sinon.assert.notCalled(BusinessNetworkDefinition.fromArchive);
                 });
         });
 
-        it('should load the current participant if an identity is specified', () => {
+        it('should handle any errors thrown loading the business network', () => {
             let mockDataService = sinon.createStubInstance(DataService);
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+            mockDataCollection.get.withArgs('businessnetwork').rejects(new Error('such error'));
             sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockIdentityService = sinon.createStubInstance(IdentityService);
-            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
-            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
-            sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
-            mockIdentityService.getCurrentUserID.returns('dogeid1');
-            let mockParticipant = sinon.createStubInstance(Resource);
-            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-            mockIdentityManager.getParticipant.withArgs('dogeid1').resolves(mockParticipant);
-            return context.initialize()
-                .then(() => {
-                    context.getParticipant().should.equal(mockParticipant);
-                });
+            return context.loadBusinessNetworkDefinition()
+                .should.be.rejectedWith(/such error/);
         });
 
-        it('should load but not set the current participant if an identity is specified and reinitialize is specified', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
+    });
+
+    describe('#loadCurrentParticipant', () => {
+
+        it('should return null if no identity is specified', () => {
             let mockIdentityService = sinon.createStubInstance(IdentityService);
             sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
             let mockIdentityManager = sinon.createStubInstance(IdentityManager);
             sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            mockIdentityService.getCurrentUserID.returns(null);
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            mockIdentityManager.getParticipant.withArgs('dogeid1').resolves(mockParticipant);
+            return context.loadCurrentParticipant()
+                .should.eventually.be.equal(null);
+        });
+
+        it('should load the current participant if an identity is specified', () => {
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
+            let mockIdentityManager = sinon.createStubInstance(IdentityManager);
+            sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
             mockIdentityService.getCurrentUserID.returns('dogeid1');
             let mockParticipant = sinon.createStubInstance(Resource);
             mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
             mockIdentityManager.getParticipant.withArgs('dogeid1').resolves(mockParticipant);
-            return context.initialize(true)
-                .then(() => {
-                    should.equal(context.getParticipant(), null);
-                });
+            return context.loadCurrentParticipant()
+                .should.eventually.be.equal(mockParticipant);
         });
 
         it('should throw an error if an invalid identity is specified', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
             let mockIdentityService = sinon.createStubInstance(IdentityService);
             sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
             let mockIdentityManager = sinon.createStubInstance(IdentityManager);
             sandbox.stub(context, 'getIdentityManager').returns(mockIdentityManager);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
             mockIdentityService.getCurrentUserID.returns('dogeid1');
             mockIdentityManager.getParticipant.withArgs('dogeid1').rejects(new Error('no such participant'));
-            return context.initialize()
+            return context.loadCurrentParticipant()
                 .should.be.rejectedWith(/The identity may be invalid or may have been revoked/);
         });
 
-        it('should add the default JavaScript transaction executor', () => {
+    });
+
+    describe('#initialize', () => {
+
+        let mockBusinessNetwork, mockSystemRegistries, mockSystemIdentities;
+
+        beforeEach(() => {
+            mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
+            sinon.stub(context, 'loadBusinessNetworkDefinition').resolves(mockBusinessNetwork);
+            sinon.stub(context, 'loadCurrentParticipant').resolves(null);
             let mockDataService = sinon.createStubInstance(DataService);
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(mockDataCollection);
-            mockDataCollection.get.withArgs('businessnetwork').resolves({ data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
-            sandbox.stub(context, 'getDataService').returns(mockDataService);
-            let mockIdentityService = sinon.createStubInstance(IdentityService);
-            mockIdentityService.getCurrentUserID.returns('');
-            sandbox.stub(context, 'getIdentityService').returns(mockIdentityService);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            sinon.stub(context, 'addTransactionExecutor');
+            mockSystemRegistries = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysregistries').resolves(mockSystemRegistries);
+            mockSystemIdentities = sinon.createStubInstance(DataCollection);
+            mockDataService.getCollection.withArgs('$sysidentities').resolves(mockSystemIdentities);
+        });
+
+        it('should initialize the context', () => {
             return context.initialize()
                 .then(() => {
-                    let transactionExecutors = context.getTransactionExecutors();
-                    transactionExecutors.should.have.lengthOf(1);
-                    transactionExecutors[0].should.be.an.instanceOf(JSTransactionExecutor);
+                    sinon.assert.calledOnce(context.loadBusinessNetworkDefinition);
+                    context.businessNetworkDefinition.should.equal(mockBusinessNetwork);
+                    sinon.assert.calledOnce(context.loadCurrentParticipant);
+                    should.equal(context.participant, null);
+                    sinon.assert.calledOnce(context.addTransactionExecutor);
+                    sinon.assert.calledWith(context.addTransactionExecutor, sinon.match.instanceOf(JSTransactionExecutor));
+                    context.sysregistries.should.equal(mockSystemRegistries);
+                    context.sysidentities.should.equal(mockSystemIdentities);
+                });
+        });
+
+        it('should initialize the context with a specified business network definition', () => {
+            let mockBusinessNetwork2 = sinon.createStubInstance(BusinessNetworkDefinition);
+            return context.initialize({ businessNetworkDefinition: mockBusinessNetwork2 })
+                .then(() => {
+                    sinon.assert.notCalled(context.loadBusinessNetworkDefinition);
+                    context.businessNetworkDefinition.should.equal(mockBusinessNetwork2);
+                });
+        });
+
+        it('should initialize the context with the current participant if found', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            context.loadCurrentParticipant.resolves(mockParticipant);
+            return context.initialize()
+                .then(() => {
+                    context.participant.should.equal(mockParticipant);
+                });
+        });
+
+        it('should not initialize the context with the current participant if reinitializing', () => {
+            let mockParticipant = sinon.createStubInstance(Resource);
+            mockParticipant.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            context.loadCurrentParticipant.resolves(mockParticipant);
+            return context.initialize({ reinitialize: true })
+                .then(() => {
+                    should.equal(context.participant, null);
+                });
+        });
+
+        it('should initialize the context with a specified system registries collection', () => {
+            let mockSystemRegistries2 = sinon.createStubInstance(DataCollection);
+            return context.initialize({ sysregistries: mockSystemRegistries2 })
+                .then(() => {
+                    context.sysregistries.should.equal(mockSystemRegistries2);
+                });
+        });
+
+        it('should initialize the context with a specified system identities collection', () => {
+            let mockSystemIdentities2 = sinon.createStubInstance(DataCollection);
+            return context.initialize({ sysidentities: mockSystemIdentities2 })
+                .then(() => {
+                    context.sysidentities.should.equal(mockSystemIdentities2);
                 });
         });
 
@@ -322,6 +367,8 @@ describe('Context', () => {
             sinon.stub(context, 'getSerializer').returns(mockSerializer);
             let mockAccessController = sinon.createStubInstance(AccessController);
             sinon.stub(context, 'getAccessController').returns(mockAccessController);
+            let mockSystemRegistries = sinon.createStubInstance(DataCollection);
+            sinon.stub(context, 'getSystemRegistries').returns(mockSystemRegistries);
             context.getRegistryManager().should.be.an.instanceOf(RegistryManager);
         });
 
@@ -394,6 +441,8 @@ describe('Context', () => {
             sinon.stub(context, 'getDataService').returns(mockDataService);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockSystemIdentities = sinon.createStubInstance(DataCollection);
+            sinon.stub(context, 'getSystemIdentities').returns(mockSystemIdentities);
             context.getIdentityManager().should.be.an.instanceOf(IdentityManager);
         });
 
@@ -545,6 +594,38 @@ describe('Context', () => {
             let mockAccessController = sinon.createStubInstance(AccessController);
             context.accessController = mockAccessController;
             context.getAccessController().should.equal(mockAccessController);
+        });
+
+    });
+
+    describe('#getSystemRegistries', () => {
+
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getSystemRegistries();
+            }).should.throw(/must call initialize before calling this function/);
+        });
+
+        it('should return the system registries data collection', () => {
+            let mockSystemRegistries = sinon.createStubInstance(DataCollection);
+            context.sysregistries = mockSystemRegistries;
+            context.getSystemRegistries().should.equal(mockSystemRegistries);
+        });
+
+    });
+
+    describe('#getSystemIdentities', () => {
+
+        it('should throw if not initialized', () => {
+            (() => {
+                context.getSystemIdentities();
+            }).should.throw(/must call initialize before calling this function/);
+        });
+
+        it('should return the system identities data collection', () => {
+            let mockSystemIdentities = sinon.createStubInstance(DataCollection);
+            context.sysidentities = mockSystemIdentities;
+            context.getSystemIdentities().should.equal(mockSystemIdentities);
         });
 
     });

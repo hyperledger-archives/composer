@@ -285,6 +285,7 @@ describe('ResourceValidator', function () {
     });
 
     describe('#visitClassDeclaration', function() {
+
         it('should detect visiting a non resource', function () {
             const typedStack = new TypedStack('Invalid');
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
@@ -296,7 +297,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect using a missing super type', function () {
-            const vehicle = factory.newInstance('org.acme.l2', 'Vehicle', 'ABC');
+            const vehicle = factory.newResource('org.acme.l2', 'Vehicle', 'ABC');
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
@@ -310,7 +311,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect assigning to a missing type', function () {
-            const vehicle = factory.newInstance('org.acme.l3', 'Car', 'ABC');
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'ABC');
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
@@ -324,7 +325,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect assigning to an abstract type', function () {
-            const vehicle = factory.newInstance('org.acme.l3', 'Car', 'ABC');
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'ABC');
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
             const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
@@ -341,7 +342,7 @@ describe('ResourceValidator', function () {
         });
 
         it('should detect additional field', function () {
-            const vehicle = factory.newInstance('org.acme.l3', 'Car', 'ABC');
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'ABC');
             vehicle.foo = 'Baz';
             const typedStack = new TypedStack(vehicle);
             const assetDeclaration = modelManager.getType('org.acme.l2.Vehicle');
@@ -351,5 +352,20 @@ describe('ResourceValidator', function () {
                 assetDeclaration.accept(resourceValidator,parameters );
             }).should.throw(/Instance ABC has a property named foo which is not declared in org.acme.l3.Car/);
         });
+
+        it('should detect an empty identifier', function () {
+            const vehicle = factory.newResource('org.acme.l3', 'Car', 'foo');
+            vehicle.$identifier = ''; // empty the identifier
+            vehicle.model = 'Ford';
+            vehicle.numberOfWheels = 4;
+            const typedStack = new TypedStack(vehicle);
+            const assetDeclaration = modelManager.getType('org.acme.l3.Car');
+            const parameters = { stack : typedStack, 'modelManager' : modelManager, rootResourceIdentifier : 'ABC' };
+
+            (function () {
+                assetDeclaration.accept(resourceValidator,parameters );
+            }).should.throw(/has an empty identifier/);
+        });
+
     });
 });

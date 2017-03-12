@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 
 import { AdminService } from '../admin.service';
 import { ClientService } from '../client.service';
-import { SampleService } from '../sample.service';
 import { InitializationService } from '../initialization.service';
 
 import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';

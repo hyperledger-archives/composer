@@ -33,7 +33,7 @@ const ModelFile = require('./introspect/modelfile');
  * to other Composer services, such as the {@link Serializer} (to convert instances to/from JSON)
  * and {@link Factory} (to create instances).
  * </p>
- * <p><a href="./diagrams-private/modelmanager.svg"><img src="./diagrams-private/modelmanager.svg" style="width:100%;"/></a></p>
+ * <p><a href="./diagrams-private/modelmanager.svg"><img src="./diagrams-private/modelmanager.svg" style="height:100%;"/></a></p>
  * @private
  * @class
  * @memberof module:composer-common
@@ -57,7 +57,7 @@ class ModelManager {
      * @return {Object} the result of visiting or null
      * @private
      */
-    accept(visitor,parameters) {
+    accept(visitor, parameters) {
         return visitor.visit(this, parameters);
     }
 
@@ -70,12 +70,13 @@ class ModelManager {
      * must be added in dependency order, or the addModelFiles method can be
      * used to add a set of files irrespective of dependencies.
      * @param {string} modelFile - The Composer file as a string
+     * @param {string} fileName - an optional file name to associate with the model file
      * @throws {InvalidModelException}
      * @return {Object} The newly added model file (internal).
      */
-    addModelFile(modelFile) {
+    addModelFile(modelFile, fileName) {
         if (typeof modelFile === 'string') {
-            let m = new ModelFile(this, modelFile);
+            let m = new ModelFile(this, modelFile, fileName);
             m.validate();
             this.modelFiles[m.getNamespace()] = m;
             return m;
@@ -92,12 +93,13 @@ class ModelManager {
      * same namespace has already been added to the ModelManager then it
      * will be replaced.
      * @param {string} modelFile - The Composer file as a string
+     * @param {string} fileName - an optional file name to associate with the model file
      * @throws {InvalidModelException}
      * @returns {Object} The newly added model file (internal).
      */
-    updateModelFile(modelFile) {
+    updateModelFile(modelFile, fileName) {
         if (typeof modelFile === 'string') {
-            let m = new ModelFile(this, modelFile);
+            let m = new ModelFile(this, modelFile, fileName);
             if (!this.modelFiles[m.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -130,25 +132,34 @@ class ModelManager {
      * Add a set of Composer files to the model manager.
      * @param {string[]} modelFiles - An array of Composer files as
      * strings.
+     * @param {string[]} fileNames - An optional array of file names to
+     * associate with the model files
      * @returns {Object[]} The newly added model files (internal).
      */
-    addModelFiles(modelFiles) {
+    addModelFiles(modelFiles, fileNames) {
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
 
         try {
             // create the model files
-            modelFiles.forEach((modelFile) => {
+            for (let n = 0; n < modelFiles.length; n++) {
+                const modelFile = modelFiles[n];
+                let fileName = null;
+
+                if (fileNames) {
+                    fileName = fileNames[n];
+                }
+
                 if (typeof modelFile === 'string') {
-                    let m = new ModelFile(this, modelFile);
+                    let m = new ModelFile(this, modelFile, fileName);
                     this.modelFiles[m.getNamespace()] = m;
                     newModelFiles.push(m);
                 } else {
                     this.modelFiles[modelFile.getNamespace()] = modelFile;
                     newModelFiles.push(modelFile);
                 }
-            });
+            }
 
             // re-validate all the model files
             for (let ns in this.modelFiles) {
@@ -158,7 +169,7 @@ class ModelManager {
             // return the model files.
             return newModelFiles;
         }
-        catch(err) {
+        catch (err) {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
@@ -174,7 +185,7 @@ class ModelManager {
         let keys = Object.keys(this.modelFiles);
         let result = [];
 
-        for(let n=0; n < keys.length;n++) {
+        for (let n = 0; n < keys.length; n++) {
             result.push(this.modelFiles[keys[n]]);
         }
 
@@ -189,14 +200,14 @@ class ModelManager {
      * @throws {IllegalModelException} - if the type is not defined
      * @private
      */
-    resolveType(context,type) {
+    resolveType(context, type) {
         // is the type a primitive?
-        if(!ModelUtil.isPrimitiveType(type)) {
+        if (!ModelUtil.isPrimitiveType(type)) {
 
             let ns = ModelUtil.getNamespace(type);
             let modelFile = this.getModelFile(ns);
 
-            if(!modelFile) {
+            if (!modelFile) {
                 let formatter = Globalize.messageFormatter('modelmanager-resolvetype-nonsfortype');
                 throw new IllegalModelException(formatter({
                     type: type,
@@ -204,7 +215,7 @@ class ModelManager {
                 }));
             }
 
-            if(!modelFile.isLocalType(type)) {
+            if (!modelFile.isLocalType(type)) {
                 let formatter = Globalize.messageFormatter('modelmanager-resolvetype-notypeinnsforcontext');
                 throw new IllegalModelException(formatter({
                     context: context,
@@ -256,11 +267,11 @@ class ModelManager {
      */
     getType(type) {
         // is the type a primitive?
-        if(!ModelUtil.isPrimitiveType(type)) {
+        if (!ModelUtil.isPrimitiveType(type)) {
             let ns = ModelUtil.getNamespace(type);
             let modelFile = this.getModelFile(ns);
 
-            if(!modelFile) {
+            if (!modelFile) {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
                 throw new Error(formatter({
                     type: type
@@ -269,8 +280,8 @@ class ModelManager {
 
             let classDecl = modelFile.getType(type);
 
-            if(!classDecl) {
-                throw new Error( 'No type ' + type + ' in namespace ' + modelFile.getNamespace() );
+            if (!classDecl) {
+                throw new Error('No type ' + type + ' in namespace ' + modelFile.getNamespace());
             }
 
             return classDecl;
