@@ -51,7 +51,7 @@ module.exports = function (options) {
        */
       extensions: ['.ts', '.js', '.json', '.html'],
       // An array of directory names to be resolved to the current directory
-      modules: [helpers.root('src'), helpers.root('node_modules')],
+      modules: [helpers.root('src'), 'node_modules'],
       // Use our versions of Node modules.
       alias: {
         'fs': 'browserfs/dist/shims/fs.js',
