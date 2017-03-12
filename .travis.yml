@@ -36,7 +36,7 @@ deploy:
     script: ./.travis/deploy.sh
     skip_cleanup: true
     on:
-        all_branches: true
+        branch: master
 cache: false
 sudo: required
 notifications:
