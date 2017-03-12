@@ -76,7 +76,7 @@ module.exports = function (options) {
       extensions: ['.ts', '.js', '.json'],
 
       // An array of directory names to be resolved to the current directory
-      modules: [helpers.root('src'), helpers.root('node_modules')],
+      modules: [helpers.root('src'), 'node_modules'],
 
       // Use our versions of Node modules.
       alias: {
@@ -319,23 +319,19 @@ module.exports = function (options) {
       // Fix Angular 2
       new NormalModuleReplacementPlugin(
         /facade(\\|\/)async/,
-        helpers.root('node_modules/@angular/core/src/facade/async.js')
+        require.resolve('@angular/core/src/facade/async.js')
       ),
       new NormalModuleReplacementPlugin(
         /facade(\\|\/)collection/,
-        helpers.root('node_modules/@angular/core/src/facade/collection.js')
+        require.resolve('@angular/core/src/facade/collection.js')
       ),
       new NormalModuleReplacementPlugin(
         /facade(\\|\/)errors/,
-        helpers.root('node_modules/@angular/core/src/facade/errors.js')
+        require.resolve('@angular/core/src/facade/errors.js')
       ),
       new NormalModuleReplacementPlugin(
         /facade(\\|\/)lang/,
-        helpers.root('node_modules/@angular/core/src/facade/lang.js')
-      ),
-      new NormalModuleReplacementPlugin(
-        /facade(\\|\/)math/,
-        helpers.root('node_modules/@angular/core/src/facade/math.js')
+        require.resolve('@angular/core/src/facade/lang.js')
       ),
 
       new webpack.ProvidePlugin({
