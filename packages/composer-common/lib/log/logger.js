@@ -284,7 +284,7 @@ class Logger {
     static getLoggerConfig(){
         try {
             // This weird code is needed to trick browserify.
-
+            process.env.SUPPRESS_NO_CONFIG_WARNING = 'y';
             const mod = 'config';
             const req = require;
             const config = req(mod);

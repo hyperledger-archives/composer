@@ -88,7 +88,7 @@ class Context {
 
                 // check if the network has been undeployed first. if is has throw exception.
                 if (object.undeployed){
-                    throw new Error('Network has already been undeployed');
+                    throw new Error('The business network has been undeployed');
                 }
 
                 LOG.debug(method, 'Looking in cache for business network', object.hash);
