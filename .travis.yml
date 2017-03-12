@@ -37,7 +37,9 @@ deploy:
     skip_cleanup: true
     on:
         branch: master
-cache: false
+cache:
+  directories:
+    - node_modules
 sudo: required
 notifications:
   pushover:
