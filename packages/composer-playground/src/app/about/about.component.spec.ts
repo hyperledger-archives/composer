@@ -42,13 +42,13 @@ describe('AboutComponent', () => {
 
     it ('Should display the correct title for the AboutComponent', () => {
         fixture.detectChanges();
-        expect(el.textContent).toContain('About');
+        el.textContent.should.equal('About');
     });
 
     it ('Should call getVersions when the component is created', fakeAsync(() => {
         fixture.detectChanges();
         tick();
         fixture.detectChanges();
-        expect(fixture.componentInstance.playground).toBe(MOCK_RETURN.playground);
+        fixture.componentInstance.playground.should.equal(MOCK_RETURN.playground);
     }));
 });
