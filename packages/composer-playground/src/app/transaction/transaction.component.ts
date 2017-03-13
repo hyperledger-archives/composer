@@ -15,6 +15,7 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/scroll/simplescrollbars';
 
+const uuid = require('uuid');
 const fabricComposerOwner = 'fabric-composer';
 const fabricComposerRepository = 'sample-networks';
 
@@ -29,6 +30,7 @@ export class TransactionComponent implements OnInit {
   private transactionTypes: TransactionDeclaration[] = [];
   private selectedTransaction = null;
   private selectedTransactionName: string = null;
+  private hiddenTransactionItems = new Map();
 
   private resourceDefinition: string = null;
   private submitInProgress: boolean = false;
@@ -71,59 +73,48 @@ export class TransactionComponent implements OnInit {
         });
 
         // Set first in list as selectedTransaction
-        if (this.transactionTypes) {
+        if (this.transactionTypes && this.transactionTypes.length>0) {
           this.selectedTransaction = this.transactionTypes[0];
           this.selectedTransactionName = this.selectedTransaction.getName();
+
+          // We wish to hide certain items in a transaction, set these here
+          this.hiddenTransactionItems.set(this.selectedTransaction.getIdentifierFieldName(), uuid.v4());
+          this.hiddenTransactionItems.set('timestamp', new Date());
+
+          // Create a resource definition for the base item
+          this.generateTransactionDeclaration({ generate: true });
         }
-
-        // Stub out json definition
-        this.resourceDefinition = this.generateResourceStub(this.selectedTransaction);
-
-        // Run validator on json definition
-        this.onDefinitionChanged();
 
       });
   }
 
   /**
    * Process the user selection of a TransactionType
+   * @param {TransactionDeclaration} transactionType - the user selected TransactionDeclaration
    */
   onTransactionSelect(transactionType) {
     this.selectedTransaction = transactionType;
     this.selectedTransactionName = this.selectedTransaction.getName();
-    this.resourceDefinition = this.generateResourceStub(this.selectedTransaction);
+    this.generateTransactionDeclaration({ generate: true });
   }
 
   /**
-   * Generate a stub resource definition
+   * Generate a TransactionDeclaration definition, accounting for need to hide fields
+   * @param {Object} parameters  - the parameters defining resource definition generation
    */
-  private generateResourceStub(transactionDeclaration)  : string {
-    let stub = '';
-    stub = '{\n  "$class": "' + transactionDeclaration.getFullyQualifiedName() + '"';
-    let resourceProperties = transactionDeclaration.getProperties();
-    resourceProperties.forEach((property) => {
-      stub += ',\n  "' + property.getName() + '": ""';
-    });
-    stub += '\n}';
-    return stub;
-  }
-
-  /**
-   * Generate the json description of a resource
-   */
-  private generateResource(): void {
+  private generateTransactionDeclaration(parameters) {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
-    let introspector = businessNetworkDefinition.getIntrospector();
     let factory = businessNetworkDefinition.getFactory();
-    let idx = Math.round(Math.random() * 9999).toString();
-    idx = leftPad(idx, 4, '0');
-    let id = `${this.selectedTransaction.getIdentifierFieldName()}:${idx}`;
-    let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, { generate: true });
+    let id = this.hiddenTransactionItems.get(this.selectedTransaction.getIdentifierFieldName());
+    let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, parameters);
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);
+      // remove hidden items from json
+      this.hiddenTransactionItems.forEach((value,key) => {
+        delete json[key];
+      });
       this.resourceDefinition = JSON.stringify(json, null, 2);
-      this.onDefinitionChanged();
     } catch (error) {
       // We can't generate a sample instance for some reason.
       this.defitionError = error.toString();
@@ -131,11 +122,15 @@ export class TransactionComponent implements OnInit {
   }
 
   /**
-   * Validate json definition of resource
+   * Validate the defition of the TransactionDeclaration, accounting for hidden fields.
    */
   private onDefinitionChanged() {
     try {
       let json = JSON.parse(this.resourceDefinition);
+      // Add required items that are hidden from user
+      this.hiddenTransactionItems.forEach((value,key) => {
+        json[key]=value;
+      });
       let serializer = this.clientService.getBusinessNetwork().getSerializer();
       let resource = serializer.fromJSON(json);
       resource.validate();
@@ -146,13 +141,16 @@ export class TransactionComponent implements OnInit {
   }
 
   /**
-   * Submit the Transaction
+   * Submit the TransactionDeclaration definition
    */
   private submitTransaction() {
     this.submitInProgress = true;
     return Promise.resolve()
       .then(() => {
         let json = JSON.parse(this.resourceDefinition);
+        // Add UUID but not timestamp, as this is generated upon submission
+        let id = this.selectedTransaction.getIdentifierFieldName();
+        json[id] = this.hiddenTransactionItems.get(id);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
         return this.clientService.getBusinessNetworkConnection().submitTransaction(resource);
