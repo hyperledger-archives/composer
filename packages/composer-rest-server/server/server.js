@@ -32,6 +32,8 @@ const yargs = require('yargs')
     .option('p', { alias: 'connectionProfileName', describe: 'The connection profile name', type: 'string', default: process.env.COMPOSER_CONNECTION_PROFILE })
     .option('i', { alias: 'enrollId', describe: 'The enrollment ID of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_ID })
     .option('s', { alias: 'enrollSecret', describe: 'The enrollment secret of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_SECRET })
+    .option('N', { alias: 'namespaces', describe: 'The enrollment secret of the user', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'never', choices: ['always', 'required', 'never'] })
+    .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
     .help('h')
     .alias('h', 'help')
     .argv;
@@ -54,7 +56,8 @@ if (yargs.p === undefined && yargs.n === undefined && yargs.i === undefined && y
                 connectionProfileName: answers.profilename,
                 businessNetworkIdentifier: answers.businessNetworkId,
                 participantId: answers.userid,
-                participantPwd: answers.secret
+                participantPwd: answers.secret,
+                namespaces: answers.namespaces
             };
         });
 
@@ -68,7 +71,9 @@ if (yargs.p === undefined && yargs.n === undefined && yargs.i === undefined && y
             connectionProfileName: yargs.p,
             businessNetworkIdentifier: yargs.n,
             participantId: yargs.i,
-            participantPwd: yargs.s
+            participantPwd: yargs.s,
+            namespaces: yargs.N,
+            port: yargs.P
         });
     }
 }
@@ -85,12 +90,17 @@ promise.then((composer) => {
             if (error) {
                 return reject(error);
             }
-            resolve();
+            resolve(composer);
         });
     });
 
 })
-.then(() => {
+.then((composer) => {
+
+    // Set the port if one was specified.
+    if (composer.port) {
+        app.set('port', composer.port);
+    }
 
     app.start = function () {
         // start the web server

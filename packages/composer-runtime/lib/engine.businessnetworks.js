@@ -62,30 +62,28 @@ class EngineBusinessNetworks {
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    undeploy(context, args){
-        const method = 'undeploy';
+    undeployBusinessNetwork(context, args){
+        const method = 'undeployBusinessNetwork';
         LOG.entry(method, context, args);
-        if (args.length !== 1) {
+        if (args.length !== 0) {
             LOG.error(method, 'Invalid arguments', args);
-            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'undeploy', ['businessNetworkArchive']));
+            throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, method, []));
         }
         let dataService = context.getDataService();
+        let sysdata;
         return dataService.getCollection('$sysdata')
-           .then((sysdata) => {
-
-               // set flag in the sysdata to say that this has been undeployed
-               sysdata.undeployed=true;
-               // Validate the business network archive and store it.
-               return sysdata.get('businessnetwork');
-           })
-          .then((object)=> {
-              let businessNetworkArchive = Buffer.from(object.data, 'base64');
-              return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);})
-          .then((businessNetworkDefinition) => {
-               // Reinitialize the context to reload the business network.
-              LOG.debug(method, businessNetworkDefinition.getIdentifier()+' has been undeployed');
-              LOG.exit(method);
-          });
+        .then((sysdata_) => {
+            sysdata = sysdata_;
+            // Validate the business network archive and store it.
+            return sysdata.get('businessnetwork');
+        })
+        .then((businessNetwork) => {
+            businessNetwork.undeployed = true;
+            return sysdata.update('businessnetwork', businessNetwork);
+        })
+        .then(() => {
+            LOG.exit(method);
+        });
     }
 
 
