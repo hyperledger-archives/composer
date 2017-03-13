@@ -7,7 +7,7 @@ import {AdminService} from './admin.service';
 import {ClientService} from './client.service';
 import {AlertService} from './alert.service';
 
-import {BusinessNetworkDefinition} from 'composer-admin';
+import {BusinessNetworkDefinition} from 'composer-common';
 import {AclFile} from 'composer-common';
 
 const initialModelFile =
