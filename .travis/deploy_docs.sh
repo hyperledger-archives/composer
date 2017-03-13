@@ -21,7 +21,11 @@ git config push.default simple
 echo ${DIR}
 cd "${DIR}/packages/composer-website/out"
 
-export REPO="fabric-composer.github.io"
+if [ "${DOCS}" == "unstable" ]; then
+    export REPO="fabric-composer-ubstable.github.io"
+else
+    export REPO="fabric-composer.github.io"
+fi
 
 git clone git@github.com:fabric-composer/${REPO}.git
 git remote set-url origin ${REPO}.git
