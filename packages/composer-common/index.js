@@ -66,6 +66,7 @@ module.exports.FSConnectionProfileStore = require('./lib/fsconnectionprofilestor
 module.exports.Globalize = require('./lib/globalize');
 module.exports.Introspector = require('./lib/introspect/introspector');
 module.exports.Logger = require('./lib/log/logger');
+module.exports.LoopbackVisitor = require('./lib/codegen/fromcto/loopback/loopbackvisitor');
 module.exports.ModelFile = require('./lib/introspect/modelfile');
 module.exports.ModelManager = require('./lib/modelmanager');
 module.exports.ParticipantDeclaration = require('./lib/introspect/participantdeclaration');

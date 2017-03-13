@@ -19,6 +19,7 @@ const Logger = require('composer-common').Logger;
 
 const LOG = Logger.getLog('TransactionLogger');
 
+/* istanbul ignore next */
 /**
  * A class for logging the changes made by a transaction.
  * @protected
