@@ -135,11 +135,19 @@ describe('DataCollection', () => {
 
     describe('#add', () => {
 
-        it('should call _add and handle no error', () => {
+        it('should call _add, default force to false and handle no error', () => {
             sinon.stub(dataCollection, '_add').yields(null);
             return dataCollection.add('id', {})
                 .then(() => {
-                    sinon.assert.calledWith(dataCollection._add, 'id', {});
+                    sinon.assert.calledWith(dataCollection._add, 'id', {}, false);
+                });
+        });
+
+        it('should call _add, passthrough force and handle no error', () => {
+            sinon.stub(dataCollection, '_add').yields(null);
+            return dataCollection.add('id', {}, true)
+                .then(() => {
+                    sinon.assert.calledWith(dataCollection._add, 'id', {}, true);
                 });
         });
 
@@ -150,7 +158,7 @@ describe('DataCollection', () => {
                     throw new Error('should not get here');
                 })
                 .catch((error) => {
-                    sinon.assert.calledWith(dataCollection._add, 'id', {});
+                    sinon.assert.calledWith(dataCollection._add, 'id', {}, false);
                     error.should.match(/error/);
                 });
         });

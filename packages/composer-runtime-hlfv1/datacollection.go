@@ -220,13 +220,15 @@ func (dataCollection *DataCollection) add(call otto.FunctionCall) (result otto.V
 	defer func() { logger.Debug("Exiting DataCollection.add", result) }()
 
 	// Validate the arguments from JavaScript.
-	id, object, callback := call.Argument(0), call.Argument(1), call.Argument(2)
+	id, object, force, callback := call.Argument(0), call.Argument(1), call.Argument(2), call.Argument(3)
 	if !id.IsString() {
 		panic(fmt.Errorf("id not specified or is not a string"))
 	} else if !object.IsObject() {
 		panic(fmt.Errorf("object not specified or is not a string"))
 	} else if !callback.IsFunction() {
 		panic(fmt.Errorf("callback not specified or is not a string"))
+	} else if !force.IsBoolean() {
+		panic(fmt.Errorf("force not specified or is not a boolean"))
 	}
 
 	// Serialize the object.
@@ -250,20 +252,23 @@ func (dataCollection *DataCollection) add(call otto.FunctionCall) (result otto.V
 		return otto.UndefinedValue()
 	}
 
-	// Check to see if the object already exists.
-	existingValue, err := dataCollection.Stub.GetState(key)
-	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
+	forceVal, err := force.ToBoolean()
+	if !forceVal  {
+		// Check to see if the object already exists.
+		existingValue, err := dataCollection.Stub.GetState(key)
 		if err != nil {
-			panic(err)
+			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
+			if err != nil {
+				panic(err)
+			}
+			return otto.UndefinedValue()
+		} else if existingValue != nil {
+			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Failed to add object with ID '%s' as the object already exists", id)))
+			if err != nil {
+				panic(err)
+			}
+			return otto.UndefinedValue()
 		}
-		return otto.UndefinedValue()
-	} else if existingValue != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Failed to add object with ID '%s' as the object already exists", id)))
-		if err != nil {
-			panic(err)
-		}
-		return otto.UndefinedValue()
 	}
 
 	// Store the object in the collection.
