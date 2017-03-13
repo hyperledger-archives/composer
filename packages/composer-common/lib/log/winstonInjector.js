@@ -13,7 +13,6 @@
  */
 'use strict';
 
-// let exports = module.exports = {};c
 const fs = require('fs-extra');
 const winston = require('winston');
 const sprintf = require('sprintf-js').sprintf;
@@ -81,9 +80,9 @@ exports.getLogger = function (config,configElements){
         ]
     };
 
-    winston.loggers.add('IBM-Concerto',newWinstonLogger);
+    winston.loggers.add('Fabric-Composer',newWinstonLogger);
     // console.log('returning winston logger',JSON.stringify(winston.loggers.get('IBM-Concerto'),' '));
-    return winston.loggers.get('IBM-Concerto');
+    return winston.loggers.get('Fabric-Composer');
 
 
 };

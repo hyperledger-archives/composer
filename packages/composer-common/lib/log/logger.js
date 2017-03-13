@@ -279,8 +279,8 @@ class Logger {
             const mod = 'config';
             const req = require;
             const config = req(mod);
-            if (config.has('ConcertoConfig.debug')){
-                return config.get('ConcertoConfig.debug');
+            if (config.has('fabric-composer.debug')){
+                return config.get('fabric-composer.debug');
             }
         } catch (e) {
             // We don't care if we can't find the config module, it won't be
@@ -344,7 +344,7 @@ class Logger {
             for (let i=0; i< details.length;i++){
                 let e = details[i];
                 if (e === '*' || e ==='composer:*'){
-                    _tree.setIncluded();
+                    _tree.setRootInclusion();
                 }
             // determine if the element is for concerto or not
                 let machResult = e.match(regex);
@@ -374,7 +374,7 @@ class Logger {
         }
 
         // now we need to check if the name that has come in and should be traced
-        concertoLogger.include = _tree.getInclusion(concertoLogger.classname);
+        concertoLogger.include = _tree.getInclusion(concertoLogger.className);
 
         return ;
     }
