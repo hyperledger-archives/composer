@@ -17,10 +17,13 @@
       "es6"
     ],
     "types": [
+      "chai",
       "hammerjs",
       "jasmine",
       "node",
       "selenium-webdriver",
+      "sinon",
+      "sinon-chai",
       "source-map",
       "uglify-js",
       "webpack"
