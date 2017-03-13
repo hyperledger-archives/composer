@@ -343,11 +343,11 @@ describe('HFCConnectionManager', () => {
 
                             // Check for the correct interactions with hfc.
                             sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
-                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL, { pem: '=== such certificate ===' });
+                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL, { pem: '=== such certificate ===\n' });
                             sinon.assert.calledOnce(mockChain.addPeer);
-                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL, { pem: '=== such certificate ===' });
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL, { pem: '=== such certificate ===\n' });
                             sinon.assert.calledOnce(mockChain.eventHubConnect);
-                            sinon.assert.calledWith(mockChain.eventHubConnect, 'grpc://vp1', { pem: '=== such certificate ===' });
+                            sinon.assert.calledWith(mockChain.eventHubConnect, 'grpc://vp1', { pem: '=== such certificate ===\n' });
                             return true;
 
                         });
@@ -404,6 +404,24 @@ describe('HFCConnectionManager', () => {
                 peerURL: 'grpc://vp0',
                 eventHubURL: 'grpc://vp1'
             };
+        });
+
+        it('should throw for a connection not created by the connection manager', () => {
+            let mockConnection = sinon.createStubInstance(HFCConnection);
+            mockConnection.getIdentifier.returns('not a real identifier');
+            (() => {
+                connectionManager.onDisconnect(mockConnection);
+            }).should.throw(/not created by connection manager/);
+        });
+
+        it('should throw for a connection already closed by the connection manager', () => {
+            let mockConnection = sinon.createStubInstance(HFCConnection);
+            let mockChain = sinon.createStubInstance(hfcChain);
+            mockConnection.getIdentifier.returns('not a real identifier');
+            connectionManager.chainPool['not a real identifier'] = { count: 0, chain: mockChain };
+            (() => {
+                connectionManager.onDisconnect(mockConnection);
+            }).should.throw(/already closed/);
         });
 
         it('should call onDisconnect when client connection is disconnected', function() {

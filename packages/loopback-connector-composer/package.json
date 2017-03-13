@@ -1,6 +1,6 @@
 {
   "name": "loopback-connector-composer",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "A Loopback connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -12,8 +12,7 @@
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
-    "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
-    "posttest": "istanbul check-coverage",
+    "test": "nyc mocha --recursive",
     "integration-test": "mocha -t 0 integration-test",
     "integration-test-debug": "mocha $NODE_DEBUG_OPTION -t 0 integration-test"
   },
@@ -29,22 +28,22 @@
   "author": "Fabric Composer",
   "license": "Apache-2.0",
   "dependencies": {
-    "composer-admin": "^0.5.0",
-    "composer-client": "^0.5.0",
-    "composer-common": "^0.5.0",
-    "composer-connector-embedded": "^0.5.0",
-    "composer-connector-web": "^0.5.0",
-    "loopback-connector": "^2.5.0"
+    "composer-admin": "^0.5.2",
+    "composer-client": "^0.5.2",
+    "composer-common": "^0.5.2",
+    "loopback": "^3.4.0",
+    "loopback-connector": "^4.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "eslint": "^3.8.1",
-    "ink-docstrap": "^1.3.0",
-    "jsdoc": "^3.4.2",
+    "chai-as-promised": "^6.0.0",
+    "eslint": "^3.17.1",
+    "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
     "loopback": "^2.35.0",
-    "mocha": "^3.1.2",
-    "sinon": "^1.17.6",
+    "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
+    "sinon": "^1.17.7",
     "sinon-as-promised": "^4.0.2",
     "sleep-promise": "^2.0.0"
   },
@@ -59,5 +58,25 @@
     "blocking": true,
     "logInfo": false,
     "logError": true
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "integration-test/**",
+      "out/**",
+      "scripts/**",
+      "systest/**",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
   }
 }

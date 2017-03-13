@@ -118,6 +118,8 @@ class HFCConnectionManager extends ConnectionManager {
                     // Check to see that the certificate is not just whitespace.
                     let certificate = connectOptions.certificate.trim();
                     if (certificate) {
+                        // Certificates *must* end with a trailing newline.
+                        certificate += '\n';
                         grpcOptions.pem = certificate;
                     }
                 }

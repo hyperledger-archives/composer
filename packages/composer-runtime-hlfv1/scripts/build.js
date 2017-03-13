@@ -66,6 +66,8 @@ wstream3.setDefaultEncoding('utf8');
 const wstream4 = fs.createWriteStream(targetFile4);
 wstream4.setDefaultEncoding('utf8');
 
+const execSuffix = /^win/.test(process.platform) ? '.cmd' : '';
+
 return Promise.resolve()
 .then(() => {
     return new Promise((resolve, reject) => {
@@ -105,7 +107,7 @@ return Promise.resolve()
             //   https://github.com/Starcounter-Jack/JSON-Patch/issues/140
             .transform('babelify', { presets: [ 'es2015' ], global: true, ignore: /fast-json-patch/ })
             .bundle();
-        const exorcist = child_process.spawn('exorcist', [targetFile2]);
+        const exorcist = child_process.spawn(`exorcist${execSuffix}`, [targetFile2]);
         rstream.pipe(exorcist.stdin);
         exorcist.stdout.pipe(wstream3);
         exorcist.stdout.on('end', () => {
@@ -116,7 +118,7 @@ return Promise.resolve()
 .then(() => {
     return new Promise((resolve, reject) => {
         const rstream = fs.createReadStream(targetFile3);
-        const uglifyjs = child_process.spawn('uglifyjs', ['-', '--in-source-map', targetFile2, '--source-map-inline']);
+        const uglifyjs = child_process.spawn(`uglifyjs${execSuffix}`, ['-', '--in-source-map', targetFile2, '--source-map-inline']);
         rstream.pipe(uglifyjs.stdin);
         uglifyjs.stderr.pipe(process.stderr);
         uglifyjs.stdout.pipe(wstream4);
