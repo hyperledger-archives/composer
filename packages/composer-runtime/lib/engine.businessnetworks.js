@@ -195,22 +195,20 @@ class EngineBusinessNetworks {
             })
             .then(() => {
 
-                // Create the default transaction registry if it does not exist.
+                // Create the default transaction registry as it won't exist
+                // in v1.0 if we queried it's existence it would still be there but
+                // we know it isn't really.
                 let registryManager = context.getRegistryManager();
-                return registryManager
-                    .get('Transaction', 'default')
-                    .catch((error) => {
-                        LOG.debug(method, 'The default transaction registry does not exist, creating');
-                        return registryManager.add('Transaction', 'default', 'Default Transaction Registry');
-                    });
-
+                return registryManager.add('Transaction', 'default', 'Default Transaction Registry', true);
             })
             .then(() => {
 
                 // Create all other default registries.
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = context.getRegistryManager();
-                return registryManager.createDefaults();
+
+                // force creation of defaults as we know the don't exist
+                return registryManager.createDefaults(true);
 
             })
             .then(() => {

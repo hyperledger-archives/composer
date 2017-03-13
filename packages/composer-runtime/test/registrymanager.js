@@ -98,6 +98,20 @@ describe('RegistryManager', () => {
                 });
         });
 
+        it('should forcably create default asset registries', () => {
+            let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+            mockAssetDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
+            mockIntrospector.getClassDeclarations.returns([mockAssetDeclaration]);
+            sinon.stub(registryManager, 'get').withArgs('Asset', 'org.doge.Doge').rejects();
+            sinon.stub(registryManager, 'add').withArgs('Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge').resolves();
+            return registryManager.createDefaults(true)
+                .then(() => {
+                    sinon.assert.notCalled(registryManager.get);
+                    sinon.assert.calledOnce(registryManager.add);
+                    sinon.assert.calledWith(registryManager.add, 'Asset', 'org.doge.Doge', 'Asset registry for org.doge.Doge');
+                });
+        });
+
         it('should ignore abstract default asset registries', () => {
             let mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
             mockAssetDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
@@ -134,6 +148,20 @@ describe('RegistryManager', () => {
             return registryManager.createDefaults()
                 .then(() => {
                     sinon.assert.calledOnce(registryManager.get);
+                    sinon.assert.calledOnce(registryManager.add);
+                    sinon.assert.calledWith(registryManager.add, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge');
+                });
+        });
+
+        it('should forcably create default participant registries', () => {
+            let mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
+            mockParticipantDeclaration.getFullyQualifiedName.returns('org.doge.Doge');
+            mockIntrospector.getClassDeclarations.returns([mockParticipantDeclaration]);
+            sinon.stub(registryManager, 'get').withArgs('Participant', 'org.doge.Doge').rejects();
+            sinon.stub(registryManager, 'add').withArgs('Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge').resolves();
+            return registryManager.createDefaults(true)
+                .then(() => {
+                    sinon.assert.notCalled(registryManager.get);
                     sinon.assert.calledOnce(registryManager.add);
                     sinon.assert.calledWith(registryManager.add, 'Participant', 'org.doge.Doge', 'Participant registry for org.doge.Doge');
                 });
