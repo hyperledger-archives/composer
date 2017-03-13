@@ -2,7 +2,7 @@
 layout: default
 title: Integrating existing systems
 category: concepts
-sidebar: sidebars/tasks.md
+sidebar: sidebars/integrating.md
 excerpt: How to create a new Connection Profile
 ---
 

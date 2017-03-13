@@ -2,7 +2,7 @@
 layout: default
 title: Getting Started with Fabric Composer
 category: start
-sidebar: sidebars/start.md
+sidebar: sidebars/tutorials.md
 excerpt: Getting Started with Fabric Composer
 ---
 

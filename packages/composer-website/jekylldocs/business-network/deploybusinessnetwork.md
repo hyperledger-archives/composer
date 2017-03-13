@@ -2,7 +2,7 @@
 layout: default
 title: Task - Deploy a Business Network
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to deploy a Business Network
 ---
 

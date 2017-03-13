@@ -2,7 +2,7 @@
 layout: default
 title: Task - Creating a Connection Profile
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/installing.md
 excerpt: How to create a new Connection Profile
 ---
 

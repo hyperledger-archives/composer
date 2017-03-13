@@ -2,7 +2,7 @@
 layout: default
 title: Task - Create a Business Domain Model
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to create a business domain model
 ---
 

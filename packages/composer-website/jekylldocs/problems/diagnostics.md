@@ -2,7 +2,7 @@
 layout: default
 title: Task - Diagnosing Problems
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/problems.md
 excerpt: Diagnose Problems
 ---
 

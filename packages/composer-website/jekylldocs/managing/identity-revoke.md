@@ -2,7 +2,7 @@
 layout: default
 title: Task - Revoke an Identity of a Participant
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/managing.md
 excerpt: Revoke an Identity of a Participant
 ---
 

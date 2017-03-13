@@ -2,7 +2,7 @@
 layout: default
 title: Task - Generating a REST API Server
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/applications.md
 excerpt: How to generate a REST API Server for a Business Network
 ---
 
@@ -17,7 +17,7 @@ Once installed this can be run from the command line in an interactive mode or a
 # Prerequesites
 
 ---
-Along with the details of the business network and the connection profile that you will use to connect to it, you will also need to have the following 
+Along with the details of the business network and the connection profile that you will use to connect to it, you will also need to have the following
 prerequesite software installed on your system.
 
 *node.js*: v6.9.5
@@ -49,7 +49,7 @@ You will then be asked to enter a few simple details about your business network
 
 ```bash
   _____           _              _                   ____                                                         
- |  ___|   __ _  | |__    _ __  (_)   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __ 
+ |  ___|   __ _  | |__    _ __  (_)   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __
  | |_     / _` | | '_ \  | '__| | |  / __|  _____  | |      / _ \  | '_ ` _ \  | '_ \   / _ \  / __|  / _ \ | '__|
  |  _|   | (_| | | |_) | | |    | | | (__  |_____| | |___  | (_) | | | | | | | | |_) | | (_) | \__ \ |  __/ | |   
  |_|      \__,_| |_.__/  |_|    |_|  \___|          \____|  \___/  |_| |_| |_| | .__/   \___/  |___/  \___| |_|   

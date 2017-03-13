@@ -2,7 +2,7 @@
 layout: default
 title: Task - Issue an Identity to a Participant
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/managing.md
 excerpt: Issue an Identity to a Participant
 ---
 

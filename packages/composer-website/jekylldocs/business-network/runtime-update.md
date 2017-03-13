@@ -2,7 +2,7 @@
 layout: default
 title: Task - Update a Business Network Definition on a Fabric
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to update a business network definition on a fabric
 ---
 

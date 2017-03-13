@@ -2,7 +2,7 @@
 layout: default
 title: Task - Publish Business Network Definition
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to publish a business network definition for use by applications
 ---
 

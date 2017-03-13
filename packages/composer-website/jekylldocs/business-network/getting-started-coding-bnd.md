@@ -2,7 +2,7 @@
 layout: default
 title: Getting Started with coding a Business Network Definition
 category: start
-sidebar: sidebars/start.md
+sidebar: sidebars/businessnetworks.md
 excerpt: Getting Started with coding a Business Network Definition
 ---
 

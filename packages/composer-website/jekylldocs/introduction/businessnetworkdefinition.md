@@ -2,7 +2,7 @@
 layout: default
 title: Fabric Composer - Business Network Definition
 category: concepts
-sidebar: sidebars/concepts.md
+sidebar: sidebars/introduction.md
 excerpt: Overview of the Business Network Definition
 ---
 

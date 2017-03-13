@@ -2,7 +2,7 @@
 layout: default
 title: Task - Implement access control using the current Participant
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/managing.md
 excerpt: How to use the current Participant to implement access control
 ---
 

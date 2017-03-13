@@ -2,7 +2,7 @@
 layout: default
 title: Getting Started with a Fabric Composer node.js application
 category: start
-sidebar: sidebars/start.md
+sidebar: sidebars/applications.md
 excerpt: Getting Started with a Fabric Composer node.js application
 ---
 

@@ -2,7 +2,7 @@
 layout: default
 title: Fabric Composer - Participants and Identities
 category: concepts
-sidebar: sidebars/concepts.md
+sidebar: sidebars/introduction.md
 excerpt: Business Network
 ---
 

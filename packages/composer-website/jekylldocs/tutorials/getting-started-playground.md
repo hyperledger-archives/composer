@@ -2,7 +2,7 @@
 layout: default
 title: Installing and running the Fabric Composer Playground
 category: start
-sidebar: sidebars/start.md
+sidebar: sidebars/tutorials.md
 excerpt: Installing and running the Fabric Composer Playground
 ---
 

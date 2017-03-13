@@ -2,7 +2,7 @@
 layout: default
 title: Task - Create a Business Network Definition
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to create a business network definition
 ---
 

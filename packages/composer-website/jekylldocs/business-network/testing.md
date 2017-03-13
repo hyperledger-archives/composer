@@ -2,7 +2,7 @@
 layout: default
 title: Task - Testing a Business Network Definition
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to test a business network definition
 ---
 

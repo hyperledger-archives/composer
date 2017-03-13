@@ -2,7 +2,7 @@
 layout: default
 title: Generating a REST API
 category: start
-sidebar: sidebars/start.md
+sidebar: sidebars/applications.md
 excerpt: Generating a REST API
 ---
 

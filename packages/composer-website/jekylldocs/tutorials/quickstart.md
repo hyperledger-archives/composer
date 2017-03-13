@@ -2,7 +2,7 @@
 layout: default
 title: Fabric Composer Quickstart
 category: start
-sidebar: sidebars/quickstart_sidebar.md
+sidebar: sidebars/tutorials.md
 excerpt: Quickstart
 
 ---

@@ -2,7 +2,7 @@
 layout: default
 title: Task - Publish Domain Model
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to publish a domain model for use in a business network
 ---
 

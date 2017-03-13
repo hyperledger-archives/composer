@@ -2,7 +2,7 @@
 layout: default
 title: Task - Add a participant
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/managing.md
 excerpt: How to add a participant
 ---
 

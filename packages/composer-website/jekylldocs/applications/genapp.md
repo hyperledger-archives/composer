@@ -2,7 +2,7 @@
 layout: default
 title: Task - Generating an Application
 category: tasks
-sidebar: sidebars/tasks.md
+sidebar: sidebars/applications.md
 excerpt: How to generate a starter application
 ---
 
