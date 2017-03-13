@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-proxy",
-  "version": "0.4.5",
+  "version": "0.5.2",
   "description": "The proxying client connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -11,11 +11,10 @@
     "pretest": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test": "mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
-    "posttest": "istanbul check-coverage"
+    "test": "nyc mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -43,18 +42,36 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "eslint": "^3.10.2",
-    "ink-docstrap": "^1.3.0",
+    "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.1.2",
-    "moment": "^2.17.1",
-    "sinon": "^1.17.6",
+    "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
+    "sinon": "^1.17.7",
     "sinon-as-promised": "^4.0.2",
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.4.5",
-    "socket.io-client": "^1.7.2"
+    "composer-common": "^0.5.2",
+    "socket.io-client": "^1.7.3"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "out/**",
+      "scripts/**",
+      "systest/**",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 11,
+    "branches": 0,
+    "functions": 6,
+    "lines": 11
   }
 }

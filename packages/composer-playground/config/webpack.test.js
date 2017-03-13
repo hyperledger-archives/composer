@@ -12,13 +12,15 @@ const ProvidePlugin = require('webpack/lib/ProvidePlugin');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
 const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
 const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
+
 /**
  * Webpack Constants
  */
 const ENV = process.env.ENV = process.env.NODE_ENV = 'test';
 const DOCKER = !!process.env.DOCKER;
 const DOCKER_COMPOSE = !!process.env.DOCKER_COMPOSE;
-const PLAYGROUND_API = process.env.PLAYGROUND_API;
+const PLAYGROUND_API = process.env.PLAYGROUND_API || 'playground-api';
+
 /**
  * Webpack configuration
  *
@@ -26,6 +28,7 @@ const PLAYGROUND_API = process.env.PLAYGROUND_API;
  */
 module.exports = function (options) {
   return {
+
     /**
      * Source map for Karma from the help of karma-sourcemap-loader &  karma-webpack
      *
@@ -33,25 +36,22 @@ module.exports = function (options) {
      * See: https://github.com/webpack/karma-webpack#source-maps
      */
     devtool: 'inline-source-map',
+
     /**
      * Options affecting the resolving of modules.
      *
      * See: http://webpack.github.io/docs/configuration.html#resolve
      */
-   /*
-     * Options affecting the resolving of modules.
-     *
-     * See: http://webpack.github.io/docs/configuration.html#resolve
-     */
     resolve: {
-      /*
+
+      /**
        * An array of extensions that should be used to resolve modules.
        *
        * See: http://webpack.github.io/docs/configuration.html#resolve-extensions
        */
       extensions: ['.ts', '.js', '.json', '.html'],
       // An array of directory names to be resolved to the current directory
-      modules: [helpers.root('src'), helpers.root('node_modules')],
+      modules: [helpers.root('src'), 'node_modules'],
       // Use our versions of Node modules.
       alias: {
         'fs': 'browserfs/dist/shims/fs.js',
@@ -59,9 +59,11 @@ module.exports = function (options) {
         'path': 'browserfs/dist/shims/path.js',
         'processGlobal': 'browserfs/dist/shims/process.js',
         'bufferGlobal': 'browserfs/dist/shims/bufferGlobal.js',
-        'bfsGlobal': require.resolve('browserfs')
+        'bfsGlobal': require.resolve('browserfs'),
+         sinon: 'sinon/pkg/sinon'
       }
     },
+
     /**
      * Options affecting the normal modules.
      *
@@ -71,6 +73,9 @@ module.exports = function (options) {
      * See: https://github.com/AngularClass/angular2-webpack-starter/issues/1188#issuecomment-262872034
      */
     module: {
+
+      noParse: [/sinon/],
+
       rules: [
         /*
          * Typescript loader support for .ts and Angular 2 async routes via .async.ts
@@ -111,6 +116,7 @@ module.exports = function (options) {
             presets: [require.resolve('babel-preset-es2015')]
           }
         },
+
         /**
          * Json loader support for *.json files.
          *
@@ -132,6 +138,7 @@ module.exports = function (options) {
           loader: ['to-string-loader', 'css-loader'],
           exclude: [helpers.root('src/index.html')]
         },
+
         /**
          * Raw loader support for *.scss files
          *
@@ -142,6 +149,7 @@ module.exports = function (options) {
             loader: ['raw-loader', 'sass-loader'],
             exclude: [helpers.root('src/index.html')]
         },
+
         /**
          * Raw loader support for *.html
          * Returns file content as string
@@ -153,6 +161,9 @@ module.exports = function (options) {
           loader: 'raw-loader',
           exclude: [helpers.root('src/index.html')]
         },
+
+        { test: /sinon.*\.js$/,   loader: "imports-loader?define=>false,require=>false"  },
+
         /**
          * Instruments JS files with Istanbul for subsequent code coverage reporting.
          * Instrument only testing sources.
@@ -165,10 +176,10 @@ module.exports = function (options) {
           loader: 'istanbul-instrumenter-loader',
           include: helpers.root('src'),
           exclude: [
-            /\.ts$/,
             /node_modules/
           ]
         },
+
         {
           test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
           loader: "url-loader?limit=10000&minetype=application/font-woff"
@@ -189,6 +200,7 @@ module.exports = function (options) {
           test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
           loader: "url-loader?limit=10000&minetype=image/svg+xml"
         },
+
         /**
          * BrowserFS has a crap implementation of setImmediate:
          *   https://github.com/jvilk/BrowserFS/issues/169
@@ -202,12 +214,14 @@ module.exports = function (options) {
         }
       ]
     },
+
     /**
      * Add additional plugins to the compiler.
      *
      * See: http://webpack.github.io/docs/configuration.html#plugins
      */
     plugins: [
+
       /**
        * Plugin: DefinePlugin
        * Description: Define free variables.
@@ -222,13 +236,15 @@ module.exports = function (options) {
         'ENV': JSON.stringify(ENV),
         'HMR': false,
         'DOCKER': DOCKER,
-        'DOCKER_COMPOSE': DOCKER_COMPOSE
+        'DOCKER_COMPOSE': DOCKER_COMPOSE,
+        'PLAYGROUND_API' : JSON.stringify(PLAYGROUND_API)
         /* 'process.env': {
           'ENV': JSON.stringify(ENV),
           'NODE_ENV': JSON.stringify(ENV),
           'HMR': false,
         } */
       }),
+
       /**
        * Plugin: ContextReplacementPlugin
        * Description: Provides context to Angular's use of System.import
@@ -244,6 +260,7 @@ module.exports = function (options) {
           // your Angular Async Route paths relative to this root directory
         }
       ),
+
        /**
        * Plugin LoaderOptionsPlugin (experimental)
        *
@@ -252,15 +269,20 @@ module.exports = function (options) {
       new LoaderOptionsPlugin({
         debug: true,
         options: {
+
         }
       }),
+
       new webpack.ProvidePlugin({
         jQuery: 'jquery',
         $: 'jquery',
         jquery: 'jquery'
       }),
+
       new webpack.ProvidePlugin({ BrowserFS: 'bfsGlobal', process: 'processGlobal', Buffer: 'bufferGlobal' })
+
     ],
+
     /**
      * Include polyfills or mocks for various node stuff
      * Description: Node configuration
@@ -275,5 +297,6 @@ module.exports = function (options) {
       clearImmediate: false,
       setImmediate: true
     }
+
   };
 }

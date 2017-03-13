@@ -72,6 +72,17 @@ function getFabricDetails() {
                     return 'Please enter your secret';
                 }
             }
+        },
+        {
+            name: 'namespaces',
+            type: 'list',
+            message: 'Specify if you want namespaces in the generated REST API:',
+            choices: [
+                {name: 'always use namespaces', value: 'always'},
+                {name: 'use namespaces if conflicting types exist', value: 'required'},
+                {name: 'never use namespaces', value: 'never'}
+            ],
+            default: 'always'
         }
     ];
 

@@ -29,7 +29,10 @@ const sinon = require('sinon');
 describe('ConnectionProfileManager', () => {
 
     beforeEach(() => {
-        mockery.enable();
+        mockery.enable({
+            warnOnReplace: false,
+            warnOnUnregistered: false
+        });
     });
 
     afterEach(() => {

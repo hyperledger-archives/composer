@@ -426,7 +426,6 @@ export class EditorComponent implements OnInit {
         this.deployedPackageName = this.businessNetworkDefinition.getName();
         this.deployedPackageVersion = this.businessNetworkDefinition.getVersion();
         this.deployedPackageDescription = this.businessNetworkDefinition.getDescription();
-        this.readme = this.businessNetworkDefinition.getMetadata().getREADME();
 
       }
     }, (reason) => {

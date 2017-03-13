@@ -17,8 +17,8 @@ describe('SuccessComponent', () => {
       fixture = TestBed.createComponent(SuccessComponent);
       component = fixture.componentInstance;
   });
-  
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    component.should.be.ok;
   });
 });

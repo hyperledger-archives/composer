@@ -1,6 +1,6 @@
 {
   "name": "composer-admin",
-  "version": "0.4.5",
+  "version": "0.5.2",
   "description": "Fabric Composer Admin, code that manages business networks deployed to Hyperledger Fabric",
   "engines": {
     "node": ">=6",
@@ -11,16 +11,12 @@
   "scripts": {
     "prepublish": "node ./scripts/tsgen.js",
     "pretest": "npm run lint",
-    "test": "./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
-    "posttest": "istanbul check-coverage",
+    "test": "node ./scripts/api-changelog.js && nyc mocha --recursive",
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "npm run docpub && npm run docpriv",
-    "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public .",
-    "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private .",
-    "systest": "mocha -t 0 systest && cucumber-js systest"
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf"
   },
   "repository": {
     "type": "git",
@@ -37,18 +33,17 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
-    "eslint": "^3.5.0",
-    "ink-docstrap": "^1.3.0",
-    "istanbul": "^0.4.5",
-    "jsdoc": "^3.4.1",
+    "eslint": "^3.17.1",
+    "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.0.2",
-    "sinon": "^1.17.6",
+    "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
+    "sinon": "^1.17.7",
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
-    "composer-common": "^0.4.5",
-    "composer-connector-hlf": "^0.4.5"
+    "composer-common": "^0.5.2",
+    "composer-connector-hlf": "^0.5.2"
   },
   "license-check-config": {
     "src": [
@@ -61,5 +56,24 @@
     "blocking": true,
     "logInfo": false,
     "logError": true
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "out/**",
+      "scripts/**",
+      "systest/**",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
   }
 }
