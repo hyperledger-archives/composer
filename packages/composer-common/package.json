@@ -1,6 +1,6 @@
 {
   "name": "composer-common",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "Fabric Composer Common, code that is common across client, admin and runtime.",
   "engines": {
     "node": ">=6",
@@ -15,14 +15,10 @@
     "postlint": "npm run licchk",
     "licchk": "license-check",
     "postlicchk": "npm run doc",
-    "doc": "npm run docpub && npm run docpriv",
-    "docpub": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a public,undefined -d ./out/public .",
-    "docpriv": "jsdoc --pedantic --recurse -c jsdoc.conf -t ./node_modules/ink-docstrap/template -a all -d ./out/private .",
+    "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "postdoc": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/composer-common.js",
-    "test": "./scripts/api-changelog.sh && mocha --recursive && istanbul cover --include-all-sources --report cobertura --report html ./node_modules/mocha/bin/_mocha -- --recursive",
-    "posttest": "istanbul check-coverage",
-    "systest": "mocha -t 0 systest && cucumber-js systest"
+    "test": "node ./scripts/api-changelog.js && nyc mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -40,20 +36,18 @@
     "babel-preset-es2015": "^6.18.0",
     "babelify": "^7.3.0",
     "browserfs": "^1.1.0",
-    "browserify": "^13.1.1",
+    "browserify": "^13.3.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
-    "eslint": "^3.5.0",
-    "ink-docstrap": "^1.3.0",
-    "istanbul": "^0.4.5",
-    "jsdoc": "^3.4.1",
+    "eslint": "^3.17.1",
+    "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
-    "mocha": "^3.0.2",
+    "mocha": "^3.2.0",
     "mockery": "^2.0.0",
-    "moment": "^2.15.1",
+    "nyc": "^10.1.2",
     "pegjs": "^0.9.0",
-    "sinon": "^1.17.6",
+    "sinon": "^1.17.7",
     "sinon-as-promised": "^4.0.2"
   },
   "dependencies": {
@@ -62,7 +56,7 @@
     "commander": "^2.9.0",
     "comment-parser": "^0.4.0",
     "config": "^1.24.0",
-    "debug": "2.3.3",
+    "debug": "^2.6.2",
     "doctrine": "^2.0.0",
     "esprima": "^3.1.2",
     "fs-promise": "^1.0.0",
@@ -80,8 +74,8 @@
     "temp": "^0.8.3",
     "thenify": "^3.2.1",
     "thenify-all": "^1.6.0",
-    "uuid": "^3.0.0",
-    "winston": "^2.3.0"
+    "uuid": "^3.0.1",
+    "winston": "^2.3.1"
   },
   "license-check-config": {
     "src": [
@@ -94,5 +88,33 @@
     "blocking": true,
     "logInfo": false,
     "logError": true
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "lib/codegen/*",
+      "lib/codegen/fromcto/golang/**",
+      "lib/codegen/fromcto/plantuml/**",
+      "lib/codegen/fromcto/typescript/**",
+      "lib/codegen/fromjs/**",
+      "lib/tools/changelog.js",
+      "lib/tools/plantumltoimage.js",
+      "lib/introspect/parser.js",
+      "lib/acl/parser.js",
+      "out/**",
+      "scripts/**",
+      "systest/**",
+      "test/**"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 97,
+    "branches": 92,
+    "functions": 98,
+    "lines": 97
   }
 }

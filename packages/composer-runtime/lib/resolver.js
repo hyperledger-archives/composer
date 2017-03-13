@@ -117,14 +117,14 @@ class Resolver {
 
                 // Go through each item in the array.
                 LOG.debug(method, 'Property value is an array, iterating over values', value.length);
-                return value.reduce((result, item, index) => {
+                return value.reduce((arrayReduceResult, item, index) => {
 
                     // Handle the array item.
                     if (item instanceof Resource) {
 
                         // Replace the property value with the resolved resource.
                         LOG.debug(method, 'Array item is a resource, resolving', item.toString());
-                        return result.then(() => {
+                        return arrayReduceResult.then(() => {
                             return this.resolveResource(item, resolveState);
                         }).then((newItem) => {
                             value[index] = newItem;
@@ -134,7 +134,7 @@ class Resolver {
 
                         // Replace the property value with the resolved relationship.
                         LOG.debug(method, 'Property value is a relationship, resolving', item.toString());
-                        return result.then(() => {
+                        return arrayReduceResult.then(() => {
                             return this.resolveRelationship(item, resolveState);
                         }).then((newItem) => {
                             value[index] = newItem;
@@ -142,10 +142,10 @@ class Resolver {
 
                     } else {
                         LOG.debug(method, 'Array item is neither a resource or a relationship, ignoring', item);
-                        return result;
+                        return arrayReduceResult;
                     }
 
-                }, Promise.resolve());
+                }, result);
 
             } else {
                 LOG.debug(method, 'Property value is neither a resource or a relationship, ignoring', value);

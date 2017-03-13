@@ -49,6 +49,14 @@ function loopbackify(fqn) {
 class LoopbackVisitor {
 
     /**
+     * Constructor.
+     * @param {boolean} [namespaces] - whether or not namespaces should be used.
+     */
+    constructor(namespaces) {
+        this.namespaces = !!namespaces;
+    }
+
+    /**
      * Visitor design pattern
      * @param {Object} thing - the object being visited
      * @param {Object} parameters - the parameter
@@ -145,12 +153,13 @@ class LoopbackVisitor {
 
         // If this is the first declaration, then we are building a schema for this asset.
         let jsonSchema = {};
+        let name = this.namespaces ? assetDeclaration.getFullyQualifiedName() : assetDeclaration.getName();
         if (parameters.first) {
             jsonSchema = {
                 $first: true,
-                name: loopbackify(assetDeclaration.getFullyQualifiedName()),
+                name: loopbackify(name),
                 description: `An asset named ${assetDeclaration.getName()}`,
-                plural: assetDeclaration.getFullyQualifiedName(),
+                plural: name,
                 base: 'PersistedModel',
                 idInjection: false,
                 options: {
@@ -187,12 +196,13 @@ class LoopbackVisitor {
 
         // If this is the first declaration, then we are building a schema for this participant.
         let jsonSchema = {};
+        let name = this.namespaces ? participantDeclaration.getFullyQualifiedName() : participantDeclaration.getName();
         if (parameters.first) {
             jsonSchema = {
                 $first: true,
-                name: loopbackify(participantDeclaration.getFullyQualifiedName()),
+                name: loopbackify(name),
                 description: `A participant named ${participantDeclaration.getName()}`,
-                plural: participantDeclaration.getFullyQualifiedName(),
+                plural: name,
                 base: 'PersistedModel',
                 idInjection: false,
                 options: {
@@ -229,12 +239,13 @@ class LoopbackVisitor {
 
         // If this is the top declaration, then we are building a schema for this concept.
         let jsonSchema = {};
+        let name = this.namespaces ? conceptDeclaration.getFullyQualifiedName() : conceptDeclaration.getName();
         if (parameters.first) {
             jsonSchema = {
                 $first: true,
-                name: loopbackify(conceptDeclaration.getFullyQualifiedName()),
+                name: loopbackify(name),
                 description: `A concept named ${conceptDeclaration.getName()}`,
-                plural: conceptDeclaration.getFullyQualifiedName(),
+                plural: name,
                 // Concepts are not PersistedModel instances as they cannot exist by themselves.
                 // base: 'PersistedModel',
                 idInjection: false,
@@ -271,12 +282,13 @@ class LoopbackVisitor {
 
         // If this is the top declaration, then we are building a schema for this transaction.
         let jsonSchema = {};
+        let name = this.namespaces ? transactionDeclaration.getFullyQualifiedName() : transactionDeclaration.getName();
         if (parameters.first) {
             jsonSchema = {
                 $first: true,
-                name: loopbackify(transactionDeclaration.getFullyQualifiedName()),
+                name: loopbackify(name),
                 description: `A transaction named ${transactionDeclaration.getName()}`,
-                plural: transactionDeclaration.getFullyQualifiedName(),
+                plural: name,
                 base: 'PersistedModel',
                 idInjection: false,
                 options: {
@@ -326,7 +338,7 @@ class LoopbackVisitor {
 
         // If no description exists, add it now.
         if (!jsonSchema.description) {
-            jsonSchema.description = `An instance of ${classDeclaration.getFullyQualifiedName()}`;
+            jsonSchema.description = `An instance of ${classDeclaration.getName()}`;
         }
 
         // Every class declaration has a $class property.
@@ -350,7 +362,8 @@ class LoopbackVisitor {
             delete jsonSchema.$first;
             let fileContents = JSON.stringify(jsonSchema, null, 4);
             if (parameters.fileWriter) {
-                let fileName = `${classDeclaration.getFullyQualifiedName()}.json`;
+                let name = this.namespaces ? classDeclaration.getFullyQualifiedName() : classDeclaration.getName();
+                let fileName = `${name}.json`;
                 parameters.fileWriter.openFile(fileName);
                 parameters.fileWriter.write(fileContents);
                 parameters.fileWriter.closeFile();
@@ -429,8 +442,9 @@ class LoopbackVisitor {
         } else {
 
             // Render the type as JSON Schema.
+            let typeName = this.namespaces ? field.getFullyQualifiedTypeName() : field.getType();
             jsonSchema = {
-                type: loopbackify(field.getFullyQualifiedTypeName())
+                type: loopbackify(typeName)
             };
 
             // Look up the type of the property.
@@ -502,7 +516,7 @@ class LoopbackVisitor {
         // Create the schema.
         let jsonSchema = {
             type: 'String',
-            description: `The identifier of an instance of ${relationshipDeclaration.getFullyQualifiedTypeName()}`,
+            description: `The identifier of an instance of ${relationshipDeclaration.getName()}`,
             required: !relationshipDeclaration.isOptional()
         };
 

@@ -20,11 +20,12 @@ module.exports = function (app, callback) {
 
     const dataSource = app.loopback.createDataSource('composer', {
         name: 'composer',
-        connector: 'loopback-connector-composer',
+        connector: 'composer',
         connectionProfileName: composer.connectionProfileName,
         businessNetworkIdentifier: composer.businessNetworkIdentifier,
         participantId: composer.participantId,
-        participantPwd: composer.participantPwd
+        participantPwd: composer.participantPwd,
+        namespaces: composer.namespaces
     });
 
     new Promise((resolve, reject) => {
