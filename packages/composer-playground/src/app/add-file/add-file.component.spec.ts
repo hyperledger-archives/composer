@@ -1,27 +1,30 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
-import { DebugElement }    from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {By}              from '@angular/platform-browser';
+import {DebugElement}    from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { BehaviorSubject, Subject } from 'rxjs/Rx';
+import {BehaviorSubject, Subject} from 'rxjs/Rx';
 
-import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
-import { ModelFile } from 'composer-common';
+import {BusinessNetworkDefinition, AdminConnection} from 'composer-admin';
+import {ModelFile} from 'composer-common';
 
-import { AddFileComponent } from './add-file.component';
-import { FileImporterComponent } from './../file-importer';
-import { FileDragDropDirective } from './../directives/file-drag-drop';
+import {AddFileComponent} from './add-file.component';
+import {FileImporterComponent} from './../file-importer';
+import {FileDragDropDirective} from './../directives/file-drag-drop';
 
-import { AdminService } from '../services/admin.service';
-import { ClientService } from '../services/client.service';
-import { AlertService } from '../services/alert.service';
+import {AdminService} from '../services/admin.service';
+import {ClientService} from '../services/client.service';
+import {AlertService} from '../services/alert.service';
+
+import * as sinon from 'sinon';
 
 const fs = require('fs');
 
 
 class MockAdminService {
-  constructor() {}
+  constructor() {
+  }
 
   getAdminConnection(): AdminConnection {
     return new AdminConnection();
@@ -75,8 +78,8 @@ describe('AddFileComponent', () => {
         FormsModule
       ],
       providers: [
-        { provide: AdminService, useClass: MockAdminService },
-        { provide: AlertService , useClass: MockAlertService },
+        {provide: AdminService, useClass: MockAdminService},
+        {provide: AlertService, useClass: MockAlertService},
         NgbActiveModal
       ]
     });
@@ -88,35 +91,31 @@ describe('AddFileComponent', () => {
 
   describe('#fileDetected', () => {
     it('should change this.expandInput to true', () => {
-      expect(() => {
-        component.fileDetected();
-      }).not.toThrow();
-      expect(component.expandInput).toBe(true);
+      component.fileDetected();
+      component.expandInput.should.equal(true);
     });
   });
 
   describe('#fileLeft', () => {
     it('should change this.expectedInput to false', () => {
       component.fileLeft();
-      expect(component.expandInput).toBe(false);
+      component.expandInput.should.equal(false)
     });
   });
 
   describe('#fileAccepted', () => {
-    it('should set this.currentFile to a ModelFile', () => {
+    it('should set this.currentFile to a ModelFile', async(() => {
 
-      let b = new Blob(['/**CTO File*/'], { type: 'text/plain'});
+      let b = new Blob(['/**CTO File*/'], {type: 'text/plain'});
       let file = new File([b], 'newfile.cto');
 
-      return component.fileAccepted(file)
-      .then(() => {
-        expect(component.createModel).toHaveBeenCalled();
-      })
-      .catch((err) => {
-        spyOn(component, 'fileRejected');
-        expect(component.fileRejected).not.toHaveBeenCalled();
-      });
-    });
+      let createMock = sinon.stub(component, 'createModel');
+
+      component.fileAccepted(file)
+        .then(() => {
+          component.createModel.should.have.been.called;
+        });
+    }));
 
     // it('should set this.currentFile to a ScriptFile', () => {
     //   spyOn(component, 'createScript');

@@ -50,14 +50,14 @@ describe('AboutService', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
             imports: [HttpModule],
-            providers: [ 
+            providers: [
                           AboutService,
                           { provide: XHRBackend, useClass: MockBackend }
                        ]
-        });   
+        });
     });
 
-    it ('it should make an http call to retrieve the json that shows the versions', 
+    it ('it should make an http call to retrieve the json that shows the versions',
           async(inject([AboutService, XHRBackend], (aboutService, mockBackend) => {
           // setup a mocked response
           mockBackend.connections.subscribe((connection) => {
@@ -69,14 +69,14 @@ describe('AboutService', () => {
           // make the call to the service which was injected
           let result = aboutService.getVersions()
             .then((versions) => {
-                expect(versions.playground.name).toBe('playground');
-                expect(versions.playground.version).toBe('1');
-                expect(versions.admin.name).toBe('composer-admin');
-                expect(versions.admin.version).toBe('2');
-                expect(versions.client.name).toBe('composer-client');
-                expect(versions.client.version).toBe('3');
-                expect(versions.common.name).toBe('composer-common');
-                expect(versions.common.version).toBe('4');
+                versions.playground.name.should.equal('playground');
+                versions.playground.version.should.equal('1');
+                versions.admin.name.should.equal('composer-admin');
+                versions.admin.version.should.equal('2');
+                versions.client.name.should.equal('composer-client');
+                versions.client.version.should.equal('3');
+                versions.common.name.should.equal('composer-common');
+                versions.common.version.should.equal('4');
             });
             return result;
     })));
