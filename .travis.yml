@@ -4,19 +4,10 @@ node_js:
 matrix:
     include:
         - env: DOCS=full FC_TASK=docs
-          sudo: false
-          node_js :
-            - '6'
         - env: SYSTEST=embedded FC_TASK=systest
         - env: SYSTEST=web FC_TASK=systest
-        - env: SYSTEST=hlf SYSTEST_HLF=hlf  FC_TASK=systest
-          sudo: required
-          services:
-            - docker
+        - env: SYSTEST=hlf SYSTEST_HLF=hlf FC_TASK=systest
         - env: SYSTEST=hlf SYSTEST_HLF=ibm FC_TASK=systest
-          sudo: required
-          services:
-            - docker
 dist: trusty
 addons:
     apt:
@@ -37,7 +28,9 @@ deploy:
     skip_cleanup: true
     on:
         branch: master
-cache: false
+cache:
+  directories:
+    - node_modules
 sudo: required
 notifications:
   pushover:
