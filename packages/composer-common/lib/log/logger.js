@@ -13,16 +13,13 @@
  */
 
 'use strict';
-// const beautify = require('json-beautify');
-// TODO: Will need to do improvement of the formatting with some module.
-//
+
 const sprintf = require('sprintf-js').sprintf;
-// const config = require('config');
-// Moving config to some other location
-const Node = require('./node.js');
+const Tree = require('./tree.js');
+
 
 // Root node of the selection tree
-let _root = null;
+let _tree = null;
 let _logger = null;
 let _clInstances = {};
 
@@ -55,12 +52,6 @@ let _clInstances = {};
  * log.info(.....)
  * ```
  *
- * @todo Confirm the format via iterative use
- * @todo Precrtiptive on how data is uploaded to logmet etc. ??
- *
- *
- *
- * @private
  * @class
  * @memberof module:composer-common
  */
@@ -340,34 +331,31 @@ class Logger {
 
         let concertoConfigElements = [];
 
-        if (_root === null){
+        if (_tree === null){
         // need to do the filtering to see if this shold be enabled or not
             let string = this.getDebugEnv();
             let details = string.split(/[\s,]+/);
-            _root = new Node('root',false);
+            // _root = new Node('root',false);
+            _tree = new Tree();
 
             const regex = /(-?)concerto:(.*)?/;
         // now we have an array of the elements that we might need to be enabled
         //
             for (let i=0; i< details.length;i++){
                 let e = details[i];
-                if (e === '*' || e ==='concerto:*'){
-                    _root.include = true;
+                if (e === '*' || e ==='composer:*'){
+                    _tree.setIncluded();
                 }
             // determine if the element is for concerto or not
                 let machResult = e.match(regex);
                 if (machResult!==null){
-                // got a result that we need to trace therefore setup the child node correctly
-
-                    let newNode = new Node(machResult[2] ,(machResult[1]==='') );
-                    _root.addChildNodeAtStart(newNode);
+                   // got a result that we need to trace therefore setup the child node correctly
+                    _tree.addName(machResult[2] ,(machResult[1]==='') );
 
                     // make a note of the debug settings that permit the config elements
                     concertoConfigElements.push(machResult[2]);
                 }
-
             }
-
         }
 
 
@@ -386,13 +374,7 @@ class Logger {
         }
 
         // now we need to check if the name that has come in and should be traced
-        let n = _root.findChild(concertoLogger.classname);
-
-        if ( typeof n ==='undefined'){
-            concertoLogger.include = _root.isIncluded();
-        } else {
-            concertoLogger.include = n.isIncluded();
-        }
+        concertoLogger.include = _tree.getInclusion(concertoLogger.classname);
 
         return ;
     }
@@ -401,7 +383,7 @@ class Logger {
      * @description clean up the logger; required if anything is dynamically changed
      */
     static reset(){
-        _root=null;
+        _tree=null;
         _logger=null;
         _clInstances=[];
     }
