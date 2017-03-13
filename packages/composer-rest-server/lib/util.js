@@ -82,7 +82,7 @@ function getFabricDetails() {
                 {name: 'use namespaces if conflicting types exist', value: 'required'},
                 {name: 'never use namespaces', value: 'never'}
             ],
-            default: 'never'
+            default: 'always'
         }
     ];
 
