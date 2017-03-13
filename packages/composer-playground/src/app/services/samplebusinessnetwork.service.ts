@@ -351,7 +351,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  private getMetaData(owner: string, repository: string, path: string): Promise<any> {
+  private getReadme(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -408,7 +408,7 @@ export class SampleBusinessNetworkService {
     }
     sampleNetworkPromises.push(this.getScripts(owner, repository, path));
     sampleNetworkPromises.push(this.getAcls(owner, repository, path));
-    sampleNetworkPromises.push(this.getMetaData(owner, repository, path));
+    sampleNetworkPromises.push(this.getReadme(owner, repository, path));
     sampleNetworkPromises.push(this.getSampleNetworkInfo(owner, repository, path));
 
     return Promise.all(sampleNetworkPromises)
@@ -417,10 +417,11 @@ export class SampleBusinessNetworkService {
         let models = results[0];
         let scripts = results[1];
         let acls = results[2];
-        let metaData = results[3];
+        let readme = results[3];
         let packageContents = results[4];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(packageContents.name + '@' + packageContents.version, packageContents.description, metaData.data);
+
+        let businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageContents, readme.data);
         let modelManager = businessNetworkDefinition.getModelManager();
 
         modelManager.addModelFiles(models);

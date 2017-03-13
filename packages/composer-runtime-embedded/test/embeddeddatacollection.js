@@ -99,6 +99,34 @@ describe('EmbeddedDataCollection', () => {
 
     });
 
+    describe('#exists', () => {
+
+        it('should return true if the specified object exists', () => {
+            let firstStub = sinon.stub().resolves({
+                collectionId: 'doge',
+                id: 'thing1',
+                object: { thing: 1 }
+            });
+            let equalsStub = sinon.stub().withArgs(['thing1', 'doge']).returns({ first: firstStub });
+            sinon.stub(dataCollection.db.objects, 'where').withArgs('[id+collectionId]').returns({ equals: equalsStub });
+            return dataCollection.exists('thing1')
+                .then((exists) => {
+                    exists.should.equal.true;
+                });
+        });
+
+        it('should return false if the specified object does not exist', () => {
+            let firstStub = sinon.stub().resolves(null);
+            let equalsStub = sinon.stub().withArgs(['thing1', 'doge']).returns({ first: firstStub });
+            sinon.stub(dataCollection.db.objects, 'where').withArgs('[id+collectionId]').returns({ equals: equalsStub });
+            return dataCollection.exists('thing2')
+                .then((exists) => {
+                    exists.should.equal.false;
+                });
+        });
+
+    });
+
     describe('#add', () => {
 
         it('should add a new object to the collection', () => {

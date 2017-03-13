@@ -116,8 +116,17 @@ class List {
             return businessNetworkConnection.disconnect();
         })
         .catch(error => {
-            console.log(error);
+            console.log(List.getError(error));
         });
+    }
+
+    /**
+     * Get message from an error object if one is given
+     * @param {Error|String} error Error to be examined
+     * @return {String} error message
+     */
+    static getError(error) {
+        return error.message ? error.message : error;
     }
 
     /**

@@ -63,6 +63,7 @@ export class EditorComponent implements OnInit {
   private addModelFileName: string = 'lib/org.acme.model.cto';
   private addScriptFileName: string = 'lib/script.js';
   private currentError: string = null;
+  private noError: boolean = true;
   private dirty: boolean = false;
   private deploying: boolean = false;
 
@@ -77,6 +78,8 @@ export class EditorComponent implements OnInit {
 
   private inputPackageName; // This is the input 'Name' before the BND is updated
   private inputPackageVersion; // This is the input 'Version' before the BND is updated
+
+  private newPackageJson;
 
   //Used incase deploy fails to still have the changes
   private savedFiles;
@@ -105,10 +108,10 @@ export class EditorComponent implements OnInit {
       .then(() => {
         this.loadBusinessNetwork();
 
-        this.deployedPackageName = this.businessNetworkDefinition.getName(); // Set Name
-        this.deployedPackageVersion = this.businessNetworkDefinition.getVersion(); // Set Version
-        this.deployedPackageDescription = this.businessNetworkDefinition.getDescription(); // Set Description
-
+        this.deployedPackageName = this.businessNetworkDefinition.getMetadata().getName(); // Set Name
+        this.deployedPackageVersion = this.businessNetworkDefinition.getMetadata().getVersion(); // Set Version
+        this.deployedPackageDescription = this.businessNetworkDefinition.getMetadata().getDescription(); // Set Description
+        this.newPackageJson = this.businessNetworkDefinition.getMetadata().getPackageJson();
         this.updateFiles();
         if (this.files.length) {
           let currentFile = this.files.find((file) => {
@@ -122,16 +125,22 @@ export class EditorComponent implements OnInit {
       });
   }
 
-  private createBusinessNetwork(name, version, description, readme) {
-    this.businessNetworkDefinition = new BusinessNetworkDefinition(name + '@' + version, description, readme); // Creates a new BND
+  private createBusinessNetwork(name, version, description, packageJson, readme) {
+    this.businessNetworkDefinition = new BusinessNetworkDefinition(name + '@' + version, description, packageJson, readme); // Creates a new BND
+    this.deployedPackageName = name;
+    this.deployedPackageVersion = version;
+    this.deployedPackageDescription = description;
   }
 
   private loadBusinessNetwork() {
     let sourceBusinessNetworkDefinition = this.clientService.getBusinessNetwork();
 
-    let metaData = sourceBusinessNetworkDefinition.getMetadata().getREADME();
+    let readme = sourceBusinessNetworkDefinition.getMetadata().getREADME();
+    let packageJson = sourceBusinessNetworkDefinition.getMetadata().getPackageJson();
 
-    let businessNetworkDefinition = new BusinessNetworkDefinition(sourceBusinessNetworkDefinition.getName() + '@' + sourceBusinessNetworkDefinition.getVersion(), sourceBusinessNetworkDefinition.getDescription(), metaData);
+
+    let businessNetworkDefinition = new BusinessNetworkDefinition(sourceBusinessNetworkDefinition.getMetadata().getName() + '@' + sourceBusinessNetworkDefinition.getMetadata().getVersion(), sourceBusinessNetworkDefinition.getMetadata().getDescription(), packageJson, readme);
+
     sourceBusinessNetworkDefinition.getModelManager().getModelFiles()
       .map((modelFile) => {
         return modelFile.getDefinitions();
@@ -150,10 +159,10 @@ export class EditorComponent implements OnInit {
       businessNetworkDefinition.getAclManager().setAclFile(aclFile);
     }
     this.businessNetworkDefinition = businessNetworkDefinition;
-    this.deployedPackageName = businessNetworkDefinition.getName();
-    this.deployedPackageVersion = businessNetworkDefinition.getVersion();
-    this.inputPackageName = businessNetworkDefinition.getName();
-    this.inputPackageVersion = businessNetworkDefinition.getVersion();
+    this.deployedPackageName = businessNetworkDefinition.getMetadata().getName();
+    this.deployedPackageVersion = businessNetworkDefinition.getMetadata().getVersion();
+    this.inputPackageName = businessNetworkDefinition.getMetadata().getName();
+    this.inputPackageVersion = businessNetworkDefinition.getMetadata().getVersion();
   }
 
   private getCurrentCode() {
@@ -184,13 +193,8 @@ export class EditorComponent implements OnInit {
       }
     } else if (this.currentFile.package) {
       // This is what's loaded into the editor
-      let packageObject = {
-        "name": this.deployedPackageName,
-        "version": this.deployedPackageVersion,
-        "description": this.deployedPackageDescription
-      };
 
-      return JSON.stringify(packageObject);
+      return JSON.stringify(this.newPackageJson);
     } else if (this.currentFile.readme) {
       let readme = this.businessNetworkDefinition.getMetadata().getREADME();
       if (readme) {
@@ -225,22 +229,23 @@ export class EditorComponent implements OnInit {
         this.deployedPackageName = packageObject.name;
         this.deployedPackageVersion = packageObject.version;
         this.deployedPackageDescription = packageObject.description;
+        this.newPackageJson = packageObject;
         this.editingPackage = true;
       }
       this.currentError = null;
+      this.noError = true;
       this.dirty = true;
     } catch (e) {
       this.currentError = e.toString();
+      this.noError = false;
     }
   }
 
   private setCurrentFile(file) {
     this.changingCurrentFile = true;
-
     try {
       this.previousFile = this.currentFile;
       this.currentFile = file;
-
       //needs to be different as readme not shown in editor
       if (this.currentFile.readme) {
         this.readme = this.getCurrentCode();
@@ -301,8 +306,8 @@ export class EditorComponent implements OnInit {
       });
     }
 
-    let metaData = businessNetworkDefinition.getMetadata().getREADME();
-    if(metaData) {
+    let readme = businessNetworkDefinition.getMetadata().getREADME();
+    if(readme) {
       //add it first so it appears at the top of the list
       newFiles.unshift({
         readme: true,
@@ -381,6 +386,7 @@ export class EditorComponent implements OnInit {
         this.dirty = true;
       } catch (e) {
         this.currentError = e.toString();
+        this.noError = false;
       }
     } else if (file.script) {
       try {
@@ -396,6 +402,7 @@ export class EditorComponent implements OnInit {
         this.dirty = true;
       } catch (e) {
         this.currentError = e.toString();
+        this.noError = false;
       }
     }
   }
@@ -413,6 +420,13 @@ export class EditorComponent implements OnInit {
         }
         this.setCurrentFile(currentFile);
         this.alertService.successStatus$.next('Business Network successfully imported and deployed');
+        this.newPackageJson = this.businessNetworkDefinition.getMetadata().getPackageJson();
+        this.inputPackageName = this.businessNetworkDefinition.getName();
+        this.inputPackageVersion = this.businessNetworkDefinition.getVersion();
+        this.deployedPackageName = this.businessNetworkDefinition.getName();
+        this.deployedPackageVersion = this.businessNetworkDefinition.getVersion();
+        this.deployedPackageDescription = this.businessNetworkDefinition.getDescription();
+
       }
     }, (reason) => {
       // if no reason then we hit cancel
@@ -463,7 +477,7 @@ export class EditorComponent implements OnInit {
         this.deploying = true;
         //TODO: shouldn't need to do this should just be able to update the business network definition
         // Creates a new business network with the package name, version and description set. (Will have no definitions)
-        this.createBusinessNetwork(this.deployedPackageName, this.deployedPackageVersion, this.deployedPackageDescription, this.businessNetworkDefinition.getMetadata().getREADME());
+        this.createBusinessNetwork(this.deployedPackageName, this.deployedPackageVersion, this.deployedPackageDescription, this.newPackageJson, this.businessNetworkDefinition.getMetadata().getREADME());
         this.setCurrentDefinitionFiles();
         return this.adminService.update(this.businessNetworkDefinition)
       })
@@ -477,11 +491,12 @@ export class EditorComponent implements OnInit {
         //this.loadBusinessNetwork();
         this.updateFiles();
 
-        this.inputPackageVersion = this.deployedPackageVersion;
-        this.inputPackageName = this.deployedPackageName;
 
-        this.deployedPackageName = this.businessNetworkDefinition.getName();
-        this.deployedPackageVersion = this.businessNetworkDefinition.getVersion();
+
+        this.deployedPackageName = this.businessNetworkDefinition.getMetadata().getName();
+        this.deployedPackageVersion = this.businessNetworkDefinition.getMetadata().getVersion();
+        this.inputPackageName = this.businessNetworkDefinition.getMetadata().getName();
+        this.inputPackageVersion = this.businessNetworkDefinition.getMetadata().getVersion();
 
         this.editingPackage = false;
 
@@ -511,6 +526,7 @@ export class EditorComponent implements OnInit {
     let scriptFiles = scriptManager.getScripts();
     let aclFile = aclManager.getAclFile();
     let readme = this.businessNetworkDefinition.getMetadata().getREADME();
+    let packageJson = this.businessNetworkDefinition.getMetadata().getREADME();
 
     this.savedFiles = {
       modelFiles : modelFiles,
@@ -551,6 +567,7 @@ export class EditorComponent implements OnInit {
    */
   private editPackageName() {
     this.deployedPackageName = this.inputPackageName;
+    this.newPackageJson.name = this.inputPackageName;
     this.deploy().then(() => {
       if (this.previousFile == null) {
         this.setCurrentFile(this.currentFile);
@@ -568,6 +585,7 @@ export class EditorComponent implements OnInit {
    */
   private editPackageVersion() {
     this.deployedPackageVersion = this.inputPackageVersion;
+    this.newPackageJson.version = this.inputPackageVersion;
     this.deploy().then(() => {
       if (this.previousFile == null) {
         this.setCurrentFile(this.currentFile);
@@ -584,4 +602,14 @@ export class EditorComponent implements OnInit {
     this.toggleEditActive();
     this.editingPackage = true;
   }
+
+  private stopEditing(){
+    if(this.editingPackage){
+      this.editActive = false;
+      this.editingPackage = false;
+      this.setCurrentFile(this.previousFile);
+    }
+  }
+
+
 }

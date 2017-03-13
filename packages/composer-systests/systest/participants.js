@@ -182,6 +182,24 @@ describe('Participant system tests', function () {
             });
     });
 
+    it('should throw when getting a non-existent participant in an participant registry', function () {
+        return client
+            .getParticipantRegistry('systest.participants.SimpleParticipant')
+            .then(function (participantRegistry) {
+                return participantRegistry.get('doesnotexist');
+            })
+            .should.be.rejectedWith(/does not exist/);
+    });
+
+    it('should return false for an participant that does not exist', function () {
+        return client
+            .getParticipantRegistry('systest.participants.SimpleParticipant')
+            .then(function (participantRegistry) {
+                return participantRegistry.exists('doesnotexist');
+            })
+            .should.eventually.equal(false);
+    });
+
     it('should add an participant registry', function () {
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')

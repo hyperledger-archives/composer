@@ -1,6 +1,6 @@
 {
   "name": "generator-fabric-composer",
-  "version": "0.4.5",
+  "version": "0.5.2",
   "description": "Generates skeleton projects from Fabric Composer business network definitions",
   "engines": {
     "node": ">=6",
@@ -15,24 +15,20 @@
     "yeoman-generator"
   ],
   "scripts": {
-
-      "generatorTests": "npm run archiveTest && npm run liveNetworkTest",
-
-      "archiveTest": "mocha -t 0 test/angular-archive.js",
-
-      "preliveNetworkTest": "npm run downloadHLF && npm run stopHLF && npm run startHLF && composer network deploy -a test/data/digitalPropertyNetwork.bna -i WebAppAdmin -s DJY27pEnl16d",
-      "liveNetworkTest":"mocha -t 0 test/angular-network.js",
-      "postliveNetworkTest": "npm run stopHLF",
-
-      "downloadHLF": "scripts/download-hyperledger.sh",
-      "startHLF": "scripts/start-hyperledger.sh",
-      "stopHLF": "scripts/stop-hyperledger.sh",
-      "teardownHLF": "scripts/teardown.sh"
+    "generatorTests": "npm run archiveTest && npm run liveNetworkTest",
+    "archiveTest": "mocha -t 0 test/angular-archive.js",
+    "preliveNetworkTest": "npm run downloadHLF && npm run stopHLF && npm run startHLF && composer network deploy -a test/data/digitalPropertyNetwork.bna -i WebAppAdmin -s DJY27pEnl16d",
+    "liveNetworkTest": "mocha -t 0 test/angular-network.js",
+    "postliveNetworkTest": "npm run stopHLF",
+    "downloadHLF": "scripts/download-hyperledger.sh",
+    "startHLF": "scripts/start-hyperledger.sh",
+    "stopHLF": "scripts/stop-hyperledger.sh",
+    "teardownHLF": "scripts/teardown.sh"
   },
   "dependencies": {
     "bower": "^1.8.0",
-    "composer-client": "^0.4.5",
-    "composer-common": "^0.4.5",
+    "composer-client": "^0.5.2",
+    "composer-common": "^0.5.2",
     "fs": "0.0.1-security",
     "shelljs": "^0.7.5",
     "underscore.string": "^3.3.4",

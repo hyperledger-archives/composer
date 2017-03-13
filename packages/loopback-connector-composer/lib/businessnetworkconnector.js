@@ -15,12 +15,13 @@
 'use strict';
 
 const AssetDeclaration = require('composer-common').AssetDeclaration;
-const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const ConceptDeclaration = require('composer-common').ConceptDeclaration;
 const Connector = require('loopback-connector').Connector;
 const debug = require('debug')('loopback:connector:businessnetworkconnector');
-const LoopbackVisitor = require('composer-common/lib/codegen/fromcto/loopback/loopbackvisitor');
-const TransactionDeclaration = require('composer-common/lib/introspect/transactiondeclaration');
+const LoopbackVisitor = require('composer-common').LoopbackVisitor;
+const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
+const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -33,10 +34,31 @@ class BusinessNetworkConnector extends Connector {
      */
     constructor (settings) {
         debug('constructor');
-        super('businessnetworkconnector', settings);
-        this.settings = settings;
+        super('composer', settings);
+
+        // Check for required properties.
+        if (!settings.connectionProfileName) {
+            throw new Error('connectionProfileName not specified');
+        } else if (!settings.businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        } else if (!settings.participantId) {
+            throw new Error('participantId not specified');
+        } else if (!settings.participantPwd) {
+            throw new Error('participantPwd not specified');
+        }
+
+        // Assign defaults for any optional properties.
+        this.settings = Object.assign({
+            namespaces: 'always' // Default is namespaces always enabled.
+        }, settings);
+
+        // Create the new disconnected business network connection.
         this.businessNetworkConnection = new BusinessNetworkConnection();
         this.connected = this.connecting = false;
+
+        // Create a new visitor for generating LoopBack models.
+        this.visitor = new LoopbackVisitor(this.settings.namespaces === 'always');
+
     }
 
     /**
@@ -50,17 +72,34 @@ class BusinessNetworkConnector extends Connector {
         } else if (this.connecting) {
             return this.connectionPromise;
         } else {
-            return this.connect();
+            return this.connectInternal();
         }
     }
 
     /**
      * Connect to the Business Network
      * @param {function} callback the callback to call when complete.
-     * @return {Promise} A promise that is resolved when the connector has connected.
      */
     connect (callback) {
-        debug('connect', callback);
+        this.connectInternal()
+            .then(() => {
+                if (callback) {
+                    callback();
+                }
+            })
+            .catch((error) => {
+                if (callback) {
+                    callback(error);
+                }
+            });
+    }
+
+    /**
+     * Connect to the Business Network
+     * @return {Promise} A promise that is resolved when the connector has connected.
+     */
+    connectInternal() {
+        debug('connectInternal');
         debug('settings', JSON.stringify(this.settings));
         this.connecting = true;
         this.connected = false;
@@ -80,15 +119,9 @@ class BusinessNetworkConnector extends Connector {
             .then(() => {
                 this.connected = true;
                 this.connecting = false;
-                if (callback) {
-                    callback();
-                }
             })
             .catch((error) => {
                 this.connected = this.connecting = false;
-                if (callback) {
-                    callback(error);
-                }
                 throw error;
             });
         return this.connectionPromise;
@@ -129,60 +162,19 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Retrieve the list of all available model names, or the model names in a
-     * specified namespace.
-     * @param {Object} options the options provided by Loopback.
-     * @param {function} callback the callback to call when complete.
+     * Get the Composer model name for the specified LoopBack model name.
+     * @param {String} lbModelName The LoopBack model name.
+     * @return {String} The Composer model name.
      */
-    discoverModelDefinitions (options, callback) {
-        debug('discoverClassDeclarations', options);
-        this.ensureConnected()
-            .then(() => {
-                let models = [];
-                let modelClassDeclarations = this.introspector.getClassDeclarations();
-                modelClassDeclarations
-                    .forEach((modelClassDeclaration) => {
-                        if (((modelClassDeclaration instanceof TransactionDeclaration) || (modelClassDeclaration instanceof AssetDeclaration) || (modelClassDeclaration instanceof ParticipantDeclaration)) && !modelClassDeclaration.isAbstract()) {
-                            models.push({
-                                type : 'table',
-                                name : modelClassDeclaration.getFullyQualifiedName()
-                            });
-                        }
-                    });
-
-                debug('discoverModelDefinitions', 'returning list of model class declarations', models);
-                callback(null, models);
-            })
-            .catch((error) => {
-                debug('discoverModelDefinitions', 'error thrown discovering list of model class declarations', error);
-                callback(error);
-            });
+    getComposerModelName(lbModelName) {
+        debug('getComposerModelName', lbModelName);
+        if (this.getModelDefinition(lbModelName)) {
+            let settings = this.getConnectorSpecificSettings(lbModelName);
+            return settings.fqn || lbModelName;
+        } else {
+            return lbModelName;
+        }
     }
-
-    /**
-     * Retrieve the model definition for the specified model name.
-     * @param {string} object The name of the model.
-     * @param {Object} options The options provided by Loopback.
-     * @param {function} callback The callback to call when complete.
-     */
-    discoverSchemas (object, options, callback) {
-        debug('discoverSchemas', object, options);
-        this.ensureConnected()
-            .then(() => {
-                let classDeclaration = this.introspector.getClassDeclaration(object);
-                let visitor = new LoopbackVisitor();
-                let schema = classDeclaration.accept(visitor, {
-                    first : true,
-                    modelFile : classDeclaration.getModelFile()
-                });
-                callback(null, schema);
-            })
-            .catch((error) => {
-                debug('discoverSchemas', 'error thrown generating schema', error);
-                callback(error);
-            });
-    }
-
 
     /**
      * Retrieves all the instances of objects in the Business Network.
@@ -193,7 +185,8 @@ class BusinessNetworkConnector extends Connector {
      */
     all(lbModelName, filter, options, callback) {
         debug('all', lbModelName, filter, options);
-        let composerModelName = lbModelName.replace(/_/g, '.');
+        let composerModelName = this.getComposerModelName(lbModelName);
+
         let results = [];
         this.ensureConnected()
             .then(() => {
@@ -249,7 +242,7 @@ class BusinessNetworkConnector extends Connector {
                                 });
                             }
                         } else {
-                            callback('ERROR: the specified filter does not match the identifier in the model');
+                            callback(new Error('The specified filter does not match the identifier in the model'));
                         }
                     } else {
                         debug('no where filter');
@@ -345,7 +338,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {Object} callback The callback to call with the result.
      */
     getRegistryForModel(modelName, callback) {
-        debug('all', modelName);
+        debug('getRegistryForModel', modelName);
         let classDeclaration = this.modelManager.getType(modelName);
         if (classDeclaration instanceof AssetDeclaration) {
             this.businessNetworkConnection.getAssetRegistry(modelName)
@@ -363,7 +356,7 @@ class BusinessNetworkConnector extends Connector {
                     callback(null, transactionRegistry);
                 });
         } else {
-            callback('Error: No registry for specified model name');
+            callback(new Error('No registry for specified model name'));
         }
     }
 
@@ -376,36 +369,37 @@ class BusinessNetworkConnector extends Connector {
      */
     count(lbModelName, where, options, callback) {
         debug('count', lbModelName, where, options);
-        let composerModelName = lbModelName.replace(/_/g, '.');
+        let composerModelName = this.getComposerModelName(lbModelName);
+
         //console.log('COUNT: '+composerModelName, arguments);
         this.ensureConnected()
         .then(() => {
             let idField = Object.keys(where)[0];
             if(this.isValidId(composerModelName, idField)) {
                 // Just a basic existence check for now
-                this.exists(composerModelName, where[idField], callback);
+                this.exists(lbModelName, where[idField], (error, result) => {
+                    callback(null, result ? 1 : 0);
+                });
             } else {
-                callback('ERROR: '+idField+' is not valid for asset '+composerModelName);
+                callback(new Error(idField+' is not valid for asset '+composerModelName));
             }
         });
     }
 
     /**
      * Runs the callback with whether the object exists or not.
-     * @param {string} composerModelName The composer model name.
+     * @param {string} lbModelName The composer model name.
      * @param {string} id The LoopBack filter with the ID apply.
      * @param {function} callback The Callback to call when complete.
      */
-    exists(composerModelName, id, callback) {
-        debug('exists', composerModelName, id);
+    exists(lbModelName, id, callback) {
+        debug('exists', lbModelName, id);
+        let composerModelName = this.getComposerModelName(lbModelName);
+
         this.getRegistryForModel(composerModelName, (error, registry) => {
             registry.exists(id)
             .then((result) => {
-                if(result === true) {
-                    callback(null, 1);
-                } else {
-                    callback(null, 0);
-                }
+                callback(null, result);
             })
             .catch((error) => {
                 callback(error);
@@ -423,7 +417,8 @@ class BusinessNetworkConnector extends Connector {
      */
     updateAttributes(lbModelName, objectId, data, callback) {
         debug('updateAttributes', lbModelName, objectId, data);
-        let composerModelName = lbModelName.replace(/_/g, '.');
+        let composerModelName = this.getComposerModelName(lbModelName);
+
         // If the $class property has not been provided, add it now.
         if (!data.$class) {
             data.$class = composerModelName;
@@ -449,25 +444,63 @@ class BusinessNetworkConnector extends Connector {
 
     }
 
+    /**
+     * Updates the properties of the specified object in the Business Network.
+     * This function is called by the PUT API.
+     * @param {string} lbModelName The name of the model.
+     * @param {string} objectId The id of the object to update
+     * @param {Object} data The object data to use for modification
+     * @param {Object} options the options provided by Loopback.
+     * @param {Object} callback The object data to use for modification
+     */
+    replaceById(lbModelName, objectId, data, options, callback) {
+        debug('replaceById', lbModelName, objectId, data, options);
+        let composerModelName = this.getComposerModelName(lbModelName);
+
+        // If the $class property has not been provided, add it now.
+        if (!data.$class) {
+            data.$class = composerModelName;
+        }
+
+        this.ensureConnected()
+            .then(() => {
+                let resource = this.serializer.fromJSON(data);
+                this.getRegistryForModel(composerModelName, (error, registry) => {
+                    registry.update(resource)
+                    .then(() => {
+                        callback();
+                    })
+                    .catch((error) => {
+                        callback(error);
+                    });
+                });
+            })
+            .catch((error) => {
+                debug('create', 'error thrown doing update', error);
+                callback(error);
+            });
+
+    }
 
     /**
      * Create an instance of an object in Composer. For assets, this method
      * adds the asset to the default asset registry. For transactions, this method
      * submits the transaction for execution.
-     * @param {string} modelName the fully qualified model name.
+     * @param {string} lbModelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
      * @param {Object} options the options provided by Loopback.
      * @param {function} callback the callback to call when complete.
      */
-    create (modelName, data, options, callback) {
-        debug('create', modelName, data, options);
+    create (lbModelName, data, options, callback) {
+        debug('create', lbModelName, data, options);
+        let composerModelName = this.getComposerModelName(lbModelName);
 
         // If the $class property has not been provided, add it now.
         if (!data.$class) {
             // Loopback doesn't like dots in the model names so the loopback bootscript needs to change them to underscores
             // when it creates the schemas. (see <loopbackapp>/server/boot/composer.js sample)
             // So we need to change the underscores back to dots here for the composer API.
-            data.$class = modelName.replace(/_/g, '.');
+            data.$class = composerModelName;
         }
 
         this.ensureConnected()
@@ -526,22 +559,23 @@ class BusinessNetworkConnector extends Connector {
     /**
      * Get an instance of an object in Composer. For assets, this method
      * gets the asset from the default asset registry.
-     * @param {string} modelName the fully qualified model name.
+     * @param {string} lbModelName the fully qualified model name.
      * @param {string} id the identifier of the asset or participant to retrieve.
      * @param {Object} options the options provided by Loopback.
      * @param {function} callback the callback to call when complete.
      */
-    retrieve (modelName, id, options, callback) {
-        debug('retrieve', modelName, id, options);
+    retrieve (lbModelName, id, options, callback) {
+        debug('retrieve', lbModelName, id, options);
+        let composerModelName = this.getComposerModelName(lbModelName);
 
         this.ensureConnected()
             .then(() => {
                 let modelManager = this.businessNetworkDefinition.getModelManager();
-                let classDeclaration = modelManager.getType(modelName);
+                let classDeclaration = modelManager.getType(composerModelName);
 
                 if (classDeclaration instanceof AssetDeclaration) {
                     // For assets, we add the asset to its default asset registry.
-                    this.businessNetworkConnection.getAssetRegistry(modelName)
+                    this.businessNetworkConnection.getAssetRegistry(composerModelName)
                         .then((assetRegistry) => {
                             return assetRegistry.get(id);
                         })
@@ -553,7 +587,7 @@ class BusinessNetworkConnector extends Connector {
                         });
                 } else if (classDeclaration instanceof ParticipantDeclaration) {
                     // For participants, we add the participant to its default participant registry.
-                    this.businessNetworkConnection.getParticipantRegistry(modelName)
+                    this.businessNetworkConnection.getParticipantRegistry(composerModelName)
                         .then((participantRegistry) => {
                             return participantRegistry.get(id);
                         })
@@ -577,16 +611,18 @@ class BusinessNetworkConnector extends Connector {
     /**
      * Update an instance of an object in Composer. For assets, this method
      * updates the asset to the default asset registry.
-     * @param {string} modelName the fully qualified model name.
+     * @param {string} lbModelName the fully qualified model name.
      * @param {Object} data the data for the asset or transaction.
      * @param {Object} options the options provided by Loopback.
      * @param {function} callback the callback to call when complete.
      */
-    update (modelName, data, options, callback) {
-        debug('update', modelName, data, options);
+    update (lbModelName, data, options, callback) {
+        debug('update', lbModelName, data, options);
+        let composerModelName = this.getComposerModelName(lbModelName);
+
         // If the $class property has not been provided, add it now.
         if (!data.$class) {
-            data.$class = modelName.replace(/_/g, '.');
+            data.$class = composerModelName;
         }
 
         this.ensureConnected()
@@ -641,7 +677,8 @@ class BusinessNetworkConnector extends Connector {
      */
     destroyAll(lbModelName, where, options, callback) {
         debug('destroyAll', lbModelName, where, options);
-        let composerModelName = lbModelName.replace(/_/g, '.');
+        let composerModelName = this.getComposerModelName(lbModelName);
+
         //console.log('DESTROY ALL: '+composerModelName, where, options, callback);
         this.ensureConnected()
             .then(() => {
@@ -663,10 +700,136 @@ class BusinessNetworkConnector extends Connector {
                         });
                     });
                 } else {
-                    callback('ERROR: the specified filter does not match the identifier in the model');
+                    callback(new Error('The specified filter does not match the identifier in the model'));
                 }
             });
     }
+
+    /**
+     * Retrieve the list of all available model names, or the model names in a
+     * specified namespace.
+     * @param {Object} options the options provided by Loopback.
+     * @param {function} callback the callback to call when complete.
+     */
+    discoverModelDefinitions (options, callback) {
+        debug('discoverClassDeclarations', options);
+        this.ensureConnected()
+            .then(() => {
+                let models = [];
+                let modelNames = new Set();
+                let namesAreUnique = true;
+
+                // Find all the types in the buiness network.
+                const classDeclarations = this.introspector.getClassDeclarations()
+                    .filter((classDeclaration) => {
+
+                        // Filter out anything that isn't a type we want to represent.
+                        return (classDeclaration instanceof AssetDeclaration) ||
+                               (classDeclaration instanceof ConceptDeclaration) ||
+                               (classDeclaration instanceof ParticipantDeclaration) ||
+                               (classDeclaration instanceof TransactionDeclaration);
+
+                    })
+                    .filter((classDeclaration) => {
+
+                        // Filter out any abstract types.
+                        return !classDeclaration.isAbstract();
+
+                    });
+
+                // Look for duplicate type names, and set a flag if so.
+                classDeclarations.forEach((classDeclaration) => {
+                    const name = classDeclaration.getName();
+                    if (modelNames.has(name)) {
+                        namesAreUnique = false;
+                    } else {
+                        modelNames.add(name);
+                    }
+                });
+
+                // Determine whether or not we are going to use namespaces.
+                let namespaces;
+                switch (this.settings.namespaces) {
+                case 'always':
+                    namespaces = true;
+                    break;
+                case 'required':
+                    namespaces = !namesAreUnique;
+                    break;
+                case 'never':
+                    if (!namesAreUnique) {
+                        throw new Error('namespaces has been set to never, but type names in business network are not unique');
+                    }
+                    namespaces = false;
+                }
+                this.visitor = new LoopbackVisitor(namespaces);
+
+                // Add all the types to the result.
+                classDeclarations.forEach((classDeclaration) => {
+                    models.push({
+                        type : 'table',
+                        name : namespaces ? classDeclaration.getFullyQualifiedName() : classDeclaration.getName()
+                    });
+                });
+
+                debug('discoverModelDefinitions', 'returning list of model class declarations', models);
+                callback(null, models);
+            })
+            .catch((error) => {
+                debug('discoverModelDefinitions', 'error thrown discovering list of model class declarations', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Retrieve the model definition for the specified model name.
+     * @param {string} object The name of the model.
+     * @param {Object} options The options provided by Loopback.
+     * @param {function} callback The callback to call when complete.
+     */
+    discoverSchemas (object, options, callback) {
+        debug('discoverSchemas', object, options);
+        this.ensureConnected()
+            .then(() => {
+
+                // Try to find the type - search for the fully qualified name first.
+                let classDeclaration = this.introspector.getClassDeclarations()
+                    .find((classDeclaration) => {
+                        return classDeclaration.getFullyQualifiedName() === object;
+                    });
+
+                // Then look for the name.
+                if (!classDeclaration) {
+                    let matchingClassDeclaration = this.introspector.getClassDeclarations()
+                        .filter((classDeclaration) => {
+                            return classDeclaration.getName() === object;
+                        });
+                    if (matchingClassDeclaration.length > 1) {
+                        throw new Error(`Found multiple type definitions for ${object}, must fully qualify type name`);
+                    } else if (matchingClassDeclaration.length === 1) {
+                        classDeclaration = matchingClassDeclaration[0];
+                    }
+                }
+
+                // If we didn't find it, throw!
+                if (!classDeclaration) {
+                    throw new Error(`Failed to find type definition for ${object}`);
+                }
+
+                // Generate a LoopBack schema for the type.
+                let schema = classDeclaration.accept(this.visitor, {
+                    first : true,
+                    modelFile : classDeclaration.getModelFile()
+                });
+                callback(null, schema);
+
+            })
+            .catch((error) => {
+                debug('discoverSchemas', 'error thrown generating schema', error);
+                callback(error);
+            });
+    }
+
 }
 
 module.exports = BusinessNetworkConnector;

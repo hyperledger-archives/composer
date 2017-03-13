@@ -9,7 +9,7 @@ import { AlertService } from '../services/alert.service';
   templateUrl: './add-file.component.html',
   styleUrls: ['./add-file.component.scss'.toString()]
 })
-export class AddFileComponent implements OnInit {b
+export class AddFileComponent implements OnInit {
 
   @Input() businessNetwork: BusinessNetworkDefinition;
 
@@ -31,10 +31,15 @@ export class AddFileComponent implements OnInit {b
 
   constructor(private alertService: AlertService,
               public activeModal: NgbActiveModal) {
-
+  }
+  ngOnInit() {
   }
 
-  ngOnInit() {
+  removeFile() {
+    this.expandInput = false;
+    this.currentFile = null;
+    this.currentFileName = null;
+    this.fileType = '';
   }
 
  fileDetected() {
@@ -46,7 +51,6 @@ export class AddFileComponent implements OnInit {b
   }
 
  fileAccepted(file: File): Promise<any> {
-    this.newFile = false;
     let type = file.name.substr(file.name.lastIndexOf('.') + 1);
     return this.getDataBuffer(file)
       .then((data) => {
@@ -83,18 +87,16 @@ export class AddFileComponent implements OnInit {b
   }
 
   createScript(file: File, dataBuffer) {
-    this.newFile = true;
     this.fileType = 'js';
     let scriptManager = this.businessNetwork.getScriptManager();
-    this.currentFile = scriptManager.createScript(file.name, 'JS', dataBuffer.toString());
+    this.currentFile = scriptManager.createScript(file.name || this.addScriptFileName, 'JS', dataBuffer.toString());
     this.currentFileName = this.currentFile.getIdentifier();
   }
 
   createModel(file: File, dataBuffer) {
-    this.newFile = true;
     this.fileType = 'cto';
     let modelManager = this.businessNetwork.getScriptManager();
-    this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name);
+    this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name || this.addModelFileName);
     this.currentFileName = this.currentFile.getFileName();
   }
 
@@ -103,13 +105,9 @@ export class AddFileComponent implements OnInit {b
     this.alertService.errorStatus$.next(reason);
   }
 
- removeFile() {
-    this.expandInput = false;
-    this.currentFile = null;
-  }
-
- changeCurrentFileType() {
+  changeCurrentFileType() {
     this.newFile = true;
+    this.currentFile = null;
     if (this.fileType === 'js') {
       let code =
         `/**
@@ -117,6 +115,7 @@ export class AddFileComponent implements OnInit {b
   */`;
       let scriptManager = this.businessNetwork.getScriptManager();
       this.currentFile = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+      this.currentFileName = this.currentFile.getIdentifier();
     } else {
       let code =
         `/**
@@ -126,6 +125,7 @@ export class AddFileComponent implements OnInit {b
   namespace ${this.addModelNamespace}`;
       let modelManager = this.businessNetwork.getModelManager();
       this.currentFile = new ModelFile(modelManager, code, this.addModelFileName);
+      this.currentFileName = this.currentFile.getFileName();
     }
   }
 }

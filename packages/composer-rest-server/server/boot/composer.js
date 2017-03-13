@@ -20,11 +20,12 @@ module.exports = function (app, callback) {
 
     const dataSource = app.loopback.createDataSource('composer', {
         name: 'composer',
-        connector: 'loopback-connector-composer',
+        connector: 'composer',
         connectionProfileName: composer.connectionProfileName,
         businessNetworkIdentifier: composer.businessNetworkIdentifier,
         participantId: composer.participantId,
-        participantPwd: composer.participantPwd
+        participantPwd: composer.participantPwd,
+        namespaces: composer.namespaces
     });
 
     new Promise((resolve, reject) => {
@@ -67,16 +68,15 @@ module.exports = function (app, callback) {
         console.log('Adding schemas for all types to Loopback ...');
         modelSchemas.forEach((modelSchema) => {
 
-            // this is required because LoopBack doesn't like dots in model schema names
-            modelSchema.name = modelSchema.plural.replace(/\./g, '_');
-
             // this call creates the model class from the model schema.
             let model = app.loopback.createModel(modelSchema);
 
             // we now want to filter out methods that we haven't implemented or don't want.
             // we use a whitelist of method names to do this.
             let whitelist;
-            if (modelSchema.options.composer.type === 'transaction') {
+            if (modelSchema.options.composer.type === 'concept') {
+                whitelist = [ ];
+            } else if (modelSchema.options.composer.type === 'transaction') {
                 whitelist = [ 'create' ];
             } else {
                 whitelist = [ 'create', 'deleteById', 'find', 'findById', 'exists', 'replaceById' ];
