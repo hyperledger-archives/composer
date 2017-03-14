@@ -376,7 +376,7 @@ class Logger {
                 let machResult = e.match(regex);
                 if (machResult!==null){
                    // got a result that we need to trace therefore setup the child node correctly
-                    _tree.addName(machResult[2] ,(machResult[1]==='') );
+                    _tree.addNode(machResult[2] ,(machResult[1]==='') );
 
                     // make a note of the debug settings that permit the config elements
                     concertoConfigElements.push(machResult[2]);
