@@ -29,6 +29,7 @@ app-editor {
   .main-view {
     .business-network-details {
       display: flex;
+      height:50px;
 
       .business-network-version {
         margin-right: $space-smedium;

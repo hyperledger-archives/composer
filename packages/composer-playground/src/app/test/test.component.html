@@ -1,16 +1,5 @@
 <section class="side-bar">
   <div class="registries">
-    <span>Assets</span>
-    <section class="side-bar-nav">
-      <ul>
-        <li *ngFor="let assetRegistry of assetRegistries"
-            [class.active]="chosenRegistry.id === assetRegistry.id"
-            (click)="setChosenRegistry(assetRegistry)">
-          <h3>{{assetRegistry.displayName}}</h3>
-        </li>
-      </ul>
-    </section>
-
     <span>Participants</span>
     <section class="side-bar-nav">
       <ul>
@@ -18,6 +7,17 @@
             [class.active]="chosenRegistry.id === participantRegistry.id"
             (click)="setChosenRegistry(participantRegistry)">
           <h3>{{participantRegistry.displayName}}</h3>
+        </li>
+      </ul>
+    </section>
+
+    <span>Assets</span>
+    <section class="side-bar-nav">
+      <ul>
+        <li *ngFor="let assetRegistry of assetRegistries"
+            [class.active]="chosenRegistry.id === assetRegistry.id"
+            (click)="setChosenRegistry(assetRegistry)">
+          <h3>{{assetRegistry.displayName}}</h3>
         </li>
       </ul>
     </section>

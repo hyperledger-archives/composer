@@ -193,8 +193,8 @@ export class EditorComponent implements OnInit {
       }
     } else if (this.currentFile.package) {
       // This is what's loaded into the editor
-
-      return JSON.stringify(this.newPackageJson);
+      let packageFormatted = JSON.stringify(this.newPackageJson, null, 2);
+      return packageFormatted;
     } else if (this.currentFile.readme) {
       let readme = this.businessNetworkDefinition.getMetadata().getREADME();
       if (readme) {
@@ -568,14 +568,7 @@ export class EditorComponent implements OnInit {
   private editPackageName() {
     this.deployedPackageName = this.inputPackageName;
     this.newPackageJson.name = this.inputPackageName;
-    this.deploy().then(() => {
-      if (this.previousFile == null) {
-        this.setCurrentFile(this.currentFile);
-      }
-      else {
-        this.setCurrentFile(this.previousFile);
-      }
-    });
+    this.dirty = true;
 
     this.editActive = false;
   }
@@ -586,14 +579,7 @@ export class EditorComponent implements OnInit {
   private editPackageVersion() {
     this.deployedPackageVersion = this.inputPackageVersion;
     this.newPackageJson.version = this.inputPackageVersion;
-    this.deploy().then(() => {
-      if (this.previousFile == null) {
-        this.setCurrentFile(this.currentFile);
-      }
-      else {
-        this.setCurrentFile(this.previousFile);
-      }
-    });
+    this.dirty = true;
 
     this.editActive = false;
   }

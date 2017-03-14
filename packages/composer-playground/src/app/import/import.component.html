@@ -11,7 +11,7 @@
     </button>
   </div>
   <section class="modal-body">
-    <span>Upload a Business Network Archive from you computer</span>
+    <span>Upload a Business Network Archive from your computer</span>
     <file-importer *ngIf="!currentBusinessNetwork" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
                    [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-BNA_Upload'"></file-importer>
     <div class="chosen-file" *ngIf="expandInput && currentBusinessNetwork">
@@ -72,7 +72,7 @@
     </div>
     <div *ngIf="!expandInput">
       <div *ngIf="!gitHubAuthenticated && oAuthEnabled">
-        <a href="https://github.com/login/oauth/authorize?client_id={{clientId}}">Authenticate With Github</a>
+        <a href="https://github.com/login/oauth/authorize?client_id={{clientId}}">Authenticate With GitHub</a>
         <div id="githubDescription">
           To be able to see the samples you need to authenticate with github.
         </div>
