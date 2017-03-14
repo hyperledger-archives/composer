@@ -92,6 +92,7 @@ class Create {
             );
 
         }).catch(function(e) {
+            console.log(e.stack);
             console.log(e); // "oh, no!"
         });
 

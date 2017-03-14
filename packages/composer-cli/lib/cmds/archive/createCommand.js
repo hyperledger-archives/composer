@@ -34,7 +34,7 @@ module.exports.handler = (argv) => {
         process.exit(0);
     })
     .catch((error) => {
-
+        console.log(error.stack);
         console.log(error+ '\nCommand failed.');
         process.exit(1);
     });
