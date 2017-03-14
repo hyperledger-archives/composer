@@ -21,19 +21,21 @@ git config push.default simple
 echo ${DIR}
 cd "${DIR}/packages/composer-website/out"
 
-if [ "${DOCS}" == "unstable" ]; then
-    export REPO="fabric-composer-ubstable.github.io"
-else
-    export REPO="fabric-composer.github.io"
-fi
+export REPO="fabric-composer.github.io"
 
 git clone git@github.com:fabric-composer/${REPO}.git
 git remote set-url origin ${REPO}.git
 
 cd "${DIR}/packages/composer-website/out/${REPO}"
+  
+mkdir -p "${DIR}/packages/composer-website/out/${REPO}/unstable"
 
-rm -rf ${DIR}/packages/composer-website/out/${REPO}/*
-cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* .
+if [ "${DOCS}" == "full" ]; then
+    rm -rf ${DIR}/packages/composer-website/out/${REPO}/*
+    cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* .     
+fi
+
+cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ./unstable  
 
 git add .
 
