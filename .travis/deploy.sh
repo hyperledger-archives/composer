@@ -34,6 +34,17 @@ if [[ "${TRAVIS_REPO_SLUG}" != fabric-composer* ]]; then
     exit 0
 fi
 
+# are we building the docs?
+if [ "${DOCS}" != "" ]; then
+  if [ -z "${TRAVIS_TAG}" ]; then 
+    DOCS="full"
+  else
+    DOCS="unstable"
+  fi
+  ./.travis/deploy_docs.sh
+  exit 0
+fi
+
 
 # Set the NPM access token we will use to publish.
 npm config set registry https://registry.npmjs.org/
@@ -55,7 +66,7 @@ export DOCKER_IMAGES="composer-ui composer-playground"
 
 # Push the code to npm.
 if [ -z "${TRAVIS_TAG}" ]; then
-    DOCS="unstable"
+
     # Set the prerelease version.
     npm run pkgstamp
     export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
@@ -96,7 +107,7 @@ if [ -z "${TRAVIS_TAG}" ]; then
     popd
 
 else
-    DOCS="full"
+
     # Grab the current version.
     export VERSION=$(node -e "console.log(require('${DIR}/package.json').version)")
 
@@ -152,9 +163,4 @@ else
     git push origin master
 
 fi
-
-# are we building the docs?
-if [ "${DOCS}" != "" ]; then
-    ./.travis/deploy_docs.sh
-    exit 0
-fi
+date
