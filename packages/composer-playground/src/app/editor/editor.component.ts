@@ -593,8 +593,6 @@ export class EditorComponent implements OnInit {
 
     this.toggleEditActive();
     this.editingPackage = true;
-    document.getElementById('ayylmao').focus();
-    console.log('focused');
   }
 
   private stopEditing() {
