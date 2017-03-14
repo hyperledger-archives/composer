@@ -17,6 +17,8 @@
 const Node = require('./node.js');
 
 /** Specific tree implementation to work with the inclusion/exclusion log statements
+ *
+* @private
  */
 class Tree {
 
@@ -91,15 +93,15 @@ class Tree {
         // Look to see if the node is in the parent already
         let child = parent.findChild(newNodeName);
         if (typeof child === 'undefined' ){
-          // there are no children that match this spec, therefore create a new one
-            let newNode = new Node(newNodeName,include);
-            parent.addChildNodeAtStart(newNode);
-            // so that's added a new node. we need to see if we have more
-            // in the name to add - i.e. in the middle of a new branch
+
             if (details.length === 0) {
+                let newNode = new Node(newNodeName,include);
+                parent.addChildNodeAtStart(newNode);
                 // at the leaf node return the new node created
                 return newNode;
             } else {
+                let newNode = new Node(newNodeName,parent.isIncluded());
+                parent.addChildNodeAtStart(newNode);
                 // request another new node to be created.
                 return this._insertChildNode(details.join('/'),include,newNode);
             }

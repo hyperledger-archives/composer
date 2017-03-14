@@ -60,6 +60,7 @@ let _clInstances = {};
  *
  * Comming Soon: Aliases
  *
+ * @private
  * @class
  * @memberof module:composer-common
  */
