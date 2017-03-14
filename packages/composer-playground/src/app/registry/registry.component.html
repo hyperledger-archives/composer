@@ -3,7 +3,7 @@
   <div class="resource-header-left">
     <h1 >{{_registry.name}}</h1>
   </div>
-  <div *ngIf="!isTransactionRegistry()" class="resource-header-right">
+  <div *ngIf="!isTransactionRegistry()">
     <button type="button" class="primary" (click)="openNewResourceModal()">
       <span>+ Create New {{_registry.registryType}}</span>
     </button>
