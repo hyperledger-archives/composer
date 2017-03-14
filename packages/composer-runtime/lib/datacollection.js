@@ -142,12 +142,14 @@ class DataCollection {
      * @abstract
      * @param {string} id The ID of the object.
      * @param {Object} object The object.
+     * @param {boolean} force whether to force creation without checking it already exists
      * @return {Promise} A promise that will be resolved when complete, or rejected
      * with an error.
      */
-    add(id, object) {
+    add(id, object, force) {
+        force = !!force;
         return new Promise((resolve, reject) => {
-            this._add(id, object, (error, result) => {
+            this._add(id, object, force, (error, result) => {
                 if (error) {
                     return reject(error);
                 }
@@ -168,9 +170,10 @@ class DataCollection {
      * @private
      * @param {string} id The ID of the object.
      * @param {Object} object The object.
+     * @param {boolean} force don't check for existence, force it
      * @param {addCallback} callback The callback function to call when complete.
      */
-    _add(id, object, callback) {
+    _add(id, object, force, callback) {
         throw new Error('abstract function called');
     }
 

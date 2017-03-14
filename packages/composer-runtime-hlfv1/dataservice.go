@@ -67,11 +67,13 @@ func (dataService *DataService) createCollection(call otto.FunctionCall) (result
 	defer func() { logger.Debug("Exiting DataService.createCollection", result) }()
 
 	// Validate the arguments from JavaScript.
-	id, callback := call.Argument(0), call.Argument(1)
+	id, force, callback := call.Argument(0), call.Argument(1), call.Argument(2)
 	if !id.IsString() {
 		panic(fmt.Errorf("id not specified or is not a string"))
 	} else if !callback.IsFunction() {
 		panic(fmt.Errorf("callback not specified or is not a string"))
+	} else if !force.IsBoolean() {
+		panic(fmt.Errorf("force not specified or is not a boolean"))		
 	}
 
 	// Create the composite key.
@@ -85,20 +87,23 @@ func (dataService *DataService) createCollection(call otto.FunctionCall) (result
 		return otto.UndefinedValue()
 	}
 
-	// Check to see if the collection already exists.
-	existingValue, err := dataService.Stub.GetState(key)
-	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
+	forceVal, err := force.ToBoolean()
+	if !forceVal {
+		// Check to see if the collection already exists.
+		existingValue, err := dataService.Stub.GetState(key)
 		if err != nil {
-			panic(err)
+			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
+			if err != nil {
+				panic(err)
+			}
+			return otto.UndefinedValue()
+		} else if existingValue != nil {
+			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Failed to add collection with ID '%s' as the collection already exists", id)))
+			if err != nil {
+				panic(err)
+			}
+			return otto.UndefinedValue()
 		}
-		return otto.UndefinedValue()
-	} else if existingValue != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Failed to add collection with ID '%s' as the collection already exists", id)))
-		if err != nil {
-			panic(err)
-		}
-		return otto.UndefinedValue()
 	}
 
 	// Store the collection.

@@ -1,11 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import {ImportComponent} from '../import/import.component';
-import {ExportComponent} from '../export/export.component';
-import {AddFileComponent} from '../add-file/add-file.component';
+
+import { ImportComponent } from '../import/import.component';
+import { ExportComponent } from '../export/export.component';
+import { AddFileComponent } from '../add-file/add-file.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -13,9 +14,9 @@ import { InitializationService } from '../initialization.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../services/alert.service';
 
-import {AclFile, BusinessNetworkDefinition, ModelFile} from 'composer-common';
+import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
 
-import {saveAs} from 'file-saver';
+import { saveAs } from 'file-saver';
 
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/addon/fold/foldcode';
@@ -87,12 +88,12 @@ export class EditorComponent implements OnInit {
   private exportedData;
 
   constructor(private adminService: AdminService,
-              private clientService: ClientService,
-              private initializationService: InitializationService,
-              private modalService: NgbModal,
-              private route: ActivatedRoute,
-              private sampleBusinessNetworkService: SampleBusinessNetworkService,
-              private alertService: AlertService) {
+    private clientService: ClientService,
+    private initializationService: InitializationService,
+    private modalService: NgbModal,
+    private route: ActivatedRoute,
+    private sampleBusinessNetworkService: SampleBusinessNetworkService,
+    private alertService: AlertService) {
 
   }
 
@@ -270,31 +271,40 @@ export class EditorComponent implements OnInit {
   }
 
   private updateFiles() {
+    let newFiles = [];
     let businessNetworkDefinition = this.businessNetworkDefinition;
+
+    // deal with model files
     let modelManager = businessNetworkDefinition.getModelManager();
     let modelFiles = modelManager.getModelFiles();
-    let newFiles = [];
-
+    let newModelFiles = [];
     modelFiles.forEach((modelFile) => {
-      newFiles.push({
+      newModelFiles.push({
         model: true,
         id: modelFile.getNamespace(),
         displayID: 'lib/' + modelFile.getNamespace() + '.cto'
       });
     });
+    modelFiles.sort((a, b) => {
+      return a.displayID.localeCompare(b.displayID);
+    });
+    newFiles.push.apply(newFiles, newModelFiles);
 
+    // deal with script files
     let scriptManager = businessNetworkDefinition.getScriptManager();
     let scriptFiles = scriptManager.getScripts();
+    let newScriptFiles = [];
     scriptFiles.forEach((scriptFile) => {
-      newFiles.push({
+      newScriptFiles.push({
         script: true,
         id: scriptFile.getIdentifier(),
         displayID: scriptFile.getIdentifier()
       });
     });
-    newFiles.sort((a, b) => {
+    scriptFiles.sort((a, b) => {
       return a.displayID.localeCompare(b.displayID);
     });
+    newFiles.push.apply(newFiles, newScriptFiles);
 
     let aclManager = businessNetworkDefinition.getAclManager();
     let aclFile = aclManager.getAclFile();
@@ -307,11 +317,11 @@ export class EditorComponent implements OnInit {
     }
 
     let readme = businessNetworkDefinition.getMetadata().getREADME();
-    if(readme) {
+    if (readme) {
       //add it first so it appears at the top of the list
       newFiles.unshift({
         readme: true,
-        id : 'readme',
+        id: 'readme',
         displayID: 'README.md'
       })
     }
@@ -429,10 +439,7 @@ export class EditorComponent implements OnInit {
 
       }
     }, (reason) => {
-      // if no reason then we hit cancel
-      if (reason) {
-        this.alertService.errorStatus$.next(reason);
-      }
+      // do nothing - modal has been dismissed
     });
   }
 
@@ -440,7 +447,7 @@ export class EditorComponent implements OnInit {
     return this.businessNetworkDefinition.toArchive().then((exportedData) => {
       let file = new File([exportedData],
         this.deployedPackageName + '.bna',
-        {type: 'application/octet-stream'});
+        { type: 'application/octet-stream' });
       saveAs(file);
 
       this.modalService.open(ExportComponent);
@@ -461,7 +468,7 @@ export class EditorComponent implements OnInit {
           }
         }
       }).catch(() => {
-    }); // Ignore this, only there to prevent crash when closed
+      }); // Ignore this, only there to prevent crash when closed
   }
 
   private deploy(): Promise<any> {
@@ -529,10 +536,10 @@ export class EditorComponent implements OnInit {
     let packageJson = this.businessNetworkDefinition.getMetadata().getREADME();
 
     this.savedFiles = {
-      modelFiles : modelFiles,
-      scriptFiles : scriptFiles,
-      aclFile : aclFile,
-      readme : readme
+      modelFiles: modelFiles,
+      scriptFiles: scriptFiles,
+      aclFile: aclFile,
+      readme: readme
     };
   }
 
@@ -603,8 +610,8 @@ export class EditorComponent implements OnInit {
     this.editingPackage = true;
   }
 
-  private stopEditing(){
-    if(this.editingPackage){
+  private stopEditing() {
+    if (this.editingPackage) {
       this.editActive = false;
       this.editingPackage = false;
       this.setCurrentFile(this.previousFile);
