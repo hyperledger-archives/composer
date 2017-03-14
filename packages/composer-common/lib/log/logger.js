@@ -20,7 +20,11 @@ const Tree = require('./tree.js');
 
 // Root node of the selection tree
 let _tree = null;
+
+// Core logger that is in use (user configurable)
 let _logger = null;
+
+// Set of instances of this logger class that acts as a proxy to the core logger
 let _clInstances = {};
 
 /**
@@ -41,16 +45,20 @@ let _clInstances = {};
  * Standard log levels are in use. In order these are
  *  - silly, debug, verbose, info, warn, error
  * In addition, there are functions that record method entry and method exit. these
- * map down to the debug level.
+ * map down to the debug level. [Silly level isn't being used]
  *
  * Examples of using each function are included for each API below.
  *
- * At the top of the class (or file if not object style).  issue.
+ * At the top of the class (or file if not object style) issue.
  *
  * ```
  * const log = require('./log/logger.js').getLog(<CLASSNAME>);
  * log.info(.....)
  * ```
+ * The classname is in a fully qualified format eg common/BusinessNetworkDefinition or
+ * cli/archiveCreate.
+ *
+ * Comming Soon: Aliases
  *
  * @class
  * @memberof module:composer-common
@@ -90,6 +98,11 @@ class Logger {
 
     /**
      * @description Main internal logging method
+     * Required fn here is to form up the arguements into a suitable string, and
+     * process any errors to capture the stack trace.  The core logger is then CALLED
+     *
+     * The assumption is that this logger has a method called `log`. with this prototype
+     * `log(String loglevel, String codeunit, String message, Array[optional] data)`
      *
      * @param {String} loglevel log loglevel
      * @param {String} method method name
@@ -97,8 +110,10 @@ class Logger {
      */
     _intLogMain(loglevel,method,msg){
         if (typeof arguments[3] ==='undefined'){
+            // this is the case where there are no additional arguements; data for example
             _logger.log(loglevel,sprintf('%-25s:%-25s', this.className,method+'()'),msg);
         } else {
+            // loop over the aguements - if any are Errors make sure that the stack trace is captured
             let args = [];
             for(let i = 3; i < arguments.length; i++) {
                 if (arguments[i] instanceof Error){
@@ -256,10 +271,9 @@ class Logger {
 
 
      /**
-      * @descrption what is the debug environment variable set to
-     * Note that the _envDebug property of this object is for debugging and
-     * emergency use ONLY
-     *
+      * @description what is the debug environment variable set to
+     * Note that the _envDebug property of this object is for debugging the debugging log
+     * and emergency use ONLY
      *
      *  @return {String} String of the DEBUG env variable
      *
@@ -268,7 +282,18 @@ class Logger {
         return process.env.DEBUG || this._envDebug || '';
     }
 
-    /** get the configuration for the logging
+    /**
+     * @description Get the configuration for the logging.
+     * This uses the config module to look for a configuration block under the
+     * fabric-composer.debug property.
+     *
+     * The 'logger' property is required to specify the core logger to use. By
+     * default this is the 'winstonInjector' that creates and returns a Winston backed
+     * console and file logger.
+     *
+     * The 'config' property is required - but the contents of this property are passed
+     * as is to the class defined in the logger property.
+     *
      * @return {Object} with the config iformation
      *
      **/
@@ -369,7 +394,9 @@ class Logger {
             let loggerToUse = localConfig.logger;
             let myLogger = require(loggerToUse);
 
-            _logger = myLogger.getLogger(localConfig.config,concertoConfigElements);
+            // primary used to determine what has been abled to allow the logger to
+            // go into a default mode.. NOT MEANT TO BE USED FOR FILTERTING.
+            _logger = myLogger.getLogger(localConfig.config,{ 'debug' : concertoConfigElements } );
 
         }
 
