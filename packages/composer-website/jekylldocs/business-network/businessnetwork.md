@@ -2,7 +2,7 @@
 layout: default
 title: Fabric Composer - Business Network
 category: concepts
-sidebar: sidebars/business-network.md
+sidebar: sidebars/businessnetwork.md
 excerpt: Business Network
 ---
 
