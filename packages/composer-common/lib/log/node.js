@@ -66,6 +66,13 @@ class Node {
     }
 
 
+    /**
+     * @description Set the node to be an inclusion
+     */
+    setIncluded(){
+        this.include = true;
+    }
+
    /** Find the node in the children that matches the array
     *
     * @param {String} nameToFind which node to try and locate in the children
