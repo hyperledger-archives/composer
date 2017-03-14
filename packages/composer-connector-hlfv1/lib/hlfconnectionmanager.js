@@ -176,6 +176,8 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('The events array has not been specified in the connection profile');
         } else if (!connectOptions.events.length) {
             throw new Error('No event hub URLs have been specified in the connection profile');
+        } else if (connectOptions.events.length !== connectOptions.peers.length) {
+            throw new Error('there should be an identical number of event hub urls to peers');
         } else if (!wallet && !connectOptions.keyValStore) {
             throw new Error('No key value store directory has been specified');
         } else if (!connectOptions.ca) {
@@ -216,17 +218,21 @@ class HLFConnectionManager extends ConnectionManager {
             chain.addPeer(HLFConnectionManager.createPeer(peer));
         });
 
-        // Load the first of the event hub URLs into the client.
-        // TODO: the fabric-client SDK should really support multiple URLs.
-        const eventHub = HLFConnectionManager.createEventHub();
-        let eventHubURL = connectOptions.events[0];
-        LOG.debug(method, 'Setting event hub URL', eventHubURL);
-        eventHub.setPeerAddr(eventHubURL);
-        eventHub.connect();
+        // load and connect to each of the defined event eventHubs
+        let eventHubs = [];
+        connectOptions.events.forEach((eventHubURL) => {
+            const eventHub = HLFConnectionManager.createEventHub();
+            LOG.debug(method, 'Setting event hub URL', eventHubURL);
+            eventHub.setPeerAddr(eventHubURL);
+            eventHub.connect();
+            eventHubs.push(eventHub);
+        });
         process.on('exit', () => {
-            if (eventHub.isconnected()) {
-                eventHub.disconnect();
-            }
+            eventHubs.forEach((eventHub) => {
+                if (eventHub.isconnected()) {
+                    eventHub.disconnect();
+                }
+            });
         });
 
         // If a wallet has been specified, then we want to use that.
@@ -261,7 +267,7 @@ class HLFConnectionManager extends ConnectionManager {
             });
 
             // Now we can create the connection.
-            let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHub, caClient);
+            let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHubs, caClient);
             LOG.exit(method, connection);
             return connection;
 
