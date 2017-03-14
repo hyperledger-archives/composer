@@ -62,12 +62,18 @@ func (dataService *DataService) createCollection(call otto.FunctionCall) (result
 	logger.Debug("Entering DataService.createCollection", call)
 	defer func() { logger.Debug("Exiting DataService.createCollection", result) }()
 
-	id, callback := call.Argument(0), call.Argument(1)
+	// force is ignored for this connector. It is provided by the runtime but only
+	// required for hyper V1 connector.
+	id, force, callback := call.Argument(0), call.Argument(1), call.Argument(2)
 	if !id.IsString() {
 		panic(fmt.Errorf("id not specified or is not a string"))
 	} else if !callback.IsFunction() {
 		panic(fmt.Errorf("callback not specified or is not a string"))
+	} else if !force.IsBoolean() {
+		panic(fmt.Errorf("force not specified or is not a boolean"))		
 	}
+
+
 	err := dataService.Stub.CreateTable(id.String(), []*shim.ColumnDefinition{
 		{Name: "id", Type: shim.ColumnDefinition_STRING, Key: true},
 		{Name: "data", Type: shim.ColumnDefinition_STRING, Key: false},
