@@ -36,6 +36,8 @@ export class TransactionComponent implements OnInit {
   private submitInProgress: boolean = false;
   private defitionError: string = null;
 
+  private generateParameters = {generate : true};
+
   private codeConfig = {
     lineNumbers: true,
     lineWrapping: true,
@@ -82,7 +84,7 @@ export class TransactionComponent implements OnInit {
           this.hiddenTransactionItems.set('timestamp', new Date());
 
           // Create a resource definition for the base item
-          this.generateTransactionDeclaration({ generate: true });
+          this.generateTransactionDeclaration();
         }
 
       });
@@ -95,18 +97,17 @@ export class TransactionComponent implements OnInit {
   onTransactionSelect(transactionType) {
     this.selectedTransaction = transactionType;
     this.selectedTransactionName = this.selectedTransaction.getName();
-    this.generateTransactionDeclaration({ generate: true });
+    this.generateTransactionDeclaration();
   }
 
   /**
    * Generate a TransactionDeclaration definition, accounting for need to hide fields
-   * @param {Object} parameters  - the parameters defining resource definition generation
    */
-  private generateTransactionDeclaration(parameters) {
+  private generateTransactionDeclaration() {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
     let factory = businessNetworkDefinition.getFactory();
     let id = this.hiddenTransactionItems.get(this.selectedTransaction.getIdentifierFieldName());
-    let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, parameters);
+    let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, this.generateParameters);
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);
