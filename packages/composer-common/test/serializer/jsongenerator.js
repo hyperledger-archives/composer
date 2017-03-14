@@ -103,6 +103,38 @@ describe('JSONGenerator', () => {
 
     });
 
+    describe('#convertToJSON', () => {
+
+        it('should serialize an integer object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Integer'; } }, 123456).should.equal('123456');
+        });
+
+        it('should serialize an double object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Double'; } }, 3.142).should.equal('3.142');
+        });
+
+        it('should serialize an long object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Long'; } }, 1234567890).should.equal('1234567890');
+        });
+
+        it('should serialize an string object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello world').should.equal('"hello world"');
+            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello"world').should.equal('"hello\\"world"');
+            jsonGenerator.convertToJSON({ getType: () => { return 'String'; } }, 'hello\nworld').should.equal('"hello\\nworld"');
+        });
+
+        it('should serialize a date time object', () => {
+            let date = new Date('Wed, 09 Aug 1995 00:00:00 GMT');
+            jsonGenerator.convertToJSON({ getType: () => { return 'DateTime'; } }, date).should.equal('"1995-08-09T00:00:00.000Z"');
+        });
+
+        it('should serialize an boolean object', () => {
+            jsonGenerator.convertToJSON({ getType: () => { return 'Boolean'; } }, true).should.equal('true');
+            jsonGenerator.convertToJSON({ getType: () => { return 'Boolean'; } }, false).should.equal('false');
+        });
+
+    });
+
     describe('#visitRelationshipDeclaration', () => {
 
         it('should serialize a relationship', () => {

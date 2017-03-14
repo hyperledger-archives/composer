@@ -155,7 +155,7 @@ class JSONGenerator {
             return `${obj.toString()}`;
         }
         default: {
-            return `"${obj.toString()}"`;
+            return JSON.stringify(obj.toString());
         }
         }
     }

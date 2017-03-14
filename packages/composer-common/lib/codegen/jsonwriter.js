@@ -66,7 +66,7 @@ class JSONWriter extends Writer {
      */
     writeKey(key) {
         this.writeComma();
-        this.write(`"${key}":`);
+        this.write(JSON.stringify(key) + ':');
         this.log('writeKey', key );
     }
 
@@ -89,7 +89,7 @@ class JSONWriter extends Writer {
      * @param {string} value - the value
      */
     writeStringValue(value) {
-        this.write(`"${value}"`);
+        this.write(JSON.stringify(value));
         this.firstItem = false;
         this.log('writeStringValue', value);
     }
@@ -113,7 +113,8 @@ class JSONWriter extends Writer {
      */
     writeKeyStringValue(key,value) {
         this.writeComma();
-        this.write(`"${key}":"${value}"`);
+        this.writeKey(key);
+        this.writeStringValue(value);
         this.firstItem = false;
         this.log('writeKeyStringValue', (key + ':' + value));
     }
@@ -126,7 +127,8 @@ class JSONWriter extends Writer {
      */
     writeKeyValue(key,value) {
         this.writeComma();
-        this.write(`"${key}": ${value}`);
+        this.writeKey(key);
+        this.writeValue(value);
         this.firstItem = false;
         this.log('writeKeyValue', key + '=' + value);
     }
@@ -138,7 +140,7 @@ class JSONWriter extends Writer {
      */
     writeArrayStringValue(value) {
         this.writeComma();
-        this.write(`"${value}"`);
+        this.writeStringValue(value);
         this.firstItem = false;
         this.log('writeArrayStringValue', value);
     }
@@ -200,6 +202,15 @@ class JSONWriter extends Writer {
 
             console.log(spaces + ' ' + message + ' ' + callSite );
         }
+    }
+
+    /**
+     * Empties the underyling buffer and resets the line count.
+     */
+    clearBuffer() {
+        super.clearBuffer();
+        this.indent = 0;
+        this.firstItem = true;
     }
 }
 
