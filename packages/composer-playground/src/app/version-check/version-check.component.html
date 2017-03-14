@@ -1,4 +1,4 @@
-<div class="welcome">
+<div class="version-check">
   <div class="modal-header">
     <button class="icon modal-exit" (click)="activeModal.close()">
       <svg class="ibm-icon" aria-hidden="true">
@@ -7,16 +7,15 @@
     </button>
   </div>
   <section class="modal-body">
-    <h1>Welcome to Fabric Composer Playground!</h1>
+    <h1>Invalid version!</h1>
     <svg class="ibm-icon" aria-hidden="true">
-      <use xlink:href="#icon-WelcomeToPlayground"></use>
+      <use xlink:href="#icon-Empty_State"></use>
     </svg>
-    <p>The Basic Sample Network is imported by default, have a play and learn what Fabric Composer is all about.
-    </p>
+    <p>It looks like you've used an older version of Composer Playground before!</p>
   </section>
   <footer>
-    <button type="button" class="primary centre" (click)="activeModal.close();">
-      <span>Let's Blockchain!</span>
+    <button type="button" class="primary centre" (click)="clearLocalStorage();activeModal.close();">
+      <span>Clear local storage</span>
     </button>
   </footer>
 </div>
