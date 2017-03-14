@@ -326,8 +326,7 @@ describe('JSONGenerator', () => {
             let mockRelationship = sinon.createStubInstance(Relationship);
             mockRelationship.getIdentifier.returns('DOGE_1');
             mockRelationship.getNamespace.returns('org.elsewhere');
-            mockRelationship.getFullyQualifiedIdentifier.returns('org.elsewhere.MyAsset1#DOGE_1');
-            jsonGenerator.getRelationshipText(relationshipDeclaration1, mockRelationship).should.equal('org.elsewhere.MyAsset1#DOGE_1');
+            jsonGenerator.getRelationshipText(relationshipDeclaration1, mockRelationship).should.equal('DOGE_1');
         });
 
         it('should throw an error for a resource if not permitted', () => {
