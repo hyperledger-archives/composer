@@ -65,10 +65,11 @@ class RegistryManager extends EventEmitter {
 
     /**
      * Ensure that the default registries exist.
+     * @param {boolean} force if set to true, will add without checking for existence
      * @returns {Promise} A promise that is resolved once all default registries
      * have been created, or rejected with an error.
      */
-    createDefaults() {
+    createDefaults(force) {
         let assetDeclarations = this.introspector.getClassDeclarations().filter((classDeclaration) => {
             if (classDeclaration.isAbstract()) {
                 return false;
@@ -85,19 +86,27 @@ class RegistryManager extends EventEmitter {
             .then(() => {
                 return assetDeclarations.reduce((result, assetDeclaration) => {
                     let fqn = assetDeclaration.getFullyQualifiedName();
-                    return this.get('Asset', fqn)
-                        .catch(() => {
-                            return this.add('Asset', fqn, `Asset registry for ${fqn}`);
-                        });
+                    if (force) {
+                        return this.add('Asset', fqn, `Asset registry for ${fqn}`, true);
+                    } else {
+                        return this.get('Asset', fqn)
+                            .catch(() => {
+                                return this.add('Asset', fqn, `Asset registry for ${fqn}`);
+                            });
+                    }
                 }, Promise.resolve());
             })
             .then(() => {
                 return participantDeclarations.reduce((result, participantDeclaration) => {
                     let fqn = participantDeclaration.getFullyQualifiedName();
-                    return this.get('Participant', fqn)
-                        .catch(() => {
-                            return this.add('Participant', fqn, `Participant registry for ${fqn}`);
-                        });
+                    if (force) {
+                        return this.add('Participant', fqn, `Participant registry for ${fqn}`, true);
+                    } else {
+                        return this.get('Participant', fqn)
+                            .catch(() => {
+                                return this.add('Participant', fqn, `Participant registry for ${fqn}`);
+                            });
+                    }
                 }, Promise.resolve());
             });
     }
@@ -176,14 +185,15 @@ class RegistryManager extends EventEmitter {
      * @param {string} type The type of the registry.
      * @param {string} id The ID of the registry.
      * @param {string} name The name of the registry.
+     * @param {boolean} force true to force the creation of the collection without checking
      * @return {Promise} A promise that is resolved when complete, or rejected
      * with an error.
      */
-    add(type, id, name) {
+    add(type, id, name, force) {
         let collectionID = type + ':' + id;
-        return this.sysregistries.add(collectionID, { type: type, id: id, name: name })
+        return this.sysregistries.add(collectionID, { type: type, id: id, name: name }, force)
             .then(() => {
-                return this.dataService.createCollection(collectionID);
+                return this.dataService.createCollection(collectionID, force);
             })
             .then((dataCollection) => {
                 let result = this.createRegistry(dataCollection, this.serializer, this.accessController, type, id, name);

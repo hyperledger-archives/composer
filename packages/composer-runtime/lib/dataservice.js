@@ -26,12 +26,14 @@ class DataService {
      * Create a collection with the specified ID.
      * @abstract
      * @param {string} id The ID of the collection.
+     * @param {force} force force creation, don't check for existence 1st
      * @return {Promise} A promise that will be resolved with a {@link DataCollection}
      * when complete, or rejected with an error.
      */
-    createCollection(id) {
+    createCollection(id, force) {
+        force =!!force;
         return new Promise((resolve, reject) => {
-            this._createCollection(id, (error, dataCollection) => {
+            this._createCollection(id, force, (error, dataCollection) => {
                 if (error) {
                     return reject(error);
                 }
@@ -52,9 +54,10 @@ class DataService {
      * @abstract
      * @private
      * @param {string} id The ID of the collection.
+     * @param {force} force force creation, don't check for existence 1st
      * @param {createCollectionCallback} callback The callback function to call when complete.
      */
-    _createCollection(id, callback) {
+    _createCollection(id, force, callback) {
         throw new Error('abstract function called');
     }
 
