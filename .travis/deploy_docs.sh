@@ -28,13 +28,13 @@ git remote set-url origin ${REPO}.git
 
 cd "${DIR}/packages/composer-website/out/${REPO}"
   
-mkdir -p "${DIR}/packages/composer-website/out/${REPO}/unstable"
-
 if [ "${DOCS}" == "full" ]; then
     rm -rf ${DIR}/packages/composer-website/out/${REPO}/*
     cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* .     
 fi
 
+mkdir -p ${DIR}/packages/composer-website/out/${REPO}/unstable
+rm -rf ${DIR}/packages/composer-website/out/${REPO}/unstable/*
 cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ./unstable  
 
 git add .
