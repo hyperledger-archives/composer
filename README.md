@@ -26,7 +26,7 @@ You should see messages indicating that the required git repositories have been 
 
 You must install [Lerna](https://lernajs.io) to build this multi-package repository:
 
-    $ npm install -g lerna@2.0.0-beta.32
+    $ npm install -g lerna@2.0.0-beta.38
 
 You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
 
