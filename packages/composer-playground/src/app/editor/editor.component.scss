@@ -41,6 +41,11 @@ app-editor {
       .edit-package-text {
         font-style: italic;
       }
+
+      .edit-label{
+        line-height: 2.5rem;
+        font-weight:bold;
+      }
     }
 
     .readme {
@@ -53,5 +58,6 @@ app-editor {
       min-height:80vh;
       max-height:80vh;
     }
+
 
 }

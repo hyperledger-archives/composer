@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit } from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
@@ -585,8 +585,11 @@ export class EditorComponent implements OnInit {
   }
 
   private hideEdit() {
+
     this.toggleEditActive();
     this.editingPackage = true;
+    document.getElementById('ayylmao').focus();
+    console.log('focused');
   }
 
   private stopEditing(){
