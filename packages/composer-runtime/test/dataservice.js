@@ -29,14 +29,24 @@ describe('DataService', () => {
 
     describe('#createCollection', () => {
 
-        it('should call _createCollection and handle no error', () => {
+        it('should call _createCollection, default force to false and handle no error', () => {
             sinon.stub(dataService, '_createCollection').yields(null, {});
             return dataService.createCollection('id')
                 .then((result) => {
-                    sinon.assert.calledWith(dataService._createCollection, 'id');
+                    sinon.assert.calledWith(dataService._createCollection, 'id', false);
                     result.should.deep.equal({});
                 });
         });
+
+        it('should call _createCollection, passthrough force to false and handle no error', () => {
+            sinon.stub(dataService, '_createCollection').yields(null, {});
+            return dataService.createCollection('id', true)
+                .then((result) => {
+                    sinon.assert.calledWith(dataService._createCollection, 'id', true);
+                    result.should.deep.equal({});
+                });
+        });
+
 
         it('should call _createCollection and handle an error', () => {
             sinon.stub(dataService, '_createCollection').yields(new Error('error'));
