@@ -3,7 +3,6 @@ import { TestBed, async, inject } from '@angular/core/testing';
 import { AboutService } from './about.service';
 import {
   HttpModule,
-  Http,
   Response,
   ResponseOptions,
   XHRBackend
