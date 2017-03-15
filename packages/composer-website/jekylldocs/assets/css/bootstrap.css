@@ -1600,7 +1600,6 @@ kbd kbd {
   min-height: 1px;
   padding-right: 15px;
   padding-left: 15px;
-  padding-top: 1em;
 }
 .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
   float: left;

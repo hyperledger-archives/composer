@@ -1,7 +1,11 @@
 <div class="resource-modal">
   <div class="modal-header">
     <h1>{{resourceAction}} {{resourceType}}</h1>
-    <button class="icon modal-exit" (click)="activeModal.close()">X</button>
+    <button class="icon modal-exit" (click)="activeModal.close()">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
   </div>
   <section class="modal-body">
     <h2>In registry: <b>{{registryID}}</b></h2>

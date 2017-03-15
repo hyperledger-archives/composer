@@ -1,10 +1,10 @@
 .composer {
   .side-bar {
-    width: 20%;
     max-width: 20rem;
     min-width: 17rem;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     z-index: 100;
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
 
@@ -26,6 +26,9 @@
 
         div {
           padding: $space-small 0 $space-small 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
       }
