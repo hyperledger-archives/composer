@@ -281,7 +281,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -343,7 +343,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -370,7 +370,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -394,7 +394,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -423,7 +423,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -451,7 +451,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -479,7 +479,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -508,7 +508,7 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
@@ -694,7 +694,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the response from the chaincode.
@@ -720,7 +720,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the response from the chaincode.
@@ -755,7 +755,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
@@ -794,7 +794,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
@@ -817,7 +817,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
@@ -840,7 +840,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
@@ -868,7 +868,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
@@ -896,7 +896,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
-            mockChain.buildTransactionID.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).

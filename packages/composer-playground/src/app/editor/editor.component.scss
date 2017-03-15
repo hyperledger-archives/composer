@@ -51,6 +51,9 @@ app-editor {
     .readme {
       background-color: $white;
       padding: $space-large;
+      min-height: 80vh;
+      max-height: 80vh;
+      overflow-y: auto;
     }
   }
 
