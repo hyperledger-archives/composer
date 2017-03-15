@@ -111,8 +111,6 @@ If you see this error, ensure that all of these ports are free before you run an
 
 If everything started OK, you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
-This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
-
 # <a name="installationoptions"></a>Alternative installation options
 
 If you have an existing Hyperledger Fabric instance you want to use with Fabric Composer Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.
