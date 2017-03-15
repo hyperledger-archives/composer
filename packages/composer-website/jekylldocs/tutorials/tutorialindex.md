@@ -8,11 +8,13 @@ excerpt: Tutorials
 
 # Tutorial Homepage
 
-This is a standin until tutorials are real.
+---
+
+{{site.data.conrefs.composer_full}} offers tutorials and getting started guides designed to help you take your first steps with {{site.data.conrefs.composer_short}}.
 
 
-{% for post in site.tutorials %}
+{% for page in site.tutorials %}
 <ul>
-  <li><a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a><br/><div class="excerpt">{{ post.excerpt }}</div></li>
+  <li><a href="{{ page.url }}" title="{{ page.title }}">{{ page.title }}</a><br/><div class="excerpt">{{ page.excerpt }}</div></li>
 </ul>
 {% endfor %}
