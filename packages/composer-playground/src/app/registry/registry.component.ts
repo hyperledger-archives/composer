@@ -22,14 +22,15 @@ export class RegistryComponent {
   private resources = [];
 
   private expandedResource = null;
-  private showExpand = true;
-  private resourceType: string = null;
+  private showExpand: boolean = true;
+  private registryType: string = null;
 
   @Input()
   set registry(registry: any) {
     this._registry = registry;
     if (this._registry) {
       this.loadResources();
+      this.registryType = this._registry.registryType;
     }
   }
 
@@ -49,7 +50,7 @@ export class RegistryComponent {
   loadResources() {
     this._registry.getAll()
       .then((resources) => {
-        if (this._registry instanceof TransactionRegistry){
+        if (this.isTransactionRegistry()) {
           this.resources = resources.sort((a, b) => {
             return b.timestamp - a.timestamp;
           });
@@ -62,6 +63,10 @@ export class RegistryComponent {
       .catch((error) => {
         this.alertService.errorStatus$.next(error);
       });
+  }
+
+  private isTransactionRegistry(): boolean {
+    return this.registryType === "Transaction";
   }
 
   serialize(resource: any): string {
