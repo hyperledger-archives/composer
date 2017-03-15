@@ -10,11 +10,7 @@ registry {
 
   .resource-header-left{
     flex:1;
-  }
-
-  .resource-header-right{
-    flex:1;
-    text-align: right;
+    align-self: center;
   }
 
   .resource-list {
@@ -53,8 +49,8 @@ registry {
 
         &.expanded {
           pre {
-            max-height: 500px;
-            overflow: visible;
+            max-height: 600px;
+            overflow: hidden;
 
             @include transition(all);
           }

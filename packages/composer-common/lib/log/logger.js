@@ -13,17 +13,18 @@
  */
 
 'use strict';
-// const beautify = require('json-beautify');
-// TODO: Will need to do improvement of the formatting with some module.
-//
+
 const sprintf = require('sprintf-js').sprintf;
-// const config = require('config');
-// Moving config to some other location
-const Node = require('./node.js');
+const Tree = require('./tree.js');
+
 
 // Root node of the selection tree
-let _root = null;
+let _tree = null;
+
+// Core logger that is in use (user configurable)
 let _logger = null;
+
+// Set of instances of this logger class that acts as a proxy to the core logger
 let _clInstances = {};
 
 /**
@@ -44,21 +45,20 @@ let _clInstances = {};
  * Standard log levels are in use. In order these are
  *  - silly, debug, verbose, info, warn, error
  * In addition, there are functions that record method entry and method exit. these
- * map down to the debug level.
+ * map down to the debug level. [Silly level isn't being used]
  *
  * Examples of using each function are included for each API below.
  *
- * At the top of the class (or file if not object style).  issue.
+ * At the top of the class (or file if not object style) issue.
  *
  * ```
  * const log = require('./log/logger.js').getLog(<CLASSNAME>);
  * log.info(.....)
  * ```
+ * The classname is in a fully qualified format eg common/BusinessNetworkDefinition or
+ * cli/archiveCreate.
  *
- * @todo Confirm the format via iterative use
- * @todo Precrtiptive on how data is uploaded to logmet etc. ??
- *
- *
+ * Comming Soon: Aliases
  *
  * @private
  * @class
@@ -99,6 +99,11 @@ class Logger {
 
     /**
      * @description Main internal logging method
+     * Required fn here is to form up the arguements into a suitable string, and
+     * process any errors to capture the stack trace.  The core logger is then CALLED
+     *
+     * The assumption is that this logger has a method called `log`. with this prototype
+     * `log(String loglevel, String codeunit, String message, Array[optional] data)`
      *
      * @param {String} loglevel log loglevel
      * @param {String} method method name
@@ -106,8 +111,10 @@ class Logger {
      */
     _intLogMain(loglevel,method,msg){
         if (typeof arguments[3] ==='undefined'){
+            // this is the case where there are no additional arguements; data for example
             _logger.log(loglevel,sprintf('%-25s:%-25s', this.className,method+'()'),msg);
         } else {
+            // loop over the aguements - if any are Errors make sure that the stack trace is captured
             let args = [];
             for(let i = 3; i < arguments.length; i++) {
                 if (arguments[i] instanceof Error){
@@ -265,10 +272,9 @@ class Logger {
 
 
      /**
-      * @descrption what is the debug environment variable set to
-     * Note that the _envDebug property of this object is for debugging and
-     * emergency use ONLY
-     *
+      * @description what is the debug environment variable set to
+     * Note that the _envDebug property of this object is for debugging the debugging log
+     * and emergency use ONLY
      *
      *  @return {String} String of the DEBUG env variable
      *
@@ -277,7 +283,18 @@ class Logger {
         return process.env.DEBUG || this._envDebug || '';
     }
 
-    /** get the configuration for the logging
+    /**
+     * @description Get the configuration for the logging.
+     * This uses the config module to look for a configuration block under the
+     * fabric-composer.debug property.
+     *
+     * The 'logger' property is required to specify the core logger to use. By
+     * default this is the 'winstonInjector' that creates and returns a Winston backed
+     * console and file logger.
+     *
+     * The 'config' property is required - but the contents of this property are passed
+     * as is to the class defined in the logger property.
+     *
      * @return {Object} with the config iformation
      *
      **/
@@ -288,8 +305,8 @@ class Logger {
             const mod = 'config';
             const req = require;
             const config = req(mod);
-            if (config.has('ConcertoConfig.debug')){
-                return config.get('ConcertoConfig.debug');
+            if (config.has('fabric-composer.debug')){
+                return config.get('fabric-composer.debug');
             }
         } catch (e) {
             // We don't care if we can't find the config module, it won't be
@@ -340,34 +357,31 @@ class Logger {
 
         let concertoConfigElements = [];
 
-        if (_root === null){
+        if (_tree === null){
         // need to do the filtering to see if this shold be enabled or not
             let string = this.getDebugEnv();
             let details = string.split(/[\s,]+/);
-            _root = new Node('root',false);
+            // _root = new Node('root',false);
+            _tree = new Tree();
 
             const regex = /(-?)concerto:(.*)?/;
         // now we have an array of the elements that we might need to be enabled
         //
             for (let i=0; i< details.length;i++){
                 let e = details[i];
-                if (e === '*' || e ==='concerto:*'){
-                    _root.include = true;
+                if (e === '*' || e ==='composer:*'){
+                    _tree.setRootInclusion();
                 }
             // determine if the element is for concerto or not
                 let machResult = e.match(regex);
                 if (machResult!==null){
-                // got a result that we need to trace therefore setup the child node correctly
-
-                    let newNode = new Node(machResult[2] ,(machResult[1]==='') );
-                    _root.addChildNodeAtStart(newNode);
+                   // got a result that we need to trace therefore setup the child node correctly
+                    _tree.addNode(machResult[2] ,(machResult[1]==='') );
 
                     // make a note of the debug settings that permit the config elements
                     concertoConfigElements.push(machResult[2]);
                 }
-
             }
-
         }
 
 
@@ -381,18 +395,14 @@ class Logger {
             let loggerToUse = localConfig.logger;
             let myLogger = require(loggerToUse);
 
-            _logger = myLogger.getLogger(localConfig.config,concertoConfigElements);
+            // primary used to determine what has been abled to allow the logger to
+            // go into a default mode.. NOT MEANT TO BE USED FOR FILTERTING.
+            _logger = myLogger.getLogger(localConfig.config,{ 'debug' : concertoConfigElements } );
 
         }
 
         // now we need to check if the name that has come in and should be traced
-        let n = _root.findChild(concertoLogger.classname);
-
-        if ( typeof n ==='undefined'){
-            concertoLogger.include = _root.isIncluded();
-        } else {
-            concertoLogger.include = n.isIncluded();
-        }
+        concertoLogger.include = _tree.getInclusion(concertoLogger.className);
 
         return ;
     }
@@ -401,7 +411,7 @@ class Logger {
      * @description clean up the logger; required if anything is dynamically changed
      */
     static reset(){
-        _root=null;
+        _tree=null;
         _logger=null;
         _clInstances=[];
     }

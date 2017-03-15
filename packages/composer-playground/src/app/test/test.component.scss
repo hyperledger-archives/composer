@@ -20,10 +20,22 @@ app-test {
       .side-bar-nav {
         padding: 0;
       }
+
+
     }
 
     .side-button {
-      margin:auto
+      margin: 0 auto;
+
+      .button-item {
+        padding-top: 5rem;
+        text-align: center;
+      }
     }
+
+  }
+
+  .main-view {
+    overflow-y: auto;
   }
 }
