@@ -1,9 +1,31 @@
 svg.ibm-icon {
   display: inline-block;
+  width: 14px;
+  height: 14px;
+  fill: $primary-text;
+}
+
+svg.nav-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  fill: $white;
+}
+
+svg.standard-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  fill: $primary-text;
+}
+
+svg.large-icon {
+  display: inline-block;
   width: 24px;
   height: 24px;
   fill: $primary-text;
 }
+
 
 svg.blue-icon{
   fill: $second-highlight;

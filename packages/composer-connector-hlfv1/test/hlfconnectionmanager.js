@@ -254,6 +254,7 @@ describe('HLFConnectionManager', () => {
                     connection.chain.should.deep.equal(mockChain);
                     connection.eventHubs.should.deep.equal([mockEventHub]);
                     connection.caClient.should.deep.equal(mockCAClient);
+                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
                 });
         });
 
@@ -268,6 +269,7 @@ describe('HLFConnectionManager', () => {
                     connection.chain.should.deep.equal(mockChain);
                     connection.eventHubs.should.deep.equal([mockEventHub]);
                     connection.caClient.should.deep.equal(mockCAClient);
+                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
                 });
         });
 

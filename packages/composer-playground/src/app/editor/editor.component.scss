@@ -35,6 +35,7 @@ app-editor {
   .main-view {
     .business-network-details {
       display: flex;
+      height:50px;
 
       .business-network-version {
         margin-right: $space-smedium;
@@ -46,11 +47,19 @@ app-editor {
       .edit-package-text {
         font-style: italic;
       }
+
+      .edit-label{
+        line-height: 2.5rem;
+        font-weight:bold;
+      }
     }
 
     .readme {
       background-color: $white;
       padding: $space-large;
+      min-height: 80vh;
+      max-height: 80vh;
+      overflow-y: auto;
     }
   }
 
@@ -58,5 +67,6 @@ app-editor {
       min-height:80vh;
       max-height:80vh;
     }
+
 
 }

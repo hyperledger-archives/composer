@@ -12,5 +12,7 @@ This is a standin until tutorials are real.
 
 
 {% for post in site.tutorials %}
-  <li><a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a><br/><div class="excerpt">{{ post.excerpt }}</div><ul class="tags">
+<ul>
+  <li><a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a><br/><div class="excerpt">{{ post.excerpt }}</div></li>
+</ul>
 {% endfor %}

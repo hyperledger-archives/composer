@@ -15,10 +15,12 @@ body.composer {
   flex-direction: column;
   height: 100vh;
 
-  .main-container {
+  main {
+    flex: 1;
     display: flex;
     width: 100%;
-    overflow-y: auto;
+    //the height of the page minus the header
+    height: calc(100vh - 63px);
   }
 
   .sr-only {

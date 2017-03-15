@@ -155,7 +155,7 @@ class JSONGenerator {
             return `${obj.toString()}`;
         }
         default: {
-            return `"${obj.toString()}"`;
+            return JSON.stringify(obj.toString());
         }
         }
     }
@@ -232,12 +232,8 @@ class JSONGenerator {
         } else {
             throw new Error('Did not find a relationship for ' + relationshipDeclaration.getFullyQualifiedTypeName() + ' found ' + relationship );
         }
-        let relationshipText = identifiable.getIdentifier();
-        if(relationshipDeclaration.getNamespace() !==  identifiable.getNamespace() ) {
-            relationshipText = identifiable.getFullyQualifiedIdentifier();
-        }
 
-        return relationshipText;
+        return identifiable.getIdentifier();
     }
 }
 

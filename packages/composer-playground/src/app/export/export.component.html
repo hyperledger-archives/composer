@@ -1,10 +1,19 @@
 <div class="export container">
   <div class="modal-header">
-    <span><b> {{fileName}}.bna</b> was exported</span>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">
-      <svg class="ibm-icon" aria-hidden="true">
+    <div class="flex-shrink:1;align-self:center;">
+      <svg class="large-icon margin-right" aria-hidden="true">
+          <use xlink:href="#icon-checklist_64"></use>
+      </svg>
+    </div>
+    <div class="flex-grow:1;align-self:center;">
+      <b> {{fileName}}.bna</b> was exported
+    </div>
+    <div style="flex-shrink:1;align-self:center;">
+      <button class="icon modal-exit" (click)="activeModal.dismiss()">
+        <svg class="ibm-icon" aria-hidden="true">
           <use xlink:href="#icon-close_new"></use>
         </svg>
-    </button>
+      </button>
+    </div>
   </div>
 </div>
