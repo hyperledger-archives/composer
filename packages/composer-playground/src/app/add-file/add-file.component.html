@@ -4,7 +4,11 @@
      [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
   <div class="modal-header">
     <h1>Add a file</h1>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">X</button>
+    <button class="icon modal-exit" (click)="activeModal.dismiss()">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
   </div>
   <section class="modal-body">
     <span>Upload a file from your computer...</span>
@@ -46,7 +50,7 @@
       <input type="radio" id="file-type-js"name="file-type" [(ngModel)]="fileType" value="js" (change)="changeCurrentFileType()">
       <label class="radio-label" for="file-type-js">Script File (.js)</label>
       <div class="description">
-        Define the logic of transaction executions using Javascript.
+        Define the logic of transaction executions using JavaScript.
       </div>
     </div>
    </form>
