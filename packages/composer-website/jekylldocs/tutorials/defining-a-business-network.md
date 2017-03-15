@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Tutorial 1: Building your first business network
+title: Tutorial 1 - Building your first business network
 category: tasks
 sidebar: sidebars/tutorials.md
 excerpt: This tutorial walks you through the basics of defining a business network of your own, the contents of a business network, and how they come together to form a business network archive.
