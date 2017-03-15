@@ -14,13 +14,15 @@
 
 'use strict';
 
+const connector = require('loopback-connector-composer');
+
 module.exports = function (app, callback) {
 
     const composer = app.get('composer');
 
     const dataSource = app.loopback.createDataSource('composer', {
         name: 'composer',
-        connector: 'composer',
+        connector: connector,
         connectionProfileName: composer.connectionProfileName,
         businessNetworkIdentifier: composer.businessNetworkIdentifier,
         participantId: composer.participantId,

@@ -41,6 +41,7 @@ import { ConfirmComponent } from './confirm';
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
+import { VersionCheckComponent } from './version-check/version-check.component.ts';
 
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
@@ -92,6 +93,7 @@ type StoreType = {
     TransactionComponent,
     AddFileComponent,
     WelcomeComponent,
+    VersionCheckComponent,
     ResetComponent,
     BusyComponent
   ],
@@ -119,7 +121,8 @@ type StoreType = {
     TransactionComponent,
     CheckOverFlowDirective,
     AddFileComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    VersionCheckComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
@@ -131,7 +134,7 @@ type StoreType = {
     TooltipModule.forRoot(),
     NgbModule.forRoot(),
     LocalStorageModule.withConfig({
-      prefix: 'Concerto',
+      prefix: '',
       storageType: 'localStorage'
     })
   ],

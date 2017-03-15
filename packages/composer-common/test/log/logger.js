@@ -15,7 +15,7 @@
 'use strict';
 
 const Logger = require('../../lib/log/logger');
-
+const Tree = require('../../lib/log//tree.js');
 
 const chai = require('chai');
 // const should = chai.should();
@@ -28,7 +28,7 @@ describe('Logger', () => {
 
         it('Log should be returned', () => {
 
-            Logger._envDebug='concerto:*';
+            Logger._envDebug='composer:*';
 
             let mm = Logger.getLog('Test');
             mm.should.not.be.null;
@@ -39,7 +39,7 @@ describe('Logger', () => {
     describe('#info', () => {
         it('Call a trace point', () => {
 
-            Logger._envDebug='concerto:*';
+            Logger._envDebug='composer:*';
 
             let mm = Logger.getLog('Test');
             mm.should.not.be.null;
@@ -61,9 +61,9 @@ describe('Logger', () => {
     });
 
     describe('#infoOff', () => {
-        it('Call a trace point tracenot enabled', () => {
+        it('Call a trace point trace not enabled', () => {
 
-            // Logger._envDebug='concerto:*';
+            // Logger._envDebug='composer:*';
 
             let mm = Logger.getLog('Test');
             mm.should.not.be.null;
@@ -86,12 +86,12 @@ describe('Logger', () => {
 
     describe('#setFunctionalLogger', () => {
         it('Call a trace point', () => {
-            Logger._envDebug='concerto:*';
+            Logger._envDebug='composer:*';
 
             // let mm = Logger.getLog('Test');
             Logger.setFunctionalLogger({
                 log: function(){
-                    console.log('{\"concerto\":'+JSON.stringify(arguments)+'}');
+                    console.log('{\"composer\":'+JSON.stringify(arguments)+'}');
                 }
             });
             // mm.should.not.be.null;
@@ -106,7 +106,7 @@ describe('Logger', () => {
         it('Call a trace point specific on string', () => {
             console.log('reseting root');
             Logger.reset();
-            Logger._envDebug='concerto:bill';
+            Logger._envDebug='composer:bill';
 
             let mm = Logger.getLog('Test');
             mm.should.not.be.null;
@@ -119,7 +119,7 @@ describe('Logger', () => {
         it('Call a trace point matching specific', () => {
             console.log('reseting root');
             Logger.reset();
-            Logger._envDebug='concerto:bill';
+            Logger._envDebug='composer:bill';
 
             let mm = Logger.getLog('bill');
             mm.should.not.be.null;
@@ -128,5 +128,31 @@ describe('Logger', () => {
 
         });
     });
+
+    describe('#tree tests', () => {
+        it('Run data into the tree object', () => {
+
+            let _tree = new Tree();
+            _tree.setRootInclusion();
+            _tree.addNode('alpha',false);
+
+
+            _tree.getInclusion('alpha').should.be.false;
+            _tree.getInclusion('omega').should.be.true;
+            _tree.addNode('alpha/beta',true);
+            _tree.getInclusion('alpha/beta').should.be.true;
+
+            _tree.addNode('alpha/beta',true);
+            _tree.getInclusion('alpha/beta').should.be.true;
+
+            _tree.addNode('gamma/delta/epsilon',false);
+            _tree.getInclusion('gamma/delta/epsilon').should.be.false;
+            _tree.getInclusion('gamma/delta').should.be.true;
+            _tree.getInclusion('gamma').should.be.true;
+        });
+
+    }
+
+  );
 
 });
