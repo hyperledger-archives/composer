@@ -21,20 +21,24 @@
         </div>
       </div>
     </div>
-    <div>
-      <h4 class="transaction-preview">JSON Data Preview</h4>
-    </div>
-    <div class="transaction-bound">
-      <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
-      </codemirror>
-      <div class="transaction-error" ng-if="defitionError!=null">
-        <h6>{{defitionError}}</h6>
+    <section class="resource-container">
+      <section class="resource-component">
+      <div>
+        <p class="resource-preview-text">JSON Data Preview</p>
       </div>
-    </div>
+       <div class="resource-bound">
+        <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
+        </codemirror>
+        <div class="resource-error-text" ng-if="defitionError!=null">
+          <p>{{defitionError}}</p>
+        </div>
+      </div>
+      </section>
+    </section>
   </section>
   <footer>
-    <h2>Just need quick test data? <button class="action" type="button" (click)="generateTransactionDeclaration({ generate: true })">Generate Random Data</button></h2>
-    <button type="button" class="secondary" (click)="activeModal.dismiss();">
+    <p class="footer-text">Just need quick test data? <button type="button" class="icon" (click)="generateTransactionDeclaration()"><u>Generate Random Data</u></button></p>
+    <button type="button" class="secondary" (click)="activeModal.close();">
       <span>Cancel</span>
     </button>
     <button type="button" class="primary" (click)="submitTransaction()" [disabled]="defitionError!=null || submitInProgress">
