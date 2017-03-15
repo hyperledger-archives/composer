@@ -292,10 +292,7 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-                // generate the transaction id
-                return this.chain.buildTransactionID(nonce, this.user);
-            })
-            .then((txId) => {
+                let txId = this.chain.buildTransactionID(nonce, this.user);
 
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
@@ -326,17 +323,14 @@ class HLFConnection extends Connection {
             .then((bna) => {
                 businessNetworkArchive = bna;
                 nonce = utils.getNonce();
-                return this.chain.buildTransactionID(nonce, this.user);
-            })
-            .then((txId) => {
                 // prepare and send the instantiate proposal
-                finalTxId = txId;
+                finalTxId = this.chain.buildTransactionID(nonce, this.user);
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: connectorPackageJSON.version,
                     chaincodeId: businessNetwork.getName(),
                     chainId: this.connectOptions.channel,
-                    txId: txId,
+                    txId: finalTxId,
                     nonce: nonce,
                     fcn: 'init',
                     args: [businessNetworkArchive.toString('base64')]
@@ -539,20 +533,19 @@ class HLFConnection extends Connection {
         });
 
         let nonce = utils.getNonce();
-        return this.chain.buildTransactionID(nonce, this.user)
-            .then((txId) => {
-                // Submit the query request.
-                const request = {
-                    chaincodeId: this.businessNetworkIdentifier,
-                    chainId: this.connectOptions.channel,
-                    txId: txId,
-                    nonce: nonce,
-                    fcn: functionName,
-                    args: args,
-                    attrs: ['userID']
-                };
-                return this.chain.queryByChaincode(request);
-            })
+        let txId = this.chain.buildTransactionID(nonce, this.user);
+
+        // Submit the query request.
+        const request = {
+            chaincodeId: this.businessNetworkIdentifier,
+            chainId: this.connectOptions.channel,
+            txId: txId,
+            nonce: nonce,
+            fcn: functionName,
+            args: args,
+            attrs: ['userID']
+        };
+        return this.chain.queryByChaincode(request)
             .then((payloads) => {
                 LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the chaincode`, payloads);
                 if (!payloads.length) {
@@ -599,21 +592,18 @@ class HLFConnection extends Connection {
         });
 
         let nonce = utils.getNonce();
-        let txId;
-        return this.chain.buildTransactionID(nonce, this.user)
-            .then((id) => {
-                txId = id;
-                // Submit the transaction to the endorsers.
-                const request = {
-                    chaincodeId: this.businessNetworkIdentifier,
-                    chainId: this.connectOptions.channel,
-                    txId: txId,
-                    nonce: nonce,
-                    fcn: functionName,
-                    args: args,
-                    attrs: ['userID']
-                };
-                return this.chain.sendTransactionProposal(request);            })
+        let txId = this.chain.buildTransactionID(nonce, this.user);
+        // Submit the transaction to the endorsers.
+        const request = {
+            chaincodeId: this.businessNetworkIdentifier,
+            chainId: this.connectOptions.channel,
+            txId: txId,
+            nonce: nonce,
+            fcn: functionName,
+            args: args,
+            attrs: ['userID']
+        };
+        return this.chain.sendTransactionProposal(request)
             .then((results) => {
 
                 // Validate the endorsement results.
