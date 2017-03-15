@@ -213,6 +213,11 @@ module.exports = function (options) {
            //   sourceMap: true
             }
           }]
+        },
+
+        {
+          test: /\.bna$/,
+          loader: "buffer-loader"
         }
 
       ],
