@@ -63,6 +63,10 @@ app-editor {
     }
   }
 
+  .CodeMirror {
+    font-family: Source Code Pro
+  
+  }
   .CodeMirror, .CodeMirror-scroll{
       min-height:80vh;
       max-height:80vh;
