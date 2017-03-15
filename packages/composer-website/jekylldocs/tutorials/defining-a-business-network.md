@@ -101,11 +101,12 @@ which controls the transactions, in this script file, there is JavaScript logic 
 
 12. To represent a counter-offer or raise from another member, repeat step 10, increasing the `bidPrice` property and changing the `member` who is placing the bid. After you have submitted a second *Offer* transaction, the *VehicleListing* asset should update to show that both bids have been placed.
 
-13. When you've placed as many bids as you like, the next step is to submit the *CloseBidding* transaction to close the auction. The *CloseBidding* transaction pays the previous owner of the *Vehicle* asset listed in the *VehicleListing* the current highest offer and transfers ownership of the *Vehicle* asset, as listed in the `owner` property, to the highest bidder. To submit the *CloseBidding* 
+13. When you've placed as many bids as you like, the next step is to submit the *CloseBidding* transaction to close the auction. The *CloseBidding* transaction pays the previous owner of the *Vehicle* asset listed in the *VehicleListing* the current highest offer, changes the `state` of the listing to `SOLD`, and transfers ownership of the *Vehicle* asset, as listed in the `owner` property, to the highest bidder. To submit the *CloseBidding* transaction, click **Submit Transaction** and enter the `listingId` which corresponds to the *VehicleListing*. Click **Submit** to submit the transaction.
 
-## What to do next
+  Once the transaction has been submitted, you can check the *Vehicle* asset's `owner` property to ensure that it has changed, as well as checking the `balance` of the previous and new owner of the car, and the *VehicleListing* `state`.
 
-learn more about business networks: docs.
-Read docs: applications.
+14. You've successfully run the `carauction-network` {{site.data.conrefs.composer_short}} sample! If you want to continue to use this business network in future tutorials or for testing, click **Export** in the **Define** tab to download a Business Network Archive `.bna` file. A `.bna` file contains all files listed in the business network, in this example, `README.md`, `lib/logic.js`, `lib/org.acme.vehicle.auction.cto`, and `permissions.acl`.
+
+If you want to continue to modify your business network, you could add some new fields to asset types in the business network definition, for example, make or model for *Vehicle* assets.
 
 ---
