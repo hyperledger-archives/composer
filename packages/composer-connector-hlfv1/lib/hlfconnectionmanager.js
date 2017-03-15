@@ -186,12 +186,6 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('No channel has been specified in the connection profile');
         }
 
-        // Generate the chain identifier.
-        let chainIdentifier = connectionProfile;
-        if (businessNetworkIdentifier) {
-            chainIdentifier += '@' + businessNetworkIdentifier;
-        }
-
         // Default the optional connection options.
         if (!connectOptions.deployWaitTime) {
             connectOptions.deployWaitTime = 60;
@@ -204,7 +198,7 @@ class HLFConnectionManager extends ConnectionManager {
         const client = HLFConnectionManager.createClient();
 
         // Create a new chain instance.
-        const chain = client.newChain(chainIdentifier);
+        const chain = client.newChain(connectOptions.channel);
 
         // Load all of the orderers into the client.
         connectOptions.orderers.forEach((orderer) => {
