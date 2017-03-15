@@ -212,6 +212,11 @@ module.exports = function (options) {
         {
           test: /browserfs.*\.js$/,
           loader: 'imports-loader?importedSetImmediate=setimmediate'
+        },
+
+        {
+          test: /\.bna$/,
+          loader: "buffer-loader"
         }
       ]
     },

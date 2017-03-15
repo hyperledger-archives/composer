@@ -9,54 +9,7 @@ import {AlertService} from './alert.service';
 
 import {BusinessNetworkDefinition, AclFile} from 'composer-common';
 
-const initialModelFile =
-  `/**
- * Sample business network definition.
- */
-namespace org.acme.biznet
-
-asset SampleAsset identified by assetId {
-  o String assetId
-  --> SampleParticipant owner
-  o String value
-}
-
-participant SampleParticipant identified by participantId {
-  o String participantId
-  o String firstName
-  o String lastName
-}
-
-transaction SampleTransaction identified by transactionId {
-  o String transactionId
-  --> SampleAsset asset
-  o String newValue
-}
-`;
-
-const initialScriptFile =
-  `/**
- * Sample transaction processor function.
- */
-function onSampleTransaction(sampleTransaction) {
-  sampleTransaction.asset.value = sampleTransaction.newValue;
-  return getAssetRegistry('org.acme.biznet.SampleAsset')
-    .then(function (assetRegistry) {
-      return assetRegistry.update(sampleTransaction.asset);
-    });
-}`;
-
-const initialAclFile = `/**
- * Sample Access Control List
- */
-rule Everyone {
-    description: "Allows any participant in the namespace full access to all resources in the namespace"
-    participant: "org.acme.biznet"
-    operation: ALL
-    resource: "org.acme.biznet"
-    action: ALLOW
-}
-`;
+const sampleBusinessNetworkArchive = require('sample-network/dist/sample-network.bna');
 
 @Injectable()
 export class SampleBusinessNetworkService {
@@ -384,16 +337,10 @@ export class SampleBusinessNetworkService {
 
   public deployInitialSample(): Promise<any> {
     this.alertService.busyStatus$.next('Deploying sample business network ...');
-    let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
-    let modelManager = businessNetworkDefinition.getModelManager();
-    modelManager.addModelFile(initialModelFile);
-    let scriptManager = businessNetworkDefinition.getScriptManager();
-    let thisScript = scriptManager.createScript('lib/logic.js', 'JS', initialScriptFile);
-    scriptManager.addScript(thisScript);
-    let aclManager = businessNetworkDefinition.getAclManager();
-    let aclFile = new AclFile('permissions.acl', modelManager, initialAclFile);
-    aclManager.setAclFile(aclFile);
-    return this.deployBusinessNetwork(businessNetworkDefinition);
+    return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
+      .then((businessNetworkDefinition) => {
+        return this.deployBusinessNetwork(businessNetworkDefinition);
+      });
   }
 
   public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
