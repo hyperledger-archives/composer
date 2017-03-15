@@ -3,7 +3,7 @@
   <div class="resource-header-left">
     <h1 >{{_registry.name}}</h1>
   </div>
-  <div *ngIf="_registry.registryType!='Transaction'" class="resource-header-right">
+  <div *ngIf="_registry.registryType!='Transaction'">
     <button type="button" class="primary" (click)="openNewResourceModal()">
       <span>+ Create New {{_registry.registryType}}</span>
     </button>
@@ -32,7 +32,7 @@
                   <use xlink:href="#icon-trash_32"></use>
               </svg>
            </button>
-         </div>    
+         </div>
       </div>
       <button *ngIf="showExpand" class="expand" type="button" (click)="expandResource(resource)">
         {{resource.getIdentifier() === expandedResource ? 'Collapse' : 'Show All'}}
@@ -43,6 +43,7 @@
         <use xlink:href="#icon-Emptiness"></use>
       </svg>
       <h3>This registry is empty!</h3>
-      <p>To create resources in this registry click create new at the top of this page</p>
+      <p *ngIf="_registry.registryType!='Transaction'">To create resources in this registry click create new at the top of this page</p>
+      <p *ngIf="_registry.registryType=='Transaction'">Submit a Transaction via the side menu</p>
     </div>
 </div>

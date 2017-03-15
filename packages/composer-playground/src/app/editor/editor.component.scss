@@ -26,6 +26,12 @@ app-editor {
     }
   }
 
+  svg.nav-icon {
+      width: 32px;
+      height: 16px;
+  }
+
+
   .main-view {
     .business-network-details {
       display: flex;
@@ -45,6 +51,9 @@ app-editor {
     .readme {
       background-color: $white;
       padding: $space-large;
+      min-height: 80vh;
+      max-height: 80vh;
+      overflow-y: auto;
     }
   }
 

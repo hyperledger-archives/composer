@@ -252,8 +252,9 @@ describe('HLFConnectionManager', () => {
                     connection.getConnectionOptions().should.deep.equal(connectOptions);
                     connection.client.should.deep.equal(mockClient);
                     connection.chain.should.deep.equal(mockChain);
-                    connection.eventHub.should.deep.equal(mockEventHub);
+                    connection.eventHubs.should.deep.equal([mockEventHub]);
                     connection.caClient.should.deep.equal(mockCAClient);
+                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
                 });
         });
 
@@ -266,8 +267,9 @@ describe('HLFConnectionManager', () => {
                     connection.getConnectionOptions().should.deep.equal(connectOptions);
                     connection.client.should.deep.equal(mockClient);
                     connection.chain.should.deep.equal(mockChain);
-                    connection.eventHub.should.deep.equal(mockEventHub);
+                    connection.eventHubs.should.deep.equal([mockEventHub]);
                     connection.caClient.should.deep.equal(mockCAClient);
+                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
                 });
         });
 
@@ -305,11 +307,27 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
+        it('should fail if eventhub count doesn\'t match peer count', () => {
+            connectOptions.peers = [
+                'grpc://localhost:7051',
+                'grpc://localhost:8051',
+                'grpc://localhost:9051'
+            ];
+            (() => {
+                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+            }).should.throw(/there should be an identical number of event hub urls to peers/);
+        });
+
         it('should add multiple peers to the chain', () => {
             connectOptions.peers = [
                 'grpc://localhost:7051',
                 'grpc://localhost:8051',
                 'grpc://localhost:9051'
+            ];
+            connectOptions.events = [
+                'grpc://localhost:7054',
+                'grpc://localhost:8054',
+                'grpc://localhost:9054'
             ];
             return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
                 .then((connection) => {

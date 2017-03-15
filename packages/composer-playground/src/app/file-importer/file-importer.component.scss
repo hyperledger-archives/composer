@@ -43,7 +43,9 @@ file-importer {
     align-items: center;
 
     svg {
-      margin-right: $space-medium;
+      margin-right: $space-smedium;
+      width: 16px;
+      height: 16px;
     }
 
     .underline {

@@ -53,6 +53,11 @@ describe('HLFConnection', () => {
         mockEventHub = sinon.createStubInstance(EventHub);
         mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
         mockUser = sinon.createStubInstance(User);
+
+        // TODO: Temp code to address patch due to node-sdk not having fix yet
+        mockUser.mspImpl = {};
+        mockUser.mspImpl._id = '';
+
         mockSecurityContext = sinon.createStubInstance(HLFSecurityContext);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockBusinessNetwork.getName.returns('org.acme.biznet');
@@ -71,7 +76,7 @@ describe('HLFConnection', () => {
             keyValStore: '/tmp/hlfabric1',
             channel: 'testchainid'
         };
-        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, mockEventHub, mockCAClient);
+        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
     });
 
     afterEach(() => {
@@ -108,15 +113,22 @@ describe('HLFConnection', () => {
             }).should.throw(/chain not specified/);
         });
 
-        it('should throw if eventHub not specified', () => {
+        it('should throw if eventHubs not specified', () => {
             (() => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, null, mockCAClient);
-            }).should.throw(/eventHub not specified/);
+            }).should.throw(/eventHubs not specified or not an array/);
         });
+
+        it('should throw if eventHubs not an array', () => {
+            (() => {
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, mockEventHub, mockCAClient);
+            }).should.throw(/eventHubs not specified or not an array/);
+        });
+
 
         it('should throw if caClient not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, mockEventHub, null);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, [mockEventHub], null);
             }).should.throw(/caClient not specified/);
         });
 
@@ -269,6 +281,8 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
@@ -278,7 +292,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
@@ -290,10 +304,11 @@ describe('HLFConnection', () => {
                     sinon.assert.calledOnce(connection.fs.outputFile);
                     sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
                     sinon.assert.calledOnce(mockChain.sendInstallProposal);
+                    sinon.assert.calledOnce(mockChain.initialize);
                     sinon.assert.calledOnce(mockChain.sendInstantiateProposal);
                     sinon.assert.calledWith(mockChain.sendInstallProposal, {
                         chaincodePath: 'composer',
-                        chaincodeVersion: '1.0',
+                        chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -301,7 +316,7 @@ describe('HLFConnection', () => {
                     });
                     sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
                         chaincodePath: 'composer',
-                        chaincodeVersion: '1.0',
+                        chaincodeVersion: connectorPackageJSON.version,
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -328,6 +343,8 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
@@ -337,7 +354,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledTwice(connection.fs.outputFile);
@@ -353,6 +370,8 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
@@ -362,7 +381,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .should.be.rejectedWith(/No results were returned/);
         });
@@ -371,10 +390,12 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [ new Error('such error') ];
+            const proposalResponses = [ {'error': new Error('such error')} ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
@@ -384,7 +405,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .should.be.rejectedWith(/such error/);
         });
@@ -402,6 +423,8 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
@@ -411,9 +434,37 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .should.be.rejectedWith(/such error/);
+        });
+
+        it('should throw an error if peer says transaction not valid', () => {
+            // This is the generated nonce.
+            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'INVALID');
+            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
+                .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 
         it('should throw an error if the commit of the transaction times out', () => {
@@ -428,6 +479,8 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
@@ -455,6 +508,8 @@ describe('HLFConnection', () => {
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
@@ -464,7 +519,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'INVALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .should.be.rejectedWith(/Failed to commit transaction/);
         });
@@ -639,6 +694,8 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the response from the chaincode.
             const response = Buffer.from('hello world');
@@ -663,6 +720,8 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the response from the chaincode.
             mockChain.queryByChaincode.resolves([]);
@@ -696,6 +755,8 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
@@ -712,7 +773,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then((result) => {
                     sinon.assert.calledOnce(mockChain.sendTransactionProposal);
@@ -733,6 +794,8 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [];
@@ -745,7 +808,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/No results were returned/);
         });
@@ -754,9 +817,11 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
-            const proposalResponses = [ new Error('such error') ];
+            const proposalResponses = [ {'error': new Error('such error')} ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
@@ -766,7 +831,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/such error/);
         });
@@ -775,6 +840,8 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
@@ -792,7 +859,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/such error/);
         });
@@ -801,6 +868,8 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
@@ -827,6 +896,8 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
@@ -843,7 +914,7 @@ describe('HLFConnection', () => {
             };
             mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields();
+            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/Failed to commit transaction/);
         });
