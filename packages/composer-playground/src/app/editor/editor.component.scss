@@ -35,6 +35,7 @@ app-editor {
   .main-view {
     .business-network-details {
       display: flex;
+      height:50px;
 
       .business-network-version {
         margin-right: $space-smedium;
@@ -45,6 +46,11 @@ app-editor {
       }
       .edit-package-text {
         font-style: italic;
+      }
+
+      .edit-label{
+        line-height: 2.5rem;
+        font-weight:bold;
       }
     }
 
@@ -57,9 +63,14 @@ app-editor {
     }
   }
 
+  .CodeMirror {
+    font-family: Source Code Pro
+  
+  }
   .CodeMirror, .CodeMirror-scroll{
       min-height:80vh;
       max-height:80vh;
     }
+
 
 }

@@ -1,25 +1,31 @@
 <div class="resource-modal">
   <div class="modal-header">
     <h1>{{resourceAction}} {{resourceType}}</h1>
-    <button class="icon modal-exit" (click)="activeModal.close()">X</button>
+    <button class="icon modal-exit" (click)="activeModal.close()">
+      <svg class="ibm-icon" aria-hidden="true">
+       <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
   </div>
   <section class="modal-body">
     <h2>In registry: <b>{{registryID}}</b></h2>
-    <section>
+    <section class="resource-container">
+      <section class="resource-component">
       <div>
-        <h4 class="resource-preview">JSON Data Preview</h4>
+        <p class="resource-preview-text">JSON Data Preview</p>
       </div>
-      <div class="resource-bound">
+       <div class="resource-bound">
         <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
         </codemirror>
-        <div class="resource-error" ng-if="defitionError!=null">
-          <h6>{{defitionError}}</h6>
+        <div class="resource-error-text" ng-if="defitionError!=null">
+          <p>{{defitionError}}</p>
         </div>
       </div>
+      </section>
     </section>
   </section>
   <footer>
-    <h2 *ngIf="!editMode()">Just need quick test data? <button class="action" type="button" (click)="generateResource()">Generate Random Data</button></h2>
+    <p class="footer-text" *ngIf="!editMode()">Just need quick test data? <button type="button" class="icon" (click)="generateResource()"><u>Generate Random Data</u></button></p>
     <button type="button" class="secondary" (click)="activeModal.close();">
       <span>Cancel</span>
     </button>
