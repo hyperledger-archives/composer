@@ -50,15 +50,15 @@ which controls the transactions, in this script file, there is JavaScript logic 
 
 8. To create a *Vehicle* asset, click **Vehicle**, then **Create New Asset**. Enter the VIN (Vehicle Identification Number) and the email address of the owner. In this case, enter the email address of one of the *Members* created in step 5 or 6, then click **Create New** to finish creating the asset. Now, the asset exists and has a set owner. The *Vehicle* asset credentials must be in the following format, as defined in the `.cto` file.
 
-  ```
-  {
-    "$class": "org.acme.vehicle.auction.Vehicle",
-    "vin": "1234",
-    "owner": "dave@biznet.org"
-  }
-  ```
+```
+{
+  "$class": "org.acme.vehicle.auction.Vehicle",
+  "vin": "1234",
+  "owner": "dave@biznet.org"
+}
+```
 
-9. Next, to sell the car at auction, an auction listing asset must be created. Assets can be any tangible or intangible goods or services, in this case, the auction listing itself. To create the auction listing, click **VehicleListing** then click **Create New Asset**. The *VehicleListing* requires several properties:
+9. Next, to sell the car at auction, an auction listing asset must be created. Assets can be any tangible or intangible goods or services, in this case, the auction listing itself. To create the auction listing, click **VehicleListing** then click **Create New Asset**. The *VehicleListing* requires several properties, and should have the following format:
   * `listingId` is the unique identifier of this car listing. For the purposes of this tutorial, you can enter anything here.
   * `reservePrice` is the minimum price which the allow ownership of the car to be transferred once the auction is closed, this function is defined in the script file which makes up part of this business network.
   * `description` is the description of the auction, for this tutorial you can enter anything here.
@@ -66,47 +66,38 @@ which controls the transactions, in this script file, there is JavaScript logic 
   * `offers` should be left blank, and will be populated automatically as participants make offers.
   * `vehicle` defines the vehicle which is for sale, this should be the same as the `vin` field on the *Vehicle* asset created in step 8.
 
-  A complete *VehicleListing* asset should appear in the following format:
+```
+{
+  "$class": "org.acme.vehicle.auction.VehicleListing",
+  "listingId": "listing_1",
+  "reservePrice": 2000,
+  "description": "dave's car",
+  "state": "FOR_SALE",
+  "offers": [],
+  "vehicle": "1234"
+}
+```
 
-  ```
-  {
-    "$class": "org.acme.vehicle.auction.VehicleListing",
-    "listingId": "listing_1",
-    "reservePrice": 2000,
-    "description": "dave's car",
-    "state": "FOR_SALE",
-    "offers": [],
-    "vehicle": "1234"
-  }
-  ```
-  Once the *VehicleListing* is complete, click **Create new** to add it as an asset.
-
-10. Now that you have *Members* to own and bid on an asset, an *Auctioneer*, a *Vehicle* asset with registered ownership, and a *VehicleListing* asset to track the bids, reserve price, and state of the auction. The next step is to begin using transactions to interact with assets. This sample includes the *Offer* and *CloseBidding* transactions. Transactions, combined with assets and participants, make up the economic model of a business network. Transactions can modify, transfer, or otherwise alter assets, as in this sample, where transactions allow participants to place bids or allow the auctioneer to close the auction.
-
-  Placing a bid uses the *Offer* transaction. To submit a transaction, click the **Submit Transaction** button. In the dialog box, use the dropdown to select the *Offer* transaction type. The *Offer* transaction requires a number of properties:
+10. Now that you have *Members* to own and bid on an asset, an *Auctioneer*, a *Vehicle* asset with registered ownership, and a *VehicleListing* asset to track the bids, reserve price, and state of the auction. The next step is to begin using transactions to interact with assets. This sample includes the *Offer* and *CloseBidding* transactions. Transactions, combined with assets and participants, make up the economic model of a business network. Transactions can modify, transfer, or otherwise alter assets, as in this sample, where transactions allow participants to place bids or allow the auctioneer to close the auction. Placing a bid uses the *Offer* transaction. To submit a transaction, click the **Submit Transaction** button. In the dialog box, use the dropdown to select the *Offer* transaction type. The *Offer* transaction requires a number of properties and should have the following format:
 
   * `bidPrice` is the amount that the member submitting the transaction is bidding.
   * `listing` is the `listingId` of the auction the bid should be associated with.
   * `member` is the email address of the member making the offer.
 
-  When you've entered the required information, the *Offer* transaction should follow this format, click **Submit** to submit the transaction.
-
-  ```
-  {
-    "$class": "org.acme.vehicle.auction.Offer",
-    "bidPrice": "1000",
-    "listing": "listing_1",
-    "member": "alice@biznet.org",
-  }
-  ```
+```
+{
+  "$class": "org.acme.vehicle.auction.Offer",
+  "bidPrice": "1000",
+  "listing": "listing_1",
+  "member": "alice@biznet.org",
+}
+```
 
 11. Now that you've submitted an *Offer* transaction, we can check that it has been successfully applied to the *VehicleListing* asset. Click **VehicleListing** and then click **Show All** in your listing entry. You should see that there is now an entry for the *Offer* transaction in the `offers` property of the listing asset. Congratulations, you've just made your first bid!
 
 12. To represent a counter-offer or raise from another member, repeat step 10, increasing the `bidPrice` property and changing the `member` who is placing the bid. After you have submitted a second *Offer* transaction, the *VehicleListing* asset should update to show that both bids have been placed.
 
-13. When you've placed as many bids as you like, the next step is to submit the *CloseBidding* transaction to close the auction. The *CloseBidding* transaction pays the previous owner of the *Vehicle* asset listed in the *VehicleListing* the current highest offer, changes the `state` of the listing to `SOLD`, and transfers ownership of the *Vehicle* asset, as listed in the `owner` property, to the highest bidder. To submit the *CloseBidding* transaction, click **Submit Transaction** and enter the `listingId` which corresponds to the *VehicleListing*. Click **Submit** to submit the transaction.
-
-  Once the transaction has been submitted, you can check the *Vehicle* asset's `owner` property to ensure that it has changed, as well as checking the `balance` of the previous and new owner of the car, and the *VehicleListing* `state`.
+13. When you've placed as many bids as you like, the next step is to submit the *CloseBidding* transaction to close the auction. The *CloseBidding* transaction pays the previous owner of the *Vehicle* asset listed in the *VehicleListing* the current highest offer, changes the `state` of the listing to `SOLD`, and transfers ownership of the *Vehicle* asset, as listed in the `owner` property, to the highest bidder. To submit the *CloseBidding* transaction, click **Submit Transaction** and enter the `listingId` which corresponds to the *VehicleListing*. Click **Submit** to submit the transaction. Once the transaction has been submitted, you can check the *Vehicle* asset's `owner` property to ensure that it has changed, as well as checking the `balance` of the previous and new owner of the car, and the *VehicleListing* `state`.
 
 14. You've successfully run the `carauction-network` {{site.data.conrefs.composer_short}} sample! If you want to continue to use this business network in future tutorials or for testing, click **Export** in the **Define** tab to download a Business Network Archive `.bna` file. A `.bna` file contains all files listed in the business network, in this example, `README.md`, `lib/logic.js`, `lib/org.acme.vehicle.auction.cto`, and `permissions.acl`.
 
