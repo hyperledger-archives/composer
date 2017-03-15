@@ -1,18 +1,18 @@
-**[Introduction]({{site.baseurl}}/introduction/introduction.html)**
-**[Tutorials]({{site.baseurl}}/tutorials/tutorialindex.html)**
-**[Installing]({{site.baseurl}}/installing/prerequisites.html)**
-**[Defining Business Networks]({{site.baseurl}}/business-network/businessnetwork.html)**
-[Defining a business network definition]({{site.baseurl}}/business-network/getting-started-coding-bnd.html)
-[Deploying a business network]({{site.baseurl}}/business-network/deploybusinessnetwork.html)
-[Create a business network definition]({{site.baseurl}}/business-network/bnd-define.html)
-[Publish a business network definition]({{site.baseurl}}/business-network/bnd-publish.html)
-[Create a business domain model]({{site.baseurl}}/business-network/model-define.html)
-[Publish a business domain model]({{site.baseurl}}/business-network/model-publish.html)
-[Update a business network definition on Fabric]({{site.baseurl}}/business-network/runtime-update.html)
-[Test a business network definition]({{site.baseurl}}/business-network/testing.html)
-**[Writing Applications]({{site.baseurl}}/applications/genapp.html)**
-**[Integrating Existing Systems]({{site.baseurl}}/integrating/integrating-index.html)**
-**[Managing and Operating]({{site.baseurl}}/managing/participant-add.html)**
-**[Determining Problems]({{site.baseurl}}/problems/diagnostics.html)**
-**[Reference]({{site.baseurl}}/reference/MeetTheModules.html)**
-**[Support]({{site.baseurl}}/support/index.html)**
+**[Introduction](../introduction/introduction.html)**
+**[Tutorials](../tutorials/tutorialindex.html)**
+**[Installing](../installing/prerequisites.html)**
+**[Defining Business Networks](../business-network/businessnetwork.html)**
+[Defining a business network definition](../business-network/getting-started-coding-bnd.html)
+[Deploying a business network](../business-network/deploybusinessnetwork.html)
+[Create a business network definition](../business-network/bnd-define.html)
+[Publish a business network definition](../business-network/bnd-publish.html)
+[Create a business domain model](../business-network/model-define.html)
+[Publish a business domain model](../business-network/model-publish.html)
+[Update a business network definition on Fabric](../business-network/runtime-update.html)
+[Test a business network definition](../business-network/testing.html)
+**[Writing Applications](../applications/genapp.html)**
+**[Integrating Existing Systems](../integrating/integrating-index.html)**
+**[Managing and Operating](../managing/participant-add.html)**
+**[Determining Problems](../problems/diagnostics.html)**
+**[Reference](../reference/MeetTheModules.html)**
+**[Support](../support/index.html)**

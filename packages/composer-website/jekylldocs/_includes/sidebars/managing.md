@@ -1,15 +1,15 @@
-**[Introduction]({{site.baseurl}}/introduction/introduction.html)**
-**[Tutorials]({{site.baseurl}}/tutorials/tutorialindex.html)**
-**[Installing]({{site.baseurl}}/installing/prerequisites.html)**
-**[Defining Business Networks]({{site.baseurl}}/business-network/businessnetwork.html)**
-**[Writing Applications]({{site.baseurl}}/applications/genapp.html)**
-**[Integrating Existing Systems]({{site.baseurl}}/integrating/integrating-index.html)**
-**[Managing and Operating]({{site.baseurl}}/managing/participant-add.html)**
-[Adding a participant]({{site.baseurl}}/managing/participant-add.html)
-[Issuing an identity to a participant]({{site.baseurl}}/managing/identity-issue.html)
-[Revoking an identity from a participant]({{site.baseurl}}/managing/identity-revoke.html)
-[Enabling OAuth using GitHub]({{site.baseurl}}/managing/github-oauth.html)
-[Enabling access control using the current participant]({{site.baseurl}}/managing/current-participant.html)
-**[Determining Problems]({{site.baseurl}}/problems/diagnostics.html)**
-**[Reference]({{site.baseurl}}/reference/MeetTheModules.html)**
-**[Support]({{site.baseurl}}/support/index.html)**
+**[Introduction](../introduction/introduction.html)**
+**[Tutorials](../tutorials/tutorialindex.html)**
+**[Installing](../installing/prerequisites.html)**
+**[Defining Business Networks](../business-network/businessnetwork.html)**
+**[Writing Applications](../applications/genapp.html)**
+**[Integrating Existing Systems](../integrating/integrating-index.html)**
+**[Managing and Operating](../managing/participant-add.html)**
+[Adding a participant](../managing/participant-add.html)
+[Issuing an identity to a participant](../managing/identity-issue.html)
+[Revoking an identity from a participant](../managing/identity-revoke.html)
+[Enabling OAuth using GitHub](../managing/github-oauth.html)
+[Enabling access control using the current participant](../managing/current-participant.html)
+**[Determining Problems](../problems/diagnostics.html)**
+**[Reference](../reference/MeetTheModules.html)**
+**[Support](../support/index.html)**

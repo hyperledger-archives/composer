@@ -1,13 +1,13 @@
-**[Introduction]({{site.baseurl}}/introduction/introduction.html)**
-[Understanding Business Networks]({{site.baseurl}}/introduction/businessnetwork.html)
-[Business Network Definition]({{site.baseurl}}/introduction/businessnetworkdefinition.html)
-[Participants and Transactions]({{site.baseurl}}/introduction/participantsandidentities.html)
-**[Tutorials]({{site.baseurl}}/tutorials/tutorialindex.html)**
-**[Installing]({{site.baseurl}}/installing/prerequisites.html)**
-**[Defining Business Networks]({{site.baseurl}}/business-network/businessnetwork.html)**
-**[Writing Applications]({{site.baseurl}}/applications/genapp.html)**
-**[Integrating Existing Systems]({{site.baseurl}}/integrating/integrating-index.html)**
-**[Managing and Operating]({{site.baseurl}}/managing/participant-add.html)**
-**[Determining Problems]({{site.baseurl}}/problems/diagnostics.html)**
-**[Reference]({{site.baseurl}}/reference/MeetTheModules.html)**
-**[Support]({{site.baseurl}}/support/index.html)**
+**[Introduction](../introduction/introduction.html)**
+[Understanding Business Networks](../introduction/businessnetwork.html)
+[Business Network Definition](../introduction/businessnetworkdefinition.html)
+[Participants and Transactions](../introduction/participantsandidentities.html)
+**[Tutorials](../tutorials/tutorialindex.html)**
+**[Installing](../installing/prerequisites.html)**
+**[Defining Business Networks](../business-network/businessnetwork.html)**
+**[Writing Applications](../applications/genapp.html)**
+**[Integrating Existing Systems](../integrating/integrating-index.html)**
+**[Managing and Operating](../managing/participant-add.html)**
+**[Determining Problems](../problems/diagnostics.html)**
+**[Reference](../reference/MeetTheModules.html)**
+**[Support](../support/index.html)**
