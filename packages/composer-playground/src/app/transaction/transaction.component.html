@@ -1,7 +1,11 @@
 <div class="transaction-modal">
   <div class="modal-header">
     <h1>Submit Transaction</h1>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">X</button>
+    <button class="icon modal-exit" (click)="activeModal.dismiss()">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
   </div>
   <section class="modal-body">
     <div class="transaction-select">
@@ -17,21 +21,29 @@
         </div>
       </div>
     </div>
-    <div>
-      <h4 class="transaction-preview">JSON Data Preview</h4>
-    </div>
-    <div class="transaction-bound">
-      <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
-      </codemirror>
-      <div class="transaction-error" ng-if="defitionError!=null">
-        <h6>{{defitionError}}</h6>
+    <section class="resource-container">
+      <section class="resource-component">
+      <div>
+        <p class="resource-preview-text">JSON Data Preview</p>
       </div>
-    </div>
+       <div class="resource-bound">
+        <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
+        </codemirror>
+        <div class="resource-error-text" ng-if="defitionError!=null">
+          <p>{{defitionError}}</p>
+        </div>
+      </div>
+      </section>
+    </section>
   </section>
   <footer>
-    <div class="transaction-footer-content">
-      <div class="transaction-footer-quick-data">
-          <p>Just need quick test data? <button class="action" type="button" (click)="generateResource()">Generate Random Data</button></p>
+    <p class="footer-text">Just need quick test data? <button type="button" class="icon" (click)="generateTransactionDeclaration()"><u>Generate Random Data</u></button></p>
+    <button type="button" class="secondary" (click)="activeModal.close();">
+      <span>Cancel</span>
+    </button>
+    <button type="button" class="primary" (click)="submitTransaction()" [disabled]="defitionError!=null || submitInProgress">
+      <div *ngIf="!submitInProgress">
+        <span>Submit</span>
       </div>
       <div class="transaction-footer-cta">
             <button type="button" class="secondary" (click)="activeModal.dismiss();">

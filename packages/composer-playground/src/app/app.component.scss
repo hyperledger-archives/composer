@@ -10,10 +10,9 @@
 }
 
 app {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  main {
-    min-height: 100%;
-  }
 }
 
 .CodeMirror {

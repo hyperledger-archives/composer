@@ -177,14 +177,19 @@ func (dataCollection *DataCollection) add(call otto.FunctionCall) (result otto.V
 	logger.Debug("Entering DataCollection.add", call)
 	defer func() { logger.Debug("Exiting DataCollection.add", result) }()
 
-	id, object, callback := call.Argument(0), call.Argument(1), call.Argument(2)
+	// force is ignored for this connector. Its provided by the runtime and is required for
+	// hyper V1 support.
+	id, object, force, callback := call.Argument(0), call.Argument(1), call.Argument(2), call.Argument(3)
 	if !id.IsString() {
 		panic(fmt.Errorf("id not specified or is not a string"))
 	} else if !object.IsObject() {
 		panic(fmt.Errorf("object not specified or is not a string"))
 	} else if !callback.IsFunction() {
 		panic(fmt.Errorf("callback not specified or is not a string"))
+	} else if !force.IsBoolean() {
+		panic(fmt.Errorf("force not specified or is not a boolean"))
 	}
+	
 	data, err := call.Otto.Call("JSON.stringify", nil, object)
 	if err != nil {
 		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))

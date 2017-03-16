@@ -100,7 +100,6 @@ export class ResourceComponent implements OnInit {
    */
   private generateResource(): void {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
-    let introspector = businessNetworkDefinition.getIntrospector();
     let factory = businessNetworkDefinition.getFactory();
     let idx = Math.round(Math.random() * 9999).toString();
     idx = leftPad(idx, 4, '0');

@@ -127,6 +127,23 @@ class EmbeddedDataService extends DataService {
             });
     }
 
+    /**
+     * Determine whether the collection with the specified ID exists.
+     * @param {string} id The ID of the collection.
+     * @return {Promise} A promise that will be resolved with a boolean
+     * indicating whether the collection exists.
+     */
+    existsCollection(id) {
+        console.log('EmbeddedDataService.existsCollection', id);
+        return this.ensureConnected()
+            .then(() => {
+                return this.db.collections.get(id);
+            })
+            .then((collection) => {
+                return !!collection;
+            });
+    }
+
 }
 
 module.exports = EmbeddedDataService;

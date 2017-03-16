@@ -371,7 +371,7 @@ describe('AccessController', () => {
 
     });
 
-    describe('#natchPredicate', () => {
+    describe('#matchPredicate', () => {
 
         it('should return true if the ACL rule specifies a predicate of (true)', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
@@ -386,13 +386,13 @@ describe('AccessController', () => {
         });
 
         it('should return true if the ACL rule specifies a predicate that returns a truthy expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: ((3 + 6) / 3 === 3) action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: ((3 + 6) / 3 === 3) action: ALLOW}');
             controller.matchPredicate(asset, 'READ', participant, aclManager.getAclRules()[0])
                 .should.be.true;
         });
 
         it('should return false if the ACL rule specifies a predicate that returns a falsey expression', () => {
-            setAclFile('rule R1 {description: "Test R1" participant: "ANY" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: ((3 + 3) / 3 === 3) action: ALLOW}');
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" condition: ((3 + 3) / 3 === 3) action: ALLOW}');
             controller.matchPredicate(asset, 'READ', participant, aclManager.getAclRules()[0])
                 .should.be.false;
         });

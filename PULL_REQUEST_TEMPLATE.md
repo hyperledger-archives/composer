@@ -1,12 +1,12 @@
 <!--- Provide a general summary of the pull request in the Title above -->
 
 ## Checklist
-[ ]  A link to the issue/user story that the pull request relates to
-[ ]  How to recreate the problem without the fix
-[ ]  Design of the fix
-[ ]  How to prove that the fix works
-[ ]  Automated tests that prove the fix keeps on working
-[ ]  Documentation - any JSDoc, website, or Stackoverflow answers?
+ - [ ]  A link to the issue/user story that the pull request relates to
+ - [ ]  How to recreate the problem without the fix
+ - [ ]  Design of the fix
+ - [ ]  How to prove that the fix works
+ - [ ]  Automated tests that prove the fix keeps on working
+ - [ ]  Documentation - any JSDoc, website, or Stackoverflow answers?
 
 
 ## Issue/User story

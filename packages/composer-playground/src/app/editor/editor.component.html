@@ -9,7 +9,7 @@
           <h3 *ngIf="file.script">Script File</h3>
           <h3 *ngIf="file.acl">Access Control</h3>
           <h3 *ngIf="file.readme">About</h3>
-          <div>{{file.displayID}}</div>
+          <div title="{{file.displayID}}">{{file.displayID}}</div>
         </li>
       </ul>
     </div>
@@ -25,7 +25,7 @@
   <div class="actions">
     <div>
       <button type="button" class="action" (click)="openImportModal()">
-        <svg class="ibm-icon" aria-hidden="true">
+        <svg class="standard-icon" aria-hidden="true">
           <use xlink:href="#icon-download_32"></use>
         </svg>
         Import/Replace
@@ -33,8 +33,8 @@
     </div>
     <div>
       <button type="button" class="action" (click)="openExportModal()">
-        <svg class="ibm-icon" aria-hidden="true">
-          <use xlink:href="#icon-upload_24"></use>
+        <svg class="standard-icon" aria-hidden="true">
+          <use xlink:href="#icon-upload_32"></use>
         </svg>
         Export
       </button>
@@ -46,21 +46,25 @@
     <div *ngIf="editingPackage" class="business-network-details">
       <h1>Editing package.json</h1>
     </div>
-    <div *ngIf="!editActive" class="business-network-details">
-      <h1 class="margin-right">{{deployedPackageName}}</h1>
-      <div class="business-network-version small">{{deployedPackageVersion}}</div>
-      <div>
-        <button type="button" class="action" (click)="toggleEditActive()">
-          <svg class="ibm-icon" aria-hidden="true">
+    <div *ngIf="!editActive && !editingPackage" class="business-network-details">
+      <div style="flex-shrink:1;align-self: center">
+        <h1 class="margin-right">{{deployedPackageName}}</h1>
+      </div>
+
+      <div style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}
+      </div>
+      <div style="flex-shrink:1;align-self:center">
+        <button type="button" class="action" style="padding-top:4px;" (click)="toggleEditActive()">
+          <svg class="ibm-icon vertical-top" aria-hidden="true">
             <use xlink:href="#icon-edit_24"></use>
           </svg>
         </button>
       </div>
     </div>
     <div *ngIf="editActive" class="business-network-details">
-      <label class="margin-right" for="editName">Name</label>
+      <label class="edit-label margin-right" for="editName">Name</label>
       <input class="margin-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
-      <label class="margin-right" for="editVersion">Version</label>
+      <label class="edit-label margin-right" for="editVersion">Version</label>
       <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
              [(ngModel)]="inputPackageVersion">
       <div class="edit-package-text margin-right">
@@ -75,9 +79,28 @@
   </div>
   <div class="readme" *ngIf="readme" [innerHTML]="readme">
   </div>
-    <codemirror *ngIf="!readme" [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
+  <codemirror *ngIf="!readme" [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%"
+              height="100%" (blur)="stopEditing()">
   </codemirror>
-  <div class="alert alert-danger mt-2" role="alert" *ngIf="currentError">
-    {{currentError}}
+
+  <div class="alert-area" role="alert" *ngIf="currentError">
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-spell_check_error"></use>
+    </svg>
+    <div class="alert-message" role="alert">
+      <h3>Error found!</h3>
+      <p>{{currentError}}</p>
+    </div>
   </div>
+
+  <div class="alert-area" role="alert" *ngIf="noError">
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-spell_check"></use>
+    </svg>
+    <div class="alert-message" role="alert">
+      <h3>Everything looks good!</h3>
+      <p>Any problems detected in your code would be reported here</p>
+    </div>
+  </div>
+
 </section>

@@ -36,10 +36,7 @@ export class ConnectionProfileComponent implements OnInit {
     console.log('Loaded ConnectionProfileComponent');
 
     this.updateProfiles();
-    console.log('updated profiles');
-    this.currentProfile = this.profiles[0];
-    console.log('set currentprofile')
-    this.setCurrentProfile(this.currentProfile);
+    this.setCurrentProfile(this.profiles[0]);
   }
 
   private updateProfiles(): void {

@@ -3,6 +3,8 @@
 
 registry {
 
+  $highlighted : #e4e4e4;
+
   .resource-header{
     display: flex;
     color:$secondary-text;
@@ -10,11 +12,23 @@ registry {
 
   .resource-header-left{
     flex:1;
+    align-self: center;
   }
 
-  .resource-header-right{
-    flex:1;
-    text-align: right;
+  button.registry {
+    background-color: $white;
+    border-color: $white;
+    box-shadow: 0 2px 5px -1px $fifth-highlight;
+
+    &:hover {
+      background-color: $highlighted;
+      border-color: $highlighted;
+    }
+
+    &[disabled], &[disabled]:hover {
+      background-color:$highlighted;
+      border-color: $highlighted;
+    }
   }
 
   .resource-list {
@@ -53,8 +67,8 @@ registry {
 
         &.expanded {
           pre {
-            max-height: 500px;
-            overflow: visible;
+            max-height: 600px;
+            overflow: hidden;
 
             @include transition(all);
           }

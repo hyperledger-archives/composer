@@ -36,6 +36,11 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
+  if [ -z "${TRAVIS_TAG}" ]; then
+    DOCS="full"
+  else
+    DOCS="unstable"
+  fi
   ./.travis/deploy_docs.sh
   exit 0
 fi
@@ -46,8 +51,8 @@ npm config set registry https://registry.npmjs.org/
 npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
 
 # Set the GitHub deploy key we will use to publish.
-set-up-ssh --key "$encrypted_568b95f14ac3_key" \
-           --iv "$encrypted_568b95f14ac3_iv" \
+set-up-ssh --key "$encrypted_8496d53a6fac_key" \
+           --iv "$encrypted_8496d53a6fac_iv" \
            --path-encrypted-key ".travis/github_deploy_key.enc"
 
 # Change from HTTPS to SSH.
@@ -98,6 +103,7 @@ if [ -z "${TRAVIS_TAG}" ]; then
     cf push fabric-composer-next-unstable -c "node cli.js" -i 2 -m 128M --no-start
     cf set-env fabric-composer-next-unstable CLIENT_ID ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_ID}
     cf set-env fabric-composer-next-unstable CLIENT_SECRET ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_SECRET}
+    cf set-env fabric-composer-next-unstable USABILLA_ID ${USABILLA_ID}
     cf start fabric-composer-next-unstable
     popd
 
@@ -138,12 +144,13 @@ else
     cf push fabric-composer-next -c "node cli.js" -i 2 -m 128M --no-start
     cf set-env fabric-composer-next CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
     cf set-env fabric-composer-next CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
+    cf set-env fabric-composer-next USABILLA_ID ${USABILLA_ID}
     cf start fabric-composer-next
     popd
 
     # Configure the Git repository and clean any untracked and unignored build files.
-    git config user.name "Travis CI"
-    git config user.email "noreply@travis-ci.org"
+    git config user.name "${GH_USER_NAME}"
+    git config user.email "${GH_USER_EMAIL}"
     git checkout -b master
     git reset --hard
     git clean -d -f

@@ -16,9 +16,10 @@ import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';
 import {SuccessComponent} from './success';
-
-
 import {WelcomeComponent} from './welcome';
+import { VersionCheckComponent } from './version-check/version-check.component.ts';
+import { LocalStorageService } from 'angular-2-local-storage';
+import { AboutService } from './services/about.service';
 
 const LZString = require('lz-string');
 
@@ -64,35 +65,47 @@ export class AppComponent {
               private identityService: IdentityService,
               private initializationService: InitializationService,
               private alertService: AlertService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private localStorageService: LocalStorageService,
+              private aboutService: AboutService) {
 
   }
 
   ngOnInit() {
     console.log('Initial App State', this.appState.state);
-    // Subscribe for status updates.
+
     this.subs = [
-      this.alertService.busyStatus$.subscribe((busyStatus) => {
-        this.onBusyStatus(busyStatus);
-      }),
-      this.alertService.errorStatus$.subscribe((errorStatus) => {
-        this.onErrorStatus(errorStatus);
-      }),
-      this.alertService.successStatus$.subscribe((successStatus) => {
-        this.onSuccessStatus(successStatus);
-      }),
-      this.adminService.connectionProfileChanged$.subscribe(() => {
-        this.updateConnectionData();
-      }),
-      this.route.queryParams.subscribe((queryParams) => {
-        this.queryParamsUpdated(queryParams);
-      }),
-      this.router.events
-        .filter(e => e instanceof NavigationEnd).subscribe((e) => {
-          if(e.url === '/') {
-            this.openWelcomeModal();
-          }
-      })];
+            this.alertService.busyStatus$.subscribe((busyStatus) => {
+              this.onBusyStatus(busyStatus);
+            }),
+            this.alertService.errorStatus$.subscribe((errorStatus) => {
+              this.onErrorStatus(errorStatus);
+            }),
+            this.alertService.successStatus$.subscribe((successStatus) => {
+              this.onSuccessStatus(successStatus);
+            }),
+            this.adminService.connectionProfileChanged$.subscribe(() => {
+              this.updateConnectionData();
+            }),
+            this.route.queryParams.subscribe((queryParams) => {
+              this.queryParamsUpdated(queryParams);
+            }),
+            this.router.events.filter(e => e instanceof NavigationEnd).subscribe((e) => {
+              if(e.url === '/') {
+                this.openWelcomeModal();
+              }
+              else{
+                return this.checkVersion().then((success)=>{
+                  if(!success){
+                    this.openVersionModal();
+                  }
+                });
+              }
+
+            })
+          ];
+
+
   }
 
   ngOnDestroy() {
@@ -283,8 +296,56 @@ export class AppComponent {
       modalRef.componentInstance.success = successStatus;
     }
   }
+
   private openWelcomeModal() {
-    this.modalService.open(WelcomeComponent);
+    return this.checkVersion().then((success)=>{
+      if(success){
+        this.modalService.open(WelcomeComponent);
+      }
+      else{
+        this.modalService.open(VersionCheckComponent);
+      }
+    });
   }
+
+  private openVersionModal() {
+    this.modalService.open(VersionCheckComponent);
+  }
+
+
+  private checkVersion():Promise<boolean> {
+    let currentPlaygroundVersion = this.getPlaygroundDetails();
+
+    if(currentPlaygroundVersion === null){
+      return this.setPlaygroundDetails().then(()=>{
+        return true;
+      });
+    }
+    else{
+      return this.aboutService.getVersions().then((versions) => {
+        let latestPlaygroundVersion = versions.playground.version;
+        if(currentPlaygroundVersion != latestPlaygroundVersion){
+          return false;
+        }
+        else{
+          return true;
+        }
+      });
+    }
+  }
+
+  private setPlaygroundDetails(): Promise<any> {
+    let key = `playgroundVersion`;
+    return this.aboutService.getVersions().then((versions) => {
+      this.localStorageService.set(key, versions.playground.version);
+    })
+  }
+
+  private getPlaygroundDetails(): string {
+    let key = `playgroundVersion`;
+    let result = this.localStorageService.get<string>(key);
+    return result;
+  }
+
 
 }

@@ -13,7 +13,6 @@
  */
 
 'use strict';
-
 const Connection = require('composer-common').Connection;
 const fs = require('fs-extra');
 const HLFSecurityContext = require('./hlfsecuritycontext');
@@ -58,13 +57,13 @@ class HLFConnection extends Connection {
      * @param {object} connectOptions The connection options in use by this connection.
      * @param {Client} client A configured and connected {@link Client} object.
      * @param {Chain} chain A configured and connected {@link Chain} object.
-     * @param {EventHub} eventHub A configured and connected {@link EventHub} object.
+     * @param {array} eventHubs A configured and connected {@link EventHub} object.
      * @param {FabricCAClientImpl} caClient A configured and connected {@link FabricCAClientImpl} object.
      */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHub, caClient) {
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHubs, caClient) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         const method = 'constructor';
-        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHub, caClient);
+        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHubs, caClient);
 
         // Validate all the arguments.
         if (!connectOptions) {
@@ -73,8 +72,8 @@ class HLFConnection extends Connection {
             throw new Error('client not specified');
         } else if (!chain) {
             throw new Error('chain not specified');
-        } else if (!eventHub) {
-            throw new Error('eventHub not specified');
+        } else if (!eventHubs || !Array.isArray(eventHubs)) {
+            throw new Error('eventHubs not specified or not an array');
         } else if (!caClient) {
             throw new Error('caClient not specified');
         }
@@ -83,7 +82,7 @@ class HLFConnection extends Connection {
         this.connectOptions = connectOptions;
         this.client = client;
         this.chain = chain;
-        this.eventHub = eventHub;
+        this.eventHubs = eventHubs;
         this.caClient = caClient;
 
         // We create promisified versions of these APIs.
@@ -113,9 +112,11 @@ class HLFConnection extends Connection {
         // Disconnect from the business network.
         return Promise.resolve()
             .then(() => {
-                if (this.eventHub.isconnected()) {
-                    this.eventHub.disconnect();
-                }
+                this.eventHubs.forEach((eventHub) => {
+                    if (eventHub.isconnected()) {
+                        eventHub.disconnect();
+                    }
+                });
                 LOG.exit(method);
             })
             .catch((error) => {
@@ -158,8 +159,12 @@ class HLFConnection extends Connection {
 
                 // Set the user object that the client will use.
                 LOG.debug(method, 'Persisting user context into key value store');
+                this.user = user;
                 return this.client.setUserContext(user);
 
+            })
+            .then(() => {
+                return this.chain.initialize();
             })
             .then(() => {
                 LOG.exit(method, user);
@@ -209,6 +214,7 @@ class HLFConnection extends Connection {
                 LOG.debug(method, 'Creating new security context');
                 let result = new HLFSecurityContext(this);
                 result.setUser(enrollmentID);
+                this.user = user;
                 LOG.exit(method, result);
                 return result;
 
@@ -284,10 +290,7 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-                // generate the transaction id
-                return this.chain.buildTransactionID_getUserContext(nonce);
-            })
-            .then((txId) => {
+                let txId = this.chain.buildTransactionID(nonce, this.user);
 
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
@@ -295,48 +298,37 @@ class HLFConnection extends Connection {
                 // Submit the install proposal to the endorsers.
                 const request = {
                     chaincodePath: chaincodePath,
-                    chaincodeVersion: '1.0',
+                    chaincodeVersion: connectorPackageJSON.version,
                     chaincodeId: businessNetwork.getName(),
                     chainId: this.connectOptions.channel,
                     txId: txId,
                     nonce: nonce,
                 };
                 return this.chain.sendInstallProposal(request);
-
             })
             .then((results) => {
-                // Validate the proposal results.
-                LOG.debug(method, `Received ${results.length} results(s) from deploying the chaincode`, results);
-                const proposalResponses = results[0];
-                if (!proposalResponses.length) {
-                    throw new Error('No results were returned from the deploy request');
-                }
-                proposalResponses.forEach((proposalResponse) => {
-                    if (proposalResponse instanceof Error) {
-                        throw proposalResponse;
-                    } else if (proposalResponse.response.status === 200) {
-                        return true;
-                    }
-                    throw new Error(proposalResponse.response.payload);
-                });
+                LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
 
+                // Validate the proposal results.
+                this._validateResponses(results[0]);
+                // initialize the chain ready for instantiation
+                return this.chain.initialize();
+            })
+            .then(() => {
                 // serialise the business network
                 return businessNetwork.toArchive();
             })
             .then((bna) => {
                 businessNetworkArchive = bna;
                 nonce = utils.getNonce();
-                return this.chain.buildTransactionID_getUserContext(nonce);
-            })
-            .then((txId) => {
                 // prepare and send the instantiate proposal
-                finalTxId = txId;
+                finalTxId = this.chain.buildTransactionID(nonce, this.user);
                 const request = {
                     chaincodePath: chaincodePath,
-                    chaincodeVersion: '1.0',
+                    chaincodeVersion: connectorPackageJSON.version,
                     chaincodeId: businessNetwork.getName(),
                     chainId: this.connectOptions.channel,
-                    txId: txId,
+                    txId: finalTxId,
                     nonce: nonce,
                     fcn: 'init',
                     args: [businessNetworkArchive.toString('base64')]
@@ -346,18 +338,8 @@ class HLFConnection extends Connection {
             .then((results) => {
                 // Validate the instantiate proposal results
                 LOG.debug(method, `Received ${results.length} results(s) from deploying the chaincode`, results);
-                const proposalResponses = results[0];
-                if (!proposalResponses.length) {
-                    throw new Error('No results were returned from the deploy request');
-                }
-                proposalResponses.forEach((proposalResponse) => {
-                    if (proposalResponse instanceof Error) {
-                        throw proposalResponse;
-                    } else if (proposalResponse.response.status === 200) {
-                        return true;
-                    }
-                    throw new Error(proposalResponse.response.payload);
-                });
+                let proposalResponses = results[0];
+                this._validateResponses(proposalResponses);
 
                 // Submit the endorsed transaction to the orderers.
                 const proposal = results[1];
@@ -373,19 +355,10 @@ class HLFConnection extends Connection {
 
                 // If the transaction was successful, wait for it to be committed.
                 LOG.debug(method, 'Received response from orderer', response);
-                if (response.status === 'SUCCESS') {
-                    return new Promise((resolve, reject) => {
-                        const handle = setTimeout(() => {
-                            reject(new Error(`Failed to receive commit notification for transaction '${finalTxId}' within the timeout period`));
-                        }, this.connectOptions.deployWaitTime * 1000);
-                        this.eventHub.registerTxEvent(finalTxId.toString(), () => {
-                            clearTimeout(handle);
-                            resolve();
-                        });
-                    });
-                } else {
+                if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
                 }
+                return this._waitForEvents(finalTxId);
 
             })
             .then(() => {
@@ -395,6 +368,26 @@ class HLFConnection extends Connection {
                 LOG.error(method, error);
                 throw error;
             });
+    }
+
+    /**
+     * Check for proposal response errors.
+     * @private
+     * @param {any} proposalResponses the proposal responses
+     */
+    _validateResponses(proposalResponses) {
+        if (!proposalResponses.length) {
+            throw new Error('No results were returned from the request');
+        }
+
+        proposalResponses.forEach((proposalResponse) => {
+            if (proposalResponse.error) {
+                throw proposalResponse.error;
+            } else if (proposalResponse.response.status === 200) {
+                return true;
+            }
+            throw new Error(proposalResponse.response.payload);
+        });
     }
 
     /**
@@ -538,24 +531,23 @@ class HLFConnection extends Connection {
         });
 
         let nonce = utils.getNonce();
-        return this.chain.buildTransactionID_getUserContext(nonce)
-            .then((txId) => {
-                // Submit the query request.
-                const request = {
-                    chaincodeId: this.businessNetworkIdentifier,
-                    chainId: this.connectOptions.channel,
-                    txId: txId,
-                    nonce: nonce,
-                    fcn: functionName,
-                    args: args,
-                    attrs: ['userID']
-                };
-                return this.chain.queryByChaincode(request);
-            })
+        let txId = this.chain.buildTransactionID(nonce, this.user);
+
+        // Submit the query request.
+        const request = {
+            chaincodeId: this.businessNetworkIdentifier,
+            chainId: this.connectOptions.channel,
+            txId: txId,
+            nonce: nonce,
+            fcn: functionName,
+            args: args,
+            attrs: ['userID']
+        };
+        return this.chain.queryByChaincode(request)
             .then((payloads) => {
                 LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the chaincode`, payloads);
                 if (!payloads.length) {
-                    throw new Error('No payloads were returned from the query request');
+                    throw new Error('No payloads were returned from the query request:' + functionName);
                 }
                 const payload = payloads[0];
                 LOG.exit(payload);
@@ -598,67 +590,44 @@ class HLFConnection extends Connection {
         });
 
         let nonce = utils.getNonce();
-        let txId;
-        return this.chain.buildTransactionID_getUserContext(nonce)
-            .then((id) => {
-                txId = id;
-                // Submit the transaction to the endorsers.
-                const request = {
-                    chaincodeId: this.businessNetworkIdentifier,
-                    chainId: this.connectOptions.channel,
-                    txId: txId,
-                    nonce: nonce,
-                    fcn: functionName,
-                    args: args,
-                    attrs: ['userID']
-                };
-                return this.chain.sendTransactionProposal(request);
-            })
+        let txId = this.chain.buildTransactionID(nonce, this.user);
+        // Submit the transaction to the endorsers.
+        const request = {
+            chaincodeId: this.businessNetworkIdentifier,
+            chainId: this.connectOptions.channel,
+            txId: txId,
+            nonce: nonce,
+            fcn: functionName,
+            args: args,
+            attrs: ['userID']
+        };
+        return this.chain.sendTransactionProposal(request)
             .then((results) => {
 
                 // Validate the endorsement results.
                 LOG.debug(method, `Received ${results.length} results(s) from invoking the chaincode`, results);
                 const proposalResponses = results[0];
-                if (!proposalResponses.length) {
-                    throw new Error('No results were returned from the invoke request');
-                }
-                proposalResponses.forEach((proposalResponse) => {
-                    if (proposalResponse instanceof Error) {
-                        throw proposalResponse;
-                    } else if (proposalResponse.response.status === 200) {
-                        return true;
-                    }
-                    throw new Error(proposalResponse.response.payload);
-                });
+                this._validateResponses(proposalResponses);
 
                 // Submit the endorsed transaction to the orderers.
                 const proposal = results[1];
                 const header = results[2];
+
                 return this.chain.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
                     header: header
                 });
-
             })
             .then((response) => {
-
                 // If the transaction was successful, wait for it to be committed.
+                // TODO: Should only listen for the events if SUCCESS is returned
                 LOG.debug(method, 'Received response from orderer', response);
-                if (response.status === 'SUCCESS') {
-                    return new Promise((resolve, reject) => {
-                        const handle = setTimeout(() => {
-                            reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
-                        }, this.connectOptions.invokeWaitTime * 1000);
-                        this.eventHub.registerTxEvent(txId.toString(), () => {
-                            clearTimeout(handle);
-                            resolve();
-                        });
-                    });
-                } else {
+
+                if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
                 }
-
+                return this._waitForEvents(txId);
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -697,6 +666,36 @@ class HLFConnection extends Connection {
         // We do not want to persist the list of business networks client side if possible.
         return Promise.reject(new Error('unimplemented function called'));
 
+    }
+
+    /**
+     * wait for events from the peers associated with the provided transaction id.
+     * @param {string} txId the transaction id to listen for events on
+     * @returns {Promise} A promise which resolves when all the events are received or rejected
+     * if an event is not received within the given timeout period
+     * @memberOf HLFConnection
+     */
+    _waitForEvents(txId) {
+        let eventPromises = [];
+        this.eventHubs.forEach((eh) => {
+            let txPromise = new Promise((resolve, reject) => {
+                const handle = setTimeout(() => {
+                    reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
+                }, this.connectOptions.invokeWaitTime * 1000);
+                eh.registerTxEvent(txId.toString(), (tx, code) => {
+                    clearTimeout(handle);
+                    eh.unregisterTxEvent(txId);
+                    if (code !== 'VALID') {
+                        reject(new Error(`Peer has rejected transaction '${txId}'`));
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+
+            eventPromises.push(txPromise);
+        });
+        return Promise.all(eventPromises);
     }
 
 }

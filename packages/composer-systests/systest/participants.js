@@ -164,7 +164,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should get an participant registry', function () {
+    it('should get a participant registry', function () {
         return client
             .getParticipantRegistry('systest.participants.SimpleParticipant')
             .then(function (participantRegistry) {
@@ -182,7 +182,25 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should add an participant registry', function () {
+    it('should throw when getting a non-existent participant in a participant registry', function () {
+        return client
+            .getParticipantRegistry('systest.participants.SimpleParticipant')
+            .then(function (participantRegistry) {
+                return participantRegistry.get('doesnotexist');
+            })
+            .should.be.rejectedWith(/does not exist/);
+    });
+
+    it('should return false for a participant that does not exist', function () {
+        return client
+            .getParticipantRegistry('systest.participants.SimpleParticipant')
+            .then(function (participantRegistry) {
+                return participantRegistry.exists('doesnotexist');
+            })
+            .should.eventually.equal(false);
+    });
+
+    it('should add a participant registry', function () {
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
             .then(function () {
@@ -198,7 +216,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should add an participant to an participant registry', function () {
+    it('should add a participant to a participant registry', function () {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -220,7 +238,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should bulk add participants to an participant registry', function () {
+    it('should bulk add participants to a participant registry', function () {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -243,7 +261,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should update an participant in an participant registry', () => {
+    it('should update a participant in a participant registry', () => {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -270,7 +288,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should bulk update participants in an participant registry', function () {
+    it('should bulk update participants in a participant registry', function () {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -311,7 +329,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should remove an participant from an participant registry', () => {
+    it('should remove a participant from a participant registry', () => {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -338,7 +356,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should bulk remove participants from an participant registry', () => {
+    it('should bulk remove participants from a participant registry', () => {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -368,7 +386,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should store participants containing participants in an participant registry', () => {
+    it('should store participants containing participants in a participant registry', () => {
         let participantRegistry;
         let participantContainerRegistry;
         return client
@@ -412,7 +430,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should store participants containing participant relationships in an participant registry', () => {
+    it('should store participants containing participant relationships in a participant registry', () => {
         let participantRegistry;
         let participantContainerRegistry;
         return client
@@ -457,7 +475,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should resolve participants containing participant relationships from an participant registry', () => {
+    it('should resolve participants containing participant relationships from a participant registry', () => {
         let participantRegistry;
         let participantContainerRegistry;
         return client
@@ -502,7 +520,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should resolve participants containing circular relationships from an participant registry', () => {
+    it('should resolve participants containing circular relationships from a participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let participantRegistry;
         return client
@@ -541,7 +559,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should find participants in an participant registry', function () {
+    it('should find participants in a participant registry', function () {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -572,7 +590,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should find participants in an participant registry using expressions that access related participants', function () {
+    it('should find participants in a participant registry using expressions that access related participants', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let participantRegistry;
         return client
@@ -601,7 +619,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should query participants in an participant registry', function () {
+    it('should query participants in a participant registry', function () {
         let participantRegistry;
         return client
             .addParticipantRegistry('myregistry', 'my new participant registry')
@@ -653,7 +671,7 @@ describe('Participant system tests', function () {
             });
     });
 
-    it('should query participants in an participant registry using expressions that access related participants', function () {
+    it('should query participants in a participant registry using expressions that access related participants', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let participantRegistry;
         return client

@@ -26,7 +26,6 @@
     transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
     min-width: 140px;
 
-
     &:focus {
       outline: none;
     }
@@ -54,9 +53,6 @@
       &:hover {
         background-color: $sixth-highlight;
       }
-      &.active, &:active, &:focus {
-        background-color: $sixth-highlight;
-      }
 
       &[disabled], &[disabled]:hover {
         background-color: $fifth-highlight;
@@ -75,6 +71,7 @@
         color: $white;
 
       }
+
       &.active, &:active, &:focus {
         background-color: $second-highlight;
         border-color: $second-highlight;
@@ -83,15 +80,17 @@
 
       &[disabled], &[disabled]:hover {
         border-color: $fifth-highlight;
-        color: $fifth-highlight
+        color: $fifth-highlight;
+        background-color:$white;
       }
+
     }
 
     &.expand {
       background-color: $white;
       border: 1px solid $fourth-highlight;
       border-radius: 25px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
       padding: 0;
       font-size: 0.75em;
       line-height: 25px;
@@ -99,7 +98,6 @@
     }
 
     &.action {
-      border: none;
       border-bottom: 2px solid transparent;
       background-color: transparent;
       color: $primary-text;
@@ -107,7 +105,7 @@
       padding: 0;
       border-radius: 0px;
 
-      &:hover{
+      &:hover {
         color: $first-highlight;
         background-color: transparent;
         border-bottom: 2px solid $first-highlight;
@@ -144,7 +142,7 @@
       background-color: transparent;
       min-width: 0;
       padding: 0;
-      &:hover{
+      &:hover {
         color: $first-highlight;
         background-color: transparent;
 
@@ -155,8 +153,8 @@
     }
 
     &.basic {
-      background-color:#FDFDFD;
-      border:1px solid $fourth-highlight;
+      background-color: #FDFDFD;
+      border: 1px solid $fourth-highlight;
       border-radius: 0.25em;
     }
   }

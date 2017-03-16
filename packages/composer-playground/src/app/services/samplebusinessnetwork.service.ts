@@ -7,64 +7,14 @@ import {AdminService} from './admin.service';
 import {ClientService} from './client.service';
 import {AlertService} from './alert.service';
 
-import {BusinessNetworkDefinition} from 'composer-admin';
-import {AclFile} from 'composer-common';
+import {BusinessNetworkDefinition, AclFile} from 'composer-common';
 
-const initialModelFile =
-  `/**
- * Sample business network definition.
- */
-namespace org.acme.biznet
-
-asset SampleAsset identified by assetId {
-  o String assetId
-  --> SampleParticipant owner
-  o String value
-}
-
-participant SampleParticipant identified by participantId {
-  o String participantId
-  o String firstName
-  o String lastName
-}
-
-transaction SampleTransaction identified by transactionId {
-  o String transactionId
-  --> SampleAsset asset
-  o String newValue
-}
-`
-
-const initialScriptFile =
-  `/**
- * Sample transaction processor function.
- */
-function onSampleTransaction(sampleTransaction) {
-  sampleTransaction.asset.value = sampleTransaction.newValue;
-  return getAssetRegistry('org.acme.biznet.SampleAsset')
-    .then(function (assetRegistry) {
-      return assetRegistry.update(sampleTransaction.asset);
-    });
-}`
-
-const initialAclFile = `/**
- * Sample Access Control List
- */
-rule Everyone {
-    description: "Allows any participant in the namespace full access to all resources in the namespace"
-    participant: "org.acme.biznet"
-    operation: ALL
-    resource: "org.acme.biznet"
-    action: ALLOW
-}
-`;
+const sampleBusinessNetworkArchive = require('sample-network/dist/sample-network.bna');
 
 @Injectable()
 export class SampleBusinessNetworkService {
 
   private octo;
-  private socket;
-  private connected: boolean = false;
 
   public OPEN_SAMPLE: boolean = false;
   public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded, to fix this problem setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
@@ -77,8 +27,18 @@ export class SampleBusinessNetworkService {
               private http: Http) {
   }
 
+  //horrible hack for tests
+  createBusinessNetworkInstance(identifier, description, packageJson, readme) {
+    return new BusinessNetworkDefinition(identifier, description, packageJson, readme);
+  }
 
-  isOAuthEnabled(): Promise<boolean> {
+  //horrible hack for tests
+  createAclFileInstance(name, modelManager, data) {
+    return new AclFile(name, modelManager, data);
+  }
+
+
+  public isOAuthEnabled(): Promise<boolean> {
     return this.http.get(PLAYGROUND_API + '/api/isOAuthEnabled')
       .toPromise()
       .then((response) => {
@@ -94,7 +54,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  getGithubClientId(): Promise<string> {
+  public getGithubClientId(): Promise<string> {
     if (this.CLIENT_ID) {
       return Promise.resolve(this.CLIENT_ID);
     }
@@ -121,7 +81,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  setUpGithub(accessToken: string) {
+  public setUpGithub(accessToken: string) {
     if (accessToken) {
       this.octo = new Octokat({token: accessToken});
     } else {
@@ -129,7 +89,7 @@ export class SampleBusinessNetworkService {
     }
   }
 
-  isAuthenticatedWithGitHub(): boolean {
+  public isAuthenticatedWithGitHub(): boolean {
     return this.octo ? true : false;
   }
 
@@ -198,7 +158,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  public getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
+  getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -223,7 +183,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  public getModel(owner: string, repository: string, path: string): Promise<any> {
+  getModel(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -285,15 +245,14 @@ export class SampleBusinessNetworkService {
             });
 
             return allModels;
-          })
+          });
       })
-      //TODO: do something more sensible with this
       .catch((error) => {
         throw error
       });
   }
 
-  private getScripts(owner: string, repository: string, path: string): Promise<any> {
+  getScripts(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -326,7 +285,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  private getAcls(owner: string, repository: string, path: string): Promise<any> {
+  getAcls(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -351,7 +310,7 @@ export class SampleBusinessNetworkService {
       });
   }
 
-  private getMetaData(owner: string, repository: string, path: string): Promise<any> {
+  getReadme(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
       return Promise.reject('no connection to github');
     }
@@ -378,16 +337,10 @@ export class SampleBusinessNetworkService {
 
   public deployInitialSample(): Promise<any> {
     this.alertService.busyStatus$.next('Deploying sample business network ...');
-    let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
-    let modelManager = businessNetworkDefinition.getModelManager();
-    modelManager.addModelFile(initialModelFile);
-    let scriptManager = businessNetworkDefinition.getScriptManager();
-    let thisScript = scriptManager.createScript('lib/logic.js', 'JS', initialScriptFile);
-    scriptManager.addScript(thisScript);
-    let aclManager = businessNetworkDefinition.getAclManager();
-    let aclFile = new AclFile('permissions.acl', modelManager, initialAclFile);
-    aclManager.setAclFile(aclFile);
-    return this.deployBusinessNetwork(businessNetworkDefinition);
+    return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
+      .then((businessNetworkDefinition) => {
+        return this.deployBusinessNetwork(businessNetworkDefinition);
+      });
   }
 
   public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
@@ -408,7 +361,7 @@ export class SampleBusinessNetworkService {
     }
     sampleNetworkPromises.push(this.getScripts(owner, repository, path));
     sampleNetworkPromises.push(this.getAcls(owner, repository, path));
-    sampleNetworkPromises.push(this.getMetaData(owner, repository, path));
+    sampleNetworkPromises.push(this.getReadme(owner, repository, path));
     sampleNetworkPromises.push(this.getSampleNetworkInfo(owner, repository, path));
 
     return Promise.all(sampleNetworkPromises)
@@ -417,10 +370,11 @@ export class SampleBusinessNetworkService {
         let models = results[0];
         let scripts = results[1];
         let acls = results[2];
-        let metaData = results[3];
+        let readme = results[3];
         let packageContents = results[4];
 
-        let businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageContents, metaData.data);
+
+        let businessNetworkDefinition = this.createBusinessNetworkInstance(null, null, packageContents, readme.data);
         let modelManager = businessNetworkDefinition.getModelManager();
 
         modelManager.addModelFiles(models);
@@ -433,7 +387,7 @@ export class SampleBusinessNetworkService {
 
         if (acls) {
           let aclManager = businessNetworkDefinition.getAclManager();
-          let aclFile = new AclFile(acls.name, modelManager, acls.data);
+          let aclFile = this.createAclFileInstance(acls.name, modelManager, acls.data);
           aclManager.setAclFile(aclFile);
         }
 

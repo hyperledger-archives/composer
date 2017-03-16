@@ -6,6 +6,7 @@ app-test {
   width: 100%;
 
   .side-bar {
+
     .registries {
       & > * {
         padding: $space-smedium $space-large;
@@ -20,10 +21,23 @@ app-test {
       .side-bar-nav {
         padding: 0;
       }
+
+
     }
 
     .side-button {
-      margin:auto
+      flex : 1;
+      margin: 0 auto;
+
+      .button-item {
+        padding-top: 5rem;
+        text-align: center;
+      }
     }
+
+  }
+
+  .main-view {
+    overflow-y: auto;
   }
 }

@@ -27,18 +27,20 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 const yargs = require('yargs')
     .wrap(null)
-    .usage('Usage: $0 -p connection profile -b business network identifier -u participant id -s participant password')
-    .option('c', { alias: 'connectionProfile', describe: 'connection profile Name', type: 'string', default: process.env.COMPOSER_CONNECTION_PROFILE })
-    .option('b', { alias: 'businessNetwork', describe: 'business network identifier', type: 'string', default: process.env.COMPOSER_BUSINESS_NETWORK })
-    .option('i', { alias: 'participantId', describe: 'participant id', type: 'string', default: process.env.COMPOSER_ENROLLMENT_ID })
-    .option('p', { alias: 'participantPwd', describe: 'participant password', type: 'string', default: process.env.COMPOSER_ENROLLMENT_SECRET })
+    .usage('Usage: $0 [options]')
+    .option('n', { alias: 'businessNetworkName', describe: 'The business network identifier', type: 'string', default: process.env.COMPOSER_BUSINESS_NETWORK })
+    .option('p', { alias: 'connectionProfileName', describe: 'The connection profile name', type: 'string', default: process.env.COMPOSER_CONNECTION_PROFILE })
+    .option('i', { alias: 'enrollId', describe: 'The enrollment ID of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_ID })
+    .option('s', { alias: 'enrollSecret', describe: 'The enrollment secret of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_SECRET })
+    .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
+    .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
     .help('h')
     .alias('h', 'help')
     .argv;
 
 // see if we need to run interactively
 let promise;
-if (yargs.c === undefined && yargs.b === undefined && yargs.i === undefined && yargs.p === undefined) {
+if (yargs.p === undefined && yargs.n === undefined && yargs.i === undefined && yargs.s === undefined) {
     // Gather some args interactively
     clear();
     console.log(
@@ -54,21 +56,24 @@ if (yargs.c === undefined && yargs.b === undefined && yargs.i === undefined && y
                 connectionProfileName: answers.profilename,
                 businessNetworkIdentifier: answers.businessNetworkId,
                 participantId: answers.userid,
-                participantPwd: answers.secret
+                participantPwd: answers.secret,
+                namespaces: answers.namespaces
             };
         });
 
 } else {
     // make sure we have args for all required parms otherwise error
-    if (yargs.c === undefined || yargs.b === undefined || yargs.i === undefined || yargs.p === undefined) {
+    if (yargs.p === undefined || yargs.n === undefined || yargs.i === undefined || yargs.s === undefined) {
         console.log('Error: Missing parameter.   Please run compposer-rest-server -h to see usage details');
         process.exit(1);
     } else {
         promise = Promise.resolve({
-            connectionProfileName: yargs.c,
-            businessNetworkIdentifier: yargs.b,
+            connectionProfileName: yargs.p,
+            businessNetworkIdentifier: yargs.n,
             participantId: yargs.i,
-            participantPwd: yargs.p
+            participantPwd: yargs.s,
+            namespaces: yargs.N,
+            port: yargs.P
         });
     }
 }
@@ -85,12 +90,17 @@ promise.then((composer) => {
             if (error) {
                 return reject(error);
             }
-            resolve();
+            resolve(composer);
         });
     });
 
 })
-.then(() => {
+.then((composer) => {
+
+    // Set the port if one was specified.
+    if (composer.port) {
+        app.set('port', composer.port);
+    }
 
     app.start = function () {
         // start the web server

@@ -8,22 +8,10 @@ import { AboutComponent } from './about.component';
 import { AboutService } from '../services/about.service';
 
 const MOCK_RETURN = {
-          'playground': {
-            name: 'playground',
-            version: '1'
-          },
-          'common': {
-            name: 'composer-common',
-            version: '2'
-          },
-          'client': {
-            name: 'composer-client',
-            version: '3'
-          },
-          'admin': {
-            name: 'composer-admin',
-            version: '4'
-          }
+  'playground': {
+    name: 'playground',
+    version: '1'
+  }
 };
 
 class MockAboutService {
@@ -54,16 +42,13 @@ describe('AboutComponent', () => {
 
     it ('Should display the correct title for the AboutComponent', () => {
         fixture.detectChanges();
-        expect(el.textContent).toContain('About');
+        el.textContent.should.equal('About');
     });
 
     it ('Should call getVersions when the component is created', fakeAsync(() => {
         fixture.detectChanges();
         tick();
         fixture.detectChanges();
-        expect(fixture.componentInstance.playground).toBe(MOCK_RETURN.playground);
-        expect(fixture.componentInstance.common).toBe(MOCK_RETURN.common);
-        expect(fixture.componentInstance.client).toBe(MOCK_RETURN.client);
-        expect(fixture.componentInstance.admin).toBe(MOCK_RETURN.admin);
+        fixture.componentInstance.playground.should.equal(MOCK_RETURN.playground);
     }));
 });

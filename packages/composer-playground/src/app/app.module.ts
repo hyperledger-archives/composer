@@ -31,7 +31,6 @@ import { SuccessComponent } from './success';
 import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
-import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
 import { TransactionComponent } from './transaction';
@@ -41,6 +40,7 @@ import { ConfirmComponent } from './confirm';
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
+import { VersionCheckComponent } from './version-check/version-check.component.ts';
 
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
@@ -84,7 +84,6 @@ type StoreType = {
   bootstrap: [ AppComponent ],
   entryComponents: [
     ImportComponent,
-    ExportComponent,
     ErrorComponent,
     SuccessComponent,
     ConfirmComponent,
@@ -92,6 +91,7 @@ type StoreType = {
     TransactionComponent,
     AddFileComponent,
     WelcomeComponent,
+    VersionCheckComponent,
     ResetComponent,
     BusyComponent
   ],
@@ -109,7 +109,6 @@ type StoreType = {
     ConfirmComponent,
     ResetComponent,
     ImportComponent,
-    ExportComponent,
     GithubComponent,
     NoContentComponent,
     AboutComponent,
@@ -119,7 +118,8 @@ type StoreType = {
     TransactionComponent,
     CheckOverFlowDirective,
     AddFileComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    VersionCheckComponent
   ],
   imports: [ // import Angular's modules
     BrowserModule,
@@ -131,7 +131,7 @@ type StoreType = {
     TooltipModule.forRoot(),
     NgbModule.forRoot(),
     LocalStorageModule.withConfig({
-      prefix: 'Concerto',
+      prefix: '',
       storageType: 'localStorage'
     })
   ],

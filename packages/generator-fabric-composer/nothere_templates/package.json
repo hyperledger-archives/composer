@@ -1,0 +1,37 @@
+{
+  "name": "<%= appName %>",
+  "version": "0.1.0",
+  "description": "<%= appDescription %>",
+  "author": "<%= authorName %> <%= authorEmail %>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'run the automated tests here'",
+    "setupHLF": "scripts/setup.sh",
+    "teardownHLF": "scripts/teardown.sh",
+    "deployNetwork": "gulp --archiveFile <%= networkIdentifier %>.bna && composer network deploy --archiveFile  <%= networkIdentifier %>.bna  --enrollId <%= enrollmentId %> --enrollSecret <%= enrollmentSecret %> ",
+    "install" : "npm run teardownHLF && npm run setupHLF && npm run deployNetwork"
+  },
+  "keywords": [
+    "blockchain",
+    "hyperledger",
+    "solutions",
+    "framework"
+  ],
+  "author": "<%= authorName %>",
+  "license": "Apache2",
+  "dependencies": {
+    "<%= npmNetworkDependancy %>": "0.0.21",
+    "composer-client": "^0.5.0",
+    "config": "^1.21.0",
+    "shelljs": "^0.7.5",
+    "winston": "^2.2.0",
+    "gulp": "^3.9.1",
+    "yargs": "^6.5.0",
+    "cli-table" : "latest"
+  },
+  "devDependencies" : {
+    "gulp-file": "^0.3.0",
+    "gulp-flatten": "^0.3.1",
+    "gulp-vinyl-zip": "^1.4.0"
+  }
+}
