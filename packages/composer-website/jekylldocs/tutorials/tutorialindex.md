@@ -26,7 +26,7 @@ Tutorials here are designed to be run through in order, and help guide you throu
 
 These getting started guides are intended for more technical users and may require some installation before use.
 
-* [Quickstart](../tutorials/quickstart.html). Quickstart installs and tests the prerequisites for the digital property network sample.
+* [Quickstart](../installing/quickstart.html) installs and tests the prerequisites for the digital property network sample.
 * [Running a sample with the command line](../tutorials/getting-started-cmd-line.html).
 * [Installing and running the {{site.data.conrefs.composer_short}} Playground locally](../tutorials/getting-started-playground.html).
 
