@@ -4,7 +4,7 @@
 
 set -ev
 
-# Grab the Concerto-Docs directory.
+# Grab the Composer-Docs directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 
