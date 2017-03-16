@@ -381,8 +381,9 @@ class HLFConnection extends Connection {
         }
 
         proposalResponses.forEach((proposalResponse) => {
-            if (proposalResponse.error) {
-                throw proposalResponse.error;
+            if (proposalResponse instanceof Error) {
+                console.log('throwing proposal response');
+                throw proposalResponse;
             } else if (proposalResponse.response.status === 200) {
                 return true;
             }
@@ -550,6 +551,10 @@ class HLFConnection extends Connection {
                     throw new Error('No payloads were returned from the query request:' + functionName);
                 }
                 const payload = payloads[0];
+                if (payload instanceof Error) {
+                    // will be handled by the catch block
+                    throw payload;
+                }
                 LOG.exit(payload);
                 return payload;
             })
