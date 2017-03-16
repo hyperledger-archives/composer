@@ -6,7 +6,6 @@
 [Deploying a business network](../business-network/deploybusinessnetwork.html)
 [Create a business network definition](../business-network/bnd-define.html)
 [Publish a business network definition](../business-network/bnd-publish.html)
-[Create a business domain model](../business-network/model-define.html)
 [Publish a business domain model](../business-network/model-publish.html)
 [Update a business network definition on Fabric](../business-network/runtime-update.html)
 [Test a business network definition](../business-network/testing.html)

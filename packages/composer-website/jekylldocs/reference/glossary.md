@@ -50,7 +50,7 @@ Fabric Composer has been developed to permit architects and developers to use a 
 
 There are two 'phases' to running an application using the Composer framework; the Business Network Definition should be deployed to a Hyperledger Fabric; then the application will run against this fabric, but using APIs applicable to the business model.
 
-The Composer system is defined in a number of [modules](MeetTheModules.html).
+The Composer system is defined in a number of [modules](../reference/MeetTheModules.html).
 
 **Fabric Composer Client API** This is the API that is used by applications to connect to a business network and submit transactions. These end applications might be either command line, gui web applications using for example Angular-2.  These APIs permit CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets for example.
 

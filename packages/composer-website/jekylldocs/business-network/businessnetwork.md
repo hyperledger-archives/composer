@@ -46,8 +46,8 @@ Fabric Composer makes it easy to create these elements in a business network, an
 
 ## Related Tasks
 
-[Deploying a business network](../business-network/deploybusinessnetwork.md)
+[Deploying a business network](../business-network/deploybusinessnetwork.html)
 
 ## Related Reference
 
-[Network deploy command](../reference/composer.network.deploy.md)
+[Network deploy command](../reference/composer.network.deploy.html)

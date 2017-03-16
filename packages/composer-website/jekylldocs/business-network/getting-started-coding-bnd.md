@@ -191,4 +191,4 @@ $ composer network update --archiveFile digitalproperty-network@0.0.1.bna  --enr
 
 #Complete!
 
-This tutorial is now complete. The next step would be to create a REST api for applications to use. The [next tutorial](./getting-started-rest-api.md) will create a REST api for the Digital Property Network.
+This tutorial is now complete. The next step would be to create a REST api for applications to use. The [next step](../applications/genapp.html) will create a REST api for the Digital Property Network.

@@ -13,7 +13,7 @@ excerpt: How to deploy a Business Network
 A business network is deployed using the `composer network deploy` command.
 
 ## Procedure
-1. Before deploying a business network, a [Business Network Definition](../concepts/businessnetworkdefinition.md) is needed as a `zip` file with the following structure:
+1. Before deploying a business network, a [Business Network Definition](../business-network/businessnetworkdefinition.html) is needed as a `zip` file with the following structure:
 
     ```
     BusinessNetworkArchive.zip
@@ -25,8 +25,8 @@ A business network is deployed using the `composer network deploy` command.
     ```
 
     -	**lib** contains all of the transactions processor functions
-    -	**models** contains all of the model files written in the [CTO Language](../reference/cto_language.md).
-    -	**package.json** is required, and is used to create the [Business Network Definition](../concepts/businessnetworkdefinition.md)'s identifier
+    -	**models** contains all of the model files written in the [CTO Language](../reference/cto_language.html).
+    -	**package.json** is required, and is used to create the [Business Network Definition](../business-network/businessnetworkdefinition.html)'s identifier
 
     You can use the `composer archive` command to create an archive with the correct format.
 
@@ -34,7 +34,7 @@ A business network is deployed using the `composer network deploy` command.
 
 2. Start [Hyperledger Fabric Peer and Membership Service](runtime-start.md)
 
-3. [Create a Connection Profile](createconnectionprofile.md) or do *not* use `-p` and allow Fabric Composer to create a `Default Connection Profile` for you.
+3. [Create a Connection Profile](../installing/createconnectionprofile.html) or do *not* use `-p` and allow Fabric Composer to create a `Default Connection Profile` for you.
 
 4. Enter the command on a single line. For example:
 

@@ -28,4 +28,4 @@ For an example of a business network in action; a realtor may have a business ne
 
 ---
 
-To get started with Fabric Composer right away, try the [Fabric Composer tutorials](linkylink), to learn more about Fabric Composer read [understanding business networks](../bndefinition), to get installed and trying the full product immediately go to [installing Fabric Composer](installylink).
+To get started with Fabric Composer right away, try the [Fabric Composer tutorials](../tutorials/tutorialindex.html), to learn more about Fabric Composer read [understanding business networks](../introduction/businessnetwork.html), to get installed and trying the full product immediately go to [installing Fabric Composer](../installing/prerequisites.html).
