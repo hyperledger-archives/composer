@@ -52,7 +52,7 @@ the vin field. Identifying fields must be Strings.
 4. An optional super-type, which the resource definition extends.
 5. An optional 'abstract' declaration, to indicate that this type cannot be created
 6. A set of named fields (data owned by the resource, using a has-a relationship)
-7. A set of relationships to other concerto types that are not owned by the resource
+7. A set of relationships to other Composer types that are not owned by the resource
 but that may be referenced from the resource. Relationships are unidirectional.
 
     ```
@@ -122,7 +122,7 @@ concept UnitedStatesAddress extends Address {
 
 ### Primitive types
 
-Concerto resources are defined in terms of the following primitive types:
+Composer resources are defined in terms of the following primitive types:
 
 1. String : a UTF8 encoded String
 2. Double : a double precision 64 bit numeric value
@@ -134,7 +134,7 @@ and UTZ offset
 
 ### Arrays
 
-All types in Concerto may be declared as arrays using the [] notation. Hence
+All types in Composer may be declared as arrays using the [] notation. Hence
 
     Integer[] integerArray
 
@@ -147,7 +147,7 @@ Is an array of relationships to the Animal type, stored in a field called
 
 ### Relationships
 
-A relationship in the Concerto language is a tuple composed of:
+A relationship in the Composer language is a tuple composed of:
 
 1. The namespace of the type being referenced
 2. The type name of the type being referenced
@@ -167,7 +167,7 @@ exists or the information in the relationship is invalid.
 
 ### Field Validators
 
-String fields may include an optional regular expression, which is used to validate the contents of the field. Careful use of field validators allows Concerto to perform rich data validation, leading to fewer errors and less boilerplate code.
+String fields may include an optional regular expression, which is used to validate the contents of the field. Careful use of field validators allows Composer to perform rich data validation, leading to fewer errors and less boilerplate code.
 
 The example below declares that the `Farmer` participant contains a field `postcode` that must conform to the regular expression for valid UK postcodes.
 

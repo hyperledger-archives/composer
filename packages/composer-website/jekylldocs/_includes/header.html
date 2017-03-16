@@ -1,9 +1,9 @@
-
-{% capture tasks %}{% include sidebars/tasks.md %}{% endcapture %}
-{% capture reference %}{% include sidebars/reference.md %}{% endcapture %}
-{% capture start %}{% include sidebars/start.md %}{% endcapture %}
+<<<<<<< HEAD
+=======
 
 
+
+>>>>>>> refs/remotes/fabric-composer/master
 <header class="page-header">
   <div class="container">
     <div class="mobile-bar">
@@ -16,19 +16,36 @@
           <a href="{{site.baseurl}}/index.html"><i class="fa fa-home" aria-hidden="true"></i></a>
         </li>
         <li>
-          <a href="{{site.baseurl}}/overview/overview.html">Overview</a>
+          <a href="{{site.baseurl}}/introduction/introduction.html">Introduction</a>
+          {{ introduction | markdownify }}
         </li>
         <li>
-          <a href="{{site.baseurl}}/start/getting-started.html">Getting Started</a>
-          {{ start | markdownify }}
+          <a href="{{site.baseurl}}/tutorials/tutorialindex.html">Tutorials</a>
+          {{ tutorials | markdownify }}
         </li>
         <li>
-          <a href="{{site.baseurl}}/concepts/index.html">Concepts</a>
-          {{ concepts | markdownify }}
+          <a href="{{site.baseurl}}/installing/prerequisites.html">Installing</a>
+          {{ installing | markdownify }}
         </li>
         <li>
-          <a href="{{site.baseurl}}/tasks/index.html">Tasks</a>
-          {{ tasks | markdownify }}
+          <a href="{{site.baseurl}}/business-network/bnd-define.html">Defining Business Networks</a>
+          {{ businessnetworks | markdownify }}
+        </li>
+        <li>
+            <a href="{{site.baseurl}}/applications/genapp.html">Writing Applications</a>
+          {{ applications | markdownify }}
+        </li>
+        <li>
+            <a href="{{site.baseurl}}/integrating/integrating-index.html">Integrating Existing Systems</a>
+          {{ integrating | markdownify }}
+        </li>
+        <li>
+            <a href="{{site.baseurl}}/managing/participant-add.html">Managing and Operating</a>
+          {{ managing | markdownify }}
+        </li>
+        <li>
+            <a href="{{site.baseurl}}/problems/diagnostics.html">Determining Problems</a>
+          {{ problems | markdownify }}
         </li>
         <li>
             <a href="{{site.baseurl}}/reference/index.html">Reference</a>

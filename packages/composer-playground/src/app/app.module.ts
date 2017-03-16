@@ -31,7 +31,6 @@ import { SuccessComponent } from './success';
 import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
-import { ExportComponent } from './export';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
 import { TransactionComponent } from './transaction';
@@ -85,7 +84,6 @@ type StoreType = {
   bootstrap: [ AppComponent ],
   entryComponents: [
     ImportComponent,
-    ExportComponent,
     ErrorComponent,
     SuccessComponent,
     ConfirmComponent,
@@ -111,7 +109,6 @@ type StoreType = {
     ConfirmComponent,
     ResetComponent,
     ImportComponent,
-    ExportComponent,
     GithubComponent,
     NoContentComponent,
     AboutComponent,
