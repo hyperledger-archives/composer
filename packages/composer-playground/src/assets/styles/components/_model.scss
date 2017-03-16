@@ -31,10 +31,10 @@
   }
 
   .modal-dialog {
-    margin: 30px auto;
+    margin: 10vh auto;
     display: table;
-    min-width: 450px;
-    max-width: 600px;
+    min-width: 700px;
+    max-width: 800px;
   }
 
   .modal-content {
@@ -104,12 +104,12 @@
     background-color: $third-highlight;
 
     // Easily place margin between footer elements
-    > :not(:first-child) {
-      margin-left: .25rem;
-    }
-    > :not(:last-child) {
-      margin-right: .25rem;
-    }
+    // > :not(:first-child) {
+    //   margin-left: .25rem;
+    // }
+    // > :not(:last-child) {
+    //   margin-right: .25rem;
+    // }
   }
 
   // Measure scrollbar width for padding body during modal show/hide
@@ -121,4 +121,3 @@
     overflow: scroll;
   }
 }
-
