@@ -53,9 +53,6 @@
       &:hover {
         background-color: $sixth-highlight;
       }
-      &.active, &:active, &:focus {
-        background-color: $sixth-highlight;
-      }
 
       &[disabled], &[disabled]:hover {
         background-color: $fifth-highlight;
@@ -74,6 +71,7 @@
         color: $white;
 
       }
+
       &.active, &:active, &:focus {
         background-color: $second-highlight;
         border-color: $second-highlight;
@@ -82,8 +80,10 @@
 
       &[disabled], &[disabled]:hover {
         border-color: $fifth-highlight;
-        color: $fifth-highlight
+        color: $fifth-highlight;
+        background-color:$white;
       }
+
     }
 
     &.expand {

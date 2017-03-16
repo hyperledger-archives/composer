@@ -10,15 +10,17 @@
 .CodeMirror-simplescroll-vertical {
   width: 4px !important;
   border-radius: 4px !important;
-  border: none;
+  border: none !important;
   margin-right: 1rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  background: #FFFFFF !important;
 }
 
-.CodeMirror-simplescroll-vertical div {
+.CodeMirror-simplescroll-horizontal div, .CodeMirror-simplescroll-vertical div {
   border-radius: 4px !important;
-  background: #ffffff;
+  background: #828686 !important;
+  border: none !important;
 }
 
 .cm-s-default.CodeMirror {
@@ -40,10 +42,10 @@
 }
 .cm-s-default .CodeMirror-guttermarker { color: #ffffff; }
 .cm-s-default .CodeMirror-guttermarker-subtle { color: #505050; }
-.cm-s-default .CodeMirror-linenumber { color: #8C9696; }
+.cm-s-default .CodeMirror-linenumber { color: #B2B9B9; }
 .cm-s-default .CodeMirror-cursor { border-left: 1px solid #FFFFFF; }
 
-.cm-s-default span.cm-comment { color: #8C9696 }
+.cm-s-default span.cm-comment { color: #B2B9B9; }
 .cm-s-default span.cm-atom { color: #FFFFFF; }
 .cm-s-default span.cm-number { color: #FFFFFF; }
 .cm-s-default span.cm-property { color: #FFFFFF; }
@@ -61,3 +63,16 @@
 
 .cm-s-default .CodeMirror-activeline-background { background: #202020; }
 .cm-s-default .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }
+
+.alert-area{
+      display: flex;
+      flex-direction: row;
+      padding-top: 1rem;
+    }
+
+    .alert-message{
+      flex:1;
+      color: #8C9696;
+      padding-left:1rem;
+      border-bottom: solid 1px #D0DADA;
+    }

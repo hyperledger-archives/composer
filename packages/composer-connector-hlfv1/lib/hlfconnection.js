@@ -160,7 +160,6 @@ class HLFConnection extends Connection {
                 // Set the user object that the client will use.
                 LOG.debug(method, 'Persisting user context into key value store');
                 this.user = user;
-                this.user.mspImpl._id = 'Org1MSP';
                 return this.client.setUserContext(user);
 
             })
@@ -216,7 +215,6 @@ class HLFConnection extends Connection {
                 let result = new HLFSecurityContext(this);
                 result.setUser(enrollmentID);
                 this.user = user;
-                this.user.mspImpl._id = 'Org1MSP';
                 LOG.exit(method, result);
                 return result;
 
@@ -383,8 +381,9 @@ class HLFConnection extends Connection {
         }
 
         proposalResponses.forEach((proposalResponse) => {
-            if (proposalResponse.error) {
-                throw proposalResponse.error;
+            if (proposalResponse instanceof Error) {
+                console.log('throwing proposal response');
+                throw proposalResponse;
             } else if (proposalResponse.response.status === 200) {
                 return true;
             }
@@ -552,6 +551,10 @@ class HLFConnection extends Connection {
                     throw new Error('No payloads were returned from the query request:' + functionName);
                 }
                 const payload = payloads[0];
+                if (payload instanceof Error) {
+                    // will be handled by the catch block
+                    throw payload;
+                }
                 LOG.exit(payload);
                 return payload;
             })

@@ -54,10 +54,6 @@ describe('HLFConnection', () => {
         mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
         mockUser = sinon.createStubInstance(User);
 
-        // TODO: Temp code to address patch due to node-sdk not having fix yet
-        mockUser.mspImpl = {};
-        mockUser.mspImpl._id = '';
-
         mockSecurityContext = sinon.createStubInstance(HLFSecurityContext);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockBusinessNetwork.getName.returns('org.acme.biznet');
@@ -390,7 +386,7 @@ describe('HLFConnection', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [ {'error': new Error('such error')} ];
+            const proposalResponses = [ new Error('such error') ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
@@ -729,6 +725,22 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/No payloads were returned from the query request/);
         });
 
+        it('should throw any responses that are errors', () => {
+            // This is the generated nonce.
+            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            // This is the transaction proposal and response (from the peers).
+            const response = [ new Error('such error') ];
+            // This is the response from the chaincode.
+            mockChain.queryByChaincode.resolves(response);
+            return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
+                .should.be.rejectedWith(/such error/);
+
+        });
+
     });
 
     describe('#invokeChainCode', () => {
@@ -821,7 +833,7 @@ describe('HLFConnection', () => {
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
-            const proposalResponses = [ {'error': new Error('such error')} ];
+            const proposalResponses = [ new Error('such error') ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);

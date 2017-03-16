@@ -31,7 +31,6 @@ app-editor {
       height: 16px;
   }
 
-
   .main-view {
     .business-network-details {
       display: flex;
@@ -41,9 +40,11 @@ app-editor {
         margin-right: $space-smedium;
         color: $secondary-text;
       }
+
       .margin-right {
         margin-right: $space-smedium;
       }
+
       .edit-package-text {
         font-style: italic;
       }
@@ -57,16 +58,18 @@ app-editor {
     .readme {
       background-color: $white;
       padding: $space-large;
-      min-height: 80vh;
-      max-height: 80vh;
+      min-height: 63vh;
+      max-height: 63vh;
       overflow-y: auto;
     }
   }
 
+  .CodeMirror {
+    font-family: Source Code Pro
+
+  }
   .CodeMirror, .CodeMirror-scroll{
-      min-height:80vh;
-      max-height:80vh;
+      min-height:63vh;
+      max-height:63vh;
     }
-
-
 }
