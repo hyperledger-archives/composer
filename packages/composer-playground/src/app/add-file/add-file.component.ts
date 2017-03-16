@@ -114,8 +114,8 @@ export class AddFileComponent implements OnInit {
     if (this.fileType === 'js') {
       let code =
         `/**
-  * New script file
-  */`;
+ * New script file
+ */`;
       let scriptManager = this.businessNetwork.getScriptManager();
       let existingScripts = scriptManager.getScripts();
       let filteredScripts = existingScripts.filter((script) => {
@@ -141,10 +141,10 @@ export class AddFileComponent implements OnInit {
 
       let code =
         `/**
-  * New model file
-  */
+ * New model file
+ */
 
-  namespace ${this.addModelNamespace + numModels}`;
+namespace ${this.addModelNamespace + numModels}`;
 
       this.currentFile = new ModelFile(modelManager, code, this.addModelFileName + numModels + this.addModelFileExtension);
       this.currentFileName = this.currentFile.getFileName();
