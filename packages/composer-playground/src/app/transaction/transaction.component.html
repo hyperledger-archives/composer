@@ -6,7 +6,7 @@
   <section class="modal-body">
     <div class="transaction-select">
       <div class="transaction-select-item">
-        <h2>Transaction Type</h2>
+        <p>Transaction Type</p>
       </div>
       <div class="transaction-select-item">
         <div ngbDropdown class="d-inline-block">
@@ -29,21 +29,27 @@
     </div>
   </section>
   <footer>
-    <h2>Just need quick test data? <button class="action" type="button" (click)="generateResource()">Generate Random Data</button></h2>
-    <button type="button" class="secondary" (click)="activeModal.dismiss();">
-      <span>Cancel</span>
-    </button>
-    <button type="button" class="primary" (click)="submitTransaction()" [disabled]="defitionError!=null || submitInProgress">
-      <div *ngIf="!submitInProgress">
-        <span>Submit</span>
+    <div class="transaction-footer-content">
+      <div class="transaction-footer-quick-data">
+          <p>Just need quick test data? <button class="action" type="button" (click)="generateResource()">Generate Random Data</button></p>
       </div>
-      <div *ngIf="submitInProgress" class="ibm-spinner-indeterminate small loop">
-        <div class="loader">
-          <svg class="circular" viewBox="25 25 50 50">
-            <circle class="circle-path" cx="50" cy="50" r="20"/>
-          </svg>
-        </div>
+      <div class="transaction-footer-cta">
+            <button type="button" class="secondary" (click)="activeModal.dismiss();">
+              <span>Cancel</span>
+            </button>
+            <button type="button" class="primary" (click)="submitTransaction()" [disabled]="defitionError!=null || submitInProgress">
+              <div *ngIf="!submitInProgress">
+                <span>Submit</span>
+              </div>
+              <div *ngIf="submitInProgress" class="ibm-spinner-indeterminate small loop">
+                <div class="loader">
+                  <svg class="circular" viewBox="25 25 50 50">
+                    <circle class="circle-path" cx="50" cy="50" r="20"/>
+                  </svg>
+                </div>
+              </div>
+            </button>
       </div>
-    </button>
+  </div>
   </footer>
 </div>

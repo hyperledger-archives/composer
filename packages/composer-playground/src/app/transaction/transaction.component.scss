@@ -33,4 +33,18 @@ transaction-modal {
     max-height: 450px;
   }
 
+  .transaction-footer-content {
+    display: flex;
+    flex-direction: row;
+
+    .transaction-footer-quick-data {
+      flex: 1;
+    }
+
+    .transaction-footer-cta {
+      align-items: flex-end;
+    }
+
+  }
+
 }
