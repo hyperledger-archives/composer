@@ -37,6 +37,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
 1. To get a better understanding of how business network definitions work in practise, click the **Test** tab at the top. From this screen, we can create assets and participants, and submit transactions.
 
 2. To start with, add a *Member* participant by clicking **Member** then clicking **Create New Participant**. Enter the balance, email, and name credentials for the new participant in the following format, then click **Create New**. The credentials which are required for each participant are defined in the `.cto` file viewable in the **Define** tab.
+
 ```
 {
   "$class": "org.acme.vehicle.auction.Member",
@@ -62,6 +63,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
 ```
 
 6. Next, to sell the car at auction, an auction listing asset must be created. Assets can be any tangible or intangible goods or services, in this case, the auction listing itself. To create the auction listing, click **VehicleListing** then click **Create New Asset**. The *VehicleListing* requires several properties, and should have the following format:
+
 ```
 {
   "$class": "org.acme.vehicle.auction.VehicleListing",
@@ -77,6 +79,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
 ### Running the auction
 
 1. Now that you have *Members* to own and bid on an asset, an *Auctioneer*, a *Vehicle* asset with registered ownership, and a *VehicleListing* asset to track the bids, reserve price, and state of the auction. The next step is to begin using transactions to interact with assets. This sample includes the *Offer* and *CloseBidding* transactions. Transactions, combined with assets and participants, make up the economic model of a business network. Transactions can modify, transfer, or otherwise alter assets, as in this sample, where transactions allow participants to place bids or allow the auctioneer to close the auction. Placing a bid uses the *Offer* transaction. To submit a transaction, click the **Submit Transaction** button. In the dialog box, use the dropdown to select the *Offer* transaction type. The *Offer* transaction requires a number of properties and should have the following format:
+
 ```
 {
   "$class": "org.acme.vehicle.auction.Offer",
