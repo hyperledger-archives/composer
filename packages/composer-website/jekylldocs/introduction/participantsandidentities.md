@@ -38,13 +38,13 @@ These actions are performed by an existing participant in the business network,
 for example a regulatory body, or a participant in the same organization who has
 been trusted to manage participants/identities in that organization.
 
-In the IBM Blockchain Framework, the structure of a participant is modelled in a
+In {{site.data.conrefs.composer_full}}, the structure of a participant is modelled in a
 model file. This structure may include various information about the participant,
 for example the participants name, address, e-mail address, date of birth, etc.
 New instances of that modelled participant can then be created and stored in a
 participant registry.
 
-The IBM Blockchain Framework uses Hyperledger Fabric enrollment certificates as
+{{site.data.conrefs.composer_full}} uses Hyperledger Fabric enrollment certificates as
 identity documents. APIs and command line applications are provided to issue and
 revoke enrollment certificates to participants that are stored in a participant
 registry. When transactions are submitted using those enrollment certificates, the
@@ -53,17 +53,17 @@ function to use.
 
 ## Related Concepts
 
-[Business Network](./businessnetwork.md)
+[Business Network](../introduction/businessnetwork.html)
 
 ## Related Tasks
 
-[Create a Business Domain Model](../tasks/model-define.md)  
-[Add a Participant](../tasks/participant-add.md)  
-[Issue an Identity to a Participant](../tasks/identity-issue.md)  
-[Revoke an Identity from a Participant](../tasks/identity-revoke.md)
+[Create a Business Domain Model](../business-network/model-define.html)  
+[Add a Participant](../managing/participant-add.html)  
+[Issue an Identity to a Participant](../managing/identity-issue.html)  
+[Revoke an Identity from a Participant](../managing/identity-revoke.html)
 
 ## Related Reference
 
-[Participant add command](../tasks/participant-add.md)  
-[Identity issue command](../tasks/identity-issue.md)  
-[Identity revoke command](../tasks/identity-revoke.md)  
+[Participant add command](../reference/participant-add.html)  
+[Identity issue command](../reference/identity-issue.html)  
+[Identity revoke command](../reference/identity-revoke.html)  

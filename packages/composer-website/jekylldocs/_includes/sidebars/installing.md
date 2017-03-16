@@ -2,6 +2,7 @@
 **[Tutorials](../tutorials/tutorialindex.html)**
 **[Installing](../installing/prerequisites.html)**
 [Prerequisites](../installing/prerequisites.html)
+[Quickstart](../installing/quickstart.html)
 [Start a Fabric runtime](../installing/runtime-start.html)
 [Creating a network connection profile](../installing/createconnectionprofile.html)
 **[Defining Business Networks](../business-network/businessnetwork.html)**

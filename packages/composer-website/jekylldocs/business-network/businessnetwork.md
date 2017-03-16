@@ -42,11 +42,11 @@ Fabric Composer makes it easy to create these elements in a business network, an
 
 ## Related Concepts
 
-[Business Network Definition]({{site.baseurl}}/concepts/businessnetworkdefinition.html)
+[Business Network Definition](../introduction/businessnetworkdefinition.html)
 
 ## Related Tasks
 
-[Deploying a business network](../tasks/deploybusinessnetwork.md)
+[Deploying a business network](../business-network/deploybusinessnetwork.md)
 
 ## Related Reference
 

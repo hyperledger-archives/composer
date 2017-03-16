@@ -11,7 +11,7 @@ excerpt: Getting Started with Fabric Composer
 ---
 
 Before you follow these instructions, make sure you've completed the
-[Quickstart](../quickstart.html)! After the end of the Quickstart there will be a local Hyperledger Fabric instance running and a deployed business network.
+[Quickstart](../installing/quickstart.html)! After the end of the Quickstart there will be a local Hyperledger Fabric instance running and a deployed business network.
 
 This guide will explain more about the business network, and explain in more detail what is happening in the sample application. This is all done using a simple business network  **Digital Property Network**
 
