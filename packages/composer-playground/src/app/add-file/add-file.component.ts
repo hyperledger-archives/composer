@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {Component, OnInit, Input} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { BusinessNetworkDefinition, ModelFile } from 'composer-common';
-import { AlertService } from '../services/alert.service';
+import {BusinessNetworkDefinition, ModelFile} from 'composer-common';
+import {AlertService} from '../services/alert.service';
 
 @Component({
   selector: 'add-file-model',
@@ -24,14 +24,17 @@ export class AddFileComponent implements OnInit {
   supportedFileTypes: string[] = ['.js', '.cto'];
 
   addModelNamespace: string = 'org.acme.model';
-  addModelFileName: string = 'lib/org.acme.model.cto';
-  addScriptFileName: string = 'lib/script.js';
+  addModelFileName: string = 'lib/org.acme.model';
+  addModelFileExtension: string = '.cto';
+  addScriptFileName: string = 'lib/script';
+  addScriptFileExtension: string = '.js';
 
   error = null;
 
   constructor(private alertService: AlertService,
               public activeModal: NgbActiveModal) {
   }
+
   ngOnInit() {
   }
 
@@ -42,15 +45,15 @@ export class AddFileComponent implements OnInit {
     this.fileType = '';
   }
 
- fileDetected() {
+  fileDetected() {
     this.expandInput = true;
   }
 
- fileLeft() {
+  fileLeft() {
     this.expandInput = false;
   }
 
- fileAccepted(file: File): Promise<any> {
+  fileAccepted(file: File): Promise<any> {
     let type = file.name.substr(file.name.lastIndexOf('.') + 1);
     return this.getDataBuffer(file)
       .then((data) => {
@@ -101,7 +104,7 @@ export class AddFileComponent implements OnInit {
   }
 
 
- fileRejected(reason: string) {
+  fileRejected(reason: string) {
     this.alertService.errorStatus$.next(reason);
   }
 
@@ -114,17 +117,36 @@ export class AddFileComponent implements OnInit {
   * New script file
   */`;
       let scriptManager = this.businessNetwork.getScriptManager();
-      this.currentFile = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+      let existingScripts = scriptManager.getScripts();
+      let filteredScripts = existingScripts.filter((script) => {
+        let pattern = new RegExp(this.addScriptFileName + '\\d*' + this.addScriptFileExtension);
+        return pattern.test(script.getIdentifier());
+      });
+
+
+      let numScripts;
+      numScripts = filteredScripts.length === 0 ? '' : filteredScripts.length;
+      this.currentFile = scriptManager.createScript(this.addScriptFileName + numScripts + this.addScriptFileExtension, 'JS', code);
       this.currentFileName = this.currentFile.getIdentifier();
     } else {
+      let modelManager = this.businessNetwork.getModelManager();
+      let existingModels = modelManager.getModelFiles();
+      let filteredModels = existingModels.filter((model) => {
+        let pattern = new RegExp(this.addModelFileName + '\\d*' + this.addModelFileExtension);
+        return pattern.test(model.getName());
+      });
+
+
+      let numModels = filteredModels.length === 0 ? '' : filteredModels.length;
+
       let code =
         `/**
   * New model file
   */
 
-  namespace ${this.addModelNamespace}`;
-      let modelManager = this.businessNetwork.getModelManager();
-      this.currentFile = new ModelFile(modelManager, code, this.addModelFileName);
+  namespace ${this.addModelNamespace + numModels}`;
+
+      this.currentFile = new ModelFile(modelManager, code, this.addModelFileName + numModels + this.addModelFileExtension);
       this.currentFileName = this.currentFile.getFileName();
     }
   }
