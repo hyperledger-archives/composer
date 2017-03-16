@@ -25,7 +25,7 @@ Before beginning this tutorial you will need:
 
 ## Let's get started - Importing the sample
 
-1. Open the [{{site.data.conrefs.composer_short}} Playground](http://fabric-composer-next.mybluemix.net/editor). On the left are three files, a script file, `lib/logic.js` which represents transaction logic, a model file, `lib/org.acme.biznet.cto` which defines the participants assets and transactions of the business network, and an access control file, `permissions.acl` which defines the access different participants have.
+1. Open the [{{site.data.conrefs.composer_short}} Playground](https://composer-playground.mybluemix.net). On the left are three files, a script file, `lib/logic.js` which represents transaction logic, a model file, `lib/org.acme.biznet.cto` which defines the participants assets and transactions of the business network, and an access control file, `permissions.acl` which defines the access different participants have.
 
 2. To get set up with a sample business network click **Import/Replace**. This dialog allows you to import your own business network archive `.bna` files, or to import our premade business network samples. For now we'll use a pre-built sample from the {{site.data.conrefs.composer_short}} GitHub repository. Click **Authenticate with GitHub** then log into your GitHub account and click **Authorize application**.
 
