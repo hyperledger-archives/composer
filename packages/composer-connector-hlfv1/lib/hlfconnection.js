@@ -160,7 +160,6 @@ class HLFConnection extends Connection {
                 // Set the user object that the client will use.
                 LOG.debug(method, 'Persisting user context into key value store');
                 this.user = user;
-                this.user.mspImpl._id = 'Org1MSP';
                 return this.client.setUserContext(user);
 
             })
@@ -216,7 +215,6 @@ class HLFConnection extends Connection {
                 let result = new HLFSecurityContext(this);
                 result.setUser(enrollmentID);
                 this.user = user;
-                this.user.mspImpl._id = 'Org1MSP';
                 LOG.exit(method, result);
                 return result;
 
