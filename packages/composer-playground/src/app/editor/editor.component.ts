@@ -513,6 +513,9 @@ export class EditorComponent implements OnInit {
         }
         this.alertService.busyStatus$.next(null);
         this.alertService.successStatus$.next('Business Network Deployed Successfully');
+        if ((<any>window).usabilla_live) {
+          (<any>window).usabilla_live('trigger', 'manual trigger');
+        }
       })
       .catch((error) => {
         this.deploying = false;
