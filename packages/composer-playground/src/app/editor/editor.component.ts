@@ -447,9 +447,7 @@ export class EditorComponent implements OnInit {
         this.deployedPackageName + '.bna',
         { type: 'application/octet-stream' });
       saveAs(file);
-
-      this.modalService.open(ExportComponent);
-
+      this.alertService.successStatus$.next(this.deployedPackageName + '.bna was exported');
     });
   }
 
