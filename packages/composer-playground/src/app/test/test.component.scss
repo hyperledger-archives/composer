@@ -6,6 +6,7 @@ app-test {
   width: 100%;
 
   .side-bar {
+
     .registries {
       & > * {
         padding: $space-smedium $space-large;
@@ -25,6 +26,7 @@ app-test {
     }
 
     .side-button {
+      flex : 1;
       margin: 0 auto;
 
       .button-item {
