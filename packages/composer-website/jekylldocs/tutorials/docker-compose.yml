@@ -31,7 +31,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   composer:
-    image: fabriccomposer/composer-ui
+    image: fabriccomposer/composer-playground
     ports:
       - '8080:8080'
     links:
