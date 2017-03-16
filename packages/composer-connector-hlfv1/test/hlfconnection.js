@@ -54,10 +54,6 @@ describe('HLFConnection', () => {
         mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
         mockUser = sinon.createStubInstance(User);
 
-        // TODO: Temp code to address patch due to node-sdk not having fix yet
-        mockUser.mspImpl = {};
-        mockUser.mspImpl._id = '';
-
         mockSecurityContext = sinon.createStubInstance(HLFSecurityContext);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockBusinessNetwork.getName.returns('org.acme.biznet');
