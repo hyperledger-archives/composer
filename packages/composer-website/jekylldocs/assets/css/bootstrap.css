@@ -5,7 +5,7 @@
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 html {
-  font-family: sans-serif;
+  font-family: "Open Sans", sans-serif;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
 }
@@ -1084,7 +1084,7 @@ html {
 }
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.42857143;
   color: #333;
   background-color: #fff;
@@ -4247,8 +4247,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   }
 }
 .navbar-fixed-top {
-  background-color: #343334;
-  border-color: #343334;
+  background-color: #5068C2;
+  border-color: #5068C2;
   top: 0;
   border-width: 0 0 1px;
 }
@@ -4256,14 +4256,14 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   bottom: 0;
   margin-bottom: 0;
   border-width: 1px 0 0;
-  background-color: #343334;
-  border-color: #343334;
+  background-color: #323232;
+  border-color: #323232;
 }
 .navbar-brand {
   float: left;
   height: 50px;
   padding: 15px 15px;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 20px;
 }
 .navbar-brand:hover,
@@ -4604,15 +4604,12 @@ fieldset[disabled] .navbar-default .btn-link:focus {
 .navbar-inverse .navbar-nav > .disabled > a,
 .navbar-inverse .navbar-nav > .disabled > a:hover,
 .navbar-inverse .navbar-nav > .disabled > a:focus {
-  color: #444;
+  color: #5068C2;
   background-color: transparent;
-}
-.navbar-inverse .navbar-toggle {
-  border-color: #333;
 }
 .navbar-inverse .navbar-toggle:hover,
 .navbar-inverse .navbar-toggle:focus {
-  background-color: #272727;
+  background-color: #3F55AF;
 }
 .navbar-inverse .navbar-toggle .icon-bar {
   background-color: #fff;
