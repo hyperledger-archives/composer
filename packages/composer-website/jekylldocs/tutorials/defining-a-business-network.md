@@ -19,6 +19,7 @@ Defining a business network is the entry point to any {{site.data.conrefs.fabric
 Before beginning this tutorial you will need:
 
 * A GitHub account
+* If you want to run this tutorial locally, see [Installing and running the {{site.data.conrefs.composer_full}} Playground locally](../tutorials/getting-started-playground.html).
 
 ---
 
