@@ -19,8 +19,9 @@ resource-modal {
 
     .resource-bound {
       max-height: 40px;
-      min-width: 410px;
-      max-width: 410px;
+      min-width: 100%;
+     // min-width: 410px;
+     // max-width: 410px;
       margin-top: $space-medium;
     }
 
