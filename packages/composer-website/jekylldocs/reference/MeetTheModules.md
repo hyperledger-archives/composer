@@ -42,4 +42,4 @@ This provides command line tools to provide the ability to deploy and managed bu
 ```
 npm install -g composer-cli
 ```
-If you wish however you can instgall this as a local dependancy, but you could need to access the cli.js node class directly rather than used the `concerto` command.
+If you wish however you can instgall this as a local dependancy, but you could need to access the cli.js node class directly rather than used the `composer` command.
