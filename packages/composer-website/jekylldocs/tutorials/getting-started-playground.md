@@ -173,17 +173,17 @@ In order to install Fabric Composer Playground with npm, you need the following 
 You can install Fabric Composer Playground by running the following command in your terminal or command prompt:
 
   ```
-  sudo npm install -g composer-ui
+  sudo npm install -g composer-playground
   ```
 
 You should see the following output in your terminal or command prompt:
 
   ```
-  $ sudo npm install -g composer-ui
+  $ sudo npm install -g composer-playground
   ...
-  /usr/local/bin/composer-ui -> /usr/local/lib/node_modules/composer-ui/cli.js
+  /usr/local/bin/composer-playground -> /usr/local/lib/node_modules/composer-playground/cli.js
   /usr/local/lib/node_modules
-  └─┬ composer-ui@0.4.3
+  └─┬ composer-playground@0.4.3
   ...
   ```
 
@@ -192,7 +192,7 @@ Verify that no errors occurred. If any part of this process fails, then Fabric C
 You can then start Fabric Composer Playground by running the following command in your terminal or command prompt:
 
   ```
-  composer-ui
+  composer-playground
   ```
 
 A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
@@ -227,13 +227,13 @@ In order to install Fabric Composer Playground with Docker, you need the followi
 You can install Fabric Composer Playground by running the following Docker command in your terminal or command prompt:
 
   ```
-  docker run -d -p 8080:8080 fabriccomposer/composer-ui
+  docker run -d -p 8080:8080 fabriccomposer/composer-playground
   ```
 
 You should see the following output in your terminal or command prompt:
 
   ```
-  $ docker run -d -p 8080:8080 fabriccomposer/composer-ui
+  $ docker run -d -p 8080:8080 fabriccomposer/composer-playground
   afd1baff0487de5c69626b8baea69c702744f92813043e3d2b0ef786c7f77517
   ```
 
