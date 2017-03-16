@@ -37,9 +37,9 @@ fi
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
   if [ -z "${TRAVIS_TAG}" ]; then
-    DOCS="full"
-  else
     DOCS="unstable"
+  else
+    DOCS="full"
   fi
   ./.travis/deploy_docs.sh
   exit 0
