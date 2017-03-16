@@ -51,7 +51,6 @@ module.exports = generators.Base.extend({
             }
         }];
         return this.prompt(questions).then(answers => {
-
             this.generatorType = answers.generatorType;
         });
     },

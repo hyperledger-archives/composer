@@ -1,0 +1,31 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+version-check-modal {
+  .version-check {
+    .modal-header {
+      background-color: $white;
+    }
+
+    section.modal-body {
+      align-items: center;
+      text-align: center;
+
+      svg {
+        width: 200px;
+        height: 200px;
+      }
+
+      p {
+        padding: 0 $space-xlarge;
+      }
+    }
+
+    footer {
+      background-color: $white;
+      justify-content: center;
+      padding-bottom: $space-large;
+    }
+  }
+}
+

@@ -35,7 +35,7 @@ businessNetworkConnection.connect(connectionProfile, businessNetworkIdentifier, 
       let table = new Table({
           head: ['Registry Type', 'ID', 'Name']
       });
-      for (let i=0; i<result.length;i++){
+      for (let i=0; i<result.length; i++){
           let tableLine = [];
 
           tableLine.push(result[i].registryType);
