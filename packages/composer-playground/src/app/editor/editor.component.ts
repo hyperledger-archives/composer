@@ -283,7 +283,7 @@ export class EditorComponent implements OnInit {
         displayID: 'lib/' + modelFile.getNamespace() + '.cto'
       });
     });
-    modelFiles.sort((a, b) => {
+    newModelFiles.sort((a, b) => {
       return a.displayID.localeCompare(b.displayID);
     });
     newFiles.push.apply(newFiles, newModelFiles);
@@ -299,7 +299,7 @@ export class EditorComponent implements OnInit {
         displayID: scriptFile.getIdentifier()
       });
     });
-    scriptFiles.sort((a, b) => {
+    newScriptFiles.sort((a, b) => {
       return a.displayID.localeCompare(b.displayID);
     });
     newFiles.push.apply(newFiles, newScriptFiles);
@@ -447,9 +447,7 @@ export class EditorComponent implements OnInit {
         this.deployedPackageName + '.bna',
         { type: 'application/octet-stream' });
       saveAs(file);
-
-      this.modalService.open(ExportComponent);
-
+      this.alertService.successStatus$.next(this.deployedPackageName + '.bna was exported');
     });
   }
 
@@ -465,8 +463,9 @@ export class EditorComponent implements OnInit {
             this.addScriptFile(result);
           }
         }
-      }).catch(() => {
-      }); // Ignore this, only there to prevent crash when closed
+      }, (reason) => {
+        //do nothing - modal has been dismissed
+      })
   }
 
   private deploy(): Promise<any> {
@@ -513,6 +512,9 @@ export class EditorComponent implements OnInit {
         }
         this.alertService.busyStatus$.next(null);
         this.alertService.successStatus$.next('Business Network Deployed Successfully');
+        if ((<any>window).usabilla_live) {
+          (<any>window).usabilla_live('trigger', 'manual trigger');
+        }
       })
       .catch((error) => {
         this.deploying = false;

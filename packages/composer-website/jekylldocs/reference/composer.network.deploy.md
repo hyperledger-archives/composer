@@ -23,7 +23,8 @@ composer network deploy -a <business-network-archive> -i <enrollment-id> -s <enr
   --archiveFile, -a            The business network archive file name  [string] [required]
   --connectionProfileName, -p  The connection profile name  [string]
   --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]```
+  --enrollSecret, -s           The enrollment secret of the user  [string]
+```
 
 ## Example Output
 

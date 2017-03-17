@@ -48,10 +48,11 @@
     </div>
     <div *ngIf="!editActive && !editingPackage" class="business-network-details">
       <div style="flex-shrink:1;align-self: center">
-      <h1 class="margin-right">{{deployedPackageName}}</h1>
+        <h1 class="margin-right">{{deployedPackageName}}</h1>
       </div>
 
-      <div style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}</div>
+      <div style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}
+      </div>
       <div style="flex-shrink:1;align-self:center">
         <button type="button" class="action" style="padding-top:4px;" (click)="toggleEditActive()">
           <svg class="ibm-icon vertical-top" aria-hidden="true">
@@ -82,28 +83,24 @@
               height="100%" (blur)="stopEditing()">
   </codemirror>
 
-  <div class="alert-area" role="alert" *ngIf="currentError" >
-    <div class="alert-icon" role="alert">
-      <svg class="ibm-icon" aria-hidden="true">
-        <use xlink:href="#icon-spell_check_error"></use>
-      </svg>
-    </div>
+  <div class="alert-area" role="alert" *ngIf="currentError">
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-spell_check_error"></use>
+    </svg>
     <div class="alert-message" role="alert">
       <h3>Error found!</h3>
-        <p>{{currentError}}</p>
+      <p>{{currentError}}</p>
     </div>
-</div>
+  </div>
 
-<div class="alert-area" role="alert" *ngIf="noError" >
-  <div class="alert-icon" role="alert">
+  <div class="alert-area" role="alert" *ngIf="noError">
     <svg class="ibm-icon" aria-hidden="true">
       <use xlink:href="#icon-spell_check"></use>
     </svg>
-  </div>
-  <div class="alert-message" role="alert">
-    <h3>Everything looks good!</h3>
+    <div class="alert-message" role="alert">
+      <h3>Everything looks good!</h3>
       <p>Any problems detected in your code would be reported here</p>
+    </div>
   </div>
-</div>
 
 </section>

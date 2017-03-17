@@ -10,48 +10,56 @@
   <section class="modal-body">
     <div class="transaction-select">
       <div class="transaction-select-item">
-        <h2>Transaction Type</h2>
+        <p>Transaction Type</p>
       </div>
       <div class="transaction-select-item">
         <div ngbDropdown class="d-inline-block">
           <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle>{{selectedTransactionName}}</button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <button class="dropdown-item action " *ngFor="let transaction of transactionTypes" (click)="onTransactionSelect(transaction)">{{transaction.getName()}}</button>
+            <button class="dropdown-item action " *ngFor="let transaction of transactionTypes"
+                    (click)="onTransactionSelect(transaction)">{{transaction.getName()}}
+            </button>
           </div>
         </div>
       </div>
     </div>
     <section class="resource-container">
       <section class="resource-component">
-      <div>
-        <p class="resource-preview-text">JSON Data Preview</p>
-      </div>
-       <div class="resource-bound">
-        <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
-        </codemirror>
-        <div class="resource-error-text" ng-if="defitionError!=null">
-          <p>{{defitionError}}</p>
+        <div>
+          <p class="resource-preview-text">JSON Data Preview</p>
         </div>
-      </div>
+        <div class="resource-bound">
+          <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()"
+                      width="100%" height="100%">
+          </codemirror>
+          <div class="resource-error-text" ng-if="defitionError!=null">
+            <p>{{defitionError}}</p>
+          </div>
+        </div>
       </section>
     </section>
   </section>
   <footer>
-    <p class="footer-text">Just need quick test data? <button type="button" class="icon" (click)="generateTransactionDeclaration()"><u>Generate Random Data</u></button></p>
-    <button type="button" class="secondary" (click)="activeModal.close();">
-      <span>Cancel</span>
-    </button>
-    <button type="button" class="primary" (click)="submitTransaction()" [disabled]="defitionError!=null || submitInProgress">
-      <div *ngIf="!submitInProgress">
-        <span>Submit</span>
-      </div>
-      <div *ngIf="submitInProgress" class="ibm-spinner-indeterminate small loop">
-        <div class="loader">
-          <svg class="circular" viewBox="25 25 50 50">
-            <circle class="circle-path" cx="50" cy="50" r="20"/>
-          </svg>
+    <p class="footer-text">Just need quick test data?
+      <button type="button" class="icon" (click)="generateTransactionDeclaration()"><u>Generate Random Data</u></button>
+    </p>
+    <div class="transaction-footer-cta">
+      <button type="button" class="secondary" (click)="activeModal.dismiss();">
+        <span>Cancel</span>
+      </button>
+      <button type="button" class="primary" (click)="submitTransaction()"
+              [disabled]="defitionError!=null || submitInProgress">
+        <div *ngIf="!submitInProgress">
+          <span>Submit</span>
         </div>
-      </div>
-    </button>
+        <div *ngIf="submitInProgress" class="ibm-spinner-indeterminate small loop">
+          <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+              <circle class="circle-path" cx="50" cy="50" r="20"/>
+            </svg>
+          </div>
+        </div>
+      </button>
+    </div>
   </footer>
 </div>

@@ -37,9 +37,9 @@ fi
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
   if [ -z "${TRAVIS_TAG}" ]; then
-    DOCS="full"
-  else
     DOCS="unstable"
+  else
+    DOCS="full"
   fi
   ./.travis/deploy_docs.sh
   exit 0
@@ -100,10 +100,11 @@ if [ -z "${TRAVIS_TAG}" ]; then
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-playground
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer-next-unstable -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env fabric-composer-next-unstable CLIENT_ID ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_ID}
-    cf set-env fabric-composer-next-unstable CLIENT_SECRET ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_SECRET}
-    cf start fabric-composer-next-unstable
+    cf push composer-playground-unstable -c "node cli.js" -i 2 -m 128M --no-start
+    cf set-env composer-playground-unstable CLIENT_ID ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_ID}
+    cf set-env composer-playground-unstable CLIENT_SECRET ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_SECRET}
+    cf set-env composer-playground-unstable USABILLA_ID ${USABILLA_ID}
+    cf start composer-playground-unstable
     popd
 
 else
@@ -140,10 +141,11 @@ else
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-playground
     cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer-next -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env fabric-composer-next CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
-    cf set-env fabric-composer-next CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
-    cf start fabric-composer-next
+    cf push composer-playground -c "node cli.js" -i 2 -m 128M --no-start
+    cf set-env composer-playground CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
+    cf set-env composer-playground CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
+    cf set-env composer-playground USABILLA_ID ${USABILLA_ID}
+    cf start composer-playground
     popd
 
     # Configure the Git repository and clean any untracked and unignored build files.
