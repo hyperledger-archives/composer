@@ -23,7 +23,7 @@
   "author": "<%= authorName %>",
   "license": "Apache2",
   "dependencies": {
-    "<%= npmNetworkDependancy %>": "0.0.1",
+    "<%= npmNetworkDependancy %>": "latest",
     "composer-client": "latest",
     "config": "^1.21.0",
     "shelljs": "^0.7.5",
