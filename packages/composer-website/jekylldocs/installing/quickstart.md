@@ -45,6 +45,7 @@ $ git clone https://github.com/fabric-composer/sample-applications.git
 ```
 $ cd sample-applications/packages/getting-started
 $ npm install
+$ composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 ```
 
 ***npm install***
