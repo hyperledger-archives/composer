@@ -184,6 +184,8 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('The certificate authority URL has not been specified in the connection profile');
         } else if (!connectOptions.channel) {
             throw new Error('No channel has been specified in the connection profile');
+        } else if (!connectOptions.mspid) {
+            throw new Error('No msp id defined');
         }
 
         // Default the optional connection options.

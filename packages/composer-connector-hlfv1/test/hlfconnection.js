@@ -70,7 +70,8 @@ describe('HLFConnection', () => {
             ],
             ca: 'http://localhost:7054',
             keyValStore: '/tmp/hlfabric1',
-            channel: 'testchainid'
+            channel: 'testchainid',
+            mspid: 'suchmsp'
         };
         connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
     });
@@ -190,7 +191,7 @@ describe('HLFConnection', () => {
             return connection.enroll('admin', 'adminpw')
                 .then(() => {
                     sinon.assert.calledOnce(mockUser.setEnrollment);
-                    sinon.assert.calledWith(mockUser.setEnrollment, 'suchkey', 'suchcert');
+                    sinon.assert.calledWith(mockUser.setEnrollment, 'suchkey', 'suchcert', 'suchmsp');
                     sinon.assert.calledOnce(mockClient.setUserContext);
                     sinon.assert.calledWith(mockClient.setUserContext, mockUser);
                 });
