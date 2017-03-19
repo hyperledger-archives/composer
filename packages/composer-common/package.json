@@ -1,6 +1,6 @@
 {
   "name": "composer-common",
-  "version": "0.5.4",
+  "version": "0.5.6",
   "description": "Fabric Composer Common, code that is common across client, admin and runtime.",
   "engines": {
     "node": ">=6",

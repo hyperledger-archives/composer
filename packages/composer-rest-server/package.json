@@ -1,6 +1,6 @@
 {
   "name": "composer-rest-server",
-  "version": "0.5.4",
+  "version": "0.5.6",
   "description": "Fabric Composer REST server that uses the Fabric Composer LoopBack connector",
   "engines": {
     "node": ">=6",
@@ -42,7 +42,7 @@
     "loopback": "^3.4.0",
     "loopback-boot": "^2.23.0",
     "loopback-component-explorer": "^4.1.1",
-    "loopback-connector-composer": "^0.5.4",
+    "loopback-connector-composer": "^0.5.6",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
     "touch": "^1.0.0",
