@@ -12,6 +12,10 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.5.6 {70655adb621429f2e79cbbca974b5885} 2017-03-20
+- Added the ScriptProcessor
+- Added the JSScriptProcessor
+
 Version 0.4.4 {0e331be906f2098a98a845e92efec2b9} 2017-03-08
 - Added package.json to BusinessNetworkMetadata
 - Added getBusinessNetworkMetadata to BusinessNetworkDefinition
