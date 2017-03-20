@@ -20,7 +20,6 @@
  * @module composer-runtime
  */
 
-module.exports.ComposerConfig = require('./composer.config');
 module.exports.Container = require('./lib/container');
 module.exports.Context = require('./lib/context');
 module.exports.DataCollection = require('./lib/datacollection');

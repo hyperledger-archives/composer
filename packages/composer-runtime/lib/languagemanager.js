@@ -14,8 +14,28 @@
 
 'use strict';
 
-const composerConfig = require('../composer.config');
 const ScriptManager = require('composer-common').ScriptManager;
+const JSScriptProcessor = require('composer-common').JSScriptProcessor;
+const JSTransactionExecutor = require('./jstransactionexecutor');
+
+let _languages = {
+    'JS' : {
+        'description' : 'Built-in JS language support',
+        'scriptprocessor' : new JSScriptProcessor(),
+        'transactionexecutor' : new JSTransactionExecutor(),
+        'codemirror' : {
+            lineNumbers: true,
+            lineWrapping: true,
+            readOnly: false,
+            mode: 'javascript',
+            autofocus: true,
+            extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+            foldGutter: true,
+            gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+            scrollbarStyle: 'simple'
+        },
+    },
+};
 
 /**
  * A class for managing languages registered in the config file
@@ -23,10 +43,13 @@ const ScriptManager = require('composer-common').ScriptManager;
  */
 class LanguageManager {
 
+    /**
+     * Create a LanguageManager.
+     *
+     */
     constructor(){
-        let config = composerConfig({});
-        this.languages = config.languages? config.languages : [];
-        
+        this.languages = _languages;
+
         // Add the script processors to the script manager
         this.getScriptProcessors().forEach(function(scriptprocessor){
             if(scriptprocessor) {
@@ -37,6 +60,8 @@ class LanguageManager {
 
     /**
      * Get all the languages.
+     *
+     * @returns {String[]} All the languages
      */
     getLanguages() {
         return Object.getOwnPropertyNames(this.languages);
@@ -44,15 +69,16 @@ class LanguageManager {
 
     /**
      * Get all the script code mirror style by language.
-     * @param language The language to be specified. 
+     * @param {String} language The language to be specified.
+     * @returns {Object} The code mirror style
      */
     getCodeMirrorStyle(language) {
         return this.languages[language].codemirror;
     }
 
-   
     /**
      * Get all the script processors.
+     * @returns {ScriptProcessor[]} The script processors
      */
     getScriptProcessors() {
         let _languages = this.languages;
@@ -61,13 +87,13 @@ class LanguageManager {
 
     /**
      * Get all the transaction executors.
+     * @returns {TransactionExecutor[]} The transaction executors
      */
     getTransactionExecutors() {
         let _languages = this.languages;
         return this.getLanguages().map((language) => _languages[language].transactionexecutor);
     }
 
-    
     /**
      * Stop serialization of this object.
      * @return {Object} An empty object.

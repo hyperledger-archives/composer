@@ -18,7 +18,6 @@ const AccessController = require('./accesscontroller');
 const Api = require('./api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
-const JSTransactionExecutor = require('./jstransactionexecutor');
 const LanguageManager = require('./languagemanager');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');

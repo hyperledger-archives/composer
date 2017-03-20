@@ -33,8 +33,8 @@ describe('FunctionDeclaration', () => {
     let loadFunctionDeclaration = (scriptFileName) => {
         let scriptText = fs.readFileSync(scriptFileName, 'utf8');
         let scriptProcessor = new JSScriptProcessor();
-        let _functions = scriptProcessor.process(modelManager, 'TEST_SCRIPT', scriptText);
-        let script = new Script(modelManager, 'TEST_SCRIPT', 'JS', scriptText, _functions);
+        let parsedFunctions = scriptProcessor.process(modelManager, 'TEST_SCRIPT', scriptText);
+        let script = new Script(modelManager, 'TEST_SCRIPT', 'JS', scriptText, parsedFunctions);
         let functions = script.getFunctionDeclarations();
         (functions.length > 0).should.be.true;
         return functions[0];

@@ -76,11 +76,11 @@ describe('JSTransactionExecutor', () => {
 
     describe('#execute', () => {
 
-        it('should throw if no functions could be found', () => {
+        it('should not throw if no functions could be found', () => {
             sinon.stub(executor, 'findFunctionNames').returns([]);
             (() => {
                 executor.execute(api, scriptManager, transaction, resolvedTransaction);
-            }).should.throw(/Could not find any functions/);
+            }).should.not.throw(/Could not find any functions/);
         });
 
         it('should execute a single transaction processor function', () => {
