@@ -58,7 +58,7 @@ Example: `Xurw3yU9zI0l`
 
 `--data, -d`
 
-The serialized JSON representation of the transaction to send to the business network. The data must be valid according to the model of the participant.  
+The serialized JSON representation of the transaction to send to the business network. The data must be valid according to the model of the transaction.  
 Example: `{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}`
 
 ## Example command
