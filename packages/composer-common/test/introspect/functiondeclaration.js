@@ -17,6 +17,7 @@
 const FunctionDeclaration = require('../../lib/introspect/functiondeclaration');
 const Script = require('../../lib/introspect/script');
 const ModelManager = require('../../lib/modelmanager');
+const JSScriptProcessor = require('../../lib/introspect/jsscriptprocessor');
 const fs = require('fs');
 
 require('chai').should();
@@ -31,7 +32,9 @@ describe('FunctionDeclaration', () => {
 
     let loadFunctionDeclaration = (scriptFileName) => {
         let scriptText = fs.readFileSync(scriptFileName, 'utf8');
-        let script = new Script(modelManager, 'TEST_SCRIPT', 'JS', scriptText);
+        let scriptProcessor = new JSScriptProcessor();
+        let _functions = scriptProcessor.process(modelManager, 'TEST_SCRIPT', scriptText);
+        let script = new Script(modelManager, 'TEST_SCRIPT', 'JS', scriptText, _functions);
         let functions = script.getFunctionDeclarations();
         (functions.length > 0).should.be.true;
         return functions[0];
