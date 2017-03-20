@@ -74,7 +74,7 @@ export class ImportComponent implements OnInit {
 
   }
 
-  private onShow() {
+  onShow() {
     this.gitHubInProgress = true;
     this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
     if (this.gitHubAuthenticated) {
@@ -89,8 +89,14 @@ export class ImportComponent implements OnInit {
             error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
           }
 
+          this.gitHubInProgress = false;
           this.activeModal.dismiss(error);
         });
+    }
+    else {
+      //should never get here
+      this.gitHubInProgress = false;
+      this.activeModal.dismiss(new Error('A connection to github has not been established'));
     }
   }
 
@@ -100,7 +106,7 @@ export class ImportComponent implements OnInit {
 
 
   private fileLeft() {
-      this.expandInput = false;
+    this.expandInput = false;
 
   }
 
@@ -128,12 +134,12 @@ export class ImportComponent implements OnInit {
     this.expandInput = false;
   }
 
-  private removeFile() {
+  removeFile() {
     this.expandInput = false;
     this.currentBusinessNetwork = null;
   }
 
-  private deploy() {
+  deploy() {
     this.deployInProgress = true;
     let deployPromise;
 
@@ -161,7 +167,7 @@ export class ImportComponent implements OnInit {
   }
 
 
-  private deployFromGitHub(): Promise < any > {
+  deployFromGitHub(): Promise < any > {
     let chosenSampleNetwork = this.sampleNetworks.find((sampleNetwork) => {
       return sampleNetwork.name === this.chosenNetwork;
     });
