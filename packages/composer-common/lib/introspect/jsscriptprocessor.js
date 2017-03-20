@@ -43,11 +43,11 @@ class JSScriptProcessor extends ScriptProcessor {
      */
     process(modelManager, identifier, contents) {
         const parser = new JavaScriptParser(contents);
-        var results = [];
+        let results = [];
         const functions = parser.getFunctions();
         for(let n=0; n < functions.length; n++) {
             const func = functions[n];
-            const functionDeclaration = new FunctionDeclaration(modelManager, "JS", func.name, func.visibility,
+            const functionDeclaration = new FunctionDeclaration(modelManager, 'JS', func.name, func.visibility,
               func.returnType, func.throws, func.parameterNames, func.parameterTypes, func.decorators, func.functionText );
             functionDeclaration.validate();
             results.push( functionDeclaration );
@@ -64,8 +64,8 @@ class JSScriptProcessor extends ScriptProcessor {
         let content =
 `/**
  * New script file
- */`; 
-        return content; 
+ */`;
+        return content;
     }
 
 

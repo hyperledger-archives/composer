@@ -14,8 +14,6 @@
 
 'use strict';
 
-const FunctionDeclaration = require('../introspect/functiondeclaration');
-
 /**
  * <p>
  * An executable script.
@@ -25,7 +23,7 @@ const FunctionDeclaration = require('../introspect/functiondeclaration');
  * @memberof module:composer-common
  */
 class Script {
-   
+
     /**
      * Create the Script.
      * <p>

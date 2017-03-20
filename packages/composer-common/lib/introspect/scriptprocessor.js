@@ -14,8 +14,6 @@
 
 'use strict';
 
-const FunctionDeclaration = require('../introspect/functiondeclaration');
-
 /**
  * A class for processing script files.
  * @protected

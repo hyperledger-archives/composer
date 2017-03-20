@@ -62,17 +62,17 @@ class ScriptManager {
      * @returns {Script} - the instantiated script
      */
     createScript(identifier, language, contents) {
-        let scriptProcessor = null
+        let scriptProcessor = null;
         for(let i = 0; i < _scriptProcessors.length; i++) {
             if(_scriptProcessors[i].getType().toUpperCase() === language.toUpperCase()) {
                 scriptProcessor = _scriptProcessors[i];
                 break;
             }
         }
-       
+
         let functions = [];
         if(scriptProcessor) {
-            if(!contents || contents.length == 0) {
+            if(!contents || contents.length === 0) {
                 contents = scriptProcessor.newContent();
             }
             functions = scriptProcessor.process(this.modelManager, identifier, contents);
@@ -99,8 +99,12 @@ class ScriptManager {
         this.addScript(script);
     }
 
+    /**
+     * Get the model manager
+     * @return {ModelManager} The model manager
+     */
     getModelManager() {
-        return this.modelManager; 
+        return this.modelManager;
     }
 
     /**
