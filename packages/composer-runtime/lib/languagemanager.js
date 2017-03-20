@@ -29,7 +29,7 @@ let _languages = {
             readOnly: false,
             mode: 'javascript',
             autofocus: true,
-            extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+            //extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
             foldGutter: true,
             gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
             scrollbarStyle: 'simple'
@@ -52,9 +52,7 @@ class LanguageManager {
 
         // Add the script processors to the script manager
         this.getScriptProcessors().forEach(function(scriptprocessor){
-            if(scriptprocessor) {
-                ScriptManager.addScriptProcessor(scriptprocessor);
-            }
+            ScriptManager.addScriptProcessor(scriptprocessor);
         });
     }
 

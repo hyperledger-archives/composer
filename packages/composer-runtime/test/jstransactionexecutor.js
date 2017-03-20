@@ -270,6 +270,19 @@ describe('JSTransactionExecutor', () => {
             global.$testResult.should.equal('org.acme.TestTransaction#1');
         });
 
+        it('should not add non-JS scripts', () => {
+            scriptManager.addScript(scriptManager.createScript('script1', 'JS', `
+            function doIt(transaction) {
+                global.$testResult = transaction.getFullyQualifiedIdentifier();
+            }`));
+            scriptManager.addScript(scriptManager.createScript('script2', 'XML', `
+            <xml></xml>`));
+            let functions = executor.compileScripts(scriptManager, ['doIt']);
+            functions.should.have.lengthOf(1);
+            functions[0](transaction);
+            global.$testResult.should.equal('org.acme.TestTransaction#1');
+        });
+
         it('should compile multiple functions for a single script and multiple functions', () => {
             scriptManager.addScript(scriptManager.createScript('script1', 'JS', `
             function doIt(transaction) {
