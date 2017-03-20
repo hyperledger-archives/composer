@@ -11,10 +11,10 @@
       "variables-before-functions"
     ],
     "no-any": false,
-    "no-inferrable-types": false,
+    "no-inferrable-types": [ false ],
     "no-internal-module": true,
     "no-var-requires": false,
-    "typedef": false,
+    "typedef": [ false ],
     "typedef-whitespace": [
       true,
       {
@@ -57,7 +57,7 @@
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-switch-case-fall-through": true,
-    "no-unreachable": true,
+    // "no-unreachable": true,
     "no-unused-expression": true,
     "no-unused-variable": false,
     "no-use-before-declare": true,
@@ -88,15 +88,23 @@
       }
     ],
 
-    "align": false,
+    "align": [
+      true,
+      "parameters",
+      "statements"
+    ],
     "class-name": true,
     "comment-format": [
       true,
       "check-space"
     ],
-    "interface-name": false,
+    "interface-name": [
+      false
+    ],
     "jsdoc-format": true,
-    "no-consecutive-blank-lines": false,
+    "no-consecutive-blank-lines": [
+      false
+    ],
     "one-line": [
       false,
       "check-open-brace",
