@@ -148,7 +148,8 @@ describe('HLFConnectionManager', () => {
                 ],
                 ca: 'http://localhost:7054',
                 keyValStore: '/tmp/hlfabric1',
-                channel: 'testchainid'
+                channel: 'testchainid',
+                mspid: 'MSP1Org'
             };
             mockClient = sinon.createStubInstance(Client);
             sandbox.stub(HLFConnectionManager, 'createClient').returns(mockClient);
@@ -178,6 +179,13 @@ describe('HLFConnectionManager', () => {
             (() => {
                 connectionManager.connect('hlfabric1', 'org.acme.biznet', null);
             }).should.throw(/connectOptions not specified/);
+        });
+
+        it('should throw if msp id is not specified', () => {
+            delete connectOptions.mspid;
+            (() => {
+                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+            }).should.throw(/No msp id defined/);
         });
 
         it('should throw if orderers are not specified', () => {
