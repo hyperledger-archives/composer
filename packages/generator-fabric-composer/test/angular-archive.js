@@ -11,6 +11,7 @@ describe('fabric-composer:angular for digitalPropertyNetwork running against a b
         .inTmpDir(function (dir) {
             tmpDir = dir;
         })
+        .withOptions({ skipInstall: true })
         .withPrompts({
             liveNetwork: false,
             appName: 'digitalPropertyNetwork',
@@ -95,7 +96,7 @@ describe('fabric-composer:angular for CarAuction-Network running against a busin
             appDescription: 'A CarAuction-Network application',
             authorName: 'TestUser',
             authorEmail: 'TestUser@TestApp.com',
-            fileName: __dirname+'/data/org.acme.vehicle.auction@0.0.2.bna'
+            fileName: __dirname+'/data/carAuction.bna'
         })
         .on('error', function (error) {
             console.log('Error found:', error);

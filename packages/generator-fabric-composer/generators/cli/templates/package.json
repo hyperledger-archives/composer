@@ -11,7 +11,8 @@
     "stopHLF": "scripts/stop-hyperledger.sh",
     "teardownHLF": "scripts/teardown.sh",
     "deployNetwork": "composer archive create --archiveFile <%= networkIdentifier %>.bna --sourceType module --sourceName <%= npmNetworkDependancy %> && composer network deploy --archiveFile  <%= networkIdentifier %>.bna  --enrollId <%= enrollmentId %> --enrollSecret <%= enrollmentSecret %> ",
-    "install": "scripts/download-hyperledger.sh && scripts/start-hyperledger.sh && npm run deployNetwork"
+    "install": "scripts/download-hyperledger.sh && scripts/start-hyperledger.sh && npm run deployNetwork",
+    "start": "node index.js"
   },
   "keywords": [
     "Blockchain",
