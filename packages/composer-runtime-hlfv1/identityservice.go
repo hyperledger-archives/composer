@@ -16,6 +16,9 @@ package main
 
 import (
 	"fmt"
+	"bytes"
+	"crypto/x509"
+	"encoding/pem"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/robertkrimen/otto"
@@ -25,7 +28,6 @@ import (
 type IdentityService struct {
 	This *otto.Object
 	Stub shim.ChaincodeStubInterface
-	// AccessControlShim *impl.AccessControlShim
 }
 
 // NewIdentityService creates a Go wrapper around a new instance of the IdentityService JavaScript class.
@@ -46,7 +48,7 @@ func NewIdentityService(vm *otto.Otto, context *Context, stub shim.ChaincodeStub
 	// acs := impl.NewAccessControlShim(stub)
 
 	// Add a pointer to the Go object into the JavaScript object.
-	result = &IdentityService{This: temp.Object(), Stub: stub /* , AccessControlShim: acs */}
+	result = &IdentityService{This: temp.Object(), Stub: stub}
 	err = object.Set("$this", result)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to store Go object in IdentityService JavaScript object: %v", err))
@@ -60,8 +62,47 @@ func NewIdentityService(vm *otto.Otto, context *Context, stub shim.ChaincodeStub
 
 // getCurrentUserID retrieves the userID attribute from the users certificate.
 func (identityService *IdentityService) getCurrentUserID(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering DataService.getCurrentUserID", call)
-	defer func() { logger.Debug("Exiting DataService.getCurrentUserID", result) }()
+	logger.Debug("Entering IdentityService.getCurrentUserID", call)
+	defer func() { logger.Debug("Exiting IdentityService.getCurrentUserID", result) }()
+
+	creator, err := identityService.Stub.GetCreator()
+	if err != nil {
+		logger.Debug("Error received on GetCreator", err)
+		return otto.NullValue()
+	}
+	//var ucert *x509.Certificate
+	logger.Debug("creator", string(creator))
+	certStart := bytes.IndexAny(creator, "----BEGIN CERTIFICATE-----")
+	if certStart == -1 {
+		logger.Debug("No certificate found");
+		return otto.NullValue()
+	}
+	certText := creator[certStart:]
+	block, _ := pem.Decode(certText)
+	if block == nil {
+		logger.Debug("Error received on pem.Decode of certificate", certText)
+		return otto.NullValue()
+	}
+
+	ucert, err := x509.ParseCertificate(block.Bytes)
+
+	if err != nil {
+		logger.Debug("Error received on ParseCertificate", err)
+		return otto.NullValue()
+	}
+
+	logger.Debug("Common Name", ucert.Subject.CommonName)
+
+	// TODO: temporary for V1 admin user returns null to give them
+	// full authority
+	if ucert.Subject.CommonName == "admin" {
+		return otto.NullValue();
+	}
+	result, err = otto.ToValue(ucert.Subject.CommonName)
+	if err != nil {
+		panic(call.Otto.MakeCustomError("Error", err.Error()))
+	}
+	return result
 
 	// Read the userID attribute value.
 	// identityService.Stub.GetBinding()
@@ -75,6 +116,6 @@ func (identityService *IdentityService) getCurrentUserID(call otto.FunctionCall)
 	// 	panic(call.Otto.MakeCustomError("Error", err.Error()))
 	// }
 	// return result
-	return otto.NullValue()
+	//return otto.NullValue()
 
 }
