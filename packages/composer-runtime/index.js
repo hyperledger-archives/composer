@@ -20,6 +20,7 @@
  * @module composer-runtime
  */
 
+module.exports.ComposerConfig = require('./composer.config');
 module.exports.Container = require('./lib/container');
 module.exports.Context = require('./lib/context');
 module.exports.DataCollection = require('./lib/datacollection');
@@ -27,5 +28,6 @@ module.exports.DataService = require('./lib/dataservice');
 module.exports.Engine = require('./lib/engine');
 module.exports.IdentityService = require('./lib/identityservice');
 module.exports.JSTransactionExecutor = require('./lib/jstransactionexecutor');
+module.exports.LanguageManager = require('./lib/languagemanager');
 module.exports.LoggingService = require('./lib/loggingservice');
 module.exports.TransactionExecutor = require('./lib/transactionexecutor');

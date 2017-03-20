@@ -194,7 +194,7 @@ class BusinessNetworkDefinition {
             });
 
             LOG.debug(method, 'Looking for JavaScript files');
-            let jsFiles = zip.file(/lib\/.*\.js$/); //Matches any file which is in the 'lib' folder and has a .js extension
+            let jsFiles = zip.file(/lib\/.*$/); //Matches any file which is in the 'lib' folder
             jsFiles.forEach(function(file) {
                 LOG.debug(method, 'Found JavaScript file, loading it', file.name);
                 const jsPromise = file.async('string');
@@ -233,7 +233,7 @@ class BusinessNetworkDefinition {
                     // console.log('What are the jsObjectsArray?',jsObjectArray);
                     LOG.debug(method, 'Adding JavaScript files to script manager');
                     jsScriptFiles.forEach(function(obj) {
-                        let jsObject = businessNetworkDefinition.scriptManager.createScript(obj.name, 'js', obj.contents);
+                        let jsObject = businessNetworkDefinition.scriptManager.createScript(obj.name, obj.name.split('.').pop(), obj.contents);
                         businessNetworkDefinition.scriptManager.addScript(jsObject); // Adds all js files to script manager
                     });
                     LOG.debug(method, 'Added JavaScript files to script manager');

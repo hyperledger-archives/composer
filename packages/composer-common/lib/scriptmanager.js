@@ -15,6 +15,10 @@
 'use strict';
 
 const Script = require('./introspect/script');
+const JSScriptProcessor = require('./introspect/jsscriptprocessor');
+
+//TODO make it a static variable
+let _scriptProcessors = [new JSScriptProcessor()];
 
 /**
  * <p>
@@ -58,7 +62,22 @@ class ScriptManager {
      * @returns {Script} - the instantiated script
      */
     createScript(identifier, language, contents) {
-        return new Script(this.modelManager, identifier, language, contents );
+        let scriptProcessor = null
+        for(let i = 0; i < _scriptProcessors.length; i++) {
+            if(_scriptProcessors[i].getType().toUpperCase() === language.toUpperCase()) {
+                scriptProcessor = _scriptProcessors[i];
+                break;
+            }
+        }
+       
+        let functions = [];
+        if(scriptProcessor) {
+            if(!contents || contents.length == 0) {
+                contents = scriptProcessor.newContent();
+            }
+            functions = scriptProcessor.process(this.modelManager, identifier, contents);
+        }
+        return new Script(this.modelManager, identifier, language, contents , functions );
     }
 
     /**
@@ -78,6 +97,10 @@ class ScriptManager {
             throw new Error('Script file does not exist');
         }
         this.addScript(script);
+    }
+
+    getModelManager() {
+        return this.modelManager; 
     }
 
     /**
@@ -131,6 +154,25 @@ class ScriptManager {
      */
     getScriptIdentifiers() {
         return Object.keys(this.scripts);
+    }
+
+    /**
+     * Add a transaction executor.
+     * @param {ScriptProcessor} scriptProcessor The script processor.
+     */
+    static addScriptProcessor(scriptProcessor) {
+        let replaced = _scriptProcessors.some((existingScriptProcessor, index) => {
+            if (scriptProcessor.getType() === existingScriptProcessor.getType()) {
+                console.log('Found existing executor for type, replacing', index, scriptProcessor.getType());
+                _scriptProcessors[index] = scriptProcessor;
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (!replaced) {
+            _scriptProcessors.push(scriptProcessor);
+        }
     }
 
     /**

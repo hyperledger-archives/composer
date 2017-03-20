@@ -51,8 +51,9 @@ class JSTransactionExecutor extends TransactionExecutor {
 
         // If we didn't find any functions to call, then throw an error!
         if (functionNames.length === 0) {
-            LOG.error(`Could not find any functions to execute for transaction ${transaction.getFullyQualifiedIdentifier()}`);
-            throw new Error(`Could not find any functions to execute for transaction ${transaction.getFullyQualifiedIdentifier()}`);
+            LOG.info(`Could not find any functions to execute for transaction ${transaction.getFullyQualifiedIdentifier()}`);
+            //throw new Error(`Could not find any functions to execute for transaction ${transaction.getFullyQualifiedIdentifier()}`);
+            return;
         }
 
         // Find all of the scripts, and build a function for each script function to call.
@@ -154,7 +155,9 @@ class JSTransactionExecutor extends TransactionExecutor {
 
             // Concatenate the script source.
             LOG.debug(method, 'Looking at script', script.getIdentifier());
-            source += script.getContents() + '\n';
+            if(script.getLanguage().toUpperCase() === 'JS'){
+                source += script.getContents() + '\n';
+            }
 
         });
 

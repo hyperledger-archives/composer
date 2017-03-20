@@ -15,6 +15,8 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/scroll/simplescrollbars';
 
+const _languageManager = require('composer-runtime').LanguageManager
+
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
@@ -27,20 +29,59 @@ export class EditorComponent implements OnInit {
   private changingCurrentFile: boolean = false;
   private code: string = null;
   private previousCode: string = null;
-  private codeConfig = {
-    lineNumbers: true,
-    lineWrapping: true,
-    readOnly: false,
-    mode: 'javascript',
-    autofocus: true,
-    extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
-    foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-    scrollbarStyle: 'simple'
+  private LanguageManager
+  private getCodeConfig() {
+      if(!this.currentFile || !this.currentFile.language){
+        return {};
+      }
+
+      if(_languageManager.getLanguages().includes(this.currentFile.language)){
+        return _languageManager.getCodeMirrorStyle(this.currentFile.language);
+      }
+
+      switch(this.currentFile.language){
+      case "ACL":
+        return {
+          lineNumbers: true,
+          lineWrapping: true,
+          readOnly: false,
+          mode: 'javascript',
+          autofocus: true,
+          extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+          foldGutter: true,
+          gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+          scrollbarStyle: 'simple'
+        };
+      case "CTO":
+        return {
+          lineNumbers: true,
+          lineWrapping: true,
+          readOnly: false,
+          mode: 'java',
+          autofocus: true,
+          extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+          foldGutter: true,
+          gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+          scrollbarStyle: 'simple'
+        };
+    }
+    // default rendering
+    return {
+      lineNumbers: true,
+      lineWrapping: true,
+      readOnly: false,
+      mode: 'javascript',
+      autofocus: true,
+      extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+      foldGutter: true,
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+      scrollbarStyle: 'simple'
+    };
   };
+  private languages: string[];
   private addModelNamespace: string = 'org.acme.model';
   private addModelFileName: string = 'lib/org.acme.model.cto';
-  private addScriptFileName: string = 'lib/script.js';
+  private addScriptFileName: string[] = ['lib/script', '.js'];
   private currentError: string = null;
   private dirty: boolean = false;
   private deploying: boolean = false;
@@ -57,6 +98,7 @@ export class EditorComponent implements OnInit {
   ngOnInit(): Promise<any> {
     return this.initializationService.initialize()
       .then(() => {
+        this.languages = _languageManager.getLanguages().map((lang) => lang.toLowerCase());
         this.loadBusinessNetwork();
         this.updateFiles();
         if (this.files.length) {
@@ -70,6 +112,11 @@ export class EditorComponent implements OnInit {
         }
       });
   }
+
+  private getFileExtension(fileName) {
+    return fileName.split('.').pop();
+  }
+
 
   private loadBusinessNetwork() {
     let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
@@ -138,7 +185,7 @@ export class EditorComponent implements OnInit {
         }
         modelManager.addModelFile(modelFile);
       } else if (this.currentFile.script) {
-        let script = scriptManager.createScript(this.currentFile.id, 'JS', this.code);
+        let script = scriptManager.createScript(this.currentFile.id, this.getFileExtension(this.currentFile.id), this.code);
         scriptManager.addScript(script);
       } else if (this.currentFile.acl) {
         let aclFile = new AclFile(this.currentFile.id, modelManager, this.code);
@@ -177,10 +224,12 @@ export class EditorComponent implements OnInit {
     let modelManager = businessNetworkDefinition.getModelManager();
     let modelFiles = modelManager.getModelFiles();
     let newFiles = [];
+    
     modelFiles.forEach((modelFile) => {
       newFiles.push({
         model: true,
         id: modelFile.getNamespace(),
+        language: 'CTO',
         displayID: 'lib/' + modelFile.getNamespace() + '.cto'
       });
     });
@@ -189,6 +238,7 @@ export class EditorComponent implements OnInit {
     scriptFiles.forEach((scriptFile) => {
       newFiles.push({
         script: true,
+        language: this.getFileExtension(scriptFile.getIdentifier()),
         id: scriptFile.getIdentifier(),
         displayID: scriptFile.getIdentifier()
       });
@@ -201,6 +251,7 @@ export class EditorComponent implements OnInit {
     if (aclFile) {
       newFiles.push({
         acl: true,
+        language: 'ACL',
         id: aclFile.getIdentifier(),
         displayID: aclFile.getIdentifier()
       });
@@ -234,11 +285,11 @@ namespace ${this.addModelNamespace}`;
 `/**
  * New script file
  */`;
-    let script = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+    let script = scriptManager.createScript(this.addScriptFileName.join(''), this.getFileExtension(this.addScriptFileName.join('')), null);
     scriptManager.addScript(script);
     this.updateFiles();
     this.files.forEach((file) => {
-      if (file.id === this.addScriptFileName) {
+      if (file.id === this.addScriptFileName.join('')) {
         this.setCurrentFile(file);
       }
     });
