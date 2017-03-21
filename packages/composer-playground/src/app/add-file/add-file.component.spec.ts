@@ -110,6 +110,7 @@ describe('AddFileComponent', () => {
       let file = new File([b], 'newfile.cto');
 
       let createMock = sinon.stub(component, 'createModel');
+      let dataBufferMock = sinon.stub(component, 'getDataBuffer').returns(Promise.resolve('some data'));
 
       component.fileAccepted(file)
         .then(() => {
