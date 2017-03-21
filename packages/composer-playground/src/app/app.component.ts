@@ -75,35 +75,35 @@ export class AppComponent {
     console.log('Initial App State', this.appState.state);
 
     this.subs = [
-            this.alertService.busyStatus$.subscribe((busyStatus) => {
-              this.onBusyStatus(busyStatus);
-            }),
-            this.alertService.errorStatus$.subscribe((errorStatus) => {
-              this.onErrorStatus(errorStatus);
-            }),
-            this.alertService.successStatus$.subscribe((successStatus) => {
-              this.onSuccessStatus(successStatus);
-            }),
-            this.adminService.connectionProfileChanged$.subscribe(() => {
-              this.updateConnectionData();
-            }),
-            this.route.queryParams.subscribe((queryParams) => {
-              this.queryParamsUpdated(queryParams);
-            }),
-            this.router.events.filter(e => e instanceof NavigationEnd).subscribe((e) => {
-              if(e.url === '/') {
-                this.openWelcomeModal();
-              }
-              else{
-                return this.checkVersion().then((success)=>{
-                  if(!success){
-                    this.openVersionModal();
-                  }
-                });
-              }
+          this.alertService.busyStatus$.subscribe((busyStatus) => {
+            this.onBusyStatus(busyStatus);
+          }),
+          this.alertService.errorStatus$.subscribe((errorStatus) => {
+            this.onErrorStatus(errorStatus);
+          }),
+          this.alertService.successStatus$.subscribe((successStatus) => {
+            this.onSuccessStatus(successStatus);
+          }),
+          this.adminService.connectionProfileChanged$.subscribe(() => {
+            this.updateConnectionData();
+          }),
+          this.route.queryParams.subscribe((queryParams) => {
+            this.queryParamsUpdated(queryParams);
+          }),
+          this.router.events.filter(e => e instanceof NavigationEnd).subscribe((e) => {
+            if(e.url === '/') {
+              this.openWelcomeModal();
+            }
+            else{
+              return this.checkVersion().then((success)=>{
+                if(!success){
+                  this.openVersionModal();
+                }
+              });
+            }
 
-            })
-          ];
+          })
+        ];
 
 
   }

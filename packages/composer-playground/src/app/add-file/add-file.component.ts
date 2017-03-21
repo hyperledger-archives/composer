@@ -53,21 +53,22 @@ export class AddFileComponent implements OnInit {
     this.expandInput = false;
   }
 
-  fileAccepted(file: File): Promise<any> {
+  fileAccepted(file: File) {
     let type = file.name.substr(file.name.lastIndexOf('.') + 1);
-    return this.getDataBuffer(file)
+    this.getDataBuffer(file)
       .then((data) => {
         switch (type) {
           case 'js':
+            this.expandInput = true;
             this.createScript(file, data);
             break;
           case 'cto':
+            this.expandInput = true;
             this.createModel(file, data);
             break;
           default:
             throw new Error('Unexpected File Type');
         }
-        this.expandInput = true;
       })
       .catch((err) => {
         this.fileRejected(err);
@@ -98,7 +99,7 @@ export class AddFileComponent implements OnInit {
 
   createModel(file: File, dataBuffer) {
     this.fileType = 'cto';
-    let modelManager = this.businessNetwork.getScriptManager();
+    let modelManager = this.businessNetwork.getModelManager();
     this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name || this.addModelFileName);
     this.currentFileName = this.currentFile.getFileName();
   }
