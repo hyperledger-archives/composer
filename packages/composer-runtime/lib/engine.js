@@ -14,6 +14,8 @@
 
 'use strict';
 
+require('./languagemanager');
+
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const Context = require('./context');
 const createHash = require('sha.js');
