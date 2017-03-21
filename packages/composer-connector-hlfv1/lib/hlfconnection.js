@@ -381,7 +381,6 @@ class HLFConnection extends Connection {
 
         proposalResponses.forEach((proposalResponse) => {
             if (proposalResponse instanceof Error) {
-                console.log('throwing proposal response');
                 throw proposalResponse;
             } else if (proposalResponse.response.status === 200) {
                 return true;
@@ -696,7 +695,6 @@ class HLFConnection extends Connection {
 
             this.caClient.register(registerRequest, this._getLoggedInUser())
                 .then((userSecret) => {
-                    console.log(userSecret);
                     LOG.exit(method, 'Register request succeeded');
                     resolve({
                         userID: userID,
