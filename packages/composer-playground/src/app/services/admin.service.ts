@@ -15,15 +15,19 @@ import WebConnectionManager = require('composer-connector-web');
 @Injectable()
 export class AdminService {
 
+  public connectionProfileChanged$: Subject<string> = new BehaviorSubject<string>(null);
+
   private adminConnection: AdminConnection = null;
   private isConnected: boolean = false;
   private connectingPromise: Promise<any> = null;
   private initialDeploy: boolean = false;
   private config: any = null;
 
-  public connectionProfileChanged$: Subject<string> = new BehaviorSubject<string>(null);
-
-  constructor(private connectionProfileService: ConnectionProfileService, private walletService: WalletService, private identityService: IdentityService, private http: Http, private alertService: AlertService) {
+  constructor(private connectionProfileService: ConnectionProfileService,
+              private walletService: WalletService,
+              private identityService: IdentityService,
+              private http: Http,
+              private alertService: AlertService) {
     Logger.setFunctionalLogger({
       log: () => {
       }
