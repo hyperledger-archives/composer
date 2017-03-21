@@ -15,15 +15,17 @@ export class VersionCheckComponent {
               private router: Router) {
   }
 
-  clearLocalStorage(){
+  public clearLocalStorage(): Promise<boolean>{
     if(this.localStorageService.clearAll()){
-      return this.router.navigateByUrl('/').then((result) => {
+      return this.router.navigateByUrl('/')
+      .then((result) => {
+
         if (result) {
           window.open('/','_self');
         }
-        else {
-          throw new Error('Failed to navigate to main page');
-        }
+
+        return result;
+
       });
     }
     else{

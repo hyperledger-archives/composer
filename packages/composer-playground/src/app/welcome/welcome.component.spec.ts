@@ -9,6 +9,8 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap'
 describe('WelcomeComponent', () => {
   let component: WelcomeComponent;
   let fixture: ComponentFixture<WelcomeComponent>;
+  let debug: DebugElement;
+  let element: HTMLElement;
 
   let ngbActiveModalMock = {
     close: () => {
@@ -28,10 +30,17 @@ describe('WelcomeComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(WelcomeComponent);
     component = fixture.componentInstance;
+    debug = fixture.debugElement.query(By.css('h1'));
+    element = debug.nativeElement;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create component', () => {
     component.should.be.ok;
   });
+
+  it('should have correct title', () => {
+    element.textContent.should.contain('Welcome to Fabric Composer Playground!');
+  });
+
 });

@@ -93,11 +93,6 @@ export class ImportComponent implements OnInit {
           this.activeModal.dismiss(error);
         });
     }
-    else {
-      //should never get here
-      this.gitHubInProgress = false;
-      this.activeModal.dismiss(new Error('A connection to github has not been established'));
-    }
   }
 
   private fileDetected() {
@@ -121,7 +116,8 @@ export class ImportComponent implements OnInit {
           this.expandInput = true;
         })
         .catch((error) => {
-          this.alertService.errorStatus$.next(error);
+          let failMessage = "Cannot import an invalid Business Network Definition. Found "+error.toString();;
+          this.alertService.errorStatus$.next(failMessage);
           this.expandInput = false;
         });
     };
