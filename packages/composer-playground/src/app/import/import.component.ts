@@ -116,7 +116,8 @@ export class ImportComponent implements OnInit {
           this.expandInput = true;
         })
         .catch((error) => {
-          this.alertService.errorStatus$.next(error);
+          let failMessage = "Cannot import an invalid Business Network Definition. Found "+error.toString();;
+          this.alertService.errorStatus$.next(failMessage);
           this.expandInput = false;
         });
     };
