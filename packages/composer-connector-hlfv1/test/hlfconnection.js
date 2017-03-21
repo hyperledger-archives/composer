@@ -935,12 +935,144 @@ describe('HLFConnection', () => {
     });
 
     describe('#createIdentity', () => {
-
-        it('should throw an error as not implemented yet', () => {
-            return connection.createIdentity(mockSecurityContext, 'doge')
-                .should.be.rejectedWith(/unimplemented function called/);
+        beforeEach(() => {
+            sandbox.stub(connection, '_getLoggedInUser').returns(mockUser);
         });
 
+
+        it('should throw error if no user is specified', () => {
+            (() => {
+                connection.createIdentity(mockSecurityContext, '');
+            }).should.throw(/userID not specified/);
+            (() => {
+                connection.createIdentity(mockSecurityContext);
+            }).should.throw(/userID not specified/);
+            (() => {
+                connection.createIdentity(mockSecurityContext, null);
+            }).should.throw(/userID not specified/);
+        });
+
+        it('should issue a request to register a user', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser')
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request to register a user who can register other users', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {issuer: true})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [
+                            {name: 'hf.RegisterRoles', value: 'client'},
+                            {name: 'hf.RegisterDelegateRoles', value: 'client'},
+                        ],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with a limited number of enrollments', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {maxEnrollments: 9})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [],
+                        maxEnrollments: 9,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with a different affiliation', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {affiliation: 'bank_b'})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'bank_b',
+                        attrs: [],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with a different role', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {role: 'peer,auditor'})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [],
+                        maxEnrollments: 0,
+                        role: 'peer,auditor'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with user supplied attributes', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {attributes: {attr1: 'value1', attr2: 'value2'}})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [
+                            {name: 'attr1', value: 'value1'},
+                            {name: 'attr2', value: 'value2'}
+                        ],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+
+        it('should handle a register error', () => {
+            mockCAClient.register.rejects(new Error('anerror'));
+            return connection.createIdentity(mockSecurityContext, 'auser')
+                .should.be.rejectedWith(/anerror/);
+
+        });
     });
 
     describe('#list', () => {
