@@ -17,6 +17,7 @@
 const debug = require('debug')('ibm-concerto');
 const Globalize = require('./globalize');
 const InstanceGenerator = require('./serializer/instancegenerator');
+const ValueGeneratorFactory = require('./serializer/valuegenerator');
 const Relationship = require('./model/relationship');
 
 const Resource = require('./model/resource');
@@ -135,10 +136,12 @@ class Factory {
 
         if(options.generate) {
             let visitor = new InstanceGenerator();
+            const generator = options.withSampleData ? ValueGeneratorFactory.sample() : ValueGeneratorFactory.default();
             let parameters = {
                 stack: new TypedStack(newObj),
                 modelManager: this.modelManager,
-                factory: this
+                factory: this,
+                valueGenerator: generator
             };
             classDecl.accept(visitor, parameters);
         }
