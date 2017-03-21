@@ -15,11 +15,9 @@
 'use strict';
 
 exports.command = 'generator <subcommand>';
-exports.desc = 'Composer generator command';
+exports.desc = 'Composer generator command to convert a Business Network Definition to code';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs
-    .commandDir('generator')
-    .default('testDirName', 'test');
+    return yargs.commandDir('generator');
 };
 exports.handler = function (argv) {};

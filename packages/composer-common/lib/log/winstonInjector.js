@@ -34,8 +34,8 @@ exports.getLogger = function (config,configElements){
     // if the length of the configured elements are 0 then put this into a default
     // only mode.
     if (configElements.debug.length === 0){
-        consoleLevel='error';
-        fileLevel='info';
+        consoleLevel=config.console.alwaysLevel;
+                fileLevel=config.file.alwaysLevel;
     } else {
         fileLevel=config.file.enabledLevel;
         consoleLevel=config.console.enabledLevel;

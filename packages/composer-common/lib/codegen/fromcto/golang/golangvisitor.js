@@ -14,16 +14,19 @@
 
 'use strict';
 
-const ModelUtil = require('../../../modelutil');
-const ModelManager = require('../../../modelmanager');
-const ModelFile = require('../../../introspect/modelfile');
+const AssetDeclaration = require('../../../introspect/assetdeclaration');
 const ClassDeclaration = require('../../../introspect/classdeclaration');
-const Field = require('../../../introspect/field');
-const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
+const ConceptDeclaration = require('../../../introspect/conceptdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
-const FunctionDeclaration = require('../../../introspect/functiondeclaration');
-
+const Field = require('../../../introspect/field');
+const ModelFile = require('../../../introspect/modelfile');
+const ModelManager = require('../../../modelmanager');
+const BusinessNetworkDefinition = require('../../../businessnetworkdefinition');
+const RelationshipDeclaration = require('../../../introspect/relationshipdeclaration');
+const TransactionDeclaration = require('../../../introspect/transactiondeclaration');
+const util = require('util');
+const ModelUtil = require('../../../modelutil');
 /**
  * Convert the contents of a ModelManager to Go Lang code.
  * All generated code is placed into the 'main' package. Set a
@@ -43,25 +46,47 @@ class GoLangVisitor {
      * @private
      */
     visit(thing, parameters) {
-        if (thing instanceof ModelManager) {
+        if (thing instanceof BusinessNetworkDefinition) {
+            return this.visitBusinessNetwork(thing, parameters);
+        } else if (thing instanceof ModelManager) {
             return this.visitModelManager(thing, parameters);
         } else if (thing instanceof ModelFile) {
             return this.visitModelFile(thing, parameters);
+        } else if (thing instanceof AssetDeclaration) {
+            return this.visitClassDeclaration(thing, parameters);
+        } else if (thing instanceof TransactionDeclaration) {
+          //  return this.visitTransactionDeclaration(thing, parameters);
         } else if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
+        } else if (thing instanceof ConceptDeclaration) {
+            return this.visitConceptDeclaration(thing, parameters);
         } else if (thing instanceof ClassDeclaration) {
             return this.visitClassDeclaration(thing, parameters);
         } else if (thing instanceof Field) {
             return this.visitField(thing, parameters);
         } else if (thing instanceof RelationshipDeclaration) {
-            return this.visitRelationship(thing, parameters);
+          //  return this.visitRelationshipDeclaration(thing, parameters);
         } else if (thing instanceof EnumValueDeclaration) {
             return this.visitEnumValueDeclaration(thing, parameters);
-        } else if (thing instanceof FunctionDeclaration) {
-            // return this.visitEnum(thing, parameters);
         } else {
-            throw new Error('Unrecognised ' + JSON.stringify(thing) );
+            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: null }));
         }
+    }
+
+    /**
+     * Visitor design pattern
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition - the object being visited
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    visitBusinessNetwork(businessNetworkDefinition, parameters) {
+
+        businessNetworkDefinition.getModelManager().getModelFiles().forEach((decl) => {
+            decl.accept(this, parameters);
+        });
+
+        return null;
     }
 
     /**

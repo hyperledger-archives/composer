@@ -101,6 +101,7 @@ class ConnectionProfileManager {
             let connectionManager  = connectionManagers[data.type];
             if(!connectionManager) {
                 const mod = `composer-connector-${data.type}`;
+                LOG.debug('getConnectionManager','Looking for module',mod);
                 try {
                     // Check for the connection manager class registered using
                     // registerConnectionManager (used by the web connector).
@@ -115,6 +116,7 @@ class ConnectionProfileManager {
                         let curmod = module;
                         while (curmod) {
                             try {
+                                console.log(curmod);
                                 connectionManager = new(curmod.require(mod))(this);
                                 break;
                             } catch (e) {
