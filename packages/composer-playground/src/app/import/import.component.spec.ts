@@ -184,17 +184,6 @@ describe('ImportComponent', () => {
       component['gitHubInProgress'].should.equal(false);
       mockActiveModal.dismiss.should.have.been.called;
     }));
-
-    it('should get error if github not setup', fakeAsync(() => {
-      mockBusinessNetworkService.getModelsInfo.reset();
-      mockBusinessNetworkService.isAuthenticatedWithGitHub.returns(false);
-
-      component.onShow();
-
-      component['gitHubInProgress'].should.equal(false);
-      mockActiveModal.dismiss.should.have.been.called;
-      mockBusinessNetworkService.getModelsInfo.should.not.have.been.called;
-    }));
   });
 
   describe('fileDetected', () => {
