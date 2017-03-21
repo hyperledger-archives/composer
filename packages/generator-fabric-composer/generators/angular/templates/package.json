@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "app": "node app.js",
-    "start": "concurrently \"ng serve\" \"node app.js\"",
+    "app": "composer-rest-server -n <%= networkIdentifier %> -p <%= connectionProfileName %> -i <%= enrollmentId %> -s <%= enrollmentSecret %> -N always -P 3000",
+    "start": "concurrently \"ng serve\" \"npm run app\"",
     "lint": "tslint \"src/**/*.ts\"",
     "test": "ng test --watch false",
     "pree2e": "webdriver-manager update --standalone false --gecko false",
@@ -22,6 +22,7 @@
     "@angular/platform-browser-dynamic": "^2.4.0",
     "@angular/router": "^3.4.0",
     "composer-client": "^0.5.0",
+    "composer-rest-server": "^0.5.5",
     "bootstrap": "^3.3.7",
     "concurrently": "^3.1.0",
     "config": "^1.21.0",
