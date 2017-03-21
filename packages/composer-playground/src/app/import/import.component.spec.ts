@@ -52,6 +52,7 @@ class MockFileImporterDirective {
 }
 
 describe('ImportComponent', () => {
+  let sandbox;
   let component: ImportComponent;
   let fixture: ComponentFixture<ImportComponent>;
 
@@ -79,11 +80,17 @@ describe('ImportComponent', () => {
         {provide: AlertService, useValue: mockAlertService}]
     });
 
+    sandbox = sinon.sandbox.create();
+
     fixture = TestBed.createComponent(ImportComponent);
     component = fixture.componentInstance;
 
     let mockDragDropElement = fixture.debugElement.query(By.directive(MockDragDropDirective));
     mockDragDropComponent = mockDragDropElement.injector.get(MockDragDropDirective) as MockDragDropDirective;
+  });
+
+  afterAll(() => {
+    sandbox.restore();
   });
 
   describe('ngInit', () => {
@@ -209,13 +216,13 @@ describe('ImportComponent', () => {
   });
 
   describe('fileAccepted', () => {
-
     let file;
     let mockFileReadObj;
-
-    let mockFileRead = sinon.stub(window, 'FileReader');
+    let mockFileRead;
 
     beforeEach(() => {
+      sandbox = sinon.sandbox.create();
+      mockFileRead = sandbox.stub(window, 'FileReader');
       let content = "Hello World";
       let data = new Blob([content], {type: 'text/plain'});
       let arrayOfBlob = new Array<Blob>();
@@ -225,11 +232,16 @@ describe('ImportComponent', () => {
       mockFileReadObj = {
         onload: () => {
         },
-        readAsArrayBuffer: sinon.stub(),
+        readAsArrayBuffer: sandbox.stub(),
         result: 'my file'
       };
 
       mockFileRead.returns(mockFileReadObj);
+    });
+
+    afterEach(() => {
+      mockFileRead.restore();
+      sandbox.restore();
     });
 
     it('should read a file', fakeAsync(() => {
