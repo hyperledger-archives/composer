@@ -15,10 +15,13 @@
 
 'use strict';
 
+// not using the config file module as this could be run anwhere so suppress warning
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 const yargs = require('yargs');
 let _ = require('lodash');
+
+
 yargs
     .commandDir('./lib/cmds')
     .help()
@@ -44,6 +47,5 @@ yargs
  */
 function getInfo(moduleName){
     let pjson = require(moduleName+'/package.json');
-
     return _.padEnd(pjson.name,30) + ' v'+pjson.version;
 }
