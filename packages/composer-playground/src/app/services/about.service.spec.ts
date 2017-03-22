@@ -1,5 +1,5 @@
 /* tslint:disable:no-unused-variable */
-import { TestBed, async, inject } from '@angular/core/testing';
+import { TestBed, async, inject, fakeAsync, tick } from '@angular/core/testing';
 import { AboutService } from './about.service';
 import {
   HttpModule,
@@ -44,14 +44,14 @@ const expectedResponse = {
   }
 };
 
-describe('AboutService', () => {
+fdescribe('AboutService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
           imports: [HttpModule],
           providers: [
-                        AboutService,
-                        { provide: XHRBackend, useClass: MockBackend }
-                      ]
+            AboutService,
+            { provide: XHRBackend, useClass: MockBackend }
+          ]
       });
   });
 
@@ -60,12 +60,12 @@ describe('AboutService', () => {
     // setup a mocked response
     mockBackend.connections.subscribe((connection) => {
         connection.mockRespond(new Response(new ResponseOptions({
-          body: mockResponse
+          body: JSON.stringify(mockResponse)
         })));
     });
 
     // make the call to the service which was injected
-    let result = aboutService.getVersions()
+    return aboutService.getVersions()
       .then((versions) => {
           versions.playground.name.should.equal('playground');
           versions.playground.version.should.equal('1');
@@ -76,6 +76,22 @@ describe('AboutService', () => {
           versions.common.name.should.equal('composer-common');
           versions.common.version.should.equal('4');
       });
-    return result;
+  })));
+
+  it('should enter catch block',
+    async(inject([AboutService, XHRBackend], (aboutService, mockBackend) => {
+      mockBackend.connections.subscribe(
+        (connection) => {
+          connection.mockError(new Error('error'));
+        }
+      );
+
+      return aboutService.getVersions()
+        .then(() => {
+          // Ignore this
+        })
+        .catch((error) => {
+          error.message.should.equal('error');
+        });
   })));
 });

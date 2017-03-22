@@ -26,15 +26,15 @@ export class AboutService {
             version: modules.dependencies['composer-admin'].version
           }
         };
+      })
+      .catch((e) => {
+        console.log(e);
       });
   }
 
   private getModules(): Promise<any> {
     return this.http.get('assets/npmlist.json')
       .map(res => res.json())
-      .toPromise()
-      .catch((e) => {
-        console.log(e);
-      });
+      .toPromise();
   }
 }
