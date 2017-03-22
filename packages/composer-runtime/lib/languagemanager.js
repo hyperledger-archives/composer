@@ -17,25 +17,7 @@
 const ScriptManager = require('composer-common').ScriptManager;
 const JSScriptProcessor = require('composer-common').JSScriptProcessor;
 const JSTransactionExecutor = require('./jstransactionexecutor');
-
-let _languages = {
-    'JS' : {
-        'description' : 'Built-in JS language support',
-        'scriptprocessor' : new JSScriptProcessor(),
-        'transactionexecutor' : new JSTransactionExecutor(),
-        'codemirror' : {
-            lineNumbers: true,
-            lineWrapping: true,
-            readOnly: false,
-            mode: 'javascript',
-            autofocus: true,
-            //extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
-            foldGutter: true,
-            gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-            scrollbarStyle: 'simple'
-        },
-    },
-};
+const LanguageSupport = require('./languagesupport');
 
 /**
  * A class for managing languages registered in the config file
@@ -45,51 +27,75 @@ class LanguageManager {
 
     /**
      * Create a LanguageManager.
-     *
      */
     constructor(){
-        this.languages = _languages;
+        this.reset();
+    }
 
-        // Add the script processors to the script manager
-        this.getScriptProcessors().forEach(function(scriptprocessor){
-            ScriptManager.addScriptProcessor(scriptprocessor);
-        });
+    /**
+     * Reset the language support.
+     */
+    reset() {
+        ScriptManager.resetScriptProcessors();
+        this.languages = [];
+        this.addLanguageSupport(new LanguageSupport.Builder('JS').description('Built-in JS language support')
+            .scriptProcessor(new JSScriptProcessor()).transactionExecutor(new JSTransactionExecutor())
+            .codemirror({
+                lineNumbers: true,
+                lineWrapping: true,
+                readOnly: false,
+                mode: 'javascript',
+                autofocus: true,
+                //extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+                foldGutter: true,
+                gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+                scrollbarStyle: 'simple'
+            }).build());
+    }
+
+    /**
+     * Add a language support.
+     * @param {LanguageSupport} languageSupport The language support to be added.
+     */
+    addLanguageSupport(languageSupport) {
+        this.languages.push(languageSupport);
+        let scriptProcessor = languageSupport.getScriptProcessor();
+        if(scriptProcessor) {
+            ScriptManager.addScriptProcessor(scriptProcessor);
+        }
     }
 
     /**
      * Get all the languages.
-     *
-     * @returns {String[]} All the languages
+     * @returns {LanguageSupport[]} All the languages.
      */
     getLanguages() {
-        return Object.getOwnPropertyNames(this.languages);
+        return this.languages;
     }
 
     /**
      * Get all the script code mirror style by language.
      * @param {String} language The language to be specified.
-     * @returns {Object} The code mirror style
+     * @returns {Object} The code mirror style.
      */
     getCodeMirrorStyle(language) {
-        return this.languages[language].codemirror;
+        return this.languages.find((languageSupport) => languageSupport.getLanguage() === language);
     }
 
     /**
      * Get all the script processors.
-     * @returns {ScriptProcessor[]} The script processors
+     * @returns {ScriptProcessor[]} The script processors.
      */
     getScriptProcessors() {
-        let _languages = this.languages;
-        return this.getLanguages().map((language) => _languages[language].scriptprocessor);
+        return this.languages.map((languageSupport) => languageSupport.getScriptProcessor()).filter((scriptprocessor) => scriptprocessor);
     }
 
     /**
      * Get all the transaction executors.
-     * @returns {TransactionExecutor[]} The transaction executors
+     * @returns {TransactionExecutor[]} The transaction executors.
      */
     getTransactionExecutors() {
-        let _languages = this.languages;
-        return this.getLanguages().map((language) => _languages[language].transactionexecutor);
+        return this.languages.map((languageSupport) => languageSupport.getTransactionExecutor()).filter((transactionexecutor) => transactionexecutor);
     }
 
     /**

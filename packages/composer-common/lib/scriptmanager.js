@@ -161,12 +161,12 @@ class ScriptManager {
     }
 
     /**
-     * Add a transaction executor.
+     * Add a script processor.
      * @param {ScriptProcessor} scriptProcessor The script processor.
      */
     static addScriptProcessor(scriptProcessor) {
         let replaced = _scriptProcessors.some((existingScriptProcessor, index) => {
-            if (scriptProcessor.getType() === existingScriptProcessor.getType()) {
+            if (scriptProcessor.getType().toUpperCase() === existingScriptProcessor.getType().toUpperCase()) {
                 console.log('Found existing executor for type, replacing', index, scriptProcessor.getType());
                 _scriptProcessors[index] = scriptProcessor;
                 return true;
@@ -177,6 +177,13 @@ class ScriptManager {
         if (!replaced) {
             _scriptProcessors.push(scriptProcessor);
         }
+    }
+
+    /**
+     * Reset script processors.
+     */
+    static resetScriptProcessors() {
+        _scriptProcessors = [new JSScriptProcessor()];
     }
 
     /**

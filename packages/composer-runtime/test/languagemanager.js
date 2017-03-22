@@ -14,6 +14,9 @@
 
 'use strict';
 const LanguageManager = require('../lib/languagemanager');
+const JSTransactionExecutor = require('../lib/jstransactionexecutor');
+const JSScriptProcessor = require('composer-common').JSScriptProcessor;
+const LanguageSupport = require('../lib/languagesupport');
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
@@ -25,10 +28,38 @@ describe('LanguageManager', () => {
     beforeEach(() => {
     });
 
+    afterEach(() => {
+        LanguageManager.reset();
+    });
+
     describe('#getLanguages', () => {
 
         it('should get languages', () => {
             LanguageManager.getLanguages().should.have.lengthOf(1);
+        });
+
+    });
+
+    describe('#addLanguageSupport', () => {
+
+        it('should addLanguageSupport', () => {
+            LanguageManager.addLanguageSupport(new LanguageSupport.Builder('JS').description('Built-in JS language support')
+                .scriptProcessor(new JSScriptProcessor()).transactionExecutor(new JSTransactionExecutor())
+                .codemirror({
+                    lineNumbers: true,
+                    lineWrapping: true,
+                    readOnly: false,
+                    mode: 'javascript',
+                    autofocus: true,
+                    //extraKeys: { 'Ctrl-Q': function(cm) { cm.foldCode(cm.getCursor()); } },
+                    foldGutter: true,
+                    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+                    scrollbarStyle: 'simple'
+                }).build());
+        });
+
+        it('should addLanguageSupport without script processor', () => {
+            LanguageManager.addLanguageSupport(new LanguageSupport.Builder('XXX').build());
         });
 
     });
