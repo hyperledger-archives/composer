@@ -31,6 +31,13 @@ if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
     docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
     docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
     docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
+elif [ "${SYSTEST}" = "hlfv1" -a "${SYSTEST_HLF}" = "hlf" ]; then
+    DOCKER_FILE=${DIR}/systestv1/hlfv1_alpha-docker-compose.yml
+    docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha
+    docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha
+    docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha
+    docker pull hyperledger/fabric-orderer:x86_64-1.0.0-alpha
+    docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-alpha
 elif [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
 
   if [ "${TRAVIS_EVENT_TYPE}" = "cron" ]; then
@@ -62,6 +69,15 @@ fi
 # Delete any existing configuration.
 rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
 rm -rf ${HOME}/.concerto-credentials/concerto-systests
+
+# configure v1 to run the tests
+if [ "${SYSTEST}" = "hlfv1" -a "${SYSTEST_HLF}" = "hlf" ]; then
+    sleep 10
+    cd systestv1
+    node create-channel.js
+    node join-channel.js
+    cd ..
+fi
 
 # Run the system tests.
 npm run systest:${SYSTEST} 2>&1 | tee
