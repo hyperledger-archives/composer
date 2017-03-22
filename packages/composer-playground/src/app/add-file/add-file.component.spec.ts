@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async, fakeAsync } from '@angular/core/testing';
 import { By }              from '@angular/platform-browser';
 import { DebugElement }    from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -72,7 +72,7 @@ describe('AddFileComponent', () => {
   let mockModelManager;
   let mockScriptManager;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
         FileImporterComponent,
@@ -99,12 +99,12 @@ describe('AddFileComponent', () => {
     mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
     mockBusinessNetwork.getModelManager.returns(mockModelManager);
     mockBusinessNetwork.getScriptManager.returns(mockScriptManager);
-  }));
+  });
 
 
-  afterEach(async(() => {
+  afterEach(() => {
     sandbox.restore();
-  }));
+  });
 
   describe('#fileDetected', () => {
     it('should change this.expandInput to true', () => {
@@ -116,7 +116,7 @@ describe('AddFileComponent', () => {
   describe('#fileLeft', () => {
     it('should change this.expectedInput to false', () => {
       component.fileLeft();
-      component.expandInput.should.equal(false)
+      component.expandInput.should.equal(false);
     });
   });
 
@@ -125,52 +125,52 @@ describe('AddFileComponent', () => {
       let b = new Blob(['/**CTO File*/'], {type: 'text/plain'});
       let file = new File([b], 'newfile.cto');
 
-      let createMock = sinon.stub(component, 'createModel');
-      let dataBufferMock = sinon.stub(component, 'getDataBuffer')
+      let createMock = sandbox.stub(component, 'createModel');
+      let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
                                 .returns(Promise.resolve('some data'));
 
       component.fileAccepted(file);
       createMock.called;
     }));
 
-    it('should call this.createScript', async(() => {
+    it('should call this.createScript', () => {
 
       let b = new Blob(['/**JS File*/'], {type: 'text/plain'});
       let file = new File([b], 'newfile.js');
 
-      let createMock = sinon.stub(component, 'createScript');
-      let dataBufferMock = sinon.stub(component, 'getDataBuffer')
+      let createMock = sandbox.stub(component, 'createScript');
+      let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
                                 .returns(Promise.resolve('some data'));
 
       component.fileAccepted(file);
       createMock.called;
-    }));
+    });
 
-    it('should call this.fileRejected when there is an error reading the file', async(() => {
+    it('should call this.fileRejected when there is an error reading the file', () => {
 
       let b = new Blob(['/**CTO File*/'], {type: 'text/plain'});
       let file = new File([b], 'newfile.cto');
 
-      let createMock = sinon.stub(component, 'fileRejected');
-      let dataBufferMock = sinon.stub(component, 'getDataBuffer')
+      let createMock = sandbox.stub(component, 'fileRejected');
+      let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
                                 .returns(Promise.reject('some data'));
 
       component.fileAccepted(file);
       createMock.called;
-    }));
+    });
 
-    it('should throw when given incorrect file type', async(() => {
+    it('should throw when given incorrect file type', () => {
 
       let b = new Blob(['/**PNG File*/'], {type: 'text/plain'});
       let file = new File([b], 'newfile.png');
 
-      let createMock = sinon.stub(component, 'fileRejected');
-      let dataBufferMock = sinon.stub(component, 'getDataBuffer')
+      let createMock = sandbox.stub(component, 'fileRejected');
+      let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
                                 .returns(Promise.resolve('some data'));
 
       component.fileAccepted(file);
       createMock.called;
-    }));
+    });
   });
 
   describe('#fileRejected', () => {
@@ -202,23 +202,22 @@ describe('AddFileComponent', () => {
     }));
   });
 
-  // describe('#createModel', () => {
-  //   it('should create a new model file', async(() => {
-  //     component.businessNetwork = mockBusinessNetwork;
-  //     let mockModel = sinon.createStubInstance(ModelFile);
-  //     mockModel.getFileName.returns('newfile.cto');
-  //     let b = new Blob([
-  //       `/**CTO File**/
-  //       namespace test`
-  //       ], {type: 'text/plain'});
-  //     let file = new File([b], 'newfile.cto');
-
-  //     component.createModel(file, file);
-  //     component.fileType.should.equal('cto');
-  //     component.currentFile.should.deep.equal(mockModel);
-  //     component.currentFileName = mockModel.getIdentifier();
-  //   }));
-  // });
+  describe('#createModel', () => {
+    it('should create a new model file', async(() => {
+      component.businessNetwork = mockBusinessNetwork;
+      let b = new Blob(
+        [ `/**CTO File**/ namespace test` ],
+        { type: 'text/plain' }
+      );
+      let file = new File([b], 'newfile.cto');
+      let dataBuffer = new Buffer('/**CTO File**/ namespace test');
+      let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
+      component.createModel(file, dataBuffer);
+      component.fileType.should.equal('cto');
+      component.currentFile.should.deep.equal(mockModel);
+      component.currentFileName.should.equal(mockModel.getFileName());
+    }));
+  });
 
   describe('#changeCurrentFileType', () => {
     it('should change this.currentFileType to a js file', async(() => {
@@ -228,12 +227,105 @@ describe('AddFileComponent', () => {
       mockScriptManager.createScript.returns(mockScript);
 
       component.fileType = 'js';
-      component.addScriptFileExtension = 'js';
+      component.addScriptFileExtension = '.js';
       component.businessNetwork = mockBusinessNetwork;
 
       component.changeCurrentFileType();
       component.currentFileName.should.equal('script.js');
       component.currentFile.should.deep.equal(mockScript);
     }));
+
+    it('should change this.currentFileType to a cto file', async(() => {
+      mockModelManager.getModelFiles.returns([]);
+      let b = new Blob(
+        [ `/**
+ * New model file
+ */
+
+namespace org.acme.model` ],
+        { type: 'text/plain' }
+      );
+      let file = new File([b], 'lib/org.acme.model.cto');
+      let dataBuffer = new Buffer(`/**
+ * New model file
+ */
+
+namespace org.acme.model`);
+      let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
+
+      component.fileType = 'cto';
+      component.businessNetwork = mockBusinessNetwork;
+
+      component.changeCurrentFileType();
+      component.currentFileName.should.equal('lib/org.acme.model.cto');
+      component.currentFile.should.deep.equal(mockModel);
+
+    }));
+  });
+
+  describe('#removeFile', () => {
+    it('should reset back to default values', async(() => {
+      component.expandInput = true;
+      component.currentFile = true;
+      component.currentFileName = true;
+      component.fileType = 'js';
+
+      component.removeFile();
+      component.expandInput.should.not.be.true;
+      expect(component.currentFile).to.be.null;
+      expect(component.currentFileName).to.be.null;
+      component.fileType.should.equal('');
+    }));
+  });
+
+  describe('#getDataBuffer', () => {
+    let file;
+    let mockFileReadObj;
+    let mockBuffer;
+    let mockFileRead;
+    let content;
+
+    beforeEach(() => {
+      content = 'hello world';
+      let data = new Blob([content], {type: 'text/plain'});
+      file = new File([data], 'mock.bna');
+
+      mockFileReadObj = {
+        readAsArrayBuffer: sandbox.stub(),
+        result: content,
+        onload: () => {
+        },
+        onerror: () => {
+        }
+      };
+
+      mockFileRead = sinon.stub(window, 'FileReader');
+      mockFileRead.returns(mockFileReadObj);
+    });
+
+    afterEach(() => {
+      mockFileRead.restore();
+    });
+
+    it('should return data from a file', () => {
+      let promise = component.getDataBuffer(file);
+      mockFileReadObj.onload();
+      return promise
+      .then(data => {
+        data.toString().should.equal(content);
+      });
+    });
+
+    it('should give error in promise chain', () => {
+      let promise = component.getDataBuffer(file);
+      mockFileReadObj.onerror('error');
+      return promise
+      .then(data => {
+        data.should.be.null;
+      })
+      .catch(err => {
+        err.should.equal('error');
+      });
+    });
   });
 });
