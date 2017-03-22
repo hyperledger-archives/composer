@@ -36,8 +36,6 @@ export class TransactionComponent implements OnInit {
   private submitInProgress: boolean = false;
   private defitionError: string = null;
 
-  private generateParameters = {generate : true};
-
   private codeConfig = {
     lineNumbers: true,
     lineWrapping: true,
@@ -103,11 +101,12 @@ export class TransactionComponent implements OnInit {
   /**
    * Generate a TransactionDeclaration definition, accounting for need to hide fields
    */
-  private generateTransactionDeclaration() {
+  private generateTransactionDeclaration(withSampleData?: boolean): void {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
     let factory = businessNetworkDefinition.getFactory();
     let id = this.hiddenTransactionItems.get(this.selectedTransaction.getIdentifierFieldName());
-    let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, this.generateParameters);
+    const generateParameters = { generate: true, "withSampleData": withSampleData };
+    let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, generateParameters);
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);

@@ -80,12 +80,12 @@ export class ResourceComponent implements OnInit {
 
             if (this.editMode()) {
                 this.resourceAction = 'Update';
-                this.resourceDefinition = this.getResourceJSON();
             } else {
                 // Stub out json definition
                 this.resourceAction = 'Create New';
-                this.resourceDefinition = this.generateDefinitionStub(this.registryID, modelClassDeclaration);
+                this.generateResource();
             }
+            this.resourceDefinition = this.getResourceJSON();
 
             // Run validator on json definition
             this.onDefinitionChanged();
@@ -95,25 +95,33 @@ export class ResourceComponent implements OnInit {
       });
   }
 
+  private generateSampleData(): void {
+    this.generateResource(true);
+    this.onDefinitionChanged();
+  }
+ 
   /**
    * Generate the json description of a resource
    */
-  private generateResource(): void {
+  private generateResource(withSampleData?: boolean): void {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
     let factory = businessNetworkDefinition.getFactory();
     let idx = Math.round(Math.random() * 9999).toString();
     idx = leftPad(idx, 4, '0');
     let id = `${this.resourceDeclaration.getIdentifierFieldName()}:${idx}`;
-    let resource = factory.newResource(this.resourceDeclaration.getModelFile().getNamespace(), this.resourceDeclaration.getName(), id, { generate: true });
+    let resource = factory.newResource(
+      this.resourceDeclaration.getModelFile().getNamespace(),
+      this.resourceDeclaration.getName(),
+      id,
+      { generate: true, "withSampleData": withSampleData });
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);
       this.resourceDefinition = JSON.stringify(json, null, 2);
-      this.onDefinitionChanged();
     } catch (error) {
       // We can't generate a sample instance for some reason.
       this.defitionError = error.toString();
-      this.resourceDefinition = this.generateDefinitionStub(this.registryID, this.resourceDeclaration);
+      this.resourceDefinition = "";
     }
   }
 
