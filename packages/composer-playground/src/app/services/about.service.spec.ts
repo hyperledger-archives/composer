@@ -44,7 +44,7 @@ const expectedResponse = {
   }
 };
 
-fdescribe('AboutService', () => {
+describe('AboutService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
           imports: [HttpModule],
