@@ -70,8 +70,15 @@ describe('Factory', () => {
             should.equal(resource.validate, undefined);
         });
 
-        it('should create a new instance with a specified ID and generated data', () => {
+        it('should create a new instance with a specified ID and generated default data', () => {
             let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true });
+            resource.assetId.should.equal('MY_ID_1');
+            resource.newValue.should.be.a('string');
+            should.not.equal(resource.validate, undefined);
+        });
+
+        it('should create a new instance with a specified ID and generated sample data', () => {
+            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true, withSampleData: true });
             resource.assetId.should.equal('MY_ID_1');
             resource.newValue.should.be.a('string');
             should.not.equal(resource.validate, undefined);
