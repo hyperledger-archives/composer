@@ -59,7 +59,7 @@ class GoLangVisitor {
         } else if (thing instanceof EnumDeclaration) {
             return this.visitEnumDeclaration(thing, parameters);
         } else if (thing instanceof ConceptDeclaration) {
-            return this.visitConceptDeclaration(thing, parameters);
+            //return this.visitConceptDeclaration(thing, parameters);
         } else if (thing instanceof ClassDeclaration) {
             return this.visitClassDeclaration(thing, parameters);
         } else if (thing instanceof Field) {

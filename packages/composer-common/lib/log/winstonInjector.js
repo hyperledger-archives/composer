@@ -35,7 +35,7 @@ exports.getLogger = function (config,configElements){
     // only mode.
     if (configElements.debug.length === 0){
         consoleLevel=config.console.alwaysLevel;
-                fileLevel=config.file.alwaysLevel;
+        fileLevel=config.file.alwaysLevel;
     } else {
         fileLevel=config.file.enabledLevel;
         consoleLevel=config.console.enabledLevel;
