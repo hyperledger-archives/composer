@@ -32,7 +32,6 @@
     "composer-runtime": "^0.5.6",
     "exorcist": "^0.4.0",
     "fs-extra": "^1.0.0",
-    "uglify-js": "^2.7.5",
-	"vm-browserify2": "0.0.6"
+    "uglify-js": "^2.7.5"
   }
 }
