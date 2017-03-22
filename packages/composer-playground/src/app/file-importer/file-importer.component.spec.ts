@@ -35,11 +35,19 @@ describe('FileImporterComponent', () => {
 
   it('should acknowledge a file change', () => {
 
-    let onFileChangeSpy = spyOn(component, 'onFileChange');
+    // let onFileChangeSpy = spyOn(component, 'onFileChange');
+      let contents = new Blob(['/**BNA File*/'], {type: 'text/plain'});
+      let file = new File([contents], 'SomeFile.bna');
 
-    component.onFileChange('');
+      let event = {
+        'target': {
+          'files': [file]
+        }
+      }
+    component.onFileChange(event);
 
-    onFileChangeSpy.should.be.calledOn;
+    // onFileChangeSpy.should.be.calledOn;
+    component.dragFileAccepted.should.be.calledOn;
   });
 
 });
