@@ -9,7 +9,7 @@ import {AlertService} from '../services/alert.service';
   templateUrl: './add-file.component.html',
   styleUrls: ['./add-file.component.scss'.toString()]
 })
-export class AddFileComponent implements OnInit {
+export class AddFileComponent {
 
   @Input() businessNetwork: BusinessNetworkDefinition;
 
@@ -33,9 +33,6 @@ export class AddFileComponent implements OnInit {
 
   constructor(private alertService: AlertService,
               public activeModal: NgbActiveModal) {
-  }
-
-  ngOnInit() {
   }
 
   removeFile() {
