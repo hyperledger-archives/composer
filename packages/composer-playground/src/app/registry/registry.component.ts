@@ -36,7 +36,7 @@ export class RegistryComponent {
 
   @Input()
   set reload(reload) {
-    if (this._reload!==null) {
+    if (this._reload !== null) {
       this.loadResources();
     }
     this._reload = reload;
@@ -65,10 +65,6 @@ export class RegistryComponent {
       });
   }
 
-  private isTransactionRegistry(): boolean {
-    return this.registryType === "Transaction";
-  }
-
   serialize(resource: any): string {
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     return JSON.stringify(serializer.toJSON(resource), null, 2);
@@ -76,7 +72,7 @@ export class RegistryComponent {
 
   expandResource(resourceToExpand) {
     if (this.expandedResource === resourceToExpand.getIdentifier()) {
-      this.expandedResource = null
+      this.expandedResource = null;
     } else {
       this.expandedResource = resourceToExpand.getIdentifier();
     }
@@ -85,7 +81,7 @@ export class RegistryComponent {
   openNewResourceModal() {
     const modalRef = this.modalService.open(ResourceComponent);
     modalRef.componentInstance.registryID = this._registry.id;
-    modalRef.result.then(()=>{
+    modalRef.result.then(() => {
       // refresh current resource list
       this.loadResources();
     });
@@ -99,32 +95,38 @@ export class RegistryComponent {
     const editModalRef = this.modalService.open(ResourceComponent);
     editModalRef.componentInstance.registryID = this._registry.id;
     editModalRef.componentInstance.resource = resource;
-    editModalRef.result.then(()=>{
+    editModalRef.result.then(() => {
       // refresh current resource list
       this.loadResources();
     });
   }
-  
+
   openDeleteResourceModal(resource: any) {
     const confirmModalRef = this.modalService.open(ConfirmComponent);
-    confirmModalRef.componentInstance.confirmMessage='Please confirm that you want to delete Asset: '+resource.getIdentifier();
-    confirmModalRef.result.then((result)=>{
+    confirmModalRef.componentInstance.confirmMessage = 'Please confirm that you want to delete Asset: ' + resource.getIdentifier();
+
+    confirmModalRef.result.then((result) => {
         if(result) {
             this._registry.remove(resource)
               .then(() => {
                   this.loadResources();
               })
               .catch((error) => {
-                  console.log('ERR: '+error);
-                  this.alertService.errorStatus$.next('Removing the selected item from the registry failed:'+ error);
+                  console.log('ERR: ', error);
+                  this.alertService.errorStatus$.next(
+                    'Removing the selected item from the registry failed:' + error
+                  );
               });
         } else {
-            //todo - some error handling - we should always get called with a code for this usage of the 
+            // TODO: we should always get called with a code for this usage of the
             // modal but will that always be true
-        } 
+        }
     });
   }
 
 
+  private isTransactionRegistry(): boolean {
+    return this.registryType === 'Transaction';
+  }
 }
 
