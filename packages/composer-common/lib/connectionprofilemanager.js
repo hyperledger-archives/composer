@@ -56,7 +56,7 @@ class ConnectionProfileManager {
      */
     constructor(connectionProfileStore) {
         if (!LOG) {
-            LOG = require('./log/logger').getLog('ConnectionProfileManager');
+            LOG = require('./log/logger').getLog('common/ConnectionProfileManager');
         }
         LOG.info('constructor','Created a new ConnectionProfileManager', connectionProfileStore);
 
@@ -94,13 +94,15 @@ class ConnectionProfileManager {
      * object once the connection is established, or rejected with a connection error.
      */
     getConnectionManager(connectionProfile) {
-        LOG.info('getConnectionManager','Looking up a connection manager for profile', connectionProfile);
+        const METHOD = 'getConnectionManager';
+        LOG.info(METHOD,'Looking up a connection manager for profile', connectionProfile);
 
         return this.connectionProfileStore.load(connectionProfile)
         .then((data) => {
             let connectionManager  = connectionManagers[data.type];
             if(!connectionManager) {
                 const mod = `composer-connector-${data.type}`;
+                LOG.debug(METHOD,'Looking for module',mod);
                 try {
                     // Check for the connection manager class registered using
                     // registerConnectionManager (used by the web connector).
@@ -118,10 +120,13 @@ class ConnectionProfileManager {
                                 connectionManager = new(curmod.require(mod))(this);
                                 break;
                             } catch (e) {
+                                LOG.error(METHOD,'No yet located the module ',e.message);
                                 // Continue to search the parent.
                             }
                             curmod = curmod.parent;
                         }
+
+                        LOG.info(METHOD,'Using this connection manager ',connectionManager);
                         if (!connectionManager) {
                             connectionManagerLoaders.some((connectionManagerLoader) => {
                                 try {
@@ -134,6 +139,7 @@ class ConnectionProfileManager {
                             });
                         }
                         if (!connectionManager) {
+                            LOG.verbose(METHOD,'not located the module - final try ');
                             // We still didn't find it, so try plain old require
                             // one last time.
                             connectionManager = new(require(mod))(this);

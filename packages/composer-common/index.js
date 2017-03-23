@@ -83,3 +83,4 @@ module.exports.TransactionDeclaration = require('./lib/introspect/transactiondec
 module.exports.TypescriptVisitor = require('./lib/codegen/fromcto/typescript/typescriptvisitor');
 module.exports.Util = require('./lib/util');
 module.exports.Wallet = require('./lib/wallet');
+module.exports.CodeGen = require('./lib/codegen/codegen.js');

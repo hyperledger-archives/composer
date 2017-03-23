@@ -20,8 +20,8 @@ const Field = require('../introspect/field');
 const leftPad = require('left-pad');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
-const randomWords = require('random-words');
 const Util = require('../util');
+const ValueGeneratorFactory = require('./valuegenerator');
 
 /**
  * Generate sample instance data for the specified class declaration
@@ -99,20 +99,21 @@ class InstanceGenerator {
      */
     getSampleValue(field, parameters) {
         let type = field.getFullyQualifiedTypeName();
+        const valueGenerator = parameters.valueGenerator || ValueGeneratorFactory.default();
         if (ModelUtil.isPrimitiveType(type)) {
             switch(type) {
             case 'DateTime':
-                return new Date(Math.random() * Date.now());
+                return valueGenerator.getDateTime();
             case 'Integer':
-                return Math.round(Math.random() * Math.pow(2, 16));
+                return valueGenerator.getInteger();
             case 'Long':
-                return Math.round(Math.random() * Math.pow(2, 32));
+                return valueGenerator.getLong();
             case 'Double':
-                return Number((Math.random() * Math.pow(2, 8)).toFixed(3));
+                return valueGenerator.getDouble();
             case 'Boolean':
-                return Math.round(Math.random()) === 1;
+                return valueGenerator.getBoolean();
             default:
-                return randomWords({min: 1, max: 5}).join(' ');
+                return valueGenerator.getString();
             }
         }
         let classDeclaration = parameters.modelManager.getType(type);
