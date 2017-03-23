@@ -200,7 +200,7 @@ class TestUtil {
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
-                let password = process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
+                let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
                 return adminConnection.connect('concerto-systests', 'admin', password);
             })
             .then(function () {
@@ -264,7 +264,7 @@ class TestUtil {
         })
         .then(() => {
             enrollmentID = enrollmentID || 'admin';
-            let password = process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
+            let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
             enrollmentSecret = enrollmentSecret || password;
             console.log(`Calling Client.connect('concerto-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             return thisClient.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
