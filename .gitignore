@@ -47,8 +47,7 @@ jspm_packages
 *.swp
 
 #generated jsdoc
-composer-website/site/jekylldocs/jsdoc
-composer-website/jekylldocs/_site
+packages/composer-website/jekylldocs/jsdoc/
 
 packages/composer-playground/src/assets/npmlist.json
 
