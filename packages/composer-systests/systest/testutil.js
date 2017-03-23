@@ -107,7 +107,7 @@ class TestUtil {
         if (!TestUtil.isHyperledgerFabric()) {
             return Promise.resolve();
         }
-        if (process.env.SYSTEST === 'hlfv1') {
+        if (process.env.SYSTEST.startsWith('hlfv1')) {
             return Promise.resolve();
         }
         return TestUtil.waitForPort('localhost', 7050)
@@ -154,7 +154,7 @@ class TestUtil {
                     let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
                     mkdirp.sync(keyValStore);
 
-                    if (process.env.SYSTEST === 'hlfv1') {
+                    if (process.env.SYSTEST.startsWith('hlfv1')) {
                         adminOptions = {
                             type: 'hlfv1',
                             orderers: [
@@ -199,7 +199,7 @@ class TestUtil {
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
-                let password = process.env.SYSTEST === 'hlfv1' ? 'adminpw' : 'Xurw3yU9zI0l';
+                let password = process.env.SYSTEST.startsWith('hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
                 return adminConnection.connect('concerto-systests', 'admin', password);
             })
             .then(function () {
@@ -263,7 +263,8 @@ class TestUtil {
         })
         .then(() => {
             enrollmentID = enrollmentID || 'admin';
-            enrollmentSecret = enrollmentSecret || 'Xurw3yU9zI0l';
+            let password = process.env.SYSTEST.startsWith('hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
+            enrollmentSecret = enrollmentSecret || password;
             console.log(`Calling Client.connect('concerto-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             return thisClient.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
         })
