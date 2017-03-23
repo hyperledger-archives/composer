@@ -9,7 +9,6 @@ matrix:
         - env: SYSTEST=hlf SYSTEST_HLF=hlf FC_TASK=systest
         - env: SYSTEST=hlfv1-1 SYSTEST_HLF=hlf FC_TASK=systest
         - env: SYSTEST=hlfv1-2 SYSTEST_HLF=hlf FC_TASK=systest
-        - env: SYSTEST=hlf SYSTEST_HLF=ibm FC_TASK=systest
 dist: trusty
 addons:
     apt:
@@ -23,7 +22,7 @@ install: |
     date
     travis_wait 30 ./.travis/install.sh
     date
-script: travis_wait 120 ./.travis/script.sh
+script: ./.travis/script.sh
 deploy:
     provider: script
     script: ./.travis/deploy.sh
