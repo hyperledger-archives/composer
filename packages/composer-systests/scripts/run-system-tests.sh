@@ -20,7 +20,7 @@ fi
 
 # Set default timeouts
 export CONCERTO_PORT_WAIT_SECS=30
-export CONCERTO_DEPLOY_WAIT_SECS=120
+export CONCERTO_DEPLOY_WAIT_SECS=500
 
 # Pull any required Docker images.
 if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
