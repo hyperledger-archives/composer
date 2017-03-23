@@ -17,7 +17,7 @@
       <button class="action" type="button" (click)="openAddFileModal()">+ Add a file...</button>
     </div>
     <div>
-      <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || currentError">
+      <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
         Update
       </button>
     </div>
@@ -63,7 +63,7 @@
     </div>
     <div *ngIf="editActive" class="business-network-details">
       <label class="edit-label margin-right" for="editName">Name</label>
-      <input class="margin-right" id="editName" type="text" (blur)="editPackageName()" [(ngModel)]="inputPackageName">
+      <input class="margin-right" id="editName" type="text" focusHere (blur)="editPackageName()" [(ngModel)]="inputPackageName">
       <label class="edit-label margin-right" for="editVersion">Version</label>
       <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
              [(ngModel)]="inputPackageVersion">
@@ -77,30 +77,6 @@
       </div>
     </div>
   </div>
-  <div class="readme" *ngIf="readme" [innerHTML]="readme">
-  </div>
-  <codemirror *ngIf="!readme" [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%"
-              height="100%" (blur)="stopEditing()">
-  </codemirror>
 
-  <div class="alert-area" role="alert" *ngIf="currentError">
-    <svg class="ibm-icon" aria-hidden="true">
-      <use xlink:href="#icon-spell_check_error"></use>
-    </svg>
-    <div class="alert-message" role="alert">
-      <h3>Error found!</h3>
-      <p>{{currentError}}</p>
-    </div>
-  </div>
-
-  <div class="alert-area" role="alert" *ngIf="noError">
-    <svg class="ibm-icon" aria-hidden="true">
-      <use xlink:href="#icon-spell_check"></use>
-    </svg>
-    <div class="alert-message" role="alert">
-      <h3>Everything looks good!</h3>
-      <p>Any problems detected in your code would be reported here</p>
-    </div>
-  </div>
-
+  <editor-file [editorFile]="currentFile"></editor-file>
 </section>

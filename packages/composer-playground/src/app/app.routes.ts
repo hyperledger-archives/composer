@@ -9,7 +9,6 @@ import {ConnectionProfileComponent} from './connectionprofile/connectionprofile.
 export const ROUTES: Routes = [
   {path: 'editor', component: EditorComponent},
   {path: 'test', component: TestComponent},
-  {path: 'settings', component: SettingsComponent},
   {path: 'profile', component: ConnectionProfileComponent},
   {path: 'github', component: GithubComponent},
   {path: '', redirectTo: 'editor', pathMatch: 'full'},
