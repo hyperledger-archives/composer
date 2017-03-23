@@ -25,12 +25,25 @@ const WebDataCollection = require('./webdatacollection');
 class WebDataService extends DataService {
 
     /**
+     * Create a new instance of Dexie.
+     * @param {string} name The name of the Dexie database.
+     * @return {Dexie} The new instance of Dexie.
+     */
+    static createDexie(name) {
+        return new Dexie(name);
+    }
+
+    /**
      * Constructor.
      * @param {string} uuid The UUID of the container.
      */
     constructor(uuid) {
         super();
-        this.db = new Dexie(`Concerto:${uuid}`);
+        if (uuid) {
+            this.db = WebDataService.createDexie(`Composer:${uuid}`);
+        } else {
+            this.db = WebDataService.createDexie('Composer');
+        }
         this.db.version(1).stores({
             collections: '&id',
             objects: '[id+collectionId],collectionId'
