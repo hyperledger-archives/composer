@@ -357,7 +357,7 @@ class HLFConnection extends Connection {
                 if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(finalTxId);
+                return this._waitForEvents(finalTxId, this.connectOptions.deployWaitTime);
 
             })
             .then(() => {
@@ -630,7 +630,7 @@ class HLFConnection extends Connection {
                 if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId);
+                return this._waitForEvents(txId, this.connectOptions.invokeWaitTime);
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -725,17 +725,18 @@ class HLFConnection extends Connection {
     /**
      * wait for events from the peers associated with the provided transaction id.
      * @param {string} txId the transaction id to listen for events on
+     * @param {number} waitTime the time to wait in seconds for an event response
      * @returns {Promise} A promise which resolves when all the events are received or rejected
      * if an event is not received within the given timeout period
      * @memberOf HLFConnection
      */
-    _waitForEvents(txId) {
+    _waitForEvents(txId, waitTime) {
         let eventPromises = [];
         this.eventHubs.forEach((eh) => {
             let txPromise = new Promise((resolve, reject) => {
                 const handle = setTimeout(() => {
                     reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
-                }, this.connectOptions.invokeWaitTime * 1000);
+                }, waitTime * 1000);
                 eh.registerTxEvent(txId.toString(), (tx, code) => {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
