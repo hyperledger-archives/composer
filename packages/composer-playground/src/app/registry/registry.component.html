@@ -12,7 +12,7 @@
 <div *ngIf="_registry" class="resource-list">
   <div class="title"  [ngClass]="{'resource-empty' : !resources || resources.length === 0}">
     <div class="id">ID</div>
-    <div class="data">DATA</div>
+    <div class="data">Data</div>
   </div>
     <div *ngFor="let resource of resources" class="resource-container">
       <div class="resource-content" [ngClass]="{'expanded' : resource.getIdentifier() === expandedResource}">
