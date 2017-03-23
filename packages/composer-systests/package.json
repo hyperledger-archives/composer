@@ -16,6 +16,7 @@
     "test": "exit 0",
     "systest:embedded": "mocha -t 0 systest",
     "systest:hlf": "mocha -t 0 systest",
+    "systest:hlfv1": "mocha -t 0 systest",
     "systest:web": "karma start --single-run"
   },
   "repository": {
@@ -52,7 +53,9 @@
     "mocha": "^3.2.0",
     "sleep-promise": "^2.0.0",
     "uuid": "^3.0.1",
-    "watchify": "^3.7.0"
+    "watchify": "^3.7.0",
+    "fabric-ca-client": "1.0.0-alpha.0",
+    "fabric-client": "1.0.0-alpha"
   },
   "license-check-config": {
     "src": [
