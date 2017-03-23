@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { AdminService } from './admin.service';
-import { ConnectionProfileService } from '../connectionprofile.service';
+import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from '../identity.service';
 import { AlertService } from './alert.service'
 

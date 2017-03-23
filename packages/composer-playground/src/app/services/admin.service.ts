@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {BehaviorSubject, Subject} from 'rxjs/Rx';
 
-import {ConnectionProfileService} from '../connectionprofile.service';
+import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from '../wallet.service';
 import {IdentityService} from '../identity.service';
 import {AlertService} from './alert.service';

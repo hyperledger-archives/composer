@@ -1,0 +1,34 @@
+<div *ngIf="connectionProfileData">
+
+  <div class="profile-header">
+    <div class="profile-header-name">
+      <h1 *ngIf="connectionProfileData.name !== '$default'">{{connectionProfileData.name}}</h1>
+      <h1 *ngIf="connectionProfileData.name === '$default'">Web Browser</h1>
+      <p *ngIf="connectionProfileData.name === '$default'">Running in web browser mode</p>
+    </div>
+  </div>
+
+  <div class="profile-data" *ngIf="connectionProfileData.profile.type === 'hlf'">
+    <div class="basic-configuration">
+      <div class="connection-profile-name">
+    </div>
+    <div class="security-settings">
+      asd
+    </div>
+    <div class="advanced">
+      asd
+    </div>
+
+  </div>
+
+
+
+  <button class="button primary" type="button" disabled>Use this profile</button>
+
+
+
+
+
+
+</div>
+

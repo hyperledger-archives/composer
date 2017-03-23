@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { ConnectionProfileComponent } from './connectionprofile.component';
+import { ConnectionProfileComponent } from './connection-profile.component';
 
 describe('ConnectionProfileComponent', () => {
   // let component: ProfileComponent;

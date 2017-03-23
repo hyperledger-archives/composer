@@ -1,0 +1,23 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+connection-profile-data {
+
+  $highlighted : #e4e4e4;
+
+  .profile-header{
+    display: flex;
+    color:$secondary-text;
+  }
+
+  .profile-header-name{
+    flex:1;
+    align-self: center;
+  }
+
+  .profile-header-description{
+    flex:1;
+    align-self: center;
+  }
+
+}

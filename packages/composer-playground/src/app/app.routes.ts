@@ -4,7 +4,7 @@ import {TestComponent} from './test';
 import {SettingsComponent} from './settings';
 import {NoContentComponent} from './no-content';
 import {GithubComponent} from './github';
-import {ConnectionProfileComponent} from './connectionprofile/connectionprofile.component.ts';
+import {ConnectionProfileComponent} from './connection-profile/connection-profile.component.ts';
 
 export const ROUTES: Routes = [
   {path: 'editor', component: EditorComponent},

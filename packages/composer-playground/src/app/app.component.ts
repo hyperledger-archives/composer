@@ -7,7 +7,7 @@ import {AppState} from './app.service';
 import {AdminService} from './services/admin.service';
 import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
-import {ConnectionProfileService} from './connectionprofile.service';
+import {ConnectionProfileService} from './services/connectionprofile.service';
 import {WalletService} from './wallet.service';
 import {IdentityService} from './identity.service';
 import {InitializationService} from './initialization.service';

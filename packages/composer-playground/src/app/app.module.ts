@@ -34,7 +34,9 @@ import { ImportComponent } from './import';
 import { ResourceComponent } from './resource';
 import { AddFileComponent } from './add-file';
 import { TransactionComponent } from './transaction';
-import { ConnectionProfileComponent } from './connectionprofile/connectionprofile.component.ts';
+import { ConnectionProfileComponent } from './connection-profile/connection-profile.component.ts';
+import { ConnectionProfileDataComponent } from './connection-profile-data/connection-profile-data.component.ts';
+import { AddConnectionProfileComponent } from './add-connection-profile/add-connection-profile.component.ts';
 import { WelcomeComponent } from './welcome';
 import { ConfirmComponent } from './confirm';
 import { GithubComponent } from './github';
@@ -47,7 +49,7 @@ import { CheckOverFlowDirective } from './directives/check-overflow';
 
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
-import { ConnectionProfileService } from './connectionprofile.service';
+import { ConnectionProfileService } from './services/connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { IdentityService } from './identity.service';
 import { NotificationService } from './notification.service';
@@ -90,6 +92,7 @@ type StoreType = {
     ResourceComponent,
     TransactionComponent,
     AddFileComponent,
+    AddConnectionProfileComponent,
     WelcomeComponent,
     VersionCheckComponent,
     ResetComponent,
@@ -114,6 +117,8 @@ type StoreType = {
     AboutComponent,
     FileDragDropDirective,
     ConnectionProfileComponent,
+    ConnectionProfileDataComponent,
+    AddConnectionProfileComponent,
     ResourceComponent,
     TransactionComponent,
     CheckOverFlowDirective,
