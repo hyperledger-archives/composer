@@ -1,6 +1,6 @@
 import {NgModule, ApplicationRef} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {RouterModule, PreloadAllModules} from '@angular/router';
 import {removeNgStyles, createNewHosts, createInputTransfer} from '@angularclass/hmr';
@@ -34,17 +34,15 @@ import {ImportComponent} from './import';
 import {ResourceComponent} from './resource';
 import {AddFileComponent} from './add-file';
 import {TransactionComponent} from './transaction';
-import {ConnectionProfileComponent} from './connection-profile/connection-profile.component.ts';
-import {ConnectionProfileDataComponent} from './connection-profile-data/connection-profile-data.component.ts';
-import {AddConnectionProfileComponent} from './add-connection-profile/add-connection-profile.component.ts';
+import {ConnectionProfileComponent} from './connection-profile';
 import {WelcomeComponent} from './welcome';
 import {ConfirmComponent} from './confirm';
 import {GithubComponent} from './github';
 import {NoContentComponent} from './no-content';
 import {CodemirrorModule} from 'ng2-codemirror';
-import {VersionCheckComponent} from './version-check/version-check.component.ts';
-import { ConnectionProfileDataComponent } from './connection-profile-data/connection-profile-data.component.ts';
-import { AddConnectionProfileComponent } from './add-connection-profile/add-connection-profile.component.ts';
+import {VersionCheckComponent} from './version-check';
+import {ConnectionProfileDataComponent} from './connection-profile-data';
+import {AddConnectionProfileComponent} from './add-connection-profile';
 import {FileDragDropDirective} from './directives/file-drag-drop';
 import {CheckOverFlowDirective} from './directives/check-overflow';
 import {FocusHereDirective} from './directives/focus-here';
@@ -132,6 +130,7 @@ type StoreType = {
   imports: [ // import Angular's modules
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
     RouterModule.forRoot(ROUTES, {useHash: false, preloadingStrategy: PreloadAllModules}),
     CodemirrorModule,

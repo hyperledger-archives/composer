@@ -62,7 +62,7 @@
     <button type="button" class="secondary" (click)="activeModal.dismiss();">
       <span>Cancel</span>
     </button>
-    <button type="button" class="primary" (click)="addConnectionProfile();activeModal.close(connectionProfiles);" [disabled]="!version">
+    <button type="button" class="primary" (click)="addConnectionProfile()" [disabled]="!version">
       <span>Add</span>
     </button>
   </footer>

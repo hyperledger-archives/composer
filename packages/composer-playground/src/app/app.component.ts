@@ -124,7 +124,7 @@ export class AppComponent {
       let userID = invitationData.userID;
       let userSecret = invitationData.userSecret;
       // Create the connection profile and set it as the default.
-      this.adminService.getAdminConnection().createProfile(connectionProfileName, connectionProfile);
+      this.connectionProfileService.createProfile(connectionProfileName, connectionProfile);
       this.connectionProfileService.setCurrentConnectionProfile(connectionProfileName);
       // Add the credentials to the wallet.
       let wallet = this.walletService.getWallet(connectionProfileName);
@@ -190,7 +190,7 @@ export class AppComponent {
 
   private updateConnectionData(): Promise <any > {
     let newConnectionProfiles = [];
-    return this.adminService.getAdminConnection().getAllProfiles()
+    return this.connectionProfileService.getAllProfiles()
       .then((connectionProfiles) => {
         let keys = Object.keys(connectionProfiles).sort();
         keys.forEach((key) => {

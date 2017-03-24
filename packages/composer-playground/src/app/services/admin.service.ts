@@ -5,7 +5,7 @@ import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from '../wallet.service';
 import {IdentityService} from '../identity.service';
 import {AlertService} from './alert.service';
-import {AdminConnection, } from 'composer-admin';
+import {AdminConnection} from 'composer-admin';
 import {ConnectionProfileManager, Logger, BusinessNetworkDefinition} from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
@@ -19,7 +19,12 @@ export class AdminService {
   private isConnected: boolean = false;
   private connectingPromise: Promise<any> = null;
   private initialDeploy: boolean = false;
-  private config: any = null;
+
+  private madeItToConnect = false;
+  private connectionProfile;
+  private userID;
+  private userSecret;
+  private deployed = false;
 
   constructor(private connectionProfileService: ConnectionProfileService,
               private walletService: WalletService,
@@ -30,134 +35,45 @@ export class AdminService {
       log: () => {
       }
     });
-    this.adminConnection = new AdminConnection();
     // The proxy connection manager defaults to http://localhost:15699,
     // but that is not suitable for anything other than development.
     if (ENV && ENV !== 'development') {
       ProxyConnectionManager.setConnectorServerURL(window.location.origin);
     }
+
     ConnectionProfileManager.registerConnectionManager('hlf', ProxyConnectionManager);
     ConnectionProfileManager.registerConnectionManager('web', WebConnectionManager);
   }
 
-  getAdminConnection(): AdminConnection {
+  private getAdminConnection() {
+    if (!this.adminConnection) {
+      this.adminConnection = new AdminConnection();
+    }
+
     return this.adminConnection;
   }
 
-  ensureConnected(): Promise<any> {
+  public ensureConnected(): Promise<any> {
     if (this.isConnected) {
       return Promise.resolve();
     } else if (this.connectingPromise) {
       return this.connectingPromise;
     }
-    let deployed = false;
-    let madeItToConnect = false;
-    let connectionProfile, userID, userSecret;
+
     this.alertService.busyStatus$.next('Establishing admin connection ...');
     console.log('Establishing admin connection ...');
     this.connectingPromise = Promise.resolve()
       .then(() => {
-
-        // Load the config data.
-        return this.http.get('/config.json')
-          .map((res: Response) => res.json())
-          .toPromise();
-
-      })
-      .then((config: any) => {
-
-        // Save the config data.
-        this.config = config;
-
-
-
-      })
-      .then(() => {
-        // Create all of the connection profiles specified in the configuration.
-        const connectionProfiles = this.config.connectionProfiles || {};
-        const connectionProfileNames = Object.keys(connectionProfiles).sort();
-        return connectionProfileNames.reduce((result, connectionProfileName) => {
-          return result.then(() => {
-            console.log('Checking for connection profile', connectionProfileName);
-            return this.adminConnection.getProfile(connectionProfileName)
-              .catch((error) => {
-                console.log('Connection profile does not exist, creating');
-                return this.adminConnection.createProfile(connectionProfileName, connectionProfiles[connectionProfileName]);
-              })
-          })
-        }, Promise.resolve());
-
-      })
-      .then(() => {
-        // Create all of the credentials specified in the configuration.
-        const credentials = this.config.credentials || {};
-        const connectionProfileNames = Object.keys(credentials).sort();
-        return connectionProfileNames.reduce((result, connectionProfileName) => {
-          return result.then(() => {
-            console.log('Creating credentials for connection profile', connectionProfileName);
-            return this.walletService.getWallet(connectionProfileName)
-          })
-            .then((wallet) => {
-              const connectionProfileCredentials = credentials[connectionProfileName];
-              const credentialNames = Object.keys(connectionProfileCredentials).sort();
-              return credentialNames.reduce((result2, credentialName) => {
-                return wallet.get(credentialName)
-                  .catch((error) => {
-                    console.log('Adding credential', credentialName);
-                    return wallet.add(credentialName, connectionProfileCredentials[credentialName]);
-                  });
-              }, Promise.resolve());
-            })
-        }, Promise.resolve());
-
-      })
-      .then(() => {
-        connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        console.log('Connecting to connection profile (w/ business network ID)', connectionProfile);
-        return this.identityService.getUserID()
-          .then((userID_) => {
-            userID = userID_;
-            return this.identityService.getUserSecret();
-          })
-          .then((userSecret_) => {
-            userSecret = userSecret_;
-            madeItToConnect = true;
-            return this.adminConnection.connect(connectionProfile, userID, userSecret, 'org.acme.biznet');
-          });
+        return this.connect();
       })
       .catch((error) => {
         // If we didn't make it to connect, then the business network is probably not deployed.
         // Try again with a admin connection with no business network specified so we can deploy it.
-        if (!madeItToConnect) {
+        if (!this.madeItToConnect) {
           throw error;
         }
-        console.log('Connecting to connection profile (w/o business network ID)', connectionProfile);
-        return this.adminConnection.connect(connectionProfile, userID, userSecret)
-          .then(() => {
-            return this.adminConnection.list()
-          })
-          .then((businessNetworks) => {
-            console.log('Got business networks', businessNetworks);
-            deployed = businessNetworks.some((businessNetwork) => {
-              return businessNetwork === 'org.acme.biznet';
-            });
-            if (!deployed) {
-              this.alertService.busyStatus$.next('Deploying sample business network ...');
-              console.log('Deploying sample business network');
-              let businessNetworkDefinition = this.generateDefaultBusinessNetwork();
-              return this.adminConnection.deploy(businessNetworkDefinition)
-                .then(() => {
-                  this.initialDeploy = true;
-                });
-            }
-          })
-          .then(() => {
-            return this.adminConnection.disconnect();
-          })
-          .then(() => {
-            console.log('Connecting to connection profile (w/ business network ID)', connectionProfile);
-            return this.adminConnection.connect(connectionProfile, userID, userSecret, 'org.acme.biznet');
-          })
+
+        return this.connectWithOutID();
       })
       .then(() => {
         // this.busyStatus$.next(null);
@@ -174,14 +90,60 @@ export class AdminService {
     return this.connectingPromise;
   }
 
-  deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
+  connect(): Promise<any> {
+    this.connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+    console.log('Connecting to connection profile (w/ business network ID)', this.connectionProfile);
+    return this.identityService.getUserID()
+      .then((userID_) => {
+        this.userID = userID_;
+        return this.identityService.getUserSecret();
+      })
+      .then((userSecret_) => {
+        this.userSecret = userSecret_;
+        this.madeItToConnect = true;
+        return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org.acme.biznet');
+      });
+  }
+
+  connectWithOutID(): Promise<any> {
+    console.log('Connecting to connection profile (w/o business network ID)', this.connectionProfile);
+    return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret)
+      .then(() => {
+        return this.getAdminConnection().list()
+      })
+      .then((businessNetworks) => {
+        console.log('Got business networks', businessNetworks);
+        this.deployed = businessNetworks.some((businessNetwork) => {
+          return businessNetwork === 'org.acme.biznet';
+        });
+        if (!this.deployed) {
+          this.alertService.busyStatus$.next('Deploying sample business network ...');
+          console.log('Deploying sample business network');
+          let businessNetworkDefinition = this.generateDefaultBusinessNetwork();
+          return this.getAdminConnection().deploy(businessNetworkDefinition)
+            .then(() => {
+              this.initialDeploy = true;
+            });
+        }
+      })
+      .then(() => {
+        return this.getAdminConnection().disconnect();
+      })
+      .then(() => {
+        console.log('Connecting to connection profile (w/ business network ID)', this.connectionProfile);
+        return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org.acme.biznet');
+      })
+  }
+
+
+  public deploy(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
     return this.ensureConnected()
       .then(() => {
         return this.adminConnection.deploy(businessNetworkDefinition);
       });
   }
 
-  update(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
+  public update(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
     return this.ensureConnected()
       .then(() => {
         return this.adminConnection.update(businessNetworkDefinition);
@@ -198,4 +160,5 @@ export class AdminService {
     this.initialDeploy = false;
     return result;
   }
+
 }

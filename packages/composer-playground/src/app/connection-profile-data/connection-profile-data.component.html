@@ -5,7 +5,6 @@
 
       <h1 *ngIf="connectionProfileData.name !== '$default'">{{connectionProfileData.name}}</h1>
       <p *ngIf="connectionProfileData.name !== '$default'">{{connectionProfileData.profile.description}}</p>
-      <button type="button primary" (click)="deleteProfile(connectionProfileData)">Delete</button>
 
       <h1 *ngIf="connectionProfileData.name === '$default'">Web Browser</h1>
       <p *ngIf="connectionProfileData.name === '$default'">Running in web browser mode</p>
@@ -13,7 +12,7 @@
     </div>
   </div>
 
-  <div class="profile-data-container" *ngIf="connectionProfileData.profile.type === 'hlf'">
+  <div class="profile-data-container" *ngIf="connectionProfileData.profile.type === 'hlf' && !editing">
     <div class="profile-data-header">
       <div class="section-details">
         <div class="section-name" (click)="expandSection('Basic Configuration')">
@@ -138,7 +137,7 @@
   </div>
 
 
-  <button class="button primary" type="button">Use this profile</button>
+  <button class="button primary" type="button" (click)="useProfile()">Use this profile</button>
   <button *ngIf="connectionProfileData.name !== '$default'" class="button secondary" type="button">
     <svg class="standard-icon" aria-hidden="true">
       <use xlink:href="#icon-upload_32"></use>

@@ -1,9 +1,10 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {BusinessNetworkDefinition, ModelFile} from 'composer-common';
+import {BusinessNetworkDefinition} from 'composer-common';
 import {AlertService} from '../services/alert.service';
-import { AdminService } from '../services/admin.service';
+import {AdminService} from '../services/admin.service';
+import {ConnectionProfileService} from '../services/connectionprofile.service';
 
 @Component({
   selector: 'add-connection-profile',
@@ -46,7 +47,8 @@ export class AddConnectionProfileComponent {
 
   constructor(private alertService: AlertService,
               public activeModal: NgbActiveModal,
-              private adminService: AdminService) {
+              private adminService: AdminService,
+              private connectionProfileService: ConnectionProfileService) {
   }
 
   removeFile() {
@@ -65,15 +67,15 @@ export class AddConnectionProfileComponent {
   }
 
   fileAccepted(file: File) {
-    console.log('What is the file accepted?',file);
+    console.log('What is the file accepted?', file);
     let type = file.name.substr(file.name.lastIndexOf('.') + 1);
     this.getDataBuffer(file)
       .then((data) => {
-        if(type === 'json'){
+        if (type === 'json') {
           this.expandInput = true;
           this.createProfile(file, data);
         }
-        else{
+        else {
           throw new Error('Unexpected File Type');
         }
       })
@@ -130,13 +132,13 @@ export class AddConnectionProfileComponent {
         certificate: this.addConnectionProfileCertificate,
         certificatePath: this.addConnectionProfileCertificatePath
       };
-      console.log('What is connectionProfile',this.newConnectionProfile);
+      console.log('What is connectionProfile', this.newConnectionProfile);
 
     }
-    else if(this.version === 'v10') {
+    else if (this.version === 'v10') {
       console.log('Add v1 file');
     }
-    else{
+    else {
       throw new Error('Unsupported version');
     }
   }
@@ -164,10 +166,16 @@ export class AddConnectionProfileComponent {
       certificate: this.addConnectionProfileCertificate,
       certificatePath: this.addConnectionProfileCertificatePath
     };
-    return this.adminService.getAdminConnection().createProfile(this.addConnectionProfileName, connectionProfile)
+    return this.connectionProfileService.createProfile(this.addConnectionProfileName, connectionProfile)
       .then(() => {
         console.log('Created new profile');
-        return this.updateConnectionProfiles();
+        let newConnectionProfile = {
+          name: this.addConnectionProfileName,
+          profile: connectionProfile,
+          default: this.addConnectionProfileName === '$default'
+        };
+
+        this.activeModal.close(newConnectionProfile);
       });
   }
 
@@ -178,7 +186,9 @@ export class AddConnectionProfileComponent {
       let connectionProfileName = connectionProfileBase;
       let counter = 1;
 
-      while (this.connectionProfiles.some((cp) => { return cp.name === connectionProfileName; })) {
+      while (this.connectionProfiles.some((cp) => {
+        return cp.name === connectionProfileName;
+      })) {
         counter++;
         connectionProfileName = connectionProfileBase + counter;
       }
@@ -199,7 +209,7 @@ export class AddConnectionProfileComponent {
 
   private updateConnectionProfiles(): Promise<any> {
     let newConnectionProfiles = [];
-    return this.adminService.getAdminConnection().getAllProfiles()
+    return this.connectionProfileService.getAllProfiles()
       .then((connectionProfiles) => {
         let keys = Object.keys(connectionProfiles).sort();
         keys.forEach((key) => {
@@ -213,5 +223,4 @@ export class AddConnectionProfileComponent {
         this.connectionProfiles = newConnectionProfiles;
       });
   }
-
 }

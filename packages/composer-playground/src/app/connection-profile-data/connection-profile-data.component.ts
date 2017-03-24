@@ -4,7 +4,7 @@ import {
 }
   from '@angular/forms';
 
-import {AdminService} from '../services/admin.service';
+import {ConnectionProfileService} from '../services/connectionprofile.service'
 
 @Component({
   selector: 'connection-profile-data',
@@ -33,9 +33,8 @@ export class ConnectionProfileDataComponent {
 
   private editing = false;
 
-  constructor(private adminService:AdminService) {
+  constructor(private fb: FormBuilder, private connectionProfileService: ConnectionProfileService) {
   }
-
 
   expandSection(sectionToExpand) {
     if(sectionToExpand === 'All'){
@@ -59,9 +58,8 @@ export class ConnectionProfileDataComponent {
 
   }
 
-  deleteProfile(connectionProfileData){
-    let adminConnection = this.adminService.getAdminConnection();
-    adminConnection.deleteProfile(connectionProfileData.name);
+  useProfile() {
+    this.connectionProfileService.setCurrentConnectionProfile(this.connectionProfileData.name);
   }
 
   startEditing() {
@@ -84,11 +82,9 @@ export class ConnectionProfileDataComponent {
   onSubmit() {
     console.log(this.form);
     let connectionProfile = this.form.value;
-    this.adminService.getAdminConnection().createProfile(this.connectionProfileData.name, connectionProfile).then(() => {
+    this.connectionProfileService.createProfile(this.connectionProfileData.name, connectionProfile).then(() => {
       this.editing = false;
     });
   }
-
-
 }
 

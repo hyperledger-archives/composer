@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AdminService } from '../services/admin.service';
-import { ClientService } from '../services/client.service';
-
-import { AclFile, BusinessNetworkDefinition, ModelFile } from 'composer-common';
 import { AddConnectionProfileComponent } from '../add-connection-profile/add-connection-profile.component.ts';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 
@@ -25,11 +20,8 @@ export class ConnectionProfileComponent implements OnInit {
   private currentConnectionProfile;
 
 
-  constructor(private adminService: AdminService,
-              private clientService: ClientService,
-              private connectionProfileService: ConnectionProfileService,
-              private modalService: NgbModal,
-              private route: ActivatedRoute) {
+  constructor(private connectionProfileService: ConnectionProfileService,
+              private modalService: NgbModal) {
 
               }
 
@@ -43,7 +35,7 @@ export class ConnectionProfileComponent implements OnInit {
   }
   private setCurrentProfile(connectionProfile) {
     this.currentConnectionProfile = connectionProfile;
-    console.log('what is the clicked profile?',this.currentConnectionProfile)
+    console.log('what is the clicked profile?',this.currentConnectionProfile);
     // this.profileReload = !this.profileReload;
 
   }
@@ -66,7 +58,7 @@ export class ConnectionProfileComponent implements OnInit {
 
   private updateConnectionProfiles(): Promise<any> {
     let newConnectionProfiles = [];
-    return this.adminService.getAdminConnection().getAllProfiles()
+    return this.connectionProfileService.getAllProfiles()
       .then((connectionProfiles) => {
         let keys = Object.keys(connectionProfiles).sort();
         keys.forEach((key) => {
