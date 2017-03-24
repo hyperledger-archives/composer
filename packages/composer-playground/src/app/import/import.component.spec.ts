@@ -3,7 +3,6 @@ import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing'
 import {Directive, EventEmitter, Output, Input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
-import {DebugElement} from '@angular/core';
 
 import {ImportComponent} from './import.component';
 

@@ -20,7 +20,7 @@ fi
 
 # Set default timeouts
 export CONCERTO_PORT_WAIT_SECS=30
-export CONCERTO_DEPLOY_WAIT_SECS=120
+export CONCERTO_DEPLOY_WAIT_SECS=500
 
 # Pull any required Docker images.
 if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
@@ -31,7 +31,7 @@ if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
     docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
     docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
     docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
-elif [ "${SYSTEST}" = "hlfv1" -a "${SYSTEST_HLF}" = "hlf" ]; then
+elif [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
     DOCKER_FILE=${DIR}/systestv1/hlfv1_alpha-docker-compose.yml
     docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha
     docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha
@@ -71,7 +71,7 @@ rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
 rm -rf ${HOME}/.concerto-credentials/concerto-systests
 
 # configure v1 to run the tests
-if [ "${SYSTEST}" = "hlfv1" -a "${SYSTEST_HLF}" = "hlf" ]; then
+if [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
     sleep 10
     cd systestv1
     node create-channel.js

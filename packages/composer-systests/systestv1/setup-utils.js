@@ -82,6 +82,7 @@ let ORGS = hfc.getConfigSetting('test-network');
  */
 function getSubmitter(username, password, client, userOrg) {
     let caUrl = ORGS[userOrg].ca;
+    let mspid = ORGS[userOrg].mspid;
 
     return client.getUserContext(username)
         .then((user) => {
@@ -102,7 +103,7 @@ function getSubmitter(username, password, client, userOrg) {
                     console.log('Successfully enrolled user \'' + username + '\'');
 
                     member = new User(username, client);
-                    return member.setEnrollment(enrollment.key, enrollment.certificate);
+                    return member.setEnrollment(enrollment.key, enrollment.certificate, mspid);
                 }).then(() => {
                     return client.setUserContext(member);
                 }).then(() => {

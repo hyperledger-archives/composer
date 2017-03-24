@@ -8,15 +8,83 @@
     </div>
   </div>
 
-  <div class="profile-data" *ngIf="connectionProfileData.profile.type === 'hlf'">
-    <div class="basic-configuration">
-      <div class="connection-profile-name">
+  <div class="profile-data-container" *ngIf="connectionProfileData.profile.type === 'hlf'">
+    <div class="profile-data-header">Basic Configuration
+      <div class="profile-row">
+        <div class="profile-property">
+          Connection Profile Name
+        </div>
+        <div class="profile-value">
+          {{connectionProfileData.name}}
+        </div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-property">
+          Peer URL
+        </div>
+        <div class="profile-value">
+          {{connectionProfileData.profile.peerURL}}
+        </div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-property">
+          Membership Services URL
+        </div>
+        <div class="profile-value">
+          {{connectionProfileData.profile.membershipServicesURL}}
+        </div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-property">
+          Event Hub URL</div>
+        <div class="profile-value">
+          {{connectionProfileData.profile.eventHubURL}}
+        </div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-property">
+          Key Value Store Directory
+        </div>
+        <div class="profile-value">
+          {{connectionProfileData.profile.keyValStore}}
+        </div>
+      </div>
     </div>
-    <div class="security-settings">
-      asd
+    <div class="profile-data-header">Security Settings
+      <div class="profile-row">
+        <div class="profile-property">
+          Certificate
+        </div>
+        <div class="profile-value">
+          -
+        </div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-property">
+          Certificate Path
+        </div>
+        <div class="profile-value">
+          -
+        </div>
+      </div>
     </div>
-    <div class="advanced">
-      asd
+    <div class="profile-data-header">Advanced
+      <div class="profile-row">
+        <div class="profile-property">
+          Deploy Wait Time (seconds)
+        </div>
+        <div class="profile-value">
+          {{connectionProfileData.profile.deployWaitTime}}
+        </div>
+      </div>
+      <div class="profile-row">
+        <div class="profile-property">
+          Invoke Wait Time (seconds)
+        </div>
+        <div class="profile-value">
+          {{connectionProfileData.profile.invokeWaitTime}}
+        </div>
+      </div>
     </div>
 
   </div>

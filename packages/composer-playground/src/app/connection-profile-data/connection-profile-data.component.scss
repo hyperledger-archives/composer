@@ -20,4 +20,31 @@ connection-profile-data {
     align-self: center;
   }
 
+  .profile-data-container{
+    display:flex;
+    flex-flow: column;
+  }
+
+  .profile-data-header{
+    flex:1;
+    display:flex;
+    flex-flow: column;
+    color:$first-highlight;
+
+  }
+  .profile-row{
+    flex:2;
+    display:flex;
+    flex-flow: row;
+    color:$primary-text;
+  }
+  .profile-property{
+    flex-basis:20%;
+    padding-right: $space-large;
+    font-weight: bold;
+  }
+  .profile-value{
+    flex:1;
+  }
+
 }
