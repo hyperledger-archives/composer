@@ -10,26 +10,74 @@ connection-profile-data {
     color:$secondary-text;
   }
 
-  .profile-header-name{
+  .profile-header-details{
     flex:1;
     align-self: center;
-  }
 
-  .profile-header-description{
-    flex:1;
-    align-self: center;
+    p{
+      padding-bottom:$space-smedium;
+    }
   }
 
   .profile-data-container{
+    background-color:$white;
+    border-radius: 3px;
+    padding: $space-smedium;
     display:flex;
     flex-flow: column;
+    margin-bottom:$space-medium;
+  }
+
+  .data-section{
+    max-height:0px;
+    @include transition(all);
+    overflow:hidden;
+
+    &.expanded {
+      @include transition(all);
+      max-height: 400px;
+      overflow: hidden;
+      padding-bottom:0px;
+
+
+    }
+
+
   }
 
   .profile-data-header{
     flex:1;
     display:flex;
     flex-flow: column;
-    color:$first-highlight;
+    padding: 0 $space-medium;
+
+    .section-details{
+      display:flex;
+      flex-direction: row;
+      flex:1;
+      border-bottom:solid 1px #D0DADA;
+      margin-bottom:$space-medium;
+      align-items: center;
+
+      .section-name{
+        flex:1;
+        padding: $space-medium 0 $space-medium;
+        cursor: pointer;
+
+        h2{
+          color:$first-highlight;
+        }
+      }
+      .section-expand{
+        // flex:1;
+        // text-align: right;
+
+        button{
+          line-height:30px;
+          font-size:0.8rem;
+        }
+      }
+    }
 
   }
   .profile-row{
@@ -38,6 +86,11 @@ connection-profile-data {
     flex-flow: row;
     color:$primary-text;
   }
+  .profile-row:last-child{
+    padding-bottom:$space-large;
+  }
+
+
   .profile-property{
     flex-basis:20%;
     padding-right: $space-large;
@@ -45,6 +98,11 @@ connection-profile-data {
   }
   .profile-value{
     flex:1;
+  }
+
+  .chevron{
+    @include transition(all);
+    transform: rotate(-90deg);
   }
 
 }

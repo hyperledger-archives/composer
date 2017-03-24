@@ -1,88 +1,136 @@
 <div *ngIf="connectionProfileData">
 
   <div class="profile-header">
-    <div class="profile-header-name">
+    <div class="profile-header-details">
+
       <h1 *ngIf="connectionProfileData.name !== '$default'">{{connectionProfileData.name}}</h1>
+      <p *ngIf="connectionProfileData.name !== '$default'">{{connectionProfileData.profile.description}}</p>
+      <button type="button primary" (click)="deleteProfile(connectionProfileData)">Delete</button>
+
       <h1 *ngIf="connectionProfileData.name === '$default'">Web Browser</h1>
       <p *ngIf="connectionProfileData.name === '$default'">Running in web browser mode</p>
+
     </div>
   </div>
 
   <div class="profile-data-container" *ngIf="connectionProfileData.profile.type === 'hlf'">
-    <div class="profile-data-header">Basic Configuration
-      <div class="profile-row">
-        <div class="profile-property">
-          Connection Profile Name
+    <div class="profile-data-header">
+      <div class="section-details">
+        <div class="section-name" (click)="expandSection('Basic Configuration')">
+          <h2>Basic Configuration</h2>
         </div>
-        <div class="profile-value">
-          {{connectionProfileData.name}}
-        </div>
-      </div>
-      <div class="profile-row">
-        <div class="profile-property">
-          Peer URL
-        </div>
-        <div class="profile-value">
-          {{connectionProfileData.profile.peerURL}}
+        <div class="section-expand">
+          <button class="button secondary" type="button" (click)="expandSection('All')">{{expandedSection.length === 3 ? 'Collapse All' : 'Expand All'}}</button>
+          <button type="button" class="action" (click)="expandSection('Basic Configuration')">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Basic Configuration') > -1}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+              <use xlink:href="#icon-chevron-down"></use>
+            </svg>
+          </button>
         </div>
       </div>
-      <div class="profile-row">
-        <div class="profile-property">
-          Membership Services URL
+      <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Basic Configuration') > -1}">
+        <div class="profile-row">
+          <div class="profile-property">
+            Connection Profile Name
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.name}}
+          </div>
         </div>
-        <div class="profile-value">
-          {{connectionProfileData.profile.membershipServicesURL}}
+        <div class="profile-row">
+          <div class="profile-property">
+            Peer URL
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.peerURL}}
+          </div>
         </div>
-      </div>
-      <div class="profile-row">
-        <div class="profile-property">
-          Event Hub URL</div>
-        <div class="profile-value">
-          {{connectionProfileData.profile.eventHubURL}}
+        <div class="profile-row">
+          <div class="profile-property">
+            Membership Services URL
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.membershipServicesURL}}
+          </div>
         </div>
-      </div>
-      <div class="profile-row">
-        <div class="profile-property">
-          Key Value Store Directory
+        <div class="profile-row">
+          <div class="profile-property">
+            Event Hub URL</div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.eventHubURL}}
+          </div>
         </div>
-        <div class="profile-value">
-          {{connectionProfileData.profile.keyValStore}}
-        </div>
-      </div>
-    </div>
-    <div class="profile-data-header">Security Settings
-      <div class="profile-row">
-        <div class="profile-property">
-          Certificate
-        </div>
-        <div class="profile-value">
-          -
-        </div>
-      </div>
-      <div class="profile-row">
-        <div class="profile-property">
-          Certificate Path
-        </div>
-        <div class="profile-value">
-          -
+        <div class="profile-row">
+          <div class="profile-property">
+            Key Value Store Directory
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.keyValStore}}
+          </div>
         </div>
       </div>
     </div>
-    <div class="profile-data-header">Advanced
-      <div class="profile-row">
-        <div class="profile-property">
-          Deploy Wait Time (seconds)
+    <div class="profile-data-header">
+      <div class="section-details">
+        <div class="section-name" (click)="expandSection('Security Settings')">
+          <h2>Security Settings</h2>
         </div>
-        <div class="profile-value">
-          {{connectionProfileData.profile.deployWaitTime}}
+        <div class="section-expand">
+          <button type="button" class="action" (click)="expandSection('Security Settings')">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Security Settings') > -1}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+              <use xlink:href="#icon-chevron-down"></use>
+            </svg>
+          </button>
         </div>
       </div>
-      <div class="profile-row">
-        <div class="profile-property">
-          Invoke Wait Time (seconds)
+      <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Security Settings') > -1}">
+        <div class="profile-row">
+          <div class="profile-property">
+            Certificate
+          </div>
+          <div class="profile-value">
+            -
+          </div>
         </div>
-        <div class="profile-value">
-          {{connectionProfileData.profile.invokeWaitTime}}
+        <div class="profile-row">
+          <div class="profile-property">
+            Certificate Path
+          </div>
+          <div class="profile-value">
+            -
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-data-header">
+      <div class="section-details">
+        <div class="section-name" (click)="expandSection('Advanced')">
+          <h2>Advanced</h2>
+        </div>
+        <div class="section-expand">
+          <button type="button" class="action" (click)="expandSection('Advanced')">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Advanced') > -1}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+              <use xlink:href="#icon-chevron-down"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Advanced') > -1}">
+        <div class="profile-row">
+          <div class="profile-property">
+            Deploy Wait Time (seconds)
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.deployWaitTime}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Invoke Wait Time (seconds)
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.invokeWaitTime}}
+          </div>
         </div>
       </div>
     </div>
@@ -90,8 +138,13 @@
   </div>
 
 
-
-  <button class="button primary" type="button" disabled>Use this profile</button>
+  <button class="button primary" type="button">Use this profile</button>
+  <button *ngIf="connectionProfileData.name !== '$default'" class="button secondary" type="button">
+    <svg class="standard-icon" aria-hidden="true">
+      <use xlink:href="#icon-upload_32"></use>
+    </svg>
+    Export Connection Profile
+  </button>
 
 
 

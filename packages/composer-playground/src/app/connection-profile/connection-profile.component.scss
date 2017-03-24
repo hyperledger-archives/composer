@@ -35,6 +35,7 @@ connection-profile {
   .main-view {
     background-color: $fourth-highlight;
     padding: $space-large $space-large $space-medium $space-large;
+    overflow-y:auto;
 
     .playground-profile-warning {
       background-color: $white;

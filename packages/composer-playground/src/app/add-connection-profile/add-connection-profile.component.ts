@@ -32,6 +32,7 @@ export class AddConnectionProfileComponent {
   private newConnectionProfile: any;
 
   private addConnectionProfileName: string = null;
+  private addConnectionProfileDescription: string = null;
   private addConnectionProfilePeerURL: string = null;
   private addConnectionProfileMembershipServicesURL: string = null;
   private addConnectionProfileEventHubURL: string = null;
@@ -153,6 +154,7 @@ export class AddConnectionProfileComponent {
     }
     let connectionProfile = {
       type: 'hlf',
+      description: this.addConnectionProfileDescription,
       membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
       peerURL: this.addConnectionProfilePeerURL,
       eventHubURL: this.addConnectionProfileEventHubURL,
@@ -181,6 +183,7 @@ export class AddConnectionProfileComponent {
         connectionProfileName = connectionProfileBase + counter;
       }
       this.addConnectionProfileName = connectionProfileName;
+      this.addConnectionProfileDescription = "A description"
       this.addConnectionProfilePeerURL = 'grpc://localhost:7051';
       this.addConnectionProfileMembershipServicesURL = 'grpc://localhost:7054';
       this.addConnectionProfileEventHubURL = 'grpc://localhost:7053';
