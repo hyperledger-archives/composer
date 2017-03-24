@@ -35,7 +35,7 @@ describe('Identity system tests', () => {
     let participant;
 
     before(function () {
-        if (TestUtil.isEmbedded() || TestUtil.isWeb()) {
+        if (TestUtil.isEmbedded()) {
             this.skip();
             return;
         }

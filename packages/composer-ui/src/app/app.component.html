@@ -16,8 +16,7 @@
       </li>
     </ul>
     <ul class="nav navbar-nav float-lg-right form-inline">
-      <!-- No current identity on web browser mode as web runtime doesn't yet support identities. -->
-      <div class="btn-group" *ngIf="currentConnectionProfile !== '$default'">
+      <div class="btn-group">
         <button type="button" class="btn btn-primary btn-md dropdown-toggle" data-toggle="dropdown" placement="left" tooltip="Change the current identity" container="body">
           <span class="fa fa-id-card-o" aria-hidden="true"></span> {{currentIdentity}}
         </button>

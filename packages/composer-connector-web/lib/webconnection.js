@@ -16,7 +16,9 @@
 
 const Connection = require('composer-common').Connection;
 const Engine = require('composer-runtime').Engine;
+const uuid = require('uuid');
 const WebContainer = require('composer-runtime-web').WebContainer;
+const WebDataService = require('composer-runtime-web').WebDataService;
 const WebContext = require('composer-runtime-web').WebContext;
 const WebSecurityContext = require('./websecuritycontext');
 
@@ -127,6 +129,7 @@ class WebConnection extends Connection {
      */
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
+        this.fabricDataService = new WebDataService();
     }
 
     /**
@@ -146,26 +149,32 @@ class WebConnection extends Connection {
      * object representing the logged in participant, or rejected with a login error.
      */
     login(enrollmentID, enrollmentSecret) {
-        let result = new WebSecurityContext(this);
-        if (this.businessNetworkIdentifier) {
-            return this.getChaincodeID(this.businessNetworkIdentifier)
-                .then((chaincodeID) => {
-                    if (chaincodeID) {
-                        if (!WebConnection.getBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile)) {
-                            let container = WebConnection.createContainer(chaincodeID);
-                            let engine = WebConnection.createEngine(container);
-                            WebConnection.addBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile, chaincodeID);
-                            WebConnection.addChaincode(chaincodeID, container, engine);
-                        }
-                        result.setChaincodeID(chaincodeID);
-                    } else {
-                        throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
-                    }
+        // The 'admin' ID is special for the moment as it is not bound to a participant.
+        let result = new WebSecurityContext(this, enrollmentID !== 'admin' ? enrollmentID : null);
+        if (!this.businessNetworkIdentifier) {
+            return this.testIdentity(enrollmentID, enrollmentSecret)
+                .then(() => {
                     return result;
                 });
-        } else {
-            return Promise.resolve(result);
         }
+        return this.testIdentity(enrollmentID, enrollmentSecret)
+            .then(() => {
+                return this.getChaincodeID(this.businessNetworkIdentifier);
+            })
+            .then((chaincodeID) => {
+                if (chaincodeID) {
+                    if (!WebConnection.getBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile)) {
+                        let container = WebConnection.createContainer(chaincodeID);
+                        let engine = WebConnection.createEngine(container);
+                        WebConnection.addBusinessNetwork(this.businessNetworkIdentifier, this.connectionProfile, chaincodeID);
+                        WebConnection.addChaincode(chaincodeID, container, engine);
+                    }
+                    result.setChaincodeID(chaincodeID);
+                } else {
+                    throw new Error(`No chaincode ID found for business network '${this.businessNetworkIdentifier}'`);
+                }
+                return result;
+            });
     }
 
     /**
@@ -178,11 +187,12 @@ class WebConnection extends Connection {
      */
     deploy(securityContext, force, businessNetwork) {
         let container = WebConnection.createContainer();
+        let userID = securityContext.getUserID();
         let chaincodeID = container.getUUID();
         let engine = WebConnection.createEngine(container);
         WebConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeID);
         WebConnection.addChaincode(chaincodeID, container, engine);
-        let context = new WebContext(engine);
+        let context = new WebContext(engine, userID);
         return businessNetwork.toArchive()
             .then((businessNetworkArchive) => {
                 return engine.init(context, 'init', [businessNetworkArchive.toString('base64')]);
@@ -246,9 +256,10 @@ class WebConnection extends Connection {
      * chaincode function once it has been invoked, or rejected with an error.
      */
     queryChainCode(securityContext, functionName, args) {
+        let userID = securityContext.getUserID();
         let chaincodeID = securityContext.getChaincodeID();
         let chaincode = WebConnection.getChaincode(chaincodeID);
-        let context = new WebContext(chaincode.engine);
+        let context = new WebContext(chaincode.engine, userID);
         return chaincode.engine.query(context, functionName, args)
             .then((data) => {
                 return Buffer.from(JSON.stringify(data));
@@ -264,12 +275,84 @@ class WebConnection extends Connection {
      * has been invoked, or rejected with an error.
      */
     invokeChainCode(securityContext, functionName, args) {
+        let userID = securityContext.getUserID();
         let chaincodeID = securityContext.getChaincodeID();
         let chaincode = WebConnection.getChaincode(chaincodeID);
-        let context = new WebContext(chaincode.engine);
+        let context = new WebContext(chaincode.engine, userID);
         return chaincode.engine.invoke(context, functionName, args)
             .then((data) => {
                 return undefined;
+            });
+    }
+
+    /**
+     * Get the data collection that stores identities.
+     * @return {DataCollection} The data collection that stores identities.
+     */
+    getIdentities() {
+        return this.fabricDataService.existsCollection('identities')
+            .then((exists) => {
+                if (exists) {
+                    return this.fabricDataService.getCollection('identities');
+                } else {
+                    return this.fabricDataService.createCollection('identities');
+                }
+            });
+    }
+
+    /**
+     * Test the specified user ID and secret to ensure that it is valid.
+     * @param {string} userID The user ID.
+     * @param {string} userSecret The user secret.
+     * @return {Promise} A promise that is resolved if the user ID and secret
+     * is valid, or rejected with an error.
+     */
+    testIdentity(userID, userSecret) {
+        // The 'admin' ID is special for the moment as it is not bound to a participant.
+        if (userID === 'admin') {
+            return Promise.resolve();
+        }
+        return this.getIdentities()
+            .then((identities) => {
+                return identities.get(userID);
+            })
+            .then((identity) => {
+                if (identity.userSecret !== userSecret) {
+                    throw new Error(`The user secret ${userSecret} specified for the user ID ${userID} does not match the stored user secret ${identity.userSecret}`);
+                }
+            });
+
+    }
+
+    /**
+     * Create a new identity for the specified user ID.
+     * @param {SecurityContext} securityContext The participant's security context.
+     * @param {string} userID The user ID.
+     * @param {object} [options] Options for the new identity.
+     * @param {boolean} [options.issuer] Whether or not the new identity should have
+     * permissions to create additional new identities. False by default.
+     * @param {string} [options.affiliation] Specify the affiliation for the new
+     * identity. Defaults to 'institution_a'.
+     * @return {Promise} A promise that is resolved with a generated user
+     * secret once the new identity has been created, or rejected with an error.
+     */
+    createIdentity(securityContext, userID, options) {
+        let identities;
+        return this.getIdentities()
+            .then((identities_) => {
+                identities = identities_;
+                return identities.exists(userID);
+            })
+            .then((exists) => {
+                if (exists) {
+                    return identities.get(userID);
+                }
+                const userSecret = uuid.v4().substring(0, 8);
+                const identity = { userID: userID, userSecret: userSecret };
+                return identities.add(userID, identity)
+                    .then(() => {
+                        return identity;
+                    });
             });
     }
 

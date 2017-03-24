@@ -38,7 +38,7 @@ describe('Access control system tests', () => {
     let aliceCar, bobCar;
 
     before(function () {
-        if (TestUtil.isEmbedded() || TestUtil.isWeb()) {
+        if (TestUtil.isEmbedded()) {
             this.skip();
             return;
         }
