@@ -1,6 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AdminService } from '../services/admin.service';
+import {Component, Input} from '@angular/core';
+import {
+  FormGroup, FormControl, Validators, FormBuilder
+}
+  from '@angular/forms';
+
+import {AdminService} from '../services/admin.service';
 
 @Component({
   selector: 'connection-profile-data',
@@ -17,9 +21,17 @@ export class ConnectionProfileDataComponent {
   private showExpand:boolean = true;
 
   @Input() set connectionProfile(connectionProfile: any) {
+    this.editing = false;
     this.connectionProfileData = connectionProfile;
+    if(this.connectionProfileData && this.connectionProfileData.name.startsWith('New Connection Profile')) {
+      this.startEditing();
+    }
     console.log('Profile Loaded',this.connectionProfileData);
   }
+
+  private form: FormGroup;
+
+  private editing = false;
 
   constructor(private adminService:AdminService) {
   }
@@ -50,6 +62,31 @@ export class ConnectionProfileDataComponent {
   deleteProfile(connectionProfileData){
     let adminConnection = this.adminService.getAdminConnection();
     adminConnection.deleteProfile(connectionProfileData.name);
+  }
+
+  startEditing() {
+    this.form = this.fb.group({
+      "name": this.connectionProfileData ? this.connectionProfileData.name : '',
+      "description": this.connectionProfileData ? this.connectionProfileData.profile.description : '',
+      "peerUrl": this.connectionProfileData ? this.connectionProfileData.profile.peerUrl : 'grpc://localhost:7051',
+      "memberUrl": this.connectionProfileData ? this.connectionProfileData.profile.membershipServicesURL : 'grpc://localhost:7054',
+      "eventUrl": this.connectionProfileData ? this.connectionProfileData.profile.eventHubURL : 'grpc://localhost:7053',
+      "keyValueStore": this.connectionProfileData ? this.connectionProfileData.profile.keyValueStore : '/tmp/keyValStore',
+      "deployWaitTime": this.connectionProfileData ? this.connectionProfileData.profile.deployWaitTime : 300,
+      "invokeWaitTime": this.connectionProfileData ? this.connectionProfileData.profile.invokeWaitTime : 30,
+      "certificate": this.connectionProfileData ? this.connectionProfileData.profile.certificate : '',
+      "certificatePath": this.connectionProfileData ? this.connectionProfileData.profile.certificatePath : '',
+    });
+
+    this.editing = true;
+  }
+
+  onSubmit() {
+    console.log(this.form);
+    let connectionProfile = this.form.value;
+    this.adminService.getAdminConnection().createProfile(this.connectionProfileData.name, connectionProfile).then(() => {
+      this.editing = false;
+    });
   }
 
 

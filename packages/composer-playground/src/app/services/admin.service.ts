@@ -1,14 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {BehaviorSubject, Subject} from 'rxjs/Rx';
-
 import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from '../wallet.service';
 import {IdentityService} from '../identity.service';
 import {AlertService} from './alert.service';
-
-import {AdminConnection, BusinessNetworkDefinition} from 'composer-admin';
-import {ConnectionProfileManager, Logger} from 'composer-common';
+import {AdminConnection, } from 'composer-admin';
+import {ConnectionProfileManager, Logger, BusinessNetworkDefinition} from 'composer-common';
 import ProxyConnectionManager = require('composer-connector-proxy');
 import WebConnectionManager = require('composer-connector-web');
 
@@ -71,21 +69,10 @@ export class AdminService {
         // Save the config data.
         this.config = config;
 
-        // Check to see if the default connection profile exists.
-        console.log('Checking for $default connection profile');
-        return this.adminConnection.getProfile('$default')
-          .catch((error) => {
-            // It doesn't exist, so create it.
-            console.log('$default connection profile does not exist, creating');
-            return this.adminConnection.createProfile('$default', {type: 'web'})
-              .then(() => {
-                return this.walletService.getWallet('$default').add('admin', 'adminpw');
-              });
-          });
+
 
       })
       .then(() => {
-
         // Create all of the connection profiles specified in the configuration.
         const connectionProfiles = this.config.connectionProfiles || {};
         const connectionProfileNames = Object.keys(connectionProfiles).sort();
@@ -102,7 +89,6 @@ export class AdminService {
 
       })
       .then(() => {
-
         // Create all of the credentials specified in the configuration.
         const credentials = this.config.credentials || {};
         const connectionProfileNames = Object.keys(credentials).sort();
@@ -123,35 +109,6 @@ export class AdminService {
               }, Promise.resolve());
             })
         }, Promise.resolve());
-
-      })
-      .then(() => {
-
-        // If we're in a Docker Compose environment, check to see
-        // if the Hyperledger Fabric connection profile exists.
-        // TODO: remove once the workshops are out of the way and we can remove this stuff.
-        if (DOCKER_COMPOSE) {
-          console.log('Docker Compose environment, checking for hlfabric connection profile');
-          return this.adminConnection.getProfile('hlfabric')
-            .catch((error) => {
-              // It doesn't exist, so create it.
-              console.log('hlfabric connection profile does not exist, creating');
-              return this.adminConnection.createProfile('hlfabric', {
-                type: 'hlf',
-                keyValStore: '/home/composer/.composer-credentials',
-                membershipServicesURL: 'grpc://membersrvc:7054',
-                peerURL: 'grpc://vp0:7051',
-                eventHubURL: 'grpc://vp0:7053',
-                deployWaitTime: 5 * 60,
-                invokeWaitTime: 30
-              })
-                .then(() => {
-                  return this.walletService.getWallet('hlfabric').add('admin', 'Xurw3yU9zI0l');
-                });
-            });
-        } else {
-          console.log('Not in Docker Compose environment, not checking for hlfabric connection profile');
-        }
 
       })
       .then(() => {

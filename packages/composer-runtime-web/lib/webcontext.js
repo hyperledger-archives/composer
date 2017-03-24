@@ -26,11 +26,12 @@ class WebContext extends Context {
     /**
      * Constructor.
      * @param {Engine} engine The owning engine.
+     * @param {String} userID The current user ID.
      */
-    constructor(engine) {
+    constructor(engine, userID) {
         super(engine);
         this.dataService = engine.getContainer().getDataService();
-        this.identityService = new WebIdentityService();
+        this.identityService = new WebIdentityService(userID);
     }
 
     /**

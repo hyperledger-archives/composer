@@ -1,22 +1,19 @@
 // Textareas
 .composer {
-	textarea {
-		@extend %input;
-		resize: none;
-		width: 100%;
+  textarea {
+    @extend %input;
+    resize: none;
+    width: 100%;
+  }
 
-		&.code {
-			background-color: $fourth-highlight;
-    	color: $white;
+  form textarea {
+    border-bottom: 2px solid transparent;
+    height: auto;
+    margin-bottom: 0;
 
-	    &:hover,
-	    &:focus {
-	      border-color: $first-highlight;
-	    }
+    &.ng-dirty.invalid {
+      border-bottom: 2px solid $error-colour-1;
+    }
 
-	    &.invalid {
-	      border-color: $error-colour-1;
-	    }
-	  }
-	}
+  }
 }

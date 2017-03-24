@@ -43,7 +43,8 @@ import {GithubComponent} from './github';
 import {NoContentComponent} from './no-content';
 import {CodemirrorModule} from 'ng2-codemirror';
 import {VersionCheckComponent} from './version-check/version-check.component.ts';
-
+import { ConnectionProfileDataComponent } from './connection-profile-data/connection-profile-data.component.ts';
+import { AddConnectionProfileComponent } from './add-connection-profile/add-connection-profile.component.ts';
 import {FileDragDropDirective} from './directives/file-drag-drop';
 import {CheckOverFlowDirective} from './directives/check-overflow';
 import {FocusHereDirective} from './directives/focus-here';

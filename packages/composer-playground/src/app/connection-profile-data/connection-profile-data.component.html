@@ -146,10 +146,62 @@
     Export Connection Profile
   </button>
 
+  <div class="edit-data" *ngIf="editing">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <section>
+        <div class="section-title">Basic Configuration</div>
 
-
-
-
-
+        <div>
+          <label>Connection Profile Name*</label>
+          <input type="text" formControlName="name">
+        </div>
+        <div>
+          <label>Profile Description</label>
+          <textarea formControlName="description" rows="4"></textarea>
+        </div>
+        <div>
+          <label>Peer URL*</label>
+          <input type="text" formControlName="peerUrl">
+        </div>
+        <div>
+          <label>Membership Services URL</label>
+          <input type="text" formControlName="memberUrl">
+        </div>
+        <div>
+          <label>Event Hub URL</label>
+          <input type="text" formControlName="eventUrl">
+        </div>
+        <div>
+          <label>Key Value Store Directory</label>
+          <input type="text" formControlName="keyValueStore">
+        </div>
+      </section>
+      <section>
+        <div class="section-title">Security Settings</div>
+        <div>
+          <label>Certificate</label>
+          <input type="text" formControlName="certificate">
+        </div>
+        <div>
+          <label>Certificate Path</label>
+          <input type="text" formControlName="certificatePath">
+        </div>
+        <div class="section-title">Advanced</div>
+        <div>
+          <label>Deploy Wait Time (seconds)</label>
+          <input type="text" formControlName="deployWaitTime">
+        </div>
+        <div>
+          <label>Invoke Wait Time (seconds)</label>
+          <input type="text" formControlName="invokeWaitTime">
+        </div>
+      </section>
+      <footer>
+        <div class="info"></div>
+        <button class="secondary" type="submit" [disabled]="!form.valid">Cancel</button>
+        <button class="primary" type="submit" [disabled]="!form.valid">Save</button>
+      </footer>
+    </form>
+  </div>
 </div>
 

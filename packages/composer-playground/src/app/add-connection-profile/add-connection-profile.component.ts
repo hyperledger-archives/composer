@@ -174,7 +174,7 @@ export class AddConnectionProfileComponent {
 
   private setv06Defaults() {
     this.updateConnectionProfiles().then(() => {
-      let connectionProfileBase = 'hlfabric';
+      let connectionProfileBase = 'New Connection Profile';
       let connectionProfileName = connectionProfileBase;
       let counter = 1;
 
