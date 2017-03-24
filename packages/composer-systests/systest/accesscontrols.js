@@ -38,10 +38,6 @@ describe('Access control system tests', () => {
     let aliceCar, bobCar;
 
     before(function () {
-        if (TestUtil.isEmbedded()) {
-            this.skip();
-            return;
-        }
         const modelFiles = [
             fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.cto'), 'utf8')
         ];

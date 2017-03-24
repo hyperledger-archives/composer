@@ -30,23 +30,45 @@ require('sinon-as-promised');
 describe('EmbeddedDataService', () => {
 
     let dataService;
+    let sandbox;
 
     beforeEach(() => {
         dataService = new EmbeddedDataService('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+        sandbox = sinon.sandbox.create();
     });
 
     afterEach(() => {
-        const db = new Dexie('Concerto:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c', {
+        sandbox.restore();
+        const db = new Dexie('Composer:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c', {
             indexedDB: fakeIndexedDB,
             IDBKeyRange: FDBKeyRange
         });
         return db.delete();
     });
 
+    describe('#createDexie', () => {
+
+        it('should create a Dexie instance', () => {
+            let db = EmbeddedDataService.createDexie('Composer:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+            db.should.be.an.instanceOf(Dexie);
+        });
+
+    });
+
     describe('#constructor', () => {
 
-        it('should create a data service', () => {
+        it('should create a data service with a UUID', () => {
+            let spy = sandbox.spy(EmbeddedDataService, 'createDexie');
+            dataService = new EmbeddedDataService('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
             dataService.should.be.an.instanceOf(DataService);
+            sinon.assert.calledWith(spy, 'Composer:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+        });
+
+        it('should create a data service without a UUID', () => {
+            let spy = sandbox.spy(EmbeddedDataService, 'createDexie');
+            dataService = new EmbeddedDataService();
+            dataService.should.be.an.instanceOf(DataService);
+            sinon.assert.calledWith(spy, 'Composer');
         });
 
     });

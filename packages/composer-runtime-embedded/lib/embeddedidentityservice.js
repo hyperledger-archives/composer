@@ -23,12 +23,21 @@ const IdentityService = require('composer-runtime').IdentityService;
 class EmbeddedIdentityService extends IdentityService {
 
     /**
+     * Constructor.
+     * @param {String} userID The current user ID.
+     */
+    constructor(userID) {
+        super();
+        this.userID = userID;
+    }
+
+    /**
      * Retrieve the current user ID.
      * @return {string} The current user ID, or null if the current user ID cannot
      * be determined or has not been specified.
      */
     getCurrentUserID() {
-        return null;
+        return this.userID;
     }
 
 }

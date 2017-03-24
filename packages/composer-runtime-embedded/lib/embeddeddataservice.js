@@ -19,22 +19,24 @@ const Dexie = require('dexie');
 const EmbeddedDataCollection = require('./embeddeddatacollection');
 
 /**
- * fake-indexeddb seems to maintain too much state, even though we ask dexie to
- * create a new database for each chaincode (using a UUID as part of the database
- * name), so we have to reload the module each time.
- * @param {string} module The name of the module.
- * @return {object} The uncached module.
- */
-function requireUncached(module){
-    delete require.cache[require.resolve(module)];
-    return require(module);
-}
-
-/**
  * Base class representing the data service provided by a {@link Container}.
  * @protected
  */
 class EmbeddedDataService extends DataService {
+
+    /**
+     * Create a new instance of Dexie.
+     * @param {string} name The name of the Dexie database.
+     * @return {Dexie} The new instance of Dexie.
+     */
+    static createDexie(name) {
+        let fakeIndexedDB = require('fake-indexeddb');
+        let FDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+        return new Dexie(name, {
+            indexedDB: fakeIndexedDB,
+            IDBKeyRange: FDBKeyRange
+        });
+    }
 
     /**
      * Constructor.
@@ -42,12 +44,11 @@ class EmbeddedDataService extends DataService {
      */
     constructor(uuid) {
         super();
-        let fakeIndexedDB = requireUncached('fake-indexeddb');
-        let FDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
-        this.db = new Dexie(`Concerto:${uuid}`, {
-            indexedDB: fakeIndexedDB,
-            IDBKeyRange: FDBKeyRange
-        });
+        if (uuid) {
+            this.db = EmbeddedDataService.createDexie(`Composer:${uuid}`);
+        } else {
+            this.db = EmbeddedDataService.createDexie('Composer');
+        }
         this.db.version(1).stores({
             collections: '&id',
             objects: '[id+collectionId],collectionId'

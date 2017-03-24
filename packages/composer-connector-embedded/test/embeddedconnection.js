@@ -18,12 +18,14 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const Connection = require('composer-common').Connection;
 const ConnectionManager = require('composer-common').ConnectionManager;
 const Context = require('composer-runtime').Context;
+const DataCollection = require('composer-runtime').DataCollection;
 const DataService = require('composer-runtime').DataService;
 const EmbeddedConnection = require('../lib/embeddedconnection');
 const EmbeddedContainer = require('composer-runtime-embedded').EmbeddedContainer;
 const EmbeddedSecurityContext = require('../lib/embeddedsecuritycontext');
 const Engine = require('composer-runtime').Engine;
 const LoggingService = require('composer-runtime').LoggingService;
+const uuid = require('uuid');
 
 const chai = require('chai');
 const should = chai.should();
@@ -87,12 +89,31 @@ describe('EmbeddedConnection', () => {
 
     describe('#login', () => {
 
+        beforeEach(() => {
+            sandbox.stub(connection, 'testIdentity').resolves();
+        });
+
+        it('should return a new security context with a null user ID if the admin ID is specified', () => {
+            connection = new EmbeddedConnection(mockConnectionManager, 'devFabric1');
+            sandbox.stub(connection, 'testIdentity').resolves();
+            return connection.login('admin', 'suchs3cret')
+                .then((securityContext) => {
+                    securityContext.should.be.an.instanceOf(EmbeddedSecurityContext);
+                    should.equal(securityContext.getUserID(), null);
+                    should.equal(securityContext.getChaincodeID(), null);
+                    sinon.assert.calledWith(connection.testIdentity, 'admin', 'suchs3cret');
+                });
+        });
+
         it('should return a new security context with a null chaincode ID if the business network was not specified', () => {
             connection = new EmbeddedConnection(mockConnectionManager, 'devFabric1');
+            sandbox.stub(connection, 'testIdentity').resolves();
             return connection.login('doge', 'suchs3cret')
                 .then((securityContext) => {
                     securityContext.should.be.an.instanceOf(EmbeddedSecurityContext);
+                    securityContext.getUserID().should.equal('doge');
                     should.equal(securityContext.getChaincodeID(), null);
+                    sinon.assert.calledWith(connection.testIdentity, 'doge', 'suchs3cret');
                 });
         });
 
@@ -107,6 +128,7 @@ describe('EmbeddedConnection', () => {
                 .then((securityContext) => {
                     securityContext.should.be.an.instanceOf(EmbeddedSecurityContext);
                     securityContext.getChaincodeID().should.equal('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+                    sinon.assert.calledWith(connection.testIdentity, 'doge', 'suchs3cret');
                 });
         });
 
@@ -122,6 +144,7 @@ describe('EmbeddedConnection', () => {
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
             mockContainer.getDataService.returns(mockDataService);
             mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
+            mockSecurityContext.getUserID.returns('bob1');
             sandbox.stub(EmbeddedConnection, 'createContainer').returns(mockContainer);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
@@ -131,7 +154,11 @@ describe('EmbeddedConnection', () => {
             return connection.deploy(mockSecurityContext, true, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(mockEngine.init);
-                    sinon.assert.calledWith(mockEngine.init, sinon.match.instanceOf(Context), 'init', ['aGVsbG8gd29ybGQ=']);
+                    sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
+                        context.should.be.an.instanceOf(Context);
+                        context.getIdentityService().getCurrentUserID().should.equal('bob1');
+                        return true;
+                    }), 'init', ['aGVsbG8gd29ybGQ=']);
                     sinon.assert.calledOnce(connection.ping);
                     sinon.assert.calledOnce(mockSecurityContext.setChaincodeID);
                     sinon.assert.calledWith(mockSecurityContext.setChaincodeID, '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -227,12 +254,17 @@ describe('EmbeddedConnection', () => {
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             EmbeddedConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
+            mockSecurityContext.getUserID.returns('bob1');
             mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             mockEngine.query.resolves({ test: 'data from engine' });
             return connection.queryChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'])
                 .then((result) => {
                     sinon.assert.calledOnce(mockEngine.query);
-                    sinon.assert.calledWith(mockEngine.query, sinon.match.instanceOf(Context), 'testFunction', ['arg1', 'arg2']);
+                    sinon.assert.calledWith(mockEngine.query, sinon.match((context) => {
+                        context.should.be.an.instanceOf(Context);
+                        context.getIdentityService().getCurrentUserID().should.equal('bob1');
+                        return true;
+                    }), 'testFunction', ['arg1', 'arg2']);
                     result.should.be.an.instanceOf(Buffer);
                     JSON.parse(result.toString()).should.deep.equal({ test: 'data from engine' });
                 });
@@ -250,14 +282,112 @@ describe('EmbeddedConnection', () => {
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             EmbeddedConnection.addChaincode('6eeb8858-eced-4a32-b1cd-2491f1e3718f', mockContainer, mockEngine);
+            mockSecurityContext.getUserID.returns('bob1');
             mockSecurityContext.getChaincodeID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             mockEngine.invoke.resolves({ test: 'data from engine' });
             return connection.invokeChainCode(mockSecurityContext, 'testFunction', ['arg1', 'arg2'])
                 .then((result) => {
                     sinon.assert.calledOnce(mockEngine.invoke);
-                    sinon.assert.calledWith(mockEngine.invoke, sinon.match.instanceOf(Context), 'testFunction', ['arg1', 'arg2']);
+                    sinon.assert.calledWith(mockEngine.invoke, sinon.match((context) => {
+                        context.should.be.an.instanceOf(Context);
+                        context.getIdentityService().getCurrentUserID().should.equal('bob1');
+                        return true;
+                    }), 'testFunction', ['arg1', 'arg2']);
                     should.equal(result, undefined);
                 });
+        });
+
+    });
+
+    describe('#getIdentities', () => {
+
+        let mockFabricDataService;
+        let mockIdentitiesDataCollection;
+
+        beforeEach(() => {
+            connection.fabricDataService = mockFabricDataService = sinon.createStubInstance(DataService);
+            mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
+
+        });
+
+        it('should create and return the identities collection if it does not exist', () => {
+            mockFabricDataService.existsCollection.withArgs('identities').resolves(false);
+            mockFabricDataService.createCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
+            return connection.getIdentities()
+               .then((identities) => {
+                   identities.should.equal(mockIdentitiesDataCollection);
+               });
+        });
+
+        it('should return the existing identities collection if it already exists', () => {
+            mockFabricDataService.existsCollection.withArgs('identities').resolves(true);
+            mockFabricDataService.getCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
+            return connection.getIdentities()
+               .then((identities) => {
+                   identities.should.equal(mockIdentitiesDataCollection);
+               });
+        });
+
+    });
+
+    describe('#testIdentity', () => {
+
+        let mockIdentitiesDataCollection;
+
+        beforeEach(() => {
+            mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
+            sandbox.stub(connection, 'getIdentities').resolves(mockIdentitiesDataCollection);
+        });
+
+        it('should resolve if the user ID is admin', () => {
+            return connection.testIdentity('admin', 'password');
+        });
+
+        it('should resolve if the user ID exists', () => {
+            mockIdentitiesDataCollection.get.withArgs('doge').resolves({ userID: 'doge', userSecret: 'password' });
+            return connection.testIdentity('doge', 'password');
+        });
+
+        it('should throw an error if the user ID does not exist', () => {
+            mockIdentitiesDataCollection.get.withArgs('doge').rejects(new Error('such error'));
+            return connection.testIdentity('doge', 'password')
+               .should.be.rejectedWith(/such error/);
+        });
+
+        it('should throw an error if the user secret does not match', () => {
+            mockIdentitiesDataCollection.get.withArgs('doge').resolves({ userID: 'doge', userSecret: 'not correct' });
+            return connection.testIdentity('doge', 'password')
+               .should.be.rejectedWith(/ does not match/);
+        });
+
+    });
+
+    describe('#createIdentity', () => {
+
+        let mockIdentitiesDataCollection;
+
+        beforeEach(() => {
+            mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
+            sandbox.stub(connection, 'getIdentities').resolves(mockIdentitiesDataCollection);
+        });
+
+        it('should return the existing identity if it already exists', () => {
+            mockIdentitiesDataCollection.exists.withArgs('doge').resolves(true);
+            mockIdentitiesDataCollection.get.withArgs('doge').resolves({ userID: 'doge', userSecret: 'password' });
+            return connection.createIdentity(mockSecurityContext, 'doge')
+               .then((result) => {
+                   result.should.be.deep.equal({ userID: 'doge', userSecret: 'password' });
+               });
+        });
+
+        it('should store a new identity if it does not exists', () => {
+            sandbox.stub(uuid, 'v4').returns('f892c30a-7799-4eac-8377-06da53600e5');
+            mockIdentitiesDataCollection.exists.withArgs('doge').resolves(false);
+            mockIdentitiesDataCollection.add.withArgs('doge').resolves();
+            return connection.createIdentity(mockSecurityContext, 'doge')
+               .then((result) => {
+                   result.should.be.deep.equal({ userID: 'doge', userSecret: 'f892c30a' });
+               });
         });
 
     });
