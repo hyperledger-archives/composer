@@ -14,6 +14,7 @@
 
 'use strict';
 
+const debug = require('debug')('composer:runtime:embedded');
 const LoggingService = require('composer-runtime').LoggingService;
 
 /**
@@ -27,7 +28,7 @@ class EmbeddedLoggingService extends LoggingService {
      * @param {string} message The message to write to the log.
      */
     logCritical(message) {
-        console.error(message);
+        debug(message);
     }
 
     /**
@@ -35,7 +36,7 @@ class EmbeddedLoggingService extends LoggingService {
      * @param {string} message The message to write to the log.
      */
     logDebug(message) {
-        // console.log(message);
+        debug(message);
     }
 
     /**
@@ -43,7 +44,7 @@ class EmbeddedLoggingService extends LoggingService {
      * @param {string} message The message to write to the log.
      */
     logError(message) {
-        console.error(message);
+        debug(message);
     }
 
     /**
@@ -51,7 +52,7 @@ class EmbeddedLoggingService extends LoggingService {
      * @param {string} message The message to write to the log.
      */
     logInfo(message) {
-        console.info(message);
+        debug(message);
     }
 
     /**
@@ -59,7 +60,7 @@ class EmbeddedLoggingService extends LoggingService {
      * @param {string} message The message to write to the log.
      */
     logNotice(message) {
-        console.info(message);
+        debug(message);
     }
 
     /**
@@ -67,7 +68,7 @@ class EmbeddedLoggingService extends LoggingService {
      * @param {string} message The message to write to the log.
      */
     logWarning(message) {
-        console.warn(message);
+        debug(message);
     }
 
 }
