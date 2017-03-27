@@ -35,10 +35,6 @@ describe('Identity system tests', () => {
     let participant;
 
     before(function () {
-        if (TestUtil.isEmbedded()) {
-            this.skip();
-            return;
-        }
         const modelFiles = [
             fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8')
         ];

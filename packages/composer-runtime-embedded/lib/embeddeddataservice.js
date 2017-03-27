@@ -17,18 +17,9 @@
 const DataService = require('composer-runtime').DataService;
 const Dexie = require('dexie');
 const EmbeddedDataCollection = require('./embeddeddatacollection');
+const Logger = require('composer-common').Logger;
 
-/**
- * fake-indexeddb seems to maintain too much state, even though we ask dexie to
- * create a new database for each chaincode (using a UUID as part of the database
- * name), so we have to reload the module each time.
- * @param {string} module The name of the module.
- * @return {object} The uncached module.
- */
-function requireUncached(module){
-    delete require.cache[require.resolve(module)];
-    return require(module);
-}
+const LOG = Logger.getLog('EmbeddedDataService');
 
 /**
  * Base class representing the data service provided by a {@link Container}.
@@ -37,21 +28,51 @@ function requireUncached(module){
 class EmbeddedDataService extends DataService {
 
     /**
-     * Constructor.
-     * @param {string} uuid The UUID of the container.
+     * Create a new instance of Dexie.
+     * @param {string} name The name of the Dexie database.
+     * @return {Dexie} The new instance of Dexie.
      */
-    constructor(uuid) {
-        super();
-        let fakeIndexedDB = requireUncached('fake-indexeddb');
+    static createDexie(name) {
+        const method = 'createDexie';
+        LOG.entry(method, name);
+        let fakeIndexedDB = require('fake-indexeddb');
         let FDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
-        this.db = new Dexie(`Concerto:${uuid}`, {
+        let result = new Dexie(name, {
             indexedDB: fakeIndexedDB,
             IDBKeyRange: FDBKeyRange
         });
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Constructor.
+     * @param {string} [uuid] The UUID of the container.
+     */
+    constructor(uuid) {
+        super();
+        const method = 'constructor';
+        LOG.entry(method, uuid);
+        if (uuid) {
+            this.db = EmbeddedDataService.createDexie(`Composer:${uuid}`);
+        } else {
+            this.db = EmbeddedDataService.createDexie('Composer');
+        }
         this.db.version(1).stores({
             collections: '&id',
             objects: '[id+collectionId],collectionId'
         });
+        LOG.exit(method);
+    }
+
+    /**
+     * Close the database connection.
+     */
+    close() {
+        const method = 'close';
+        LOG.entry(method);
+        this.db.close();
+        LOG.exit(method);
     }
 
     /**
@@ -74,13 +95,16 @@ class EmbeddedDataService extends DataService {
      * when complete, or rejected with an error.
      */
     createCollection(id) {
-        console.log('EmbeddedDataService.createCollection', id);
+        const method = 'createCollection';
+        LOG.entry(method, id);
         return this.ensureConnected()
             .then(() => {
                 return this.db.collections.add({id: id});
             })
             .then(() => {
-                return new EmbeddedDataCollection(this, this.db, id);
+                let result = new EmbeddedDataCollection(this, this.db, id);
+                LOG.exit(method, result);
+                return result;
             });
     }
 
@@ -91,7 +115,8 @@ class EmbeddedDataService extends DataService {
      * with an error.
      */
     deleteCollection(id) {
-        console.log('EmbeddedDataService.deleteCollection', id);
+        const method = 'deleteCollection';
+        LOG.entry(method, id);
         return this.ensureConnected()
             .then(() => {
                 return this.db.collections.get(id);
@@ -104,6 +129,9 @@ class EmbeddedDataService extends DataService {
             })
             .then(() => {
                 return this.db.collections.delete(id);
+            })
+            .then(() => {
+                LOG.exit(method);
             });
     }
 
@@ -114,7 +142,8 @@ class EmbeddedDataService extends DataService {
     * when complete, or rejected with an error.
     */
     getCollection(id) {
-        console.log('EmbeddedDataService.getCollection', id);
+        const method = 'getCollection';
+        LOG.entry(method, id);
         return this.ensureConnected()
             .then(() => {
                 return this.db.collections.get(id);
@@ -123,7 +152,9 @@ class EmbeddedDataService extends DataService {
                 if (!collection) {
                     throw new Error(`Collection with ID '${id}' does not exist`);
                 }
-                return new EmbeddedDataCollection(this, this.db, id);
+                let result = new EmbeddedDataCollection(this, this.db, id);
+                LOG.exit(method, result);
+                return result;
             });
     }
 
@@ -134,13 +165,16 @@ class EmbeddedDataService extends DataService {
      * indicating whether the collection exists.
      */
     existsCollection(id) {
-        console.log('EmbeddedDataService.existsCollection', id);
+        const method = 'existsCollection';
+        LOG.entry(method, id);
         return this.ensureConnected()
             .then(() => {
                 return this.db.collections.get(id);
             })
             .then((collection) => {
-                return !!collection;
+                let result = !!collection;
+                LOG.exit(method, result);
+                return result;
             });
     }
 

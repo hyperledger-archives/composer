@@ -26,7 +26,7 @@ describe('EmbeddedIdentityService', () => {
     let sandbox;
 
     beforeEach(() => {
-        identityService = new EmbeddedIdentityService();
+        identityService = new EmbeddedIdentityService('bob1');
         sandbox = sinon.sandbox.create();
     });
 
@@ -38,14 +38,15 @@ describe('EmbeddedIdentityService', () => {
 
         it('should create a identity service', () => {
             identityService.should.be.an.instanceOf(IdentityService);
+            identityService.userID.should.equal('bob1');
         });
 
     });
 
     describe('#getCurrentUserID', () => {
 
-        it('should return null', () => {
-            should.equal(identityService.getCurrentUserID(), null);
+        it('should return the current user ID', () => {
+            should.equal(identityService.getCurrentUserID(), 'bob1');
         });
 
     });
