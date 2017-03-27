@@ -28,20 +28,53 @@ require('sinon-as-promised');
 describe('WebDataService', () => {
 
     let dataService;
+    let sandbox;
 
     beforeEach(() => {
         dataService = new WebDataService('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+        sandbox = sinon.sandbox.create();
     });
 
     afterEach(() => {
-        const db = new Dexie('Concerto:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+        sandbox.restore();
+        dataService.close();
+        const db = new Dexie('Composer:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
         return db.delete();
+    });
+
+    describe('#createDexie', () => {
+
+        it('should create a Dexie instance', () => {
+            let db = WebDataService.createDexie('Composer:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+            db.should.be.an.instanceOf(Dexie);
+        });
+
     });
 
     describe('#constructor', () => {
 
-        it('should create a data service', () => {
+        it('should create a data service with a UUID', () => {
+            let spy = sandbox.spy(WebDataService, 'createDexie');
+            dataService = new WebDataService('3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
             dataService.should.be.an.instanceOf(DataService);
+            sinon.assert.calledWith(spy, 'Composer:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c');
+        });
+
+        it('should create a data service without a UUID', () => {
+            let spy = sandbox.spy(WebDataService, 'createDexie');
+            dataService = new WebDataService();
+            dataService.should.be.an.instanceOf(DataService);
+            sinon.assert.calledWith(spy, 'Composer');
+        });
+
+    });
+
+    describe('#close', () => {
+
+        it('should close the database', () => {
+            sinon.spy(dataService.db, 'close');
+            dataService.close();
+            sinon.assert.calledOnce(dataService.db.close);
         });
 
     });

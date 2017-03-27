@@ -41,7 +41,7 @@ describe('EmbeddedContext', () => {
     describe('#constructor', () => {
 
         it('should construct a new context', () => {
-            let context = new EmbeddedContext(mockEngine);
+            let context = new EmbeddedContext(mockEngine, 'bob1');
             context.should.be.an.instanceOf(Context);
         });
 
@@ -50,7 +50,7 @@ describe('EmbeddedContext', () => {
     describe('#getDataService', () => {
 
         it('should return the container data service', () => {
-            let context = new EmbeddedContext(mockEngine);
+            let context = new EmbeddedContext(mockEngine, 'bob1');
             context.getDataService().should.be.an.instanceOf(DataService);
         });
 
@@ -59,8 +59,9 @@ describe('EmbeddedContext', () => {
     describe('#getIdentityService', () => {
 
         it('should return the container identity service', () => {
-            let context = new EmbeddedContext(mockEngine);
+            let context = new EmbeddedContext(mockEngine, 'bob1');
             context.getIdentityService().should.be.an.instanceOf(IdentityService);
+            context.getIdentityService().getCurrentUserID().should.equal('bob1');
         });
 
     });
