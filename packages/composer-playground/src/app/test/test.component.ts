@@ -65,9 +65,22 @@ export class TestComponent implements OnInit {
 
             return this.clientService.getBusinessNetworkConnection().getTransactionRegistry()
           })
-          .then((transactionRegistry) =>{
+          .then((transactionRegistry) => {
             this.transactionRegistry = transactionRegistry;
+            if(this.transactionRegistry) {
+              this.chosenRegistry = this.transactionRegistry;
+            }
+
+            // set the default registry selection 
+            if(this.participantRegistries.length != 0) {
+              this.chosenRegistry = this.participantRegistries[0];
+            } else if(this.assetRegistries.length != 0) {
+              this.chosenRegistry = this.assetRegistries[0];
+            } else {
+                this.chosenRegistry = this.transactionRegistry;
+            }
           });
+
       })
       .catch((error) => {
         this.alertService.errorStatus$.next(error);
