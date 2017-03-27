@@ -1,0 +1,29 @@
+{
+  "ids": {
+    "user": 2,
+    "accessToken": 5,
+    "ACL": 1,
+    "RoleMapping": 1,
+    "Role": 1,
+    "userCredential": 1,
+    "userIdentity": 2
+  },
+  "models": {
+    "user": {
+      "1": "{\"username\":\"github.sstone1\",\"password\":\"$2a$10$djXhjC34nZnpu95tRJlXpeBjVMcUJXaCibp0bpcwMWd8BUJGwq8y2\",\"email\":\"sstone1@loopback.github.com\",\"id\":1}"
+    },
+    "accessToken": {
+      "7l1O1J5dzfDD8t6LTfPiW17BG3krIAyGm7fQHrh2unIpOBs1z40IDESRs7LmtCEx": "{\"id\":\"7l1O1J5dzfDD8t6LTfPiW17BG3krIAyGm7fQHrh2unIpOBs1z40IDESRs7LmtCEx\",\"ttl\":1209600,\"created\":\"2017-03-04T21:52:05.672Z\",\"userId\":1}",
+      "VuHC140S8GG6WzFswD9wJjMHjQyvebfMzzOUHWeunhjck2hbQ4nQ4yX31cuSdt16": "{\"id\":\"VuHC140S8GG6WzFswD9wJjMHjQyvebfMzzOUHWeunhjck2hbQ4nQ4yX31cuSdt16\",\"ttl\":1209600,\"created\":\"2017-03-05T21:28:38.108Z\",\"userId\":1}",
+      "t69eyt8mmtoarFEBoCUFBju3ovk9WiG7sBxkm3IEPIi6y0mmUObZ7CkYlFgD2HPw": "{\"id\":\"t69eyt8mmtoarFEBoCUFBju3ovk9WiG7sBxkm3IEPIi6y0mmUObZ7CkYlFgD2HPw\",\"ttl\":1209600,\"created\":\"2017-03-26T22:16:33.036Z\",\"userId\":1}",
+      "AV7MiZgQLKeJILijwGLJVe8CY06XfZbGDm6gkwxD4YlpgTCnglKrdBx7VEgegbAZ": "{\"id\":\"AV7MiZgQLKeJILijwGLJVe8CY06XfZbGDm6gkwxD4YlpgTCnglKrdBx7VEgegbAZ\",\"ttl\":1209600,\"created\":\"2017-03-26T22:35:19.544Z\",\"userId\":1}"
+    },
+    "ACL": {},
+    "RoleMapping": {},
+    "Role": {},
+    "userCredential": {},
+    "userIdentity": {
+      "1": "{\"provider\":\"github\",\"authScheme\":\"oAuth 2.0\",\"externalId\":\"7118158\",\"profile\":{\"id\":\"7118158\",\"displayName\":\"Simon Stone\",\"username\":\"sstone1\",\"profileUrl\":\"https://github.com/sstone1\",\"provider\":\"github\",\"_raw\":\"{\\\"login\\\":\\\"sstone1\\\",\\\"id\\\":7118158,\\\"avatar_url\\\":\\\"https://avatars1.githubusercontent.com/u/7118158?v=3\\\",\\\"gravatar_id\\\":\\\"\\\",\\\"url\\\":\\\"https://api.github.com/users/sstone1\\\",\\\"html_url\\\":\\\"https://github.com/sstone1\\\",\\\"followers_url\\\":\\\"https://api.github.com/users/sstone1/followers\\\",\\\"following_url\\\":\\\"https://api.github.com/users/sstone1/following{/other_user}\\\",\\\"gists_url\\\":\\\"https://api.github.com/users/sstone1/gists{/gist_id}\\\",\\\"starred_url\\\":\\\"https://api.github.com/users/sstone1/starred{/owner}{/repo}\\\",\\\"subscriptions_url\\\":\\\"https://api.github.com/users/sstone1/subscriptions\\\",\\\"organizations_url\\\":\\\"https://api.github.com/users/sstone1/orgs\\\",\\\"repos_url\\\":\\\"https://api.github.com/users/sstone1/repos\\\",\\\"events_url\\\":\\\"https://api.github.com/users/sstone1/events{/privacy}\\\",\\\"received_events_url\\\":\\\"https://api.github.com/users/sstone1/received_events\\\",\\\"type\\\":\\\"User\\\",\\\"site_admin\\\":false,\\\"name\\\":\\\"Simon Stone\\\",\\\"company\\\":\\\"IBM\\\",\\\"blog\\\":null,\\\"location\\\":\\\"Hursley, UK\\\",\\\"email\\\":null,\\\"hireable\\\":null,\\\"bio\\\":null,\\\"public_repos\\\":17,\\\"public_gists\\\":0,\\\"followers\\\":9,\\\"following\\\":0,\\\"created_at\\\":\\\"2014-03-31T17:13:12Z\\\",\\\"updated_at\\\":\\\"2017-03-26T22:35:18Z\\\"}\",\"_json\":{\"login\":\"sstone1\",\"id\":7118158,\"avatar_url\":\"https://avatars1.githubusercontent.com/u/7118158?v=3\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/sstone1\",\"html_url\":\"https://github.com/sstone1\",\"followers_url\":\"https://api.github.com/users/sstone1/followers\",\"following_url\":\"https://api.github.com/users/sstone1/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/sstone1/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/sstone1/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/sstone1/subscriptions\",\"organizations_url\":\"https://api.github.com/users/sstone1/orgs\",\"repos_url\":\"https://api.github.com/users/sstone1/repos\",\"events_url\":\"https://api.github.com/users/sstone1/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/sstone1/received_events\",\"type\":\"User\",\"site_admin\":false,\"name\":\"Simon Stone\",\"company\":\"IBM\",\"blog\":null,\"location\":\"Hursley, UK\",\"email\":null,\"hireable\":null,\"bio\":null,\"public_repos\":17,\"public_gists\":0,\"followers\":9,\"following\":0,\"created_at\":\"2014-03-31T17:13:12Z\",\"updated_at\":\"2017-03-26T22:35:18Z\"}},\"credentials\":{\"accessToken\":\"92a15937f5bc613bddab23dae0e562fde504505a\"},\"created\":\"2017-03-04T21:52:05.669Z\",\"modified\":\"2017-03-26T22:35:19.534Z\",\"userId\":1,\"id\":1}"
+    }
+  }
+}

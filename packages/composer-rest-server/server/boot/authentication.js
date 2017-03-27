@@ -14,8 +14,6 @@
 
 'use strict';
 
-module.exports = function(server) {
-    let router = server.loopback.Router();
-    router.get('/status', server.loopback.status());
-    server.use(router);
+module.exports = function enableAuthentication(server) {
+    server.enableAuth();
 };

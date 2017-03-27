@@ -70,6 +70,22 @@ module.exports = function (app, callback) {
         console.log('Adding schemas for all types to Loopback ...');
         modelSchemas.forEach((modelSchema) => {
 
+            //
+            modelSchema.acls = [
+                {
+                    accessType: '*',
+                    permission: 'ALLOW',
+                    principalId: '$authenticated',
+                    principalType: 'ROLE'
+                },
+                {
+                    accessType: '*',
+                    permission: 'DENY',
+                    principalId: '$unauthenticated',
+                    principalType: 'ROLE'
+                }
+            ];
+
             // this call creates the model class from the model schema.
             let model = app.loopback.createModel(modelSchema);
 

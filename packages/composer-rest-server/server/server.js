@@ -22,6 +22,40 @@ const util = require('../lib/util');
 const loopback = require('loopback');
 const boot = require('loopback-boot');
 const app = module.exports = loopback();
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
+// Passport configurators..
+const loopbackPassport = require('loopback-component-passport');
+const PassportConfigurator = loopbackPassport.PassportConfigurator;
+const passportConfigurator = new PassportConfigurator(app);
+
+/*
+ * body-parser is a piece of express middleware that
+ *   reads a form's input and stores it as a javascript
+ *   object accessible through `req.body`
+ *
+ */
+const bodyParser = require('body-parser');
+
+/**
+ * Flash messages for passport
+ *
+ * Setting the failureFlash option to true instructs Passport to flash an
+ * error message using the message given by the strategy's verify callback,
+ * if any. This is often the best approach, because the verify callback
+ * can make the most accurate determination of why authentication failed.
+ */
+const flash = require('express-flash');
+
+// attempt to build the providers/passport config
+let config = {};
+try {
+    config = require('./providers.json');
+} catch (err) {
+    console.trace(err);
+    process.exit(1); // fatal
+}
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
@@ -84,6 +118,11 @@ promise.then((composer) => {
     // Store the composer configuration for the boot script to find
     app.set('composer', composer);
 
+    // Setup the view engine (jade)
+    let path = require('path');
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'jade');
+
     // boot scripts mount components like REST API
     return new Promise((resolve, reject) => {
         boot(app, __dirname, (error) => {
@@ -101,6 +140,110 @@ promise.then((composer) => {
     if (composer.port) {
         app.set('port', composer.port);
     }
+
+    // to support JSON-encoded bodies
+    app.middleware('parse', bodyParser.json());
+    // to support URL-encoded bodies
+    app.middleware('parse', bodyParser.urlencoded({
+        extended: true,
+    }));
+
+    // The access token is only available after boot
+    app.middleware('auth', loopback.token({
+        model: app.models.accessToken,
+    }));
+
+    app.middleware('session:before', cookieParser(app.get('cookieSecret')));
+    app.middleware('session', session({
+        secret: 'kitty',
+        saveUninitialized: true,
+        resave: true,
+    }));
+    passportConfigurator.init();
+
+    // We need flash messages to see passport errors
+    app.use(flash());
+
+    passportConfigurator.setupModels({
+        userModel: app.models.user,
+        userIdentityModel: app.models.userIdentity,
+        userCredentialModel: app.models.userCredential,
+    });
+    for (let s in config) {
+        let c = config[s];
+        c.session = c.session !== false;
+        passportConfigurator.configureProvider(s, c);
+    }
+    let ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+
+    app.get('/', function (req, res, next) {
+        res.render('pages/index', {
+            user:
+            req.user,
+            url: req.url,
+        });
+    });
+
+    app.get('/auth/account', ensureLoggedIn('/login'), function (req, res, next) {
+        res.render('pages/loginProfiles', {
+            user: req.user,
+            url: req.url,
+        });
+    });
+
+    app.get('/local', function (req, res, next) {
+        res.render('pages/local', {
+            user: req.user,
+            url: req.url,
+        });
+    });
+
+    app.get('/signup', function (req, res, next) {
+        res.render('pages/signup', {
+            user: req.user,
+            url: req.url,
+        });
+    });
+
+    app.post('/signup', function (req, res, next) {
+        let User = app.models.user;
+
+        let newUser = {};
+        newUser.email = req.body.email.toLowerCase();
+        newUser.username = req.body.username.trim();
+        newUser.password = req.body.password;
+
+        User.create(newUser, function (err, user) {
+            if (err) {
+                req.flash('error', err.message);
+                return res.redirect('back');
+            } else {
+                // Passport exposes a login() function on req (also aliased as logIn())
+                // that can be used to establish a login session. This function is
+                // primarily used when users sign up, during which req.login() can
+                // be invoked to log in the newly registered user.
+                req.login(user, function (err) {
+                    if (err) {
+                        req.flash('error', err.message);
+                        return res.redirect('back');
+                    }
+                    return res.redirect('/auth/account');
+                });
+            }
+        });
+    });
+
+    app.get('/login', function (req, res, next) {
+        res.render('pages/login', {
+            user: req.user,
+            url: req.url,
+        });
+    });
+
+    app.get('/auth/logout', function (req, res, next) {
+        req.logout();
+        res.redirect('/');
+    });
 
     app.start = function () {
         // start the web server
