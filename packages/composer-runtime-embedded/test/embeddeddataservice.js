@@ -39,6 +39,7 @@ describe('EmbeddedDataService', () => {
 
     afterEach(() => {
         sandbox.restore();
+        dataService.close();
         const db = new Dexie('Composer:3a4b69c9-239c-4e3d-9c33-9c24d2bdbb1c', {
             indexedDB: fakeIndexedDB,
             IDBKeyRange: FDBKeyRange
@@ -69,6 +70,16 @@ describe('EmbeddedDataService', () => {
             dataService = new EmbeddedDataService();
             dataService.should.be.an.instanceOf(DataService);
             sinon.assert.calledWith(spy, 'Composer');
+        });
+
+    });
+
+    describe('#close', () => {
+
+        it('should close the database', () => {
+            sinon.spy(dataService.db, 'close');
+            dataService.close();
+            sinon.assert.calledOnce(dataService.db.close);
         });
 
     });
