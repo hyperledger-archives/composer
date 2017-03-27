@@ -153,13 +153,12 @@ class HLFConnection extends Connection {
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
-                return user.setEnrollment(enrollment.key, enrollment.certificate);
+                return user.setEnrollment(enrollment.key, enrollment.certificate, this.connectOptions.mspid);
             })
             .then(() => {
 
                 // Set the user object that the client will use.
                 LOG.debug(method, 'Persisting user context into key value store');
-                this.user = user;
                 return this.client.setUserContext(user);
 
             })
@@ -290,7 +289,7 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-                let txId = this.chain.buildTransactionID(nonce, this.user);
+                let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
 
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
@@ -322,7 +321,7 @@ class HLFConnection extends Connection {
                 businessNetworkArchive = bna;
                 nonce = utils.getNonce();
                 // prepare and send the instantiate proposal
-                finalTxId = this.chain.buildTransactionID(nonce, this.user);
+                finalTxId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: connectorPackageJSON.version,
@@ -358,7 +357,7 @@ class HLFConnection extends Connection {
                 if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(finalTxId);
+                return this._waitForEvents(finalTxId, this.connectOptions.deployWaitTime);
 
             })
             .then(() => {
@@ -382,7 +381,6 @@ class HLFConnection extends Connection {
 
         proposalResponses.forEach((proposalResponse) => {
             if (proposalResponse instanceof Error) {
-                console.log('throwing proposal response');
                 throw proposalResponse;
             } else if (proposalResponse.response.status === 200) {
                 return true;
@@ -532,7 +530,7 @@ class HLFConnection extends Connection {
         });
 
         let nonce = utils.getNonce();
-        let txId = this.chain.buildTransactionID(nonce, this.user);
+        let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
 
         // Submit the query request.
         const request = {
@@ -559,8 +557,6 @@ class HLFConnection extends Connection {
                 return payload;
             })
             .catch((error) => {
-                console.error(error);
-                console.trace(error);
                 LOG.error(method, error);
                 throw error;
             });
@@ -595,7 +591,7 @@ class HLFConnection extends Connection {
         });
 
         let nonce = utils.getNonce();
-        let txId = this.chain.buildTransactionID(nonce, this.user);
+        let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
         // Submit the transaction to the endorsers.
         const request = {
             chaincodeId: this.businessNetworkIdentifier,
@@ -632,7 +628,7 @@ class HLFConnection extends Connection {
                 if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId);
+                return this._waitForEvents(txId, this.connectOptions.invokeWaitTime);
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -648,15 +644,66 @@ class HLFConnection extends Connection {
      * @param {boolean} [options.issuer] Whether or not the new identity should have
      * permissions to create additional new identities. False by default.
      * @param {string} [options.affiliation] Specify the affiliation for the new
-     * identity. Defaults to 'institution_a'.
+     * identity. Defaults to 'org1'.
+     * @param {object} [options.attributes] Specify other attributes for the identity
      * @return {Promise} A promise that is resolved with a generated user
      * secret once the new identity has been created, or rejected with an error.
      */
     createIdentity(securityContext, userID, options) {
+        const method = 'createIdentity';
+        LOG.entry(method, securityContext, userID, options);
 
-        // The fabric-ca-client API does not currently support creating certificates.
-        return Promise.reject(new Error('unimplemented function called'));
+        // Check that a valid security context has been specified.
+        HLFUtil.securityCheck(securityContext);
+        if (!userID) {
+            throw new Error('userID not specified');
+        }
+        options = options || {};
 
+        //TODO: org1 is one of the default affiliations in fabric-ca-server
+        return new Promise((resolve, reject) => {
+            let registerRequest = {
+                enrollmentID: userID,
+                affiliation: options.affiliation || 'org1',  // or eg. org1.department1
+                attrs: [],
+                maxEnrollments: options.maxEnrollments || 0,
+                role: options.role || 'client'
+            };
+
+            // TODO: Not sure delegateRoles is used anymore
+            if (options.issuer) {
+                // Everyone we create can register clients.
+                registerRequest.attrs.push({
+                    name: 'hf.RegisterRoles',
+                    value: 'client'
+                });
+                // Everyone we create can register clients that can register clients.
+                registerRequest.attrs.push({
+                    name: 'hf.RegisterDelegateRoles',
+                    value: 'client'
+                });
+            }
+            for (let attribute in options.attributes) {
+                LOG.debug(method, 'Adding attribute to request', attribute);
+                registerRequest.attrs.push({
+                    name: attribute,
+                    value: options.attributes[attribute]
+                });
+            }
+
+            this.caClient.register(registerRequest, this._getLoggedInUser())
+                .then((userSecret) => {
+                    LOG.exit(method, 'Register request succeeded');
+                    resolve({
+                        userID: userID,
+                        userSecret: userSecret
+                    });
+                })
+                .catch((error) => {
+                    LOG.error(method, 'Register request failed', error);
+                    return reject(error);
+                });
+        });
     }
 
     /**
@@ -676,17 +723,18 @@ class HLFConnection extends Connection {
     /**
      * wait for events from the peers associated with the provided transaction id.
      * @param {string} txId the transaction id to listen for events on
+     * @param {number} waitTime the time to wait in seconds for an event response
      * @returns {Promise} A promise which resolves when all the events are received or rejected
      * if an event is not received within the given timeout period
      * @memberOf HLFConnection
      */
-    _waitForEvents(txId) {
+    _waitForEvents(txId, waitTime) {
         let eventPromises = [];
         this.eventHubs.forEach((eh) => {
             let txPromise = new Promise((resolve, reject) => {
                 const handle = setTimeout(() => {
                     reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
-                }, this.connectOptions.invokeWaitTime * 1000);
+                }, waitTime * 1000);
                 eh.registerTxEvent(txId.toString(), (tx, code) => {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
@@ -701,6 +749,14 @@ class HLFConnection extends Connection {
             eventPromises.push(txPromise);
         });
         return Promise.all(eventPromises);
+    }
+
+    /**
+     * return the logged in user
+     * @returns {User} the logged in user
+     */
+    _getLoggedInUser() {
+        return this.user;
     }
 
 }

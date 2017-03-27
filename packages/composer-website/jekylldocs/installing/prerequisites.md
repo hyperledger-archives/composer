@@ -26,7 +26,7 @@ If some of the tools are already installed or to do the installation step-by-ste
 
 
 ```bash
-$ curl -O https://raw.githubusercontent.com/mbwhite/sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+$ curl -O https://raw.githubusercontent.com/fabric-composer/sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
 $ chmod u+x prereqs-ubuntu.sh
 ```
 

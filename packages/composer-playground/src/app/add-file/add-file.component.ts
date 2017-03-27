@@ -9,7 +9,7 @@ import {AlertService} from '../services/alert.service';
   templateUrl: './add-file.component.html',
   styleUrls: ['./add-file.component.scss'.toString()]
 })
-export class AddFileComponent implements OnInit {
+export class AddFileComponent {
 
   @Input() businessNetwork: BusinessNetworkDefinition;
 
@@ -35,9 +35,6 @@ export class AddFileComponent implements OnInit {
               public activeModal: NgbActiveModal) {
   }
 
-  ngOnInit() {
-  }
-
   removeFile() {
     this.expandInput = false;
     this.currentFile = null;
@@ -53,21 +50,22 @@ export class AddFileComponent implements OnInit {
     this.expandInput = false;
   }
 
-  fileAccepted(file: File): Promise<any> {
+  fileAccepted(file: File) {
     let type = file.name.substr(file.name.lastIndexOf('.') + 1);
-    return this.getDataBuffer(file)
+    this.getDataBuffer(file)
       .then((data) => {
         switch (type) {
           case 'js':
+            this.expandInput = true;
             this.createScript(file, data);
             break;
           case 'cto':
+            this.expandInput = true;
             this.createModel(file, data);
             break;
           default:
             throw new Error('Unexpected File Type');
         }
-        this.expandInput = true;
       })
       .catch((err) => {
         this.fileRejected(err);
@@ -98,7 +96,7 @@ export class AddFileComponent implements OnInit {
 
   createModel(file: File, dataBuffer) {
     this.fileType = 'cto';
-    let modelManager = this.businessNetwork.getScriptManager();
+    let modelManager = this.businessNetwork.getModelManager();
     this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name || this.addModelFileName);
     this.currentFileName = this.currentFile.getFileName();
   }
@@ -114,8 +112,8 @@ export class AddFileComponent implements OnInit {
     if (this.fileType === 'js') {
       let code =
         `/**
-  * New script file
-  */`;
+ * New script file
+ */`;
       let scriptManager = this.businessNetwork.getScriptManager();
       let existingScripts = scriptManager.getScripts();
       let filteredScripts = existingScripts.filter((script) => {
@@ -141,10 +139,10 @@ export class AddFileComponent implements OnInit {
 
       let code =
         `/**
-  * New model file
-  */
+ * New model file
+ */
 
-  namespace ${this.addModelNamespace + numModels}`;
+namespace ${this.addModelNamespace + numModels}`;
 
       this.currentFile = new ModelFile(modelManager, code, this.addModelFileName + numModels + this.addModelFileExtension);
       this.currentFileName = this.currentFile.getFileName();

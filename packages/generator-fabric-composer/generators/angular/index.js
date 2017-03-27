@@ -22,16 +22,19 @@ let introspector;
 let assetProperties;
 let destinationPath;
 let liveNetwork;
-
+let skipInstall = false;
 
 module.exports = yeoman.Base.extend({
     constructor: function() {
         yeoman.Base.apply(this, arguments);
         this.options = this.env.options;
+
+        if(arguments[1].skipInstall !== undefined){
+            skipInstall = arguments[1].skipInstall;
+        }
     },
 
     prompting: function () {
-    // Have Yeoman greet the user.
         console.log('Welcome to the Angular2 skeleton app generator');
 
         return this.prompt([
@@ -270,68 +273,65 @@ module.exports = yeoman.Base.extend({
     },
 
     writing: function () {
-        console.log('About to start creating files');
-        let self = this;
+        let completedApp = new Promise((resolve, reject) => {
+            console.log('About to start creating files');
 
-        if(liveNetwork){
+            if(liveNetwork){
 
-            console.log('About to connect to a running business network');
+                console.log('About to connect to a running business network');
 
-            return businessNetworkConnection.connect(this.connectionProfileName, this.networkIdentifier, this.enrollmentId, this.enrollmentSecret)
-                .then((result) => {
-                    console.log('Connected to:',this.networkIdentifier);
-                    businessNetworkDefinition = result;
-                    return businessNetworkConnection.disconnect();
+                return businessNetworkConnection.connect(this.connectionProfileName, this.networkIdentifier, this.enrollmentId, this.enrollmentSecret)
+                    .then((result) => {
+                        console.log('Connected to:',this.networkIdentifier);
+                        businessNetworkDefinition = result;
+                        return businessNetworkConnection.disconnect();
 
-                })
-                .then(() => {
-                    this.destinationRoot(this.appName);
-                    destinationPath = this.destinationPath();
-                    createApp();
-                    this.installDependencies({
-                        bower: false,
-                        npm: true
+                    })
+                    .then(() => {
+                        this.destinationRoot(this.appName);
+                        destinationPath = this.destinationPath();
+                        resolve(this._createApp());
+                    });
+
+            }
+            else{
+                console.log('About to read a business network archive file');
+                fs.readFile(this.fileName,(err,buffer) => {
+                    console.log('Reading file:',this.fileName);
+                    return BusinessNetworkDefinition.fromArchive(buffer)
+                    .then((result) => {
+                        businessNetworkDefinition = result;
+                        this.destinationRoot(this.appName);
+                        destinationPath = this.destinationPath();
+                        resolve(this._createApp());
+
                     });
                 });
+            }
+        });
+        return completedApp.then(() => {
+            console.log('Completed generation process');
+        });
 
-        }
-        else{
-            console.log('About to read a business network archive file');
-            fs.readFile(this.fileName,(err,buffer) => {
-                console.log('Reading file:',this.fileName);
-                BusinessNetworkDefinition.fromArchive(buffer)
-                .then((result) => {
-                    businessNetworkDefinition = result;
-                })
-                .then(() => {
-                    this.destinationRoot(this.appName);
-                    destinationPath = this.destinationPath();
-                    createApp();
-                    this.installDependencies({
-                        bower: false,
-                        npm: true
-                    });
-                });
-            });
-        }
+    },
 
 
-        /*
-        * This function will actually generate application code.
-        */
-        function createApp(){
+    _createApp: function(){
+        let createdApp = new Promise((resolve, reject) => {
 
-            // console.log('What is the BND',businessNetworkDefinition);
+            /*
+            * This function will actually generate application code.
+            */
+
             businessNetworkIdentifier = businessNetworkDefinition.getIdentifier();
             introspector = businessNetworkDefinition.getIntrospector();
-                    // scriptManager = businessNetworkDefinition.getScriptManager();
+
             modelManager = introspector.getModelManager();
             namespaceList = modelManager.getNamespaces();
 
             shell.mkdir('-p', destinationPath+'/src/assets/');
             namespaceList.forEach((namespace) => {
 
-                // currentNamespace = namespace;
 
                 let modelFile = modelManager.getModelFile(namespace);
                 let assetDeclarations = modelFile.getAssetDeclarations();
@@ -383,64 +383,71 @@ module.exports = yeoman.Base.extend({
                 assetComponentNames.push(asset.name+'Component');
             });
 
-            let model = self._generateTemplateModel();
-            self.fs.copyTpl(self.templatePath('**/!(node_modules|typings|asset|Transaction)*'), self.destinationPath(), model);
+            let model = this._generateTemplateModel();
+            this.fs.copyTpl(this.templatePath('**/!(node_modules|typings|asset|Transaction)*'), this.destinationPath(), model);
 
             for(let x=0;x<assetList.length;x++){
-                self.fs.copyTpl(
-                        self.templatePath('src/app/asset/asset.component.ts'),
-                        self.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.ts'),
+                this.fs.copyTpl(
+                        this.templatePath('src/app/asset/asset.component.ts'),
+                        this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.ts'),
                         { currentAsset: assetList[x], namespace: assetList[x].namespace, assetIdentifier:assetList[x].identifier }
                     );
 
-                self.fs.copyTpl(
+                this.fs.copyTpl(
 
-                        self.templatePath('src/app/asset/asset.service.ts'),
-                        self.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.service.ts'),
+                        this.templatePath('src/app/asset/asset.service.ts'),
+                        this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.service.ts'),
                         { assetName: assetList[x].name, namespace: assetList[x].namespace }
                     );
 
-                self.fs.copyTpl(
-                        self.templatePath('src/app/asset/asset.component.spec.ts'),
-                        self.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.spec.ts'),
+                this.fs.copyTpl(
+                        this.templatePath('src/app/asset/asset.component.spec.ts'),
+                        this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.spec.ts'),
                         { assetName: assetList[x].name }
                     );
 
-                self.fs.copyTpl(
-                        self.templatePath('src/app/asset/asset.component.html'),
-                        self.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.html'),
+                this.fs.copyTpl(
+                        this.templatePath('src/app/asset/asset.component.html'),
+                        this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.html'),
                         { currentAsset: assetList[x] }
                     );
 
-                self.fs.copyTpl(
-                        self.templatePath('src/app/asset/asset.component.css'),
-                        self.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.css'),
+                this.fs.copyTpl(
+                        this.templatePath('src/app/asset/asset.component.css'),
+                        this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.css'),
                         { styling: '{}' }
                     );
+
             }
 
             let visitor = null;
             visitor = new TypescriptVisitor();
             let parameters = {};
-            parameters.fileWriter = new FileWriter(self.destinationPath()+'/src/app');
+            parameters.fileWriter = new FileWriter(this.destinationPath()+'/src/app');
             modelManager.accept(visitor, parameters);
 
 
             assetList = [];
             assetComponentNames = [];
             assetServiceNames = [];
-        }
-
-
-
+            resolve();
+        });
+        return createdApp.then(()=>{
+            console.log('Created application!');
+        });
     },
 
 
     install: function () {
-        return this.installDependencies({
-            bower: false,
-            npm: true
-        });
+        if(!skipInstall){
+            return this.installDependencies({
+                bower: false,
+                npm: true
+            });
+        }
+        else{
+            console.log('Skipped installing dependencies');
+        }
     },
 
     _generateTemplateModel: function() {
@@ -462,7 +469,6 @@ module.exports = yeoman.Base.extend({
     },
 
     end: function() {
-        console.log('Complete');
-        process.exit(0);
+        shell.exec('pkill yo');
     }
 });

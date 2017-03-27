@@ -69,7 +69,7 @@ class JSTransactionExecutor extends TransactionExecutor {
             return result.then(() => {
                 LOG.debug(method, 'Executing function');
                 let funcResult = func(resolvedTransaction);
-                if (funcResult instanceof Promise) {
+                if (funcResult && typeof funcResult.then === 'function') {
                     return funcResult.then(() => {
                         LOG.debug(method, 'Function executed (returned promise)');
                     });

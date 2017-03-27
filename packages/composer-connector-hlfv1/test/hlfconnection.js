@@ -70,7 +70,8 @@ describe('HLFConnection', () => {
             ],
             ca: 'http://localhost:7054',
             keyValStore: '/tmp/hlfabric1',
-            channel: 'testchainid'
+            channel: 'testchainid',
+            mspid: 'suchmsp'
         };
         connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
     });
@@ -190,7 +191,7 @@ describe('HLFConnection', () => {
             return connection.enroll('admin', 'adminpw')
                 .then(() => {
                     sinon.assert.calledOnce(mockUser.setEnrollment);
-                    sinon.assert.calledWith(mockUser.setEnrollment, 'suchkey', 'suchcert');
+                    sinon.assert.calledWith(mockUser.setEnrollment, 'suchkey', 'suchcert', 'suchmsp');
                     sinon.assert.calledOnce(mockClient.setUserContext);
                     sinon.assert.calledWith(mockClient.setUserContext, mockUser);
                 });
@@ -265,7 +266,56 @@ describe('HLFConnection', () => {
             }).should.throw(/businessNetwork not specified/);
         });
 
+        it('should request an event timeout based on connection settings', () => {
+            connectOptions = {
+                orderers: [
+                    'grpc://localhost:7050'
+                ],
+                peers: [
+                    'grpc://localhost:7051'
+                ],
+                events: [
+                    'grpc://localhost:7053'
+                ],
+                ca: 'http://localhost:7054',
+                keyValStore: '/tmp/hlfabric1',
+                channel: 'testchainid',
+                mspid: 'suchmsp',
+                deployWaitTime: 39,
+                invokeWaitTime: 63,
+            };
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
+            // This is the generated nonce.
+            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            const response = {
+                status: 'SUCCESS'
+            };
+            // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            sandbox.stub(global, 'setTimeout').yields();
+            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
+                .catch(() => {
+                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
+                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, connectOptions.deployWaitTime * 1000);
+                });
+        });
+
         it('should deploy the business network', () => {
+            sandbox.stub(global, 'setTimeout');
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
@@ -876,6 +926,56 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/such error/);
         });
 
+        it('should set the timeout to value specified in connection profile', () => {
+            connectOptions = {
+                orderers: [
+                    'grpc://localhost:7050'
+                ],
+                peers: [
+                    'grpc://localhost:7051'
+                ],
+                events: [
+                    'grpc://localhost:7053'
+                ],
+                ca: 'http://localhost:7054',
+                keyValStore: '/tmp/hlfabric1',
+                channel: 'testchainid',
+                mspid: 'suchmsp',
+                deployWaitTime: 39,
+                invokeWaitTime: 63,
+            };
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
+            // This is the generated nonce.
+            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            // This is the transaction proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            sandbox.stub(global, 'setTimeout').yields();
+            // mockEventHub.registerTxEvent.yields();
+            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
+                .catch(() => {
+                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
+                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, connectOptions.invokeWaitTime * 1000);
+                });
+        });
+
+
         it('should throw an error if the commit of the transaction times out', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
@@ -934,12 +1034,144 @@ describe('HLFConnection', () => {
     });
 
     describe('#createIdentity', () => {
-
-        it('should throw an error as not implemented yet', () => {
-            return connection.createIdentity(mockSecurityContext, 'doge')
-                .should.be.rejectedWith(/unimplemented function called/);
+        beforeEach(() => {
+            sandbox.stub(connection, '_getLoggedInUser').returns(mockUser);
         });
 
+
+        it('should throw error if no user is specified', () => {
+            (() => {
+                connection.createIdentity(mockSecurityContext, '');
+            }).should.throw(/userID not specified/);
+            (() => {
+                connection.createIdentity(mockSecurityContext);
+            }).should.throw(/userID not specified/);
+            (() => {
+                connection.createIdentity(mockSecurityContext, null);
+            }).should.throw(/userID not specified/);
+        });
+
+        it('should issue a request to register a user', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser')
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request to register a user who can register other users', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {issuer: true})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [
+                            {name: 'hf.RegisterRoles', value: 'client'},
+                            {name: 'hf.RegisterDelegateRoles', value: 'client'},
+                        ],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with a limited number of enrollments', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {maxEnrollments: 9})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [],
+                        maxEnrollments: 9,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with a different affiliation', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {affiliation: 'bank_b'})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'bank_b',
+                        attrs: [],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with a different role', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {role: 'peer,auditor'})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [],
+                        maxEnrollments: 0,
+                        role: 'peer,auditor'
+                    }, mockUser);
+                });
+        });
+
+        it('should issue a request with user supplied attributes', () => {
+            mockCAClient.register.resolves('asecret');
+            return connection.createIdentity(mockSecurityContext, 'auser', {attributes: {attr1: 'value1', attr2: 'value2'}})
+                .then((result) => {
+                    result.should.deep.equal({
+                        userID: 'auser',
+                        userSecret: 'asecret'
+                    });
+                    sinon.assert.calledWith(mockCAClient.register, {
+                        enrollmentID: 'auser',
+                        affiliation: 'org1',
+                        attrs: [
+                            {name: 'attr1', value: 'value1'},
+                            {name: 'attr2', value: 'value2'}
+                        ],
+                        maxEnrollments: 0,
+                        role: 'client'
+                    }, mockUser);
+                });
+        });
+
+
+        it('should handle a register error', () => {
+            mockCAClient.register.rejects(new Error('anerror'));
+            return connection.createIdentity(mockSecurityContext, 'auser')
+                .should.be.rejectedWith(/anerror/);
+
+        });
     });
 
     describe('#list', () => {

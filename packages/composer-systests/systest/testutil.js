@@ -107,6 +107,10 @@ class TestUtil {
         if (!TestUtil.isHyperledgerFabric()) {
             return Promise.resolve();
         }
+        // startsWith not available in browser test environment
+        if (process.env.SYSTEST.match('^hlfv1')) {
+            return Promise.resolve();
+        }
         return TestUtil.waitForPort('localhost', 7050)
             .then(() => {
                 return TestUtil.waitForPort('localhost', 7051);
@@ -147,15 +151,40 @@ class TestUtil {
                         type: 'embedded'
                     };
                 } else {
+                    // hlf need to decide if v1 or 0.6
                     let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
-                    adminOptions = {
-                        type: 'hlf',
-                        keyValStore: keyValStore,
-                        membershipServicesURL: 'grpc://localhost:7054',
-                        peerURL: 'grpc://localhost:7051',
-                        eventHubURL: 'grpc://localhost:7053'
-                    };
                     mkdirp.sync(keyValStore);
+
+                    if (process.env.SYSTEST.match('^hlfv1')) {
+                        adminOptions = {
+                            type: 'hlfv1',
+                            orderers: [
+                                'grpc://localhost:7050'
+                            ],
+                            ca: 'http://localhost:7054',
+                            peers: [
+                                'grpc://localhost:7051',
+                                'grpc://localhost:7056'
+                            ],
+                            events: [
+                                'grpc://localhost:7053',
+                                'grpc://localhost:7058'
+                            ],
+                            channel: 'mychannel',
+                            mspid: 'Org1MSP',
+                            deployWaitTime: '300',
+                            invokeWaitTime: '100',
+                            keyValStore: keyValStore
+                        };
+                    } else {
+                        adminOptions = {
+                            type: 'hlf',
+                            keyValStore: keyValStore,
+                            membershipServicesURL: 'grpc://localhost:7054',
+                            peerURL: 'grpc://localhost:7051',
+                            eventHubURL: 'grpc://localhost:7053'
+                        };
+                    }
                 }
                 if (process.env.CONCERTO_DEPLOY_WAIT_SECS) {
                     adminOptions.deployWaitTime = parseInt(process.env.CONCERTO_DEPLOY_WAIT_SECS);
@@ -171,7 +200,8 @@ class TestUtil {
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
-                return adminConnection.connect('concerto-systests', 'admin', 'Xurw3yU9zI0l');
+                let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
+                return adminConnection.connect('concerto-systests', 'admin', password);
             })
             .then(function () {
                 console.log('Called AdminConnection.connect()');
@@ -234,7 +264,8 @@ class TestUtil {
         })
         .then(() => {
             enrollmentID = enrollmentID || 'admin';
-            enrollmentSecret = enrollmentSecret || 'Xurw3yU9zI0l';
+            let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
+            enrollmentSecret = enrollmentSecret || password;
             console.log(`Calling Client.connect('concerto-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
             return thisClient.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
         })

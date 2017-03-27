@@ -26,7 +26,7 @@ Check that your system has the required software (at the required versions) inst
 **git:** 2.9.x
 
 If you need to update or install anything please refer to the install guides:
-[Installing Prerequisites](../tasks/prerequisites.md)
+[Installing Prerequisites](../installing/prerequisites.md)
 
 **Install the command line tools:**
 
@@ -45,6 +45,7 @@ $ git clone https://github.com/fabric-composer/sample-applications.git
 ```
 $ cd sample-applications/packages/getting-started
 $ npm install
+$ composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 ```
 
 ***npm install***
@@ -150,4 +151,4 @@ info: [Composer-GettingStarted] Command completed successfully.
 
 **Where next?**
 
-* Learn more about the Digital Property Network and running the tests in the first [Getting Started Tutorial](./getting-started-cmd-line.md)
+* Learn more about the Digital Property Network and running the tests in the first [Getting Started Tutorial](../tutorials/getting-started-cmd-line.md)

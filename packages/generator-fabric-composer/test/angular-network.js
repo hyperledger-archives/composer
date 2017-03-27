@@ -11,6 +11,7 @@ describe('fabric-composer:angular for digitalPropertyNetwork running against a d
         .inTmpDir(function (dir) {
             tmpDir = dir;
         })
+        .withOptions({ skipInstall: true })
         .withPrompts({
             liveNetwork: true,
             appName: 'digitalPropertyNetwork',
