@@ -33,7 +33,7 @@ class MockCodeMirrorComponent {
   @Input() config: any;
 }
 
-fdescribe('TransactionComponent', () => {
+describe('TransactionComponent', () => {
   let component: TransactionComponent;
   let fixture: ComponentFixture<TransactionComponent>;
   let mockNgbActiveModal;
