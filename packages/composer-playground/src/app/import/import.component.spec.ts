@@ -146,14 +146,14 @@ describe('ImportComponent', () => {
   describe('onShow', () => {
     it('should check if authenticated with github', fakeAsync(() => {
       mockBusinessNetworkService.isAuthenticatedWithGitHub.returns(true);
-      mockBusinessNetworkService.getModelsInfo.returns(Promise.resolve({model: 'modelOne'}));
+      mockBusinessNetworkService.getModelsInfo.returns(Promise.resolve([{name: 'modelOne'}]));
 
       component.onShow();
 
       component['gitHubInProgress'].should.equal(true);
       tick();
 
-      component['sampleNetworks'].should.deep.equal({model: 'modelOne'});
+      component['sampleNetworks'].should.deep.equal([{name: 'modelOne'}]);
       component['gitHubInProgress'].should.equal(false);
     }));
 
