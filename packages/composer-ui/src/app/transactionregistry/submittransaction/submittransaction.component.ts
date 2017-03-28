@@ -73,7 +73,7 @@ export class SubmitTransactionComponent implements OnInit {
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);
-      // Delete the transaction ID and timestamp which are irrelevant.
+      // Delete the transaction ID and timestamp which will be provided at submission time.
       delete json[classDeclaration.getIdentifierFieldName()];
       delete json.timestamp;
       this.data = JSON.stringify(json, null, 2);
@@ -86,11 +86,15 @@ export class SubmitTransactionComponent implements OnInit {
 
   private onDataChanged() {
     try {
+      let businessNetworkDefinition = this.clientService.getBusinessNetwork();
+      let introspector = businessNetworkDefinition.getIntrospector();
+      let classDeclaration = introspector.getClassDeclaration(this.clazz);
       let json = JSON.parse(this.data);
+      // Add in a generated transaction ID and timestamp to satisfy the validator.
+      json[classDeclaration.getIdentifierFieldName()] = '00000000-0000-0000-0000-000000000000';
+      json.timestamp = new Date();
       let serializer = this.clientService.getBusinessNetwork().getSerializer();
       let resource = serializer.fromJSON(json);
-      resource.setIdentifier('00000000-0000-0000-0000-000000000000');
-      resource.timestamp = new Date();
       resource.validate();
       this.error = null;
     } catch (e) {
@@ -103,9 +107,18 @@ export class SubmitTransactionComponent implements OnInit {
     this.clientService.busyStatus$.next('Submitting transaction ...');
     return Promise.resolve()
       .then(() => {
+        let businessNetworkDefinition = this.clientService.getBusinessNetwork();
+        let introspector = businessNetworkDefinition.getIntrospector();
+        let classDeclaration = introspector.getClassDeclaration(this.clazz);
         let json = JSON.parse(this.data);
+        // Add in a generated transaction ID and timestamp to satisfy the validator.
+        json[classDeclaration.getIdentifierFieldName()] = '00000000-0000-0000-0000-000000000000';
+        json.timestamp = new Date();
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
+        // Delete the transaction ID and timestamp which will be provided at submission time.
+        resource.setIdentifier(undefined);
+        delete resource.timestamp;
         return this.clientService.getBusinessNetworkConnection().submitTransaction(resource);
       })
       .then(() => {
