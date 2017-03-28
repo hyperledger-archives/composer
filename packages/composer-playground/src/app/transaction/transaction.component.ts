@@ -34,7 +34,7 @@ export class TransactionComponent implements OnInit {
 
   private resourceDefinition: string = null;
   private submitInProgress: boolean = false;
-  private defitionError: string = null;
+  private definitionError: string = null;
 
   private codeConfig = {
     lineNumbers: true,
@@ -73,7 +73,7 @@ export class TransactionComponent implements OnInit {
         });
 
         // Set first in list as selectedTransaction
-        if (this.transactionTypes && this.transactionTypes.length>0) {
+        if (this.transactionTypes && this.transactionTypes.length > 0) {
           this.selectedTransaction = this.transactionTypes[0];
           this.selectedTransactionName = this.selectedTransaction.getName();
 
@@ -105,38 +105,38 @@ export class TransactionComponent implements OnInit {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
     let factory = businessNetworkDefinition.getFactory();
     let id = this.hiddenTransactionItems.get(this.selectedTransaction.getIdentifierFieldName());
-    const generateParameters = { generate: true, "withSampleData": withSampleData };
+    const generateParameters = { generate: true, 'withSampleData': withSampleData };
     let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, generateParameters);
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);
       // remove hidden items from json
-      this.hiddenTransactionItems.forEach((value,key) => {
+      this.hiddenTransactionItems.forEach((value, key) => {
         delete json[key];
       });
       this.resourceDefinition = JSON.stringify(json, null, 2);
     } catch (error) {
       // We can't generate a sample instance for some reason.
-      this.defitionError = error.toString();
+      this.definitionError = error.toString();
     }
   }
 
   /**
-   * Validate the defition of the TransactionDeclaration, accounting for hidden fields.
+   * Validate the definition of the TransactionDeclaration, accounting for hidden fields.
    */
   private onDefinitionChanged() {
     try {
       let json = JSON.parse(this.resourceDefinition);
       // Add required items that are hidden from user
-      this.hiddenTransactionItems.forEach((value,key) => {
-        json[key]=value;
+      this.hiddenTransactionItems.forEach((value, key) => {
+        json[key] = value;
       });
       let serializer = this.clientService.getBusinessNetwork().getSerializer();
       let resource = serializer.fromJSON(json);
       resource.validate();
-      this.defitionError = null;
+      this.definitionError = null;
     } catch (error) {
-      this.defitionError = error.toString();
+      this.definitionError = error.toString();
     }
   }
 
@@ -154,16 +154,16 @@ export class TransactionComponent implements OnInit {
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
         return this.clientService.getBusinessNetworkConnection().submitTransaction(resource);
-      })
+     })
       .then(() => {
         this.submitInProgress = false;
-        this.defitionError = null;
+        this.definitionError = null;
         this.activeModal.close();
       })
       .catch((error) => {
-        this.defitionError = error.toString();
+        this.definitionError = error.toString();
         this.submitInProgress = false;
-      })
+      });
   }
 
 }
