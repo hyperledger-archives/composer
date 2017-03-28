@@ -84,7 +84,6 @@ export class ConnectionProfileDataComponent {
 
   onSubmit() {
     let connectionProfile = this.form.value;
-
     // Need to set this as user doesn't input profile type
     connectionProfile.type = this.connectionProfileData.profile.type;
     this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {
@@ -97,9 +96,27 @@ export class ConnectionProfileDataComponent {
         default: false
       };
 
-      this.connectionProfileData = profileToSet;
 
-      this.profileUpdated.emit(true);
+
+
+      return this.connectionProfileService.getAllProfiles().then((connectionProfiles) => {
+        let profiles = Object.keys(connectionProfiles).sort();
+        profiles.forEach((profile) => {
+          let connectionProfile = connectionProfiles[profile];
+          if(connectionProfile.name === this.connectionProfileData.name){
+            return this.connectionProfileService.deleteProfile(this.connectionProfileData.name)
+            .then(()=>{
+              console.log('Deleted profile',this.connectionProfileData.name);
+            })
+          }
+        })
+
+
+      }).then(()=>{
+        this.connectionProfileData = profileToSet;
+        this.profileUpdated.emit(true);
+      })
+
     });
   }
 }

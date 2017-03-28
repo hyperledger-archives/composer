@@ -43,6 +43,10 @@ export class ConnectionProfileService {
     return this.getAdminConnection().getProfile(name);
   }
 
+  deleteProfile(name): Promise<any> {
+    return this.getAdminConnection().deleteProfile(name);
+  }
+
   createDefaultProfile(): Promise<any> {
     // Check to see if the default connection profile exists.
     console.log('Checking for $default connection profile');
