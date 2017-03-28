@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {
   FormGroup, FormControl, Validators, FormBuilder
 }
@@ -28,6 +28,8 @@ export class ConnectionProfileDataComponent {
     }
     console.log('Profile Loaded',this.connectionProfileData);
   }
+
+  @Output() profileUpdated = new EventEmitter();
 
   private form: FormGroup;
 
@@ -65,11 +67,12 @@ export class ConnectionProfileDataComponent {
   startEditing() {
     this.form = this.fb.group({
       "name": this.connectionProfileData ? this.connectionProfileData.name : '',
+      "type": this.connectionProfileData ? this.connectionProfileData.type : 'hlf',
       "description": this.connectionProfileData ? this.connectionProfileData.profile.description : '',
-      "peerUrl": this.connectionProfileData ? this.connectionProfileData.profile.peerUrl : 'grpc://localhost:7051',
-      "memberUrl": this.connectionProfileData ? this.connectionProfileData.profile.membershipServicesURL : 'grpc://localhost:7054',
-      "eventUrl": this.connectionProfileData ? this.connectionProfileData.profile.eventHubURL : 'grpc://localhost:7053',
-      "keyValueStore": this.connectionProfileData ? this.connectionProfileData.profile.keyValueStore : '/tmp/keyValStore',
+      "peerURL": this.connectionProfileData ? this.connectionProfileData.profile.peerURL : 'grpc://localhost:7051',
+      "membershipServicesURL": this.connectionProfileData ? this.connectionProfileData.profile.membershipServicesURL : 'grpc://localhost:7054',
+      "eventHubURL": this.connectionProfileData ? this.connectionProfileData.profile.eventHubURL : 'grpc://localhost:7053',
+      "keyValStore": this.connectionProfileData ? this.connectionProfileData.profile.keyValStore : '/tmp/keyValStore',
       "deployWaitTime": this.connectionProfileData ? this.connectionProfileData.profile.deployWaitTime : 300,
       "invokeWaitTime": this.connectionProfileData ? this.connectionProfileData.profile.invokeWaitTime : 30,
       "certificate": this.connectionProfileData ? this.connectionProfileData.profile.certificate : '',
@@ -80,10 +83,23 @@ export class ConnectionProfileDataComponent {
   }
 
   onSubmit() {
-    console.log(this.form);
     let connectionProfile = this.form.value;
-    this.connectionProfileService.createProfile(this.connectionProfileData.name, connectionProfile).then(() => {
+
+    // Need to set this as user doesn't input profile type
+    connectionProfile.type = this.connectionProfileData.profile.type;
+    this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {
       this.editing = false;
+
+      // Need to set the profile back to its original form
+      let profileToSet = {
+        name: connectionProfile.name,
+        profile: connectionProfile,
+        default: false
+      };
+
+      this.connectionProfileData = profileToSet;
+
+      this.profileUpdated.emit(true);
     });
   }
 }

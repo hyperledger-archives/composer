@@ -33,12 +33,14 @@ export class ConnectionProfileComponent implements OnInit {
       this.setCurrentProfile(this.connectionProfiles[0]);
     })
   }
+
   private setCurrentProfile(connectionProfile) {
     this.currentConnectionProfile = connectionProfile;
-    console.log('what is the clicked profile?',this.currentConnectionProfile);
+    return this.updateConnectionProfiles();
     // this.profileReload = !this.profileReload;
 
   }
+
 
   private hideWarning(){
     this.warningVisible = false;
@@ -74,6 +76,10 @@ export class ConnectionProfileComponent implements OnInit {
           this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         }
       });
+  }
+
+  profileUpdated(event){
+    return this.updateConnectionProfiles();
   }
 
 }

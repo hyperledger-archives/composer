@@ -66,6 +66,6 @@
   </div>
 
   <div class="current-profile">
-    <connection-profile-data [connectionProfile]="currentConnectionProfile"></connection-profile-data>
+    <connection-profile-data (profileUpdated)="profileUpdated($event)" [connectionProfile]="currentConnectionProfile"></connection-profile-data>
   </div>
 </section>

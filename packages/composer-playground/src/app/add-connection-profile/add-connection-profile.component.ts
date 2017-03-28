@@ -34,6 +34,7 @@ export class AddConnectionProfileComponent {
 
   private addConnectionProfileName: string = null;
   private addConnectionProfileDescription: string = null;
+  private addConnectionProfileType: string = null;
   private addConnectionProfilePeerURL: string = null;
   private addConnectionProfileMembershipServicesURL: string = null;
   private addConnectionProfileEventHubURL: string = null;
@@ -143,7 +144,7 @@ export class AddConnectionProfileComponent {
     }
   }
 
-  private addConnectionProfile(): Promise<any> {
+  private addConnectionProfile(): void {
     // Do we have a connection profile certificate?
     if (this.addConnectionProfileCertificate) {
       // That isn't just whitespace?
@@ -166,17 +167,15 @@ export class AddConnectionProfileComponent {
       certificate: this.addConnectionProfileCertificate,
       certificatePath: this.addConnectionProfileCertificatePath
     };
-    return this.connectionProfileService.createProfile(this.addConnectionProfileName, connectionProfile)
-      .then(() => {
-        console.log('Created new profile');
-        let newConnectionProfile = {
-          name: this.addConnectionProfileName,
-          profile: connectionProfile,
-          default: this.addConnectionProfileName === '$default'
-        };
 
-        this.activeModal.close(newConnectionProfile);
-      });
+    let newConnectionProfile = {
+      name: this.addConnectionProfileName,
+      profile: connectionProfile,
+      default: this.addConnectionProfileName === '$default'
+    };
+
+    this.activeModal.close(newConnectionProfile);
+
   }
 
 
@@ -193,6 +192,7 @@ export class AddConnectionProfileComponent {
         connectionProfileName = connectionProfileBase + counter;
       }
       this.addConnectionProfileName = connectionProfileName;
+      this.addConnectionProfileType = 'hlf',
       this.addConnectionProfileDescription = "A description"
       this.addConnectionProfilePeerURL = 'grpc://localhost:7051';
       this.addConnectionProfileMembershipServicesURL = 'grpc://localhost:7054';

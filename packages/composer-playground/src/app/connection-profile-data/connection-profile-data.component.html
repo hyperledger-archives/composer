@@ -21,7 +21,7 @@
         <div class="section-expand">
           <button class="button secondary" type="button" (click)="expandSection('All')">{{expandedSection.length === 3 ? 'Collapse All' : 'Expand All'}}</button>
           <button type="button" class="action" (click)="expandSection('Basic Configuration')">
-            <svg [ngClass]="{'chevron': expandedSection.indexOf('Basic Configuration') > -1}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Basic Configuration') < 0}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
               <use xlink:href="#icon-chevron-down"></use>
             </svg>
           </button>
@@ -76,7 +76,7 @@
         </div>
         <div class="section-expand">
           <button type="button" class="action" (click)="expandSection('Security Settings')">
-            <svg [ngClass]="{'chevron': expandedSection.indexOf('Security Settings') > -1}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Security Settings') < 0}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
               <use xlink:href="#icon-chevron-down"></use>
             </svg>
           </button>
@@ -88,7 +88,7 @@
             Certificate
           </div>
           <div class="profile-value">
-            -
+            {{connectionProfileData.profile.certificate}}
           </div>
         </div>
         <div class="profile-row">
@@ -96,7 +96,7 @@
             Certificate Path
           </div>
           <div class="profile-value">
-            -
+            {{connectionProfileData.profile.certificatePath}}
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@
         </div>
         <div class="section-expand">
           <button type="button" class="action" (click)="expandSection('Advanced')">
-            <svg [ngClass]="{'chevron': expandedSection.indexOf('Advanced') > -1}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Advanced') < 0}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
               <use xlink:href="#icon-chevron-down"></use>
             </svg>
           </button>
@@ -160,19 +160,19 @@
         </div>
         <div>
           <label>Peer URL*</label>
-          <input type="text" formControlName="peerUrl">
+          <input type="text" formControlName="peerURL">
         </div>
         <div>
           <label>Membership Services URL</label>
-          <input type="text" formControlName="memberUrl">
+          <input type="text" formControlName="membershipServicesURL">
         </div>
         <div>
           <label>Event Hub URL</label>
-          <input type="text" formControlName="eventUrl">
+          <input type="text" formControlName="eventHubURL">
         </div>
         <div>
           <label>Key Value Store Directory</label>
-          <input type="text" formControlName="keyValueStore">
+          <input type="text" formControlName="keyValStore">
         </div>
       </section>
       <section>
