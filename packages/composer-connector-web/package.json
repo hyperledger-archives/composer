@@ -65,6 +65,6 @@
     "composer-common": "^0.5.6",
     "composer-runtime": "^0.5.6",
     "composer-runtime-web": "^0.5.6",
-    "dexie": "^1.5.1"
+    "uuid": "^3.0.1"
   }
 }

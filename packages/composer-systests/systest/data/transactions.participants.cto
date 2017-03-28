@@ -81,6 +81,10 @@ transaction GetParticipantFromParticipantRegistryTransaction identified by trans
     o String transactionId
 }
 
+transaction ExistsParticipantInParticipantRegistryTransaction identified by transactionId {
+    o String transactionId
+}
+
 transaction AddParticipantInTransactionToParticipantRegistryTransaction identified by transactionId {
     o String transactionId
     o SimpleStringParticipant stringParticipant

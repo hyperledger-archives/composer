@@ -557,8 +557,6 @@ class HLFConnection extends Connection {
                 return payload;
             })
             .catch((error) => {
-                console.error(error);
-                console.trace(error);
                 LOG.error(method, error);
                 throw error;
             });
