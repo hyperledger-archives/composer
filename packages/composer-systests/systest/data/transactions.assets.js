@@ -173,6 +173,23 @@ function onGetAssetFromAssetRegistryTransaction(transaction) {
         });
 }
 
+function onExistsAssetInAssetRegistryTransaction(transaction) {
+    // console.log(JSON.stringify(transaction));
+    var ar;
+    return getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+        .then(function (ar_) {
+            ar = ar_;
+            return ar.exists('stringAsset1');
+        })
+        .then(function (exists) {
+            if (exists !== true) { return new Error('asset does not exist'); }
+            return ar.exists('stringAsset2');
+        })
+        .then(function (exists) {
+            if (exists !== false) { return new Error('asset does exist'); }
+        });
+}
+
 function onAddAssetInTransactionToAssetRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
     return getAssetRegistry('systest.transactions.assets.SimpleStringAsset')

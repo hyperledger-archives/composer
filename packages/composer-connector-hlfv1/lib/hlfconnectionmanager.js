@@ -16,6 +16,7 @@
 
 const Logger = require('composer-common').Logger;
 const util = require('util');
+const fs = require('fs');
 
 const LOG = Logger.getLog('HLFConnectionManager');
 
@@ -97,20 +98,97 @@ class HLFConnectionManager extends ConnectionManager {
 
     /**
      * Create a new orderer.
-     * @param {string} orderer The orderer URL.
+     * @param {string} ordererURL The orderer URL string or the orderer object definition
+     * @param {object} tlsOpts optional tls options
      * @return {Orderer} A new orderer.
      */
-    static createOrderer(orderer) {
-        return new Orderer(orderer);
+    static createOrderer(ordererURL, tlsOpts) {
+        return new Orderer(ordererURL, tlsOpts);
     }
 
     /**
-     * Create a new peer.
+     * parse the orderer definition
+     * @param {string|object} orderer The orderer definition
+     * @return {Orderer} A new orderer.
+     */
+    static parseOrderer(orderer) {
+        if (typeof orderer === 'object') {
+            const opts = HLFConnectionManager._createOpts(orderer.cert, orderer.hostnameOverride);
+            return HLFConnectionManager.createOrderer(orderer.url, opts);
+        }
+        return HLFConnectionManager.createOrderer(orderer);
+    }
+
+    /**
+     * create tls options for fabric-client
+     * @static
+     * @private
+     * @param {string} cert the certificate in PEM format
+     * @param {string} override hostname override required for tests
+     * @returns {object} tls options
+     */
+    static _createOpts(cert, override) {
+        if (!cert) {
+            return undefined;
+        }
+        let embeddedCert;
+        if (cert.match('^-----BEGIN CERTIFICATE-----')) {
+            embeddedCert = cert;
+        } else {
+            // assume a file path for now but should support a url mechanism
+            let data = fs.readFileSync(cert);
+            embeddedCert = Buffer.from(data).toString();
+        }
+
+        let opts = {
+            pem: embeddedCert
+        };
+        if (override) {
+            opts['ssl-target-name-override'] = override;
+        }
+        return opts;
+    }
+
+    /**
+     * create a new peer
+     * @static
+     * @param {string} peerURL The peer URL.
+     * @param {object} tlsOpts the tls options
+     * @returns {Peer} A new Peer
+     * @memberOf HLFConnectionManager
+     */
+    static createPeer(peerURL, tlsOpts) {
+        return new Peer(peerURL, tlsOpts);
+    }
+
+    /**
+     * parse the peer definition in a connection
      * @param {string} peer The peer URL.
+     * @param {array} eventHubs Array to store any created event hubs
      * @return {Peer} A new peer.
      */
-    static createPeer(peer) {
-        return new Peer(peer);
+    static parsePeer(peer, eventHubs) {
+        const method = 'parsePeer';
+
+        const tlsOpts = HLFConnectionManager._createOpts(peer.cert, peer.hostnameOverride);
+        if (!peer.requestURL && !peer.eventURL) {
+            throw new Error('peer incorrectly defined');
+        }
+        if (peer.requestURL && !peer.eventURL) {
+            throw new Error(`The peer at requestURL ${peer.requestURL} has no eventURL defined`);
+        }
+        if (!peer.requestURL && peer.eventURL) {
+            throw new Error(`The peer at eventURL ${peer.eventURL} has no requestURL defined`);
+        }
+
+        const hfc_peer = HLFConnectionManager.createPeer(peer.requestURL, tlsOpts);
+        // load and connect to the event hub
+        const eventHub = HLFConnectionManager.createEventHub();
+        LOG.debug(method, 'Setting event hub URL', peer.eventURL);
+        eventHub.setPeerAddr(peer.eventURL, tlsOpts);
+        eventHub.connect();
+        eventHubs.push(eventHub);
+        return hfc_peer;
     }
 
     /**
@@ -123,12 +201,33 @@ class HLFConnectionManager extends ConnectionManager {
 
     /**
      * Create a new CA client.
-     * @param {string} ca The CA URL.
+     * @param {string} caURL The CA URL.
+     * @param {object} tlsOpts the tls options
      * @param {KeyValStore} keyValStore The key value store.
      * @return {FabricCAClientImpl} A new CA client.
      */
-    static createCAClient(ca, keyValStore) {
-        return new FabricCAClientImpl(ca, keyValStore);
+    static createCAClient(caURL, tlsOpts, keyValStore) {
+        return new FabricCAClientImpl(caURL, tlsOpts, {'path': keyValStore});
+    }
+
+    /**
+     * Create a new CA client from a ca definition
+     * @param {string|object} ca The CA object or string
+     * @param {KeyValStore} keyValStore The key value store.
+     * @return {FabricCAClientImpl} A new CA client.
+     */
+    static parseCA(ca, keyValStore) {
+        let tlsOpts = null;
+        if (typeof ca === 'object') {
+            if (ca.trustedRoots) {
+                tlsOpts = {
+                    trustedRoots: ca.trustedRoots,
+                    verify: ca.verify  // undefined gets set to true by client
+                };
+            }
+            return HLFConnectionManager.createCAClient(ca.url, tlsOpts, keyValStore);
+        }
+        return HLFConnectionManager.createCAClient(ca, null, keyValStore);
     }
 
     /**
@@ -172,19 +271,13 @@ class HLFConnectionManager extends ConnectionManager {
             throw new Error('The peers array has not been specified in the connection profile');
         } else if (!connectOptions.peers.length) {
             throw new Error('No peer URLs have been specified in the connection profile');
-        } else if (!Array.isArray(connectOptions.events)) {
-            throw new Error('The events array has not been specified in the connection profile');
-        } else if (!connectOptions.events.length) {
-            throw new Error('No event hub URLs have been specified in the connection profile');
-        } else if (connectOptions.events.length !== connectOptions.peers.length) {
-            throw new Error('there should be an identical number of event hub urls to peers');
-        } else if (!wallet && !connectOptions.keyValStore) {
+        }  else if (!wallet && !connectOptions.keyValStore) {
             throw new Error('No key value store directory has been specified');
         } else if (!connectOptions.ca) {
             throw new Error('The certificate authority URL has not been specified in the connection profile');
         } else if (!connectOptions.channel) {
             throw new Error('No channel has been specified in the connection profile');
-        } else if (!connectOptions.mspid) {
+        } else if (!connectOptions.mspID) {
             throw new Error('No msp id defined');
         }
 
@@ -205,24 +298,17 @@ class HLFConnectionManager extends ConnectionManager {
         // Load all of the orderers into the client.
         connectOptions.orderers.forEach((orderer) => {
             LOG.debug(method, 'Adding orderer URL', orderer);
-            chain.addOrderer(HLFConnectionManager.createOrderer(orderer));
+            chain.addOrderer(HLFConnectionManager.parseOrderer(orderer));
         });
 
+        let eventHubs = [];
         // Load all of the peers into the client.
         connectOptions.peers.forEach((peer) => {
             LOG.debug(method, 'Adding peer URL', peer);
-            chain.addPeer(HLFConnectionManager.createPeer(peer));
+            chain.addPeer(HLFConnectionManager.parsePeer(peer, eventHubs));
         });
 
-        // load and connect to each of the defined event eventHubs
-        let eventHubs = [];
-        connectOptions.events.forEach((eventHubURL) => {
-            const eventHub = HLFConnectionManager.createEventHub();
-            LOG.debug(method, 'Setting event hub URL', eventHubURL);
-            eventHub.setPeerAddr(eventHubURL);
-            eventHub.connect();
-            eventHubs.push(eventHub);
-        });
+        // register to disconnect on exit for all event hubs
         process.on('exit', () => {
             eventHubs.forEach((eventHub) => {
                 if (eventHub.isconnected()) {
@@ -230,6 +316,8 @@ class HLFConnectionManager extends ConnectionManager {
                 }
             });
         });
+
+
 
         // If a wallet has been specified, then we want to use that.
         let result;
@@ -258,9 +346,7 @@ class HLFConnectionManager extends ConnectionManager {
         return result.then((store) => {
 
             // Create a CA client.
-            const caClient = HLFConnectionManager.createCAClient(connectOptions.ca, {
-                path: connectOptions.keyValStore
-            });
+            const caClient = HLFConnectionManager.parseCA(connectOptions.ca, connectOptions.keyValStore);
 
             // Now we can create the connection.
             let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHubs, caClient);

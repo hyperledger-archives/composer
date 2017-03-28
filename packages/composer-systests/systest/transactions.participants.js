@@ -193,6 +193,21 @@ describe('Transaction (participant specific) system tests', () => {
             });
     });
 
+    it('should submit and execute a transaction that tests the existance of an participant in an participant registry', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        participant.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.participants', 'ExistsParticipantInParticipantRegistryTransaction');
+        return client
+            .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+            .then((participantRegistry) => {
+                return participantRegistry.add(participant);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            });
+    });
+
     it('should submit and execute a transaction that adds an participant in the transaction to an participant registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.participants', 'AddParticipantInTransactionToParticipantRegistryTransaction');

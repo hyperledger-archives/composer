@@ -46,3 +46,7 @@ exclude: [
             exclude.rsync,
             README.markdown
          ]
+
+google_tracking_id:
+  development: UA-91314349-2
+  production: UA-91314349-1

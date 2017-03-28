@@ -51,7 +51,7 @@ class ParticipantRegistry {
          * @example
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get all of the drivers in the driver participant registry.
          *     return participantRegistry.getAll();
          *   })
@@ -82,7 +82,7 @@ class ParticipantRegistry {
          * @example
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get the specific driver from the driver participant registry.
          *     return participantRegistry.get('VEHICLE_1');
          *   })
@@ -107,11 +107,38 @@ class ParticipantRegistry {
         };
 
         /**
+         * Determines whether a specific participant exists in this participant registry.
+         * @example
+         * // Get the driver participant registry.
+         * return getParticipantRegistry('org.acme.Driver')
+         *   .then(function (participantRegistry) {
+         *     // Determine if the specific driver exists in the driver participant registry.
+         *     return participantRegistry.exists('VEHICLE_1');
+         *   })
+         *   .then(function (exists) {
+         *     // Process the the boolean result.
+         *     console.log('Driver exists', exists);
+         *   })
+         *   .catch(function (error) {
+         *     // Add optional error handling here.
+         *   });
+         * @public
+         * @method module:composer-runtime.ParticipantRegistry#exists
+         * @param {string} id The ID of the participant.
+         * @return {Promise} A promise. The promise is resolved with a boolean which
+         * is true if the specified participant exists in this participant registry,
+         * and false if the specified participant does not exist.
+         */
+        this.exists = function exists(id) {
+            return registry.exists(id);
+        };
+
+        /**
          * Add all of the specified participants to this participant registry.
          * @example
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Create the first driver.
@@ -121,7 +148,7 @@ class ParticipantRegistry {
          *     var driver2 = factory.newResource('org.acme', 'Driver', 'VEHICLE_2');
          *     driver2.location = 'GREEN';
          *     // Add the drivers to the driver participant registry.
-         *     return driverParticipantRegistry.addAll([driver1, driver2]);
+         *     return participantRegistry.addAll([driver1, driver2]);
          *   })
          *   .catch(function (error) {
          *     // Add optional error handling here.
@@ -144,14 +171,14 @@ class ParticipantRegistry {
          * @example
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Create the driver.
          *     var driver = factory.newResource('org.acme', 'Driver', 'VEHICLE_1');
          *     driver.location = 'Southampton';
          *     // Add the driver to the driver participant registry.
-         *     return driverParticipantRegistry.add(driver);
+         *     return participantRegistry.add(driver);
          *   })
          *   .catch(function (error) {
          *     // Add optional error handling here.
@@ -176,7 +203,7 @@ class ParticipantRegistry {
          * var driver2;
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Modify the properties of the first driver.
@@ -184,7 +211,7 @@ class ParticipantRegistry {
          *     // Modify the properties of the second driver.
          *     driver2.location = 'London';
          *     // Update the drivers in the driver participant registry.
-         *     return driverParticipantRegistry.updateAll([driver1, driver2]);
+         *     return participantRegistry.updateAll([driver1, driver2]);
          *   })
          *   .catch(function (error) {
          *     // Add optional error handling here.
@@ -209,13 +236,13 @@ class ParticipantRegistry {
          * var driver;
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Modify the properties of the driver.
          *     driver.location = 'Hursley';
          *     // Update the driver in the driver participant registry.
-         *     return driverParticipantRegistry.update(driver);
+         *     return participantRegistry.update(driver);
          *   })
          *   .catch(function (error) {
          *     // Add optional error handling here.
@@ -240,13 +267,13 @@ class ParticipantRegistry {
          * var driver1;
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Remove the drivers from the driver participant registry. Note that
          *     // one driver is specified as a driver instance, and the other
          *     // driver is specified by the ID of the driver.
-         *     return driverParticipantRegistry.removeAll([driver1, 'VEHICLE_2']);
+         *     return participantRegistry.removeAll([driver1, 'VEHICLE_2']);
          *   })
          *   .catch(function (error) {
          *     // Add optional error handling here.
@@ -272,11 +299,11 @@ class ParticipantRegistry {
          * var driver;
          * // Get the driver participant registry.
          * return getParticipantRegistry('org.acme.Driver')
-         *   .then(function (driverParticipantRegistry) {
+         *   .then(function (participantRegistry) {
          *     // Get the factory for creating new participant instances.
          *     var factory = getFactory();
          *     // Remove the driver from the driver participant registry.
-         *     return driverParticipantRegistry.remove(driver);
+         *     return participantRegistry.remove(driver);
          *   })
          *   .catch(function (error) {
          *     // Add optional error handling here.
