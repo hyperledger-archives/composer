@@ -75,6 +75,18 @@ describe('ParticipantRegistry', () => {
 
     });
 
+    describe('#exists', () => {
+
+        it('should proxy to the registry', () => {
+            mockRegistry.exists.withArgs('DOGE_1').resolves(true);
+            return participantRegistry.exists('DOGE_1')
+                .then((exists) => {
+                    exists.should.be.true;
+                });
+        });
+
+    });
+
     describe('#addAll', () => {
 
         it('should proxy to the registry', () => {
