@@ -153,7 +153,7 @@ class HLFConnection extends Connection {
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
-                return user.setEnrollment(enrollment.key, enrollment.certificate, this.connectOptions.mspid);
+                return user.setEnrollment(enrollment.key, enrollment.certificate, this.connectOptions.mspID);
             })
             .then(() => {
 
@@ -557,8 +557,6 @@ class HLFConnection extends Connection {
                 return payload;
             })
             .catch((error) => {
-                console.error(error);
-                console.trace(error);
                 LOG.error(method, error);
                 throw error;
             });

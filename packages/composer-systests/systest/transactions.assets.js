@@ -193,6 +193,21 @@ describe('Transaction (asset specific) system tests', () => {
             });
     });
 
+    it('should submit and execute a transaction that tests the existance of an asset in an asset registry', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        asset.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.assets', 'ExistsAssetInAssetRegistryTransaction');
+        return client
+            .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+            .then((assetRegistry) => {
+                return assetRegistry.add(asset);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            });
+    });
+
     it('should submit and execute a transaction that adds an asset in the transaction to an asset registry', () => {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.transactions.assets', 'AddAssetInTransactionToAssetRegistryTransaction');

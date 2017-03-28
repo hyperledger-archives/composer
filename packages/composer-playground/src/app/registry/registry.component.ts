@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientService } from '../services/client.service';
-import { AlertService } from '../services/alert.service'
+import { AlertService } from '../services/alert.service';
 import { ResourceComponent } from '../resource/resource.component';
 import { ConfirmComponent } from '../confirm/confirm.component';
 import { TransactionRegistry } from 'composer-client';
@@ -106,13 +106,12 @@ export class RegistryComponent {
     confirmModalRef.componentInstance.confirmMessage = 'Please confirm that you want to delete Asset: ' + resource.getIdentifier();
 
     confirmModalRef.result.then((result) => {
-        if(result) {
+        if (result) {
             this._registry.remove(resource)
               .then(() => {
                   this.loadResources();
               })
               .catch((error) => {
-                  console.log('ERR: ', error);
                   this.alertService.errorStatus$.next(
                     'Removing the selected item from the registry failed:' + error
                   );
@@ -123,7 +122,6 @@ export class RegistryComponent {
         }
     });
   }
-
 
   private isTransactionRegistry(): boolean {
     return this.registryType === 'Transaction';

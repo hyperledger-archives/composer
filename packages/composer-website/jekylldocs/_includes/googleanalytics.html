@@ -1,0 +1,11 @@
+<!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', '{{ include.tracking_id }}', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="{{site.baseurl}}/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->

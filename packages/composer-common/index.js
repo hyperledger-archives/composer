@@ -72,6 +72,7 @@ module.exports.ModelManager = require('./lib/modelmanager');
 module.exports.ParticipantDeclaration = require('./lib/introspect/participantdeclaration');
 module.exports.Property = require('./lib/introspect/property');
 module.exports.Relationship = require('./lib/model/relationship');
+module.exports.RelationshipDeclaration = require('./lib/introspect/relationshipdeclaration');
 module.exports.Resource = require('./lib/model/resource');
 module.exports.ScriptManager = require('./lib/scriptmanager');
 module.exports.Script = require('./lib/introspect/script');
