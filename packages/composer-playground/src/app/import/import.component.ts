@@ -19,6 +19,7 @@ export class ImportComponent implements OnInit {
   private deployInProgress: boolean = false;
   private gitHubInProgress: boolean = false;
   private sampleNetworks = [];
+  private primaryNetworkNames = ['basic-sample-network', 'carauction-network'];
   private owner: string = '';
   private repository: string = '';
   private gitHubAuthenticated: boolean = false;
@@ -81,7 +82,7 @@ export class ImportComponent implements OnInit {
       return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner,
         fabricComposerRepository)
         .then((modelsInfo) => {
-          this.sampleNetworks = modelsInfo;
+          this.sampleNetworks = this.orderGitHubProjects(modelsInfo);
           this.gitHubInProgress = false;
         })
         .catch((error) => {
@@ -93,6 +94,26 @@ export class ImportComponent implements OnInit {
           this.activeModal.dismiss(error);
         });
     }
+  }
+
+  private orderGitHubProjects(networks: any[]): any[] {
+    let newOrder = [];
+    for(let i=0; i<this.primaryNetworkNames.length; i++) {
+      let primaryName = this.primaryNetworkNames[i];
+      for(let j=0; j<networks.length; j++) {
+        let network = networks[j];
+        if(primaryName === network.name) {
+          newOrder.push(network);
+        }
+      }
+    }
+    for(let i=0; i<networks.length; i++) {
+      let network = networks[i];
+      if(this.primaryNetworkNames.indexOf(network.name) === -1) {
+        newOrder.push(network)
+      }
+    }
+    return newOrder;
   }
 
   private fileDetected() {
