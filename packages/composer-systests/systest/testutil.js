@@ -153,6 +153,7 @@ class TestUtil {
                 } else {
                     // hlf need to decide if v1 or 0.6
                     let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
+                    let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
 
                     if (process.env.SYSTEST.match('^hlfv1')) {
@@ -163,18 +164,20 @@ class TestUtil {
                             ],
                             ca: 'http://localhost:7054',
                             peers: [
-                                'grpc://localhost:7051',
-                                'grpc://localhost:7056'
-                            ],
-                            events: [
-                                'grpc://localhost:7053',
-                                'grpc://localhost:7058'
+                                {
+                                    requestURL: 'grpc://localhost:7051',
+                                    eventURL: 'grpc://localhost:7053'
+                                },
+                                {
+                                    requestURL: 'grpc://localhost:7056',
+                                    eventURL: 'grpc://localhost:7058'
+                                }
                             ],
                             channel: 'mychannel',
-                            mspid: 'Org1MSP',
+                            mspID: 'Org1MSP',
                             deployWaitTime: '300',
                             invokeWaitTime: '100',
-                            keyValStore: keyValStore
+                            keyValStore: keyValStoreV1
                         };
                     } else {
                         adminOptions = {

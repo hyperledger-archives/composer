@@ -36,8 +36,25 @@ chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
+const fs = require('fs');
 
 describe('HLFConnectionManager', () => {
+
+
+    const embeddedCert = '-----BEGIN CERTIFICATE-----\n' +
+'MIICKTCCAdCgAwIBAgIRALz4qIofOY8ff94YDATVyGIwCgYIKoZIzj0EAwIwZjEL\n' +
+'MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG\n' +
+'cmFuY2lzY28xFDASBgNVBAoTC29yZGVyZXJPcmcxMRQwEgYDVQQDEwtvcmRlcmVy\n' +
+'T3JnMTAeFw0xNzAzMDExNzM2NDFaFw0yNzAyMjcxNzM2NDFaMGYxCzAJBgNVBAYT\n' +
+'AlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2Nv\n' +
+'MRQwEgYDVQQKEwtvcmRlcmVyT3JnMTEUMBIGA1UEAxMLb3JkZXJlck9yZzEwWTAT\n' +
+'BgcqhkjOPQIBBggqhkjOPQMBBwNCAARNSaTugowp/Y4XcY7Hrs+m3oE/j8B/jIp3\n' +
+'H8thNhYUdkHX69wNsRB6v/vElHn6CPjUHpNAivbXw9dIz7X3aI/Xo18wXTAOBgNV\n' +
+'HQ8BAf8EBAMCAaYwDwYDVR0lBAgwBgYEVR0lADAPBgNVHRMBAf8EBTADAQH/MCkG\n' +
+'A1UdDgQiBCBNSnciFRaLZZTIfoJlDkOPHzfDA+FLX55vPuBswruCOjAKBggqhkjO\n' +
+'PQQDAgNHADBEAiBa6k7Cax+McCHy61Jma1vLuFZswBbnsC6DqbveiKdUoAIgeyAf\n' +
+'HzWxMoVrLfPFwF75PqCjae7xnYq+RWlsHZlMGFU=\n' +
+'-----END CERTIFICATE-----';
 
     let mockConnectionProfileManager;
     let sandbox;
@@ -99,6 +116,15 @@ describe('HLFConnectionManager', () => {
             orderer.getUrl().should.equal('grpc://localhost:7050');
         });
 
+        it('should create a new orderer with tlsopts', () => {
+            let orderer = HLFConnectionManager.createOrderer('grpc://localhost:7050', {
+                pem: embeddedCert,
+                'ssl-target-name-override': 'fredhost'
+            });
+            orderer.should.be.an.instanceOf(Orderer);
+            orderer.getUrl().should.equal('grpc://localhost:7050');
+            orderer._options['grpc.ssl_target_name_override'].should.equal('fredhost');
+        });
     });
 
     describe('#createPeer', () => {
@@ -107,6 +133,16 @@ describe('HLFConnectionManager', () => {
             let peer = HLFConnectionManager.createPeer('grpc://localhost:7051');
             peer.should.be.an.instanceOf(Peer);
             peer.getUrl().should.equal('grpc://localhost:7051');
+        });
+
+        it('should create a new peer using tls options', () => {
+            let peer = HLFConnectionManager.createPeer('grpc://localhost:7051', {
+                pem: embeddedCert,
+                'ssl-target-name-override': 'fredhost'
+            });
+            peer.should.be.an.instanceOf(Peer);
+            peer.getUrl().should.equal('grpc://localhost:7051');
+            peer._options['grpc.ssl_target_name_override'].should.equal('fredhost');
         });
 
     });
@@ -123,10 +159,200 @@ describe('HLFConnectionManager', () => {
     describe('#createCAClient', () => {
 
         it('should create a new CA client', () => {
-            let mockKeyValueStore = sinon.createStubInstance(KeyValueStore);
-            let caClient = HLFConnectionManager.createCAClient('http://localhost:7054', mockKeyValueStore);
+            let caClient = HLFConnectionManager.createCAClient('http://localhost:7054', null, '.my-key-store');
             caClient.should.be.an.instanceOf(FabricCAClientImpl);
+            caClient.getCrypto()._storeConfig.opts.path.should.equal('.my-key-store');
         });
+
+        it('should create a new CA client with tls options', () => {
+            const tlsOpts = {trustedRoots: ['cert1'], verify: false};
+            let caClient = HLFConnectionManager.createCAClient('http://localhost:7054', tlsOpts, '.my-key-store');
+            caClient.should.be.an.instanceOf(FabricCAClientImpl);
+            caClient._fabricCAClient._tlsOptions.should.deep.equal(tlsOpts);
+        });
+    });
+
+    describe('#parseCA', () => {
+
+        let mockCAClient;
+        beforeEach(() => {
+            mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
+            sandbox.stub(HLFConnectionManager, 'createCAClient').withArgs(sinon.match.string).returns(mockCAClient);
+        });
+
+        it('should create a new CA client from string', () => {
+            HLFConnectionManager.parseCA('http://localhost:7054', '.my-key-store');
+            sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
+            sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', null, '.my-key-store');
+        });
+
+        it('should create a new CA client from object', () => {
+            const ca = {
+                url: 'http://localhost:7054',
+            };
+            HLFConnectionManager.parseCA(ca, '.my-key-store');
+            sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
+            sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', null, '.my-key-store');
+        });
+
+        it('should create a new CA client with tls options', () => {
+            const ca = {
+                url: 'http://localhost:7054',
+                trustedRoots: ['cert1'],
+                verify: false
+            };
+            HLFConnectionManager.parseCA(ca,  '.my-key-store');
+            sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
+            sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054',
+                {
+                    trustedRoots: ['cert1'],
+                    verify:false
+                }, '.my-key-store');
+        });
+    });
+
+    describe('#parsePeer', () => {
+        let peerDef, mockPeer, mockEventHub;
+        beforeEach(() => {
+            peerDef = {
+                requestURL: 'grpc://localhost:7051',
+                eventURL: 'grpc://localhost:7053',
+            };
+            mockPeer = sinon.createStubInstance(Peer);
+            sandbox.stub(HLFConnectionManager, 'createPeer').withArgs(peerDef.requestURL).returns(mockPeer);
+            mockEventHub = sinon.createStubInstance(EventHub);
+            sandbox.stub(HLFConnectionManager, 'createEventHub').returns(mockEventHub);
+        });
+
+        it('should throw if peer definition is incorrect', () => {
+            let peer = {
+                requestURL: 'grpc://localhost:7051'
+            };
+            (() => {
+                HLFConnectionManager.parsePeer(peer);
+            }).should.throw('The peer at requestURL grpc://localhost:7051 has no eventURL defined');
+
+            peer = {
+                eventURL: 'grpc://localhost:7053'
+            };
+            (() => {
+                HLFConnectionManager.parsePeer(peer);
+            }).should.throw('The peer at eventURL grpc://localhost:7053 has no requestURL defined');
+            peer = {
+                rurl: 'grpc://localhost:7051',
+                eURL: 'grpc://localhost:7051'
+            };
+            (() => {
+                HLFConnectionManager.parsePeer(peer);
+            }).should.throw('peer incorrectly defined');
+        });
+
+        it('should create a new peer and eventHub with no tls', () => {
+            let eventHubs = [];
+            HLFConnectionManager.parsePeer(peerDef, eventHubs);
+            sinon.assert.calledOnce(HLFConnectionManager.createPeer);
+            sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL);
+            sinon.assert.calledOnce(HLFConnectionManager.createEventHub);
+            eventHubs.length.should.equal(1);
+            eventHubs[0].should.be.an.instanceof(EventHub);
+            sinon.assert.calledOnce(mockEventHub.setPeerAddr);
+            sinon.assert.calledWith(mockEventHub.setPeerAddr, peerDef.eventURL);
+            sinon.assert.calledOnce(mockEventHub.connect);
+        });
+
+        it('should create a new peer and eventHub with tls and embedded certificate', () => {
+            peerDef.cert = embeddedCert;
+            peerDef.hostnameOverride =  'localhost';
+
+            let eventHubs = [];
+            HLFConnectionManager.parsePeer(peerDef, eventHubs);
+            sinon.assert.calledOnce(HLFConnectionManager.createPeer);
+            sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
+                pem: peerDef.cert,
+                'ssl-target-name-override': peerDef.hostnameOverride
+            });
+
+            sinon.assert.calledOnce(HLFConnectionManager.createEventHub);
+            eventHubs.length.should.equal(1);
+            eventHubs[0].should.be.an.instanceof(EventHub);
+            sinon.assert.calledOnce(mockEventHub.setPeerAddr);
+            sinon.assert.calledWith(mockEventHub.setPeerAddr, peerDef.eventURL, {
+                pem: peerDef.cert,
+                'ssl-target-name-override': peerDef.hostnameOverride
+            });
+            sinon.assert.calledOnce(mockEventHub.connect);
+        });
+
+        it('should create a new peer and eventHub with tls and file system certificate', () => {
+            sandbox.stub(fs,'readFileSync').returns(new Buffer('acert'));
+
+            peerDef.cert = '/some/path/to/some/file';
+
+            let eventHubs = [];
+            HLFConnectionManager.parsePeer(peerDef, eventHubs);
+            sinon.assert.calledOnce(HLFConnectionManager.createPeer);
+            sinon.assert.calledWith(fs.readFileSync, peerDef.cert);
+            sinon.assert.calledWith(HLFConnectionManager.createPeer, peerDef.requestURL, {
+                pem: 'acert'
+            });
+
+            sinon.assert.calledOnce(HLFConnectionManager.createEventHub);
+            eventHubs.length.should.equal(1);
+            eventHubs[0].should.be.an.instanceof(EventHub);
+            sinon.assert.calledOnce(mockEventHub.setPeerAddr);
+            sinon.assert.calledWith(mockEventHub.setPeerAddr, peerDef.eventURL, {
+                pem: 'acert'
+            });
+            sinon.assert.calledOnce(mockEventHub.connect);
+        });
+
+
+    });
+
+    describe('#parseOrderer', () => {
+        let mockOrderer;
+        beforeEach(() => {
+            mockOrderer = sinon.createStubInstance(Orderer);
+            sandbox.stub(HLFConnectionManager, 'createOrderer').withArgs(sinon.match.string).returns(mockOrderer);
+        });
+
+        it('should create a new orderer without tls', () => {
+            HLFConnectionManager.parseOrderer('http://localhost:7054');
+            sinon.assert.calledOnce(HLFConnectionManager.createOrderer);
+            sinon.assert.calledWith(HLFConnectionManager.createOrderer, 'http://localhost:7054');
+        });
+
+        it('should create a new orderer with tls and embedded cert', () => {
+            let ordererDef = {
+                url: 'https://localhost:7054',
+                cert: embeddedCert,
+                hostnameOverride: 'fred'
+            };
+
+            HLFConnectionManager.parseOrderer(ordererDef);
+            sinon.assert.calledOnce(HLFConnectionManager.createOrderer);
+            sinon.assert.calledWith(HLFConnectionManager.createOrderer, 'https://localhost:7054', {
+                pem: embeddedCert,
+                'ssl-target-name-override': 'fred'
+            });
+        });
+
+        it('should create a new orderer with tls and file system cert', () => {
+            sandbox.stub(fs,'readFileSync').returns(new Buffer('acert'));
+
+            let ordererDef = {
+                url: 'https://localhost:7054',
+                cert: '/some/path/to/some/file',
+            };
+
+            HLFConnectionManager.parseOrderer(ordererDef);
+            sinon.assert.calledOnce(HLFConnectionManager.createOrderer);
+            sinon.assert.calledWith(fs.readFileSync, ordererDef.cert);
+            sinon.assert.calledWith(HLFConnectionManager.createOrderer, 'https://localhost:7054', {
+                pem: 'acert'
+            });
+        });
+
 
     });
 
@@ -141,15 +367,15 @@ describe('HLFConnectionManager', () => {
                     'grpc://localhost:7050'
                 ],
                 peers: [
-                    'grpc://localhost:7051'
-                ],
-                events: [
-                    'grpc://localhost:7053'
+                    {
+                        requestURL: 'grpc://localhost:7051',
+                        eventURL: 'grpc://localhost:7053'
+                    }
                 ],
                 ca: 'http://localhost:7054',
                 keyValStore: '/tmp/hlfabric1',
                 channel: 'testchainid',
-                mspid: 'MSP1Org'
+                mspID: 'MSP1Org'
             };
             mockClient = sinon.createStubInstance(Client);
             sandbox.stub(HLFConnectionManager, 'createClient').returns(mockClient);
@@ -162,7 +388,7 @@ describe('HLFConnectionManager', () => {
             mockEventHub = sinon.createStubInstance(EventHub);
             sandbox.stub(HLFConnectionManager, 'createEventHub').returns(mockEventHub);
             mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
-            sandbox.stub(HLFConnectionManager, 'createCAClient').withArgs(connectOptions.ca).returns(mockCAClient);
+            sandbox.stub(HLFConnectionManager, 'createCAClient').withArgs(sinon.match.string).returns(mockCAClient);
             mockKeyValueStore = sinon.createStubInstance(KeyValueStore);
             sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockKeyValueStore);
             mockWallet = sinon.createStubInstance(Wallet);
@@ -182,7 +408,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should throw if msp id is not specified', () => {
-            delete connectOptions.mspid;
+            delete connectOptions.mspID;
             (() => {
                 connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
             }).should.throw(/No msp id defined/);
@@ -216,18 +442,27 @@ describe('HLFConnectionManager', () => {
             }).should.throw(/No peer URLs have been specified/);
         });
 
-        it('should throw if events are not specified', () => {
-            delete connectOptions.events;
+        it('should throw if peer configuration not correct', () => {
+            connectOptions.peers = [{
+                requestURL: 'grpc://localhost:7051'
+            }];
             (() => {
                 connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
-            }).should.throw(/events array has not been specified/);
-        });
+            }).should.throw('The peer at requestURL grpc://localhost:7051 has no eventURL defined');
 
-        it('should throw if events is an empty array', () => {
-            connectOptions.events = [];
+            connectOptions.peers = [{
+                eventURL: 'grpc://localhost:7053'
+            }];
             (() => {
                 connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
-            }).should.throw(/No event hub URLs have been specified/);
+            }).should.throw('The peer at eventURL grpc://localhost:7053 has no requestURL defined');
+            connectOptions.peers = [{
+                rurl: 'grpc://localhost:7051',
+                eURL: 'grpc://localhost:7051'
+            }];
+            (() => {
+                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+            }).should.throw('peer incorrectly defined');
         });
 
         it('should throw if ca is not specified', () => {
@@ -263,6 +498,12 @@ describe('HLFConnectionManager', () => {
                     connection.eventHubs.should.deep.equal([mockEventHub]);
                     connection.caClient.should.deep.equal(mockCAClient);
                     sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
+                    sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
+                    sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', null, connectOptions.keyValStore);
+                    sinon.assert.calledOnce(HLFConnectionManager.createPeer);
+                    sinon.assert.calledWith(HLFConnectionManager.createPeer, 'grpc://localhost:7051');
+                    sinon.assert.calledOnce(HLFConnectionManager.createEventHub);
+                    sinon.assert.calledWith(mockEventHub.setPeerAddr, 'grpc://localhost:7053');
                 });
         });
 
@@ -315,27 +556,11 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should fail if eventhub count doesn\'t match peer count', () => {
-            connectOptions.peers = [
-                'grpc://localhost:7051',
-                'grpc://localhost:8051',
-                'grpc://localhost:9051'
-            ];
-            (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
-            }).should.throw(/there should be an identical number of event hub urls to peers/);
-        });
-
         it('should add multiple peers to the chain', () => {
             connectOptions.peers = [
-                'grpc://localhost:7051',
-                'grpc://localhost:8051',
-                'grpc://localhost:9051'
-            ];
-            connectOptions.events = [
-                'grpc://localhost:7054',
-                'grpc://localhost:8054',
-                'grpc://localhost:9054'
+                {requestURL: 'grpc://localhost:7051', eventURL: 'grpc://localhost:7054'},
+                {requestURL: 'grpc://localhost:8051', eventURL: 'grpc://localhost:8054'},
+                {requestURL: 'grpc://localhost:9051', eventURL: 'grpc://localhost:9054'}
             ];
             return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
                 .then((connection) => {
@@ -380,7 +605,54 @@ describe('HLFConnectionManager', () => {
             return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
-                    sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', {'path' : connectOptions.keyValStore});
+                    sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', null, connectOptions.keyValStore);
+                });
+        });
+
+        it('should connect using tls options for ca, orderer & peer', () => {
+            connectOptions.orderers[0] = {
+                url: 'grpcs://localhost:7051',
+                cert: embeddedCert
+            };
+            connectOptions.peers[0].cert = embeddedCert;
+            connectOptions.peers[0].hostnameOverride = 'peerOverride';
+            connectOptions.ca = {
+                'url': 'https://localhost:7054',
+                'trustedRoots' : ['trusted'],
+                'verify': false
+            };
+            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+                .then((connection) => {
+                    connection.getConnectionManager().should.equal(connectionManager);
+                    connection.getIdentifier().should.equal('org.acme.biznet@hlfabric1');
+                    connection.should.be.an.instanceOf(HLFConnection);
+                    connection.getConnectionOptions().should.deep.equal(connectOptions);
+                    connection.client.should.deep.equal(mockClient);
+                    connection.chain.should.deep.equal(mockChain);
+                    connection.eventHubs.should.deep.equal([mockEventHub]);
+                    connection.caClient.should.deep.equal(mockCAClient);
+                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
+                    sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
+                    sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'https://localhost:7054', {
+                        'trustedRoots' : ['trusted'],
+                        'verify': false
+                    }, connectOptions.keyValStore);
+                    sinon.assert.calledOnce(HLFConnectionManager.createPeer);
+                    sinon.assert.calledWith(HLFConnectionManager.createPeer, 'grpc://localhost:7051', {
+                        pem: embeddedCert,
+                        'ssl-target-name-override': 'peerOverride'
+                    });
+                    sinon.assert.calledOnce(HLFConnectionManager.createEventHub);
+                    sinon.assert.calledWith(mockEventHub.setPeerAddr, 'grpc://localhost:7053', {
+                        pem: embeddedCert,
+                        'ssl-target-name-override': 'peerOverride'
+                    });
+
+                    sinon.assert.calledOnce(HLFConnectionManager.createOrderer);
+                    sinon.assert.calledWith(HLFConnectionManager.createOrderer, 'grpcs://localhost:7051', {
+                        pem: embeddedCert
+                    });
+
                 });
         });
 
