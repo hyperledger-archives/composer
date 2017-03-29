@@ -16,6 +16,7 @@
 
 let util = require('util');
 let path = require('path');
+let fs = require('fs');
 
 let hfc = require('fabric-client');
 let utils = require('fabric-client/lib/utils.js');
@@ -32,7 +33,15 @@ let channel = 'mychannel';
 
 let logger = utils.getLogger('join-channel');
 
-hfc.addConfigFile(path.join(__dirname, './config.json'));
+let useTls = process.env.SYSTEST.match('tls$');
+
+if (useTls) {
+    hfc.addConfigFile(path.join(__dirname, './config.tls.json'));
+    console.log('using tls connection to join the peers');
+} else {
+    console.log('using non-tls connection');
+    hfc.addConfigFile(path.join(__dirname, './config.json'));
+}
 let ORGS = hfc.getConfigSetting('test-network');
 
 /**
@@ -48,15 +57,46 @@ function joinChannel(org) {
     //
     let client = new hfc();
     let chain = client.newChain(channel);
-    chain.addOrderer(new Orderer(ORGS.orderer));
+    if (useTls) {
+        let caRootsPath = ORGS.orderer.tls_cacerts;
+        let data = fs.readFileSync(path.join(__dirname, caRootsPath));
+        let caroots = Buffer.from(data).toString();
 
-    //let orgName = ORGS[org].name;
+        chain.addOrderer(
+            new Orderer(
+                ORGS.orderer.url,
+                {
+                    'pem': caroots,
+                    'ssl-target-name-override': ORGS.orderer['server-hostname']
+                }
+            )
+        );
+    }
+    else {
+        chain.addOrderer(new Orderer(ORGS.orderer));
+    }
 
     let targets = [];
     for (let key in ORGS[org]) {
         if (ORGS[org].hasOwnProperty(key)) {
             if (key.indexOf('peer') === 0) {
-                targets.push(new Peer(ORGS[org][key].requests));
+                if (useTls) {
+                    let data = fs.readFileSync(path.join(__dirname, ORGS[org][key].tls_cacerts));
+                    //data = fs.readFileSync(ORGS[org][key].tls_cacerts);
+
+                    targets.push(
+                        new Peer(
+                            ORGS[org][key].requests,
+                            {
+                                pem: Buffer.from(data).toString(),
+                                'ssl-target-name-override': ORGS[org][key]['server-hostname']
+                            }
+                        )
+                    );
+                }
+                else {
+                    targets.push(new Peer(ORGS[org][key].requests));
+                }
             }
         }
     }
