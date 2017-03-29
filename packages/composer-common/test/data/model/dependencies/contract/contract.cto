@@ -1,0 +1,48 @@
+/**
+  * Contract related types
+  */
+
+namespace stdlib.contract
+
+import stdlib.business.Employee
+import stdlib.proforma.ProForma
+
+enum ContractStatus {
+  o CREATED
+  o SIGNED
+  o EXPIRED
+}
+
+concept Parameter {
+  o String name
+  o String type
+}
+
+abstract concept ParameterValue {
+  o Parameter parameter
+}
+
+concept StringParameterValue extends ParameterValue {
+  o String value
+}
+
+concept IntegerParameterValue extends ParameterValue {
+  o Integer value
+}
+
+concept DoubleParameterValue extends ParameterValue {
+  o Double value
+}
+
+asset Contract identified by id {
+  o String id
+  o String description
+  --> ProForma proForma
+  o ParameterValue[] parameterValues
+  o ContractStatus status
+  o Signature[] signatures optional
+}
+
+abstract transaction Signature {
+  --> Employee signer
+}

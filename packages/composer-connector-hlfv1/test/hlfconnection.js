@@ -71,7 +71,7 @@ describe('HLFConnection', () => {
             ca: 'http://localhost:7054',
             keyValStore: '/tmp/hlfabric1',
             channel: 'testchainid',
-            mspid: 'suchmsp'
+            mspID: 'suchmsp'
         };
         connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
     });
@@ -280,7 +280,7 @@ describe('HLFConnection', () => {
                 ca: 'http://localhost:7054',
                 keyValStore: '/tmp/hlfabric1',
                 channel: 'testchainid',
-                mspid: 'suchmsp',
+                mspID: 'suchmsp',
                 deployWaitTime: 39,
                 invokeWaitTime: 63,
             };
@@ -940,7 +940,7 @@ describe('HLFConnection', () => {
                 ca: 'http://localhost:7054',
                 keyValStore: '/tmp/hlfabric1',
                 channel: 'testchainid',
-                mspid: 'suchmsp',
+                mspID: 'suchmsp',
                 deployWaitTime: 39,
                 invokeWaitTime: 63,
             };
