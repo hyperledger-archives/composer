@@ -17,6 +17,7 @@
 const ConnectionManager = require('composer-common').ConnectionManager;
 const Globalize = require('composer-common').Globalize;
 const hfc = require('hfc');
+const Chain = hfc.Chain;
 const HFCConnection = require('./hfcconnection');
 const HFCWalletProxy = require('./hfcwalletproxy');
 const LOG = require('composer-common').Logger.getLog('HFCConnectionManager');
@@ -31,36 +32,21 @@ const Wallet = require('composer-common').Wallet;
 class HFCConnectionManager extends ConnectionManager {
 
     /**
+     * Create a new chain.
+     * @param {string} name The name of the chain.
+     * @return {Chain} A new chain.
+     */
+    static createChain(name) {
+        return new Chain(name);
+    }
+
+    /**
      * Creates a new HFCConnectionManager
      * @param {ConnectionProfileManager} connectionProfileManager
      * - the ConnectionProfileManager used to manage access connection profiles.
      */
     constructor(connectionProfileManager) {
         super(connectionProfileManager);
-        this.chainPool = {};
-    }
-
-    /**
-     * Called when a connection is closed.
-     * @param {Connection} connection - the connection being closed.
-     * @return {Promise} A promise that is resolved once the connection has been
-     * terminated, or rejected with an error.
-     * @private
-     */
-    onDisconnect(connection) {
-
-        let chainReference = this.chainPool[connection.getIdentifier()];
-        if(!chainReference) {
-            throw new Error('Connection was not created by connection manager ' + connection.getIdentifier() );
-        }
-        else {
-            chainReference.count--;
-            if(chainReference.count < 0) {
-                throw new Error('Connection already closed ' + connection.getIdentifier() );
-            }
-        }
-
-        return Promise.resolve(true);
     }
 
     /**
@@ -74,78 +60,65 @@ class HFCConnectionManager extends ConnectionManager {
     connect(connectionProfile, businessNetworkIdentifier, connectOptions) {
         const method = 'connect';
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectOptions);
-        const self = this;
-        let chainIdentifier = connectionProfile;
 
+        const wallet = connectOptions.wallet || Wallet.getWallet();
+        if (!wallet && !connectOptions.keyValStore) {
+            throw new Error(Globalize.formatMessage('concerto-connect-nokeyvalstore'));
+        } else if (!connectOptions.membershipServicesURL) {
+            throw new Error(Globalize.formatMessage('concerto-connect-nomembersrvcurl'));
+        } else if (!connectOptions.peerURL) {
+            throw new Error(Globalize.formatMessage('concerto-connect-nopeerurl'));
+        } else if (!connectOptions.eventHubURL) {
+            throw new Error(Globalize.formatMessage('concerto-connect-noeventhuburl'));
+        }
+
+        let chainIdentifier = connectionProfile;
         if(businessNetworkIdentifier) {
             chainIdentifier = businessNetworkIdentifier + '@' + chainIdentifier;
         }
         LOG.debug(method, 'Chain identifier', chainIdentifier);
 
-        let chainReference = this.chainPool[chainIdentifier];
-
-        if(chainReference) {
-            LOG.info('connect','Returning connection with pooled HFC chain', chainIdentifier);
-            chainReference.count++;
-            const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chainReference.chain, connectOptions);
-            LOG.exit(method, connection);
-            return Promise.resolve(connection);
-        }
-        else {
+        return new Promise((resolve, reject) => {
             LOG.info('connect','Creating new HFC chain for ' + chainIdentifier, JSON.stringify(connectOptions));
-
-            if (!connectOptions.keyValStore) {
-                throw new Error(Globalize.formatMessage('concerto-connect-nokeyvalstore'));
-            } else if (!connectOptions.membershipServicesURL) {
-                throw new Error(Globalize.formatMessage('concerto-connect-nomembersrvcurl'));
-            } else if (!connectOptions.peerURL) {
-                throw new Error(Globalize.formatMessage('concerto-connect-nopeerurl'));
-            } else if (!connectOptions.eventHubURL) {
-                throw new Error(Globalize.formatMessage('concerto-connect-noeventhuburl'));
+            let chain = HFCConnectionManager.createChain(chainIdentifier);
+            if (wallet) {
+                chain.setKeyValStore(new HFCWalletProxy(wallet));
+            } else {
+                chain.setKeyValStore(hfc.newFileKeyValStore(connectOptions.keyValStore));
             }
-
-            return new Promise((resolve, reject) => {
-                let chain = hfc.getChain(chainIdentifier, true);
-                let wallet = Wallet.getWallet();
-                if (wallet) {
-                    chain.setKeyValStore(new HFCWalletProxy(wallet));
-                } else {
-                    chain.setKeyValStore(hfc.newFileKeyValStore(connectOptions.keyValStore));
+            let grpcOptions = {};
+            // Check to see if a certificate has been specified.
+            if (connectOptions.certificate) {
+                // Check to see that the certificate is not just whitespace.
+                let certificate = connectOptions.certificate.trim();
+                if (certificate) {
+                    // Certificates *must* end with a trailing newline.
+                    certificate += '\n';
+                    grpcOptions.pem = certificate;
                 }
-                let grpcOptions = {};
-                // Check to see if a certificate has been specified.
-                if (connectOptions.certificate) {
-                    // Check to see that the certificate is not just whitespace.
-                    let certificate = connectOptions.certificate.trim();
-                    if (certificate) {
-                        // Certificates *must* end with a trailing newline.
-                        certificate += '\n';
-                        grpcOptions.pem = certificate;
-                    }
+            }
+            LOG.debug(method, 'GRPC options', grpcOptions);
+            chain.setMemberServicesUrl(connectOptions.membershipServicesURL, grpcOptions);
+            chain.addPeer(connectOptions.peerURL, grpcOptions);
+            if (connectOptions.deployWaitTime) {
+                chain.setDeployWaitTime(connectOptions.deployWaitTime);
+            }
+            if (connectOptions.invokeWaitTime) {
+                chain.setInvokeWaitTime(connectOptions.invokeWaitTime);
+            }
+            chain.eventHubConnect(connectOptions.eventHubURL, grpcOptions);
+            process.on('exit', () => {
+                if (chain) {
+                    chain.eventHubDisconnect();
+                    chain = null;
                 }
-                LOG.debug(method, 'GRPC options', grpcOptions);
-                chain.setMemberServicesUrl(connectOptions.membershipServicesURL, grpcOptions);
-                chain.addPeer(connectOptions.peerURL, grpcOptions);
-                if (connectOptions.deployWaitTime) {
-                    chain.setDeployWaitTime(connectOptions.deployWaitTime);
-                }
-                if (connectOptions.invokeWaitTime) {
-                    chain.setInvokeWaitTime(connectOptions.invokeWaitTime);
-                }
-                chain.eventHubConnect(connectOptions.eventHubURL, grpcOptions);
-                process.on('exit', () => {
-                    if (chain) {
-                        chain.eventHubDisconnect();
-                        chain = null;
-                    }
-                });
-                const connection = new HFCConnection(self, connectionProfile, businessNetworkIdentifier, chain, connectOptions);
-                this.chainPool[chainIdentifier] = {count: 1, chain: chain};
-                LOG.exit(method, connection);
-                resolve(connection);
             });
-        }
+            const connection = new HFCConnection(this, connectionProfile, businessNetworkIdentifier, chain, connectOptions);
+            LOG.exit(method, connection);
+            resolve(connection);
+        });
     }
+
 }
 
 module.exports = HFCConnectionManager;
