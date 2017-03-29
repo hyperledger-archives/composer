@@ -51,3 +51,4 @@ packages/composer-website/jekylldocs/jsdoc/
 
 packages/composer-playground/src/assets/npmlist.json
 
+packages/composer-systests/systestv1/tls/ca/fabric-ca-server.db

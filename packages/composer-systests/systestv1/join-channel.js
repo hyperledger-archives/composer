@@ -17,6 +17,7 @@
 let util = require('util');
 let path = require('path');
 let fs = require('fs');
+const homedir = require('homedir');
 
 let hfc = require('fabric-client');
 let utils = require('fabric-client/lib/utils.js');
@@ -28,7 +29,8 @@ let testUtil = require('./setup-utils.js');
 let the_user = null;
 let tx_id = null;
 let nonce = null;
-let keystore = '/home/vagrant/.hfc-key-store';
+let keystore = homedir() + '/.hfc-key-store';
+
 let channel = 'mychannel';
 
 let logger = utils.getLogger('join-channel');
