@@ -7,6 +7,7 @@ import {AppState} from './app.service';
 import {AdminService} from './services/admin.service';
 import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
+import {EditorService} from './services/editor.service';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from './wallet.service';
 import {IdentityService} from './identity.service';
@@ -67,7 +68,8 @@ export class AppComponent {
               private alertService: AlertService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
-              private aboutService: AboutService) {
+              private aboutService: AboutService,
+              private editorService: EditorService) {
 
   }
 
