@@ -3,7 +3,7 @@
     <span class="uppercase">Connection Profiles</span>
     <div class="side-bar-nav">
       <ul>
-        <li *ngFor="let connectionProfile of connectionProfiles" [class.active]="connectionProfile === currentConnectionProfile" [class.disabled]="connectionProfile.default" (click)="setCurrentProfile(connectionProfile)">
+        <li *ngFor="let connectionProfile of connectionProfiles" [class.active]="connectionProfile.name === currentConnectionProfile.name" [class.disabled]="connectionProfile.default" (click)="setCurrentProfile(connectionProfile)">
           <div style="display: flex">
             <div style="flex:1;" *ngIf="connectionProfile.default">Web browser</div>
             <div style="flex:1;" *ngIf="!connectionProfile.default">{{connectionProfile.name}}</div>

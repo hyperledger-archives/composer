@@ -34,15 +34,16 @@ import {ImportComponent} from './import';
 import {ResourceComponent} from './resource';
 import {AddFileComponent} from './add-file';
 import {TransactionComponent} from './transaction';
-import {ConnectionProfileComponent} from './connection-profile';
 import {WelcomeComponent} from './welcome';
 import {ConfirmComponent} from './confirm';
 import {GithubComponent} from './github';
 import {NoContentComponent} from './no-content';
 import {CodemirrorModule} from 'ng2-codemirror';
 import {VersionCheckComponent} from './version-check';
+import {ConnectionProfileComponent} from './connection-profile';
 import {ConnectionProfileDataComponent} from './connection-profile-data';
 import {AddConnectionProfileComponent} from './add-connection-profile';
+import {DeleteConnectionProfileComponent} from './delete-connection-profile';
 import {FileDragDropDirective} from './directives/file-drag-drop';
 import {CheckOverFlowDirective} from './directives/check-overflow';
 import {FocusHereDirective} from './directives/focus-here';
@@ -93,6 +94,7 @@ type StoreType = {
     TransactionComponent,
     AddFileComponent,
     AddConnectionProfileComponent,
+    DeleteConnectionProfileComponent,
     WelcomeComponent,
     VersionCheckComponent,
     ResetComponent,
@@ -119,6 +121,7 @@ type StoreType = {
     ConnectionProfileComponent,
     ConnectionProfileDataComponent,
     AddConnectionProfileComponent,
+    DeleteConnectionProfileComponent,
     ResourceComponent,
     TransactionComponent,
     CheckOverFlowDirective,

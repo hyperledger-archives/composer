@@ -3,8 +3,10 @@ import {
   FormGroup, FormControl, Validators, FormBuilder
 }
   from '@angular/forms';
-
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConnectionProfileService} from '../services/connectionprofile.service'
+import {DeleteConnectionProfileComponent} from '../delete-connection-profile/delete-connection-profile.component.ts';
+import {saveAs} from 'file-saver';
 
 @Component({
   selector: 'connection-profile-data',
@@ -35,7 +37,9 @@ export class ConnectionProfileDataComponent {
 
   private editing = false;
 
-  constructor(private fb: FormBuilder, private connectionProfileService: ConnectionProfileService) {
+  constructor(private fb: FormBuilder,
+              private connectionProfileService: ConnectionProfileService,
+              private modalService: NgbModal) {
   }
 
   expandSection(sectionToExpand) {
@@ -67,8 +71,8 @@ export class ConnectionProfileDataComponent {
   startEditing() {
     this.form = this.fb.group({
       "name": this.connectionProfileData ? this.connectionProfileData.name : '',
-      "type": this.connectionProfileData ? this.connectionProfileData.type : 'hlf',
       "description": this.connectionProfileData ? this.connectionProfileData.profile.description : '',
+      "type": this.connectionProfileData ? this.connectionProfileData.type : 'hlf',
       "peerURL": this.connectionProfileData ? this.connectionProfileData.profile.peerURL : 'grpc://localhost:7051',
       "membershipServicesURL": this.connectionProfileData ? this.connectionProfileData.profile.membershipServicesURL : 'grpc://localhost:7054',
       "eventHubURL": this.connectionProfileData ? this.connectionProfileData.profile.eventHubURL : 'grpc://localhost:7053',
@@ -104,10 +108,7 @@ export class ConnectionProfileDataComponent {
         profiles.forEach((profile) => {
           let connectionProfile = connectionProfiles[profile];
           if(connectionProfile.name === this.connectionProfileData.name){
-            return this.connectionProfileService.deleteProfile(this.connectionProfileData.name)
-            .then(()=>{
-              console.log('Deleted profile',this.connectionProfileData.name);
-            })
+            return this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
           }
         })
 
@@ -118,6 +119,30 @@ export class ConnectionProfileDataComponent {
       })
 
     });
+  }
+
+  stopEditing(){
+    this.editing = false;
+  }
+
+  deleteProfile(){
+    this.modalService.open(DeleteConnectionProfileComponent).result
+    .then((result) => {
+      if(result){
+        this.connectionProfileService.deleteProfile(this.connectionProfileData.name)
+        this.profileUpdated.emit(true);
+      }
+    })
+    .catch((closed)=>{});
+  }
+
+
+  exportProfile(){
+    console.log('Exported profile')
+    let profileData = JSON.stringify(this.connectionProfileData.profile,null, 4);
+
+    let file = new File([profileData],'connection.json',{type: 'application/json'});
+    saveAs(file);
   }
 }
 

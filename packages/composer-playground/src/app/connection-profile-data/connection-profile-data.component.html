@@ -10,15 +10,17 @@
       <p *ngIf="connectionProfileData.name === '$default'">Running in web browser mode</p>
 
     </div>
-    <button type="button" class="action" (click)="startEditing()">
-      <svg *ngIf="connectionProfileData.name !== '$default'" class="standard-icon margin-right" aria-hidden="true">
+    <button type="button" class="action margin-right" (click)="startEditing()">
+      <svg *ngIf="connectionProfileData.name !== '$default'" class="standard-icon" aria-hidden="true">
         <use xlink:href="#icon-edit_16"></use>
       </svg>
     </button>
 
-    <svg *ngIf="connectionProfileData.name !== '$default'" class="standard-icon" aria-hidden="true">
-      <use xlink:href="#icon-bin_icon"></use>
-    </svg>
+    <button type="button" class="action margin-right" (click)="deleteProfile()">
+      <svg *ngIf="connectionProfileData.name !== '$default'" class="standard-icon" aria-hidden="true">
+        <use xlink:href="#icon-bin_icon"></use>
+      </svg>
+    </button>
 
   </div>
 
@@ -148,7 +150,7 @@
 
 
   <button *ngIf="!editing" class="button primary" type="button" (click)="useProfile()">Use this profile</button>
-  <button *ngIf="!editing && connectionProfileData.name !== '$default'" class="button secondary" type="button">
+  <button *ngIf="!editing && connectionProfileData.name !== '$default'" class="button secondary" type="button" (click)="exportProfile()">
     <svg class="standard-icon" aria-hidden="true">
       <use xlink:href="#icon-upload_32"></use>
     </svg>
@@ -207,7 +209,7 @@
       </section>
       <footer>
         <div class="info"></div>
-        <button class="secondary" type="submit" [disabled]="!form.valid">Cancel</button>
+        <button class="secondary" (click)="stopEditing()" [disabled]="!form.valid">Cancel</button>
         <button class="primary" type="submit" [disabled]="!form.valid">Save</button>
       </footer>
     </form>

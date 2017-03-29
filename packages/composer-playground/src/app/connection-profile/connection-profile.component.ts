@@ -52,10 +52,12 @@ export class ConnectionProfileComponent implements OnInit {
 
 
   private openAddProfileModal() {
-    this.modalService.open(AddConnectionProfileComponent).result.then((result) => {
+    this.modalService.open(AddConnectionProfileComponent).result
+    .then((result) => {
       this.currentConnectionProfile = result;
       this.updateConnectionProfiles();
-    });
+    })
+    .catch((closed) => {});
   }
 
   private updateConnectionProfiles(): Promise<any> {
