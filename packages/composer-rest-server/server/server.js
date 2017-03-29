@@ -150,7 +150,7 @@ promise.then((composer) => {
 
     // The access token is only available after boot
     app.middleware('auth', loopback.token({
-        model: app.models.accessToken,
+        model: app.models.accessToken
     }));
 
     app.middleware('session:before', cookieParser(app.get('cookieSecret')));

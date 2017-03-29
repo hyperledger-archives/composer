@@ -1,0 +1,64 @@
+{
+    "name": "Wallet",
+    "description": "A wallet stores identities for the logged in user",
+    "plural": "wallets",
+    "base": "PersistedModel",
+    "idInjection": false,
+    "properties": {
+        "id": {
+            "type": "String",
+            "id": true,
+            "defaultFn": "uuidv4",
+            "description": "The unique ID for this wallet"
+        },
+        "description": {
+            "type": "String",
+            "description": "The description for this wallet"
+        }
+    },
+    "validations": [],
+    "relations": {
+        "user": {
+            "type": "belongsTo",
+            "model": "user",
+            "foreignKey": "userId"
+        },
+        "identities": {
+            "type": "hasMany",
+            "model": "WalletIdentity",
+            "foreignKey": "walletId"
+        }
+    },
+    "acls": [
+        {
+            "accessType": "*",
+            "permission": "DENY",
+            "principalId": "$everyone",
+            "principalType": "ROLE"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "find"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "create"
+        },
+        {
+            "accessType": "*",
+            "permission": "ALLOW",
+            "principalId": "$owner",
+            "principalType": "ROLE"
+        }
+    ],
+    "methods": [],
+    "hidden": [
+        "userId"
+    ]
+}

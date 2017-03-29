@@ -18,10 +18,141 @@ const AssetDeclaration = require('composer-common').AssetDeclaration;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const ConceptDeclaration = require('composer-common').ConceptDeclaration;
 const Connector = require('loopback-connector').Connector;
-const debug = require('debug')('loopback:connector:businessnetworkconnector');
+const crypto = require('crypto');
+const debug = require('debug')('loopback:connector:composer');
 const LoopbackVisitor = require('composer-common').LoopbackVisitor;
+const NodeCache = require( 'node-cache' );
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
+
+const util = require('util');
+
+class BusinessNetworkConnectionWrapper {
+
+    /**
+     * Constructor.
+     * @param {Object} settings the settings used by the call to BusinessNetworkConnection
+     */
+    constructor(settings) {
+
+        // Check for required properties.
+        if (!settings.connectionProfileName) {
+            throw new Error('connectionProfileName not specified');
+        } else if (!settings.businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier not specified');
+        } else if (!settings.participantId) {
+            throw new Error('participantId not specified');
+        } else if (!settings.participantPwd) {
+            throw new Error('participantPwd not specified');
+        }
+        this.settings = settings;
+        this.additionalConnectOptions = {};
+        if (settings.wallet) {
+            this.additionalConnectOptions.wallet = settings.wallet;
+        }
+
+        // Create the new disconnected business network connection.
+        this.businessNetworkConnection = new BusinessNetworkConnection();
+        this.connected = this.connecting = false;
+        this.connectionPromise = null;
+
+    }
+
+    /**
+     * Ensure that the connector has connected to Composer.
+     * @return {Promise} A promise that is resolved with a {@link BusinessNetworkConnection}
+     * when the connector has connected, or rejected with an error.
+     */
+    ensureConnected() {
+        debug('ensureConnected');
+        if (this.connected) {
+            return Promise.resolve(this.businessNetworkConnection);
+        } else if (this.connecting) {
+            return this.connectionPromise;
+        } else {
+            return this.connect();
+        }
+    }
+
+    /**
+     * Connect to the Business Network
+     * @return {Promise} A promise that is resolved when the connector has connected.
+     */
+    connect() {
+        debug('connect');
+        debug('settings', JSON.stringify(this.settings));
+        this.connecting = true;
+        this.connected = false;
+        this.connectionPromise = this.businessNetworkConnection.connect(
+                this.settings.connectionProfileName,
+                this.settings.businessNetworkIdentifier,
+                this.settings.participantId,
+                this.settings.participantPwd,
+                this.additionalConnectOptions
+            )
+            .then((result) => {
+                // setup some objects for this business network
+                this.businessNetworkDefinition = result;
+                this.serializer = this.businessNetworkDefinition.getSerializer();
+                this.modelManager = this.businessNetworkDefinition.getModelManager();
+                this.introspector = this.businessNetworkDefinition.getIntrospector();
+            })
+            .then(() => {
+                this.connected = true;
+                this.connecting = false;
+                return this.businessNetworkConnection;
+            })
+            .catch((error) => {
+                this.connected = this.connecting = false;
+                throw error;
+            });
+        return this.connectionPromise;
+    }
+
+    /**
+     * Disconnect from the Business Network.
+     */
+    disconnect () {
+        debug('disconnect');
+        return this.businessNetworkConnection.disconnect()
+            .then(() => {
+                this.connected = this.connecting = false;
+            })
+            .catch((error) => {
+                this.connected = this.connecting = false;
+                throw error;
+            });
+    }
+
+    ping() {
+        return this.businessNetworkConnection.ping();
+    }
+
+    getBusinessNetworkDefinition() {
+        return this.businessNetworkDefinition;
+    }
+
+    getSerializer() {
+        return this.serializer;
+    }
+
+    getModelManager() {
+        return this.modelManager;
+    }
+
+    getIntrospector() {
+        return this.introspector;
+    }
+
+    isConnected() {
+        return this.connected;
+    }
+
+    isConnecting() {
+        return this.connecting;
+    }
+
+}
 
 /**
  * A Loopback connector for exposing the Blockchain Solution Framework to Loopback enabled applications.
@@ -49,31 +180,64 @@ class BusinessNetworkConnector extends Connector {
 
         // Assign defaults for any optional properties.
         this.settings = Object.assign({
-            namespaces: 'always' // Default is namespaces always enabled.
+            namespaces: 'always', // Default is namespaces always enabled.
+            multiuser: false      // Default is single user mode.
         }, settings);
-
-        // Create the new disconnected business network connection.
-        this.businessNetworkConnection = new BusinessNetworkConnection();
-        this.connected = this.connecting = false;
 
         // Create a new visitor for generating LoopBack models.
         this.visitor = new LoopbackVisitor(this.settings.namespaces === 'always');
+
+        // Create the cache.
+        this.connectionWrappers = new NodeCache();
+        this.connectionWrappers.on('del', (key, value) => {
+            return value.disconnect()
+                .catch((error) => {
+                    console.error(error);
+                });
+        });
+        this.defaultConnectionWrapper = new BusinessNetworkConnectionWrapper(settings);
 
     }
 
     /**
      * Ensure that the connector has connected to Composer.
-     * @return {Promise} A promise that is resolved when the connector has connected.
+     * @param {Object} options The options from LoopBack.
      */
-    ensureConnected () {
-        debug('ensureConnected');
-        if (this.connected) {
-            return Promise.resolve();
-        } else if (this.connecting) {
-            return this.connectionPromise;
+    getConnectionWrapper(options) {
+        if (options && options.accessToken) {
+            if (!options.enrollmentID || !options.enrollmentSecret) {
+                throw new Error('No enrollment ID or enrollment secret has been provided');
+            }
+            const key = crypto.createHmac('sha256', 'such secret')
+                .update(options.accessToken.id)
+                .update(options.enrollmentID)
+                .update(options.enrollmentSecret)
+                .digest('hex');
+            let connectionWrapper = this.connectionWrappers.get(key);
+            if (!connectionWrapper) {
+                const settings = Object.assign(this.settings, {
+                    participantId: options.enrollmentID,
+                    participantPwd: options.enrollmentSecret,
+                    wallet: options.wallet
+                });
+                connectionWrapper = new BusinessNetworkConnectionWrapper(settings);
+                this.connectionWrappers.set(key);
+            }
+            return connectionWrapper;
         } else {
-            return this.connectInternal();
+            return this.defaultConnectionWrapper;
         }
+    }
+
+    /**
+     * Ensure that the connector has connected to Composer.
+     * @param {Object} options The options from LoopBack.
+     * @return {Promise} A promise that is resolved with a {@link BusinessNetworkConnection}
+     * when the connector has connected, or rejected with an error.
+     */
+    ensureConnected (options) {
+        debug('ensureConnected');
+        return this.getConnectionWrapper(options).ensureConnected();
     }
 
     /**
@@ -81,8 +245,14 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback the callback to call when complete.
      */
     connect (callback) {
-        this.connectInternal()
+        debug('connect');
+        const connectionWrapper = this.getConnectionWrapper(null);
+        connectionWrapper.connect()
             .then(() => {
+                this.businessNetworkDefinition = connectionWrapper.getBusinessNetworkDefinition();
+                this.serializer = connectionWrapper.getSerializer();
+                this.modelManager = connectionWrapper.getModelManager();
+                this.introspector = connectionWrapper.getIntrospector();
                 if (callback) {
                     callback();
                 }
@@ -95,46 +265,12 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Connect to the Business Network
-     * @return {Promise} A promise that is resolved when the connector has connected.
-     */
-    connectInternal() {
-        debug('connectInternal');
-        debug('settings', JSON.stringify(this.settings));
-        this.connecting = true;
-        this.connected = false;
-        this.connectionPromise = this.businessNetworkConnection
-            .connect(this.settings.connectionProfileName,
-                this.settings.businessNetworkIdentifier,
-                this.settings.participantId,
-                this.settings.participantPwd
-            )
-            .then((result) => {
-                // setup some objects for this business network
-                this.businessNetworkDefinition = result;
-                this.serializer = this.businessNetworkDefinition.getSerializer();
-                this.modelManager = this.businessNetworkDefinition.getModelManager();
-                this.introspector = this.businessNetworkDefinition.getIntrospector();
-            })
-            .then(() => {
-                this.connected = true;
-                this.connecting = false;
-            })
-            .catch((error) => {
-                this.connected = this.connecting = false;
-                throw error;
-            });
-        return this.connectionPromise;
-    }
-
-    /**
      * Test the connection to Composer.
      * @param {function} callback the callback to call when complete.
      */
     ping (callback) {
         debug('ping');
-        this.businessNetworkConnection
-            .ping()
+        this.getConnectionWrapper().ping()
             .then(() => {
                 callback();
             })
@@ -149,14 +285,11 @@ class BusinessNetworkConnector extends Connector {
      */
     disconnect (callback) {
         debug('disconnect');
-        this.businessNetworkConnection
-            .disconnect()
+        this.getConnectionWrapper().disconnect()
             .then(() => {
-                this.connected = this.connecting = false;
                 callback();
             })
             .catch((error) => {
-                this.connected = this.connecting = false;
                 callback(error);
             });
     }
@@ -177,6 +310,25 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Get the registry that stores the resources of the specified model type.
+     * @param {BusinessNetworkConnection} businessNetworkConnection the business network connection to use.
+     * @param {string} modelName The name of the model.
+     * @return {Promise} A promise that will be resolved with the {@link Registry},
+     * or rejected with an error.
+     */
+    getRegistryForModel(businessNetworkConnection, modelName) {
+        debug('getRegistryForModel', modelName);
+        let classDeclaration = this.modelManager.getType(modelName);
+        if (classDeclaration instanceof AssetDeclaration) {
+            return businessNetworkConnection.getAssetRegistry(modelName);
+        } else if (classDeclaration instanceof ParticipantDeclaration) {
+            return businessNetworkConnection.getParticipantRegistry(modelName);
+        } else {
+            return Promise.reject(new Error('No registry for specified model name'));
+        }
+    }
+
+    /**
      * Retrieves all the instances of objects in the Business Network.
      * @param {string} lbModelName The name of the model.
      * @param {string} filter The filter of which objects to get
@@ -187,100 +339,90 @@ class BusinessNetworkConnector extends Connector {
         debug('all', lbModelName, filter, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
-        let results = [];
-        this.ensureConnected()
-            .then(() => {
-                this.getRegistryForModel(composerModelName, (error, registry) => {
+        console.log(util.inspect(lbModelName));
+        console.log(util.inspect(filter));
+        console.log(util.inspect(options));
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName);
+            })
+            .then((registry) => {
 
-                    // check for resolve include filter
-                    let doResolve = this.isResolveSet(filter);
-                    debug('doResolve', doResolve);
-                    let filterKeys = Object.keys(filter);
+                // check for resolve include filter
+                let doResolve = this.isResolveSet(filter);
+                debug('doResolve', doResolve);
+                let filterKeys = Object.keys(filter);
 
-                    if(filterKeys.indexOf('where') >= 0) {
-                        debug('where', JSON.stringify(filter.where));
-                        let whereKeys = Object.keys(filter.where);
-                        debug('where keys', whereKeys);
-                        let identifierField = this.getClassIdentifier(composerModelName);
-                        debug('identifierField', identifierField);
+                if(filterKeys.indexOf('where') >= 0) {
+                    debug('where', JSON.stringify(filter.where));
+                    let whereKeys = Object.keys(filter.where);
+                    debug('where keys', whereKeys);
+                    let identifierField = this.getClassIdentifier(composerModelName);
+                    debug('identifierField', identifierField);
 
-                        // Check we have the right identifier for the object type
-                        if(whereKeys.indexOf(identifierField) >= 0) {
-                            let objectId = filter.where[identifierField];
-                            if(doResolve) {
-                                registry.resolve(objectId)
+                    // Check we have the right identifier for the object type
+                    if(whereKeys.indexOf(identifierField) >= 0) {
+                        let objectId = filter.where[identifierField];
+                        if(doResolve) {
+                            return registry.resolve(objectId)
                                 .then((result) => {
                                     debug('Got Result:', result);
-                                    results.push(result);
-                                    callback(null, results);
+                                    return [ result ];
                                 })
                                 .catch((error) => {
                                     // check the error - it might be ok just an error indicating that the object doesn't exist
                                     debug('all: error ', error);
                                     if(error.toString().indexOf('does not exist') >= 0) {
-                                        callback(null, {});
+                                        return {};
                                     } else {
-                                        callback(error);
+                                        throw error;
                                     }
                                 });
 
-                            } else {
-                                registry.get(objectId)
-                                .then((result) => {
-                                    debug('Got Result:', result);
-                                    results.push(this.serializer.toJSON(result));
-                                    callback(null, results);
-                                })
-                                .catch((error) => {
-                                    // check the error - it might be ok just an error indicating that the object doesn't exist
-                                    debug('all: error ', error);
-                                    if(error.toString().indexOf('does not exist') >= 0) {
-                                        callback(null, {});
-                                    } else {
-                                        callback(error);
-                                    }
-                                });
-                            }
                         } else {
-                            callback(new Error('The specified filter does not match the identifier in the model'));
+                            return registry.get(objectId)
+                                .then((result) => {
+                                    debug('Got Result:', result);
+                                    return [ this.serializer.toJSON(result) ];
+                                })
+                                .catch((error) => {
+                                    // check the error - it might be ok just an error indicating that the object doesn't exist
+                                    debug('all: error ', error);
+                                    if(error.toString().indexOf('does not exist') >= 0) {
+                                        return {};
+                                    } else {
+                                        throw error;
+                                    }
+                                });
                         }
                     } else {
-                        debug('no where filter');
-                        if(doResolve) {
-                            debug('About to resolve on all');
-                            // get all unresolved objects
-                            registry.resolveAll()
-                                .then((result) => {
-                                    debug('Got Result:', result);
-                                    result.forEach((res) => {
-                                        results.push(res);
-                                    });
-                                    callback(null, results);
-                                })
-                                .catch((error) => {
-                                    callback(error);
-                                });
-
-                        } else {
-                            // get all unresolved objects
-                            debug('About to get all');
-                            registry.getAll()
-                                .then((result) => {
-                                    debug('Got Result:', result);
-                                    result.forEach((res) => {
-                                        results.push(this.serializer.toJSON(res));
-                                    });
-                                    callback(null, results);
-                                })
-                                .catch((error) => {
-                                    callback(error);
-                                });
-                        }
+                        throw new Error('The specified filter does not match the identifier in the model');
                     }
-                });
+                } else if(doResolve) {
+                    debug('no where filter, about to resolve on all');
+                    // get all unresolved objects
+                    return registry.resolveAll()
+                        .then((result) => {
+                            debug('Got Result:', result);
+                            return result;
+                        });
+
+                } else {
+                    // get all unresolved objects
+                    debug('no where filter, about to get all');
+                    return registry.getAll()
+                        .then((result) => {
+                            debug('Got Result:', result);
+                            return result.map((res) => {
+                                return this.serializer.toJSON(res);
+                            });
+                        });
+                }
+            })
+            .then((result) => {
+                callback(null, result);
             })
             .catch((error) => {
-                //console.log('ERR: '+error);
                 callback(error);
             });
     }
@@ -333,34 +475,6 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Retrieves all the instances of objects in IBM Concerto.
-     * @param {string} modelName The name of the model.
-     * @param {Object} callback The callback to call with the result.
-     */
-    getRegistryForModel(modelName, callback) {
-        debug('getRegistryForModel', modelName);
-        let classDeclaration = this.modelManager.getType(modelName);
-        if (classDeclaration instanceof AssetDeclaration) {
-            this.businessNetworkConnection.getAssetRegistry(modelName)
-                .then((assetRegistry) => {
-                    callback(null, assetRegistry);
-                });
-        } else if (classDeclaration instanceof ParticipantDeclaration) {
-            this.businessNetworkConnection.getParticipantRegistry(modelName)
-                .then((participantRegistry) => {
-                    callback(null, participantRegistry);
-                });
-        } else if (classDeclaration instanceof TransactionDeclaration) {
-            this.businessNetworkConnection.getTransactionRegistry(modelName)
-                .then((transactionRegistry) => {
-                    callback(null, transactionRegistry);
-                });
-        } else {
-            callback(new Error('No registry for specified model name'));
-        }
-    }
-
-    /**
      * counts the number of instances of the specified object in the blockchain
      * @param {string} lbModelName The Loopback model name.
      * @param {string} where The LoopBack filter with the ID apply.
@@ -371,40 +485,45 @@ class BusinessNetworkConnector extends Connector {
         debug('count', lbModelName, where, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
-        //console.log('COUNT: '+composerModelName, arguments);
-        this.ensureConnected()
-        .then(() => {
-            let idField = Object.keys(where)[0];
-            if(this.isValidId(composerModelName, idField)) {
-                // Just a basic existence check for now
-                this.exists(lbModelName, where[idField], (error, result) => {
-                    callback(null, result ? 1 : 0);
-                });
-            } else {
-                callback(new Error(idField+' is not valid for asset '+composerModelName));
-            }
-        });
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                let idField = Object.keys(where)[0];
+                if(this.isValidId(composerModelName, idField)) {
+                    // Just a basic existence check for now
+                    this.exists(lbModelName, where[idField], options, (error, result) => {
+                        callback(null, result ? 1 : 0);
+                    });
+                } else {
+                    callback(new Error(idField+' is not valid for asset '+composerModelName));
+                }
+            });
     }
 
     /**
      * Runs the callback with whether the object exists or not.
      * @param {string} lbModelName The composer model name.
      * @param {string} id The LoopBack filter with the ID apply.
+     * @param {Object} options The LoopBack options.
      * @param {function} callback The Callback to call when complete.
      */
-    exists(lbModelName, id, callback) {
+    exists(lbModelName, id, options, callback) {
         debug('exists', lbModelName, id);
         let composerModelName = this.getComposerModelName(lbModelName);
 
-        this.getRegistryForModel(composerModelName, (error, registry) => {
-            registry.exists(id)
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName);
+            })
+            .then((registry) => {
+                return registry.exists(id);
+            })
             .then((result) => {
                 callback(null, result);
             })
             .catch((error) => {
+                debug('exists', 'error thrown doing exists', error);
                 callback(error);
             });
-        });
     }
 
     /**
@@ -415,7 +534,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {Object} data The object data to use for modification
      * @param {Object} callback The object data to use for modification
      */
-    updateAttributes(lbModelName, objectId, data, callback) {
+    updateAttributes(lbModelName, objectId, data, options, callback) {
         debug('updateAttributes', lbModelName, objectId, data);
         let composerModelName = this.getComposerModelName(lbModelName);
 
@@ -424,21 +543,20 @@ class BusinessNetworkConnector extends Connector {
             data.$class = composerModelName;
         }
 
-        this.ensureConnected()
+        let resource;
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                resource = this.serializer.fromJSON(data);
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName);
+            })
+            .then((registry) => {
+                return registry.update(resource);
+            })
             .then(() => {
-                let resource = this.serializer.fromJSON(data);
-                this.getRegistryForModel(composerModelName, (error, registry) => {
-                    registry.update(resource)
-                    .then(() => {
-                        callback();
-                    })
-                    .catch((error) => {
-                        callback(error);
-                    });
-                });
+                callback();
             })
             .catch((error) => {
-                debug('create', 'error thrown doing update', error);
+                debug('updateAttributes', 'error thrown doing update', error);
                 callback(error);
             });
 
@@ -462,21 +580,20 @@ class BusinessNetworkConnector extends Connector {
             data.$class = composerModelName;
         }
 
-        this.ensureConnected()
+        let resource;
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                resource = this.serializer.fromJSON(data);
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName);
+            })
+            .then((registry) => {
+                return registry.update(resource);
+            })
             .then(() => {
-                let resource = this.serializer.fromJSON(data);
-                this.getRegistryForModel(composerModelName, (error, registry) => {
-                    registry.update(resource)
-                    .then(() => {
-                        callback();
-                    })
-                    .catch((error) => {
-                        callback(error);
-                    });
-                });
+                callback();
             })
             .catch((error) => {
-                debug('create', 'error thrown doing update', error);
+                debug('replaceById', 'error thrown doing update', error);
                 callback(error);
             });
 
@@ -503,52 +620,31 @@ class BusinessNetworkConnector extends Connector {
             data.$class = composerModelName;
         }
 
-        this.ensureConnected()
-            .then(() => {
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
                 // Convert the JSON data into a resource.
                 let serializer = this.businessNetworkDefinition.getSerializer();
                 let resource = serializer.fromJSON(data);
 
                 // The create action is based on the type of the resource.
+                // If it's a transaction, it's a transaction submit.
                 let classDeclaration = resource.getClassDeclaration();
-                if (classDeclaration instanceof AssetDeclaration) {
-                    // For assets, we add the asset to its default asset registry
-                    this.businessNetworkConnection.getAssetRegistry(classDeclaration.getFullyQualifiedName())
-                        .then((assetRegistry) => {
-                            return assetRegistry.add(resource);
-                        })
-                        .then(() => {
-                            callback();
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
+                if (classDeclaration instanceof TransactionDeclaration) {
 
-                } else if (classDeclaration instanceof TransactionDeclaration) {
                     // For transactions, we submit the transaction for execution.
-                    this.businessNetworkConnection.submitTransaction(resource)
-                        .then(() => {
-                            callback();
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
+                    return businessNetworkConnection.submitTransaction(resource);
 
-                } else if (classDeclaration instanceof ParticipantDeclaration) {
-                    this.businessNetworkConnection.getParticipantRegistry(classDeclaration.getFullyQualifiedName())
-                        .then((participantRegistry) => {
-                            return participantRegistry.add(resource);
-                        })
-                        .then(() => {
-                            callback();
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                } else {
-                    // For everything else, we blow up!
-                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
                 }
+
+                // For assets and participants, we add the resource to its default registry
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName)
+                    .then((registry) => {
+                        return registry.add(resource);
+                    });
+
+            })
+            .then(() => {
+                callback();
             })
             .catch((error) => {
                 debug('create', 'error thrown doing create', error);
@@ -568,39 +664,22 @@ class BusinessNetworkConnector extends Connector {
         debug('retrieve', lbModelName, id, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
-        this.ensureConnected()
-            .then(() => {
-                let modelManager = this.businessNetworkDefinition.getModelManager();
-                let classDeclaration = modelManager.getType(composerModelName);
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
 
-                if (classDeclaration instanceof AssetDeclaration) {
-                    // For assets, we add the asset to its default asset registry.
-                    this.businessNetworkConnection.getAssetRegistry(composerModelName)
-                        .then((assetRegistry) => {
-                            return assetRegistry.get(id);
-                        })
-                        .then((result) => {
-                            callback(null, result);
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                } else if (classDeclaration instanceof ParticipantDeclaration) {
-                    // For participants, we add the participant to its default participant registry.
-                    this.businessNetworkConnection.getParticipantRegistry(composerModelName)
-                        .then((participantRegistry) => {
-                            return participantRegistry.get(id);
-                        })
-                        .then((result) => {
-                            callback(null, result);
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                } else {
-                    // For everything else, we blow up!
-                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
-                }
+                // For assets, we add the asset to its default asset registry
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName)
+                    .then((registry) => {
+                        return registry.get(id);
+                    })
+                    .then((resource) => {
+                        let serializer = this.businessNetworkDefinition.getSerializer();
+                        return serializer.toJSON(resource);
+                    });
+
+            })
+            .then((result) => {
+                callback(null, result);
             })
             .catch((error) => {
                 debug('retrieve', 'error thrown doing retrieve', error);
@@ -625,45 +704,24 @@ class BusinessNetworkConnector extends Connector {
             data.$class = composerModelName;
         }
 
-        this.ensureConnected()
-            .then(() => {
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
                 // Convert the JSON data into a resource.
                 let serializer = this.businessNetworkDefinition.getSerializer();
                 let resource = serializer.fromJSON(data);
 
                 // The create action is based on the type of the resource.
-                let classDeclaration = resource.getClassDeclaration();
-                if (classDeclaration instanceof AssetDeclaration) {
-                    // For assets, we add the asset to its default asset registry.
-                    this.businessNetworkConnection.getAssetRegistry(classDeclaration.getFullyQualifiedName())
-                        .then((assetRegistry) => {
-                            return assetRegistry.update(resource);
-                        })
-                        .then(() => {
-                            callback();
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                } else if (classDeclaration instanceof ParticipantDeclaration) {
-                    // For participants, we add the participant to its default participant registry.
-                    this.businessNetworkConnection.getParticipantRegistry(classDeclaration.getFullyQualifiedName())
-                        .then((participantRegistry) => {
-                            return participantRegistry.update(resource);
-                        })
-                        .then(() => {
-                            callback();
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                } else {
-                    // For everything else, we blow up!
-                    throw new Error(`Unable to handle resource of type: ${typeof classDeclaration}`);
-                }
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName)
+                    .then((registry) => {
+                        return registry.update(resource);
+                    });
+
+            })
+            .then(() => {
+                callback();
             })
             .catch((error) => {
-                debug('create', 'error thrown doing update', error);
+                debug('update', 'error thrown doing update', error);
                 callback(error);
             });
     }
@@ -679,29 +737,29 @@ class BusinessNetworkConnector extends Connector {
         debug('destroyAll', lbModelName, where, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
-        //console.log('DESTROY ALL: '+composerModelName, where, options, callback);
-        this.ensureConnected()
-            .then(() => {
-                let idField = Object.keys(where)[0];
+        let idField, registry;
+        this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                idField = Object.keys(where)[0];
                 if(this.isValidId(composerModelName, idField)) {
-                    this.getRegistryForModel(composerModelName, (error, registry) => {
-                        registry.get(where[idField])
-                        .then((resourceToRemove) => {
-                            registry.remove(resourceToRemove)
-                            .then(() => {
-                                callback();
-                            })
-                            .catch((error) => {
-                                callback(error);
-                            });
-                        })
-                        .catch((error) => {
-                            callback(error);
-                        });
-                    });
+                    return this.getRegistryForModel(businessNetworkConnection, composerModelName);
                 } else {
                     callback(new Error('The specified filter does not match the identifier in the model'));
                 }
+            })
+            .then((registry_) => {
+                registry = registry_;
+                return registry.get(where[idField]);
+            })
+            .then((resourceToRemove) => {
+                return registry.remove(resourceToRemove);
+            })
+            .then(() => {
+                callback();
+            })
+            .catch((error) => {
+                debug('destroyAll', 'error thrown doing remove', error);
+                callback(error);
             });
     }
 
@@ -713,7 +771,7 @@ class BusinessNetworkConnector extends Connector {
      */
     discoverModelDefinitions (options, callback) {
         debug('discoverClassDeclarations', options);
-        this.ensureConnected()
+        this.ensureConnected(options)
             .then(() => {
                 let models = [];
                 let modelNames = new Set();
@@ -789,7 +847,7 @@ class BusinessNetworkConnector extends Connector {
      */
     discoverSchemas (object, options, callback) {
         debug('discoverSchemas', object, options);
-        this.ensureConnected()
+        this.ensureConnected(options)
             .then(() => {
 
                 // Try to find the type - search for the fully qualified name first.

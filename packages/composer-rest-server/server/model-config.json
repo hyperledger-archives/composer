@@ -18,6 +18,14 @@
     "dataSource": "db",
     "public": false
   },
+  "Wallet": {
+    "dataSource": "db",
+    "public": true
+  },
+  "WalletIdentity": {
+    "dataSource": "db",
+    "public": false
+  },
   "accessToken": {
     "dataSource": "db",
     "public": false

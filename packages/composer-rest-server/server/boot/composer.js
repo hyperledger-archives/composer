@@ -15,10 +15,152 @@
 'use strict';
 
 const connector = require('loopback-connector-composer');
+const Wallet = require('composer-common').Wallet;
+
+class LoopBackWallet extends Wallet {
+
+    constructor(wallet, WalletIdentityModel) {
+        super();
+        this.wallet = wallet;
+        this.WalletIdentityModel = WalletIdentityModel;
+    }
+
+    /**
+     * List all of the credentials in the wallet.
+     * @abstract
+     * @return {Promise} A promise that is resolved with
+     * an array of credential names, or rejected with an
+     * error.
+     */
+    list() {
+        return new Promise((resolve, reject) => {
+            this.WalletIdentityModel.find({ walletId: this.wallet.id }, (err, identities) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(identities.map((identity) => {
+                    return identity.enrollmentID;
+                }));
+            });
+        });
+    }
+
+    /**
+     * Check to see if the named credentials are in
+     * the wallet.
+     * @abstract
+     * @param {string} name The name of the credentials.
+     * @return {Promise} A promise that is resolved with
+     * a boolean; true if the named credentials are in the
+     * wallet, false otherwise.
+     */
+    contains(name) {
+        console.log('contains', this.wallet, name);
+        return new Promise((resolve, reject) => {
+            this.WalletIdentityModel.count({ walletId: this.wallet.id, enrollmentID: name }, (err, count) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(count !== 0);
+            });
+        });
+    }
+
+    /**
+     * Get the named credentials from the wallet.
+     * @abstract
+     * @param {string} name The name of the credentials.
+     * @return {Promise} A promise that is resolved with
+     * the named credentials, or rejected with an error.
+     */
+    get(name) {
+        console.log('get', name);
+        return new Promise((resolve, reject) => {
+            this.WalletIdentityModel.findOne({ walletId: this.wallet.id, enrollmentID: name }, (err, identity) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(identity.certificate);
+            });
+        });
+    }
+
+    /**
+     * Add a new credential to the wallet.
+     * @abstract
+     * @param {string} name The name of the credentials.
+     * @param {string} value The credentials.
+     * @return {Promise} A promise that is resolved when
+     * complete, or rejected with an error.
+     */
+    add(name, value) {
+        console.log('add', name, value);
+        return new Promise((resolve, reject) => {
+            this.WalletIdentityModel.findOne({ walletId: this.wallet.id, enrollmentID: name }, (err, identity) => {
+                if (err) {
+                    return reject(err);
+                }
+                identity.updateAttribute('certificate', value, (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve();
+                });
+            });
+        });
+    }
+
+    /**
+     * Update existing credentials in the wallet.
+     * @abstract
+     * @param {string} name The name of the credentials.
+     * @param {string} value The credentials.
+     * @return {Promise} A promise that is resolved when
+     * complete, or rejected with an error.
+     */
+    update(name, value) {
+        console.log('update', name, value);
+        return new Promise((resolve, reject) => {
+            this.WalletIdentityModel.findOne({ walletId: this.wallet.id, enrollmentID: name }, (err, identity) => {
+                if (err) {
+                    return reject(err);
+                }
+                identity.updateAttribute('certificate', value, (err) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve();
+                });
+            });
+        });
+    }
+
+    /**
+     * Remove existing credentials from the wallet.
+     * @abstract
+     * @param {string} name The name of the credentials.
+     * @return {Promise} A promise that is resolved when
+     * complete, or rejected with an error.
+     */
+    remove(name) {
+        console.log('remove', name);
+        return new Promise((resolve, reject) => {
+            this.WalletIdentityModel.destroyAll({ walletId: this.wallet.id, enrollmentID: name }, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
+    }
+
+}
 
 module.exports = function (app, callback) {
 
     const composer = app.get('composer');
+    const WalletModel = app.models.Wallet;
+    const WalletIdentityModel = app.models.WalletIdentity;
 
     const dataSource = app.loopback.createDataSource('composer', {
         name: 'composer',
@@ -105,10 +247,10 @@ module.exports = function (app, callback) {
                     model.disableRemoteMethodByName(name);
                 } else if (name === 'exists') {
                     // we want to remove the /:id/exists method
-                    method.http = [{verb: 'head', path: '/:id'}];
+                    method.http = [{ verb: 'head', path: '/:id' }];
                 } else if (name === 'replaceById') {
                     // we want to remove the /:id/replace method
-                    method.http = [{verb: 'put', path: '/:id'}];
+                    method.http = [{ verb: 'put', path: '/:id' }];
                 }
             });
 
@@ -123,6 +265,35 @@ module.exports = function (app, callback) {
     })
     .then(() => {
         console.log('Added schemas for all types to Loopback');
+
+        app.remotes().phases
+            .addBefore('invoke', 'options-from-request')
+            .use(function(ctx, next) {
+                if (!ctx.args.options.accessToken) {
+                    return next();
+                }
+                WalletModel.find({ userId: ctx.args.options.accessToken.userId }, (err, wallets) => {
+                    if (err) {
+                        return next(err);
+                    } else if (wallets.length === 0) {
+                        return next();
+                    }
+                    const wallet = wallets[0];
+                    WalletIdentityModel.find({ wallet: wallet }, (err, identities) => {
+                        if (err) {
+                            return next(err);
+                        } else if (identities.length === 0) {
+                            return next();
+                        }
+                        const identity = identities[0];
+                        ctx.args.options.enrollmentID = identity.enrollmentID;
+                        ctx.args.options.enrollmentSecret = identity.enrollmentSecret;
+                        ctx.args.options.wallet = new LoopBackWallet(wallet, WalletIdentityModel);
+                        next();
+                    });
+                });
+            });
+
         callback();
     })
     .catch((error) => {
