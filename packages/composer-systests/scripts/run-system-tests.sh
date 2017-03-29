@@ -91,11 +91,6 @@ npm run systest:${SYSTEST} 2>&1 | tee
 if [ "${DOCKER_FILE}" != "" ]; then
     docker-compose -f ${DOCKER_FILE} kill
     docker-compose -f ${DOCKER_FILE} down
-    # remove hlfv1 chaincode images
-    if [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
-        docker rm $(docker ps dev-* -aq)
-        docker rmi $(docker images dev-* -q)
-    fi
 fi
 
 
