@@ -23,7 +23,7 @@
       <br>
     </div>
     <div class="col-sm-8 h-100 editor">
-      <codemirror [(ngModel)]="code" [config]="codeConfig" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
+      <codemirror [(ngModel)]="code" [config]="getCodeConfig()" (ngModelChange)="onCodeChanged()" width="100%" height="100%">
       </codemirror>
       <div class="alert alert-danger mt-2" role="alert" *ngIf="currentError">
         {{currentError}}
@@ -68,7 +68,16 @@
       </div>
       <div class="modal-body">
         <label for="addScriptFileName">File name</label>
-        <input class="form-control w-100" type="text" [(ngModel)]="addScriptFileName" id="addScriptFileName">
+        <div class="row">
+          <div class="col-lg-8">
+            <input class="form-control" type="text" [(ngModel)]="addScriptFileName[0]" id="addScriptFileName">
+          </div>
+          <div class="col-lg-4">
+            <select class="form-control" [(ngModel)]="addScriptFileName[1]">
+                <option *ngFor="let language of languages" >.{{ language }}</option>
+            </select>
+          </div>
+        </div>
         <br>
         <button type="button" class="btn btn-primary" (click)="addScriptFileModal.hide(); addScriptFile();">
           <span>Add</span>

@@ -53,8 +53,18 @@ class Introspector {
    + ClassDeclaration[] getClassDeclarations() 
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
+class JSScriptProcessor extends ScriptProcessor {
+   + string getType() 
+   + FunctionDeclaration[] process(ModelManager,string,string) 
+   + string newContent() 
+}
 class ParseException extends BaseException {
    + void constructor(string) 
+}
+class ScriptProcessor {
+   + string getType() 
+   + FunctionDeclaration[] process(ModelManager,string,string) 
+   + string newContent() 
 }
 class Concept extends Typed {
    + boolean isConcept() 

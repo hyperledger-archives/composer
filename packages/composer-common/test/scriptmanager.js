@@ -16,6 +16,8 @@
 
 const ScriptManager = require('../lib/scriptmanager');
 const ModelManager = require('../lib/modelmanager');
+const ScriptProcessor = require('../lib/introspect/scriptprocessor');
+const JSScriptProcessor = require('../lib/introspect/jsscriptprocessor');
 const sinon = require('sinon');
 
 describe('ScriptManager', () => {
@@ -109,6 +111,37 @@ describe('ScriptManager', () => {
             (() => {
                 scriptManager.deleteScript('MISSING');
             }).should.throw(/Script file does not exist/);
+        });
+    });
+
+    describe('#addScriptProcessor', () => {
+
+        it('should add script processor', () => {
+            ScriptManager.addScriptProcessor(new JSScriptProcessor());
+        });
+
+        it('should add new script processor', () => {
+            /**
+             * SomeScriptProcessor
+             */
+            class SomeScriptProcessor extends ScriptProcessor {
+                /**
+                 * Get the type of this script processor.
+                 * @abstract
+                 * @return {string} The type of this transaction executor.
+                 */
+                getType() {
+                    return 'Some';
+                }
+            }
+            ScriptManager.addScriptProcessor(new SomeScriptProcessor());
+        });
+    });
+
+    describe('#getModelManager', () => {
+
+        it('should return getModelManager', () => {
+            scriptManager.getModelManager().should.be.instanceOf(ModelManager);
         });
     });
 

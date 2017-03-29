@@ -15,14 +15,17 @@
 'use strict';
 
 const Script = require('../../lib/introspect/script');
+const JSScriptProcessor = require('../../lib/introspect/jsscriptprocessor');
 const ModelManager = require('../../lib/modelmanager');
 const sinon = require('sinon');
 
 describe('Script', () => {
     let modelManager;
+    let scriptProcessor;
 
     beforeEach(() => {
         modelManager = new ModelManager();
+        scriptProcessor = new JSScriptProcessor();
     });
 
     afterEach(() => {
@@ -55,7 +58,9 @@ describe('Script', () => {
 
         it('should parse no args function', () => {
             const FUNC_TEXT = 'function foo() {return 0;}';
-            const script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
+
+            let parsedFunctions = scriptProcessor.process(modelManager, 'SCRIPT_001', FUNC_TEXT);
+            const script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT, parsedFunctions );
             script.getFunctionDeclarations().length.should.equal(1);
             script.getLanguage().should.equal('JS');
             script.getContents().should.equal(FUNC_TEXT);
@@ -71,7 +76,8 @@ describe('Script', () => {
         it('should throw for a TX processor function that does not have 1 parameter', () => {
             const FUNC_TEXT = '/*@transaction*/ function onMyTransaction() {return 0;}';
             (() => {
-                new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
+                let parsedFunctions = scriptProcessor.process(modelManager, 'SCRIPT_001', FUNC_TEXT);
+                new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT, parsedFunctions );
             }).should.throw(/must have 1 function argument/);
         });
 
@@ -89,7 +95,8 @@ describe('Script', () => {
   console.log(myParam);
   return false;
 }`;
-            const script = new Script(modelManager, 'SCRIPT_002', 'JS', COMMENT + FUNC_TEXT );
+            let parsedFunctions = scriptProcessor.process(modelManager, 'SCRIPT_002', COMMENT + FUNC_TEXT);
+            const script = new Script(modelManager, 'SCRIPT_002', 'JS', COMMENT + FUNC_TEXT, parsedFunctions);
             script.getIdentifier().should.equal('SCRIPT_002');
             script.getFunctionDeclarations().length.should.equal(1);
             const func = script.getFunctionDeclarations()[0];
@@ -106,7 +113,8 @@ describe('Script', () => {
 
         it('should return an object', () => {
             const FUNC_TEXT = 'function foo() {return 0;}';
-            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
+            let parsedFunctions = scriptProcessor.process(modelManager, 'SCRIPT_001', FUNC_TEXT);
+            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT, parsedFunctions );
             script.toJSON().should.deep.equal({
                 identifier: 'SCRIPT_001',
                 language: 'JS'

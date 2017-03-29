@@ -76,11 +76,11 @@ describe('JSTransactionExecutor', () => {
 
     describe('#execute', () => {
 
-        it('should throw if no functions could be found', () => {
+        it('should not throw if no functions could be found', () => {
             sinon.stub(executor, 'findFunctionNames').returns([]);
             (() => {
                 executor.execute(api, scriptManager, transaction, resolvedTransaction);
-            }).should.throw(/Could not find any functions/);
+            }).should.not.throw(/Could not find any functions/);
         });
 
         it('should execute a single transaction processor function', () => {
@@ -264,6 +264,19 @@ describe('JSTransactionExecutor', () => {
             function doIt(transaction) {
                 global.$testResult = transaction.getFullyQualifiedIdentifier();
             }`));
+            let functions = executor.compileScripts(scriptManager, ['doIt']);
+            functions.should.have.lengthOf(1);
+            functions[0](transaction);
+            global.$testResult.should.equal('org.acme.TestTransaction#1');
+        });
+
+        it('should not add non-JS scripts', () => {
+            scriptManager.addScript(scriptManager.createScript('script1', 'JS', `
+            function doIt(transaction) {
+                global.$testResult = transaction.getFullyQualifiedIdentifier();
+            }`));
+            scriptManager.addScript(scriptManager.createScript('script2', 'XML', `
+            <xml></xml>`));
             let functions = executor.compileScripts(scriptManager, ['doIt']);
             functions.should.have.lengthOf(1);
             functions[0](transaction);

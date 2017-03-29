@@ -18,7 +18,7 @@ const AccessController = require('./accesscontroller');
 const Api = require('./api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
-const JSTransactionExecutor = require('./jstransactionexecutor');
+const LanguageManager = require('./languagemanager');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
 const QueryExecutor = require('./queryexecutor');
@@ -210,8 +210,11 @@ class Context {
                 }
             })
             .then(() => {
-                LOG.debug(method, 'Installing default JavaScript transaction executor');
-                this.addTransactionExecutor(new JSTransactionExecutor());
+                LOG.debug(method, 'Installing transaction executors');
+                let _context = this;
+                LanguageManager.getTransactionExecutors().forEach(function(executor){
+                    _context.addTransactionExecutor(executor);
+                });
             })
             .then(() => {
                 LOG.exit(method);
