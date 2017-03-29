@@ -207,7 +207,17 @@ class ClassDeclaration {
                 }
             }
 
-            field.validate(this);
+            // we now validate the field, however to ensure that
+            // imports are resolved correctly we validate in the context
+            // of the declared type of the field for non-primitives in a different namespace
+            if(field.isPrimitive() || this.isEnum() || field.getNamespace() === this.getModelFile().getNamespace() ) {
+                field.validate(this);
+            }
+            else {
+                const typeFqn = field.getFullyQualifiedTypeName();
+                const classDecl = this.modelFile.getModelManager().getType(typeFqn);
+                field.validate(classDecl);
+            }
         }
     }
 

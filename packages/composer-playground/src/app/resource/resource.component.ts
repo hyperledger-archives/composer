@@ -3,7 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
 import { InitializationService } from '../initialization.service';
-import { ClassDeclaration, AssetDeclaration, ParticipantDeclaration, TransactionDeclaration } from 'composer-common';
+import {
+  ClassDeclaration,
+  AssetDeclaration,
+  ParticipantDeclaration,
+  TransactionDeclaration } from 'composer-common';
 import leftPad = require('left-pad');
 
 import 'codemirror/mode/javascript/javascript';
@@ -54,13 +58,8 @@ export class ResourceComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private route: ActivatedRoute,
     private clientService: ClientService,
     private initializationService: InitializationService) {
-  }
-
-  private editMode(): boolean {
-      return (this.resource ? true : false);
   }
 
   ngOnInit(): Promise<any> {
@@ -76,7 +75,7 @@ export class ResourceComponent implements OnInit {
 
             // Set resource declaration
             this.resourceDeclaration = modelClassDeclaration;
-            this.resourceType = this.retrieveResourceType(modelClassDeclaration)
+            this.resourceType = this.retrieveResourceType(modelClassDeclaration);
 
             if (this.editMode()) {
                 this.resourceAction = 'Update';
@@ -95,11 +94,15 @@ export class ResourceComponent implements OnInit {
       });
   }
 
+  private editMode(): boolean {
+      return (this.resource ? true : false);
+  }
+
   private generateSampleData(): void {
     this.generateResource(true);
     this.onDefinitionChanged();
   }
- 
+
   /**
    * Generate the json description of a resource
    */
@@ -113,7 +116,7 @@ export class ResourceComponent implements OnInit {
       this.resourceDeclaration.getModelFile().getNamespace(),
       this.resourceDeclaration.getName(),
       id,
-      { generate: true, "withSampleData": withSampleData });
+      { generate: true, 'withSampleData': withSampleData });
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);
@@ -121,7 +124,7 @@ export class ResourceComponent implements OnInit {
     } catch (error) {
       // We can't generate a sample instance for some reason.
       this.defitionError = error.toString();
-      this.resourceDefinition = "";
+      this.resourceDefinition = '';
     }
   }
 
@@ -141,7 +144,7 @@ export class ResourceComponent implements OnInit {
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
         resource.validate();
-        if(this.editMode()) {
+        if (this.editMode()) {
             return registry.update(resource);
         } else {
             return registry.add(resource);
@@ -154,7 +157,7 @@ export class ResourceComponent implements OnInit {
       .catch((error) => {
         this.defitionError = error.toString();
         this.actionInProgress = false;
-      })
+      });
   }
 
 
@@ -178,18 +181,18 @@ export class ResourceComponent implements OnInit {
    */
   private retrieveResourceType(modelClassDeclaration): string {
     if (modelClassDeclaration instanceof TransactionDeclaration) {
-      return "Transaction";
+      return 'Transaction';
     } else if (modelClassDeclaration instanceof AssetDeclaration) {
-      return "Asset";
+      return 'Asset';
     } else if (modelClassDeclaration instanceof ParticipantDeclaration) {
-      return "Participant";
+      return 'Participant';
     }
   }
 
   /**
    * Generate a stub resource definition
    */
-  private generateDefinitionStub(registryID, modelClassDeclaration)  : string {
+  private generateDefinitionStub(registryID, modelClassDeclaration): string {
     let stub = '';
     stub = '{\n  "$class": "' + registryID + '"';
     let resourceProperties = modelClassDeclaration.getProperties();
@@ -205,7 +208,7 @@ export class ResourceComponent implements OnInit {
    */
   private retrieveResourceRegistry(type) {
 
-    let client =this.clientService;
+    let client = this.clientService;
     let id = this.registryID;
 
     function isAsset() {
@@ -220,7 +223,7 @@ export class ResourceComponent implements OnInit {
       return client.getBusinessNetworkConnection().getParticipantRegistry(id);
     }
 
-    var types = {
+    let types = {
       'Asset': isAsset,
       'Participant': isParticipant,
       'Transaction': isTransaction
