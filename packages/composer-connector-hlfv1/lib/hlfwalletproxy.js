@@ -39,6 +39,16 @@ class HLFWalletProxy extends KeyValueStore {
     }
 
     /**
+     * Extract the enrollment ID from a Hyperledger Fabric key/value
+     * store name which is in the format member.<enrollmentID>.
+     * @param {string} name key/value store name.
+     * @return {string} the enrollment ID.
+     */
+    extractEnrollmentID(name) {
+        return name.replace(/^member\./, '');
+    }
+
+    /**
      * Get the value associated with name.
      * @param {string} name of the key
      * @returns {Promise} Promise for the value corresponding to the key.
@@ -48,6 +58,7 @@ class HLFWalletProxy extends KeyValueStore {
     getValue(name) {
         const method = 'getValue';
         LOG.entry(method, name);
+        name = this.extractEnrollmentID(name);
         return this.wallet.contains(name)
             .then((result) => {
                 if (result) {
@@ -75,6 +86,7 @@ class HLFWalletProxy extends KeyValueStore {
     setValue(name, value) {
         const method = 'setValue';
         LOG.entry(method, name, value);
+        name = this.extractEnrollmentID(name);
         return this.wallet.contains(name)
             .then((contains) => {
                 if (contains) {
