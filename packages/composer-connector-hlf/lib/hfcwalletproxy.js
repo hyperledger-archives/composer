@@ -36,6 +36,16 @@ class HFCWalletProxy {
     }
 
     /**
+     * Extract the enrollment ID from a Hyperledger Fabric key/value
+     * store name which is in the format member.<enrollmentID>.
+     * @param {string} name key/value store name.
+     * @return {string} the enrollment ID.
+     */
+    extractEnrollmentID(name) {
+        return name.replace(/^member\./, '');
+    }
+
+    /**
      * Get the value associated with name.
      * @param {string} name The name.
      * @param {function} cb The callback.
@@ -45,6 +55,7 @@ class HFCWalletProxy {
     getValue(name, cb) {
         const method = 'getValue';
         LOG.entry(method, name, cb);
+        name = this.extractEnrollmentID(name);
         return this.wallet.contains(name)
             .then((result) => {
                 if (result) {
@@ -74,6 +85,7 @@ class HFCWalletProxy {
     setValue(name, value, cb) {
         const method = 'setValue';
         LOG.entry(method, name, value, cb);
+        name = this.extractEnrollmentID(name);
         return this.wallet.contains(name)
             .then((contains) => {
                 if (contains) {
