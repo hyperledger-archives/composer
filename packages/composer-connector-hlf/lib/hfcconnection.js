@@ -66,15 +66,10 @@ class HFCConnection extends Connection {
      * terminated, or rejected with an error.
      */
     disconnect() {
-        const self = this;
-        return self.getConnectionManager().onDisconnect(self)
-            .then(() => {
-                return new Promise((resolve, reject) => {
-                    self.businessNetworkIdentifier = null;
-                    self.connectionProfile = null;
-                    resolve();
-                });
-            });
+        this.chain.eventHubDisconnect();
+        this.businessNetworkIdentifier = null;
+        this.connectionProfile = null;
+        return Promise.resolve();
     }
 
     /**

@@ -10,6 +10,7 @@ import {ClientService} from '../services/client.service';
 import {InitializationService} from '../initialization.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
+import {EditorService} from '../services/editor.service';
 
 import {ModelFile} from 'composer-common';
 
@@ -26,7 +27,6 @@ export class EditorComponent implements OnInit {
 
   private files: any = [];
   private currentFile: any = null;
-  private previousFile;
 
   private addModelNamespace: string = 'org.acme.model';
   private addScriptFileName: string = 'lib/script.js';
@@ -50,7 +50,8 @@ export class EditorComponent implements OnInit {
               private modalService: NgbModal,
               private route: ActivatedRoute,
               private sampleBusinessNetworkService: SampleBusinessNetworkService,
-              private alertService: AlertService) {
+              private alertService: AlertService,
+              private editorService: EditorService) {
 
   }
 
@@ -70,16 +71,22 @@ export class EditorComponent implements OnInit {
         });
 
         this.updatePackageInfo();
-
         this.updateFiles();
-        if (this.files.length) {
-          let currentFile = this.files.find((file) => {
-            return file.readme;
-          });
-          if (!currentFile) {
-            currentFile = this.files[0];
+
+        if(this.editorService.getCurrentFile() !== null) {
+          // console.log('A: ', this.editorService.getCurrentFile());
+          this.currentFile = this.editorService.getCurrentFile();
+        } else {
+          // console.log('B');
+          if (this.files.length) {
+            let initialFile = this.files.find((file) => {
+              return file.readme;
+            });
+            if (!initialFile) {
+              initialFile = this.files[0];
+            }
+            this.setCurrentFile(initialFile);
           }
-          this.setCurrentFile(currentFile);
         }
       });
   }
@@ -97,7 +104,8 @@ export class EditorComponent implements OnInit {
       this.updatePackageInfo();
       this.editingPackage = false;
     }
-    this.previousFile = this.currentFile;
+    
+    this.editorService.setCurrentFile(file);
     this.currentFile = file;
   }
 
@@ -271,13 +279,6 @@ export class EditorComponent implements OnInit {
       .then(() => {
         this.updatePackageInfo();
         this.updateFiles();
-
-        if (this.previousFile == null) {
-          this.setCurrentFile(this.currentFile);
-        }
-        else {
-          this.setCurrentFile(this.previousFile);
-        }
         this.alertService.busyStatus$.next(null);
         this.alertService.successStatus$.next('Business Network Deployed Successfully');
         if ((<any>window).usabilla_live) {

@@ -56,7 +56,6 @@ describe('HFCConnection', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
-        mockConnectionManager.onDisconnect.resolves();
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockConnectionProfileStore = sinon.createStubInstance(ConnectionProfileStore);
         mockConnectionProfileStore.load.withArgs('testprofile').resolves(connectOptions);
@@ -111,7 +110,7 @@ describe('HFCConnection', () => {
         it('should notify connection manager', () => {
             return connection.disconnect()
                 .then(() => {
-                    sinon.assert.calledOnce(mockConnectionManager.onDisconnect);
+                    sinon.assert.calledOnce(mockChain.eventHubDisconnect);
                 });
         });
     });

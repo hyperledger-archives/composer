@@ -58,6 +58,7 @@ import {InitializationService} from './initialization.service';
 import {SampleBusinessNetworkService} from './services/samplebusinessnetwork.service';
 import {AboutService} from './services/about.service';
 import {AlertService} from './services/alert.service';
+import {EditorService} from './services/editor.service';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -158,7 +159,8 @@ type StoreType = {
     InitializationService,
     SampleBusinessNetworkService,
     AboutService,
-    AlertService
+    AlertService,
+    EditorService
   ]
 })
 export class AppModule {
