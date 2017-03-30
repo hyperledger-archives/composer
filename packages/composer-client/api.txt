@@ -16,7 +16,7 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise getParticipantRegistry(string) 
    + Promise addParticipantRegistry(string,string) 
    + Promise getTransactionRegistry() 
-   + Promise connect(string,string,string,string) 
+   + Promise connect(string,string,string,string,Object) 
    + Promise disconnect() 
    + Promise submitTransaction(Resource) 
    + Promise ping() 
