@@ -134,7 +134,6 @@ export class AddConnectionProfileComponent {
         certificate: this.addConnectionProfileCertificate,
         certificatePath: this.addConnectionProfileCertificatePath
       };
-      console.log('What is connectionProfile', this.newConnectionProfile);
 
     }
     else if (this.version === 'v10') {

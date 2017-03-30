@@ -166,6 +166,9 @@
           <label>Connection Profile Name*</label>
           <input type="text" formControlName="name">
         </div>
+        <div *ngIf="formErrors.name" class="error-message">
+          {{ formErrors.name }}
+        </div>
         <div>
           <label>Profile Description</label>
           <textarea formControlName="description" rows="4"></textarea>
@@ -174,17 +177,29 @@
           <label>Peer URL*</label>
           <input type="text" formControlName="peerURL">
         </div>
+        <div *ngIf="formErrors.peerURL" class="error-message">
+          {{ formErrors.peerURL }}
+        </div>
         <div>
-          <label>Membership Services URL</label>
+          <label>Membership Services URL*</label>
           <input type="text" formControlName="membershipServicesURL">
         </div>
-        <div>
-          <label>Event Hub URL</label>
-          <input type="text" formControlName="eventHubURL">
+        <div *ngIf="formErrors.membershipServicesURL" class="error-message">
+          {{ formErrors.membershipServicesURL }}
         </div>
         <div>
-          <label>Key Value Store Directory</label>
+          <label>Event Hub URL*</label>
+          <input type="text" formControlName="eventHubURL">
+        </div>
+        <div *ngIf="formErrors.eventHubURL" class="error-message">
+          {{ formErrors.eventHubURL }}
+        </div>
+        <div>
+          <label>Key Value Store Directory Path*</label>
           <input type="text" formControlName="keyValStore">
+        </div>
+        <div *ngIf="formErrors.keyValStore" class="error-message">
+          {{ formErrors.keyValStore }}
         </div>
       </section>
       <section>
@@ -199,17 +214,23 @@
         </div>
         <div class="section-title">Advanced</div>
         <div>
-          <label>Deploy Wait Time (seconds)</label>
+          <label>Deploy Wait Time (seconds)*</label>
           <input type="text" formControlName="deployWaitTime">
         </div>
+        <div *ngIf="formErrors.deployWaitTime" class="error-message">
+          {{ formErrors.deployWaitTime }}
+        </div>
         <div>
-          <label>Invoke Wait Time (seconds)</label>
+          <label>Invoke Wait Time (seconds)*</label>
           <input type="text" formControlName="invokeWaitTime">
+        </div>
+        <div *ngIf="formErrors.invokeWaitTime" class="error-message">
+          {{ formErrors.invokeWaitTime }}
         </div>
       </section>
       <footer>
         <div class="info"></div>
-        <button class="secondary" (click)="stopEditing()" [disabled]="!form.valid">Cancel</button>
+        <button class="secondary" (click)="stopEditing()">Cancel</button>
         <button class="primary" type="submit" [disabled]="!form.valid">Save</button>
       </footer>
     </form>

@@ -70,21 +70,129 @@ export class ConnectionProfileDataComponent {
 
   startEditing() {
     this.form = this.fb.group({
-      "name": this.connectionProfileData ? this.connectionProfileData.name : '',
-      "description": this.connectionProfileData ? this.connectionProfileData.profile.description : '',
-      "type": this.connectionProfileData ? this.connectionProfileData.type : 'hlf',
-      "peerURL": this.connectionProfileData ? this.connectionProfileData.profile.peerURL : 'grpc://localhost:7051',
-      "membershipServicesURL": this.connectionProfileData ? this.connectionProfileData.profile.membershipServicesURL : 'grpc://localhost:7054',
-      "eventHubURL": this.connectionProfileData ? this.connectionProfileData.profile.eventHubURL : 'grpc://localhost:7053',
-      "keyValStore": this.connectionProfileData ? this.connectionProfileData.profile.keyValStore : '/tmp/keyValStore',
-      "deployWaitTime": this.connectionProfileData ? this.connectionProfileData.profile.deployWaitTime : 300,
-      "invokeWaitTime": this.connectionProfileData ? this.connectionProfileData.profile.invokeWaitTime : 30,
-      "certificate": this.connectionProfileData ? this.connectionProfileData.profile.certificate : '',
-      "certificatePath": this.connectionProfileData ? this.connectionProfileData.profile.certificatePath : '',
+      "name": [
+        this.connectionProfileData ? this.connectionProfileData.name : '',
+        [Validators.required]
+      ],
+
+      "description": [
+        this.connectionProfileData ? this.connectionProfileData.profile.description : ''
+      ],
+
+      "type": [
+        this.connectionProfileData ? this.connectionProfileData.type : 'hlf'
+      ],
+
+      "peerURL": [
+        this.connectionProfileData ? this.connectionProfileData.profile.peerURL : 'grpc://localhost:7051',
+        [Validators.required]
+      ],
+
+      "membershipServicesURL": [
+        this.connectionProfileData ? this.connectionProfileData.profile.membershipServicesURL : 'grpc://localhost:7054',
+        [Validators.required]
+      ],
+
+      "eventHubURL": [
+        this.connectionProfileData ? this.connectionProfileData.profile.eventHubURL : 'grpc://localhost:7053',
+        [Validators.required]
+      ],
+
+      "keyValStore": [
+        this.connectionProfileData ? this.connectionProfileData.profile.keyValStore : '/tmp/keyValStore',
+        [Validators.required]
+      ],
+
+      // Is required and must be a number
+      "deployWaitTime": [
+        this.connectionProfileData ? this.connectionProfileData.profile.deployWaitTime : 300,
+        [
+          Validators.required,
+          Validators.pattern('[0-9]+')
+        ]
+      ],
+
+      // Is required and must be a number
+      "invokeWaitTime": [
+        this.connectionProfileData ? this.connectionProfileData.profile.invokeWaitTime : 30,
+        [
+          Validators.required,
+          Validators.pattern('[0-9]+')
+        ]
+      ],
+
+      "certificate": [
+        this.connectionProfileData ? this.connectionProfileData.profile.certificate : ''
+      ],
+
+      "certificatePath": [
+        this.connectionProfileData ? this.connectionProfileData.profile.certificatePath : ''
+      ]
     });
+
+    this.form.valueChanges.subscribe(data => this.onValueChanged(data));
+
+    this.onValueChanged(); // (re)set validation messages now
 
     this.editing = true;
   }
+
+  onValueChanged(data?: any) {
+    if (!this.form) { return; }
+    const form = this.form;
+
+    for (const field in this.formErrors) {
+      // clear previous error message (if any)
+      this.formErrors[field] = '';
+      const control = form.get(field);
+
+      if (control && control.dirty && !control.valid) {
+        const messages = this.validationMessages[field];
+        for (const key in control.errors) {
+          this.formErrors[field] += messages[key] + ' ';
+        }
+      }
+    }
+  }
+
+  private formErrors = {
+    'name':'',
+    'peerURL':'',
+    'membershipServicesURL':'',
+    'eventHubURL':'',
+    'keyValStore':'',
+    'deployWaitTime': '',
+    'invokeWaitTime':''
+  };
+
+  validationMessages = {
+    'name':{
+      'required': 'A connection profile name is required.',
+    },
+    'peerURL':{
+      'required': 'A Peer URL is required.',
+    },
+    'membershipServicesURL':{
+      'required': 'A Membership Services URL is required.',
+    },
+    'eventHubURL':{
+      'required': 'An Event Hub URL is required.',
+    },
+    'keyValStore':{
+      'required': 'A Key Value Store Directory Path is required.',
+    },
+    'deployWaitTime': {
+      'required': 'A Deploy Wait Time (seconds) is required.',
+      'pattern': 'The Deploy Wait Time (seconds) must be an integer.'
+    },
+    'invokeWaitTime':{
+      'required': 'An Invoke Wait Time (seconds) is required.',
+      'pattern': 'The Invoke Wait Time (seconds) must be an integer.'
+    }
+
+  };
+
+
 
   onSubmit() {
     let connectionProfile = this.form.value;
