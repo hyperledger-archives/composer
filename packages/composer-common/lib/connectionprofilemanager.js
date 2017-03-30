@@ -160,21 +160,28 @@ class ConnectionProfileManager {
      *
      * @param {string} connectionProfile The name of the connection profile
      * @param {string} businessNetworkIdentifier The identifier of the business network, or null if this is an admin connection
+     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
+     * at runtime that override options set in the connection profile.
      * @return {Promise} A promise that is resolved with a {@link Connection}
      * object once the connection is established, or rejected with a connection error.
      * @abstract
      */
-    connect(connectionProfile, businessNetworkIdentifier) {
+    connect(connectionProfile, businessNetworkIdentifier, additionalConnectOptions) {
 
         LOG.info('connect','Connecting using ' + connectionProfile, businessNetworkIdentifier);
 
+        let connectOptions;
         return this.connectionProfileStore.load(connectionProfile)
-        .then((connectOptions) => {
-            return this.getConnectionManager(connectionProfile)
-          .then((connectionManager) => {
-              return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectOptions);
-          });
-        });
+            .then((connectOptions_) => {
+                connectOptions = connectOptions_;
+                if (additionalConnectOptions) {
+                    connectOptions = Object.assign(connectOptions, additionalConnectOptions);
+                }
+                return this.getConnectionManager(connectionProfile);
+            })
+            .then((connectionManager) => {
+                return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectOptions);
+            });
     }
 
     /**

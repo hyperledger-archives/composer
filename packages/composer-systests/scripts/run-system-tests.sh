@@ -32,7 +32,11 @@ if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
     docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
     docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
 elif [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
-    DOCKER_FILE=${DIR}/systestv1/hlfv1_alpha-docker-compose.yml
+    if [[ ${SYSTEST} == *tls ]]; then
+        DOCKER_FILE=${DIR}/systestv1/hlfv1_alpha-docker-compose.tls.yml
+    else
+        DOCKER_FILE=${DIR}/systestv1/hlfv1_alpha-docker-compose.yml
+    fi
     docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha
     docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha
     docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha
@@ -61,6 +65,7 @@ fi
 
 # Start any required Docker images.
 if [ "${DOCKER_FILE}" != "" ]; then
+    echo Using docker file ${DOCKER_FILE}
     docker-compose -f ${DOCKER_FILE} kill
     docker-compose -f ${DOCKER_FILE} down
     docker-compose -f ${DOCKER_FILE} up -d
@@ -87,6 +92,7 @@ if [ "${DOCKER_FILE}" != "" ]; then
     docker-compose -f ${DOCKER_FILE} kill
     docker-compose -f ${DOCKER_FILE} down
 fi
+
 
 # Delete any written configuration.
 rm -rf ${HOME}/.composer-connection-profiles/concerto-systests

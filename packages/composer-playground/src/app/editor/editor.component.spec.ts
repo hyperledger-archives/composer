@@ -10,6 +10,7 @@ import {EditorComponent} from './editor.component';
 
 import {AdminService} from '../services/admin.service';
 import {ClientService} from '../services/client.service';
+import {EditorService} from '../services/editor.service';
 import {InitializationService} from '../initialization.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
@@ -44,6 +45,8 @@ describe('EditorComponent', () => {
   let mockInitializationService = sinon.createStubInstance(InitializationService);
   let mockModelFile = sinon.createStubInstance(ModelFile);
   let mockScriptFile = sinon.createStubInstance(Script);
+  let editorService = new EditorService();
+
 
   let mockRouterParams = {
     subscribe: (callback) => {
@@ -66,7 +69,8 @@ describe('EditorComponent', () => {
         {provide: NgbModal, useValue: mockModal},
         {provide: AlertService, useValue: mockAlertService},
         {provide: InitializationService, useValue: mockInitializationService},
-        {provide: ActivatedRoute, useValue: mockRouter}]
+        {provide: ActivatedRoute, useValue: mockRouter},
+        {provide: EditorService, useValue: editorService}]
     });
 
     fixture = TestBed.createComponent(EditorComponent);
@@ -197,8 +201,6 @@ describe('EditorComponent', () => {
       component['currentFile'] = {file: 'oldFile'};
       let file = {file: 'myFile'};
       component.setCurrentFile(file);
-
-      component['previousFile'].should.deep.equal({file: 'oldFile'});
       component['currentFile'].should.deep.equal(file);
     });
 
@@ -210,8 +212,6 @@ describe('EditorComponent', () => {
 
       let file = {file: 'myFile'};
       component.setCurrentFile(file);
-
-      component['previousFile'].should.deep.equal({file: 'oldFile'});
       component['currentFile'].should.deep.equal(file);
 
       mockUpdatePackage.should.have.been.called;
@@ -579,8 +579,6 @@ describe('EditorComponent', () => {
       mockUpdatePackage.should.have.been.called;
       mockUpdateFiles.should.have.been.called;
 
-      mockSetCurrentFile.should.have.been.calledWith('my file');
-
       mockAlertService.busyStatus$.next.should.have.been.called;
       mockAlertService.successStatus$.next.should.have.been.called;
     }));
@@ -606,8 +604,6 @@ describe('EditorComponent', () => {
 
       mockUpdatePackage.should.have.been.called;
       mockUpdateFiles.should.have.been.called;
-
-      mockSetCurrentFile.should.have.been.calledWith('my file');
 
       mockAlertService.busyStatus$.next.should.have.been.called;
       mockAlertService.successStatus$.next.should.have.been.called;
