@@ -671,7 +671,16 @@ describe('HLFConnectionManager', () => {
                 .should.be.rejectedWith(/wow such fail/);
         });
 
-        it('should configure a wallet proxy if a wallet is provided', () => {
+        it('should configure a wallet proxy using the specified wallet if provided', () => {
+            connectOptions = Object.assign(connectOptions, { wallet: mockWallet });
+            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+                .then((connection) => {
+                    sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
+                });
+        });
+
+
+        it('should configure a wallet proxy if a singleton wallet is provided', () => {
             Wallet.setWallet(mockWallet);
             return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
                 .then((connection) => {

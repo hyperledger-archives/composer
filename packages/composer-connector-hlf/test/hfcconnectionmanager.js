@@ -45,6 +45,16 @@ describe('HFCConnectionManager', () => {
         sandbox.restore();
     });
 
+    describe('#createChain', () => {
+
+        it('should create a new chain isntance', () => {
+            const chain = HFCConnectionManager.createChain('testid');
+            chain.should.be.an.instanceOf(hfcChain);
+            chain.getName().should.equal('testid');
+        });
+
+    });
+
     describe('#connect', function() {
 
         let connectOptions;
@@ -142,22 +152,23 @@ describe('HFCConnectionManager', () => {
                 });
         });
 
-        it('should create and configure a new connection using the key value store', function() {
+        it('should create and configure a new connection without a business network using the key value store', function() {
 
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
             let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             return store.save('test', connectOptions)
                 .then(() => {
                     return profileManager
-                        .connect('test', 'testnetwork')
+                        .connect('test', null)
                         .then(function(connection) {
                             // Check for the correct interactions with hfc.
-                            sinon.assert.calledOnce(mockHFC.getChain);
+                            sinon.assert.calledOnce(HFCConnectionManager.createChain);
+                            sinon.assert.calledWith(HFCConnectionManager.createChain, 'test');
                             sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
                             sinon.assert.calledOnce(mockChain.setKeyValStore);
                             sinon.assert.calledWith(mockChain.setKeyValStore, mockKeyValStore);
@@ -172,7 +183,60 @@ describe('HFCConnectionManager', () => {
                 });
         });
 
-        it('should create and configure a new connection using the wallet proxy', function() {
+        it('should create and configure a new connection to a business network using the key value store', function() {
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            let mockKeyValStore = {};
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
+            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork')
+                        .then(function(connection) {
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(HFCConnectionManager.createChain);
+                            sinon.assert.calledWith(HFCConnectionManager.createChain, 'testnetwork@test');
+                            sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
+                            sinon.assert.calledOnce(mockChain.setKeyValStore);
+                            sinon.assert.calledWith(mockChain.setKeyValStore, mockKeyValStore);
+                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
+                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
+                            sinon.assert.calledOnce(mockChain.addPeer);
+                            sinon.assert.calledWith(mockChain.addPeer, connectOptions.peerURL);
+                            connection.should.be.an.instanceOf(HFCConnection);
+                            connection.chain.should.equal(mockChain);
+                            return true;
+                        });
+                });
+        });
+
+        it('should create and configure a new connection using the specified wallet', function() {
+
+            // Set the wallet singleton.
+            let mockWallet = sinon.createStubInstance(Wallet);
+
+            // Set up the hfc mock.
+            let mockChain = sinon.createStubInstance(hfcChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
+
+            // Connect to the Hyperledger Fabric using the mock hfc.
+            return store.save('test', connectOptions)
+                .then(() => {
+                    return profileManager
+                        .connect('test', 'testnetwork', { wallet: mockWallet })
+                        .then(function(connection) {
+                            // Check for the correct interactions with hfc.
+                            sinon.assert.calledOnce(mockChain.setKeyValStore);
+                            sinon.assert.calledWith(mockChain.setKeyValStore, sinon.match.instanceOf(HFCWalletProxy));
+                        });
+                });
+        });
+
+        it('should create and configure a new connection using the singleton wallet', function() {
 
             // Set the wallet singleton.
             let mockWallet = sinon.createStubInstance(Wallet);
@@ -180,7 +244,7 @@ describe('HFCConnectionManager', () => {
 
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
-            mockHFC.getChain.returns(mockChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
             return store.save('test', connectOptions)
@@ -195,60 +259,12 @@ describe('HFCConnectionManager', () => {
                 });
         });
 
-        it('should pool connections', function() {
-
-            // Set up the hfc mock.
-            let mockChain = sinon.createStubInstance(hfcChain);
-            let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
-            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
-
-            // Connect to the Hyperledger Fabric using the mock hfc.
-            return store.save('test', connectOptions)
-                .then(() => {
-                    return profileManager
-                        .connect('test', 'testnetwork')
-                        .then(function(connection) {
-                            // Check for the correct interactions with hfc.
-                            sinon.assert.calledOnce(mockHFC.getChain);
-                            sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setKeyValStore);
-                            sinon.assert.calledWith(mockChain.setKeyValStore, mockKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
-                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
-                            sinon.assert.calledOnce(mockChain.addPeer);
-                            connection.should.be.an.instanceOf(HFCConnection);
-                            connection.chain.should.equal(mockChain);
-                            return true;
-                        })
-                        .then(function(connection) {
-                            // call a second time, we should get a connection from the pool
-                            return profileManager
-                                .connect('test', 'testnetwork');
-                        })
-                        .then(function(connection) {
-                            // Check for the correct interactions with hfc.
-                            // these methods should NOT have been called a second time!
-                            sinon.assert.calledOnce(mockHFC.getChain);
-                            sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setKeyValStore);
-                            sinon.assert.calledWith(mockChain.setKeyValStore, mockKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
-                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
-                            sinon.assert.calledOnce(mockChain.addPeer);
-                            connection.should.be.an.instanceOf(HFCConnection);
-                            connection.chain.should.equal(mockChain);
-                            return true;
-                        });
-                });
-        });
-
         it('should optionally configure the deployWaitTime', function() {
 
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
             let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
@@ -271,7 +287,7 @@ describe('HFCConnectionManager', () => {
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
             let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
@@ -295,7 +311,7 @@ describe('HFCConnectionManager', () => {
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
             let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
             sandbox.stub(process, 'on');
 
@@ -330,7 +346,7 @@ describe('HFCConnectionManager', () => {
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
             let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
@@ -359,7 +375,7 @@ describe('HFCConnectionManager', () => {
             // Set up the hfc mock.
             let mockChain = sinon.createStubInstance(hfcChain);
             let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
+            sandbox.stub(HFCConnectionManager, 'createChain').returns(mockChain);
             mockHFC.newFileKeyValStore.returns(mockKeyValStore);
 
             // Connect to the Hyperledger Fabric using the mock hfc.
@@ -385,129 +401,4 @@ describe('HFCConnectionManager', () => {
 
     });
 
-    describe('#onDisconnect', function() {
-
-        let connectOptions;
-
-        beforeEach(function() {
-            // we recreate everything so the connection pool does not interfere
-            // with the tests
-            store = new FSConnectionProfileStore(fs);
-            profileManager = new ConnectionProfileManager(store);
-            connectionManager = new HFCConnectionManager(profileManager);
-            profileManager.addConnectionManager('hfc', connectionManager);
-
-            connectOptions = {
-                type: 'hfc',
-                keyValStore: '/tmp/keyValStore',
-                membershipServicesURL: 'grpc://membersrvc',
-                peerURL: 'grpc://vp0',
-                eventHubURL: 'grpc://vp1'
-            };
-        });
-
-        it('should throw for a connection not created by the connection manager', () => {
-            let mockConnection = sinon.createStubInstance(HFCConnection);
-            mockConnection.getIdentifier.returns('not a real identifier');
-            (() => {
-                connectionManager.onDisconnect(mockConnection);
-            }).should.throw(/not created by connection manager/);
-        });
-
-        it('should throw for a connection already closed by the connection manager', () => {
-            let mockConnection = sinon.createStubInstance(HFCConnection);
-            let mockChain = sinon.createStubInstance(hfcChain);
-            mockConnection.getIdentifier.returns('not a real identifier');
-            connectionManager.chainPool['not a real identifier'] = { count: 0, chain: mockChain };
-            (() => {
-                connectionManager.onDisconnect(mockConnection);
-            }).should.throw(/already closed/);
-        });
-
-        it('should call onDisconnect when client connection is disconnected', function() {
-
-            // Set up the hfc mock.
-            let mockChain = sinon.createStubInstance(hfcChain);
-            let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
-            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
-            let connectionId = null;
-
-            // Connect to the Hyperledger Fabric using the mock hfc.
-            return store.save('test', connectOptions)
-                .then(() => {
-                    return profileManager
-                        .connect('test', 'testnetwork')
-                        .then(function(connection) {
-                            // Check for the correct interactions with hfc.
-                            sinon.assert.calledOnce(mockHFC.getChain);
-                            sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setKeyValStore);
-                            sinon.assert.calledWith(mockChain.setKeyValStore, mockKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
-                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
-                            sinon.assert.calledOnce(mockChain.addPeer);
-                            connection.should.be.an.instanceOf(HFCConnection);
-                            connection.chain.should.equal(mockChain);
-                            return connection;
-                        });
-                })
-                .then((con) => {
-                    connectionId = con.getIdentifier();
-                    connectionId.should.equal('testnetwork@test');
-                    connectionManager.chainPool[connectionId].count.should.equal(1);
-                    return con;
-                })
-                .then((con) => {
-                    con.disconnect();
-                })
-                .then(() => {
-                    connectionManager.chainPool[connectionId].count.should.equal(0);
-                    return true;
-                });
-        });
-
-        it('should call onDisconnect when admin connection is disconnected', function() {
-
-            // Set up the hfc mock.
-            let mockChain = sinon.createStubInstance(hfcChain);
-            let mockKeyValStore = {};
-            mockHFC.getChain.returns(mockChain);
-            mockHFC.newFileKeyValStore.returns(mockKeyValStore);
-            let connectionId = null;
-
-            // Connect to the Hyperledger Fabric using the mock hfc.
-            return store.save('test', connectOptions)
-                .then(() => {
-                    return profileManager
-                        .connect('test', null)
-                        .then(function(connection) {
-                            // Check for the correct interactions with hfc.
-                            sinon.assert.calledOnce(mockHFC.getChain);
-                            sinon.assert.calledOnce(mockHFC.newFileKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setKeyValStore);
-                            sinon.assert.calledWith(mockChain.setKeyValStore, mockKeyValStore);
-                            sinon.assert.calledOnce(mockChain.setMemberServicesUrl);
-                            sinon.assert.calledWith(mockChain.setMemberServicesUrl, connectOptions.membershipServicesURL);
-                            sinon.assert.calledOnce(mockChain.addPeer);
-                            connection.should.be.an.instanceOf(HFCConnection);
-                            connection.chain.should.equal(mockChain);
-                            return connection;
-                        });
-                })
-                .then((con) => {
-                    connectionId = con.getIdentifier();
-                    connectionId.should.equal('test');
-                    connectionManager.chainPool[connectionId].count.should.equal(1);
-                    return con;
-                })
-                .then((con) => {
-                    con.disconnect();
-                })
-                .then(() => {
-                    connectionManager.chainPool[connectionId].count.should.equal(0);
-                    return true;
-                });
-        });
-    });
 });
