@@ -100,14 +100,30 @@ export class AddConnectionProfileComponent {
     });
   }
 
-  createProfile(file: File, dataBuffer) {
+  createProfile(file: File, profileBuffer) {
 
-    //To be completed
+    // Converts buffer to string
+    let profileData = JSON.parse(profileBuffer.toString());
 
-    // this.fileType = 'js';
-    // let scriptManager = this.businessNetwork.getScriptManager();
-    // this.currentFile = scriptManager.createScript(file.name || this.addScriptFileName, 'JS', dataBuffer.toString());
-    // this.currentFileName = this.currentFile.getIdentifier();
+    // Set defaults
+    return this.setv06Defaults().then(()=>{
+      // Then load imported profile data in
+      this.addConnectionProfileDescription = profileData.description;
+      this.addConnectionProfileMembershipServicesURL = profileData.membershipServicesURL;
+      this.addConnectionProfilePeerURL = profileData.peerURL;
+      this.addConnectionProfileEventHubURL = profileData.eventHubURL;
+      this.addConnectionProfileKeyValStore = profileData.keyValStore;
+      this.addConnectionProfileDeployWaitTime = profileData.deployWaitTime;
+      this.addConnectionProfileInvokeWaitTime = profileData.invokeWaitTime;
+      this.addConnectionProfileCertificate = profileData.certificate;
+      this.addConnectionProfileCertificatePath = profileData.certificatePath;
+
+      this.addConnectionProfile();
+
+    });
+
+
+
   }
 
 
@@ -120,21 +136,20 @@ export class AddConnectionProfileComponent {
     this.currentFile = null;
     if (this.version === 'v06') {
 
-      this.setv06Defaults();
-
-      this.newConnectionProfile = {
-        description: this.addConnectionProfileDescription,
-        type: 'hlf',
-        membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
-        peerURL: this.addConnectionProfilePeerURL,
-        eventHubURL: this.addConnectionProfileEventHubURL,
-        keyValStore: this.addConnectionProfileKeyValStore,
-        deployWaitTime: this.addConnectionProfileDeployWaitTime,
-        invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
-        certificate: this.addConnectionProfileCertificate,
-        certificatePath: this.addConnectionProfileCertificatePath
-      };
-
+      return this.setv06Defaults().then(() => {
+        this.newConnectionProfile = {
+          description: this.addConnectionProfileDescription,
+          type: 'hlf',
+          membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
+          peerURL: this.addConnectionProfilePeerURL,
+          eventHubURL: this.addConnectionProfileEventHubURL,
+          keyValStore: this.addConnectionProfileKeyValStore,
+          deployWaitTime: this.addConnectionProfileDeployWaitTime,
+          invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
+          certificate: this.addConnectionProfileCertificate,
+          certificatePath: this.addConnectionProfileCertificatePath
+        };
+      })
     }
     else if (this.version === 'v10') {
       console.log('Add v1 file');
@@ -179,8 +194,8 @@ export class AddConnectionProfileComponent {
   }
 
 
-  private setv06Defaults() {
-    this.updateConnectionProfiles().then(() => {
+  private setv06Defaults(): Promise<any> {
+    return this.updateConnectionProfiles().then(() => {
       let connectionProfileBase = 'New Connection Profile';
       let connectionProfileName = connectionProfileBase;
       let counter = 1;
@@ -202,7 +217,7 @@ export class AddConnectionProfileComponent {
       this.addConnectionProfileInvokeWaitTime = 30;
       this.addConnectionProfileCertificate = null;
       this.addConnectionProfileCertificatePath = null;
-    })
+    });
 
   }
 

@@ -18,7 +18,7 @@ export class ConnectionProfileComponent implements OnInit {
 
   private connectionProfiles: any;
   private currentConnectionProfile;
-
+  private previousConnectionProfile;
 
   constructor(private connectionProfileService: ConnectionProfileService,
               private modalService: NgbModal) {
@@ -35,6 +35,7 @@ export class ConnectionProfileComponent implements OnInit {
   }
 
   private setCurrentProfile(connectionProfile) {
+    this.previousConnectionProfile = this.currentConnectionProfile;
     this.currentConnectionProfile = connectionProfile;
     return this.updateConnectionProfiles();
     // this.profileReload = !this.profileReload;
@@ -54,8 +55,7 @@ export class ConnectionProfileComponent implements OnInit {
   private openAddProfileModal() {
     this.modalService.open(AddConnectionProfileComponent).result
     .then((result) => {
-      this.currentConnectionProfile = result;
-      this.updateConnectionProfiles();
+      this.setCurrentProfile(result);
     })
     .catch((closed) => {});
   }
@@ -81,6 +81,12 @@ export class ConnectionProfileComponent implements OnInit {
   }
 
   profileUpdated(event){
+
+    // If form is cancelled, we want to switch to the previous file selected
+    if(!event){
+      this.currentConnectionProfile = this.previousConnectionProfile;
+    }
+
     return this.updateConnectionProfiles();
   }
 

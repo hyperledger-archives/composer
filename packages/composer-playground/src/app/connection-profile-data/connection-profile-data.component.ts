@@ -72,7 +72,10 @@ export class ConnectionProfileDataComponent {
     this.form = this.fb.group({
       "name": [
         this.connectionProfileData ? this.connectionProfileData.name : '',
-        [Validators.required]
+        [
+          Validators.required,
+          Validators.pattern('^(?!.?New Connection Profile).*$')
+        ]
       ],
 
       "description": [
@@ -146,7 +149,7 @@ export class ConnectionProfileDataComponent {
       this.formErrors[field] = '';
       const control = form.get(field);
 
-      if (control && control.dirty && !control.valid) {
+      if (!control.valid) {
         const messages = this.validationMessages[field];
         for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
@@ -168,6 +171,7 @@ export class ConnectionProfileDataComponent {
   validationMessages = {
     'name':{
       'required': 'A connection profile name is required.',
+      'pattern': 'A connection profile name cannot start with "New Connection Profile"'
     },
     'peerURL':{
       'required': 'A Peer URL is required.',
@@ -231,6 +235,9 @@ export class ConnectionProfileDataComponent {
 
   stopEditing(){
     this.editing = false;
+
+    //Let parent know to change back to previous connection profile
+    this.profileUpdated.emit(false);
   }
 
   deleteProfile(){
