@@ -262,7 +262,7 @@ class HLFConnectionManager extends ConnectionManager {
         }
 
         // Validate the connection profile.
-        let wallet = Wallet.getWallet();
+        let wallet = connectOptions.wallet || Wallet.getWallet();
         if (!Array.isArray(connectOptions.orderers)) {
             throw new Error('The orderers array has not been specified in the connection profile');
         } else if (!connectOptions.orderers.length) {
