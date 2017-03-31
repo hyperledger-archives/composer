@@ -33,7 +33,7 @@ const yargs = require('yargs')
     .option('i', { alias: 'enrollId', describe: 'The enrollment ID of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_ID })
     .option('s', { alias: 'enrollSecret', describe: 'The enrollment secret of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_SECRET })
     .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
-    .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || undefined })
+    .option('P', { alias: 'port', describe: 'The port to serve the REST API on', type: 'number', default: process.env.COMPOSER_PORT || 3000 })
     .help('h')
     .alias('h', 'help')
     .argv;
@@ -45,7 +45,7 @@ if (yargs.p === undefined && yargs.n === undefined && yargs.i === undefined && y
     clear();
     console.log(
         chalk.yellow(
-            figlet.textSync('Fabric-Composer', { horizontalLayout: 'full' })
+            figlet.textSync('Fabric Composer', { horizontalLayout: 'full' })
         )
     );
     // Get details of the server that we want to run
@@ -64,7 +64,7 @@ if (yargs.p === undefined && yargs.n === undefined && yargs.i === undefined && y
 } else {
     // make sure we have args for all required parms otherwise error
     if (yargs.p === undefined || yargs.n === undefined || yargs.i === undefined || yargs.s === undefined) {
-        console.log('Error: Missing parameter.   Please run compposer-rest-server -h to see usage details');
+        console.log('Error: Missing parameter.   Please run composer-rest-server -h to see usage details');
         process.exit(1);
     } else {
         promise = Promise.resolve({
@@ -80,6 +80,16 @@ if (yargs.p === undefined && yargs.n === undefined && yargs.i === undefined && y
 
 // After we have got the composer configuration...
 promise.then((composer) => {
+
+    console.log('\n To re-run this issue this command');
+    let cmd = ['composer-rest-server','-p',composer.connectionProfileName,
+        '-n',composer.businessNetworkIdentifier,
+        '-i',composer.participantId,
+        '-s',composer.participantPwd,
+        '-N',composer.namespaces,
+        '-P',composer.port];
+
+    console.log(cmd.join(' '));
 
     // Store the composer configuration for the boot script to find
     app.set('composer', composer);

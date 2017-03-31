@@ -27,13 +27,13 @@ module.exports.builder = {
 
 module.exports.handler = (argv) => {
 
-    return Undeploy.handler(argv)
+    argv.thePromise =  Undeploy.handler(argv)
     .then(() => {
         console.log ('Command completed successfully.');
-        process.exit(0);
+
     })
     .catch((error) => {
         console.log(error+ '\nCommand failed.');
-        process.exit(1);
+
     });
 };

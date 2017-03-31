@@ -1,3 +1,4 @@
+
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +15,4 @@
 
 'use strict';
 
-exports.command = 'network <subcommand>';
-exports.desc = 'Composer network command';
-exports.builder = function (yargs) {
-   // apply commands in subdirectories
-    return yargs.commandDir('network');
-};
-exports.handler = function (argv) {
-
-};
+module.exports.restserver = require('./lib/server/servercmd.js');

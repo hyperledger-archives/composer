@@ -14,12 +14,10 @@
 
 'use strict';
 
-exports.command = 'network <subcommand>';
-exports.desc = 'Composer network command';
+exports.command = 'dev <subcommand>';
+exports.desc = 'Composer dev command to run local servers';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('network');
+    return yargs.commandDir('dev');
 };
-exports.handler = function (argv) {
-
-};
+exports.handler = function (argv) {};

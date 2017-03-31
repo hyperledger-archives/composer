@@ -28,13 +28,13 @@ module.exports.builder = {
 
 module.exports.handler = (argv) => {
 
-    return Add.handler(argv)
+    argv.thePromise =  Add.handler(argv)
     .then(() => {
         console.log ('Command completed successfully.');
-        process.exit(0);
+
     })
     .catch((error) => {
         console.log(error+ '\nCommand failed.');
-        process.exit(1);
+
     });
 };

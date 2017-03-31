@@ -14,12 +14,29 @@
 
 'use strict';
 
-exports.command = 'network <subcommand>';
-exports.desc = 'Composer network command';
-exports.builder = function (yargs) {
-   // apply commands in subdirectories
-    return yargs.commandDir('network');
-};
-exports.handler = function (argv) {
 
+
+module.exports.command = 'ls';
+module.exports.describe = 'current files';
+module.exports.builder = function (yargs){
+
+    return yargs;
+};
+
+
+module.exports.handler = (argv) => {
+
+    let shell = require('shelljs');
+    let files = shell.ls();
+
+
+    console.log(files.join('   '));
+
+    // argv.thePromise =  List.handler(argv)
+    // .then(() => {
+    //     console.log ('Command completed successfully.');
+    // })
+    // .catch((error) => {
+    //     console.log(error+ '\nCommand failed.');
+    // });
 };

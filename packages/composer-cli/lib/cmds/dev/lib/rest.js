@@ -14,12 +14,28 @@
 
 'use strict';
 
-exports.command = 'network <subcommand>';
-exports.desc = 'Composer network command';
-exports.builder = function (yargs) {
-   // apply commands in subdirectories
-    return yargs.commandDir('network');
-};
-exports.handler = function (argv) {
 
-};
+// const shell = require('shelljs');
+const restserver = require('composer-rest-server');
+
+/**
+ * Composer dev hlf command
+ *
+ *
+ *
+ * @private
+ */
+class rest {
+
+    /**
+    * Command process for deploy command
+    * @param {string} argv argument list from composer command
+
+    * @return {Promise} resolved when command has completed
+    */
+    static handler(argv) {
+        return restserver.startRestServer(argv,false);
+    }
+}
+
+module.exports = rest;
