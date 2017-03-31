@@ -1,0 +1,54 @@
+/**
+  * A library of standard reusable types
+  */
+
+namespace stdlib.base
+
+enum Gender {
+ o MALE
+ o FEMALE
+ o OTHER
+}
+
+abstract participant Person {
+  o String firstName  optional
+  o String lastName  optional
+  o String middleName  optional
+  o Gender gender optional
+  o String[] nationalities optional
+  o ContactDetails contactDetails optional
+  o BirthDetails birthDetails optional
+  o DeathDetails deathDetails optional
+}
+
+concept ContactDetails {
+  o String email  optional
+  o String mobilePhone  optional
+  o String homePhone optional
+  o Address address optional
+}
+
+concept BirthDetails {
+  o DateTime dateOfBirth optional
+  o String placeOfBirth optional
+}
+
+concept DeathDetails {
+  o DateTime dateOfDeath optional
+  o String placeOfDeath optional
+}
+
+/**
+ * A concept for a simple street address
+ */
+concept Address {
+  o String city optional
+  o String country optional
+  o String locality optional
+  o String region optional
+  o String street optional
+  o String street2 optional
+  o String street3 optional
+  o String postalCode optional
+  o String postOfficeBoxNumber optional
+}

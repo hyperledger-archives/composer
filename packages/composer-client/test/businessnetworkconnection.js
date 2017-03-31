@@ -20,7 +20,9 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const AssetDeclaration = require('composer-common').AssetDeclaration;
 const AssetRegistry = require('../lib/assetregistry');
 const BusinessNetworkConnection = require('..').BusinessNetworkConnection;
+const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const Connection = require('composer-common').Connection;
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const ModelManager = require('composer-common').ModelManager;
 const ParticipantRegistry = require('../lib/participantregistry');
 const Resource = require('composer-common').Resource;
@@ -62,17 +64,37 @@ describe('BusinessNetworkConnection', () => {
         mockSerializer = sinon.createStubInstance(Serializer);
         businessNetworkConnection.businessNetwork.getSerializer.returns(mockSerializer);
         businessNetworkConnection.securityContext = mockSecurityContext;
+        delete process.env.COMPOSER_CONFIG;
     });
 
     afterEach(() => {
         sandbox.restore();
+        delete process.env.COMPOSER_CONFIG;
     });
 
     describe('#constructor', () => {
 
-        it('should create a new instance', () => {
+        it('should create a new instance with a file system connection profile store', () => {
             businessNetworkConnection = new BusinessNetworkConnection();
             should.equal(businessNetworkConnection.connection, null);
+            businessNetworkConnection.connectionProfileStore.should.be.an.instanceOf(FSConnectionProfileStore);
+        });
+
+        it('should create a new instance with a combo connection profile store', () => {
+            const config = {
+                connectionProfiles: {
+                    hlfabric1: {
+                        type: 'hlfv1'
+                    },
+                    hlfabric2: {
+                        type: 'hlfv2'
+                    }
+                }
+            };
+            process.env.COMPOSER_CONFIG = JSON.stringify(config);
+            businessNetworkConnection = new BusinessNetworkConnection();
+            should.equal(businessNetworkConnection.connection, null);
+            businessNetworkConnection.connectionProfileStore.should.be.an.instanceOf(ComboConnectionProfileStore);
         });
 
     });
@@ -105,6 +127,34 @@ describe('BusinessNetworkConnection', () => {
                 result.should.be.an.instanceOf(BusinessNetworkDefinition);
             });
         });
+
+        it('should create a connection and download the business network archive supplying any additional options', () => {
+            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+            mockConnection.login.resolves(mockSecurityContext);
+            mockConnection.ping.resolves();
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+
+            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
+            .then((result) => {
+                sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
+                sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork', { some: 'other', options: true });
+                sinon.assert.calledOnce(mockConnection.login);
+                sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
+                sinon.assert.calledOnce(mockConnection.ping);
+                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+                sinon.assert.calledOnce(Util.queryChainCode);
+                sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
+                businessNetworkConnection.connection.should.equal(mockConnection);
+                result.should.be.an.instanceOf(BusinessNetworkDefinition);
+            });
+        });
+
     });
 
     describe('#disconnect', () => {

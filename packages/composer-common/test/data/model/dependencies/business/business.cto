@@ -1,0 +1,30 @@
+/**
+  * Business and employee related types
+  */
+
+namespace stdlib.business
+
+import stdlib.base.Person
+import stdlib.base.Address
+
+/**
+ * An abstract participant type in this business network
+ */
+abstract participant Business {
+  o Address headquarters optional
+  o String name optional
+  --> Manager[] managers optional
+}
+
+abstract participant Employee extends Person {
+  --> Business employer
+  --> Manager manager optional
+  o DateTime startDate optional
+  o String employmentStatus optional
+  o String department optional
+  o String jobRole optional
+}
+
+abstract participant Manager extends Employee {
+  --> Employee[] directReports optional
+}
