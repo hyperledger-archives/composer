@@ -14,9 +14,11 @@
 
 'use strict';
 
-const Util = require('composer-common').Util;
+const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfileStore;
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const Util = require('composer-common').Util;
 
 const fs = require('fs');
 
@@ -44,7 +46,16 @@ class AdminConnection {
      */
     constructor(options) {
         options = options || {};
-        this.connectionProfileStore = new FSConnectionProfileStore(options.fs || fs);
+        const fsConnectionProfileStore = new FSConnectionProfileStore(options.fs || fs);
+        if (process.env.COMPOSER_CONFIG) {
+            const envConnectionProfileStore = new EnvConnectionProfileStore();
+            this.connectionProfileStore = new ComboConnectionProfileStore(
+                fsConnectionProfileStore,
+                envConnectionProfileStore
+            );
+        } else {
+            this.connectionProfileStore = fsConnectionProfileStore;
+        }
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
         this.connection = null;
         this.securityContext = null;
