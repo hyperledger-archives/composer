@@ -10,17 +10,17 @@ module.exports = function (Wallet) {
             Wallet.disableRemoteMethodByName(name);
         } else if (name === 'exists') {
             // we want to remove the /:id/exists method
-            method.http = [{verb: 'head', path: '/:id'}];
+            method.http = [{ verb: 'head', path: '/:id' }];
         } else if (name === 'replaceById') {
             // we want to remove the /:id/replace method
-            method.http = [{verb: 'put', path: '/:id'}];
+            method.http = [{ verb: 'put', path: '/:id' }];
         }
     });
     Wallet.disableRemoteMethodByName('prototype.__get__user');
     Wallet.disableRemoteMethodByName('prototype.__count__identities');
     Wallet.disableRemoteMethodByName('prototype.__delete__identities');
 
-    // Ensure the current user ID is stored as the owner of the wallet.
+    // Ensure that the current user ID is stored as the owner of the wallet.
     Wallet.observe('before save', function (ctx, next) {
         if (ctx.options.accessToken) {
             ctx.instance.userId = ctx.options.accessToken.userId;
@@ -36,6 +36,70 @@ module.exports = function (Wallet) {
             ctx.query.where.userId = userId;
         }
         next();
+    });
+
+    // Set the specified wallet as the default wallet for the user.
+    Wallet.setDefaultWallet = function (id) {
+        return Wallet.findOne({ id: id })
+            .then((wallet) => {
+                const user = Wallet.app.models.user;
+                return user.findOne({ id: wallet.userId });
+            })
+            .then((user) => {
+                return user.updateAttribute('defaultWallet', id);
+            });
+    };
+
+    // Expose the setDefaultWallet method as an HTTP POST method.
+    Wallet.remoteMethod('setDefaultWallet', {
+        accepts: [
+            {
+                arg: 'id',
+                type: 'string',
+                required: true
+            }
+        ],
+        http: {
+            path: '/:id/setDefault',
+            verb: 'post'
+        }
+    });
+
+    // Set the specified identity as the default identity for the wallet.
+    Wallet.setDefaultIdentity = function (id, fk) {
+        let wallet;
+        return Wallet.findById(id)
+            .then((wallet_) => {
+                wallet = wallet_;
+                const WalletIdentity = Wallet.app.models.WalletIdentity;
+                return WalletIdentity.findById(fk);
+            })
+            .then((identity) => {
+                if (!identity) {
+                    throw new Error('The specified identity does not exist in the specified wallet');
+                }
+                return wallet.updateAttribute('defaultIdentity', fk);
+            });
+    };
+
+    // Expose the setDefaultWallet method as an HTTP POST method.
+    Wallet.remoteMethod('setDefaultIdentity', {
+        accepts: [
+            {
+                arg: 'id',
+                type: 'string',
+                required: true
+            },
+            {
+                arg: 'fk',
+                type: 'string',
+                required: true
+            }
+        ],
+        http: {
+            path: '/:id/identities/:fk/setDefault',
+            verb: 'post'
+        }
     });
 
 };

@@ -33,16 +33,12 @@ class LoopBackWallet extends Wallet {
      * error.
      */
     list() {
-        return new Promise((resolve, reject) => {
-            this.WalletIdentityModel.find({ walletId: this.wallet.id }, (err, identities) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(identities.map((identity) => {
+        return this.WalletIdentityModel.find({ where: { walletId: this.wallet.id } })
+            .then((identities) => {
+                return identities.map((identity) => {
                     return identity.enrollmentID;
-                }));
+                });
             });
-        });
     }
 
     /**
@@ -56,14 +52,11 @@ class LoopBackWallet extends Wallet {
      */
     contains(name) {
         console.log('contains', this.wallet, name);
-        return new Promise((resolve, reject) => {
-            this.WalletIdentityModel.count({ walletId: this.wallet.id, enrollmentID: name }, (err, count) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(count !== 0);
+        return this.WalletIdentityModel.count({ walletId: this.wallet.id, enrollmentID: name })
+            .then((count) => {
+                console.log('contains', count);
+                return count !== 0;
             });
-        });
     }
 
     /**
@@ -75,14 +68,10 @@ class LoopBackWallet extends Wallet {
      */
     get(name) {
         console.log('get', name);
-        return new Promise((resolve, reject) => {
-            this.WalletIdentityModel.findOne({ walletId: this.wallet.id, enrollmentID: name }, (err, identity) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(identity.certificate);
+        return this.WalletIdentityModel.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
+            .then((identity) => {
+                return identity.certificate;
             });
-        });
     }
 
     /**
@@ -95,19 +84,10 @@ class LoopBackWallet extends Wallet {
      */
     add(name, value) {
         console.log('add', name, value);
-        return new Promise((resolve, reject) => {
-            this.WalletIdentityModel.findOne({ walletId: this.wallet.id, enrollmentID: name }, (err, identity) => {
-                if (err) {
-                    return reject(err);
-                }
-                identity.updateAttribute('certificate', value, (err) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve();
-                });
+        return this.WalletIdentityModel.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
+            .then((identity) => {
+                return identity.updateAttribute('certificate', value);
             });
-        });
     }
 
     /**
@@ -120,19 +100,10 @@ class LoopBackWallet extends Wallet {
      */
     update(name, value) {
         console.log('update', name, value);
-        return new Promise((resolve, reject) => {
-            this.WalletIdentityModel.findOne({ walletId: this.wallet.id, enrollmentID: name }, (err, identity) => {
-                if (err) {
-                    return reject(err);
-                }
-                identity.updateAttribute('certificate', value, (err) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve();
-                });
+        return this.WalletIdentityModel.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
+            .then((identity) => {
+                return identity.updateAttribute('certificate', value);
             });
-        });
     }
 
     /**
@@ -144,14 +115,7 @@ class LoopBackWallet extends Wallet {
      */
     remove(name) {
         console.log('remove', name);
-        return new Promise((resolve, reject) => {
-            this.WalletIdentityModel.destroyAll({ walletId: this.wallet.id, enrollmentID: name }, (err) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve();
-            });
-        });
+        return this.WalletIdentityModel.destroyAll({ where: { walletId: this.wallet.id, enrollmentID: name } });
     }
 
 }
@@ -159,6 +123,7 @@ class LoopBackWallet extends Wallet {
 module.exports = function (app, callback) {
 
     const composer = app.get('composer');
+    const userModel = app.models.user;
     const WalletModel = app.models.Wallet;
     const WalletIdentityModel = app.models.WalletIdentity;
 
@@ -212,7 +177,7 @@ module.exports = function (app, callback) {
         console.log('Adding schemas for all types to Loopback ...');
         modelSchemas.forEach((modelSchema) => {
 
-            //
+            // We ensure that you have to be authenticated in order to access this model.
             modelSchema.acls = [
                 {
                     accessType: '*',
@@ -228,11 +193,11 @@ module.exports = function (app, callback) {
                 }
             ];
 
-            // this call creates the model class from the model schema.
+            // This call creates the model class from the model schema.
             let model = app.loopback.createModel(modelSchema);
 
-            // we now want to filter out methods that we haven't implemented or don't want.
-            // we use a whitelist of method names to do this.
+            // We now want to filter out methods that we haven't implemented or don't want.
+            // We use a whitelist of method names to do this.
             let whitelist;
             if (modelSchema.options.composer.type === 'concept') {
                 whitelist = [ ];
@@ -246,15 +211,15 @@ module.exports = function (app, callback) {
                 if (whitelist.indexOf(name) === -1) {
                     model.disableRemoteMethodByName(name);
                 } else if (name === 'exists') {
-                    // we want to remove the /:id/exists method
+                    // We want to remove the /:id/exists method.
                     method.http = [{ verb: 'head', path: '/:id' }];
                 } else if (name === 'replaceById') {
-                    // we want to remove the /:id/replace method
+                    // We want to remove the /:id/replace method.
                     method.http = [{ verb: 'put', path: '/:id' }];
                 }
             });
 
-            // now we register the model against the data source
+            // Now we register the model against the data source.
             app.model(model, {
                 dataSource: dataSource,
                 public: true
@@ -266,32 +231,45 @@ module.exports = function (app, callback) {
     .then(() => {
         console.log('Added schemas for all types to Loopback');
 
+        // Register a hook for all remote methods that loads the enrollment ID and
+        // enrollment secret from the logged-in users wallet for passing to the connector.
         app.remotes().phases
             .addBefore('invoke', 'options-from-request')
             .use(function(ctx, next) {
-                if (!ctx.args.options.accessToken) {
+                if (!ctx.args.options) {
+                    return next();
+                } else if (!ctx.args.options.accessToken) {
                     return next();
                 }
-                WalletModel.find({ userId: ctx.args.options.accessToken.userId }, (err, wallets) => {
-                    if (err) {
-                        return next(err);
-                    } else if (wallets.length === 0) {
-                        return next();
-                    }
-                    const wallet = wallets[0];
-                    WalletIdentityModel.find({ wallet: wallet }, (err, identities) => {
-                        if (err) {
-                            return next(err);
-                        } else if (identities.length === 0) {
+                const userId = ctx.args.options.accessToken.userId;
+                let wallet;
+                return userModel.findById(userId)
+                    .then((user) => {
+                        console.log('found user', user);
+                        return WalletModel.findById(user.defaultWallet);
+                    })
+                    .then((wallet_) => {
+                        wallet = wallet_;
+                        if (!wallet) {
+                            return;
+                        }
+                        console.log('found default wallet', wallet);
+                        if (!wallet.defaultIdentity) {
+                            return;
+                        }
+                        console.log('identities', require('util').inspect(wallet));
+                        return WalletIdentityModel.findById(wallet.defaultIdentity);
+                    })
+                    .then((identity) => {
+                        if (!identity) {
                             return next();
                         }
-                        const identity = identities[0];
+                        console.log('found default identity', identity);
                         ctx.args.options.enrollmentID = identity.enrollmentID;
                         ctx.args.options.enrollmentSecret = identity.enrollmentSecret;
                         ctx.args.options.wallet = new LoopBackWallet(wallet, WalletIdentityModel);
                         next();
                     });
-                });
             });
 
         callback();

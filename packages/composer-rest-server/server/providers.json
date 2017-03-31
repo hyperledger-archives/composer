@@ -12,6 +12,7 @@
         "scope": [
             "email"
         ],
-        "failureFlash": true
+        "failureFlash": true,
+        "display": "GitHub"
     }
 }

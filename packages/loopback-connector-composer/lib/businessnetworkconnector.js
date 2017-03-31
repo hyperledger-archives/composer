@@ -34,6 +34,7 @@ class BusinessNetworkConnectionWrapper {
      * @param {Object} settings the settings used by the call to BusinessNetworkConnection
      */
     constructor(settings) {
+        debug('BusinessNetworkConnectionWrapper ctor');
 
         // Check for required properties.
         if (!settings.connectionProfileName) {
@@ -64,7 +65,7 @@ class BusinessNetworkConnectionWrapper {
      * when the connector has connected, or rejected with an error.
      */
     ensureConnected() {
-        debug('ensureConnected');
+        debug('ensureConnected', this.connected, this.connecting);
         if (this.connected) {
             return Promise.resolve(this.businessNetworkConnection);
         } else if (this.connecting) {
@@ -92,17 +93,22 @@ class BusinessNetworkConnectionWrapper {
             )
             .then((result) => {
                 // setup some objects for this business network
+                debug('here after connect');
                 this.businessNetworkDefinition = result;
                 this.serializer = this.businessNetworkDefinition.getSerializer();
                 this.modelManager = this.businessNetworkDefinition.getModelManager();
                 this.introspector = this.businessNetworkDefinition.getIntrospector();
+                debug('here after connect #2');
             })
             .then(() => {
+                debug('here after connect #3');
                 this.connected = true;
                 this.connecting = false;
+                debug('here after connect #4');
                 return this.businessNetworkConnection;
             })
             .catch((error) => {
+                debug('here after connect #5', error);
                 this.connected = this.connecting = false;
                 throw error;
             });
@@ -188,7 +194,10 @@ class BusinessNetworkConnector extends Connector {
         this.visitor = new LoopbackVisitor(this.settings.namespaces === 'always');
 
         // Create the cache.
-        this.connectionWrappers = new NodeCache();
+        this.connectionWrappers = new NodeCache({
+            stdTTL: 5 * 60,
+            useClones: false
+        });
         this.connectionWrappers.on('del', (key, value) => {
             return value.disconnect()
                 .catch((error) => {
@@ -215,13 +224,14 @@ class BusinessNetworkConnector extends Connector {
                 .digest('hex');
             let connectionWrapper = this.connectionWrappers.get(key);
             if (!connectionWrapper) {
+                console.log('Creating new connection wrapper for key', key);
                 const settings = Object.assign(this.settings, {
                     participantId: options.enrollmentID,
                     participantPwd: options.enrollmentSecret,
                     wallet: options.wallet
                 });
                 connectionWrapper = new BusinessNetworkConnectionWrapper(settings);
-                this.connectionWrappers.set(key);
+                this.connectionWrappers.set(key, connectionWrapper);
             }
             return connectionWrapper;
         } else {
@@ -339,9 +349,6 @@ class BusinessNetworkConnector extends Connector {
         debug('all', lbModelName, filter, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
-        console.log(util.inspect(lbModelName));
-        console.log(util.inspect(filter));
-        console.log(util.inspect(options));
         this.ensureConnected(options)
             .then((businessNetworkConnection) => {
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName);

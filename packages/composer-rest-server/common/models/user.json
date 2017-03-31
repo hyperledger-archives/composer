@@ -2,6 +2,12 @@
     "name": "user",
     "plural": "users",
     "base": "User",
+    "properties": {
+        "defaultWallet": {
+            "type": "Number",
+            "description": "The default wallet for this user"
+        }
+    },
     "relations": {
         "accessTokens": {
             "type": "hasMany",

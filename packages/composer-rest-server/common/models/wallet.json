@@ -3,17 +3,21 @@
     "description": "A wallet stores identities for the logged in user",
     "plural": "wallets",
     "base": "PersistedModel",
-    "idInjection": false,
+    "forceId": true,
+    "idInjection": true,
     "properties": {
-        "id": {
-            "type": "String",
-            "id": true,
-            "defaultFn": "uuidv4",
-            "description": "The unique ID for this wallet"
-        },
         "description": {
             "type": "String",
             "description": "The description for this wallet"
+        },
+        "createdAsDefault": {
+            "type": "Boolean",
+            "default": false,
+            "description": "Was this wallet created as the default wallet?"
+        },
+        "defaultIdentity": {
+            "type": "Number",
+            "description": "The default identity for this wallet"
         }
     },
     "validations": [],
@@ -55,10 +59,19 @@
             "permission": "ALLOW",
             "principalId": "$owner",
             "principalType": "ROLE"
+        },
+        {
+            "accessType": "EXECUTE",
+            "permission": "ALLOW",
+            "principalId": "$authenticated",
+            "principalType": "ROLE",
+            "property": "getDefaultWallet"
         }
     ],
     "methods": [],
     "hidden": [
-        "userId"
+        "userId",
+        "createdAsDefault",
+        "defaultIdentity"
     ]
 }
