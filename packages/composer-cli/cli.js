@@ -58,10 +58,12 @@ let results = yargs
 
 if (typeof(results.thePromise) !== 'undefined'){
     results.thePromise.then( () => {
+
         console.log(chalk.green('\nCommand succeeded\n'));
         process.exit(0);
     }).catch((error) => {
         console.log(error+chalk.red('\nCommand failed\n'));
+
         process.exit(1);
     });
 } else {

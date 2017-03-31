@@ -15,24 +15,28 @@
 'use strict';
 
 
-module.exports.command = 'pwd';
-module.exports.describe = 'Where is this process running from ';
+
+module.exports.command = 'ls';
+module.exports.describe = 'current files';
 module.exports.builder = function (yargs){
 
     return yargs;
 };
 
+
 module.exports.handler = (argv) => {
 
     let shell = require('shelljs');
-    console.log(shell.pwd().toString());
+    let files = shell.ls();
 
-    // argv.thePromise = Create.handler(argv)
+
+    console.log(files.join('   '));
+
+    // argv.thePromise =  List.handler(argv)
     // .then(() => {
     //     console.log ('Command completed successfully.');
     // })
     // .catch((error) => {
-    //     console.log(error.stack);
     //     console.log(error+ '\nCommand failed.');
     // });
 };

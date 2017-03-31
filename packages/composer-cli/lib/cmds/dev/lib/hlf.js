@@ -14,10 +14,12 @@
 
 'use strict';
 
+
 const shell = require('shelljs');
 const path = require('path');
 /**
  * Composer dev hlf command
+
  * @private
  */
 class hlf {
@@ -32,17 +34,20 @@ class hlf {
 
         let hlfCmdPromise = new Promise(
         function (resolve, reject) {
+
             if (hlf.runCmd(argv)===0) {
                 resolve(0); // fulfilled
             } else {
                 reject(1); // reject
             }
+
         }
       );
 
         return hlfCmdPromise;
 
     }
+
 
     /** @private
      * @param {String} cmdString The command string to run
@@ -53,11 +58,13 @@ class hlf {
         return shell.exec(cmdString).code;
     }
 
+
     /**
     *  @param {Array} argv command arguments
     *  @return {int} error code
     */
     static runCmd(argv){
+
 
 
         if (argv.start === undefined && argv.stop === undefined && argv.download===undefined && argv.delete === undefined && argv.purgeProfiles === undefined){
@@ -77,6 +84,7 @@ class hlf {
             console.log('Stopping Hyperledger Fabric');
             cmdString = 'docker-compose -f '+composeYML+' stop ';
             errorCode =  this._cmd(cmdString);
+
         } else if (argv.download){
           /*
           # Pull and tag the latest Hyperledger Fabric base image.
@@ -89,19 +97,24 @@ class hlf {
 
             cmdString = 'docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest';
             errorCode = this._cmd(cmdString);
+
         } else if (argv.delete){
           // todo put prompt here
           /*docker-compose kill && docker-compose down
           */
             console.log('Killing and stoping Hypledger Fabric docker containers');
             cmdString = ['docker-compose','-f',composeYML,'kill && docker-compose','-f',composeYML,'down'].join(' ');
+
             errorCode = this._cmd(cmdString);
+
         }
 
         if (argv.purgeProfiles && errorCode === 0){
             console.log('Deleting the default connection profile');
+
             errorCode = shell.rm('-rf','~/.composer-connection-profiles/defaultProfile').code;
             errorCode = (errorCode===0) ? shell.rm('-r','~/.composer-credentials/*').code : errorCode;
+
         }
 
         return errorCode;

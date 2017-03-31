@@ -21,6 +21,7 @@ module.exports.describe = 'Controls a the rest API server';
 module.exports.builder = function (yargs){
 
     return yargs
+
     .wrap(null)
     .usage('Usage: $0 [options]')
     .option('p', { alias: 'connectionProfileName', describe: 'The connection profile name', type: 'string', default: process.env.COMPOSER_CONNECTION_PROFILE })
@@ -32,6 +33,7 @@ module.exports.builder = function (yargs){
     .option('S', { alias: 'security', describe: 'Enable security for the REST API', type: 'boolean', default: process.env.COMPOSER_SECURITY || false })
     .help('h')
     .alias('h', 'help');
+
 };
 
 module.exports.handler = (argv) => {
@@ -40,6 +42,7 @@ module.exports.handler = (argv) => {
     .then(() => {
         console.log ('Command completed successfully.');
         return;
+
     })
     .catch((error) => {
         console.log(error.stack);
@@ -48,4 +51,5 @@ module.exports.handler = (argv) => {
     });
 
     return argv.thePromise;
+
 };

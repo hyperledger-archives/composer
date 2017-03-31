@@ -29,6 +29,7 @@ module.exports.builder = function (yargs){
             .conflicts({'download':'stop','start':'stop','stop':'','delete':'start'})
             .usage('composer dev hlf --downloand --hlfversion 0.6  \n  composer dev hlf --start')
             ;
+
 };
 
 module.exports.handler = (argv) => {
@@ -43,5 +44,7 @@ module.exports.handler = (argv) => {
         console.log(error+ '\nCommand failed.');
         return (1);
     });
+
     return argv.thePromise;
+
 };
