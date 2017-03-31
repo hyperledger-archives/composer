@@ -16,7 +16,9 @@
 
 const AssetRegistry = require('./assetregistry');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const EnvConnectionProfileStore = require('composer-common').EnvConnectionProfileStore;
 const EventEmitter = require('events');
 const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
@@ -54,7 +56,16 @@ class BusinessNetworkConnection extends EventEmitter {
         this.developmentMode = options.developmentMode || false;
         this.connection = null;
 
-        this.connectionProfileStore = new FSConnectionProfileStore(options.fs || fs);
+        const fsConnectionProfileStore = new FSConnectionProfileStore(options.fs || fs);
+        if (process.env.COMPOSER_CONFIG) {
+            const envConnectionProfileStore = new EnvConnectionProfileStore();
+            this.connectionProfileStore = new ComboConnectionProfileStore(
+                fsConnectionProfileStore,
+                envConnectionProfileStore
+            );
+        } else {
+            this.connectionProfileStore = fsConnectionProfileStore;
+        }
         this.connectionProfileManager = new ConnectionProfileManager(this.connectionProfileStore);
 
         this.connection = null;
