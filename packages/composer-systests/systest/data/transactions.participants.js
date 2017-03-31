@@ -173,6 +173,23 @@ function onGetParticipantFromParticipantRegistryTransaction(transaction) {
         });
 }
 
+function onExistsParticipantInParticipantRegistryTransaction(transaction) {
+    // console.log(JSON.stringify(transaction));
+    var pr;
+    return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+        .then(function (pr_) {
+            pr = pr_;
+            return pr.exists('stringParticipant1');
+        })
+        .then(function (exists) {
+            if (exists !== true) { return new Error('participant does not exist'); }
+            return pr.exists('stringParticipant2');
+        })
+        .then(function (exists) {
+            if (exists !== false) { return new Error('participant does exist'); }
+        });
+}
+
 function onAddParticipantInTransactionToParticipantRegistryTransaction(transaction) {
     // console.log(JSON.stringify(transaction));
     return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')

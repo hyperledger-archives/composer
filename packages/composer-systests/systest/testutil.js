@@ -153,29 +153,66 @@ class TestUtil {
                 } else {
                     // hlf need to decide if v1 or 0.6
                     let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
+                    let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
-
                     if (process.env.SYSTEST.match('^hlfv1')) {
-                        adminOptions = {
-                            type: 'hlfv1',
-                            orderers: [
-                                'grpc://localhost:7050'
-                            ],
-                            ca: 'http://localhost:7054',
-                            peers: [
-                                'grpc://localhost:7051',
-                                'grpc://localhost:7056'
-                            ],
-                            events: [
-                                'grpc://localhost:7053',
-                                'grpc://localhost:7058'
-                            ],
-                            channel: 'mychannel',
-                            mspid: 'Org1MSP',
-                            deployWaitTime: '300',
-                            invokeWaitTime: '100',
-                            keyValStore: keyValStore
-                        };
+                        if (process.env.SYSTEST.match('tls$')) {
+                            console.log('setting up TLS Connection Profile for HLF V1');
+                            adminOptions = {
+                                type: 'hlfv1',
+                                orderers: [
+                                    {
+                                        url: 'grpcs://localhost:7050',
+                                        cert: './systestv1/tls/orderer/ca-cert.pem',
+                                        hostnameOverride: 'orderer0'
+                                    }
+                                ],
+                                ca: 'https://localhost:7054',
+                                peers: [
+                                    {
+                                        requestURL: 'grpcs://localhost:7051',
+                                        eventURL: 'grpcs://localhost:7053',
+                                        cert: './systestv1/tls/peers/peer0/ca-cert.pem',
+                                        hostnameOverride: 'peer0'
+                                    },
+                                    {
+                                        requestURL: 'grpcs://localhost:7056',
+                                        eventURL: 'grpcs://localhost:7058',
+                                        cert: './systestv1/tls/peers/peer1/ca-cert.pem',
+                                        hostnameOverride: 'peer1'
+                                    }
+                                ],
+                                keyValStore: keyValStoreV1,
+                                channel: 'mychannel',
+                                mspID: 'Org1MSP',
+                                deployWaitTime: '300',
+                                invokeWaitTime: '100'
+                            };
+                        } else {
+                            console.log('setting up Non-TLS Connection Profile for HLF V1');
+                            adminOptions = {
+                                type: 'hlfv1',
+                                orderers: [
+                                    'grpc://localhost:7050'
+                                ],
+                                ca: 'http://localhost:7054',
+                                peers: [
+                                    {
+                                        requestURL: 'grpc://localhost:7051',
+                                        eventURL: 'grpc://localhost:7053'
+                                    },
+                                    {
+                                        requestURL: 'grpc://localhost:7056',
+                                        eventURL: 'grpc://localhost:7058'
+                                    }
+                                ],
+                                channel: 'mychannel',
+                                mspID: 'Org1MSP',
+                                deployWaitTime: '300',
+                                invokeWaitTime: '100',
+                                keyValStore: keyValStoreV1
+                            };
+                        }
                     } else {
                         adminOptions = {
                             type: 'hlf',

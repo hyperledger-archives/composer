@@ -107,6 +107,33 @@ class AssetRegistry {
         };
 
         /**
+         * Determines whether a specific asset exists in this asset registry.
+         * @example
+         * // Get the vehicle asset registry.
+         * return getAssetRegistry('org.acme.Vehicle')
+         *   .then(function (vehicleAssetRegistry) {
+         *     // Determine if the specific vehicle exists in the vehicle asset registry.
+         *     return assetRegistry.exists('VEHICLE_1');
+         *   })
+         *   .then(function (exists) {
+         *     // Process the the boolean result.
+         *     console.log('Vehicle exists', exists);
+         *   })
+         *   .catch(function (error) {
+         *     // Add optional error handling here.
+         *   });
+         * @public
+         * @method module:composer-runtime.AssetRegistry#exists
+         * @param {string} id The ID of the asset.
+         * @return {Promise} A promise. The promise is resolved with a boolean which
+         * is true if the specified asset exists in this asset registry, and false
+         * if the specified participant does not exist.
+         */
+        this.exists = function exists(id) {
+            return registry.exists(id);
+        };
+
+        /**
          * Add all of the specified assets to this asset registry.
          * @example
          * // Get the vehicle asset registry.

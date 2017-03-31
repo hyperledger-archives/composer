@@ -332,4 +332,37 @@ describe('Test Model', function(){
             modelFile.getImports()[0].should.equal('concerto.Participant');
         });
     });
+
+    describe('#imports', function() {
+        it('check that dependencies of imported types are resolved correctly', function() {
+
+            // create and populate the ModelManager with a model file
+            let modelManager = new ModelManager();
+
+            let fileName = './test/data/model/dependencies/base/base.cto';
+            let baseModel = fs.readFileSync(fileName, 'utf8');
+            baseModel.should.not.be.null;
+            modelManager.addModelFile(baseModel,fileName);
+
+            fileName = './test/data/model/dependencies/business/business.cto';
+            let businessModel = fs.readFileSync(fileName, 'utf8');
+            businessModel.should.not.be.null;
+            modelManager.addModelFile(businessModel,fileName);
+
+            fileName = './test/data/model/dependencies/contract/proforma.cto';
+            let proformaModel = fs.readFileSync(fileName, 'utf8');
+            proformaModel.should.not.be.null;
+            modelManager.addModelFile(proformaModel,fileName);
+
+            fileName = './test/data/model/dependencies/contract/contract.cto';
+            let contractModel = fs.readFileSync(fileName, 'utf8');
+            contractModel.should.not.be.null;
+            modelManager.addModelFile(contractModel,fileName);
+
+            let modelFile = modelManager.getModelFile('stdlib.business');
+            modelFile.isLocalType('Business').should.equal(true);
+            modelFile.isImportedType('Person').should.equal(true);
+            modelFile.getImports().length.should.equal(2);
+        });
+    });
 });
