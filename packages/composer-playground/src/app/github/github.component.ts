@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Http}    from '@angular/http';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Http }    from '@angular/http';
 
-import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
+import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 
 @Component({
   selector: 'github',
@@ -29,7 +29,7 @@ export class GithubComponent implements OnInit {
             this.sampleBusinessNetworkService.setUpGithub(token.access_token);
             this.sampleBusinessNetworkService.OPEN_SAMPLE = true;
             return this.router.navigate(['/editor']);
-          })
+          });
       });
   }
 

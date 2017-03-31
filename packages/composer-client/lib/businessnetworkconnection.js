@@ -277,10 +277,13 @@ class BusinessNetworkConnection extends EventEmitter {
      * @param {string} businessNetwork - The identifier of the business network
      * @param {string} enrollmentID the enrollment ID of the user
      * @param {string} enrollmentSecret the enrollment secret of the user
+     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
+     * at runtime that override options set in the connection profile.
+     * which will override those in the specified connection profile.
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
-    connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret) {
-        return this.connectionProfileManager.connect(connectionProfile, businessNetwork)
+    connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
+        return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
             .then((connection) => {
                 this.connection = connection;
                 return connection.login(enrollmentID, enrollmentSecret);

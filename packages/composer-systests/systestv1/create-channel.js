@@ -16,23 +16,52 @@
 
 let hfc = require('fabric-client');
 let path = require('path');
+let fs = require('fs');
 
 let testUtil = require('./setup-utils.js');
 let utils = require('fabric-client/lib/utils.js');
 let Orderer = require('fabric-client/lib/Orderer.js');
-
-//let the_user = null;
+const homedir = require('homedir');
 
 let logger = utils.getLogger('create-channel');
 
-hfc.addConfigFile(path.join(__dirname, './config.json'));
+let useTls = process.env.SYSTEST.match('tls$');
+
+if (useTls) {
+    console.log('using tls connection to create the channel');
+    hfc.addConfigFile(path.join(__dirname, './config.tls.json'));
+} else {
+    console.log('using non-tls connection');
+    hfc.addConfigFile(path.join(__dirname, './config.json'));
+}
 let ORGS = hfc.getConfigSetting('test-network');
-let keystore = '/home/vagrant/.hfc-key-store';
+
+//TODO: Need to make this configurable
+let keystore = homedir() + '/.hfc-key-store';
 let channel = 'mychannel';
 
 let client = new hfc();
 let chain = client.newChain(channel);
-chain.addOrderer(new Orderer(ORGS.orderer));
+
+if (useTls) {
+    let caRootsPath = ORGS.orderer.tls_cacerts;
+    let data = fs.readFileSync(path.join(__dirname, caRootsPath));
+    //let data = fs.readFileSync(caRootsPath);
+
+    let caroots = Buffer.from(data).toString();
+    chain.addOrderer(
+        new Orderer(
+            ORGS.orderer.url,
+            {
+                'pem': caroots,
+                'ssl-target-name-override': ORGS.orderer['server-hostname']
+            }
+        )
+    );
+}
+else {
+    chain.addOrderer(new Orderer(ORGS.orderer));
+}
 
 
 //let org = ORGS.org1.name;
@@ -48,7 +77,6 @@ hfc.newDefaultKeyValueStore({
     })
     .then((admin) => {
         console.log('Successfully enrolled user \'admin\'');
-        //the_user = admin;
 
         // readin the envelope to send to the orderer
         return testUtil.readFile('./mychannel.tx');

@@ -40,7 +40,7 @@ describe('ConnectionProfileManager', () => {
         ConnectionProfileManager.removeAllConnectionManagers();
     });
 
-    describe('#construct', () => {
+    describe('#constructor', () => {
 
         it('should throw if no connection profile store', () => {
 
@@ -164,8 +164,29 @@ describe('ConnectionProfileManager', () => {
             return cpm.connect( 'foo', 'myNetwork' )
             .then((connection) => {
                 connection.should.equal(stubConnection);
+                sinon.assert.calledOnce(connectionManager.connect);
+                sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {type: 'foo', data : 'data' });
             });
         });
+
+        it('should call connect on connection manager applying any additional options', () => {
+            const store = sinon.createStubInstance(ConnectionProfileStore);
+            const profile = {type: 'foo', data : 'data', overrideMe: 'please' };
+            store.load.returns( Promise.resolve(profile) );
+            const connectionManager = sinon.createStubInstance(ConnectionManager);
+            const stubConnection = sinon.createStubInstance(Connection);
+            connectionManager.connect.returns(stubConnection);
+            let cpm = new ConnectionProfileManager(store);
+            cpm.should.not.be.null;
+            cpm.addConnectionManager( 'foo', connectionManager);
+            return cpm.connect( 'foo', 'myNetwork', { overrideMe: 'sure thing' } )
+            .then((connection) => {
+                connection.should.equal(stubConnection);
+                sinon.assert.calledOnce(connectionManager.connect);
+                sinon.assert.calledWith(connectionManager.connect, 'foo', 'myNetwork', {type: 'foo', data : 'data', overrideMe: 'sure thing' });
+            });
+        });
+
     });
 
 

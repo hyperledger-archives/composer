@@ -127,6 +127,34 @@ describe('BusinessNetworkConnection', () => {
                 result.should.be.an.instanceOf(BusinessNetworkDefinition);
             });
         });
+
+        it('should create a connection and download the business network archive supplying any additional options', () => {
+            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+            mockConnection.login.resolves(mockSecurityContext);
+            mockConnection.ping.resolves();
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+
+            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
+            .then((result) => {
+                sinon.assert.calledOnce(businessNetworkConnection.connectionProfileManager.connect);
+                sinon.assert.calledWith(businessNetworkConnection.connectionProfileManager.connect, 'testprofile', 'testnetwork', { some: 'other', options: true });
+                sinon.assert.calledOnce(mockConnection.login);
+                sinon.assert.calledWith(mockConnection.login, 'enrollmentID', 'enrollmentSecret');
+                sinon.assert.calledOnce(mockConnection.ping);
+                sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+                sinon.assert.calledOnce(Util.queryChainCode);
+                sinon.assert.calledWith(Util.queryChainCode, mockSecurityContext, 'getBusinessNetwork', []);
+                sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
+                sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, Buffer.from('aGVsbG8=', 'base64'));
+                businessNetworkConnection.connection.should.equal(mockConnection);
+                result.should.be.an.instanceOf(BusinessNetworkDefinition);
+            });
+        });
+
     });
 
     describe('#disconnect', () => {

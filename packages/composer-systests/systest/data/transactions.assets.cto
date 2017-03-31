@@ -81,6 +81,10 @@ transaction GetAssetFromAssetRegistryTransaction identified by transactionId {
     o String transactionId
 }
 
+transaction ExistsAssetInAssetRegistryTransaction identified by transactionId {
+    o String transactionId
+}
+
 transaction AddAssetInTransactionToAssetRegistryTransaction identified by transactionId {
     o String transactionId
     o SimpleStringAsset stringAsset

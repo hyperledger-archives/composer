@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.5.6 {b33a9697716c4de4fa2cda2ebac97bfb} 2017-03-29
+- Added additional connection options
+
 Version 0.4.3 {d12e6cf1314fbc2a87f3f613304c2540} 2017-02-13
 - Added Factory.newConcept() to runtime
 
