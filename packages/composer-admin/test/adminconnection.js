@@ -14,13 +14,13 @@
 
 'use strict';
 
-const Module = require('../');
-const AdminConnection = require('../lib/adminconnection');
-const ConcertoCommon = require('composer-common');
-const BusinessNetworkDefinition = ConcertoCommon.BusinessNetworkDefinition;
-const Connection = ConcertoCommon.Connection;
-const ConnectionManager = ConcertoCommon.ConnectionManager;
-const SecurityContext = ConcertoCommon.SecurityContext;
+const AdminConnection = require('..').AdminConnection;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const ComboConnectionProfileStore = require('composer-common').ComboConnectionProfileStore;
+const Connection = require('composer-common').Connection;
+const ConnectionManager = require('composer-common').ConnectionManager;
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const SecurityContext = require('composer-common').SecurityContext;
 
 const chai = require('chai');
 const should = chai.should();
@@ -72,26 +72,43 @@ describe('AdminConnection', () => {
         sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
         sinon.stub(adminConnection.connectionProfileStore, 'delete').withArgs('testprofile').resolves();
+        delete process.env.COMPOSER_CONFIG;
     });
 
-    describe('#module', () => {
-        it('should give access to AdminConnection', () => {
-            Module.AdminConnection.should.not.be.null;
-        });
-        it('should give access to BusinessNetworkDefinition', () => {
-            Module.BusinessNetworkDefinition.should.not.be.null;
-        });
+    afterEach(() => {
+        delete process.env.COMPOSER_CONFIG;
     });
 
     describe('#constructor', () => {
-        it('should create a new AdminConnection instance', () => {
+
+        it('should create a new AdminConnection instance with a file system connection profile store', () => {
             let adminConnection = new AdminConnection();
             adminConnection.should.not.be.null;
+            adminConnection.connectionProfileStore.should.be.an.instanceOf(FSConnectionProfileStore);
         });
+
+        it('should create a new AdminConnection instance with a combo connection profile store', () => {
+            const config = {
+                connectionProfiles: {
+                    hlfabric1: {
+                        type: 'hlfv1'
+                    },
+                    hlfabric2: {
+                        type: 'hlfv2'
+                    }
+                }
+            };
+            process.env.COMPOSER_CONFIG = JSON.stringify(config);
+            let adminConnection = new AdminConnection();
+            adminConnection.should.not.be.null;
+            adminConnection.connectionProfileStore.should.be.an.instanceOf(ComboConnectionProfileStore);
+        });
+
         it('should not fail if no connectionManager is provided', () => {
             let adminConnection = new AdminConnection();
             adminConnection.connectionProfileManager.should.not.be.null;
         });
+
     });
 
     describe('#connect', () => {
