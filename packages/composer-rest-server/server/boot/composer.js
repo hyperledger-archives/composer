@@ -15,114 +15,15 @@
 'use strict';
 
 const connector = require('loopback-connector-composer');
-const Wallet = require('composer-common').Wallet;
-
-class LoopBackWallet extends Wallet {
-
-    constructor(wallet, WalletIdentityModel) {
-        super();
-        this.wallet = wallet;
-        this.WalletIdentityModel = WalletIdentityModel;
-    }
-
-    /**
-     * List all of the credentials in the wallet.
-     * @abstract
-     * @return {Promise} A promise that is resolved with
-     * an array of credential names, or rejected with an
-     * error.
-     */
-    list() {
-        return this.WalletIdentityModel.find({ where: { walletId: this.wallet.id } })
-            .then((identities) => {
-                return identities.map((identity) => {
-                    return identity.enrollmentID;
-                });
-            });
-    }
-
-    /**
-     * Check to see if the named credentials are in
-     * the wallet.
-     * @abstract
-     * @param {string} name The name of the credentials.
-     * @return {Promise} A promise that is resolved with
-     * a boolean; true if the named credentials are in the
-     * wallet, false otherwise.
-     */
-    contains(name) {
-        console.log('contains', this.wallet, name);
-        return this.WalletIdentityModel.count({ walletId: this.wallet.id, enrollmentID: name })
-            .then((count) => {
-                console.log('contains', count);
-                return count !== 0;
-            });
-    }
-
-    /**
-     * Get the named credentials from the wallet.
-     * @abstract
-     * @param {string} name The name of the credentials.
-     * @return {Promise} A promise that is resolved with
-     * the named credentials, or rejected with an error.
-     */
-    get(name) {
-        console.log('get', name);
-        return this.WalletIdentityModel.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
-            .then((identity) => {
-                return identity.certificate;
-            });
-    }
-
-    /**
-     * Add a new credential to the wallet.
-     * @abstract
-     * @param {string} name The name of the credentials.
-     * @param {string} value The credentials.
-     * @return {Promise} A promise that is resolved when
-     * complete, or rejected with an error.
-     */
-    add(name, value) {
-        console.log('add', name, value);
-        return this.WalletIdentityModel.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
-            .then((identity) => {
-                return identity.updateAttribute('certificate', value);
-            });
-    }
-
-    /**
-     * Update existing credentials in the wallet.
-     * @abstract
-     * @param {string} name The name of the credentials.
-     * @param {string} value The credentials.
-     * @return {Promise} A promise that is resolved when
-     * complete, or rejected with an error.
-     */
-    update(name, value) {
-        console.log('update', name, value);
-        return this.WalletIdentityModel.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
-            .then((identity) => {
-                return identity.updateAttribute('certificate', value);
-            });
-    }
-
-    /**
-     * Remove existing credentials from the wallet.
-     * @abstract
-     * @param {string} name The name of the credentials.
-     * @return {Promise} A promise that is resolved when
-     * complete, or rejected with an error.
-     */
-    remove(name) {
-        console.log('remove', name);
-        return this.WalletIdentityModel.destroyAll({ where: { walletId: this.wallet.id, enrollmentID: name } });
-    }
-
-}
+const LoopBackWallet = require('../../lib/loopbackwallet');
 
 module.exports = function (app, callback) {
 
     const composer = app.get('composer');
+    if (!composer) {
+        return callback();
+    }
+
     const userModel = app.models.user;
     const WalletModel = app.models.Wallet;
     const WalletIdentityModel = app.models.WalletIdentity;
@@ -235,7 +136,7 @@ module.exports = function (app, callback) {
         // enrollment secret from the logged-in users wallet for passing to the connector.
         app.remotes().phases
             .addBefore('invoke', 'options-from-request')
-            .use(function(ctx, next) {
+            .use(function (ctx, next) {
                 if (!ctx.args.options) {
                     return next();
                 } else if (!ctx.args.options.accessToken) {
@@ -245,7 +146,6 @@ module.exports = function (app, callback) {
                 let wallet;
                 return userModel.findById(userId)
                     .then((user) => {
-                        console.log('found user', user);
                         return WalletModel.findById(user.defaultWallet);
                     })
                     .then((wallet_) => {
@@ -253,21 +153,18 @@ module.exports = function (app, callback) {
                         if (!wallet) {
                             return;
                         }
-                        console.log('found default wallet', wallet);
                         if (!wallet.defaultIdentity) {
                             return;
                         }
-                        console.log('identities', require('util').inspect(wallet));
                         return WalletIdentityModel.findById(wallet.defaultIdentity);
                     })
                     .then((identity) => {
                         if (!identity) {
                             return next();
                         }
-                        console.log('found default identity', identity);
                         ctx.args.options.enrollmentID = identity.enrollmentID;
                         ctx.args.options.enrollmentSecret = identity.enrollmentSecret;
-                        ctx.args.options.wallet = new LoopBackWallet(wallet, WalletIdentityModel);
+                        ctx.args.options.wallet = new LoopBackWallet(app, wallet);
                         next();
                     });
             });

@@ -14,10 +14,6 @@
             "type": "Boolean",
             "default": false,
             "description": "Was this wallet created as the default wallet?"
-        },
-        "defaultIdentity": {
-            "type": "Number",
-            "description": "The default identity for this wallet"
         }
     },
     "validations": [],
@@ -31,6 +27,11 @@
             "type": "hasMany",
             "model": "WalletIdentity",
             "foreignKey": "walletId"
+        },
+        "defaultWallet": {
+            "type": "hasOne",
+            "model": "User",
+            "foreignKey": "defaultWallet"
         }
     },
     "acls": [

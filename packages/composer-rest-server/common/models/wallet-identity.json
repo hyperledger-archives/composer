@@ -25,6 +25,11 @@
             "type": "belongsTo",
             "model": "Wallet",
             "foreignKey": "walletId"
+        },
+        "defaultIdentity": {
+            "type": "hasOne",
+            "model": "Wallet",
+            "foreignKey": "defaultIdentity"
         }
     },
     "acls": [],

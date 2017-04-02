@@ -9,17 +9,17 @@ block content
         th Enrollment ID
         th Enrollment Secret
         th.text-center
-          button.btn.btn-sm.btn-success.fa.fa-plus(onclick='showAddIdentity(#{wallet.id})')
+          button.btn.btn-sm.btn-success.fa.fa-plus(onclick='showAddIdentity("#{wallet.id}")')
       for identity in wallet.identities()
         tr(class=identity.certificate ? 'info' : null)
           td= identity.id
           td= identity.enrollmentID
           td= identity.enrollmentSecret
           td.text-center
-            if identity.id === wallet.defaultIdentity
+            if wallet.defaultIdentity && identity.id.toString() === wallet.defaultIdentity.toString()
               a.btn.btn-sm.btn-warning.fa.fa-star(disabled='disabled')
             else
-              button.btn.btn-sm.btn-default.fa.fa-star(onclick='setDefaultIdentity(#{wallet.id}, "#{identity.id}")')
+              button.btn.btn-sm.btn-default.fa.fa-star(onclick='setDefaultIdentity("#{wallet.id}", "#{identity.id}")')
   p
   h4 Access token
   pre= accessToken

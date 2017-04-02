@@ -186,7 +186,15 @@ promise.then((composer) => {
     });
 
     app.get('/auth/account', ensureLoggedIn('/login'), function (req, res, next) {
-        app.models.user.findById(req.user.id, { include: { wallets: ['identities']} })
+        const filter = {
+            include: {
+                wallets: {
+                    'identities': true,
+                    'defaultIdentity': true
+                }
+            }
+        };
+        app.models.user.findById(req.user.id, filter)
             .then((user) => {
                 res.render('pages/account', {
                     user: user,

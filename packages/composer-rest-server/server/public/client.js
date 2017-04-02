@@ -4,9 +4,9 @@ function showAddIdentity(walletID) {
 }
 
 function addIdentity() {
-    var walletID = $('#walletID').val();
-    var enrollmentID = $('#enrollmentID').val();
-    var enrollmentSecret = $('#enrollmentSecret').val();
+    let walletID = $('#walletID').val();
+    let enrollmentID = $('#enrollmentID').val();
+    let enrollmentSecret = $('#enrollmentSecret').val();
     $.ajax({
         type: 'POST',
         url: '/api/wallets/' + walletID + '/identities',

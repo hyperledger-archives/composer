@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 'use strict';
 
 module.exports = function (Wallet) {
@@ -40,13 +54,16 @@ module.exports = function (Wallet) {
 
     // Set the specified wallet as the default wallet for the user.
     Wallet.setDefaultWallet = function (id) {
-        return Wallet.findOne({ id: id })
-            .then((wallet) => {
+        let wallet;
+        return Wallet.findById(id)
+            .then((wallet_) => {
+                wallet = wallet_;
                 const user = Wallet.app.models.user;
-                return user.findOne({ id: wallet.userId });
+                return user.findById(wallet.userId);
             })
             .then((user) => {
-                return user.updateAttribute('defaultWallet', id);
+                user.defaultWallet = wallet.id;
+                return user.save();
             });
     };
 
@@ -78,7 +95,8 @@ module.exports = function (Wallet) {
                 if (!identity) {
                     throw new Error('The specified identity does not exist in the specified wallet');
                 }
-                return wallet.updateAttribute('defaultIdentity', fk);
+                wallet.defaultIdentity = identity.id;
+                return wallet.save();
             });
     };
 
