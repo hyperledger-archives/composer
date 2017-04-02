@@ -6,6 +6,8 @@ sidebar: sidebars/introduction.md
 excerpt: Fabric Composer overview
 ---
 
+---
+
 # Welcome to Fabric Composer
 
 ---
@@ -18,7 +20,17 @@ Fabric Composer requires and exploits the existing [Hyperledger Fabric blockchai
 
 ---
 
+## Key Fabric Composer concepts diagram
+
+---
+
+![Diagram of Fabric Composer](/assets/img/Composer-Diagram.svg)
+
+---
+
 ## How does Fabric Composer work in practise?
+
+---
 
 For an example of a business network in action; a realtor may have a business network containing houses and listings as assets. Participants could include buyers and homeowners. Transactions might include buying or selling houses, and creating and closing listings. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor may want to create an application to present buyers and sellers participants with a simple user interface for viewing open listings and making offers. This business network could also be integrated with the existing inventory system for the realtor, allowing for the addition of new houses as assets. Relevant other parties can be registered as participants whilst maintaining their own business network, for example a land registry might interact with a buyer winner to transfer ownership of the land.
 
