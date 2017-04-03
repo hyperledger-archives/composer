@@ -15,30 +15,30 @@
 'use strict';
 
 const connector = require('loopback-connector-composer');
-const LoopBackWallet = require('../../lib/loopbackwallet');
 
 module.exports = function (app, callback) {
 
+    // Get the Composer configuration.
     const composer = app.get('composer');
     if (!composer) {
-        return callback();
+        callback();
+        return Promise.resolve();
     }
 
-    const userModel = app.models.user;
-    const WalletModel = app.models.Wallet;
-    const WalletIdentityModel = app.models.WalletIdentity;
-
-    const dataSource = app.loopback.createDataSource('composer', {
+    // Create an instance of the LoopBack data source that uses the connector.
+    const connectorSettings = {
         name: 'composer',
         connector: connector,
         connectionProfileName: composer.connectionProfileName,
         businessNetworkIdentifier: composer.businessNetworkIdentifier,
         participantId: composer.participantId,
         participantPwd: composer.participantPwd,
-        namespaces: composer.namespaces
-    });
+        namespaces: composer.namespaces,
+        fs: composer.fs
+    };
+    const dataSource = app.loopback.createDataSource('composer', connectorSettings);
 
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         // Discover the model definitions (types) from the connector.
         // This will go and find all of the non-abstract types in the business network definition.
@@ -131,44 +131,6 @@ module.exports = function (app, callback) {
     })
     .then(() => {
         console.log('Added schemas for all types to Loopback');
-
-        // Register a hook for all remote methods that loads the enrollment ID and
-        // enrollment secret from the logged-in users wallet for passing to the connector.
-        app.remotes().phases
-            .addBefore('invoke', 'options-from-request')
-            .use(function (ctx, next) {
-                if (!ctx.args.options) {
-                    return next();
-                } else if (!ctx.args.options.accessToken) {
-                    return next();
-                }
-                const userId = ctx.args.options.accessToken.userId;
-                let wallet;
-                return userModel.findById(userId)
-                    .then((user) => {
-                        return WalletModel.findById(user.defaultWallet);
-                    })
-                    .then((wallet_) => {
-                        wallet = wallet_;
-                        if (!wallet) {
-                            return;
-                        }
-                        if (!wallet.defaultIdentity) {
-                            return;
-                        }
-                        return WalletIdentityModel.findById(wallet.defaultIdentity);
-                    })
-                    .then((identity) => {
-                        if (!identity) {
-                            return next();
-                        }
-                        ctx.args.options.enrollmentID = identity.enrollmentID;
-                        ctx.args.options.enrollmentSecret = identity.enrollmentSecret;
-                        ctx.args.options.wallet = new LoopBackWallet(app, wallet);
-                        next();
-                    });
-            });
-
         callback();
     })
     .catch((error) => {

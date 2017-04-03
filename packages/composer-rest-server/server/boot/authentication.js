@@ -14,6 +14,16 @@
 
 'use strict';
 
-module.exports = function enableAuthentication(server) {
-    server.enableAuth();
+module.exports = function (app) {
+
+    // Enable authentication if the security option has been specified.
+    const composer = app.get('composer');
+    if (!composer) {
+        return;
+    }
+    const security = !!composer.security;
+    if (security) {
+        app.enableAuth();
+    }
+
 };

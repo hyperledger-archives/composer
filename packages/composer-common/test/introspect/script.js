@@ -14,8 +14,10 @@
 
 'use strict';
 
-const Script = require('../../lib/introspect/script');
 const ModelManager = require('../../lib/modelmanager');
+const Script = require('../../lib/introspect/script');
+
+require('chai').should();
 const sinon = require('sinon');
 
 describe('Script', () => {
@@ -35,6 +37,46 @@ describe('Script', () => {
                 new Script(modelManager, 'SCRIPT_001', 'JS', null );
             }).should.throw(/Empty script contents/);
         });
+    });
+
+    describe('#getIdentifier', () => {
+
+        it('should return the identifier of the script', () => {
+            const FUNC_TEXT = 'function foo() {return 0;}';
+            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
+            script.getIdentifier().should.equal('SCRIPT_001');
+        });
+
+    });
+
+    describe('#getName', () => {
+
+        it('should return the name of the script', () => {
+            const FUNC_TEXT = 'function foo() {return 0;}';
+            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
+            script.getName().should.equal('SCRIPT_001');
+        });
+
+    });
+
+    describe('#getLanguage', () => {
+
+        it('should return the language of the script', () => {
+            const FUNC_TEXT = 'function foo() {return 0;}';
+            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
+            script.getLanguage().should.equal('JS');
+        });
+
+    });
+
+    describe('#getContents', () => {
+
+        it('should return the language of the script', () => {
+            const FUNC_TEXT = 'function foo() {return 0;}';
+            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
+            script.getContents().should.equal(FUNC_TEXT);
+        });
+
     });
 
     describe('#accept', () => {

@@ -20,7 +20,7 @@
   },
   "Wallet": {
     "dataSource": "db",
-    "public": true
+    "public": false
   },
   "WalletIdentity": {
     "dataSource": "db",

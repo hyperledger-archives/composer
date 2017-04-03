@@ -18,18 +18,22 @@ const boot = require('loopback-boot');
 const loopback = require('loopback');
 require('loopback-component-passport');
 const path = require('path');
+const WalletScript = require('../../../common/models/wallet');
 
 const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
+const sinon = require('sinon');
 
 describe('Wallet model', () => {
 
     let app;
     let userModel, WalletModel, WalletIdentityModel;
     let user;
+    let sandbox;
 
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
         app = loopback();
         return new Promise((resolve, reject) => {
             boot(app, path.resolve(__dirname, '..', '..', '..', 'server'), (err) => {
@@ -54,6 +58,126 @@ describe('Wallet model', () => {
         .then((user_) => {
             user = user_;
         });
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    describe('#before save hook', () => {
+
+        it('should do nothing if there is no logged in user', () => {
+            sandbox.stub(WalletModel, 'observe');
+            WalletScript(WalletModel);
+            sinon.assert.called(WalletModel.observe);
+            const ev = WalletModel.observe.args[0][0];
+            ev.should.equal('before save');
+            const cb = WalletModel.observe.args[0][1];
+            const ctx = {
+                instance: { },
+                options: { }
+            };
+            const next = sinon.stub();
+            cb(ctx, next);
+            sinon.assert.calledOnce(next);
+        });
+
+        it('should set the userId to the logged in user', () => {
+            sandbox.stub(WalletModel, 'observe');
+            WalletScript(WalletModel);
+            sinon.assert.called(WalletModel.observe);
+            const ev = WalletModel.observe.args[0][0];
+            ev.should.equal('before save');
+            const cb = WalletModel.observe.args[0][1];
+            const ctx = {
+                instance: { },
+                options: {
+                    accessToken: {
+                        userId: '999'
+                    }
+                }
+            };
+            const next = sinon.stub();
+            cb(ctx, next);
+            ctx.instance.userId.should.equal('999');
+            sinon.assert.calledOnce(next);
+        });
+
+    });
+
+    describe('#access hook', () => {
+
+        it('should do nothing if there is no logged in user', () => {
+            sandbox.stub(WalletModel, 'observe');
+            WalletScript(WalletModel);
+            sinon.assert.called(WalletModel.observe);
+            const ev = WalletModel.observe.args[1][0];
+            ev.should.equal('access');
+            const cb = WalletModel.observe.args[1][1];
+            const ctx = {
+                instance: { },
+                options: { }
+            };
+            const next = sinon.stub();
+            cb(ctx, next);
+            sinon.assert.calledOnce(next);
+        });
+
+        it('should add a where and set the userId to the logged in user', () => {
+            sandbox.stub(WalletModel, 'observe');
+            WalletScript(WalletModel);
+            sinon.assert.called(WalletModel.observe);
+            const ev = WalletModel.observe.args[1][0];
+            ev.should.equal('access');
+            const cb = WalletModel.observe.args[1][1];
+            const ctx = {
+                instance: { },
+                options: {
+                    accessToken: {
+                        userId: '999'
+                    }
+                },
+                query: {
+
+                }
+            };
+            const next = sinon.stub();
+            cb(ctx, next);
+            ctx.query.where.should.deep.equal({
+                userId: '999'
+            });
+            sinon.assert.calledOnce(next);
+        });
+
+        it('should set the userId to the logged in user in an existing where', () => {
+            sandbox.stub(WalletModel, 'observe');
+            WalletScript(WalletModel);
+            sinon.assert.called(WalletModel.observe);
+            const ev = WalletModel.observe.args[1][0];
+            ev.should.equal('access');
+            const cb = WalletModel.observe.args[1][1];
+            const ctx = {
+                instance: { },
+                options: {
+                    accessToken: {
+                        userId: '999'
+                    }
+                },
+                query: {
+                    where: {
+                        description: 'blah'
+                    }
+                }
+            };
+            const next = sinon.stub();
+            cb(ctx, next);
+            ctx.query.where.should.deep.equal({
+                userId: '999',
+                description: 'blah'
+            });
+            sinon.assert.calledOnce(next);
+        });
+
     });
 
     describe('#setDefaultWallet', () => {

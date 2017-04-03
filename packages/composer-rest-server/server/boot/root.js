@@ -16,6 +16,6 @@
 
 module.exports = function(server) {
     let router = server.loopback.Router();
-    router.get('/status', server.loopback.status());
+    router.get('/', server.loopback.status());
     server.use(router);
 };

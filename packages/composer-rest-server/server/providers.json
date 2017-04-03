@@ -1,18 +1,11 @@
 {
-    "github-login": {
-        "provider": "github",
-        "module": "passport-github2",
-        "clientID": "69e33e2302c923ebe3c5",
-        "clientSecret": "2b8e4449a07b5e2dfbdc70a8e836388eb48c9e54",
-        "callbackURL": "/auth/github/callback",
-        "authPath": "/auth/github",
-        "callbackPath": "/auth/github/callback",
+    "local": {
+        "provider": "local",
+        "module": "passport-local",
+        "usernameField": "username",
+        "passwordField": "password",
+        "authPath": "/auth/local",
         "successRedirect": "/auth/account",
-        "failureRedirect": "/login",
-        "scope": [
-            "email"
-        ],
-        "failureFlash": true,
-        "display": "GitHub"
+        "failureRedirect": "/local"
     }
 }
