@@ -42,6 +42,16 @@ describe('BaseException', function () {
             exc.stack.should.be.a('string');
         });
 
+        it('should handle a lack of support for stack traces', function () {
+            let captureStackTrace = Error.captureStackTrace;
+            Error.captureStackTrace = null;
+            try {
+                new BaseException('hello world');
+            } finally {
+                Error.captureStackTrace = captureStackTrace;
+            }
+        });
+
     });
 
 });

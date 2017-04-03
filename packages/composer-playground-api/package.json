@@ -56,7 +56,7 @@
     "sinon": "^1.17.7"
   },
   "dependencies": {
-    "body-parser": "^1.16.1",
+    "body-parser": "^1.17.0",
     "composer-common": "^0.5.6",
     "composer-connector-server": "^0.5.6",
     "dotenv": "^4.0.0",
