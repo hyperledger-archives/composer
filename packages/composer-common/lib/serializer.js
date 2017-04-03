@@ -19,6 +19,7 @@ const Globalize = require('./globalize');
 const JSONGenerator = require('./serializer/jsongenerator');
 const JSONPopulator = require('./serializer/jsonpopulator');
 const ResourceValidator = require('./serializer/resourcevalidator');
+const TransactionDeclaration = require('./introspect/transactiondeclaration');
 const TypedStack = require('./serializer/typedstack');
 const JSONWriter = require('./codegen/jsonwriter');
 
@@ -78,9 +79,6 @@ class Serializer {
         parameters.modelManager = this.modelManager;
         parameters.seenResources = new Set();
         const classDeclaration = this.modelManager.getType( resource.getFullyQualifiedType() );
-        if(!classDeclaration) {
-            throw new Error( 'Failed to find type ' + resource.getFullyQualifiedType() + ' in ModelManager.' );
-        }
 
         // validate the resource against the model
         options = options || { validate: true };
@@ -130,16 +128,21 @@ class Serializer {
         }
 
         const classDeclaration = this.modelManager.getType(jsonObject.$class);
-        if(!classDeclaration) {
-            throw new Error( 'Failed to find type ' + jsonObject.$class + ' in ModelManager.' );
-        }
 
         // default the options.
         options = options || {};
 
         // create a new instance, using the identifier field name as the ID.
-        let resource = this.factory.newResource( classDeclaration.getModelFile().getNamespace(),
-          classDeclaration.getName(), jsonObject[classDeclaration.getIdentifierFieldName()] );
+        let resource;
+        if (classDeclaration instanceof TransactionDeclaration) {
+            resource = this.factory.newTransaction( classDeclaration.getModelFile().getNamespace(),
+                                                    classDeclaration.getName(),
+                                                    jsonObject[classDeclaration.getIdentifierFieldName()] );
+        } else {
+            resource = this.factory.newResource( classDeclaration.getModelFile().getNamespace(),
+                                                 classDeclaration.getName(),
+                                                 jsonObject[classDeclaration.getIdentifierFieldName()] );
+        }
 
         // populate the resource based on the jsonObject
         // by walking the classDeclaration

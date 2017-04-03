@@ -127,8 +127,7 @@ describe('ScriptManager', () => {
     describe('#toJSON', () => {
 
         it('should return an empty object', () => {
-            let mm = new ModelManager();
-            mm.toJSON().should.deep.equal({});
+            scriptManager.toJSON().should.deep.equal({});
         });
 
     });

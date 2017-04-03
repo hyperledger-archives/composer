@@ -148,9 +148,7 @@ class Factory {
 
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
-        if(idField) {
-            newObj[idField] = id;
-        }
+        newObj[idField] = id;
 
         debug('Factory.newResource created %s', id );
         return newObj;
