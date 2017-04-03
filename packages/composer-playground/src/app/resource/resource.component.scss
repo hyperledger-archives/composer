@@ -46,6 +46,8 @@ resource-modal {
   .CodeMirror-scroll {
     min-height: 250px;
     max-height: 450px;
+    min-width: 600px;
+    max-width: 600px;
   }
 
 }

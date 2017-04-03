@@ -6,6 +6,7 @@ registry {
   $highlighted : #e4e4e4;
 
   .resource-header{
+    min-height: 50px;
     display: flex;
     color:$secondary-text;
   }

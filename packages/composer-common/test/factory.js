@@ -56,6 +56,18 @@ describe('Factory', () => {
 
     describe('#newResource', () => {
 
+        it('should throw creating a new instance without an ID', () => {
+            (() => {
+                factory.newResource('org.acme.test', 'MyAsset', null);
+            }).should.throw(/Invalid or missing identifier/);
+        });
+
+        it('should throw creating a new instance with an ID that is just whitespace', () => {
+            (() => {
+                factory.newResource('org.acme.test', 'MyAsset', '     ');
+            }).should.throw(/Missing identifier/);
+        });
+
         it('should create a new instance with a specified ID', () => {
             let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1');
             resource.assetId.should.equal('MY_ID_1');

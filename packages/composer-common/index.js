@@ -21,6 +21,21 @@
  * @module composer-common
  */
 
+/**
+ * Check whether we're running in a version of node which has the updated Buffer implementation
+ * Used above to fall back to the old version if needed.
+ * @return {boolean} whether the new version is supported
+ */
+function nodeHasNewBufferVersion() {
+    try {
+        Buffer.from('b2xkbm9kZQ==', 'base64');
+        return true;
+    } catch (e) {
+        /* istanbul ignore next */
+        return false;
+    }
+}
+
 /* istanbul ignore next */
 if (!nodeHasNewBufferVersion()) {
     const originalBufferFrom = Buffer.from;
@@ -33,32 +48,20 @@ if (!nodeHasNewBufferVersion()) {
     Object.defineProperty(Buffer, 'from', { value: newBufferFrom });
 }
 
-/**
- * Check whether we're running in a version of node which has the updated Buffer implementation
- * Used above to fall back to the old version if needed.
- * @return {boolean} whether the new version is supported
- */
-function nodeHasNewBufferVersion() {
-    try {
-        Buffer.from('b2xkbm9kZQ==', 'base64');
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
 module.exports.AclFile = require('./lib/acl/aclfile');
 module.exports.AclManager = require('./lib/aclmanager');
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
+module.exports.ComboConnectionProfileStore = require('./lib/comboconnectionprofilestore');
 module.exports.Concept = require('./lib/model/concept');
 module.exports.ConceptDeclaration = require('./lib/introspect/conceptdeclaration');
 module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
 module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanager');
 module.exports.ConnectionProfileStore = require('./lib/connectionprofilestore');
+module.exports.EnvConnectionProfileStore = require('./lib/envconnectionprofilestore');
 module.exports.Factory = require('./lib/factory');
 module.exports.FileWallet = require('./lib/filewallet');
 module.exports.FileWriter = require('./lib/codegen/filewriter');

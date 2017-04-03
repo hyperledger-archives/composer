@@ -224,7 +224,7 @@ class ModelManager {
                 }));
             }
             else {
-                return modelFile.getNamespace() + '.' + type;
+                return type;
             }
         }
         else {
