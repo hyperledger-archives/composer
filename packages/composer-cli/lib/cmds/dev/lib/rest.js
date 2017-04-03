@@ -34,7 +34,7 @@ class rest {
     * @return {Promise} resolved when command has completed
     */
     static handler(argv) {
-        return restserver.startRestServer(argv,false);
+        return restserver.startRestServer(argv);
     }
 }
 

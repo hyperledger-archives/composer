@@ -16,8 +16,8 @@
 'use strict';
 
 const loopback = require('loopback');
-const boot = require('loopback-boot');
-const app = module.exports = loopback();
+const server = require('./server');
+
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
@@ -29,43 +29,20 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 */
 function startRestServer(composer){
 
-  // Store the composer configuration for the boot script to find
-    app.set('composer', composer);
+  // Create the LoopBack application.
+    return server(composer)
+  .then((app) => {
 
-  // boot scripts mount components like REST API
-    return new Promise((resolve, reject) => {
-        boot(app, __dirname, (error) => {
-            if (error) {
-                return reject(error);
-            }
-            resolve(composer);
-        });
-    })
-  .then((composer) => {
-  // Set the port if one was specified.
-
-
-      if (composer.port) {
-          app.set('port', composer.port);
-      }
-
-      app.start = function () {
-        // start the web server
-          return app.listen(function () {
-              app.emit('started');
-              let baseUrl = app.get('url').replace(/\/$/, '');
-              console.log('Web server listening at: %s', baseUrl);
-              if (app.get('loopback-component-explorer')) {
-                  let explorerPath = app.get('loopback-component-explorer').mountPath;
-                  console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
-              }
-          });
-      };
-
-  // start the server if `$ node server.js`
-      if (require.main === module) {
-          app.start();
-      }
+        // Start the LoopBack application.
+      return app.listen(function () {
+          app.emit('started');
+          let baseUrl = app.get('url').replace(/\/$/, '');
+          console.log('Web server listening at: %s', baseUrl);
+          if (app.get('loopback-component-explorer')) {
+              let explorerPath = app.get('loopback-component-explorer').mountPath;
+              console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+          }
+      });
   });
 
 }
