@@ -522,6 +522,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyTransaction' : 'MyTransaction',
@@ -543,13 +544,14 @@ describe('LoopbackVisitor', () => {
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             },
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             }
                         },
@@ -573,6 +575,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyBaseTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyBaseTransaction' : 'MyBaseTransaction',
@@ -596,11 +599,12 @@ describe('LoopbackVisitor', () => {
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             }
                         },
@@ -610,6 +614,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyTransaction' : 'MyTransaction',
@@ -633,11 +638,12 @@ describe('LoopbackVisitor', () => {
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             },
                             theValue: {
@@ -665,6 +671,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyTransaction' : 'MyTransaction',
@@ -688,11 +695,12 @@ describe('LoopbackVisitor', () => {
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             },
                             theValue: {

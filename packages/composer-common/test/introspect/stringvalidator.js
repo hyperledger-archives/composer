@@ -29,9 +29,24 @@ describe('StringValidator', () => {
         mockField.getFullyQualifiedName.returns('org.acme.myField');
     });
 
+    describe('#constructor', () => {
+
+        it('should throw for invalid regexes', () => {
+            (() => {
+                new StringValidator(mockField, '/^[A-z/' );
+            }).should.throw(/Invalid validator for field/);
+        });
+
+    });
+
     describe('#validate', () => {
 
-        it('should validate', () => {
+        it('should ignore a null string', () => {
+            let v = new StringValidator(mockField, '/^[A-z][A-z][0-9]{7}/' );
+            v.validate('id', null);
+        });
+
+        it('should validate a string', () => {
             let v = new StringValidator(mockField, '/^[A-z][A-z][0-9]{7}/' );
             v.validate('id', 'AB1234567');
         });

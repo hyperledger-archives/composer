@@ -62,7 +62,7 @@ set-up-ssh --key "$encrypted_8496d53a6fac_key" \
 docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 
 # This is the list of Docker images to build.
-export DOCKER_IMAGES="composer-ui composer-playground"
+export DOCKER_IMAGES="composer-ui composer-playground composer-rest-server"
 
 # Push the code to npm.
 if [ -z "${TRAVIS_TAG}" ]; then
