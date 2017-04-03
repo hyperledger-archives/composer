@@ -38,6 +38,11 @@ describe('composer-rest-server CLI unit tests', () => {
         sandbox.stub(process, 'exit');
         sandbox.spy(console, 'log');
         sandbox.spy(console, 'error');
+        Object.keys(process.env).forEach((key) => {
+            if (key.match(/^COMPOSER_/)) {
+                delete process.env[key];
+            }
+        });
     });
 
     afterEach(() => {
