@@ -14,15 +14,10 @@
 
 'use strict';
 
-
 const shell = require('shelljs');
-
 const path = require('path');
 /**
  * Composer dev hlf command
- *
- *
- *
  * @private
  */
 class hlf {
@@ -37,13 +32,11 @@ class hlf {
 
         let hlfCmdPromise = new Promise(
         function (resolve, reject) {
-
             if (hlf.runCmd(argv)===0) {
                 resolve(0); // fulfilled
             } else {
                 reject(1); // reject
             }
-
         }
       );
 
@@ -51,22 +44,38 @@ class hlf {
 
     }
 
+    /** @private
+     * @param {String} cmdString The command string to run
+     * @return {int} error code
+     */
+    static _cmd(cmdString){
+        console.log('Running > '+cmdString);
+        return shell.exec(cmdString).code;
+    }
+
     /**
     *  @param {Array} argv command arguments
     *  @return {int} error code
     */
     static runCmd(argv){
+
+        if (argv.start === undefined && argv.stop === undefined && argv.download===undefined && argv.delete === undefined && argv.purgeProfiles === undefined){
+            return this._cmd('docker ps');
+        }
+
         let dir = path.dirname(require.resolve('./hlf.js'));
 
         let composeYML = path.resolve(dir,'..','scripts','docker-compose.yml');
         let cmdString;
         let errorCode = 0;
         if (argv.start){
+            console.log('Starting Hyperledger Fabric');
             cmdString = 'docker-compose -f '+composeYML+' up -d --build ';
-            errorCode = shell.exec(cmdString).code;
+            errorCode = this._cmd(cmdString);
         } else if (argv.stop){
+            console.log('Stopping Hyperledger Fabric');
             cmdString = 'docker-compose -f '+composeYML+' stop ';
-            errorCode =  shell.exec(cmdString);
+            errorCode =  this._cmd(cmdString);
         } else if (argv.download){
           /*
           # Pull and tag the latest Hyperledger Fabric base image.
@@ -75,23 +84,23 @@ class hlf {
           */
             console.log('Pulling down Hyperledger Fabric Docker images');
             cmdString = 'docker pull hyperledger/fabric-baseimage:x86_64-0.1.0';
-            errorCode = shell.exec(cmdString);
+            errorCode = this._cmd(cmdString);
 
             cmdString = 'docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest';
-            errorCode = shell.exec(cmdString);
+            errorCode = this._cmd(cmdString);
         } else if (argv.delete){
           // todo put prompt here
           /*docker-compose kill && docker-compose down
           */
             console.log('Killing and stoping Hypledger Fabric docker containers');
             cmdString = ['docker-compose','-f',composeYML,'kill && docker-compose','-f',composeYML,'down'].join(' ');
-            errorCode = shell.exec(cmdString);
+            errorCode = this._cmd(cmdString);
         }
 
         if (argv.purgeProfiles && errorCode === 0){
             console.log('Deleting the default connection profile');
-            errorCode = shell.rm('-rf','~/.composer-connection-profiles/defaultProfile');
-            errorCode = (errorCode===0) ? shell.rm('-r','~/.composer-credentials/*') : errorCode;
+            errorCode = shell.rm('-rf','~/.composer-connection-profiles/defaultProfile').code;
+            errorCode = (errorCode===0) ? shell.rm('-r','~/.composer-credentials/*').code : errorCode;
         }
 
         return errorCode;

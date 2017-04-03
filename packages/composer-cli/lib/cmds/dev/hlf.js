@@ -27,7 +27,8 @@ module.exports.builder = function (yargs){
             .option('delete',{alias: 'd', required: false, describe:'Removes the HLF instance and cleans up Composer conneciton profiles. (Cached Docker images not removed)'})
             .option('purgeProfiles', {alias: 'p', required: false, describe: 'Deletes the Composer Default connection profiles'})
             .conflicts({'download':'stop','start':'stop','stop':'','delete':'start'})
-            .usage('composer dev hlf --downloand --hlfversion 0.6  \n  composer dev hlf --start');
+            .usage('composer dev hlf --downloand --hlfversion 0.6  \n  composer dev hlf --start')
+            ;
 };
 
 module.exports.handler = (argv) => {

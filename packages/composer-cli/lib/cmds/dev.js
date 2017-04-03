@@ -18,6 +18,6 @@ exports.command = 'dev <subcommand>';
 exports.desc = 'Composer dev command to run local servers';
 exports.builder = function (yargs) {
    // apply commands in subdirectories
-    return yargs.commandDir('dev');
+    return yargs.commandDir('dev').strict();
 };
 exports.handler = function (argv) {};
