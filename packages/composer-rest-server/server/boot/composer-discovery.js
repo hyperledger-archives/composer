@@ -18,19 +18,27 @@ const connector = require('loopback-connector-composer');
 
 module.exports = function (app, callback) {
 
+    // Get the Composer configuration.
     const composer = app.get('composer');
+    if (!composer) {
+        callback();
+        return Promise.resolve();
+    }
 
-    const dataSource = app.loopback.createDataSource('composer', {
+    // Create an instance of the LoopBack data source that uses the connector.
+    const connectorSettings = {
         name: 'composer',
         connector: connector,
         connectionProfileName: composer.connectionProfileName,
         businessNetworkIdentifier: composer.businessNetworkIdentifier,
         participantId: composer.participantId,
         participantPwd: composer.participantPwd,
-        namespaces: composer.namespaces
-    });
+        namespaces: composer.namespaces,
+        fs: composer.fs
+    };
+    const dataSource = app.loopback.createDataSource('composer', connectorSettings);
 
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         // Discover the model definitions (types) from the connector.
         // This will go and find all of the non-abstract types in the business network definition.
@@ -70,11 +78,27 @@ module.exports = function (app, callback) {
         console.log('Adding schemas for all types to Loopback ...');
         modelSchemas.forEach((modelSchema) => {
 
-            // this call creates the model class from the model schema.
+            // We ensure that you have to be authenticated in order to access this model.
+            modelSchema.acls = [
+                {
+                    accessType: '*',
+                    permission: 'ALLOW',
+                    principalId: '$authenticated',
+                    principalType: 'ROLE'
+                },
+                {
+                    accessType: '*',
+                    permission: 'DENY',
+                    principalId: '$unauthenticated',
+                    principalType: 'ROLE'
+                }
+            ];
+
+            // This call creates the model class from the model schema.
             let model = app.loopback.createModel(modelSchema);
 
-            // we now want to filter out methods that we haven't implemented or don't want.
-            // we use a whitelist of method names to do this.
+            // We now want to filter out methods that we haven't implemented or don't want.
+            // We use a whitelist of method names to do this.
             let whitelist;
             if (modelSchema.options.composer.type === 'concept') {
                 whitelist = [ ];
@@ -88,15 +112,15 @@ module.exports = function (app, callback) {
                 if (whitelist.indexOf(name) === -1) {
                     model.disableRemoteMethodByName(name);
                 } else if (name === 'exists') {
-                    // we want to remove the /:id/exists method
-                    method.http = [{verb: 'head', path: '/:id'}];
+                    // We want to remove the /:id/exists method.
+                    method.http = [{ verb: 'head', path: '/:id' }];
                 } else if (name === 'replaceById') {
-                    // we want to remove the /:id/replace method
-                    method.http = [{verb: 'put', path: '/:id'}];
+                    // We want to remove the /:id/replace method.
+                    method.http = [{ verb: 'put', path: '/:id' }];
                 }
             });
 
-            // now we register the model against the data source
+            // Now we register the model against the data source.
             app.model(model, {
                 dataSource: dataSource,
                 public: true

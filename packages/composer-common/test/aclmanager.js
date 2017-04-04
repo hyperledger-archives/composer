@@ -16,14 +16,18 @@
 
 const AclFile = require('../lib/acl/aclfile');
 const AclManager = require('../lib/aclmanager');
+const fs = require('fs');
 const ModelManager = require('../lib/modelmanager');
+const path = require('path');
 
 const chai = require('chai');
-//const should = chai.should();
+chai.should();
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 
 describe('AclManager', () => {
+
+    const testAcl = fs.readFileSync(path.resolve(__dirname, 'acl', 'test.acl'), 'utf8');
 
     let modelManager;
     let aclFile;
@@ -44,13 +48,23 @@ describe('AclManager', () => {
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            let mm = new AclManager(modelManager);
+            let am = new AclManager(modelManager);
             let visitor = {
                 visit: sinon.stub()
             };
-            mm.accept(visitor, ['some', 'args']);
+            am.accept(visitor, ['some', 'args']);
             sinon.assert.calledOnce(visitor.visit);
-            sinon.assert.calledWith(visitor.visit, mm, ['some', 'args']);
+            sinon.assert.calledWith(visitor.visit, am, ['some', 'args']);
+        });
+
+    });
+
+    describe('#createAclFile', () => {
+
+        it('should create a new ACL file', () => {
+            let am = new AclManager(modelManager);
+            let acl = am.createAclFile('permissions.acl', testAcl);
+            acl.should.be.an.instanceOf(AclFile);
         });
 
     });
