@@ -124,6 +124,10 @@ class Factory {
             throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
         }
 
+        if(classDecl.isConcept()) {
+            throw new Error('Use newConcept to create concepts ' + classDecl.getFullyQualifiedName());
+        }
+
         let newObj = null;
         options = options || {};
         if(options.disableValidation) {
@@ -188,6 +192,10 @@ class Factory {
 
         if(classDecl.isAbstract()) {
             throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+        }
+
+        if(!classDecl.isConcept()) {
+            throw new Error('Class is not a concept ' + classDecl.getFullyQualifiedName());
         }
 
         let newObj = null;
