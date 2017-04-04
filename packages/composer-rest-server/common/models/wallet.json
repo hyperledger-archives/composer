@@ -14,6 +14,11 @@
             "type": "Boolean",
             "default": false,
             "description": "Was this wallet created as the default wallet?"
+        },
+        "createdAsSystem": {
+            "type": "Boolean",
+            "default": false,
+            "description": "Was this wallet created as the system wallet?"
         }
     },
     "validations": [],
@@ -73,6 +78,7 @@
     "hidden": [
         "userId",
         "createdAsDefault",
+        "createdAsSystem",
         "defaultIdentity"
     ]
 }
