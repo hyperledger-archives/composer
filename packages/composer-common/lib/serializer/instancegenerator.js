@@ -120,7 +120,12 @@ class InstanceGenerator {
         if (classDeclaration instanceof EnumDeclaration) {
             let enumValues = classDeclaration.getOwnProperties();
             return enumValues[Math.floor(Math.random() * enumValues.length)].getName();
-        } else {
+        }
+        else if (classDeclaration.isConcept()) {
+            let resource = parameters.factory.newConcept(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName());
+            parameters.stack.push(resource);
+            return classDeclaration.accept(this, parameters);
+        }  else {
             let identifierFieldName = classDeclaration.getIdentifierFieldName();
             let idx = Math.round(Math.random() * 9999).toString();
             idx = leftPad(idx, 4, '0');
