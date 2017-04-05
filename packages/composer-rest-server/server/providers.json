@@ -5,7 +5,7 @@
         "usernameField": "username",
         "passwordField": "password",
         "authPath": "/auth/local",
-        "successRedirect": "/auth/account",
-        "failureRedirect": "/local"
+        "successRedirect": "/",
+        "failureRedirect": "/"
     }
 }

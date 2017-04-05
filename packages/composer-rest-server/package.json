@@ -54,7 +54,6 @@
     "loopback-component-explorer": "^4.1.1",
     "loopback-component-passport": "^3.2.0",
     "loopback-connector-composer": "^0.5.7",
-    "passport-github2": "^0.1.10",
     "passport-local": "^1.0.0",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
