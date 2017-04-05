@@ -39,11 +39,13 @@ module.exports.handler = (argv) => {
     argv.thePromise = rest.handler(argv)
     .then(() => {
         console.log ('Command completed successfully.');
-        return (0);
+        return;
     })
     .catch((error) => {
         console.log(error.stack);
         console.log(error+ '\nCommand failed.');
-        return (1);
+        return;
     });
+
+    return argv.thePromise;
 };

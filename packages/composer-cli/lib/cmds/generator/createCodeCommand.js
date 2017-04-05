@@ -36,6 +36,7 @@ module.exports.handler = (argv) => {
     .catch((error) => {
         console.log(error.stack);
         console.log(error+ '\nCommand failed.');
-
+        throw error;
     });
+    return argv.thePromise;
 };

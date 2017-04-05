@@ -14,8 +14,6 @@
 
 'use strict';
 
-
-
 module.exports.command = 'pwd';
 module.exports.describe = 'Where is this process running from ';
 module.exports.builder = function (yargs){

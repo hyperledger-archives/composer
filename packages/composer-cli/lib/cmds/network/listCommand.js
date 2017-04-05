@@ -30,12 +30,12 @@ module.exports.builder = {
 module.exports.handler = (argv) => {
 
     argv.thePromise =  List.handler(argv)
-    .then(() => {
-        console.log ('Command completed successfully.');
+  .then(() => {
+      return;
+  })
+  .catch((error) => {
+      throw error;
+  });
 
-    })
-    .catch((error) => {
-        console.log(error+ '\nCommand failed.');
-
-    });
+    return argv.thePromise;
 };

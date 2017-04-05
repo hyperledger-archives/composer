@@ -33,4 +33,5 @@ module.exports.handler = (argv) => {
     .catch((error) => {
         console.log(error+ '\nCommand failed.');
     });
+    return argv.thePromise;
 };

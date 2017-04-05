@@ -29,13 +29,11 @@ module.exports.handler = (argv) => {
 
     argv.thePromise =  Deploy.handler(argv)
     .then(() => {
-        console.log ('Command completed successfully.');
         return;
-
     })
     .catch((error) => {
-        console.log(error+ '\nCommand failed.');
-
-        return;
+        throw error;
     });
+
+    return argv.thePromise;
 };

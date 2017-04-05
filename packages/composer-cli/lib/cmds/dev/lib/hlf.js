@@ -59,6 +59,7 @@ class hlf {
     */
     static runCmd(argv){
 
+
         if (argv.start === undefined && argv.stop === undefined && argv.download===undefined && argv.delete === undefined && argv.purgeProfiles === undefined){
             return this._cmd('docker ps');
         }

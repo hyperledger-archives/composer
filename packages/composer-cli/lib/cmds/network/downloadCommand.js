@@ -20,6 +20,7 @@ module.exports.command = 'download [options]';
 module.exports.describe = 'Downloads a business network from the fabric, does not undeploy';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
+    businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     connectionProfileName: {alias: 'p', optional: true, describe: 'The connection profile name', type: 'string' },
     enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
     enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }
@@ -29,11 +30,10 @@ module.exports.handler = (argv) => {
 
     argv.thePromise =  Download.handler(argv)
     .then(() => {
-        console.log ('Command completed successfully.');
-
+        return;
     })
     .catch((error) => {
-        console.log(error+ '\nCommand failed.');
-
+        throw error;
     });
+    return argv.thePromise;
 };
