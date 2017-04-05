@@ -38,6 +38,9 @@ module.exports = generators.Base.extend({
             },{
                 name: 'Angular2 Application',
                 value: 'Angular2'
+            }, {
+                name: 'Skeleton Business Network',
+                value: 'businessnetwork'
             }
             ],
             store: true,
@@ -66,6 +69,9 @@ module.exports = generators.Base.extend({
         else if(this.generatorType === 'Angular2'){
             console.log('You can run this generator using: \'yo fabric-composer:angular\'');
             this.composeWith(require.resolve('../angular'));
+        } else if (this.generatorType === 'businessnetwork') {
+            console.log('You can run this generator using: \'yo fabric-composer:businessnetwork\'');
+            this.composeWith(require.resolve('../businessnetwork'));
         }
         else{
             console.log('Generator type not recognised');
