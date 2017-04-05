@@ -38,8 +38,8 @@ module.exports.handler = (argv) => {
     .catch((error) => {
         console.log(error);
         console.log('Command failed.');
-
         throw error;
+
 
 
     });

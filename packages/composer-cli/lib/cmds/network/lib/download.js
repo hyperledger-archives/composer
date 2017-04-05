@@ -101,9 +101,13 @@ class Download {
 
         }).catch( (error) => {
             console.log(error);
+<<<<<<< HEAD
             if (spinner) {
                 spinner.fail();
             }
+=======
+            spinner.fail();
+>>>>>>> 487267b... cli tidy up
             throw error;
         })
         ;

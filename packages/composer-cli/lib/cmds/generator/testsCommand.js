@@ -30,7 +30,6 @@ module.exports.handler = (argv) => {
     argv.thePromise =  Test.handler(argv)
     .then(() => {
         console.log ('Command completed successfully.');
-
         return;
 
     })

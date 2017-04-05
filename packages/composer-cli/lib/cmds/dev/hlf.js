@@ -44,7 +44,6 @@ module.exports.handler = (argv) => {
         console.log(error+ '\nCommand failed.');
         return (1);
     });
-
     return argv.thePromise;
 
 };
