@@ -18,7 +18,7 @@ function onChangeAssetValue(changeAssetValue) {
         return assetRegistry.get(id)
     })
     .then(function(asset) {
-        asset.value = changeAssetValue.newValue
+        asset.value = changeAssetValue.newValue;
         return assetRegistry.update(asset);
     });
 }
