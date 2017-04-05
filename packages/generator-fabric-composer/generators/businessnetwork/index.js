@@ -97,8 +97,9 @@ module.exports = yeoman.Base.extend({
 
     writing: function() {
         let model = this._generateTemplateModel();
-        this.fs.copyTpl(this.templatePath('**/*'), this.destinationPath(), model);
+        this.fs.copyTpl(this.templatePath('**/!(models|node_modules)*'), this.destinationPath(), model);
         this.fs.move(this.destinationPath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'));
+        this.fs.move(this.destinationPath('./models/namespace.cto'), this.destinationPath('./models/'+this.namespace+'.cto'));
     },
 
     _generateTemplateModel: function() {

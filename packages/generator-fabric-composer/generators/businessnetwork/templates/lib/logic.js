@@ -4,7 +4,7 @@
  */
 
 /**
- * Sample transaction 
+ * Sample transaction
  * @param {<%= namespace%>.ChangeAssetValue} changeAssetValue
  * @transaction
  */

@@ -9,7 +9,6 @@
   "license": "<%= applicense %>",
   "devDependencies": {
     "composer-admin": "latest",
-    "composer-cli": "latest",
     "composer-client": "latest",
     "composer-connector-embedded": "latest",
     "browserfs": "latest",
