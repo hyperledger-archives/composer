@@ -26,7 +26,7 @@ A Connection Profile is used by Fabric Composer to connect to a running fabric. 
     ```
     cd MyProfile
     ```
-3. Using your favourite text editor, create a new file called `connection.json` that contains the following information for fabric V0.6
+3. Using your favourite text editor, create a new file called `connection.json` that contains the following information for Hyperledger Fabric V0.6
 
     ```
     {
@@ -37,7 +37,7 @@ A Connection Profile is used by Fabric Composer to connect to a running fabric. 
         "eventHubURL": <your-event-hub-url>
     }
     ```
-4. Using your favourite text editor, create a new file called `connection.json` that contains the following information as an example for fabric V1.0
+4. Using your favourite text editor, create a new file called `connection.json` that contains the following information as an example for Hyperledger Fabric V1.0
 
     ```
     {
