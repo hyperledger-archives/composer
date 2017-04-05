@@ -22,6 +22,7 @@ const composerDiscovery = require('../../../server/boot/composer-discovery');
 const fs = require('fs');
 const loopback = require('loopback');
 require('loopback-component-passport');
+const LoopBackWallet = require('../../../lib/loopbackwallet');
 const path = require('path');
 
 require('chai').should();
@@ -32,13 +33,7 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
 
 describe('composer-discovery boot script', () => {
 
-    let composerConfig = {
-        connectionProfileName: 'defaultProfile',
-        businessNetworkIdentifier: 'bond-network',
-        participantId: 'admin',
-        participantPwd: 'adminpw',
-        fs: bfs_fs
-    };
+    let composerConfig;
     let app;
     let sandbox;
 
@@ -62,6 +57,13 @@ describe('composer-discovery boot script', () => {
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        composerConfig = {
+            connectionProfileName: 'defaultProfile',
+            businessNetworkIdentifier: 'bond-network',
+            participantId: 'admin',
+            participantPwd: 'adminpw',
+            fs: bfs_fs
+        };
         app = loopback();
         return new Promise((resolve, reject) => {
             boot(app, path.resolve(__dirname, '..', '..', '..', 'server'), (err) => {
@@ -141,6 +143,24 @@ describe('composer-discovery boot script', () => {
             .then(() => {
                 sinon.assert.calledOnce(cb);
                 cb.args[0][0].should.match(/such error/);
+            });
+    });
+
+    it('should discover the business network using a wallet to persist certificates', () => {
+        sinon.spy(app.loopback, 'createDataSource');
+        app.datasources.db.name = 'MongoDB';
+        const cb = sinon.stub();
+        return composerDiscovery(app, cb)
+            .then(() => {
+                return app.models.Wallet.findOne({ where: { createdAsSystem: true } });
+            })
+            .then((wallet) => {
+                wallet.should.exist;
+                return app.models.WalletIdentity.findOne({ where: { walletId: wallet.id, enrollmentID: 'admin', enrollmentSecret: 'adminpw' }});
+            })
+            .then((identity) => {
+                identity.should.exist;
+                app.loopback.createDataSource.args[0][1].wallet.should.be.an.instanceOf(LoopBackWallet);
             });
     });
 
