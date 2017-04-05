@@ -309,6 +309,10 @@ class BusinessNetworkDefinition {
      * passes the options.dependencyGlob pattern.
      * </p>
      * <p>
+     * If the network depends on an npm module its dependencies (transitive closure)
+     * will also be scanned for model (CTO) files.
+     * </p>
+     * <p>
      * The directory may optionally contain a README.md file which is accessible from the
      * BusinessNetworkMetadata.getREADME method.
      * </p>
