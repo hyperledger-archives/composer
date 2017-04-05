@@ -384,7 +384,7 @@ class BusinessNetworkDefinition {
         // create the business network definition
         const businessNetwork = new BusinessNetworkDefinition(null, null, jsonObject, readmeContents);
 
-        // define a help function that will filter out files
+        // define a helper function that will filter out files
         // that are inside a node_modules directory under the path
         // we are processing
         const isFileInNodeModuleDir = function(file) {
