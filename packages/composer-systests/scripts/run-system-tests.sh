@@ -24,7 +24,7 @@ export CONCERTO_DEPLOY_WAIT_SECS=500
 
 # Pull any required Docker images.
 if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
-    DOCKER_FILE=${DIR}/hlf-docker-compose.yml
+    DOCKER_FILE=${DIR}/hlf/hlf-docker-compose.yml
     docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
     docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
     docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
@@ -33,9 +33,9 @@ if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
     docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
 elif [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
     if [[ ${SYSTEST} == *tls ]]; then
-        DOCKER_FILE=${DIR}/systestv1/hlfv1_alpha-docker-compose.tls.yml
+        DOCKER_FILE=${DIR}/hlfv1/hlfv1_alpha-docker-compose.tls.yml
     else
-        DOCKER_FILE=${DIR}/systestv1/hlfv1_alpha-docker-compose.yml
+        DOCKER_FILE=${DIR}/hlfv1/hlfv1_alpha-docker-compose.yml
     fi
     docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha
     docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha
@@ -45,7 +45,7 @@ elif [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
 elif [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
 
   if [ "${TRAVIS_EVENT_TYPE}" = "cron" ]; then
-    DOCKER_FILE=${DIR}/ibm-docker-compose.yml
+    DOCKER_FILE=${DIR}/hlf/ibm-docker-compose.yml
     docker pull ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview
     docker tag ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview ibmblockchain/fabric-membersrvc:latest
     docker pull ibmblockchain/fabric-peer:x86_64-0.6.1-preview
@@ -78,7 +78,7 @@ rm -rf ${HOME}/.concerto-credentials/concerto-systests
 # configure v1 to run the tests
 if [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
     sleep 10
-    cd systestv1
+    cd hlfv1
     node create-channel.js
     node join-channel.js
     cd ..
