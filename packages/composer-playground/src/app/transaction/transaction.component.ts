@@ -114,6 +114,7 @@ export class TransactionComponent implements OnInit {
         delete json[key];
       });
       this.resourceDefinition = JSON.stringify(json, null, 2);
+      this.onDefinitionChanged();
     } catch (error) {
       // We can't generate a sample instance for some reason.
       this.definitionError = error.toString();
