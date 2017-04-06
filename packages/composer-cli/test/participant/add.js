@@ -80,7 +80,7 @@ describe('composer participant add CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockParticipantRegistry.add);
                 sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-                sinon.assert.calledWith(process.exit, 0);
+
             });
     });
 
@@ -98,7 +98,7 @@ describe('composer participant add CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, argv.connectionProfileName, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockParticipantRegistry.add);
                 sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-                sinon.assert.calledWith(process.exit, 0);
+
             });
     });
 
@@ -115,7 +115,7 @@ describe('composer participant add CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockParticipantRegistry.add);
                 sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-                sinon.assert.calledWith(process.exit, 0);
+
             });
     });
 
@@ -133,7 +133,7 @@ describe('composer participant add CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockParticipantRegistry.add);
                 sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-                sinon.assert.calledWith(process.exit, 1);
+
             });
     });
 

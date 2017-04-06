@@ -22,7 +22,10 @@ const yargs = require('yargs');
 let _ = require('lodash');
 
 
-yargs
+const chalk = require('chalk');
+console.log('');
+
+let results = yargs
     .commandDir('./lib/cmds')
     .help()
     .example('composer archive create --inputDir .\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
@@ -38,7 +41,32 @@ yargs
           '\n'+getInfo('composer-connector-hlf')+'\n';
     })
     .describe('v', 'show version information')
+    .command(
+    {
+        command: 'shell',
+        aliases: ['shell', 'i'],
+        desc: 'Interactive shell',
+        builder: (yargs) => yargs,
+        handler: (argv) => {
+            console.log('Starting shell...');
+            argv.thePromise = require('./shell.js').shell();
+        }
+    }
+
+    )
     .argv;
+
+if (typeof(results.thePromise) !== 'undefined'){
+    results.thePromise.then( () => {
+        console.log(chalk.green('\nCommand succeeded\n'));
+        process.exit(0);
+    }).catch((error) => {
+        console.log(error+chalk.red('\nCommand failed\n'));
+        process.exit(1);
+    });
+} else {
+    process.exit(0);
+}
 
 /**
  * [getInfo description]
