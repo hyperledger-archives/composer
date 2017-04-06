@@ -28,13 +28,14 @@ module.exports.builder = {
 
 module.exports.handler = (argv) => {
 
-    return Revoke.handler(argv)
+    argv.thePromise =  Revoke.handler(argv)
     .then(() => {
         console.log ('Command completed successfully.');
-        process.exit(0);
+
     })
     .catch((error) => {
         console.log(error+ '\nCommand failed.');
-        process.exit(1);
+
     });
+    return argv.thePromise;
 };

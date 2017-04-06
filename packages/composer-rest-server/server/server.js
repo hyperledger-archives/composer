@@ -26,14 +26,27 @@ module.exports = function (composer) {
     // Ensure that the configuration has been provided.
     if (!composer) {
         throw new Error('composer not specified');
+
     }
 
     // Create the LoopBack application.
     const app = loopback();
     return new Promise((resolve, reject) => {
 
-        // Store the Composer configuration for the boot scripts to find.
+
+        console.log('\n To re-run this issue this command');
+        let cmd = ['composer-rest-server','-p',composer.connectionProfileName,
+            '-n',composer.businessNetworkIdentifier,
+            '-i',composer.participantId,
+            '-s',composer.participantPwd,
+            '-N',composer.namespaces,
+            '-P',composer.port];
+
+        console.log(cmd.join(' '));
+
+    // Store the composer configuration for the boot script to find
         app.set('composer', composer);
+
 
         // Load the model-config.json file; we want to make the visibility of the wallet
         // model dependent on whether or not security is enabled.

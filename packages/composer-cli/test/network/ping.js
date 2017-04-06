@@ -61,7 +61,6 @@ describe('composer network ping CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(process.exit, 0);
             });
     });
 
@@ -78,7 +77,6 @@ describe('composer network ping CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(process.exit, 0);
             });
     });
 
@@ -94,7 +92,6 @@ describe('composer network ping CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(process.exit, 0);
             });
     });
 
@@ -114,7 +111,6 @@ describe('composer network ping CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(process.exit, 0);
             });
     });
 
@@ -126,12 +122,11 @@ describe('composer network ping CLI unit tests', () => {
             enrollSecret: ENROLL_SECRET
         };
         return Ping.handler(argv)
-            .then((res) => {
+            .catch((res) => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.ping);
-                sinon.assert.calledWith(process.exit, 1);
             });
     });
 
