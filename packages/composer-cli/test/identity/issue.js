@@ -63,7 +63,7 @@ describe('composer identity issue CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-                sinon.assert.calledWith(process.exit, 0);
+
             });
     });
 
@@ -82,7 +82,7 @@ describe('composer identity issue CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-                sinon.assert.calledWith(process.exit, 0);
+
             });
     });
 
@@ -100,7 +100,7 @@ describe('composer identity issue CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-                sinon.assert.calledWith(process.exit, 0);
+
             });
     });
 
@@ -123,7 +123,7 @@ describe('composer identity issue CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: true });
-                sinon.assert.calledWith(process.exit, 0);
+
             });
     });
 
@@ -142,7 +142,7 @@ describe('composer identity issue CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, 'org.doge.Doge#DOGE_1', 'dogeid1', { issuer: false });
-                sinon.assert.calledWith(process.exit, 1);
+
             });
     });
 

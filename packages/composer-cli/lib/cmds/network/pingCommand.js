@@ -27,13 +27,12 @@ module.exports.builder = {
 
 module.exports.handler = (argv) => {
 
-    return Ping.handler(argv)
+    argv.thePromise =  Ping.handler(argv)
     .then(() => {
-        console.log ('Command completed successfully.');
-        process.exit(0);
+        return;
     })
     .catch((error) => {
-        console.log(error+ '\nCommand failed.');
-        process.exit(1);
+        throw error;
     });
+    return argv.thePromise;
 };
