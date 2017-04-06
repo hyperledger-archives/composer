@@ -16,20 +16,23 @@
 
 const debug = require('debug')('ibm-concerto');
 const Globalize = require('./globalize');
+
 const InstanceGenerator = require('./serializer/instancegenerator');
 const ValueGeneratorFactory = require('./serializer/valuegenerator');
-const Relationship = require('./model/relationship');
+const ResourceValidator = require('./serializer/resourcevalidator');
+const TypedStack = require('./serializer/typedstack');
 
+const Relationship = require('./model/relationship');
 const Resource = require('./model/resource');
 const ValidatedResource = require('./model/validatedresource');
-
 const Concept = require('./model/concept');
 const ValidatedConcept = require('./model/validatedconcept');
 
-const ResourceValidator = require('./serializer/resourcevalidator');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
-const TypedStack = require('./serializer/typedstack');
+const Introspector = require('./introspect/introspector');
+
 const uuid = require('uuid');
+
 
 /**
  * Use the Factory to create instances of Resource: transactions, participants
@@ -84,6 +87,7 @@ class Factory {
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
+        console.log('>>> newResource: ', ns, type, id, options);
 
         if(!id || typeof(id) !== 'string') {
             let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
@@ -119,18 +123,29 @@ class Factory {
         }
 
         let classDecl = modelFile.getType(type);
-
         if(classDecl.isAbstract()) {
-            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+            let newClassDecl = this.findExtendingLeafType(classDecl);
+            if(newClassDecl !== null) {
+                // console.log('>>> Replacing '+classDecl.getFullyQualifiedName()+' with '+newClassDecl.getFullyQualifiedName());
+                classDecl = newClassDecl;
+                // console.log('>>> Replacing '+type+' with '+newClassDecl.getName());
+                type = newClassDecl.getName();
+            } else {
+                let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
+                throw new Error(formatter({
+                    namespace: ns,
+                    type: type
+                }));
+            }
         }
 
         let newObj = null;
         options = options || {};
         if(options.disableValidation) {
-            newObj = new Resource(this.modelManager,ns,type,id);
+            newObj = new Resource(this.modelManager, ns, type, id);
         }
         else {
-            newObj = new ValidatedResource(this.modelManager,ns,type,id, new ResourceValidator());
+            newObj = new ValidatedResource(this.modelManager, ns, type, id, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
 
@@ -149,9 +164,50 @@ class Factory {
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
         newObj[idField] = id;
-
+        console.log('>>> newResource: created: ', newObj );
         debug('Factory.newResource created %s', id );
         return newObj;
+    }
+
+    /**
+     * Find a type that extends the provided abstract type and return it.
+     * TODO: work out whether this has to be a leaf node or whether the closest type can be used
+     * It depends really since the closest type will satisfy the model but whether it satisfies
+     * any transaction code which attempts to use the generated resource is another matter.
+     * @param {any} type the class declaration.
+     * @return {any} the closest extending concrete class definition - null if none are found.
+     */
+    findExtendingLeafType(inputType) {
+        let returnType = null;
+        debug('>findExtendingLeafType: ', inputType);
+        if(inputType.isAbstract()) {
+            let introspector = new Introspector(this.modelManager);
+            let allClassDeclarations = introspector.getClassDeclarations();
+            let contenders = [];
+            allClassDeclarations.forEach((classDecl) => {
+                let superType = classDecl.getSuperType();
+                if(!classDecl.isAbstract() && (superType !== null)) {
+                    if(superType === inputType.getFullyQualifiedName()) {
+                        contenders.push(classDecl);
+                    }
+                }
+            });
+
+            if(contenders.length>0) {
+                returnType = contenders[0];
+            } else {
+                let formatter = Globalize.messageFormatter('factory-newinstance-noconcreteclass');
+                throw new Error(formatter({
+                    type: inputType.getFullyQualifiedName()
+                }));
+            }
+        } else {
+            // we haven't been given an abstract type so just return what we were given.
+            returnType = inputType;
+        }
+
+        debug('<findExtendingLeafType: ', returnType);
+        return returnType;
     }
 
     /**

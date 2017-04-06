@@ -38,6 +38,8 @@
         "factory-newinstance-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
         "factory-newinstance-missingidentifier": "Missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-invalididentifier": "Invalid or missing identifier for Type {type} in namespace {namespace}",
+        "factory-newinstance-abstracttype": "Cannot instantiate Abstract Type {type} in namespace {namespace}",
+        "factory-newinstance-noconcreteclass": "No concrete extending type for {type}",
 
         "factory-newrelationship-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
         "factory-newrelationship-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
