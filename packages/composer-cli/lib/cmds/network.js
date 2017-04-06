@@ -20,4 +20,6 @@ exports.builder = function (yargs) {
    // apply commands in subdirectories
     return yargs.commandDir('network');
 };
-exports.handler = function (argv) {};
+exports.handler = function (argv) {
+
+};
