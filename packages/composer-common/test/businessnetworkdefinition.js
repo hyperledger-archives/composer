@@ -123,12 +123,14 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getName().should.equal('test-npm-archive');
                 businessNetwork.getVersion().should.equal('0.0.1');
                 businessNetwork.getDescription().should.equal('A test business network using npm model dependencies.');
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(2);
+                // should load 1 model from the network, 1 from animaltracking and
+                // 2 from the dependency on composer.business (composer.business + composer.base)
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(4);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(13);
-                businessNetwork.getModelManager().getModelFiles().length.should.equal(2);
+                intro.getClassDeclarations().length.should.equal(22);
+                businessNetwork.getModelManager().getModelFiles().length.should.equal(4);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });

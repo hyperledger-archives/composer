@@ -6,10 +6,11 @@
     "node": ">=6",
     "npm": ">=3"
   },
+  "main" : "index.js",
   "bin": {
     "composer-rest-server": "cli.js"
   },
-  "main": "server/server.js",
+  "main": "server/servercmd.js",
   "scripts": {
     "start": "node .",
     "pretest": "npm run licchk",
