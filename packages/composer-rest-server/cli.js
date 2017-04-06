@@ -26,8 +26,8 @@ const Util = require('./lib/util');
 const yargs = require('yargs')
     .wrap(null)
     .usage('Usage: $0 [options]')
-    .option('n', { alias: 'businessNetworkName', describe: 'The business network identifier', type: 'string', default: process.env.COMPOSER_BUSINESS_NETWORK })
     .option('p', { alias: 'connectionProfileName', describe: 'The connection profile name', type: 'string', default: process.env.COMPOSER_CONNECTION_PROFILE })
+    .option('n', { alias: 'businessNetworkName', describe: 'The business network identifier', type: 'string', default: process.env.COMPOSER_BUSINESS_NETWORK })
     .option('i', { alias: 'enrollId', describe: 'The enrollment ID of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_ID })
     .option('s', { alias: 'enrollSecret', describe: 'The enrollment secret of the user', type: 'string', default: process.env.COMPOSER_ENROLLMENT_SECRET })
     .option('N', { alias: 'namespaces', describe: 'Use namespaces if conflicting types exist', type: 'string', default: process.env.COMPOSER_NAMESPACES || 'always', choices: ['always', 'required', 'never'] })
@@ -37,9 +37,16 @@ const yargs = require('yargs')
     .alias('h', 'help')
     .argv;
 
-// see if we need to run interactively
+// See if we need to run interactively.
+// We check to see if no command line arguments have been supplied,
+// and then check to see that none of the required arguments have
+// been supplied via environment variables have been specified either.
+const interactive = process.argv.slice(2).length === 0 && // No command line arguments supplied.
+                    ['n', 'p', 'i', 's'].every((flag) => {
+                        return yargs[flag] === undefined;
+                    });
 let promise;
-if (process.argv.slice(2).length === 0) {
+if (interactive) {
     // Gather some args interactively
     clear();
     console.log(

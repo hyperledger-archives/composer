@@ -119,7 +119,6 @@ export class ResourceComponent implements OnInit {
             id,
             { generate: true, 'withSampleData': withSampleData }
         );
-        console.log('>>> generateResource: resource: ', resource);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let json = serializer.toJSON(resource);
         this.resourceDefinition = JSON.stringify(json, null, 2);

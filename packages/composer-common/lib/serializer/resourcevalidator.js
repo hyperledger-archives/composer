@@ -107,7 +107,6 @@ class ResourceValidator {
     visitClassDeclaration(classDeclaration, parameters) {
 
         const obj = parameters.stack.pop();
-        console.log('>>> visitClassDeclaration: obj: ', obj);
 
         // are we dealing with a Resouce?
         if(!((obj instanceof Resource) || (obj instanceof Concept))) {
@@ -124,20 +123,16 @@ class ResourceValidator {
         // the only way this can happen is if the type is non-abstract
         // and then gets redeclared as abstract
         if(toBeAssignedClassDeclaration.isAbstract()) {
-            console.log('>>> visitClassDeclaration: reportAbstractClass: toBeAssignedClassDeclaration: ', toBeAssignedClassDeclaration.getFullyQualifiedName());
-            console.log('>>> visitClassDeclaration: reportAbstractClass: classDeclaration: ', classDeclaration.getFullyQualifiedName());
             ResourceValidator.reportAbstractClass(toBeAssignedClassDeclaration);
         }
 
         // are there extra fields in the object?
         let props = Object.getOwnPropertyNames(obj);
-        console.log('>>> visitClassDeclaration: ownPropNames: '+props);
         for (let n = 0; n < props.length; n++) {
             let propName = props[n];
             if(!this.isSystemProperty(propName)) {
                 const field = toBeAssignedClassDeclaration.getProperty(propName);
                 if (!field) {
-                    console.log('>>> visitClassDeclaration: isIdentifiable: ', obj instanceof Identifiable);
                     if(obj instanceof Identifiable) {
                         ResourceValidator.reportUndeclaredField(obj.getIdentifier(), propName, toBeAssignedClassDeclaration.getFullyQualifiedName());
                     }
@@ -400,8 +395,6 @@ class ResourceValidator {
             if(!message) {
                 message = '';
             }
-
-            console.log('[' + callSite + '] ' + message );
         }
     }
 
