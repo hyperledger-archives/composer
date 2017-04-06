@@ -140,7 +140,7 @@ describe('Factory', () => {
         it('should throw if concept is abstract', () => {
             (() => {
                 factory.newConcept('org.acme.test', 'AbstractConcept');
-            }).should.throw(/Cannot create abstract type org.acme.test.AbstractConcept/);
+            }).should.throw(/Cannot instantiate Abstract Type AbstractConcept in namespace org.acme.test/);
         });
 
         it('should create a new concept', () => {

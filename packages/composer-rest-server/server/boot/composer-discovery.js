@@ -15,6 +15,7 @@
 'use strict';
 
 const connector = require('loopback-connector-composer');
+const LoopBackWallet = require('../../lib/loopbackwallet');
 
 module.exports = function (app, callback) {
 
@@ -24,30 +25,76 @@ module.exports = function (app, callback) {
         callback();
         return Promise.resolve();
     }
+    let dataSource;
+    return Promise.resolve()
+    .then(() => {
 
-    // Create an instance of the LoopBack data source that uses the connector.
-    const connectorSettings = {
-        name: 'composer',
-        connector: connector,
-        connectionProfileName: composer.connectionProfileName,
-        businessNetworkIdentifier: composer.businessNetworkIdentifier,
-        participantId: composer.participantId,
-        participantPwd: composer.participantPwd,
-        namespaces: composer.namespaces,
-        fs: composer.fs
-    };
-    const dataSource = app.loopback.createDataSource('composer', connectorSettings);
+        // If this isn't the memory connector, then we want to persist the enrollment certificate.
+        // This means that the Composer APIs will fall back to using the default filesystem wallet.
+        const isMemory = app.datasources.db.name === 'Memory';
+        if (isMemory) {
+            return;
+        }
 
-    return new Promise((resolve, reject) => {
+        // Find or create the system wallet.
+        let filter = {
+            where: {
+                createdAsSystem: true
+            }
+        };
+        let data = {
+            description: 'System wallet',
+            createdAsSystem: true
+        };
+        return app.models.Wallet.findOrCreate(filter, data)
+            .then((parts) => {
+
+                // Create a LoopBack wallet for the system wallet.
+                let wallet = parts[0];
+                composer.wallet = new LoopBackWallet(app, wallet);
+
+                // Ensure that the specified identity exists.
+                let filter = {
+                    where: {
+                        enrollmentID: composer.participantId
+                    }
+                };
+                let data = {
+                    walletId: wallet.id,
+                    enrollmentID: composer.participantId,
+                    enrollmentSecret: composer.participantPwd
+                };
+                return app.models.WalletIdentity.findOrCreate(filter, data);
+
+            });
+
+    })
+    .then(() => {
+
+        // Create an instance of the LoopBack data source that uses the connector.
+        const connectorSettings = {
+            name: 'composer',
+            connector: connector,
+            connectionProfileName: composer.connectionProfileName,
+            businessNetworkIdentifier: composer.businessNetworkIdentifier,
+            participantId: composer.participantId,
+            participantPwd: composer.participantPwd,
+            namespaces: composer.namespaces,
+            fs: composer.fs,
+            wallet: composer.wallet
+        };
+        dataSource = app.loopback.createDataSource('composer', connectorSettings);
 
         // Discover the model definitions (types) from the connector.
         // This will go and find all of the non-abstract types in the business network definition.
-        console.log('Discovering types from business network definition ...');
-        dataSource.discoverModelDefinitions({}, (error, modelDefinitions) => {
-            if (error) {
-                return reject(error);
-            }
-            resolve(modelDefinitions);
+        return new Promise((resolve, reject) => {
+            console.log('Discovering types from business network definition ...');
+            dataSource.discoverModelDefinitions({}, (error, modelDefinitions) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(modelDefinitions);
+            });
         });
 
     })

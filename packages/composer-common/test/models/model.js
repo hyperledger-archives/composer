@@ -66,7 +66,7 @@ describe('Model Tests', function(){
             let factory = new Factory(modelManager);
 
             // attempt to create an abstract asset
-            assert.throws( function() {factory.newResource('org.acme.base', 'AbstractAsset', '123' );}, /.+Cannot create abstract type org.acme.base.AbstractAsset/, 'did not throw with expected message');
+            assert.throws( function() {factory.newResource('org.acme.base', 'AbstractAsset', '123' );}, /.+Cannot instantiate Abstract Type AbstractAsset in namespace org.acme.base/, 'did not throw with expected message');
 
             // create a new instance
             let resource = factory.newResource(
