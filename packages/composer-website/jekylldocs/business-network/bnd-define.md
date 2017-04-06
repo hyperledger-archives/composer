@@ -10,7 +10,8 @@ excerpt: How to create a business network definition
 
 ---
 
-A business network definition is composed of three major items:
+A business network definition is composed of three major items: 
+
 * basic metadata for the business network definition (name, version and description)
 * a set of domain models that define the structure of the participants, assets and transactions within the network
 * a set of scripts that define business logic
@@ -23,7 +24,7 @@ Instructions on installing `yo` and Fabric Composer's Yeoman generator are found
 ### Generation
 1. `yo fabric-composer`
 
-```bash
+```
 Welcome to the Fabric Composer Skeleton Application Generator? 
 Please select the type of Application: 
   CLI Application 
@@ -33,7 +34,8 @@ Please select the type of Application:
 And select `Skeleton Business Netork`
 
 2. Answer all of the questions
-```bash
+
+```
 Welcome to the Fabric Composer Skeleton Application Generator
 ? Please select the type of Application: Skeleton Business Network
 You can run this generator using: 'yo fabric-composer:businessnetwork'
@@ -50,7 +52,6 @@ Welcome to the business network skeleton generator
    create test/logic.js
    create .eslintrc.yml
    create models/org.acme.biznet.cto
-
 ```
 
 This generates a skeleton business network with an `asset`, `participant` and `transaction` defined, as well as a `mocha` unit test. 
