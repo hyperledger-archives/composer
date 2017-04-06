@@ -395,8 +395,6 @@ class ResourceValidator {
             if(!message) {
                 message = '';
             }
-
-            console.log('[' + callSite + '] ' + message );
         }
     }
 
