@@ -15,7 +15,7 @@ module.exports = yeoman.Base.extend({
             {
                 type: 'input',
                 name: 'appname',
-                message: 'What is the business network\'s identifier?',
+                message: 'What is the business network\'s name?',
                 store: false,
                 validate: function(input) {
                     if(input !== null && input !== undefined && input !== '' && input.indexOf(' ') === -1) {
