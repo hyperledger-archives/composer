@@ -41,16 +41,11 @@
   },
   "dependencies": {
     "chalk": "^1.1.3",
-<<<<<<< HEAD
     "composer-admin": "^0.5.11",
     "composer-client": "^0.5.11",
     "composer-common": "^0.5.11",
     "composer-rest-server": "^0.5.11",
-=======
-    "composer-admin": "^0.5.6",
-    "composer-client": "^0.5.6",
-    "composer-common": "^0.5.6",
->>>>>>> aaca7e5... cli updates
+
     "homedir": "^0.6.0",
     "npm-paths": "^0.1.3",
     "nunjucks": "^3.0.0",
@@ -92,8 +87,5 @@
     "branches": 50,
     "functions": 58,
     "lines": 60
-  },
-  "optionalDependencies": {
-    "composer-rest-server": "^0.5.5"
   }
 }
