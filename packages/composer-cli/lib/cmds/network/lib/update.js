@@ -31,7 +31,6 @@ class Update {
     * @return {Promise} promise when command complete
     */
     static handler(argv) {
-
         return Deploy.handler(argv, true);
     }
 }

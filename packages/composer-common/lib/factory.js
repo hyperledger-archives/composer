@@ -16,20 +16,22 @@
 
 const debug = require('debug')('ibm-concerto');
 const Globalize = require('./globalize');
+
 const InstanceGenerator = require('./serializer/instancegenerator');
 const ValueGeneratorFactory = require('./serializer/valuegenerator');
-const Relationship = require('./model/relationship');
+const ResourceValidator = require('./serializer/resourcevalidator');
+const TypedStack = require('./serializer/typedstack');
 
+const Relationship = require('./model/relationship');
 const Resource = require('./model/resource');
 const ValidatedResource = require('./model/validatedresource');
-
 const Concept = require('./model/concept');
 const ValidatedConcept = require('./model/validatedconcept');
 
-const ResourceValidator = require('./serializer/resourcevalidator');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
-const TypedStack = require('./serializer/typedstack');
+
 const uuid = require('uuid');
+
 
 /**
  * Use the Factory to create instances of Resource: transactions, participants
@@ -84,7 +86,6 @@ class Factory {
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
-
         if(!id || typeof(id) !== 'string') {
             let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
             throw new Error(formatter({
@@ -119,18 +120,25 @@ class Factory {
         }
 
         let classDecl = modelFile.getType(type);
-
         if(classDecl.isAbstract()) {
-            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+            let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        if(classDecl.isConcept()) {
+            throw new Error('Use newConcept to create concepts ' + classDecl.getFullyQualifiedName());
         }
 
         let newObj = null;
         options = options || {};
         if(options.disableValidation) {
-            newObj = new Resource(this.modelManager,ns,type,id);
+            newObj = new Resource(this.modelManager, ns, type, id);
         }
         else {
-            newObj = new ValidatedResource(this.modelManager,ns,type,id, new ResourceValidator());
+            newObj = new ValidatedResource(this.modelManager, ns, type, id, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
 
@@ -149,7 +157,6 @@ class Factory {
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
         newObj[idField] = id;
-
         debug('Factory.newResource created %s', id );
         return newObj;
     }
@@ -187,7 +194,15 @@ class Factory {
         let classDecl = modelFile.getType(type);
 
         if(classDecl.isAbstract()) {
-            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+            let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        if(!classDecl.isConcept()) {
+            throw new Error('Class is not a concept ' + classDecl.getFullyQualifiedName());
         }
 
         let newObj = null;

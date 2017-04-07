@@ -16,12 +16,14 @@
 
 const ClassDeclaration = require('../introspect/classdeclaration');
 const EnumDeclaration = require('../introspect/enumdeclaration');
+const Introspector = require('../introspect/introspector');
 const Field = require('../introspect/field');
 const leftPad = require('left-pad');
 const ModelUtil = require('../modelutil');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
 const Util = require('../util');
 const ValueGeneratorFactory = require('./valuegenerator');
+const Globalize = require('../globalize');
 
 /**
  * Generate sample instance data for the specified class declaration
@@ -80,6 +82,7 @@ class InstanceGenerator {
      * @private
      */
     visitField(field, parameters) {
+
         if (field.isArray()) {
             let result = [];
             for (let i = 0; i < 3; i++) {
@@ -120,7 +123,20 @@ class InstanceGenerator {
         if (classDeclaration instanceof EnumDeclaration) {
             let enumValues = classDeclaration.getOwnProperties();
             return enumValues[Math.floor(Math.random() * enumValues.length)].getName();
-        } else {
+        }
+        else if (classDeclaration.isAbstract) {
+            let newClassDecl = this.findExtendingLeafType(classDeclaration);
+            if(newClassDecl !== null) {
+                classDeclaration = newClassDecl;
+                type = newClassDecl.getName();
+            }
+        }
+
+        if (classDeclaration.isConcept()) {
+            let concept = parameters.factory.newConcept(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName());
+            parameters.stack.push(concept);
+            return classDeclaration.accept(this, parameters);
+        }  else {
             let identifierFieldName = classDeclaration.getIdentifierFieldName();
             let idx = Math.round(Math.random() * 9999).toString();
             idx = leftPad(idx, 4, '0');
@@ -130,6 +146,47 @@ class InstanceGenerator {
             return classDeclaration.accept(this, parameters);
         }
     }
+
+    /**
+     * Find a type that extends the provided abstract type and return it.
+     * TODO: work out whether this has to be a leaf node or whether the closest type can be used
+     * It depends really since the closest type will satisfy the model but whether it satisfies
+     * any transaction code which attempts to use the generated resource is another matter.
+     * @param {any} inputType the class declaration.
+     * @return {any} the closest extending concrete class definition - null if none are found.
+     */
+    findExtendingLeafType(inputType) {
+        let modelManager = inputType.getModelFile().getModelManager();
+        let returnType = null;
+        if(inputType.isAbstract()) {
+            let introspector = new Introspector(modelManager);
+            let allClassDeclarations = introspector.getClassDeclarations();
+            let contenders = [];
+            allClassDeclarations.forEach((classDecl) => {
+                let superType = classDecl.getSuperType();
+                if(!classDecl.isAbstract() && (superType !== null)) {
+                    if(superType === inputType.getFullyQualifiedName()) {
+                        contenders.push(classDecl);
+                    }
+                }
+            });
+
+            if(contenders.length > 0) {
+                returnType = contenders[0];
+            } else {
+                let formatter = Globalize.messageFormatter('instancegenerator-newinstance-noconcreteclass');
+                throw new Error(formatter({
+                    type: inputType.getFullyQualifiedName()
+                }));
+            }
+        } else {
+            // we haven't been given an abstract type so just return what we were given.
+            returnType = inputType;
+        }
+        return returnType;
+    }
+
+
 
     /**
      * Visitor design pattern

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A test business network using npm model dependencies.",
   "dependencies": {
-    "animaltracking-model": "0.0.7"
+    "animaltracking-model": "0.0.7",
+    "composer.business": "latest"
   }
 }

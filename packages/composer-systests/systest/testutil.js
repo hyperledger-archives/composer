@@ -163,7 +163,7 @@ class TestUtil {
                                 orderers: [
                                     {
                                         url: 'grpcs://localhost:7050',
-                                        cert: './systestv1/tls/orderer/ca-cert.pem',
+                                        cert: './hlfv1/tls/orderer/ca-cert.pem',
                                         hostnameOverride: 'orderer0'
                                     }
                                 ],
@@ -172,13 +172,13 @@ class TestUtil {
                                     {
                                         requestURL: 'grpcs://localhost:7051',
                                         eventURL: 'grpcs://localhost:7053',
-                                        cert: './systestv1/tls/peers/peer0/ca-cert.pem',
+                                        cert: './hlfv1/tls/peers/peer0/ca-cert.pem',
                                         hostnameOverride: 'peer0'
                                     },
                                     {
                                         requestURL: 'grpcs://localhost:7056',
                                         eventURL: 'grpcs://localhost:7058',
-                                        cert: './systestv1/tls/peers/peer1/ca-cert.pem',
+                                        cert: './hlfv1/tls/peers/peer1/ca-cert.pem',
                                         hostnameOverride: 'peer1'
                                     }
                                 ],

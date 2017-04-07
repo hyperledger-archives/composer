@@ -44,5 +44,75 @@ describe('ModelFile type parsing', () => {
             const mf = new ModelFile(mockModelManager,invalidModel, 'types.cto');
             mf.validate();
         });
+
+        it('should be invalid due to decimal default', () => {
+            const model = `
+            namespace org.acme
+
+            concept Address {
+                o Integer foo default=104.0
+            }
+            `;
+            (() => {
+                const mf = new ModelFile(mockModelManager, model, 'test.cto');
+                mf.validate();
+            }).should.throw();
+        });
+
+        it('should be invalid due to no decimal default', () => {
+            const model = `
+            namespace org.acme
+
+            concept Address {
+                o Double foo default=104
+            }
+            `;
+            (() => {
+                const mf = new ModelFile(mockModelManager, model, 'test.cto');
+                mf.validate();
+            }).should.throw();
+        });
+
+        it('should be invalid due to decimal range', () => {
+            const model = `
+            namespace org.acme
+
+            concept Address {
+                o Integer foo range=[0.1, 0.2]
+            }
+            `;
+            (() => {
+                const mf = new ModelFile(mockModelManager, model, 'test.cto');
+                mf.validate();
+            }).should.throw();
+        });
+
+        it('should be invalid due to decimal default', () => {
+            const model = `
+            namespace org.acme
+
+            concept Address {
+                o Integer foo default=104.0
+            }
+            `;
+            (() => {
+                const mf = new ModelFile(mockModelManager, model, 'test.cto');
+                mf.validate();
+            }).should.throw();
+        });
+
+        it('should be invalid due to no decimal range', () => {
+            const model = `
+            namespace org.acme
+
+            concept Address {
+                o Double foo range=[0, 1]
+            }
+            `;
+            (() => {
+                const mf = new ModelFile(mockModelManager, model, 'test.cto');
+                mf.validate();
+            }).should.throw();
+        });
     });
 });
