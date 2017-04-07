@@ -17,8 +17,8 @@
        <div class="resource-bound">
         <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()" width="100%" height="100%">
         </codemirror>
-        <div class="resource-error-text" ng-if="defitionError!=null">
-          <p>{{defitionError}}</p>
+        <div class="resource-error-text" ng-if="definitionError!=null">
+          <p>{{definitionError}}</p>
         </div>
       </div>
       </section>
@@ -29,7 +29,7 @@
     <button type="button" class="secondary" (click)="activeModal.close();">
       <span>Cancel</span>
     </button>
-    <button type="button" class="primary" (click)="addOrUpdateResource()" [disabled]="defitionError!=null || actionInProgress ">
+    <button type="button" class="primary" (click)="addOrUpdateResource()" [disabled]="definitionError!=null || actionInProgress ">
       <div *ngIf="!actionInProgress">
         <span>{{resourceAction}}</span>
       </div>
