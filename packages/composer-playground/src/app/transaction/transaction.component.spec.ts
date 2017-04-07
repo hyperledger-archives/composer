@@ -191,7 +191,6 @@ describe('TransactionComponent', () => {
       resourceDefenition = JSON.parse(resourceDefenition);
 
       mockSerializer.toJSON.should.be.called;
-      should.not.exist(component['definitionError']);
       should.not.exist(resourceDefenition['timestamp']);
       should.not.exist(resourceDefenition['transactionId']);
     });

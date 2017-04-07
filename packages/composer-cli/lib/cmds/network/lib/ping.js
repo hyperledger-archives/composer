@@ -17,6 +17,9 @@
 const cmdUtil = require('../../utils/cmdutils');
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
+// const ora = require('ora');
+const chalk = require('chalk');
+
 /**
  * <p>
  * Composer "network ping" command
@@ -65,9 +68,11 @@ class Ping {
             return businessNetworkConnection.ping();
         })
         .then((result) => {
-            console.log('The connection to the network was successfully tested:');
-            console.log(`  version = ${result.version}`);
-            console.log(`  participant = ${result.participant ? result.participant : '<no participant found>'}`);
+            console.log(chalk.blue.bold('The connection to the network was successfully tested: ')+businessNetworkName);
+            console.log(chalk.blue('\tversion: ') + result.version);
+            console.log(chalk.blue('\tparticipant: ') + (result.participant ? result.participant : '<no participant found>'));
+        }).catch((error) => {
+            throw error;
         });
     }
 
