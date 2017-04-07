@@ -13,7 +13,7 @@
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
   <script src="{{site.baseurl}}/assets/js/clipboard.min.js"></script>
 
-  {% if site.github and site.google_tracking_id.production %}
+  {% if jekyll.environment == "production" and site.google_tracking_id.production %}
     {% include googleanalytics.html tracking_id=site.google_tracking_id.production %}
   {% elsif site.google_tracking_id.development %}
     {% include googleanalytics.html tracking_id=site.google_tracking_id.development %}
