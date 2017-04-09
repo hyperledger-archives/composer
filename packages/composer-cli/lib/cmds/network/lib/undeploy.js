@@ -17,6 +17,10 @@
 const cmdUtil = require('../../utils/cmdutils');
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
+const ora = require('ora');
+// const chalk = require('chalk');
+
+
 /**
  * <p>
  * Composer "network network undeploy" command
@@ -36,6 +40,8 @@ class Undeploy {
         let enrollSecret;
         let connectionProfileName = Undeploy.getDefaultProfileName(argv);
         let businessNetworkName;
+
+        let spinner;
 
         return (() => {
             if (!argv.enrollSecret) {
@@ -61,10 +67,15 @@ class Undeploy {
             return adminConnection.connect(connectionProfileName, enrollId, enrollSecret,  businessNetworkName);
         })
           .then((result) => {
-
-              console.log('Undeploying business network definition. This may take some seconds...');
+              spinner = ora('Undeploying business network definition. This may take some seconds...').start();
               return adminConnection.undeploy(businessNetworkName);
 
+          }).then((result) => {
+              spinner.succeed();
+              return result;
+          }).catch((error) => {
+              spinner.fail();
+              throw error;
           });
     }
 

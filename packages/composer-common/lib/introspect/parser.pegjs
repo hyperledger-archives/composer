@@ -280,6 +280,10 @@ DecimalLiteral
   / DecimalIntegerLiteral ExponentPart? {
       return { type: "Literal", value: parseFloat(text()) };
     }
+    
+SignedRealLiteral= [+-]? DecimalIntegerLiteral "." DecimalDigit* ExponentPart? {
+      return { type: "Literal", value: parseFloat(text()) };
+    }
 
 DecimalIntegerLiteral
   = "0"
@@ -1293,6 +1297,12 @@ BooleanType       = "Boolean"     !IdentifierPart {
 
 NumberType
    = IntegerType / DoubleType / LongType
+   
+RealNumberType
+   = DoubleType
+
+WholeNumberType
+   = IntegerType / LongType
 
 PrimitiveType
  = StringType /
@@ -1396,23 +1406,29 @@ StringDefault
       return def.value;
     }
 
-NumberDefault
-   = "default" __ "=" __ def:$SignedNumber {
-      return def;
-    }
-
 BooleanDefault
    = "default" __ "=" __ def:$BooleanLiteral {
+      return def;
+    }
+    
+IntegerDefault
+   = "default" __ "=" __ def:$SignedInteger {
+     return def;
+    }
+
+RealDefault
+   = "default" __ "=" __ def:SignedRealLiteral{
       return def;
     }
 
 FieldDeclarations
   = StringFieldDeclaration
-  / NumberFieldDeclaration
+  / RealFieldDeclaration
   / BooleanFieldDeclaration
   / DateTimeFieldDeclaration
   / RelationshipDeclaration
   / ObjectFieldDeclaration
+  / IntegerFieldDeclaration
 
 ClassDeclarationBody
   = decls:FieldDeclarations* {
@@ -1481,16 +1497,38 @@ StringRegexValidator
    	return regex
   }
 
-NumericDomainValidator
-   = "range" __ "=" __ "[" __ lower:SignedNumber? __ "," __ upper:SignedNumber? __ "]" {
+RealDomainValidator
+   = "range" __ "=" __ "[" __ lower:SignedRealLiteral? __ "," __ upper:SignedRealLiteral? __ "]" {
+   	return {
+    	lower: lower,
+      upper: upper
+    }
+  }
+  
+IntegerDomainValidator
+   = "range" __ "=" __ "[" __ lower:SignedInteger? __ "," __ upper:SignedInteger? __ "]" {
    	return {
     	lower: lower,
       upper: upper
     }
   }
 
-NumberFieldDeclaration
-    = "o" __ propertyType:NumberType __ array:"[]"? __ id:Identifier __  d:NumberDefault? __ range:NumericDomainValidator? __ optional:Optional? __ {
+RealFieldDeclaration
+    = "o" __ propertyType:RealNumberType __ array:"[]"? __ id:Identifier __  d:RealDefault? __ range:RealDomainValidator? __ optional:Optional? __ {
+    	return {
+    		type: "FieldDeclaration",
+    		id: id,
+    		propertyType: {name:propertyType},
+    		array: array,
+    		range: range,
+    		default: d,
+    		optional: optional,
+            location: location()
+    	}
+    }
+    
+IntegerFieldDeclaration
+    = "o" __ propertyType:WholeNumberType __ array:"[]"? __ id:Identifier __  d:IntegerDefault? __ range:IntegerDomainValidator? __ optional:Optional? __ {
     	return {
     		type: "FieldDeclaration",
     		id: id,

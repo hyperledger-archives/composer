@@ -217,7 +217,7 @@ describe('ResourceComponent', () => {
       };
       component['resourceDeclaration'] = mockClassDeclaration;
       component['generateResource']();
-      should.exist(component['defitionError']);
+      should.exist(component['definitionError']);
     });
   });
 
@@ -288,7 +288,7 @@ describe('ResourceComponent', () => {
 
       component['addOrUpdateResource']();
       tick();
-      should.exist(component['defitionError']);
+      should.exist(component['definitionError']);
       component['actionInProgress'].should.be.false;
     }));
   });
@@ -304,13 +304,13 @@ describe('ResourceComponent', () => {
       mockSerializer.fromJSON.should.be.called;
       mockSerializer.fromJSON.should.be.calledWith({'$class': 'org.acme'});
       mockResource.validate.should.be.called;
-      should.not.exist(component['defitionError']);
+      should.not.exist(component['definitionError']);
     });
 
     it('should set definitionError', () => {
       component['resourceDefinition'] = 'will error';
       component['onDefinitionChanged']();
-      should.exist(component['defitionError']);
+      should.exist(component['definitionError']);
     });
   });
 
