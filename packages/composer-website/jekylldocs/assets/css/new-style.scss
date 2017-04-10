@@ -317,20 +317,6 @@ li {
   color: $primary-text;
 }
 
-// .navbar-inverse .navbar-nav > li > a {
-//   color: $primary-text;
-//   &:hover {
-//     color: $primary-text;
-//   }
-// }
-//
-// .navbar-inverse .navbar-brand {
-//   color: $primary-text;
-//   &:hover {
-//     color: $primary-text;
-//   }
-// }
-
 .navbar-fixed-top {
   border: none;
 }
@@ -740,6 +726,11 @@ li {
       flex-direction: row;
     }
 
+    }
+    .contact-illustration {
+      img {
+        height: auto;
+      }
     }
   }
   }
