@@ -240,6 +240,7 @@ button {
     margin: auto;
     margin-top: 17vh;
     display: flex;
+
     position: relative;
     flex-direction: row;
     z-index: 10;
@@ -247,6 +248,7 @@ button {
     .leftcontent {
       flex-basis: 40%;
       display: flex;
+
       flex-direction: column;
       padding-right: 2rem;
       padding-bottom: 8rem;
@@ -270,8 +272,10 @@ button {
     }
     .social-container {
       display: flex;
+
 ul {
   display: flex;
+
   flex-direction: row;
   margin: 0;
   padding: 0;
@@ -283,6 +287,7 @@ li {
   justify-content: center;
   height: 100%;
   display: flex;
+
 }
 .icon2 {
   font-size: 1.2rem;
@@ -303,12 +308,14 @@ li {
   margin-top: 3.5rem;
   margin-bottom: 2.5rem;
   display: flex;
+
 }
 
 //Navbar overrides of bootstrap
 
 .navbar {
   display: flex;
+
   flex-basis: auto;
   width: 100vw;
   height: 4rem;
@@ -325,6 +332,7 @@ li {
 
 .indexnav {
   display: flex;
+
   flex-direction: row;
   align-items: center;
   width: 100%;
@@ -337,6 +345,7 @@ li {
 .navcontent {
   font-size: 0.9rem;
   display: flex;
+
   width: 70vw;
   margin: auto;
   padding-top: 2rem;
@@ -361,12 +370,14 @@ li {
 
 .menuitems {
   display: flex;
+
   justify-content: flex-end;
   flex-basis: auto;
   flex-shrink: 1;
   height: 100%;
   ul {
     display: flex;
+
     flex-direction: row;
     margin: 0;
     padding: 0;
@@ -378,6 +389,7 @@ li {
       justify-content: center;
       height: 100%;
       display: flex;
+
       a {
         color: $white;
         text-decoration: none;
@@ -394,6 +406,7 @@ li {
 
 .footer-bg {
   display: flex;
+
   background-color: $first-highlight;
   width: 100vw;
   height: auto;
@@ -401,6 +414,7 @@ li {
 
 .footer-container {
   display: flex;
+
   width: 70vw;
   margin: auto;
   padding-top: 3rem;
@@ -408,6 +422,7 @@ li {
 
 .footer-left {
   display: flex;
+
   flex-grow: 1;
   flex-shrink: 1;
 
@@ -428,12 +443,14 @@ li {
 
   .footer-right {
     display: flex;
+
     justify-content: flex-end;
     flex-basis: auto;
     flex-shrink: 1;
     height: 100%;
     ul {
       display: flex;
+
       flex-grow: 2;
       flex-direction: row;
       margin: 0;
@@ -446,6 +463,7 @@ li {
       justify-content: center;
       height: 100%;
       display: flex;
+
       a {
         color: $white;
         text-decoration: none;
@@ -474,6 +492,7 @@ li {
   margin-right: auto;
   width: 70vw;
   display: flex;
+
   flex-direction: row;
   justify-content:space-around;
   flex-wrap: wrap;
@@ -495,6 +514,7 @@ li {
     flex-wrap: wrap;
     img {
       display: flex;
+
       height: 60px;
       width: auto;
       margin: auto;
@@ -510,6 +530,7 @@ li {
     flex-wrap: wrap;
     img {
       display: flex;
+
       height: 60px;
       width: auto;
       margin: auto;
@@ -524,6 +545,7 @@ li {
     flex-wrap: wrap;
     img {
       display: flex;
+
       height: 60px;
       width: auto;
       margin: auto;
@@ -542,6 +564,7 @@ li {
 
 .contact-us {
   display: flex;
+
   flex-direction: row;
   justify-content:center;
   margin-left: auto;
@@ -553,6 +576,7 @@ li {
     flex-grow: 0;
     img {
       display: flex;
+
       height: 17rem;
       width: auto;
     }
@@ -563,6 +587,7 @@ li {
 
     .social-icons {
   display: flex;
+
   flex-wrap: wrap;
   flex-direction: row;
 
@@ -595,6 +620,7 @@ li {
 
   .social-icons > div {
   display: flex;
+
   flex-basis: calc(40% - 30px);
   justify-content: center;
   flex-direction: column;
@@ -602,6 +628,7 @@ li {
 }
 .social-icons > div > div {
   display: flex;
+
   flex-direction: row;
 }
 
@@ -622,6 +649,7 @@ li {
 @media only screen and (max-width: 1200px) {
   .hero_container {
       flex-direction: column-reverse;
+      -webkit-flex-direction: row;
       .hero_illustration {
         padding-bottom: 2rem;
       }
@@ -643,6 +671,10 @@ li {
         }
 
 @media only screen and (max-width: 900px) {
+
+    .hero_container {
+      -webkit-flex-direction: row;
+    }
 
   .trio {
     flex-direction: column;
@@ -671,6 +703,10 @@ li {
   }
 
 @media only screen and (max-width: 750px) {
+
+  .hero_container {
+    -webkit-flex-direction: row;
+  }
   .contact-bg {
     .contact-us {
         .contact-content {
@@ -679,7 +715,7 @@ li {
       flex-direction: column;
     }
     .social-icons > div > div {
-      flex-direction: row;
+      flex-direction: row; 
     }
 
     }
@@ -693,6 +729,7 @@ li {
         height: auto;
         .navcontent {
             flex-direction: column;
+            -webkit-flex-direction: row;
 
             .navlogo {
               margin-bottom: 0.5rem;
@@ -711,19 +748,31 @@ li {
         }
   }
 
+  .hero_container {
+    -webkit-flex-direction: row;
+  }
+
+  .trio {
+    -webkit-flex-direction: row;
+  }
+
   .contact-bg {
     .contact-us {
+      -webkit-flex-direction: row;
         .contact-content {
           .social-icons {
             flex-direction: column;
+            -webkit-flex-direction: row;
           }
 
       .social-icons > div {
       flex-basis: calc(50% - 30px);
       flex-direction: column;
+      -webkit-flex-direction: row;
     }
     .social-icons > div > div {
       flex-direction: row;
+      -webkit-flex-direction: row;
     }
 
     }
@@ -748,9 +797,11 @@ li {
     .footer-container {
       flex-wrap: wrap;
       flex-direction: column;
+      -webkit-flex-direction: row;
       .footer-right {
         ul {
           flex-direction: column;
+          -webkit-flex-direction: row;
         }
 
         li {
