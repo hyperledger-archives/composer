@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-embedded",
-  "version": "0.5.8",
+  "version": "0.5.10",
   "description": "The embedded runtime container for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -52,8 +52,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.5.8",
-    "composer-runtime": "^0.5.8",
+    "composer-common": "^0.5.10",
+    "composer-runtime": "^0.5.10",
     "debug": "^2.6.2",
     "dexie": "^1.5.1",
     "fake-indexeddb": "^1.0.8",

@@ -104,7 +104,7 @@ export class EditorComponent implements OnInit {
       this.updatePackageInfo();
       this.editingPackage = false;
     }
-    
+
     this.editorService.setCurrentFile(file);
     this.currentFile = file;
   }
@@ -238,7 +238,7 @@ export class EditorComponent implements OnInit {
       let file = new File([exportedData],
         this.clientService.getBusinessNetworkName() + '.bna',
         {type: 'application/octet-stream'});
-      saveAs.saveAs(file);
+      saveAs(file);
       this.alertService.successStatus$.next(this.clientService.getBusinessNetworkName() + '.bna was exported');
     });
   }

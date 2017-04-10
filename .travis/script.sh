@@ -27,6 +27,9 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
+    if [ -n "${TRAVIS_TAG}" ]; then
+        export JEKYLL_ENV=production
+    fi
 	cd "${DIR}/packages/composer-website"
 	npm install
 	npm run full
