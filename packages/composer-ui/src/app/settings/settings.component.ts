@@ -183,6 +183,7 @@ export class SettingsComponent implements OnInit {
     let connectionProfileBase = 'hlfabric';
     let connectionProfileName = connectionProfileBase;
     let counter = 1;
+    console.log('What are this.connectionProfiles',this.connectionProfiles);
     while (this.connectionProfiles.some((cp) => { return cp.name === connectionProfileName; })) {
       counter++;
       connectionProfileName = connectionProfileBase + counter;

@@ -1,0 +1,241 @@
+import {Component, Input} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
+import {BusinessNetworkDefinition} from 'composer-common';
+import {AlertService} from '../services/alert.service';
+import {AdminService} from '../services/admin.service';
+import {ConnectionProfileService} from '../services/connectionprofile.service';
+
+@Component({
+  selector: 'add-connection-profile',
+  templateUrl: './add-connection-profile.component.html',
+  styleUrls: ['./add-connection-profile.component.scss'.toString()]
+})
+export class AddConnectionProfileComponent {
+
+  @Input() businessNetwork: BusinessNetworkDefinition;
+
+  currentFile = null;
+  currentFileName = null;
+  version = '';
+  private code: string = null;
+
+  expandInput: boolean = false;
+
+  maxFileSize: number = 5242880;
+  supportedFileTypes: string[] = ['.json'];
+
+  private inUseConnectionProfile: any = null;
+  private connectionProfiles: any = [];
+  private currentConnectionProfile: any = null;
+  private changingCurrentConnectionProfile: boolean = false;
+
+  private newConnectionProfile: any;
+
+  private addConnectionProfileName: string = null;
+  private addConnectionProfileDescription: string = null;
+  private addConnectionProfileType: string = null;
+  private addConnectionProfilePeerURL: string = null;
+  private addConnectionProfileMembershipServicesURL: string = null;
+  private addConnectionProfileEventHubURL: string = null;
+  private addConnectionProfileKeyValStore: string = null;
+  private addConnectionProfileDeployWaitTime: number = null;
+  private addConnectionProfileInvokeWaitTime: number = null;
+  private addConnectionProfileCertificate: string = null;
+  private addConnectionProfileCertificatePath: string = null;
+
+  error = null;
+
+  constructor(private alertService: AlertService,
+              public activeModal: NgbActiveModal,
+              private adminService: AdminService,
+              private connectionProfileService: ConnectionProfileService) {
+  }
+
+  removeFile() {
+    this.expandInput = false;
+    this.currentFile = null;
+    this.currentFileName = null;
+    this.version = '';
+  }
+
+  fileDetected() {
+    this.expandInput = true;
+  }
+
+  fileLeft() {
+    this.expandInput = false;
+  }
+
+  fileAccepted(file: File) {
+    console.log('What is the file accepted?', file);
+    let type = file.name.substr(file.name.lastIndexOf('.') + 1);
+    this.getDataBuffer(file)
+      .then((data) => {
+        if (type === 'json') {
+          this.expandInput = true;
+          this.createProfile(file, data);
+        }
+        else {
+          throw new Error('Unexpected File Type');
+        }
+      })
+      .catch((err) => {
+        this.fileRejected(err);
+      });
+  }
+
+  getDataBuffer(file: File) {
+    return new Promise((resolve, reject) => {
+      let fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(file);
+      fileReader.onload = () => {
+        let dataBuffer = Buffer.from(fileReader.result);
+        resolve(dataBuffer);
+      };
+
+      fileReader.onerror = (err) => {
+        reject(err);
+      };
+    });
+  }
+
+  createProfile(file: File, profileBuffer) {
+
+    // Converts buffer to string
+    let profileData = JSON.parse(profileBuffer.toString());
+
+    // Set defaults
+    return this.setv06Defaults().then(()=>{
+      // Then load imported profile data in
+      this.addConnectionProfileDescription = profileData.description;
+      this.addConnectionProfileMembershipServicesURL = profileData.membershipServicesURL;
+      this.addConnectionProfilePeerURL = profileData.peerURL;
+      this.addConnectionProfileEventHubURL = profileData.eventHubURL;
+      this.addConnectionProfileKeyValStore = profileData.keyValStore;
+      this.addConnectionProfileDeployWaitTime = profileData.deployWaitTime;
+      this.addConnectionProfileInvokeWaitTime = profileData.invokeWaitTime;
+      this.addConnectionProfileCertificate = profileData.certificate;
+      this.addConnectionProfileCertificatePath = profileData.certificatePath;
+
+      this.addConnectionProfile();
+
+    });
+
+
+
+  }
+
+
+  fileRejected(reason: string) {
+    this.alertService.errorStatus$.next(reason);
+  }
+
+  changeCurrentFileType() {
+
+    this.currentFile = null;
+    if (this.version === 'v06') {
+
+      return this.setv06Defaults().then(() => {
+        this.newConnectionProfile = {
+          description: this.addConnectionProfileDescription,
+          type: 'hlf',
+          membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
+          peerURL: this.addConnectionProfilePeerURL,
+          eventHubURL: this.addConnectionProfileEventHubURL,
+          keyValStore: this.addConnectionProfileKeyValStore,
+          deployWaitTime: this.addConnectionProfileDeployWaitTime,
+          invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
+          certificate: this.addConnectionProfileCertificate,
+          certificatePath: this.addConnectionProfileCertificatePath
+        };
+      })
+    }
+    else if (this.version === 'v10') {
+      console.log('Add v1 file');
+    }
+    else {
+      throw new Error('Unsupported version');
+    }
+  }
+
+  private addConnectionProfile(): void {
+    // Do we have a connection profile certificate?
+    if (this.addConnectionProfileCertificate) {
+      // That isn't just whitespace?
+      if (this.addConnectionProfileCertificate.trim()) {
+        let end = this.addConnectionProfileCertificate.slice(-1);
+        if (end !== '\n') {
+          this.addConnectionProfileCertificate += '\n';
+        }
+      }
+    }
+    let connectionProfile = {
+      description: this.addConnectionProfileDescription,
+      type: 'hlf',
+      membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
+      peerURL: this.addConnectionProfilePeerURL,
+      eventHubURL: this.addConnectionProfileEventHubURL,
+      keyValStore: this.addConnectionProfileKeyValStore,
+      deployWaitTime: this.addConnectionProfileDeployWaitTime,
+      invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
+      certificate: this.addConnectionProfileCertificate,
+      certificatePath: this.addConnectionProfileCertificatePath
+    };
+
+    let newConnectionProfile = {
+      name: this.addConnectionProfileName,
+      profile: connectionProfile,
+      default: this.addConnectionProfileName === '$default'
+    };
+
+    this.activeModal.close(newConnectionProfile);
+
+  }
+
+
+  private setv06Defaults(): Promise<any> {
+    return this.updateConnectionProfiles().then(() => {
+      let connectionProfileBase = 'New Connection Profile';
+      let connectionProfileName = connectionProfileBase;
+      let counter = 1;
+
+      while (this.connectionProfiles.some((cp) => {
+        return cp.name === connectionProfileName;
+      })) {
+        counter++;
+        connectionProfileName = connectionProfileBase + counter;
+      }
+      this.addConnectionProfileName = connectionProfileName;
+      this.addConnectionProfileDescription = "A description"
+      this.addConnectionProfileType = 'hlf',
+      this.addConnectionProfilePeerURL = 'grpc://localhost:7051';
+      this.addConnectionProfileMembershipServicesURL = 'grpc://localhost:7054';
+      this.addConnectionProfileEventHubURL = 'grpc://localhost:7053';
+      this.addConnectionProfileKeyValStore = '/tmp/keyValStore';
+      this.addConnectionProfileDeployWaitTime = 5 * 60;
+      this.addConnectionProfileInvokeWaitTime = 30;
+      this.addConnectionProfileCertificate = null;
+      this.addConnectionProfileCertificatePath = null;
+    });
+
+  }
+
+
+  private updateConnectionProfiles(): Promise<any> {
+    let newConnectionProfiles = [];
+    return this.connectionProfileService.getAllProfiles()
+      .then((connectionProfiles) => {
+        let keys = Object.keys(connectionProfiles).sort();
+        keys.forEach((key) => {
+          let connectionProfile = connectionProfiles[key];
+          newConnectionProfiles.push({
+            name: key,
+            profile: connectionProfile,
+            default: key === '$default'
+          });
+        });
+        this.connectionProfiles = newConnectionProfiles;
+      });
+  }
+}

@@ -1,0 +1,69 @@
+<div class="import" fileDragDrop (fileDragDropFileAccepted)="fileAccepted($event)"
+     (fileDragDropFileRejected)="fileRejected($event)"
+     (fileDragDropDragOver)="fileDetected($event)" (fileDragDropDragLeave)="fileLeft($event)"
+     [maxFileSize]="maxFileSize" [supportedFileTypes]="supportedFileTypes">
+  <div class="modal-header">
+    <h1>Import/Create a Connection Profile</h1>
+    <button class="icon modal-exit" (click)="activeModal.dismiss()">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
+  </div>
+  <section class="modal-body">
+    <span>Upload a Connection Profile from your computer</span>
+    <file-importer *ngIf="!expandInput" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
+                   [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-CTO_JS_Upload'"></file-importer>
+    <div class="chosen-file" *ngIf="expandInput && currentFile">
+      <div class="file-info">
+        <div class="flex-container">
+          <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-JS_File" *ngIf="fileType==='v06'"></use>
+            <use xlink:href="#icon-CTO_File" *ngIf="fileType==='v10'"></use>
+          </svg>
+          <div class="file-title">
+            <div class="title">{{currentFileName}}</div>
+            <div *ngIf="fileType==='v06'">
+              <span>{{currentFile.getAssetDeclarations().length}} Assets</span>
+              <span>{{currentFile.getParticipantDeclarations().length}} Participants</span>
+              <span>{{currentFile.getTransactionDeclarations().length}} Transactions</span>
+            </div>
+            <div *ngIf="fileType==='v10'">
+              <span>{{currentFile.getFunctionDeclarations().length}} Functions</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button role="button" type="button" class="action" (click)="removeFile()">Remove File</button>
+        </div>
+      </div>
+    </div>
+    <span>Or create a connection profile, select your Fabric version:</span>
+    <form class="file-types-list" #f="ngForm" *ngIf="!expandInput">
+      <div class="file-types-list-item">
+        <input type="radio" id="file-type-v06" name="file-type" [(ngModel)]="version" value="v06"
+               (change)="changeCurrentFileType()">
+        <label class="radio-label" for="file-type-v06">v0.6</label>
+        <div class="description">
+          v0.6 Connection Profile.
+        </div>
+      </div>
+      <div class="file-types-list-item">
+        <input type="radio" id="file-type-v10" name="file-type" [(ngModel)]="version" value="v10"
+               (change)="changeCurrentFileType()">
+        <label class="radio-label" for="file-type-v10">v1.0</label>
+        <div class="description">
+          v1.0 Connection Profile.
+        </div>
+      </div>
+    </form>
+  </section>
+  <footer>
+    <button type="button" class="secondary" (click)="activeModal.dismiss();">
+      <span>Cancel</span>
+    </button>
+    <button type="button" class="primary" (click)="addConnectionProfile()" [disabled]="!version">
+      <span>Add</span>
+    </button>
+  </footer>
+</div>

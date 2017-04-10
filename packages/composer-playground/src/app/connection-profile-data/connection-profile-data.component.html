@@ -1,0 +1,239 @@
+<div *ngIf="connectionProfileData">
+
+  <div class="profile-header" *ngIf="!editing">
+    <div class="profile-header-details">
+
+      <h1 *ngIf="connectionProfileData.name !== '$default'">{{connectionProfileData.name}}</h1>
+      <p *ngIf="connectionProfileData.name !== '$default'">{{connectionProfileData.profile.description}}</p>
+
+      <h1 *ngIf="connectionProfileData.name === '$default'">Web Browser</h1>
+      <p *ngIf="connectionProfileData.name === '$default'">Running in web browser mode</p>
+
+    </div>
+    <button type="button" class="action margin-right" (click)="startEditing()">
+      <svg *ngIf="connectionProfileData.name !== '$default'" class="standard-icon" aria-hidden="true">
+        <use xlink:href="#icon-edit_16"></use>
+      </svg>
+    </button>
+
+    <button type="button" class="action margin-right" (click)="deleteProfile()">
+      <svg *ngIf="connectionProfileData.name !== '$default'" class="standard-icon" aria-hidden="true">
+        <use xlink:href="#icon-bin_icon"></use>
+      </svg>
+    </button>
+
+  </div>
+
+  <div class="profile-data-container" *ngIf="connectionProfileData.profile.type === 'hlf' && !editing">
+    <div class="profile-data-header">
+      <div class="section-details">
+        <div class="section-name" (click)="expandSection('Basic Configuration')">
+          <h2>Basic Configuration</h2>
+        </div>
+        <div class="section-expand">
+          <button class="button secondary" type="button" (click)="expandSection('All')">{{expandedSection.length === 3 ? 'Collapse All' : 'Expand All'}}</button>
+          <button type="button" class="action" (click)="expandSection('Basic Configuration')">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Basic Configuration') < 0}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+              <use xlink:href="#icon-chevron-down"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Basic Configuration') > -1}">
+        <div class="profile-row">
+          <div class="profile-property">
+            Connection Profile Name
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.name}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Peer URL
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.peerURL}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Membership Services URL
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.membershipServicesURL}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Event Hub URL</div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.eventHubURL}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Key Value Store Directory
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.keyValStore}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-data-header">
+      <div class="section-details">
+        <div class="section-name" (click)="expandSection('Security Settings')">
+          <h2>Security Settings</h2>
+        </div>
+        <div class="section-expand">
+          <button type="button" class="action" (click)="expandSection('Security Settings')">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Security Settings') < 0}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+              <use xlink:href="#icon-chevron-down"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Security Settings') > -1}">
+        <div class="profile-row">
+          <div class="profile-property">
+            Certificate
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.certificate}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Certificate Path
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.certificatePath}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-data-header">
+      <div class="section-details">
+        <div class="section-name" (click)="expandSection('Advanced')">
+          <h2>Advanced</h2>
+        </div>
+        <div class="section-expand">
+          <button type="button" class="action" (click)="expandSection('Advanced')">
+            <svg [ngClass]="{'chevron': expandedSection.indexOf('Advanced') < 0}" class="standard-icon" *ngIf="showExpand" aria-hidden="true">
+              <use xlink:href="#icon-chevron-down"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Advanced') > -1}">
+        <div class="profile-row">
+          <div class="profile-property">
+            Deploy Wait Time (seconds)
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.deployWaitTime}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Invoke Wait Time (seconds)
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.invokeWaitTime}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <button *ngIf="!editing" class="button primary" type="button" (click)="useProfile()">Use this profile</button>
+  <button *ngIf="!editing && connectionProfileData.name !== '$default'" class="button secondary" type="button" (click)="exportProfile()">
+    <svg class="standard-icon" aria-hidden="true">
+      <use xlink:href="#icon-upload_32"></use>
+    </svg>
+    Export Connection Profile
+  </button>
+
+  <div class="edit-data" *ngIf="editing">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <section>
+        <div class="section-title">Basic Configuration</div>
+
+        <div>
+          <label>Connection Profile Name*</label>
+          <input type="text" formControlName="name">
+        </div>
+        <div *ngIf="formErrors.name" class="error-message">
+          {{ formErrors.name }}
+        </div>
+        <div>
+          <label>Profile Description</label>
+          <textarea formControlName="description" rows="4"></textarea>
+        </div>
+        <div>
+          <label>Peer URL*</label>
+          <input type="text" formControlName="peerURL">
+        </div>
+        <div *ngIf="formErrors.peerURL" class="error-message">
+          {{ formErrors.peerURL }}
+        </div>
+        <div>
+          <label>Membership Services URL*</label>
+          <input type="text" formControlName="membershipServicesURL">
+        </div>
+        <div *ngIf="formErrors.membershipServicesURL" class="error-message">
+          {{ formErrors.membershipServicesURL }}
+        </div>
+        <div>
+          <label>Event Hub URL*</label>
+          <input type="text" formControlName="eventHubURL">
+        </div>
+        <div *ngIf="formErrors.eventHubURL" class="error-message">
+          {{ formErrors.eventHubURL }}
+        </div>
+        <div>
+          <label>Key Value Store Directory Path*</label>
+          <input type="text" formControlName="keyValStore">
+        </div>
+        <div *ngIf="formErrors.keyValStore" class="error-message">
+          {{ formErrors.keyValStore }}
+        </div>
+      </section>
+      <section>
+        <div class="section-title">Security Settings</div>
+        <div>
+          <label>Certificate</label>
+          <input type="text" formControlName="certificate">
+        </div>
+        <div>
+          <label>Certificate Path</label>
+          <input type="text" formControlName="certificatePath">
+        </div>
+        <div class="section-title">Advanced</div>
+        <div>
+          <label>Deploy Wait Time (seconds)*</label>
+          <input type="text" formControlName="deployWaitTime">
+        </div>
+        <div *ngIf="formErrors.deployWaitTime" class="error-message">
+          {{ formErrors.deployWaitTime }}
+        </div>
+        <div>
+          <label>Invoke Wait Time (seconds)*</label>
+          <input type="text" formControlName="invokeWaitTime">
+        </div>
+        <div *ngIf="formErrors.invokeWaitTime" class="error-message">
+          {{ formErrors.invokeWaitTime }}
+        </div>
+      </section>
+      <footer>
+        <div class="info"></div>
+        <button class="secondary" (click)="stopEditing()">Cancel</button>
+        <button class="primary" type="submit" [disabled]="!form.valid">Save</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
