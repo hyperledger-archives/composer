@@ -715,7 +715,7 @@ li {
       flex-direction: column;
     }
     .social-icons > div > div {
-      flex-direction: row; 
+      flex-direction: row;
     }
 
     }
@@ -818,3 +818,42 @@ li {
   }
 
 }
+
+// Docs styling updates
+
+nav {
+      .container {
+        padding-top: 5px;
+      }
+    }
+
+  .context-nav {
+    a {
+        padding-left: 1rem;
+        border: none;
+        border-left: 2px solid transparent;
+        transition: none;
+
+        &:hover {
+          color: $first-highlight;
+          border-left: 2px solid $second-highlight;
+          transition: none;
+        }
+
+        &:last-child {
+          padding-left: 0;
+          border: none;
+        }
+
+        &:active {
+          color: $first-highlight;
+        }
+
+        + strong {
+          a {
+            padding-top: 1.5rem;
+            border-left: none;
+          }
+        }
+      }
+  }
