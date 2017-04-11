@@ -715,7 +715,7 @@ li {
       flex-direction: column;
     }
     .social-icons > div > div {
-      flex-direction: row; 
+      flex-direction: row;
     }
 
     }
@@ -818,3 +818,11 @@ li {
   }
 
 }
+
+// Docs styling updates
+
+nav {
+      .container {
+        padding-top: 5px;
+      }
+    }
