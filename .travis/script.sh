@@ -10,6 +10,10 @@ ME=`basename "$0"`
 
 echo ${ME} `date`
 
+echo ${TRAVIS_COMMIT}
+echo ${CF_ORGANIZATION}
+echo ${DOCKER_USERNAME}
+
 source ${DIR}/build.cfg
 
 if [ "${ABORT_BUILD}" = "true" ]; then
