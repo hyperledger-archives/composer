@@ -34,7 +34,7 @@ If you need to update or install anything please refer to the install guides:
 $ npm install -g composer-cli
 ```
 
-**3. Create your Composer Connection Profile
+**3. Create your Composer Connection Profile**
 
 Create the default Composer Connection profile directory (defaultProfile) eg.
 
@@ -45,7 +45,7 @@ mkdir -p ~/.composer-connection-profiles/defaultProfile
 
 Create (or edit as appropriate) the file `~/.composer-connection-profiles/defaultProfile/connection.json`, and create the Hyperledger Fabric v1 compatible connection profile using this template (below) - this profile uses a default channel 'mychannel'. 
 
-`
+```
 {
     "type": "hlfv1",
     "orderers": [
@@ -69,7 +69,7 @@ Create (or edit as appropriate) the file `~/.composer-connection-profiles/defaul
     "invokeWaitTime": "100"
 }
 
-`
+```
 
 **4. Clone the Sample Applications Git Repository:**
 
