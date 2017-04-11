@@ -45,7 +45,7 @@ $ git clone https://github.com/fabric-composer/sample-applications.git
 ```
 $ cd sample-applications/packages/getting-started
 $ npm install
-$ composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+$ composer network list -n digitalproperty-network --enrollId admin --enrollSecret adminpw
 ```
 
 The latter command returns details about the deployed digital property network such as name, models, registries etc.
