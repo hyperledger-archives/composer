@@ -7,9 +7,25 @@ excerpt: Quickstart
 
 ---
 
-# Fabric Composer Quickstart
+# Installing {{site.data.conrefs.composer_full}}
 
 ---
+
+**shortdesc**
+
+---
+
+## Before you begin
+
+Ensure that you have the following prerequisites installed.
+
+* At least Ubuntu Linux v14.04 or Mac OS v10.12
+* At least *Docker* v1.12.5
+* At least *Docker-compose* v1.10.0
+* At least *node.js*: v6.9.5
+* A code editor, for example *Atom* or *VSCode*
+
+
 
 Check that your system has the required software (at the required versions) installed:
 

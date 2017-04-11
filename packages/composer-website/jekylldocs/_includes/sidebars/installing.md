@@ -1,6 +1,6 @@
 **[Introduction](../introduction/introduction.html)**
 **[Tutorials](../tutorials/tutorialindex.html)**
-**[Installing](../installing/prerequisites.html)**
+**[Installing](../installing/installingindex.html)**
 [Prerequisites](../installing/prerequisites.html)
 [Quickstart](../installing/quickstart.html)
 [Start a Fabric runtime](../installing/runtime-start.html)

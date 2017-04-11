@@ -1,7 +1,5 @@
 **[Introduction](../introduction/introduction.html)**
-[Understanding Business Networks](../introduction/businessnetwork.html)
-[Business Network Definition](../introduction/businessnetworkdefinition.html)
-[Participants and Transactions](../introduction/participantsandidentities.html)
+[Components and Concepts](../introduction/key-concepts.html)
 **[Tutorials](../tutorials/tutorialindex.html)**
 **[Installing](../installing/prerequisites.html)**
 **[Defining Business Networks](../business-network/businessnetwork.html)**
