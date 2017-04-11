@@ -1,7 +1,6 @@
 'use strict';
 let yeoman = require('yeoman-generator');
 let fs = require('fs');
-// let fs = require('fs');
 let shell = require('shelljs');
 
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;

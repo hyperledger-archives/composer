@@ -20,7 +20,7 @@ concept BooleanValue {
 
 concept TestConcept {
     o String s default="test" regex=/test/
-    o Double d default = 1 range=[0,10] optional 
+    o Double d default = 1.0 range=[0.0,10.0] optional 
     o Long l default = 1 range=[0,10]
     o Integer i default = 1 range=[0,10] optional 
     o DateTime date default = "" optional
@@ -62,7 +62,7 @@ concept Defaults {
 }
 
 concept Ranges {
-    o Double d range=[-10,10]
-    o Double d2 range=[,10]
-    o Double d3 range=[-10,]
+    o Double d range=[-10.0,10.0]
+    o Double d2 range=[,10.0]
+    o Double d3 range=[-10.0,]
 }

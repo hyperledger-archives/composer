@@ -73,7 +73,6 @@ class BusinessNetworkConnection extends EventEmitter {
         this.businessNetwork = null;
     }
 
-
     /**
      * Returns the currently connected BusinessNetworkDefinition
      * @example

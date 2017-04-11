@@ -97,6 +97,16 @@ describe('Concept', function () {
             const obj = serializer.toJSON(asset);
             JSON.stringify(obj).should.equal('{"$class":"org.acme.biznet.MakerInventory","makerId":"123","invSets":[{"$class":"org.acme.biznet.InventorySets","Make":"Make","Model":"Model","invCount":10,"invType":"NEWBATCH"}]}');
         });
+
+        it('should generate JSON for an asset that contains a concept', function () {
+            let conceptModel = fs.readFileSync('./test/data/model/concept2.cto', 'utf8');
+            modelManager.addModelFile(conceptModel, 'concept2.cto');
+            const factory = new Factory(modelManager);
+            const options = {'generate': 'true'};
+            const asset = factory.newResource('ibm.procurement.contingentLabor', 'POContractorRecord', '123', options );
+            const serializer = new Serializer(factory, modelManager);
+            serializer.toJSON(asset);
+        });
     });
 
     describe('#fromJSON', () => {

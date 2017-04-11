@@ -277,6 +277,38 @@ describe('InstanceGenerator', () => {
             resource.inheritedValue.should.be.a('string');
         });
 
+        it('should generate a concrete class for an abstract type if one is available', () => {
+            let resource = test(`namespace org.acme.test
+            abstract concept BaseConcept {
+                o String inheritedValue
+            }
+            concept MyConcept extends BaseConcept {
+                o String concreteConceptValue
+            }
+            asset MyAsset identified by id {
+                o String id
+                o BaseConcept aConcept
+            }`);
+            resource.aConcept.$type.should.match(/^MyConcept$/);
+        });
+
+        it('should throw an error when trying to generate a resource from a model that uses an Abstract type with no concrete Implementing type', () => {
+            try {
+                test(`namespace org.acme.test
+                    abstract concept BaseConcept {
+                        o String inheritedValue
+                    }
+                    asset MyAsset identified by id {
+                        o String id
+                        o BaseConcept aConcept
+                    }`);
+            } catch (error) {
+                error.should.match(/^Error: No concrete extending type for org.acme.test.BaseConcept$/);
+            }
+        });
+
+
+
     });
 
 });

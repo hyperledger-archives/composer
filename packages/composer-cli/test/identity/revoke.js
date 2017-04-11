@@ -59,7 +59,6 @@ describe('composer identity revoke CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
-                sinon.assert.calledWith(process.exit, 0);
             });
     });
 
@@ -77,7 +76,6 @@ describe('composer identity revoke CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, 'someOtherProfile', argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
-                sinon.assert.calledWith(process.exit, 0);
             });
     });
 
@@ -94,7 +92,6 @@ describe('composer identity revoke CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
-                sinon.assert.calledWith(process.exit, 0);
             });
     });
 
@@ -112,7 +109,6 @@ describe('composer identity revoke CLI unit tests', () => {
                 sinon.assert.calledWith(mockBusinessNetworkConnection.connect, DEFAULT_PROFILE_NAME, argv.businessNetworkName, argv.enrollId, argv.enrollSecret);
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
                 sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, 'dogeid1');
-                sinon.assert.calledWith(process.exit, 1);
             });
     });
 

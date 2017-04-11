@@ -15,11 +15,15 @@
 'use strict';
 
 
-const Client = require('composer-client');
+
 const Pretty = require('prettyjson');
-const BusinessNetworkConnection = Client.BusinessNetworkConnection;
+
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 const cmdUtil = require('../../utils/cmdutils');
+
+const ora = require('ora');
+
+
 
 /**
  * <p>
@@ -45,9 +49,12 @@ class List {
         let businessNetworkDefinition;
         let listOutput;
 
-        return (() => {
+        let spinner;
 
-            console.log ('List business network '+businessNetworkName);
+        return (() => {
+            spinner = ora('List business network '+businessNetworkName).start();
+            // console.log ('List business network '+businessNetworkName);
+
             if (!argv.enrollSecret) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
@@ -66,7 +73,7 @@ class List {
         .then (() => {
             enrollId = argv.enrollId;
             enrollSecret = argv.enrollSecret;
-            businessNetworkConnection = new BusinessNetworkConnection();
+            businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
             return businessNetworkConnection.connect(connectionProfileName, businessNetworkName, enrollId, enrollSecret);
 
         })
@@ -104,18 +111,27 @@ class List {
                             let outputJSON = serializer.toJSON(assetSet[j]);
                             listOutput.registries[registry.id].assets[assetSet[j].getIdentifier()] = outputJSON;
                         }
+                        if (assetSet.length===0){
+                            delete   listOutput.registries[registry.id].assets;
+                        }
                     });
 
                 });
             }, Promise.resolve());
         })
         .then ((result) => {
-            console.log(Pretty.render(listOutput));
+            spinner.succeed();
+            console.log(Pretty.render(listOutput,{
+                keysColor: 'blue',
+                dashColor: 'blue',
+                stringColor: 'white'
+            }));
         })
         .then ((result) => {
             return businessNetworkConnection.disconnect();
         })
         .catch(error => {
+            spinner.fail();
             console.log(List.getError(error));
         });
     }

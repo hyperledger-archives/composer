@@ -123,7 +123,10 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getName().should.equal('test-npm-archive');
                 businessNetwork.getVersion().should.equal('0.0.1');
                 businessNetwork.getDescription().should.equal('A test business network using npm model dependencies.');
+
+
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(2);
+
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();

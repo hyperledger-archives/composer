@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-web",
-  "version": "0.5.6",
+  "version": "0.5.11",
   "description": "The web client connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -62,9 +62,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.5.6",
-    "composer-runtime": "^0.5.6",
-    "composer-runtime-web": "^0.5.6",
+    "composer-common": "^0.5.11",
+    "composer-runtime": "^0.5.11",
+    "composer-runtime-web": "^0.5.11",
     "uuid": "^3.0.1"
   }
 }

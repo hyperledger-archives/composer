@@ -1,0 +1,275 @@
+/**
+ * Defines a data model for a contingent labor business network
+ */
+namespace ibm.procurement.contingentLabor
+
+/* Purchase Order Approval Status */
+enum POContractorApprovalStatus {
+  o APPROVED
+  o NOT_APPROVED
+  o PENDING_REAPPROVAL
+}
+
+enum Flag_Y_N {
+  o Y
+  o N
+}
+
+/****************************
+* ASSETS
+*****************************/
+
+/*
+* POContractor represents line grouping by Contractor within PO
+*/
+concept POContractor {
+  o String itemStraightTime
+  o String poQtyStraightTime
+  o String unitPriceStraightTime
+  o String uomStraightTime
+  o String shortTextStraightTime
+  o String hoursDeliveredStraightTime
+  o String hoursRemainingStraightTime
+  o String itemOvertime
+  o String poQtyOvertime
+  o String unitPriceOvertime
+  o String uomOvertime
+  o String shortTextOvertime
+  o String hoursDeliveredOvertime
+  o String hoursRemainingOvertime
+  o String itemExpense
+  o String poQtyExpense
+  o String unitPriceExpense
+  o String uomExpense
+  o String shortTextExpense
+  o String hoursDeliveredExpense
+  o String hoursRemainingExpense
+  o String currency
+  o String startDate
+  o String endDate
+  o String street
+  o String postcode
+  o String city
+  o String country
+  o String region
+  o String timezone
+  o String requestContactName
+  o String requestContractID
+  o String orderedQty
+  o String deliveredQty
+  o String invoicedQty
+  o String toBeDeliveredQty
+  o String orderedValue
+  o String deliveredValue
+  o String invoicedValue
+  o String toBeDeliveredValue
+}
+
+/*
+* PurchaseOrder
+*/
+asset PurchaseOrder identified by poNumber {
+  o String poNumber
+  --> Supplier supplier  //Participant
+  o String supplierDescription
+  o String poDate
+  o String paymentTerms
+  o String paymentInDays
+  o String agreementNumber
+  o POContractor[] poContractor
+}
+
+/*
+* information entered by IBM PM
+*/
+concept POContractorBuyerDetails {
+  o String contractorID
+  o String contractorEmail
+  o String buyerEmail //init from PO.requestContractID
+  o String overTimeRate_1_0
+  o String overTimeRate_1_5
+  o String overTimeRate_2_0
+  o String expenseEligiblity
+  o String activity
+  o String activityDescription
+  o String accountID
+  o String workItem
+  o String activtyCode
+  // actualEndDate handled at parent level since both buyer and supplier can edit
+  o String bandLevel
+  o Flag_Y_N overTimeValidToInvoiceFlag
+  o Flag_Y_N expenseValidToInvoiceFlag
+}
+
+/*
+* information entered by Supplier SAM
+*/
+concept POContractorSupplierDetails {
+  o String contractorID
+  o String contractorName //init from PO.shortTextStraightTime
+  o String samID // SupplierAccountManager
+  o String singleHours
+  o String timeHalfHours
+  o String doubleTimeHours
+  o String contractorWorkLocation
+  o String actualStartDate // init from PO.startDate
+  // actualEndDate handled at parent level since both buyer and supplier can edit
+  o String workItem
+  o String workItemDescription
+  o String jobRoleDescription
+  o String jobRoleSkillSet
+  o String skillLevel
+  o Flag_Y_N backgroundCheckFlag
+  o String backgroundCheckDate
+  o String backgroundCheckEndDate
+  o String hoursToBeWorkedInADay
+  o String hoursToBeWorkedInAWeek
+}
+
+/*
+* Generated at time of receiving PO.  One POContractorRecord per PO.POContractor
+*/
+asset POContractorRecord identified by poContractorKey {
+  --> PurchaseOrder poNumber //identifier of PurchaseOrder is poNumber
+  o String poLineItem
+  o String poContractorKey // poNumber_poLineItem
+  o POContractorBuyerDetails poContractorBuyerDetails
+  o POContractorSupplierDetails poContractorSupplierDetails
+  o String actualEndDate  //init from PO.endDate
+  o Flag_Y_N activeContractorFlag // once approved first time by buyer and seller, and within actualEndDate the flag is Y
+  o POContractorApprovalStatus buyerApproval default ="NOT_APPROVED"
+  o POContractorApprovalStatus supplierApproval default ="NOT_APPROVED"
+}
+
+/****************************
+* TRANSACTIONS
+*****************************/
+
+/** Create purchase order from PO provider, ie SAP system */
+transaction CreatePO identified by trxId {
+  o String trxId
+  o PurchaseOrder po
+}
+
+transaction UpdatePOContractorSupplierDetails identified by trxId {
+  o String trxId
+  o String poNumber
+  o POContractorSupplierDetails poContractorSupplierDetails
+}
+
+transaction UpdatePOContractorBuyerDetails identified by trxId {
+  o String trxId
+  o String poNumber
+  o POContractorBuyerDetails poContractorBuyerDetails
+}
+
+/**
+ * Transaction for supplier account manager to approve purchase order buyer details
+ */
+transaction ApprovePOContractorBuyerDetails identified by trxId {
+  o String trxId
+  o String poNumber
+}
+
+/**
+ * Transaction for buyer manager to approve purchase order supplier details
+ */
+transaction ApprovePOContractorSupplierDetails identified by trxId {
+  o String trxId
+  o String poNumber
+}
+
+/****************************
+* PARTICIPANTS
+*****************************/
+
+/**
+ * An abstract User participant which can be extended
+ */
+abstract participant User identified by id {
+  o String id
+  o String organizationName // Infinite, IBM
+  o String defaultEmail optional
+}
+
+/**
+ * A PO Provider participant in the network, ie SAP
+ */
+participant POProvider extends User {
+}
+
+/**
+ * A Buyer participant role, ie IBM
+ */
+participant BuyerPM extends User {
+}
+
+/**
+ * A Supplier Account Manager participant role, ie Infinite
+ */
+participant Supplier extends User {
+}
+
+/**
+ * A (Buyer) Supplier Relationship Manager participant role, ie IBM
+ */
+participant BuyerSRM extends User {
+}
+
+
+/*****************************************************************************/
+
+/* future usage ??
+enum DayOfTheWeek {
+  o SATURDAY
+  o SUNDAY
+  o MONDAY
+  o TUESDAY
+  o WEDNESDAY
+  o THURSDAY
+  o FRIDAY
+}
+*/
+
+/* future usage ??
+asset TimeSheet identified by tsId {
+    o String tsId
+    o String weekEndingDate
+    o TimeEntry[] timeEntry //Concept
+    --> PurchaseOrder po    //Asset
+    --> Contractor contractor  //Participant
+}
+*/
+
+/****************************
+* CONCEPT
+*****************************/
+/* future usage ??
+concept TimeEntry {
+  o DayOfTheWeek dayOfTheWeek
+  o Double hours
+  o String assignmentType
+}
+*/
+
+/****************************
+* TRANSACTIONS
+*****************************/
+/**
+ * Transaction for contractor to log hours
+ */
+/*
+transaction LogHours identified by trxId {
+  o String trxId
+  o TimeSheet timeSheet
+}
+*/
+
+/**
+ * Transaction for resource manager to approve hours
+ */
+ /*
+transaction ApproveHours identified by trxId {
+  o String trxId
+}
+*/

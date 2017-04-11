@@ -104,9 +104,8 @@ export class TransactionComponent implements OnInit {
   private generateTransactionDeclaration(withSampleData?: boolean): void {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
     let factory = businessNetworkDefinition.getFactory();
-    let id = this.hiddenTransactionItems.get(this.selectedTransaction.getIdentifierFieldName());
     const generateParameters = { generate: true, 'withSampleData': withSampleData };
-    let resource = factory.newResource(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), id, generateParameters);
+    let resource = factory.newTransaction(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), undefined, generateParameters);
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);
@@ -115,6 +114,7 @@ export class TransactionComponent implements OnInit {
         delete json[key];
       });
       this.resourceDefinition = JSON.stringify(json, null, 2);
+      this.onDefinitionChanged();
     } catch (error) {
       // We can't generate a sample instance for some reason.
       this.definitionError = error.toString();
@@ -148,9 +148,6 @@ export class TransactionComponent implements OnInit {
     return Promise.resolve()
       .then(() => {
         let json = JSON.parse(this.resourceDefinition);
-        // Add UUID but not timestamp, as this is generated upon submission
-        let id = this.selectedTransaction.getIdentifierFieldName();
-        json[id] = this.hiddenTransactionItems.get(id);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let resource = serializer.fromJSON(json);
         return this.clientService.getBusinessNetworkConnection().submitTransaction(resource);

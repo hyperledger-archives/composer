@@ -27,14 +27,15 @@ module.exports.builder = {
 };
 module.exports.handler = (argv) => {
 
-    return Test.handler(argv)
+    argv.thePromise =  Test.handler(argv)
     .then(() => {
         console.log ('Command completed successfully.');
-        process.exit(0);
+        return;
     })
     .catch((error) => {
         console.log(error);
         console.log('Command failed.');
-        process.exit(1);
+        throw error;
     });
+    return argv.thePromise;
 };

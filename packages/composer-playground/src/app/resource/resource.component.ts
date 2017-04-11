@@ -38,7 +38,7 @@ export class ResourceComponent implements OnInit {
   private resourceDefinition: string = null;
   private resourceDeclaration: ClassDeclaration = null;
   private actionInProgress: boolean = false;
-  private defitionError: string = null;
+  private definitionError: string = null;
 
   private codeConfig = {
     lineNumbers: true,
@@ -112,19 +112,20 @@ export class ResourceComponent implements OnInit {
     let idx = Math.round(Math.random() * 9999).toString();
     idx = leftPad(idx, 4, '0');
     let id = `${this.resourceDeclaration.getIdentifierFieldName()}:${idx}`;
-    let resource = factory.newResource(
-      this.resourceDeclaration.getModelFile().getNamespace(),
-      this.resourceDeclaration.getName(),
-      id,
-      { generate: true, 'withSampleData': withSampleData });
-    let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
-      let json = serializer.toJSON(resource);
-      this.resourceDefinition = JSON.stringify(json, null, 2);
+        let resource = factory.newResource(
+            this.resourceDeclaration.getModelFile().getNamespace(),
+            this.resourceDeclaration.getName(),
+            id,
+            { generate: true, 'withSampleData': withSampleData }
+        );
+        let serializer = this.clientService.getBusinessNetwork().getSerializer();
+        let json = serializer.toJSON(resource);
+        this.resourceDefinition = JSON.stringify(json, null, 2);
     } catch (error) {
-      // We can't generate a sample instance for some reason.
-      this.defitionError = error.toString();
-      this.resourceDefinition = '';
+        // We can't generate a sample instance for some reason.
+        this.definitionError = error.toString();
+        this.resourceDefinition = '';
     }
   }
 
@@ -155,7 +156,7 @@ export class ResourceComponent implements OnInit {
         this.activeModal.close();
       })
       .catch((error) => {
-        this.defitionError = error.toString();
+        this.definitionError = error.toString();
         this.actionInProgress = false;
       });
   }
@@ -170,9 +171,9 @@ export class ResourceComponent implements OnInit {
       let serializer = this.clientService.getBusinessNetwork().getSerializer();
       let resource = serializer.fromJSON(json);
       resource.validate();
-      this.defitionError = null;
+      this.definitionError = null;
     } catch (e) {
-      this.defitionError = e.toString();
+      this.definitionError = e.toString();
     }
   }
 

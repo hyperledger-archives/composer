@@ -4,5 +4,5 @@
   "description": "A test business network using npm model dependencies.",
   "dependencies": {
     "animaltracking-model": "0.0.7"
-  }
+    }
 }

@@ -31,6 +31,8 @@ resource-modal {
 
     .resource-error-text{
       min-height: 30px;
+      color: $error-colour-1;
+      max-width: 600px;
     }
   }
 

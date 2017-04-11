@@ -32,8 +32,8 @@
           <codemirror [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()"
                       width="100%" height="100%">
           </codemirror>
-          <div class="resource-error-text" ng-if="defitionError!=null">
-            <p>{{defitionError}}</p>
+          <div class="resource-error-text" ng-if="definitionError!=null">
+            <p>{{definitionError}}</p>
           </div>
         </div>
       </section>
@@ -48,7 +48,7 @@
         <span>Cancel</span>
       </button>
       <button type="button" class="primary" (click)="submitTransaction()"
-              [disabled]="defitionError!=null || submitInProgress">
+              [disabled]="definitionError!=null || submitInProgress">
         <div *ngIf="!submitInProgress">
           <span>Submit</span>
         </div>
