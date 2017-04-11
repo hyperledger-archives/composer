@@ -11,7 +11,7 @@ excerpt: Quickstart
 
 ---
 
-Check that your system has the required software (at the required versions) installed:
+**1. Check that your system has the required software (at the required versions) installed:**
 
 **Operating Systems:** Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
 
@@ -28,19 +28,56 @@ Check that your system has the required software (at the required versions) inst
 If you need to update or install anything please refer to the install guides:
 [Installing Prerequisites](../installing/prerequisites.md)
 
-**Install the Composer command line tools:**
+**2. Install the Composer command line tools:**
 
 ```
 $ npm install -g composer-cli
 ```
 
-**Clone the Sample Applications Git Repository:**
+**3. Create your Composer Connection Profile
+
+Create the default Composer Connection profile directory (defaultProfile) eg.
+
+```
+bash 
+mkdir -p ~/.composer-connection-profiles/defaultProfile
+```
+
+Create (or edit as appropriate) the file `~/.composer-connection-profiles/defaultProfile/connection.json`, and create the Hyperledger Fabric v1 compatible connection profile using this template (below) - this profile uses a default channel 'mychannel'. 
+
+`
+{
+    "type": "hlfv1",
+    "orderers": [
+        "grpc://localhost:7050"
+    ],
+    "ca": "https://localhost:7054",
+    "peers": [
+        {
+            "requestURL": "grpc://localhost:7051",
+            "eventURL": "grpc://localhost:7053"
+        },
+        {
+            "requestURL": "grpc://localhost:7056",
+            "eventURL": "grpc://localhost:7058"
+        }
+    ],
+    "keyValStore": "/home/<username>/.hfc-key-store",
+    "channel": "mychannel",
+    "mspID": "Org1MSP",
+    "deployWaitTime": "300",
+    "invokeWaitTime": "100"
+}
+
+`
+
+**4. Clone the Sample Applications Git Repository:**
 
 ```
 $ git clone https://github.com/fabric-composer/sample-applications.git
 ```
 
-**Install the Getting Started Application:**
+**5. Install the Getting Started Application:**
 
 ```
 $ cd sample-applications/packages/getting-started
@@ -52,7 +89,7 @@ The latter command returns details about the deployed digital property network s
 
 ***npm install***
 
-`npm install` will run several scripts that are packaged into the getting-started repository. Presently, the Hyperledger Fabric v1 Docker YAML file used below is hlfv1/hlfv1_alpha-docker-compose.yml (non-TLS)
+`npm install` will run several scripts that are packaged into the getting-started repository. Presently, the Hyperledger Fabric v1 Docker YAML file used below is located at hlfv1/hlfv1_alpha-docker-compose.yml (non-TLS)
 
 1. *scripts/download-hyperledger.sh* - This script pulls the required Hyperledger Fabric v1 Docker images.
 2. *scripts/start-hyperledger.sh* - This uses the HLFv1 YAML file to bring up the Hyperledger Fabric v1 containers.
@@ -63,7 +100,7 @@ The latter command returns details about the deployed digital property network s
 
 There is [Reference material](https://fabric-composer.github.io/reference/commands.html) for Composer CLI
 
-**Run the Getting Started Application:**
+**6. Run the Getting Started Application:**
 
 Run the `npm test` command. You should see output as below.
 
