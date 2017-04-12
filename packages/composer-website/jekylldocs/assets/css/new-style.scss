@@ -890,6 +890,27 @@ nav {
             border: 1px solid $keyline-highlight;
           }
 
+          ul {
+            list-style: none;
+            padding-left: 2em;
+            text-indent: -1em;
+
+            li:before {
+              color: $primary-text;
+              content: '- \0000a0';
+              font-size: 1rem;
+              font-weight: 600;
+            }
+
+            li {
+              padding-bottom: 0.5rem;
+              p {
+                display: inline;
+              }
+
+            }
+          }
+
           ol {
             border-left: 1px solid $keyline-highlight;
             li {
