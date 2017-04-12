@@ -236,8 +236,8 @@ export class EditorComponent implements OnInit {
   openExportModal() {
     return this.clientService.getBusinessNetwork().toArchive().then((exportedData) => {
       let file = new File([exportedData],
-        this.clientService.getBusinessNetworkName() + '.bna',
-        {type: 'application/octet-stream'});
+                          this.clientService.getBusinessNetworkName() + '.bna',
+                          {type: 'application/octet-stream'});
       saveAs(file);
       this.alertService.successStatus$.next(this.clientService.getBusinessNetworkName() + '.bna was exported');
     });
