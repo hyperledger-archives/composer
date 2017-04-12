@@ -1,5 +1,5 @@
 /* tslint:disable:no-unused-variable */
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async,fakeAsync, tick} from '@angular/core/testing';
 import {Directive, Input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
@@ -458,9 +458,8 @@ describe('EditorComponent', () => {
     }));
   });
 
-  //TODO: workout how to do this
-  xdescribe('openExportModal', () => {
-    it('should export file', fakeAsync(() => {
+  describe('exportBNA', () => {
+    it('should export file', (done) => {
       mockClientService.getBusinessNetwork.returns({
         toArchive: sinon.stub().returns(Promise.resolve('my data'))
       });
@@ -471,12 +470,13 @@ describe('EditorComponent', () => {
         next: sinon.stub()
       };
 
-      component.openExportModal();
+      component.exportBNA();
 
-      tick();
-
-      mockAlertService.successStatus$.next.should.have.been.called;
-    }));
+      fixture.whenStable().then(() => {
+        mockAlertService.successStatus$.next.should.have.been.called;
+        done();
+      });
+    });
   });
 
   describe('openAddFileModal', () => {
