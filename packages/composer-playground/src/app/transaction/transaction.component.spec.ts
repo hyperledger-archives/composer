@@ -1,8 +1,8 @@
 /* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement, Component, Input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { By, BrowserModule } from '@angular/platform-browser';
+import { Component, Input } from '@angular/core';
+import { FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm } from '@angular/forms';
 
 import { TransactionComponent } from './transaction.component';
 import { CodemirrorComponent } from 'ng2-codemirror';
@@ -19,6 +19,7 @@ import {
   ModelFile,
   Introspector
 } from 'composer-common';
+
 import { BusinessNetworkConnection, AssetRegistry, TransactionRegistry } from 'composer-client';
 
 import * as chai from 'chai';
@@ -36,6 +37,7 @@ class MockCodeMirrorComponent {
 describe('TransactionComponent', () => {
   let component: TransactionComponent;
   let fixture: ComponentFixture<TransactionComponent>;
+  let element: HTMLElement;
   let mockNgbActiveModal;
   let mockClientService;
   let mockInitializationService;
@@ -45,11 +47,11 @@ describe('TransactionComponent', () => {
   let mockSerializer;
   let mockIntrospector;
   let mockFactory;
-  let mockResource;
 
   let sandbox;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
+
     sandbox = sinon.sandbox.create();
     mockNgbActiveModal = sinon.createStubInstance(NgbActiveModal);
     mockClientService = sinon.createStubInstance(ClientService);
@@ -59,7 +61,6 @@ describe('TransactionComponent', () => {
     mockSerializer = sinon.createStubInstance(Serializer);
     mockIntrospector = sinon.createStubInstance(Introspector);
     mockFactory = sinon.createStubInstance(Factory);
-    mockResource = sinon.createStubInstance(Resource);
     mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
     mockClientService.getBusinessNetwork.returns(mockBusinessNetwork);
     mockBusinessNetwork.getSerializer.returns(mockSerializer);
@@ -77,7 +78,8 @@ describe('TransactionComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [
-        FormsModule
+        FormsModule,
+        BrowserModule
       ],
       declarations: [
         TransactionComponent,
@@ -86,9 +88,13 @@ describe('TransactionComponent', () => {
       providers: [
         { provide: NgbActiveModal, useValue: mockNgbActiveModal },
         { provide: ClientService, useValue: mockClientService },
-        { provide: InitializationService, useValue: mockInitializationService },
+        { provide: InitializationService, useValue: mockInitializationService }
       ]
-    });
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {    
     fixture = TestBed.createComponent(TransactionComponent);
     component = fixture.componentInstance;
   });
@@ -165,23 +171,36 @@ describe('TransactionComponent', () => {
       mockModelFile.getNamespace.returns('com.test');
     });
 
-    it('should generate valid transaction definition', () => {
-      sandbox.stub(JSON, 'stringify');
-      component['selectedTransaction'] = mockTransaction;
+    it('should generate valid transaction definition', () => {      
+      mockSerializer.fromJSON.returns(mockTransaction);  
       mockTransaction.getIdentifierFieldName.returns('transactionId');
-      mockTransaction.getModelFile.returns(mockModelFile);
-      mockResource = sinon.createStubInstance(Resource);
+      mockTransaction.getModelFile.returns(mockModelFile);  
+      mockTransaction.validate = sandbox.stub();     
+      component['selectedTransaction'] = mockTransaction;      
+      
+      // should start clean
+      should.not.exist(component['definitionError']);
+
+      // run method
       component['generateTransactionDeclaration']();
 
-      mockSerializer.toJSON.should.be.called;
-      JSON.stringify.should.be.called;
+      // should not result in definitionError
+      should.not.exist(component['definitionError']);
+
+      // resourceDefinition should be set as per serializer.toJSON output
+      component['resourceDefinition'].should.equal('{\n  "$class": "mock.class",\n  "timestamp": "now",\n  "transactionId": "A"\n}');
+
+      // We use the following methods:
+      mockFactory.newTransaction.should.be.called;
+      mockSerializer.toJSON.should.be.called;      
+      component.onDefinitionChanged.should.be.calledOn;
     });
 
     it('should remove hidden transactions', () => {
       component['selectedTransaction'] = mockTransaction;
       mockTransaction.getIdentifierFieldName.returns('transactionId');
       mockTransaction.getModelFile.returns(mockModelFile);
-      mockResource = sinon.createStubInstance(Resource);
+
       component['hiddenTransactionItems'].set('transactionId', 'transactionId');
       component['hiddenTransactionItems'].set('timestamp', 'transactionId');
 
@@ -195,11 +214,12 @@ describe('TransactionComponent', () => {
       should.not.exist(resourceDefenition['transactionId']);
     });
 
-    it('should set definitionError', () => {
+    it('should set definitionError on serializer fail', () => {
       component['selectedTransaction'] = mockTransaction;
       mockTransaction.getIdentifierFieldName.returns('transactionId');
       mockTransaction.getModelFile.returns(mockModelFile);
-      mockResource = sinon.createStubInstance(Resource);
+            
+      // Validation requires serialisation to pass
       mockSerializer.toJSON = () => {
         throw new Error();
       };
@@ -208,16 +228,34 @@ describe('TransactionComponent', () => {
       component['definitionError'].should.not.be.null;
 
     });
+
+    it('should set definitionError on validation fail', () => {
+      component['selectedTransaction'] = mockTransaction;
+      mockTransaction.getIdentifierFieldName.returns('transactionId');
+      mockTransaction.getModelFile.returns(mockModelFile);
+      mockSerializer.toJSON.returns({'$class': 'com.org'});   
+      mockSerializer.fromJSON.returns(mockTransaction); 
+      mockTransaction.validate = () => {
+        throw new Error('error');
+      };
+
+      // should start clean
+      should.not.exist(component['definitionError']);
+
+      component['generateTransactionDeclaration']();
+
+      // should be in error state
+      should.exist(component['definitionError']);
+    });
   });
 
   describe('#onDefinitionChanged', () => {
     it('should validate a resource', () => {
-      mockResource.validate = sandbox.stub();
-      mockSerializer.fromJSON.returns(mockResource);
+      mockTransaction.validate = sandbox.stub();
+      mockSerializer.fromJSON.returns(mockTransaction);
       component['resourceDefinition'] = JSON.stringify({
         '$class': 'mock.class',
-        'timestamp':
-        'now',
+        'timestamp': 'now',
         'transactionId': 'A'
       });
       component['hiddenTransactionItems'].set('transactionId', 'transactionId');
@@ -225,34 +263,105 @@ describe('TransactionComponent', () => {
 
       component['onDefinitionChanged']();
       should.not.exist(component['definitionError']);
-      mockResource.validate.should.be.called;
+      mockTransaction.validate.should.be.called;
     });
 
-    it('should set definitionError', () => {
-      mockSerializer.fromJSON = () => {
-        throw new Error();
-      };
+    it('should set definitionError if validation fails', () => {
       component['resourceDefinition'] = JSON.stringify({
         '$class': 'mock.class',
-        'timestamp':
-        'now',
+        'timestamp': 'now',
         'transactionId': 'A'
       });
-      component['hiddenTransactionItems'].set('transactionId', 'transactionId');
-      component['hiddenTransactionItems'].set('timestamp', 'transactionId');
+      
+      // Force a validation fail
+      mockTransaction.validate = () => {
+        throw new Error('error');
+      };
 
+      // Run method and check
       component['onDefinitionChanged']();
       should.exist(component['definitionError']);
+
     });
+
+    it('should show definition errors to users', () => {      
+      
+      component['definitionError'] = 'Error: forced error';
+
+      // Check that the UI is showing the error
+      fixture.detectChanges();      
+      element = fixture.debugElement.query(By.css('.resource-error-text')).nativeElement;
+      element.textContent.should.contain('Error: forced error');
+
+    });
+
+    it('should disable the submit transaction button if definition error detected', () => {
+
+      component['definitionError'] = 'Error: forced error';
+      
+      // Check that the transaction submission button is disabled in UI
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;      
+      (element as HTMLButtonElement).disabled.should.be.true;
+
+    });
+
+    it('should re-enable the submit transaction button if definition error is fixed', () => {
+ 
+      component['definitionError'] = 'Error: forced error';
+      
+      // Check that the transaction submission button is disabled
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;      
+      (element as HTMLButtonElement).disabled.should.be.true;
+
+      // Fix the definition error      
+      component['definitionError'] = null;
+       
+      // Check that the transaction submission button is enabled
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;      
+      (element as HTMLButtonElement).disabled.should.be.false;
+
+    });
+
   });
 
   describe('#submitTransaction', () => {
-    it('should submit a transaction', fakeAsync(() => {
-      mockSerializer.fromJSON.returns(mockResource);
+    
+    it('should change button display on transaction submission', () => {
+      mockSerializer.fromJSON.returns(mockTransaction);
+      component['hiddenTransactionItems'].set('transactionId', 'transactionId');
+      component['hiddenTransactionItems'].set('timestamp', 'transactionId');
+
       component['resourceDefinition'] = JSON.stringify({
         '$class': 'mock.class',
-        'timestamp':
-        'now',
+        'timestamp': 'now',
+        'transactionId': 'A'
+      });
+
+      component['selectedTransaction'] = mockTransaction;
+
+      // Check that the transaction submission button is labelled correctly on initialisation
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;
+      element.innerHTML.should.contain('Submit');
+
+      // Flip Submit boolean
+      component['submitInProgress'] = true;
+
+      // Update element and check that button now contains spinner
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;   
+      element.innerHTML.should.contain('class="ibm-spinner-indeterminate small loop"');
+
+    });
+    
+    it('should submit a transaction and close the modal', fakeAsync(() => {
+      mockSerializer.fromJSON.returns(mockTransaction);
+      component['resourceDefinition'] = JSON.stringify({
+        '$class': 'mock.class',
+        'timestamp': 'now',
         'transactionId': 'A'
       });
       component['selectedTransaction'] = mockTransaction;
@@ -264,14 +373,7 @@ describe('TransactionComponent', () => {
       should.not.exist(component['definitionError']);
       mockNgbActiveModal.close.should.be.called;
     }));
+
   });
 
-  it('should give set definitionError', fakeAsync(() => {
-    component['resourceDefinition'] = 'error';
-    component['submitTransaction']();
-    tick();
-    tick();
-    should.exist(component['definitionError']);
-    component['submitInProgress'].should.be.false;
-  }));
 });
