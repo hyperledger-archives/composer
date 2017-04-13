@@ -75,10 +75,8 @@ export class EditorComponent implements OnInit {
         this.updateFiles();
 
         if(this.editorService.getCurrentFile() !== null) {
-          // console.log('A: ', this.editorService.getCurrentFile());
           this.currentFile = this.editorService.getCurrentFile();
         } else {
-          // console.log('B');
           if (this.files.length) {
             let initialFile = this.files.find((file) => {
               return file.readme;
@@ -93,7 +91,7 @@ export class EditorComponent implements OnInit {
   }
 
   updatePackageInfo() {
-    this.deployedPackageName = this.clientService.getMetaData().getName(); // Set Name
+  this.deployedPackageName = this.clientService.getMetaData().getName(); // Set Name
     this.deployedPackageVersion = this.clientService.getMetaData().getVersion(); // Set Version
     this.deployedPackageDescription = this.clientService.getMetaData().getDescription(); // Set Description
     this.inputPackageName = this.clientService.getMetaData().getName();
@@ -101,12 +99,12 @@ export class EditorComponent implements OnInit {
   }
 
   setCurrentFile(file) {
-    if (this.editingPackage) {
+  if (this.editingPackage) {
       this.updatePackageInfo();
       this.editingPackage = false;
     }
 
-    this.editorService.setCurrentFile(file);
+  this.editorService.setCurrentFile(file);
     this.currentFile = file;
   }
 
@@ -143,6 +141,7 @@ export class EditorComponent implements OnInit {
     });
     newFiles.push.apply(newFiles, newScriptFiles);
 
+    // deal with acl files
     let aclFile = this.clientService.getAclFile();
     if (aclFile) {
       newFiles.push({
@@ -152,6 +151,7 @@ export class EditorComponent implements OnInit {
       });
     }
 
+    // deal with readme
     let readme = this.clientService.getMetaData().getREADME();
     if (readme) {
       //add it first so it appears at the top of the list
@@ -307,8 +307,8 @@ export class EditorComponent implements OnInit {
    */
   editPackageName() {
     this.deployedPackageName = this.inputPackageName;
-
-    this.clientService.setBusinessNetworkName(this.deployedPackageName);
+    
+  this.clientService.setBusinessNetworkName(this.deployedPackageName);
 
     this.editActive = false;
   }
