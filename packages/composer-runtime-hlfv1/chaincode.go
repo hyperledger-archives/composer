@@ -41,7 +41,9 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 	//even though it was enabled in main.
 	logger.SetLevel(shim.LogDebug)
 	logger.Debug("Entering Chaincode.Init", &stub)
-	defer func() { logger.Debug("Exiting Chaincode.Init", response.Status, string(response.Payload)) }()
+	defer func() {
+		logger.Debug("Exiting Chaincode.Init", response.Status, response.Message, string(response.Payload))
+	}()
 
 	// Get an instance of Composer from the pool, and ensure it's returned.
 	composer := chaincode.ComposerPool.Get()
@@ -64,7 +66,9 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response p
 	//even though it was enabled in main.
 	logger.SetLevel(shim.LogDebug)
 	logger.Debug("Entering Chaincode.Invoke", &stub)
-	defer func() { logger.Debug("Exiting Chaincode.Invoke", response.Status, string(response.Payload)) }()
+	defer func() {
+		logger.Debug("Exiting Chaincode.Invoke", response.Status, response.Message, string(response.Payload))
+	}()
 
 	// Get an instance of Composer from the pool, and ensure it's returned.
 	composer := chaincode.ComposerPool.Get()
