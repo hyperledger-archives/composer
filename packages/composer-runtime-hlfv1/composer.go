@@ -19,7 +19,6 @@ import (
 	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
 	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
 
@@ -62,6 +61,7 @@ func (composer *Composer) createJavaScript() {
 	// Register event loop functions.
 	vm.PushTimers()
 
+	// Install the global object, and the window alias to it.
 	err := vm.PevalString(`
 		if (typeof global === 'undefined') {
 			(function () {
@@ -100,21 +100,10 @@ func (composer *Composer) createJavaScript() {
 
 }
 
-// handleErrorhandles an error from JavaScript converts it into a Go error.
-func (composer *Composer) handleError(err error) (result error) {
-	logger.Debug("Entering Composer.handleError", err)
-	defer func() { logger.Debug("Exiting Composer.handleError", result) }()
-
-	if jsError, ok := err.(*otto.Error); ok {
-		return errors.New(jsError.String())
-	}
-	return err
-}
-
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
 // Init can read from and write to the world state.
 func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
-	logger.Debug("Entering Composer.Init", stub, function, arguments)
+	logger.Debug("Entering Composer.Init", &stub, function, arguments)
 	defer func() { logger.Debug("Exiting Composer.Init", string(result), err) }()
 
 	// Create all required objects.
@@ -123,35 +112,32 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 	// Defer to the JavaScript function.
 	channel := composer.Engine.Init(context, function, arguments)
 
-	// Now read from the channel.
+	// Now read from the channel. This will be triggered when the JavaScript
+	// code calls the callback function.
 	data, ok := <-channel
 	if !ok {
 		return nil, errors.New("Failed to receive callback from JavaScript function")
 	}
-	result = data.Result
-	err = data.Error
-	return result, composer.handleError(err)
+	return data.Result, data.Error
 }
 
 // Invoke is called by the Hyperledger Fabric when the chaincode is invoked.
 // Invoke can read from and write to the world state.
 func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
-	logger.Debug("Entering Composer.Invoke", stub, function, arguments)
+	logger.Debug("Entering Composer.Invoke", &stub, function, arguments)
 	defer func() { logger.Debug("Exiting Composer.Invoke", string(result), err) }()
 
 	// Create all required objects.
-	// context := NewContext(composer.VM, composer.Engine, stub)
+	context := NewContext(composer.VM, composer.Engine, stub)
 
-	// // Defer to the JavaScript function.
-	// channel := composer.Engine.Invoke(context, function, arguments)
+	// Defer to the JavaScript function.
+	channel := composer.Engine.Invoke(context, function, arguments)
 
-	// // Now read from the channel.
-	// data, ok := <-channel
-	// if !ok {
-	// 	return nil, errors.New("Failed to receive callback from JavaScript function")
-	// }
-	// result = data.Result
-	// err = data.Error
-	// return result, composer.handleError(err)
-	return nil, nil
+	// Now read from the channel. This will be triggered when the JavaScript
+	// code calls the callback function.
+	data, ok := <-channel
+	if !ok {
+		return nil, errors.New("Failed to receive callback from JavaScript function")
+	}
+	return data.Result, data.Error
 }

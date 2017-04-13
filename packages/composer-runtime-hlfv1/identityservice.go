@@ -22,74 +22,85 @@ import (
 	duktape "gopkg.in/olebedev/go-duktape.v3"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
 )
 
 // IdentityService is a Go wrapper around an instance of the IdentityService JavaScript class.
 type IdentityService struct {
-	This *otto.Object
+	VM   *duktape.Context
 	Stub shim.ChaincodeStubInterface
 }
 
 // NewIdentityService creates a Go wrapper around a new instance of the IdentityService JavaScript class.
 func NewIdentityService(vm *duktape.Context, context *Context, stub shim.ChaincodeStubInterface) (result *IdentityService) {
-	logger.Debug("Entering NewIdentityService", vm, context, stub)
+	logger.Debug("Entering NewIdentityService", vm, context, &stub)
 	defer func() { logger.Debug("Exiting NewIdentityService", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	// temp, err := vm.Call("new composer.IdentityService", nil, context.This)
-	// if err != nil {
-	// 	panic(fmt.Sprintf("Failed to create new instance of IdentityService JavaScript class: %v", err))
-	// } else if !temp.IsObject() {
-	// 	panic("New instance of IdentityService JavaScript class is not an object")
-	// }
-	// object := temp.Object()
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
 
-	// Create a new access control shim.
-	// acs := impl.NewAccessControlShim(stub)
+	// Create the new identity service.
+	result = &IdentityService{VM: vm, Stub: stub}
 
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &IdentityService{Stub: stub}
-	// err = object.Set("$this", result)
-	// if err != nil {
-	// 	panic(fmt.Sprintf("Failed to store Go object in IdentityService JavaScript object: %v", err))
-	// }
+	// Create a new instance of the JavaScript IdentityService class.
+	vm.PushGlobalObject()                   // [ global ]
+	vm.GetPropString(-1, "composer")        // [ global composer ]
+	vm.GetPropString(-1, "IdentityService") // [ global composer IdentityService ]
+	err := vm.Pnew(0)                       // [ global composer theIdentityService ]
+	if err != nil {
+		panic(err)
+	}
+
+	// Store the identity service into the global stash.
+	vm.PushGlobalStash()                    // [ global composer theIdentityService stash ]
+	vm.Dup(-2)                              // [ global composer theIdentityService stash theIdentityService  ]
+	vm.PutPropString(-2, "identityService") // [ global composer theIdentityService stash ]
+	vm.Pop()                                // [ global composer theIdentityService ]
 
 	// Bind the methods into the JavaScript object.
-	// result.This.Set("getCurrentUserID", result.getCurrentUserID)
-	return result
+	vm.PushGoFunction(result.getCurrentUserID) // [ global composer theIdentityService getCurrentUserID ]
+	vm.PutPropString(-2, "getCurrentUserID")   // [ global composer theIdentityService ]
 
+	// Return the new identity service.
+	return result
 }
 
 // getCurrentUserID retrieves the userID attribute from the users certificate.
-func (identityService *IdentityService) getCurrentUserID(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering IdentityService.getCurrentUserID", call)
+func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (result int) {
+	logger.Debug("Entering IdentityService.getCurrentUserID", vm)
 	defer func() { logger.Debug("Exiting IdentityService.getCurrentUserID", result) }()
 
 	creator, err := identityService.Stub.GetCreator()
 	if err != nil {
 		logger.Debug("Error received on GetCreator", err)
-		return otto.NullValue()
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.Throw()
+		return 0
 	}
 	//var ucert *x509.Certificate
 	logger.Debug("creator", string(creator))
 	certStart := bytes.IndexAny(creator, "----BEGIN CERTIFICATE-----")
 	if certStart == -1 {
 		logger.Debug("No certificate found")
-		return otto.NullValue()
+		vm.PushErrorObject(duktape.ErrError, "%s", "No certificate found")
+		vm.Throw()
+		return 0
 	}
 	certText := creator[certStart:]
 	block, _ := pem.Decode(certText)
 	if block == nil {
 		logger.Debug("Error received on pem.Decode of certificate", certText)
-		return otto.NullValue()
+		vm.PushErrorObject(duktape.ErrError, "Error received on pem.Decode of certificate: %s", certText)
+		vm.Throw()
+		return 0
 	}
 
 	ucert, err := x509.ParseCertificate(block.Bytes)
 
 	if err != nil {
 		logger.Debug("Error received on ParseCertificate", err)
-		return otto.NullValue()
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.Throw()
+		return 0
 	}
 
 	logger.Debug("Common Name", ucert.Subject.CommonName)
@@ -97,26 +108,9 @@ func (identityService *IdentityService) getCurrentUserID(call otto.FunctionCall)
 	// TODO: temporary for V1 admin user returns null to give them
 	// full authority
 	if ucert.Subject.CommonName == "admin" {
-		return otto.NullValue()
+		vm.PushNull()
+		return 1
 	}
-	result, err = otto.ToValue(ucert.Subject.CommonName)
-	if err != nil {
-		panic(call.Otto.MakeCustomError("Error", err.Error()))
-	}
-	return result
-
-	// Read the userID attribute value.
-	// identityService.Stub.GetBinding()
-	// bytes, err := identityService.AccessControlShim.ReadCertAttribute("userID")
-	// if err != nil {
-	// 	return otto.NullValue()
-	// }
-	// value := string(bytes)
-	// result, err = otto.ToValue(value)
-	// if err != nil {
-	// 	panic(call.Otto.MakeCustomError("Error", err.Error()))
-	// }
-	// return result
-	//return otto.NullValue()
-
+	vm.PushString(ucert.Subject.CommonName)
+	return 1
 }

@@ -21,47 +21,52 @@ import (
 
 // LoggingService is a Go wrapper around an instance of the LoggingService JavaScript class.
 type LoggingService struct {
+	VM   *duktape.Context
 	Stub shim.ChaincodeStubInterface
 }
 
 // NewLoggingService creates a Go wrapper around a new instance of the LoggingService JavaScript class.
 func NewLoggingService(vm *duktape.Context, container *Container, stub shim.ChaincodeStubInterface) (result *LoggingService) {
-	logger.Debug("Entering NewLoggingService", vm, container, stub)
+	logger.Debug("Entering NewLoggingService", vm, container, &stub)
 	defer func() { logger.Debug("Exiting NewLoggingService", result) }()
 
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
+
 	// Create the new logging service.
-	result = &LoggingService{Stub: stub}
+	result = &LoggingService{VM: vm, Stub: stub}
 
 	// Create a new instance of the JavaScript LoggingService class.
 	vm.PushGlobalObject()                  // [ global ]
 	vm.GetPropString(-1, "composer")       // [ global composer ]
 	vm.GetPropString(-1, "LoggingService") // [ global composer LoggingService ]
-	vm.New(0)                              // [ global composer theLoggingService ]
+	err := vm.Pnew(0)                      // [ global composer theLoggingService ]
+	if err != nil {
+		panic(err)
+	}
 
-	// Store the LoggingService into the global stash.
+	// Store the logging service into the global stash.
 	vm.PushGlobalStash()                   // [ global composer theLoggingService stash ]
 	vm.Dup(-2)                             // [ global composer theLoggingService stash theLoggingService  ]
 	vm.PutPropString(-2, "loggingService") // [ global composer theLoggingService stash ]
 	vm.Pop()                               // [ global composer theLoggingService ]
 
 	// Bind the methods into the JavaScript object.
-	vm.PushGoFunction(result.logCritical)
-	vm.PutPropString(-2, "logCritical")
-	vm.PushGoFunction(result.logDebug)
-	vm.PutPropString(-2, "logDebug")
-	vm.PushGoFunction(result.logError)
-	vm.PutPropString(-2, "logError")
-	vm.PushGoFunction(result.logInfo)
-	vm.PutPropString(-2, "logInfo")
-	vm.PushGoFunction(result.logNotice)
-	vm.PutPropString(-2, "logNotice")
-	vm.PushGoFunction(result.logWarning)
-	vm.PutPropString(-2, "logWarning")
-	vm.Pop3()
+	vm.PushGoFunction(result.logCritical) // [ global composer theLoggingService logCritical ]
+	vm.PutPropString(-2, "logCritical")   // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logDebug)    // [ global composer theLoggingService logDebug ]
+	vm.PutPropString(-2, "logDebug")      // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logError)    // [ global composer theLoggingService logError ]
+	vm.PutPropString(-2, "logError")      // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logInfo)     // [ global composer theLoggingService logInfo ]
+	vm.PutPropString(-2, "logInfo")       // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logNotice)   // [ global composer theLoggingService logNotice ]
+	vm.PutPropString(-2, "logNotice")     // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logWarning)  // [ global composer theLoggingService logWarning ]
+	vm.PutPropString(-2, "logWarning")    // [ global composer theLoggingService ]
 
 	// Return the new logging service.
 	return result
-
 }
 
 // getLogInserts extracts the list of JavaScript arguments and converts them into a Go array.

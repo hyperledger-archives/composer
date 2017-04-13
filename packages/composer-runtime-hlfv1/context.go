@@ -16,50 +16,57 @@ package main
 
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
 	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
 
 // Context is a Go wrapper around an instance of the Context JavaScript class.
 type Context struct {
-	This            *otto.Object
+	VM              *duktape.Context
 	DataService     *DataService
 	IdentityService *IdentityService
 }
 
 // NewContext creates a Go wrapper around a new instance of the Context JavaScript class.
 func NewContext(vm *duktape.Context, engine *Engine, stub shim.ChaincodeStubInterface) (result *Context) {
-	logger.Debug("Entering NewContext", vm, engine, stub)
+	logger.Debug("Entering NewContext", vm, engine, &stub)
 	defer func() { logger.Debug("Exiting NewContext", result) }()
 
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
+
 	// Create the new logging service.
-	result = &Context{}
+	result = &Context{VM: vm}
 
 	// Create the services.
 	result.DataService = NewDataService(vm, result, stub)
 	result.IdentityService = NewIdentityService(vm, result, stub)
 
-	// Create a new instance of the JavaScript LoggingService class.
-	vm.PushGlobalObject()                  // [ global ]
-	vm.GetPropString(-1, "composer")       // [ global composer ]
-	vm.GetPropString(-1, "LoggingService") // [ global composer LoggingService ]
-	vm.New(0)                              // [ global composer theLoggingService ]
+	// Find the JavaScript engine object.
+	vm.PushGlobalStash()           // [ stash ]
+	vm.GetPropString(-1, "engine") // [ stash theEngine ]
 
-	// Store the LoggingService into the global stash.
-	vm.PushGlobalStash()                   // [ global composer theLoggingService stash ]
-	vm.Dup(-2)                             // [ global composer theLoggingService stash theLoggingService  ]
-	vm.PutPropString(-2, "loggingService") // [ global composer theLoggingService stash ]
-	vm.Pop()                               // [ global composer theLoggingService ]
+	// Create a new instance of the JavaScript Context class.
+	vm.PushGlobalObject()            // [ stash theEngine global ]
+	vm.GetPropString(-1, "composer") // [ stash theEngine global composer ]
+	vm.GetPropString(-1, "Context")  // [ stash theEngine global composer Context ]
+	vm.Dup(-4)                       // [ stash theEngine global composer Context theEngine ]
+	err := vm.Pnew(1)                // [ stash theEngine global composer theContext ]
+	if err != nil {
+		panic(err)
+	}
+
+	// Store the context into the global stash.
+	vm.DupTop()                     // [ stash theEngine global composer theContext theContext ]
+	vm.PutPropString(-6, "context") // [ stash theEngine global composer theContext ]
 
 	// Bind the methods into the JavaScript object.
-	vm.PushGoFunction(result.getDataService)
-	vm.PutPropString(-2, "getDataService")
-	vm.PushGoFunction(result.getIdentityService)
-	vm.PutPropString(-2, "getIdentityService")
+	vm.PushGoFunction(result.getDataService)     // [ stash theEngine global composer theContext getDataService ]
+	vm.PutPropString(-2, "getDataService")       // [ stash theEngine global composer theContext ]
+	vm.PushGoFunction(result.getIdentityService) // [ stash theEngine global composer theContext getIdentityService ]
+	vm.PutPropString(-2, "getIdentityService")   // [ stash theEngine global composer theContext ]
 
 	// Return the new context.
 	return result
-
 }
 
 // getDataService returns the data service to use.
@@ -67,6 +74,7 @@ func (context *Context) getDataService(vm *duktape.Context) (result int) {
 	logger.Debug("Entering Context.getDataService", vm)
 	defer func() { logger.Debug("Exiting Context.getDataService", result) }()
 
+	// Return the JavaScript object from the global stash.
 	vm.PushGlobalStash()
 	vm.GetPropString(-1, "dataService")
 	return 1
@@ -77,6 +85,7 @@ func (context *Context) getIdentityService(vm *duktape.Context) (result int) {
 	logger.Debug("Entering Context.getIdentityService", vm)
 	defer func() { logger.Debug("Exiting Context.getIdentityService", result) }()
 
+	// Return the JavaScript object from the global stash.
 	vm.PushGlobalStash()
 	vm.GetPropString(-1, "identityService")
 	return 1

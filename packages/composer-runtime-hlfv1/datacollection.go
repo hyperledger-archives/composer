@@ -15,377 +15,405 @@
 package main
 
 import (
-	"fmt"
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
 )
 
 // DataCollection is a Go wrapper around an instance of the DataCollection JavaScript class.
 type DataCollection struct {
-	This         *otto.Object
+	VM           *duktape.Context
 	Stub         shim.ChaincodeStubInterface
 	CollectionID string
 }
 
 // NewDataCollection creates a Go wrapper around a new instance of the DataCollection JavaScript class.
-func NewDataCollection(vm *otto.Otto, dataService *DataService, stub shim.ChaincodeStubInterface, collectionID string) (result *DataCollection) {
-	logger.Debug("Entering NewDataCollection", vm, dataService, stub)
+func NewDataCollection(vm *duktape.Context, dataService *DataService, stub shim.ChaincodeStubInterface, collectionID string) (result *DataCollection) {
+	logger.Debug("Entering NewDataCollection", vm, dataService, &stub)
 	defer func() { logger.Debug("Exiting NewDataCollection", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new composer.DataCollection", nil, dataService.This)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of DataCollection JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of DataCollection JavaScript class is not an object")
-	}
-	object := temp.Object()
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
 
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &DataCollection{This: temp.Object(), Stub: stub, CollectionID: collectionID}
-	err = object.Set("$this", result)
+	// Create the new data service.
+	result = &DataCollection{VM: vm, Stub: stub, CollectionID: collectionID}
+
+	// Get the data service.
+	vm.PushGlobalStash()                // [ stash ]
+	vm.GetPropString(-1, "dataService") // [ stash theDataService ]
+
+	// Create a new instance of the JavaScript DataCollection class.
+	vm.PushGlobalObject()                  // [ stash theDataService global ]
+	vm.GetPropString(-1, "composer")       // [ stash theDataService global composer ]
+	vm.GetPropString(-1, "DataCollection") // [ stash theDataService global composer DataCollection ]
+	vm.Dup(-4)                             // [ stash theDataService global composer DataCollection theDataService ]
+	err := vm.Pnew(1)                      // [ stash theDataService global composer theDataCollection ]
 	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in DataCollection JavaScript object: %v", err))
+		panic(err)
 	}
+
+	// Store the data collection into the global stash.
+	vm.DupTop()                            // [ stash theDataService global composer theDataCollection theDataCollection ]
+	vm.PutPropString(-6, "dataCollection") // [ stash theDataService global composer theDataCollection ]
 
 	// Bind the methods into the JavaScript object.
-	result.This.Set("_getAll", result.getAll)
-	result.This.Set("_get", result.get)
-	result.This.Set("_exists", result.exists)
-	result.This.Set("_add", result.add)
-	result.This.Set("_update", result.update)
-	result.This.Set("_remove", result.remove)
-	return result
+	vm.PushGoFunction(result.getAll) // [ stash theDataService global composer theDataCollection getAll ]
+	vm.PutPropString(-2, "_getAll")  // [ stash theDataService global composer theDataCollection ]
+	vm.PushGoFunction(result.get)    // [ stash theDataService global composer theDataCollection get ]
+	vm.PutPropString(-2, "_get")     // [ stash theDataService global composer theDataCollection ]
+	vm.PushGoFunction(result.exists) // [ stash theDataService global composer theDataCollection exists ]
+	vm.PutPropString(-2, "_exists")  // [ stash theDataService global composer theDataCollection ]
+	vm.PushGoFunction(result.add)    // [ stash theDataService global composer theDataCollection add ]
+	vm.PutPropString(-2, "_add")     // [ stash theDataService global composer theDataCollection ]
+	vm.PushGoFunction(result.update) // [ stash theDataService global composer theDataCollection update ]
+	vm.PutPropString(-2, "_update")  // [ stash theDataService global composer theDataCollection ]
+	vm.PushGoFunction(result.remove) // [ stash theDataService global composer theDataCollection remove ]
+	vm.PutPropString(-2, "_remove")  // [ stash theDataService global composer theDataCollection ]
 
+	// Return the new data collection.
+	return result
 }
 
 // getAll retreieves all of the objects in this collection from the world state.
-func (dataCollection *DataCollection) getAll(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering DataCollection.getAll", call)
+func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataCollection.getAll", vm)
 	defer func() { logger.Debug("Exiting DataCollection.getAll", result) }()
 
 	// Validate the arguments from JavaScript.
-	callback := call.Argument(0)
-	if !callback.IsFunction() {
-		panic(fmt.Errorf("callback not specified or is not a string"))
-	}
+	vm.RequireFunction(0)
 
 	// Create the composite key.
 	// The objects are stored with composite keys of collectionID + objectID.
 	iterator, err := dataCollection.Stub.GetStateByPartialCompositeKey(dataCollection.CollectionID, []string{})
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(0)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
 	// Must close iterator to free resources.
 	defer iterator.Close()
 
 	// Iterate over all the keys returned by the partial query above.
-	objects := []interface{}{}
+	arrIdx := vm.PushArray()
+	arrCount := uint(0)
 	for iterator.HasNext() {
 
 		// Read the current key and value.
-		kv, err := iterator.Next()
+		_, value, err := iterator.Next()
+		// kv, err := iterator.Next()
 		if err != nil {
-			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-			if err != nil {
+			vm.Dup(0)
+			vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
-			return otto.UndefinedValue()
+			return 0
 		}
 
 		// Parse the current value.
-		object, err := call.Otto.Call("JSON.parse", nil, string(kv.Value))
-		if err != nil {
-			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-			if err != nil {
-				panic(err)
-			}
-			return otto.UndefinedValue()
-		}
-		objects = append(objects, object)
+		vm.PushString(string(value))
+		// vm.PushString(string(kv.Value))
+		vm.JsonDecode(-1)
+		vm.PutPropIndex(arrIdx, arrCount)
+		arrCount++
 
 	}
-	_, err = callback.Call(callback, nil, objects)
-	if err != nil {
-		panic(err)
-	}
-	return otto.UndefinedValue()
+
+	// Call the callback.
+	vm.Dup(0)
+	vm.PushNull()
+	vm.Dup(arrIdx)
+	vm.Pcall(2)
+	return 0
 }
 
 // get retrieves a specific object in this collection from the world state.
-func (dataCollection *DataCollection) get(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering DataCollection.get", call)
+func (dataCollection *DataCollection) get(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataCollection.get", vm)
 	defer func() { logger.Debug("Exiting DataCollection.get", result) }()
 
 	// Validate the arguments from JavaScript.
-	id, callback := call.Argument(0), call.Argument(1)
-	if !id.IsString() {
-		panic(fmt.Errorf("id not specified or is not a string"))
-	} else if !callback.IsFunction() {
-		panic(fmt.Errorf("callback not specified or is not a string"))
-	}
+	id := vm.RequireString(0)
+	vm.RequireFunction(1)
 
 	// Create the composite key.
 	// The objects are stored with composite keys of collectionID + objectID.
-	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id.String()})
+	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
 	// Get the collection.
 	value, err := dataCollection.Stub.GetState(key)
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	} else if value == nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Object with ID '%s' in collection with ID '%s' does not exist", id, dataCollection.CollectionID)))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "Object with ID '%s' in collection with ID '%s' does not exist", []interface{}{id, dataCollection.CollectionID})
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
 	// Parse the current value.
-	object, err := call.Otto.Call("JSON.parse", nil, string(value))
-	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
-			panic(err)
-		}
-		return otto.UndefinedValue()
+	vm.PushString(string(value))
+	vm.JsonDecode(-1)
+
+	// Call the callback.
+	vm.Dup(1)
+	vm.PushNull()
+	vm.Dup(-3)
+	if vm.Pcall(2) == duktape.ExecError {
+		panic(vm.ToString(-1))
 	}
-	_, err = callback.Call(callback, nil, object)
-	if err != nil {
-		panic(err)
-	}
-	return otto.UndefinedValue()
+	return 0
 }
 
 // exists checks to see if an object exists in this collection in the world state.
-func (dataCollection *DataCollection) exists(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering DataCollection.exists", call)
+func (dataCollection *DataCollection) exists(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataCollection.exists", vm)
 	defer func() { logger.Debug("Exiting DataCollection.exists", result) }()
 
 	// Validate the arguments from JavaScript.
-	id, callback := call.Argument(0), call.Argument(1)
-	if !id.IsString() {
-		panic(fmt.Errorf("id not specified or is not a string"))
-	} else if !callback.IsFunction() {
-		panic(fmt.Errorf("callback not specified or is not a string"))
-	}
+	id := vm.RequireString(0)
+	vm.RequireFunction(1)
 
 	// Create the composite key.
 	// The objects are stored with composite keys of collectionID + objectID.
-	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id.String()})
+	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
 	// Get the object.
 	value, err := dataCollection.Stub.GetState(key)
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
-	_, err = callback.Call(callback, nil, value != nil)
-	if err != nil {
-		panic(err)
+
+	// Call the callback.
+	vm.Dup(1)
+	vm.PushNull()
+	vm.PushBoolean(value != nil)
+	if vm.Pcall(2) == duktape.ExecError {
+		panic(vm.ToString(-1))
 	}
-	return otto.UndefinedValue()
+	return 0
 }
 
 // add adds an object to this collection in the world satte.
-func (dataCollection *DataCollection) add(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering DataCollection.add", call)
+func (dataCollection *DataCollection) add(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataCollection.add", vm)
 	defer func() { logger.Debug("Exiting DataCollection.add", result) }()
 
 	// Validate the arguments from JavaScript.
-	id, object, force, callback := call.Argument(0), call.Argument(1), call.Argument(2), call.Argument(3)
-	if !id.IsString() {
-		panic(fmt.Errorf("id not specified or is not a string"))
-	} else if !object.IsObject() {
-		panic(fmt.Errorf("object not specified or is not a string"))
-	} else if !callback.IsFunction() {
-		panic(fmt.Errorf("callback not specified or is not a string"))
-	} else if !force.IsBoolean() {
-		panic(fmt.Errorf("force not specified or is not a boolean"))
-	}
+	id := vm.RequireString(0)
+	vm.RequireObjectCoercible(1)
+	force := vm.RequireBoolean(2)
+	vm.RequireFunction(3)
 
 	// Serialize the object.
-	value, err := call.Otto.Call("JSON.stringify", nil, object)
-	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
-			panic(err)
-		}
-		return otto.UndefinedValue()
-	}
+	vm.Dup(1)
+	vm.JsonEncode(-1)
+	value := vm.RequireString(-1)
 
 	// Create the composite key.
 	// The objects are stored with composite keys of collectionID + objectID.
-	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id.String()})
+	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(3)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
-	forceVal, err := force.ToBoolean()
-	if !forceVal {
+	if !force {
 		// Check to see if the object already exists.
 		existingValue, err := dataCollection.Stub.GetState(key)
 		if err != nil {
-			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-			if err != nil {
+			vm.Dup(3)
+			vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
-			return otto.UndefinedValue()
+			return 0
 		} else if existingValue != nil {
-			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Failed to add object with ID '%s' as the object already exists", id)))
-			if err != nil {
+			vm.Dup(3)
+			vm.PushErrorObject(duktape.ErrError, "Failed to add object with ID '%s' as the object already exists", id)
+			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
-			return otto.UndefinedValue()
+			return 0
 		}
 	}
 
 	// Store the object in the collection.
-	err = dataCollection.Stub.PutState(key, []byte(value.String()))
-	_, err = callback.Call(callback, nil)
+	err = dataCollection.Stub.PutState(key, []byte(value))
 	if err != nil {
-		panic(err)
+		vm.Dup(2)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
+			panic(err)
+		}
+		return 0
 	}
-	return otto.UndefinedValue()
+
+	// Call the callback.
+	vm.Dup(3)
+	vm.PushNull()
+	if vm.Pcall(1) == duktape.ExecError {
+		panic(vm.ToString(-1))
+	}
+	return 0
 }
 
 // update updates an existing object in this collection in the world state.
-func (dataCollection *DataCollection) update(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering DataCollection.update", call)
+func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataCollection.update", vm)
 	defer func() { logger.Debug("Exiting DataCollection.update", result) }()
 
 	// Validate the arguments from JavaScript.
-	id, object, callback := call.Argument(0), call.Argument(1), call.Argument(2)
-	if !id.IsString() {
-		panic(fmt.Errorf("id not specified or is not a string"))
-	} else if !object.IsObject() {
-		panic(fmt.Errorf("object not specified or is not a string"))
-	} else if !callback.IsFunction() {
-		panic(fmt.Errorf("callback not specified or is not a string"))
-	}
+	id := vm.RequireString(0)
+	vm.RequireObjectCoercible(1)
+	vm.RequireFunction(2)
 
 	// Serialize the object.
-	value, err := call.Otto.Call("JSON.stringify", nil, object)
-	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
-			panic(err)
-		}
-		return otto.UndefinedValue()
-	}
+	vm.Dup(1)
+	vm.JsonEncode(-1)
+	value := vm.RequireString(-1)
 
 	// Create the composite key.
 	// The objects are stored with composite keys of collectionID + objectID.
-	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id.String()})
+	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(2)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
 	// Check to see if the object already exists.
 	existingValue, err := dataCollection.Stub.GetState(key)
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(2)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	} else if existingValue == nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Failed to update object with ID '%s' as the object does not exist", id)))
-		if err != nil {
+		vm.Dup(2)
+		vm.PushErrorObject(duktape.ErrError, "Failed to update object with ID '%s' as the object does not exist", id)
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
 	// Store the object in the collection.
-	err = dataCollection.Stub.PutState(key, []byte(value.String()))
-	_, err = callback.Call(callback, nil)
+	err = dataCollection.Stub.PutState(key, []byte(value))
 	if err != nil {
-		panic(err)
+		vm.Dup(2)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
+			panic(err)
+		}
+		return 0
 	}
-	return otto.UndefinedValue()
+
+	// Call the callback.
+	vm.Dup(2)
+	vm.PushNull()
+	if vm.Pcall(1) == duktape.ExecError {
+		panic(vm.ToString(-1))
+	}
+	return 0
 }
 
 // remove removes an object from this collection in the world state.
-func (dataCollection *DataCollection) remove(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering DataCollection.remove", call)
+func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataCollection.remove", vm)
 	defer func() { logger.Debug("Exiting DataCollection.remove", result) }()
 
 	// Validate the arguments from JavaScript.
-	id, callback := call.Argument(0), call.Argument(1)
-	if !id.IsString() {
-		panic(fmt.Errorf("id not specified or is not a string"))
-	} else if !callback.IsFunction() {
-		panic(fmt.Errorf("callback not specified or is not a string"))
-	}
+	id := vm.RequireString(0)
+	vm.RequireFunction(1)
 
 	// Create the composite key.
 	// The objects are stored with composite keys of collectionID + objectID.
-	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id.String()})
+	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
 	// Check to see if the object already exists.
 	existingValue, err := dataCollection.Stub.GetState(key)
 	if err != nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	} else if existingValue == nil {
-		_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", fmt.Sprintf("Failed to delete object with ID '%s' as the object does not exist", id)))
-		if err != nil {
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "Failed to delete object with ID '%s' as the object does not exist", id)
+		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
-		return otto.UndefinedValue()
+		return 0
 	}
 
-	// Store the object in the collection.
+	// Remove the object from the collection.
 	err = dataCollection.Stub.DelState(key)
-	_, err = callback.Call(callback, nil)
 	if err != nil {
-		panic(err)
+		vm.Dup(1)
+		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
+			panic(err)
+		}
+		return 0
 	}
-	return otto.UndefinedValue()
+
+	// Call the callback.
+	vm.Dup(1)
+	vm.PushNull()
+	if vm.Pcall(1) == duktape.ExecError {
+		panic(vm.ToString(-1))
+	}
+	return 0
 }

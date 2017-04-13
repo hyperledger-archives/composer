@@ -40,8 +40,8 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 	//logging needs to be set here again as the fabric chaincode disables it
 	//even though it was enabled in main.
 	logger.SetLevel(shim.LogDebug)
-	logger.Debug("Entering Chaincode.Init", stub)
-	defer func() { logger.Debug("Exiting Chaincode.Init", response) }()
+	logger.Debug("Entering Chaincode.Init", &stub)
+	defer func() { logger.Debug("Exiting Chaincode.Init", response.Status, string(response.Payload)) }()
 
 	// Get an instance of Composer from the pool, and ensure it's returned.
 	composer := chaincode.ComposerPool.Get()
@@ -59,8 +59,12 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 // Invoke is called by the Hyperledger Fabric when the chaincode is invoked.
 // Invoke can read from and write to the world state.
 func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response pb.Response) {
-	logger.Debug("Entering Chaincode.Invoke", stub)
-	defer func() { logger.Debug("Exiting Chaincode.Invoke", response) }()
+	//TODO: Need to control this via env var and/or api call.
+	//logging needs to be set here again as the fabric chaincode disables it
+	//even though it was enabled in main.
+	logger.SetLevel(shim.LogDebug)
+	logger.Debug("Entering Chaincode.Invoke", &stub)
+	defer func() { logger.Debug("Exiting Chaincode.Invoke", response.Status, string(response.Payload)) }()
 
 	// Get an instance of Composer from the pool, and ensure it's returned.
 	composer := chaincode.ComposerPool.Get()

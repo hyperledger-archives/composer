@@ -22,6 +22,7 @@ import (
 
 // Container is a Go wrapper around an instance of the Container JavaScript class.
 type Container struct {
+	VM             *duktape.Context
 	LoggingService *LoggingService
 }
 
@@ -30,8 +31,11 @@ func NewContainer(vm *duktape.Context, stub shim.ChaincodeStubInterface) (result
 	logger.Debug("Entering NewContainer", vm)
 	defer func() { logger.Debug("Exiting NewContainer", result) }()
 
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
+
 	// Create the new container.
-	result = &Container{}
+	result = &Container{VM: vm}
 
 	// Create the services.
 	result.LoggingService = NewLoggingService(vm, result, stub)
@@ -40,7 +44,10 @@ func NewContainer(vm *duktape.Context, stub shim.ChaincodeStubInterface) (result
 	vm.PushGlobalObject()             // [ global ]
 	vm.GetPropString(-1, "composer")  // [ global composer ]
 	vm.GetPropString(-1, "Container") // [ global composer Container ]
-	vm.New(0)                         // [ global composer theContainer ]
+	err := vm.Pnew(0)                 // [ global composer theContainer ]
+	if err != nil {
+		panic(err)
+	}
 	vm.PushGlobalStash()              // [ global composer theContainer stash ]
 	vm.Dup(-2)                        // [ global composer theContainer stash theContainer  ]
 	vm.PutPropString(-2, "container") // [ global composer theContainer stash ]
@@ -51,11 +58,9 @@ func NewContainer(vm *duktape.Context, stub shim.ChaincodeStubInterface) (result
 	vm.PutPropString(-2, "getVersion")          // [ global composer theContainer ]
 	vm.PushGoFunction(result.getLoggingService) // [ global composer theContainer getLoggingService ]
 	vm.PutPropString(-2, "getLoggingService")   // [ global composer theContainer ]
-	vm.Pop3()                                   // []
 
 	// Return the new container.
 	return result
-
 }
 
 // getVersion returns the current version of the chaincode.
@@ -63,6 +68,7 @@ func (container *Container) getVersion(vm *duktape.Context) (result int) {
 	logger.Debug("Entering Container.getVersion", vm)
 	defer func() { logger.Debug("Exiting Container.getVersion", result) }()
 
+	// Return the chaincode version.
 	vm.PushString(version)
 	return 1
 }
@@ -72,6 +78,7 @@ func (container *Container) getLoggingService(vm *duktape.Context) (result int) 
 	logger.Debug("Entering Container.getLoggingService", vm)
 	defer func() { logger.Debug("Exiting Container.getLoggingService", result) }()
 
+	// Return the JavaScript object from the global stash.
 	vm.PushGlobalStash()
 	vm.GetPropString(-1, "loggingService")
 	return 1
