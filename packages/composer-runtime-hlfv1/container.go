@@ -15,65 +15,64 @@
 package main
 
 import (
-	"fmt"
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
 )
 
 // Container is a Go wrapper around an instance of the Container JavaScript class.
 type Container struct {
-	This           *otto.Object
 	LoggingService *LoggingService
 }
 
 // NewContainer creates a Go wrapper around a new instance of the Container JavaScript class.
-func NewContainer(vm *otto.Otto, stub shim.ChaincodeStubInterface) (result *Container) {
+func NewContainer(vm *duktape.Context, stub shim.ChaincodeStubInterface) (result *Container) {
 	logger.Debug("Entering NewContainer", vm)
 	defer func() { logger.Debug("Exiting NewContainer", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new composer.Container", nil)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of Container JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of Container JavaScript class is not an object")
-	}
-	object := temp.Object()
-
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &Container{This: object}
-	err = object.Set("$this", result)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in Container JavaScript object: %v", err))
-	}
+	// Create the new container.
+	result = &Container{}
 
 	// Create the services.
 	result.LoggingService = NewLoggingService(vm, result, stub)
 
+	// Create a new instance of the JavaScript Container class.
+	vm.PushGlobalObject()             // [ global ]
+	vm.GetPropString(-1, "composer")  // [ global composer ]
+	vm.GetPropString(-1, "Container") // [ global composer Container ]
+	vm.New(0)                         // [ global composer theContainer ]
+	vm.PushGlobalStash()              // [ global composer theContainer stash ]
+	vm.Dup(-2)                        // [ global composer theContainer stash theContainer  ]
+	vm.PutPropString(-2, "container") // [ global composer theContainer stash ]
+	vm.Pop()                          // [ global composer theContainer ]
+
 	// Bind the methods into the JavaScript object.
-	result.This.Set("getVersion", result.getVersion)
-	result.This.Set("getLoggingService", result.getLoggingService)
+	vm.PushGoFunction(result.getVersion)        // [ global composer theContainer getVersion ]
+	vm.PutPropString(-2, "getVersion")          // [ global composer theContainer ]
+	vm.PushGoFunction(result.getLoggingService) // [ global composer theContainer getLoggingService ]
+	vm.PutPropString(-2, "getLoggingService")   // [ global composer theContainer ]
+	vm.Pop3()                                   // []
+
+	// Return the new container.
 	return result
 
 }
 
 // getVersion returns the current version of the chaincode.
-func (container *Container) getVersion(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering Container.getVersion", call)
+func (container *Container) getVersion(vm *duktape.Context) (result int) {
+	logger.Debug("Entering Container.getVersion", vm)
 	defer func() { logger.Debug("Exiting Container.getVersion", result) }()
 
-	result, err := otto.ToValue(version)
-	if err != nil {
-		panic(err)
-	}
-	return result
+	vm.PushString(version)
+	return 1
 }
 
 // getLoggingService returns the logging service to use.
-func (container *Container) getLoggingService(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering Container.getLoggingService", call)
+func (container *Container) getLoggingService(vm *duktape.Context) (result int) {
+	logger.Debug("Entering Container.getLoggingService", vm)
 	defer func() { logger.Debug("Exiting Container.getLoggingService", result) }()
 
-	return container.LoggingService.This.Value()
+	vm.PushGlobalStash()
+	vm.GetPropString(-1, "loggingService")
+	return 1
 }

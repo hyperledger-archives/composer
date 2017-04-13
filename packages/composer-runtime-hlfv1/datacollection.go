@@ -90,7 +90,7 @@ func (dataCollection *DataCollection) getAll(call otto.FunctionCall) (result ott
 	for iterator.HasNext() {
 
 		// Read the current key and value.
-		_, value, err := iterator.Next()
+		kv, err := iterator.Next()
 		if err != nil {
 			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
 			if err != nil {
@@ -100,7 +100,7 @@ func (dataCollection *DataCollection) getAll(call otto.FunctionCall) (result ott
 		}
 
 		// Parse the current value.
-		object, err := call.Otto.Call("JSON.parse", nil, string(value))
+		object, err := call.Otto.Call("JSON.parse", nil, string(kv.Value))
 		if err != nil {
 			_, err = callback.Call(callback, call.Otto.MakeCustomError("Error", err.Error()))
 			if err != nil {
@@ -253,7 +253,7 @@ func (dataCollection *DataCollection) add(call otto.FunctionCall) (result otto.V
 	}
 
 	forceVal, err := force.ToBoolean()
-	if !forceVal  {
+	if !forceVal {
 		// Check to see if the object already exists.
 		existingValue, err := dataCollection.Stub.GetState(key)
 		if err != nil {

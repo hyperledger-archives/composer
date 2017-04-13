@@ -18,12 +18,14 @@ import (
 	"errors"
 	"fmt"
 
+	duktape "gopkg.in/olebedev/go-duktape.v3"
+
 	"github.com/robertkrimen/otto"
 )
 
 // Engine is a Go wrapper around an instance of the Engine JavaScript class.
 type Engine struct {
-	This *otto.Object
+	VM *duktape.Context
 }
 
 // EngineCallback is a structure used for callbacks from the chaincode.
@@ -33,25 +35,29 @@ type EngineCallback struct {
 }
 
 // NewEngine creates a Go wrapper around a new instance of the Engine JavaScript class.
-func NewEngine(vm *otto.Otto, container *Container) (result *Engine) {
+func NewEngine(vm *duktape.Context, container *Container) (result *Engine) {
 	logger.Debug("Entering NewEngine", vm, container)
 	defer func() { logger.Debug("Exiting NewEngine", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new composer.Engine", nil, container.This)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of Engine JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of Engine JavaScript class is not an object")
-	}
-	object := temp.Object()
+	// Create the new engine.
+	result = &Engine{VM: vm}
 
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &Engine{This: object}
-	err = object.Set("$this", result)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in Engine JavaScript object: %v", err))
-	}
+	// Find the JavaScript container object.
+	vm.PushGlobalStash()
+	vm.GetPropString(-1, "container")
+
+	// Create a new instance of the JavaScript chaincode class.
+	vm.PushGlobalObject()            // [ theContainer global ]
+	vm.GetPropString(-1, "composer") // [ theContainer global composer ]
+	vm.GetPropString(-1, "Engine")   // [ theContainer global composer Engine ]
+	vm.Dup(-4)                       // [ theContainer global composer Engine theContainer ]
+	vm.Pnew(1)                       // [ theContainer global composer theEngine ]
+	vm.PushGlobalStash()             // [ theContainer global composer theContainer stash ]
+	vm.Dup(-2)                       // [ theContainer global composer theContainer stash theContainer  ]
+	vm.PutPropString(-2, "engine")   // [ theContainer global composer theContainer stash ]
+	vm.PopN(5)                       // [ ]
+
+	// Return the new engine.
 	return result
 
 }
@@ -118,17 +124,39 @@ func (engine *Engine) Init(context *Context, function string, arguments []string
 	channel = make(chan EngineCallback, 1)
 
 	// Call the JavaScript code and pass in a callback function.
-	_, err := engine.This.Call("_init", context.This, function, arguments, func(call otto.FunctionCall) otto.Value {
-		return engine.handleCallback(channel, call)
-	})
-
-	// Check for an error being thrown from JavaScript.
-	if err != nil {
-		channel <- EngineCallback{
-			Result: nil,
-			Error:  err,
-		}
+	vm := engine.VM
+	vm.PushGlobalStash()
+	vm.GetPropString(-1, "engine")
+	objIdx := vm.GetTopIndex()
+	vm.PushString("_init")
+	vm.PushNull()
+	vm.PushString(function)
+	arrIdx := vm.PushArray()
+	for i, argument := range arguments {
+		vm.PushString(argument)
+		vm.PutPropIndex(arrIdx, uint(i))
 	}
+	vm.PushGoFunction(func(vm *duktape.Context) int {
+		fmt.Printf("woo here!")
+		return 0
+	})
+	nowIdx := vm.GetTopIndex()
+	fmt.Printf("was %d now %d", objIdx, nowIdx)
+	err := vm.PcallProp(objIdx, 4)
+	if err == duktape.ExecError {
+		panic(vm.ToString(-1))
+	}
+	// _, err := engine.This.Call("_init", context.This, function, arguments, func(call otto.FunctionCall) otto.Value {
+	// 	return engine.handleCallback(channel, call)
+	// })
+
+	// // Check for an error being thrown from JavaScript.
+	// if err != nil {
+	// 	channel <- EngineCallback{
+	// 		Result: nil,
+	// 		Error:  err,
+	// 	}
+	// }
 	return channel
 
 }
@@ -142,17 +170,17 @@ func (engine *Engine) Invoke(context *Context, function string, arguments []stri
 	channel = make(chan EngineCallback, 1)
 
 	// Call the JavaScript code and pass in a callback function.
-	_, err := engine.This.Call("_invoke", context.This, function, arguments, func(call otto.FunctionCall) otto.Value {
-		return engine.handleCallback(channel, call)
-	})
+	// _, err := engine.This.Call("_invoke", context.This, function, arguments, func(call otto.FunctionCall) otto.Value {
+	// 	return engine.handleCallback(channel, call)
+	// })
 
-	// Check for an error being thrown from JavaScript.
-	if err != nil {
-		channel <- EngineCallback{
-			Result: nil,
-			Error:  err,
-		}
-	}
+	// // Check for an error being thrown from JavaScript.
+	// if err != nil {
+	// 	channel <- EngineCallback{
+	// 		Result: nil,
+	// 		Error:  err,
+	// 	}
+	// }
 	return channel
 
 }

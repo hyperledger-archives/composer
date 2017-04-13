@@ -18,6 +18,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	duktape "gopkg.in/olebedev/go-duktape.v3"
+
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/robertkrimen/otto"
 )
@@ -32,31 +34,27 @@ type DataService struct {
 }
 
 // NewDataService creates a Go wrapper around a new instance of the DataService JavaScript class.
-func NewDataService(vm *otto.Otto, context *Context, stub shim.ChaincodeStubInterface) (result *DataService) {
+func NewDataService(vm *duktape.Context, context *Context, stub shim.ChaincodeStubInterface) (result *DataService) {
 	logger.Debug("Entering NewDataService", vm, context, stub)
 	defer func() { logger.Debug("Exiting NewDataService", result) }()
 
 	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new composer.DataService", nil, context.This)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of DataService JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of DataService JavaScript class is not an object")
-	}
-	object := temp.Object()
+	// temp, err := vm.Call("new composer.DataService", nil, context.This)
+	// if err != nil {
+	// 	panic(fmt.Sprintf("Failed to create new instance of DataService JavaScript class: %v", err))
+	// } else if !temp.IsObject() {
+	// 	panic("New instance of DataService JavaScript class is not an object")
+	// }
+	// object := temp.Object()
 
 	// Add a pointer to the Go object into the JavaScript object.
-	result = &DataService{This: temp.Object(), Stub: stub}
-	err = object.Set("$this", result)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in DataService JavaScript object: %v", err))
-	}
+	result = &DataService{Stub: stub}
 
 	// Bind the methods into the JavaScript object.
-	result.This.Set("_createCollection", result.createCollection)
-	result.This.Set("_deleteCollection", result.deleteCollection)
-	result.This.Set("_getCollection", result.getCollection)
-	result.This.Set("_existsCollection", result.existsCollection)
+	// result.This.Set("_createCollection", result.createCollection)
+	// result.This.Set("_deleteCollection", result.deleteCollection)
+	// result.This.Set("_getCollection", result.getCollection)
+	// result.This.Set("_existsCollection", result.existsCollection)
 	return result
 
 }
@@ -73,7 +71,7 @@ func (dataService *DataService) createCollection(call otto.FunctionCall) (result
 	} else if !callback.IsFunction() {
 		panic(fmt.Errorf("callback not specified or is not a string"))
 	} else if !force.IsBoolean() {
-		panic(fmt.Errorf("force not specified or is not a boolean"))		
+		panic(fmt.Errorf("force not specified or is not a boolean"))
 	}
 
 	// Create the composite key.
@@ -289,13 +287,13 @@ func (dataService *DataService) clearCollection(collectionID string) (err error)
 	for iterator.HasNext() {
 
 		// Read the current key.
-		key, _, err := iterator.Next()
+		kv, err := iterator.Next()
 		if err != nil {
 			return err
 		}
 
 		// Delete the current key.
-		err = dataService.Stub.DelState(key)
+		err = dataService.Stub.DelState(kv.Key)
 		if err != nil {
 			return err
 		}

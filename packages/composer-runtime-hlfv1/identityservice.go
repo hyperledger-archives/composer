@@ -15,10 +15,11 @@
 package main
 
 import (
-	"fmt"
 	"bytes"
 	"crypto/x509"
 	"encoding/pem"
+
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/robertkrimen/otto"
@@ -31,31 +32,31 @@ type IdentityService struct {
 }
 
 // NewIdentityService creates a Go wrapper around a new instance of the IdentityService JavaScript class.
-func NewIdentityService(vm *otto.Otto, context *Context, stub shim.ChaincodeStubInterface) (result *IdentityService) {
+func NewIdentityService(vm *duktape.Context, context *Context, stub shim.ChaincodeStubInterface) (result *IdentityService) {
 	logger.Debug("Entering NewIdentityService", vm, context, stub)
 	defer func() { logger.Debug("Exiting NewIdentityService", result) }()
 
 	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new composer.IdentityService", nil, context.This)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of IdentityService JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of IdentityService JavaScript class is not an object")
-	}
-	object := temp.Object()
+	// temp, err := vm.Call("new composer.IdentityService", nil, context.This)
+	// if err != nil {
+	// 	panic(fmt.Sprintf("Failed to create new instance of IdentityService JavaScript class: %v", err))
+	// } else if !temp.IsObject() {
+	// 	panic("New instance of IdentityService JavaScript class is not an object")
+	// }
+	// object := temp.Object()
 
 	// Create a new access control shim.
 	// acs := impl.NewAccessControlShim(stub)
 
 	// Add a pointer to the Go object into the JavaScript object.
-	result = &IdentityService{This: temp.Object(), Stub: stub}
-	err = object.Set("$this", result)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in IdentityService JavaScript object: %v", err))
-	}
+	result = &IdentityService{Stub: stub}
+	// err = object.Set("$this", result)
+	// if err != nil {
+	// 	panic(fmt.Sprintf("Failed to store Go object in IdentityService JavaScript object: %v", err))
+	// }
 
 	// Bind the methods into the JavaScript object.
-	result.This.Set("getCurrentUserID", result.getCurrentUserID)
+	// result.This.Set("getCurrentUserID", result.getCurrentUserID)
 	return result
 
 }
@@ -74,7 +75,7 @@ func (identityService *IdentityService) getCurrentUserID(call otto.FunctionCall)
 	logger.Debug("creator", string(creator))
 	certStart := bytes.IndexAny(creator, "----BEGIN CERTIFICATE-----")
 	if certStart == -1 {
-		logger.Debug("No certificate found");
+		logger.Debug("No certificate found")
 		return otto.NullValue()
 	}
 	certText := creator[certStart:]
@@ -96,7 +97,7 @@ func (identityService *IdentityService) getCurrentUserID(call otto.FunctionCall)
 	// TODO: temporary for V1 admin user returns null to give them
 	// full authority
 	if ucert.Subject.CommonName == "admin" {
-		return otto.NullValue();
+		return otto.NullValue()
 	}
 	result, err = otto.ToValue(ucert.Subject.CommonName)
 	if err != nil {
