@@ -857,3 +857,79 @@ nav {
         }
       }
   }
+
+  .SiteWrapper {
+    .content {
+      .container {
+        .content-chunk {
+
+          p {
+            margin-top: 1.3rem;
+          }
+
+          h1 {
+            font-weight: 300;
+            font-size: 2em;
+          }
+
+          h2 {
+            margin-top: 2rem;
+          }
+
+          h3 {
+            font-family: $font-stack;
+            font-weight: 300;
+            font-size: 1.2rem;
+            line-height: 130%;
+            color: $primary-text;
+            margin-top: 2rem;
+          }
+
+          pre {
+            background-color: $third-highlight;
+            border: 1px solid $keyline-highlight;
+          }
+
+          ul {
+            list-style: none;
+            padding-left: 2em;
+            text-indent: -1em;
+
+            li:before {
+              color: $primary-text;
+              content: '- \0000a0';
+              font-size: 1rem;
+              font-weight: 600;
+            }
+
+            li {
+              padding-bottom: 0.5rem;
+              p {
+                display: inline;
+              }
+
+            }
+          }
+
+          ol {
+            border-left: 1px solid $keyline-highlight;
+            li {
+                margin-top: 1.3rem;
+            }
+          }
+
+        a {
+          color: $first-highlight;
+        }
+        }
+      }
+    }
+  }
+
+  // Docs Footer
+
+  .docs-footer {
+    // position: absolute;
+    // bottom: 0;
+    background-color: $sixth-highlight;
+  }
