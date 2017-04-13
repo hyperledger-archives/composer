@@ -19,8 +19,8 @@ if [ "${SYSTEST}" = "" ]; then
 fi
 
 # Set default timeouts
-export CONCERTO_PORT_WAIT_SECS=30
-export CONCERTO_DEPLOY_WAIT_SECS=500
+export COMPOSER_PORT_WAIT_SECS=30
+export COMPOSER_DEPLOY_WAIT_SECS=500
 
 # Pull any required Docker images.
 if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
@@ -72,8 +72,9 @@ if [ "${DOCKER_FILE}" != "" ]; then
 fi
 
 # Delete any existing configuration.
-rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
-rm -rf ${HOME}/.concerto-credentials/concerto-systests
+rm -rf ${HOME}/.composer-connection-profiles/composer-systests
+rm -rf ${HOME}/.composer-credentials/composer-systests
+rm -rf ${HOME}/.hfc-key-store
 
 # configure v1 to run the tests
 if [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
@@ -95,8 +96,8 @@ fi
 
 
 # Delete any written configuration.
-rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
-rm -rf ${HOME}/.concerto-credentials/concerto-systests
+rm -rf ${HOME}/.composer-connection-profiles/composer-systests
+rm -rf ${HOME}/.composer-credentials/composer-systests
 
 # Run getting started system test
 #sh $DIR/scripts/getting-started.sh $DIR

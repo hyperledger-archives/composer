@@ -67,9 +67,9 @@ class TestUtil {
      */
     static waitForPort(hostname, port) {
         let waitTime = 30;
-        if (process.env.CONCERTO_PORT_WAIT_SECS) {
-            waitTime = parseInt(process.env.CONCERTO_PORT_WAIT_SECS);
-            console.log('CONCERTO_PORT_WAIT_SECS set, using: ', waitTime);
+        if (process.env.COMPOSER_PORT_WAIT_SECS) {
+            waitTime = parseInt(process.env.COMPOSER_PORT_WAIT_SECS);
+            console.log('COMPOSER_PORT_WAIT_SECS set, using: ', waitTime);
         }
         return new Promise(function (resolve, reject) {
             let testConnect = function (count) {
@@ -152,7 +152,7 @@ class TestUtil {
                     };
                 } else {
                     // hlf need to decide if v1 or 0.6
-                    let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
+                    let keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
                     let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
                     if (process.env.SYSTEST.match('^hlfv1')) {
@@ -223,22 +223,22 @@ class TestUtil {
                         };
                     }
                 }
-                if (process.env.CONCERTO_DEPLOY_WAIT_SECS) {
-                    adminOptions.deployWaitTime = parseInt(process.env.CONCERTO_DEPLOY_WAIT_SECS);
-                    console.log('CONCERTO_DEPLOY_WAIT_SECS set, using: ', adminOptions.deployWaitTime);
+                if (process.env.COMPOSER_DEPLOY_WAIT_SECS) {
+                    adminOptions.deployWaitTime = parseInt(process.env.COMPOSER_DEPLOY_WAIT_SECS);
+                    console.log('COMPOSER_DEPLOY_WAIT_SECS set, using: ', adminOptions.deployWaitTime);
                 }
-                if (process.env.CONCERTO_INVOKE_WAIT_SECS) {
-                    adminOptions.invokeWaitTime = parseInt(process.env.CONCERTO_INVOKE_WAIT_SECS);
-                    console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
+                if (process.env.COMPOSER_INVOKE_WAIT_SECS) {
+                    adminOptions.invokeWaitTime = parseInt(process.env.COMPOSER_INVOKE_WAIT_SECS);
+                    console.log('COMPOSER_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
                 console.log('Calling AdminConnection.createProfile() ...');
-                return adminConnection.createProfile('concerto-systests', adminOptions);
+                return adminConnection.createProfile('composer-systests', adminOptions);
             })
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
                 let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
-                return adminConnection.connect('concerto-systests', 'admin', password);
+                return adminConnection.connect('composer-systests', 'admin', password);
             })
             .then(function () {
                 console.log('Called AdminConnection.connect()');
@@ -303,8 +303,8 @@ class TestUtil {
             enrollmentID = enrollmentID || 'admin';
             let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
             enrollmentSecret = enrollmentSecret || password;
-            console.log(`Calling Client.connect('concerto-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
-            return thisClient.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
+            console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
+            return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
         })
         .then(() => {
             return thisClient;
