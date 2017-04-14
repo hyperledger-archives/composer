@@ -28,7 +28,7 @@ describe('ProxySecurityContext', () => {
 
     beforeEach(() => {
         mockProxyConnection = sinon.createStubInstance(ProxyConnection);
-        proxySecurityContext = new ProxySecurityContext(mockProxyConnection, 'aea015ec-3428-45cb-a481-900eadd0ba33');
+        proxySecurityContext = new ProxySecurityContext(mockProxyConnection, 'alice1', 'aea015ec-3428-45cb-a481-900eadd0ba33');
     });
 
     describe('#constructor', () => {
@@ -41,10 +41,8 @@ describe('ProxySecurityContext', () => {
 
     describe('#getUser', () => {
 
-        it('should throw an error', () => {
-            (() => {
-                proxySecurityContext.getUser();
-            }).should.throw(/TODO/);
+        it('should return the enrollment ID', () => {
+            proxySecurityContext.getUser().should.equal('alice1');
         });
 
     });
