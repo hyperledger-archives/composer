@@ -17,21 +17,24 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
-const ConnectorServer = require('composer-connector-server');
-const EmbeddedConnectionManager = require('composer-connector-embedded');
-const fs = require('fs');
-const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
-const ProxyConnectionManager = require('composer-connector-proxy');
 const sleep = require('sleep-promise');
-const socketIO = require('socket.io');
 const Util = require('composer-common').Util;
 
 let adminConnection;
 let client;
+
+/**
+ * Trick browserify by making the ID parameter to require dynamic.
+ * @param {string} id The module ID.
+ * @return {*} The module.
+ */
+function dynamicRequire(id) {
+    return require(id);
+}
 
 /**
  * A class containing test utilities for use in BusinessNetworkConnection system tests.
@@ -39,6 +42,7 @@ let client;
  * @private
  */
 class TestUtil {
+
 
     /**
      * Check to see if running under a web browser.
@@ -165,6 +169,15 @@ class TestUtil {
                         type: 'embedded'
                     };
                 } else if (TestUtil.isProxy()) {
+                    // A whole bunch of dynamic requires to trick browserify.
+                    const ConnectorServer = dynamicRequire('composer-connector-server');
+                    const EmbeddedConnectionManager = dynamicRequire('composer-connector-embedded');
+                    const FSConnectionProfileStore = dynamicRequire('composer-common').FSConnectionProfileStore;
+                    const fs = dynamicRequire('fs');
+                    const ProxyConnectionManager = dynamicRequire('composer-connector-proxy');
+                    const socketIO = dynamicRequire('socket.io');
+                    // We are using the embedded connector, but we configure it to route through the
+                    // proxy connector and connector server.
                     adminOptions = {
                         type: 'embedded'
                     };
