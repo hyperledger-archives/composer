@@ -25,7 +25,7 @@ class ConsoleLogger {
      * Called to format.
      * @param {string} method The method.
      * @param {string} msg The message.
-     * @param {*[]} [args] The arguments.
+     * @param {*} [args] The arguments.
      * @returns {string} The formatted message.
      */
     format(method, msg, args) {
@@ -54,7 +54,7 @@ class ConsoleLogger {
      * @param {string} level The logging level.
      * @param {string} method The method.
      * @param {string} msg The message.
-     * @param {*[]} [args] The arguments.
+     * @param {*} [args] The arguments.
      */
     log(level, method, msg, args) {
         const formattedMessage = this.format(method, msg, args);
