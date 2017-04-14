@@ -14,24 +14,93 @@
 
 'use strict';
 
-/* const ConnectorServer = */ require('..');
+const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
+const Logger = require('composer-common').Logger;
+
+const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
 describe('composer-connector-server CLI unit tests', () => {
 
+    let originalArgv = process.argv;
     let sandbox;
+    let mockSocket;
+    let mockSocketIO;
+    let mockConnectorServer;
 
     beforeEach(() => {
+        delete require.cache[require.resolve('yargs')];
         sandbox = sinon.sandbox.create();
         sandbox.stub(process, 'exit');
+        mockSocket = {
+            on: sinon.stub()
+        };
+        mockSocketIO = sinon.stub();
+        mockConnectorServer = sinon.stub();
     });
 
     afterEach(() => {
         sandbox.restore();
+        process.argv = originalArgv;
+        Logger.setFunctionalLogger(null);
     });
 
-    it('should do something', () => {
+    it('should start a connector server on the default port', () => {
+        mockSocketIO.returns(mockSocket);
+        proxyquire('../cli.js', {
+            'socket.io': mockSocketIO
+        });
+        sinon.assert.calledOnce(mockSocketIO);
+        sinon.assert.calledWith(mockSocketIO, 15699);
+    });
 
+    it('should start a connector server on the specified port', () => {
+        process.argv = [ process.argv0, 'cli.js', '-p', '23456' ];
+        mockSocketIO.returns(mockSocket);
+        proxyquire('../cli.js', {
+            'socket.io': mockSocketIO
+        });
+        sinon.assert.calledOnce(mockSocketIO);
+        sinon.assert.calledWith(mockSocketIO, 23456);
+    });
+
+    it('should register a connect listener', () => {
+        const mockClientSocket = {
+            id: 1,
+            request: {
+                connection: {
+                    remoteAddress: 'localhost'
+                }
+            },
+            on: sinon.stub()
+        };
+        mockSocketIO.returns(mockSocket);
+        mockSocket.on.withArgs('connect', sinon.match.func).yields(mockClientSocket);
+        proxyquire('../cli.js', {
+            'socket.io': mockSocketIO,
+            '.': mockConnectorServer
+        });
+        sinon.assert.calledOnce(mockConnectorServer);
+        sinon.assert.calledWith(mockConnectorServer, sinon.match.instanceOf(FSConnectionProfileStore), sinon.match.instanceOf(ConnectionProfileManager), mockClientSocket);
+    });
+
+    it('should register a disconnect listener', () => {
+        const mockClientSocket = {
+            id: 1,
+            request: {
+                connection: {
+                    remoteAddress: 'localhost'
+                }
+            },
+            on: sinon.stub()
+        };
+        mockSocketIO.returns(mockSocket);
+        mockSocket.on.withArgs('disconnect', sinon.match.func).yields(mockClientSocket);
+        proxyquire('../cli.js', {
+            'socket.io': mockSocketIO,
+            '.': mockConnectorServer
+        });
     });
 
 });
