@@ -17,11 +17,17 @@
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const ConnectorServer = require('composer-connector-server');
+const EmbeddedConnectionManager = require('composer-connector-embedded');
+const fs = require('fs');
+const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const homedir = require('homedir');
 const mkdirp = require('mkdirp');
 const net = require('net');
 const path = require('path');
+const ProxyConnectionManager = require('composer-connector-proxy');
 const sleep = require('sleep-promise');
+const socketIO = require('socket.io');
 const Util = require('composer-common').Util;
 
 let adminConnection;
@@ -51,11 +57,19 @@ class TestUtil {
     }
 
     /**
+     * Check to see if running in proxy mode.
+     * @return {boolean} True if running in proxy mode, false if not.
+     */
+    static isProxy() {
+        return process.env.npm_lifecycle_event === 'systest:proxy';
+    }
+
+    /**
      * Check to see if running in Hyperledger Fabric mode.
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabric() {
-        return !TestUtil.isWeb() && !TestUtil.isEmbedded();
+        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy();
     }
 
     /**
@@ -150,7 +164,28 @@ class TestUtil {
                     adminOptions = {
                         type: 'embedded'
                     };
-                } else {
+                } else if (TestUtil.isProxy()) {
+                    adminOptions = {
+                        type: 'embedded'
+                    };
+                    const connectionProfileStore = new FSConnectionProfileStore(fs);
+                    ConnectionProfileManager.registerConnectionManager('embedded', ProxyConnectionManager);
+                    const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
+                    // Since we're a single process, we have to force the embedded connection manager into
+                    // the connection profile manager that the connector server is using.
+                    const connectionManager = new EmbeddedConnectionManager(connectionProfileManager);
+                    connectionProfileManager.getConnectionManager = () => {
+                        return connectionManager;
+                    };
+                    const io = socketIO(15699);
+                    io.on('connect', (socket) => {
+                        console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
+                        new ConnectorServer(connectionProfileStore, connectionProfileManager, socket);
+                    });
+                    io.on('disconnect', (socket) => {
+                        console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
+                    });
+                } else if (TestUtil.isHyperledgerFabric()) {
                     // hlf need to decide if v1 or 0.6
                     let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
                     let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
@@ -222,6 +257,8 @@ class TestUtil {
                             eventHubURL: 'grpc://localhost:7053'
                         };
                     }
+                } else {
+                    throw new Error('I do not know what kind of tests you want me to run!');
                 }
                 if (process.env.CONCERTO_DEPLOY_WAIT_SECS) {
                     adminOptions.deployWaitTime = parseInt(process.env.CONCERTO_DEPLOY_WAIT_SECS);
