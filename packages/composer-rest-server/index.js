@@ -14,4 +14,4 @@
 
 'use strict';
 
-module.exports.restserver = require('./server/servercmd.js');
+module.exports = require('./server/servercmd.js');

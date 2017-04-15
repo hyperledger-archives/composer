@@ -6,7 +6,7 @@
     "node": ">=6",
     "npm": ">=3"
   },
-  "main": "server/servercmd.js",
+  "main": "index.js",
   "bin": {
     "composer-rest-server": "cli.js"
   },
