@@ -89,20 +89,6 @@ return Promise.resolve()
 .then(() => {
     return new Promise((resolve, reject) => {
         const rstream = browserify(sourceFile, { standalone: 'composer', debug: true })
-            // .transform('browserify-replace', { replace: [
-            //     // These ugly hacks are due to Go and Otto only supporting Go regexes.
-            //     // Go regexes do not support PCRE features such as lookahead.
-            //     {
-            //         // This ugly hack changes a JavaScript only regex used by acorn into something safe for Go.
-            //         from: /\[\^\]/g,
-            //         to: '[^\\x{FFFF}]'
-            //     },
-            //     {
-            //         // This ugly hack changes a JavaScript only regex used by thenify into something safe for Go.
-            //         from: /\/\\s\|bound\(\?!\$\)\/g/g,
-            //         to: '/(\s)|(bound)./g'
-            //     }
-            // ], global: true })
             // The ignore is to workaround these issues:
             //   https://github.com/Starcounter-Jack/JSON-Patch/issues/140
             .transform('babelify', { presets: [ 'es2015' ], global: true, ignore: /fast-json-patch/ })
