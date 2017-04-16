@@ -14,23 +14,23 @@
 
 'use strict';
 
-/**
- * Utility methods for the proxy connector.
- */
-class ProxyUtil {
+const ProxyUtil = require('../lib/proxyutil');
+const serializerr = require('serializerr');
 
-    /**
-     * Inflate an error that was serialized using serializerr back into an Error
-     * instance of the correct type.
-     * @param {object} error An error that was serialized using serializerr.
-     * @return {Error} The inflated error.
-     */
-    static inflaterr(error) {
-        let result = global[error.name](error.message);
-        result.stack = error.stack;
-        return result;
-    }
+require('chai').should();
 
-}
+describe('ProxyUtil', () => {
 
-module.exports = ProxyUtil;
+    describe('#inflaterr', () => {
+
+        it('should inflate a serialized error', () => {
+            const expectedError = new TypeError('some type error');
+            const serializedError = serializerr(expectedError);
+            (() => {
+                throw ProxyUtil.inflaterr(serializedError);
+            }).should.throw(TypeError, /some type error/);
+        });
+
+    });
+
+});

@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.5.11 {32a34a8f379a6aa521c368fdae866cbf} 2017-04-14
+- Added ConsoleLogger
+
 Version 0.4.4 {0e331be906f2098a98a845e92efec2b9} 2017-03-08
 - Added package.json to BusinessNetworkMetadata
 - Added getBusinessNetworkMetadata to BusinessNetworkDefinition

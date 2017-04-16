@@ -22,24 +22,24 @@ const uuid = require('uuid');
 const LOG = Logger.getLog('ConnectorServer');
 
 /**
- * A wrapper around serializerr that checks for non-error objects
- * like strings that are sometimes incorrectly returned by hfc.
- * @param {Error} error The error to serialize with serializerr.
- * @return {Object} The error serialized by serializerr.
- */
-function serializerr (error) {
-    if (error instanceof Error) {
-        return realSerializerr(error);
-    } else {
-        return realSerializerr(new Error(error.toString()));
-    }
-}
-
-/**
  * A connector server for hosting Composer connectors and
  * serving them over a connected socket.io socket.
  */
 class ConnectorServer {
+
+    /**
+     * A wrapper around serializerr that checks for non-error objects
+     * like strings that are sometimes incorrectly returned by hfc.
+     * @param {Error} error The error to serialize with serializerr.
+     * @return {Object} The error serialized by serializerr.
+     */
+    static serializerr(error) {
+        if (error instanceof Error) {
+            return realSerializerr(error);
+        } else {
+            return realSerializerr(new Error(error.toString()));
+        }
+    }
 
     /**
      * Constructor.
@@ -47,16 +47,16 @@ class ConnectorServer {
      * @param {ConnectionProfileManager} connectionProfileManager The connection profile manager to use.
      * @param {Socket} socket The connected socket to use for communicating with the client.
      */
-    constructor (connectionProfileStore, connectionProfileManager, socket) {
+    constructor(connectionProfileStore, connectionProfileManager, socket) {
         const method = 'constructor';
         LOG.entry(method, connectionProfileStore, connectionProfileManager, socket);
         this.connectionProfileStore = connectionProfileStore;
         this.connectionProfileManager = connectionProfileManager;
         this.socket = socket;
-        let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this));
+        let propertyNames = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).sort();
         propertyNames.forEach((propertyName) => {
             if (propertyName === 'constructor') {
-                return;
+                return Promise.resolve();
             }
             let property = this[propertyName];
             if (typeof property === 'function') {
@@ -76,7 +76,7 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionManagerConnect (connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
+    connectionManagerConnect(connectionProfile, businessNetworkIdentifier, connectionOptions, callback) {
         const method = 'connectionManagerConnect';
         LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
         return this.connectionProfileStore.load(connectionProfile, connectionOptions)
@@ -100,7 +100,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
     }
@@ -111,17 +111,18 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDisconnect (connectionID, callback) {
+    connectionDisconnect(connectionID, callback) {
         const method = 'connectionDisconnect';
         LOG.entry(method, connectionID);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
+        delete this.connections[connectionID];
         return connection.disconnect()
             .then(() => {
                 callback(null);
@@ -129,7 +130,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
     }
@@ -142,16 +143,16 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionLogin (connectionID, enrollmentID, enrollmentSecret, callback) {
+    connectionLogin(connectionID, enrollmentID, enrollmentSecret, callback) {
         const method = 'connectionLogin';
         LOG.entry(method, connectionID, enrollmentID, enrollmentSecret);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         return connection.login(enrollmentID, enrollmentSecret)
             .then((securityContext) => {
@@ -162,7 +163,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
     }
@@ -176,24 +177,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDeploy (connectionID, securityContextID, force, businessNetworkBase64, callback) {
+    connectionDeploy(connectionID, securityContextID, force, businessNetworkBase64, callback) {
         const method = 'connectionDeploy';
         LOG.entry(method, connectionID, securityContextID, force, businessNetworkBase64);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
         return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
@@ -206,7 +207,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
     }
@@ -219,24 +220,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionUpdate (connectionID, securityContextID, businessNetworkBase64, callback) {
+    connectionUpdate(connectionID, securityContextID, businessNetworkBase64, callback) {
         const method = 'connectionUpdate';
         LOG.entry(method, connectionID, securityContextID, businessNetworkBase64);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
         return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
@@ -249,7 +250,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
     }
@@ -262,24 +263,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionUndeploy (connectionID, securityContextID, businessNetworkIdentifier, callback) {
+    connectionUndeploy(connectionID, securityContextID, businessNetworkIdentifier, callback) {
         const method = 'connectionUndeploy';
         LOG.entry(method, connectionID, securityContextID, businessNetworkIdentifier);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         return connection.undeploy(securityContext, businessNetworkIdentifier)
             .then(() => {
@@ -288,7 +289,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
     }
@@ -300,24 +301,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionPing (connectionID, securityContextID, callback) {
+    connectionPing(connectionID, securityContextID, callback) {
         const method = 'connectionPing';
         LOG.entry(method, connectionID, securityContextID);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         return connection.ping(securityContext)
             .then((result) => {
@@ -326,7 +327,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
     }
@@ -340,24 +341,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionQueryChainCode (connectionID, securityContextID, functionName, args, callback) {
+    connectionQueryChainCode(connectionID, securityContextID, functionName, args, callback) {
         const method = 'connectionQueryChainCode';
         LOG.entry(method, connectionID, securityContextID, functionName, args);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         return connection.queryChainCode(securityContext, functionName, args)
             .then((result) => {
@@ -366,7 +367,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
     }
@@ -380,24 +381,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionInvokeChainCode (connectionID, securityContextID, functionName, args, callback) {
+    connectionInvokeChainCode(connectionID, securityContextID, functionName, args, callback) {
         const method = 'connectionInvokeChainCode';
         LOG.entry(method, connectionID, securityContextID, functionName, args);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         return connection.invokeChainCode(securityContext, functionName, args)
             .then(() => {
@@ -406,7 +407,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method);
             });
     }
@@ -420,24 +421,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionCreateIdentity (connectionID, securityContextID, userID, options, callback) {
+    connectionCreateIdentity(connectionID, securityContextID, userID, options, callback) {
         const method = 'connectionCreateIdentity';
         LOG.entry(method, connectionID, securityContextID, userID, options);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         return connection.createIdentity(securityContext, userID, options)
             .then((result) => {
@@ -446,7 +447,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
     }
@@ -458,24 +459,24 @@ class ConnectorServer {
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionList (connectionID, securityContextID, callback) {
+    connectionList(connectionID, securityContextID, callback) {
         const method = 'connectionList';
         LOG.entry(method, connectionID, securityContextID);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         let securityContext = this.securityContexts[securityContextID];
         if (!securityContext) {
             let error = new Error(`No security context found with ID ${securityContextID}`);
             LOG.error(error);
-            callback(serializerr(error));
+            callback(ConnectorServer.serializerr(error));
             LOG.exit(method, null);
-            return;
+            return Promise.resolve();
         }
         return connection.list(securityContext)
             .then((result) => {
@@ -484,7 +485,7 @@ class ConnectorServer {
             })
             .catch((error) => {
                 LOG.error(error);
-                callback(serializerr(error));
+                callback(ConnectorServer.serializerr(error));
                 LOG.exit(method, null);
             });
     }

@@ -61,6 +61,7 @@ module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
 module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanager');
 module.exports.ConnectionProfileStore = require('./lib/connectionprofilestore');
+module.exports.ConsoleLogger = require('./lib/log/consolelogger');
 module.exports.EnvConnectionProfileStore = require('./lib/envconnectionprofilestore');
 module.exports.Factory = require('./lib/factory');
 module.exports.FileWallet = require('./lib/filewallet');
