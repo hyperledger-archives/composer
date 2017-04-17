@@ -58,7 +58,7 @@ if (interactive) {
     promise = Util.getConnectionSettings()
         .then((answers) => {
             // augment the app with the extra config that we've just collected
-            return {
+            const composer = {
                 connectionProfileName: answers.profilename,
                 businessNetworkIdentifier: answers.businessNetworkId,
                 participantId: answers.userid,
@@ -66,6 +66,26 @@ if (interactive) {
                 namespaces: answers.namespaces,
                 security: answers.security
             };
+            console.log('\nTo restart the REST server using the same options, issue the following command:');
+            let cmd = [ 'composer-rest-server' ];
+            const args = {
+                '-p': 'connectionProfileName',
+                '-n': 'businessNetworkIdentifier',
+                '-i': 'participantId',
+                '-s': 'participantPwd',
+                '-N': 'namespaces',
+                '-P': 'port',
+                '-S': 'security',
+            };
+            for (let arg in args) {
+                const propName = args[arg];
+                if (composer[propName]) {
+                    cmd.push(arg, composer[propName]);
+                }
+            }
+            console.log('  ', cmd.join(' '));
+            console.log();
+            return composer;
         });
 
 } else {
