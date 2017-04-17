@@ -79,6 +79,7 @@ describe('BusinessNetworkConnector', () => {
 
         // // setup mocks
         mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
+        mockBusinessNetworkConnection.ping.resolves();
         mockBusinessNetworkConnection.disconnect.resolves();
         mockBusinessNetworkConnection.submitTransaction.resolves();
         mockBusinessNetworkDefinition.getIntrospector.returns(introspector);
@@ -312,25 +313,45 @@ describe('BusinessNetworkConnector', () => {
 
     describe('#ping', () => {
 
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+        });
+
         it('should ping the business network', () => {
-            mockBusinessNetworkConnectionWrapper.ping.resolves();
+            mockBusinessNetworkConnection.ping.resolves();
             const cb = sinon.stub();
             return testConnector.ping(cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockBusinessNetworkConnectionWrapper.ping);
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, null);
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                     sinon.assert.calledOnce(cb);
                 });
         });
 
         it('should handle an error pinging the business network', () => {
             const err = new Error('such error');
-            mockBusinessNetworkConnectionWrapper.ping.rejects(err);
+            mockBusinessNetworkConnection.ping.rejects(err);
             const cb = sinon.stub();
             return testConnector.ping(cb)
                 .then(() => {
-                    sinon.assert.calledOnce(mockBusinessNetworkConnectionWrapper.ping);
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, null);
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, err);
+                });
+        });
+
+        it('should ping the business network using LoopBack options', () => {
+            mockBusinessNetworkConnection.ping.resolves();
+            const cb = sinon.stub();
+            return testConnector.ping({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
+                    sinon.assert.calledOnce(cb);
                 });
         });
 
@@ -448,6 +469,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
                 .then((result) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
@@ -468,6 +490,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
                 .then((result) => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
@@ -524,6 +547,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
             .then((result) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 result.should.deep.equal({});
             });
@@ -541,6 +565,7 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
             .then((result) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                 result.should.deep.equal({});
             });
@@ -1701,6 +1726,91 @@ describe('BusinessNetworkConnector', () => {
             })
             .should.be.rejectedWith(/does not exist/);
         });
+    });
+
+    describe('#issueIdentity', () => {
+
+        const participant = 'org.acme.Member#bob@email.com';
+        const userID = 'bob1';
+        const options = {
+            issuer: true,
+            affiliation: 'acmecorp'
+        };
+        const identity = {
+            userID: userID,
+            userSecret: 'suchs3cret'
+        };
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+        });
+
+        it('should issue an identity', () => {
+            mockBusinessNetworkConnection.issueIdentity.withArgs(participant, userID, options).resolves(identity);
+            const cb = sinon.stub();
+            return testConnector.issueIdentity(participant, userID, options, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, participant, userID, options);
+                    const result = cb.args[0][1]; // First call, second argument (error, identity)
+                    result.should.deep.equal(identity);
+                });
+        });
+
+        it('should handle an error thrown issuing an identity', () => {
+            mockBusinessNetworkConnection.issueIdentity.withArgs(participant, userID, options).rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.issueIdentity(participant, userID, options, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.issueIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.issueIdentity, participant, userID, options);
+                    const error = cb.args[0][0]; // First call, first argument (error, identity)
+                    error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#revokeIdentity', () => {
+
+        const userID = 'bob1';
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+        });
+
+        it('should revoke an identity', () => {
+            mockBusinessNetworkConnection.revokeIdentity.withArgs(userID).resolves();
+            const cb = sinon.stub();
+            return testConnector.revokeIdentity(userID, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, userID);
+                });
+        });
+
+        it('should handle an error thrown revoking an identity', () => {
+            mockBusinessNetworkConnection.revokeIdentity.withArgs(userID).rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.revokeIdentity(userID, { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockBusinessNetworkConnection.revokeIdentity);
+                    sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, userID);
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
     });
 
     describe('#discoverModelDefinitions', () => {
