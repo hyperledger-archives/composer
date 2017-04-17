@@ -182,18 +182,6 @@ describe('BusinessNetworkConnectionWrapper', () => {
 
     });
 
-    describe('#ping', () => {
-
-        it('should ping the business network', () => {
-            mockBusinessNetworkConnection.ping.resolves();
-            return businessNetworkConnectionWrapper.ping()
-                .then(() => {
-                    sinon.assert.calledOnce(mockBusinessNetworkConnection.ping);
-                });
-        });
-
-    });
-
     describe('#getBusinessNetwork', () => {
 
         it('should get the business network definition', () => {
