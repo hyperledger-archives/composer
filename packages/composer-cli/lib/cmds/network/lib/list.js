@@ -131,7 +131,9 @@ class List {
             return businessNetworkConnection.disconnect();
         })
         .catch(error => {
-            spinner.fail();
+            if (spinner) {
+                spinner.fail();
+            }
             console.log(List.getError(error));
         });
     }
