@@ -33,18 +33,7 @@ module.exports = function (composer) {
     const app = loopback();
     return new Promise((resolve, reject) => {
 
-
-        console.log('\n To re-run this issue this command');
-        let cmd = ['composer-rest-server','-p',composer.connectionProfileName,
-            '-n',composer.businessNetworkIdentifier,
-            '-i',composer.participantId,
-            '-s',composer.participantPwd,
-            '-N',composer.namespaces,
-            '-P',composer.port];
-
-        console.log(cmd.join(' '));
-
-    // Store the composer configuration for the boot script to find
+        // Store the composer configuration for the boot script to find
         app.set('composer', composer);
 
 

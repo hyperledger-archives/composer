@@ -56,6 +56,10 @@ class Introspector {
 class ParseException extends BaseException {
    + void constructor(string) 
 }
+class ConsoleLogger {
+   + string format(string,string,undefined) 
+   + void log(string,string,string,undefined) 
+}
 class Concept extends Typed {
    + boolean isConcept() 
 }

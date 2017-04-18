@@ -121,16 +121,6 @@ class BusinessNetworkConnectionWrapper {
     }
 
     /**
-     * Test the connection to the runtime and verify that the version of the
-     * runtime is compatible with this level of the client node.js module.
-     * @return {Promise} A promise that will be fufilled when the connection has
-     * been tested. The promise will be rejected if the version is incompatible.
-     */
-    ping() {
-        return this.businessNetworkConnection.ping();
-    }
-
-    /**
      * Returns the currently connected BusinessNetworkDefinition
      * @returns {BusinessNetworkDefinition} the business network
      */

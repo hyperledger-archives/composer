@@ -124,7 +124,7 @@ export class TransactionComponent implements OnInit {
   /**
    * Validate the definition of the TransactionDeclaration, accounting for hidden fields.
    */
-  private onDefinitionChanged() {
+  onDefinitionChanged() {
     try {
       let json = JSON.parse(this.resourceDefinition);
       // Add required items that are hidden from user

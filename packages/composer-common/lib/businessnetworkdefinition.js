@@ -385,6 +385,21 @@ class BusinessNetworkDefinition {
         const modelFiles = [];
         const modelFileNames = [];
 
+        // define a help function that will filter out files
+        // that are inside a node_modules directory under the path
+        // we are processing
+        const isFileInNodeModuleDir = function(file, basePath) {
+            const method = 'isFileInNodeModuleDir';
+            let filePath = fsPath.parse(file);
+            let subPath = filePath.dir.substring(basePath.length);
+            let result = subPath.split(fsPath.sep).some((element) => {
+                return element === 'node_modules';
+            });
+
+            LOG.debug(method, file, result);
+            return result;
+        };
+
         // process each module dependency
         // filtering using a glob on the module dependency name
         if(jsonObject.dependencies) {
@@ -408,10 +423,10 @@ class BusinessNetworkDefinition {
 
                 BusinessNetworkDefinition.processDirectory(dependencyPath, {
                     accepts: function(file) {
-                        return minimatch(file, options.modelFileGlob);
+                        return isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob);
                     },
                     acceptsDir: function(dir) {
-                        return true;
+                        return !isFileInNodeModuleDir(dir, dependencyPath);
                     },
                     process: function(path,contents) {
                         modelFiles.push(contents);
@@ -421,29 +436,14 @@ class BusinessNetworkDefinition {
             }
         }
 
-        // define a help function that will filter out files
-        // that are inside a node_modules directory under the path
-        // we are processing
-        const isFileInNodeModuleDir = function(file) {
-            const method = 'isFileInNodeModuleDir';
-            let filePath = fsPath.parse(file);
-            let subPath = filePath.dir.substring(path.length);
-            let result = subPath.split(fsPath.sep).some((element) => {
-                return element === 'node_modules';
-            });
-
-            LOG.debug(method, file, result);
-            return result;
-        };
-
         // find CTO files outside the npm install directory
         //
         BusinessNetworkDefinition.processDirectory(path, {
             accepts: function(file) {
-                return isFileInNodeModuleDir(file) === false && minimatch(file, options.modelFileGlob);
+                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob);
             },
             acceptsDir: function(dir) {
-                return !isFileInNodeModuleDir(dir);
+                return !isFileInNodeModuleDir(dir, path);
             },
             process: function(path,contents) {
                 modelFiles.push(contents);
@@ -459,10 +459,10 @@ class BusinessNetworkDefinition {
         const scriptFiles = [];
         BusinessNetworkDefinition.processDirectory(path, {
             accepts: function(file) {
-                return isFileInNodeModuleDir(file) === false && minimatch(file, options.scriptGlob);
+                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob);
             },
             acceptsDir: function(dir) {
-                return !isFileInNodeModuleDir(dir);
+                return !isFileInNodeModuleDir(dir, path);
             },
             process: function(path,contents) {
                 let filePath = fsPath.parse(path);
