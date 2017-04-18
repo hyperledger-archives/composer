@@ -7,7 +7,7 @@ markdown: 0
       <div class="row">
         <!-- If there's a sidebar, divide into 2 columns -->
         {% if page.sidebar %}
-        <div class="col-md-2">
+        <div class="col-md-3">
           <nav class="context-nav" id="myScrollspy">
             {% capture sidebar %}{% include {{ page.sidebar }} %}{% endcapture %}
             {% if sidebarHTML %}
@@ -17,7 +17,7 @@ markdown: 0
             {% endif %}
           </nav>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-9">
           <section class="content-chunk">
             {% if page.markdown == 1 %}
               {{ content | markdownify }}

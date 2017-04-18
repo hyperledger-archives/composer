@@ -34,7 +34,7 @@ class BusinessNetworkConnector extends Connector {
      * Constructor.
      * @param {Object} settings the settings used by the call to BusinessNetworkConnection
      */
-    constructor (settings) {
+    constructor(settings) {
         debug('constructor');
         super('composer', settings);
 
@@ -120,7 +120,7 @@ class BusinessNetworkConnector extends Connector {
      * @return {Promise} A promise that is resolved with a {@link BusinessNetworkConnection}
      * when the connector has connected, or rejected with an error.
      */
-    ensureConnected (options) {
+    ensureConnected(options) {
         debug('ensureConnected');
         return this.getConnectionWrapper(options).ensureConnected();
     }
@@ -130,7 +130,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback the callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connect (callback) {
+    connect(callback) {
         debug('connect');
         const connectionWrapper = this.getConnectionWrapper(null);
         return connectionWrapper.connect()
@@ -152,17 +152,30 @@ class BusinessNetworkConnector extends Connector {
 
     /**
      * Test the connection to Composer.
+     * @param {Object} [options] The options provided by Loopback.
      * @param {function} callback the callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    ping (callback) {
-        debug('ping');
-        return this.getConnectionWrapper().ping()
-            .then(() => {
-                callback();
+    ping(options, callback) {
+        let actualOptions = null, actualCallback = null;
+        if (arguments.length === 1) {
+            // LoopBack API, called with (callback).
+            actualCallback = options;
+        } else {
+            // Composer API, called with (options, callback).
+            actualOptions = options;
+            actualCallback = callback;
+        }
+        debug('ping', actualOptions);
+        return this.ensureConnected(actualOptions)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.ping();
+            })
+            .then((result) => {
+                actualCallback(null, result);
             })
             .catch((error) => {
-                callback(error);
+                actualCallback(error);
             });
     }
 
@@ -171,7 +184,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback the callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    disconnect (callback) {
+    disconnect(callback) {
         debug('disconnect');
         return this.getConnectionWrapper().disconnect()
             .then(() => {
@@ -522,7 +535,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback the callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    create (lbModelName, data, options, callback) {
+    create(lbModelName, data, options, callback) {
         debug('create', lbModelName, data, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
@@ -575,7 +588,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback the callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    retrieve (lbModelName, id, options, callback) {
+    retrieve(lbModelName, id, options, callback) {
         debug('retrieve', lbModelName, id, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
@@ -611,7 +624,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback the callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    update (lbModelName, data, options, callback) {
+    update(lbModelName, data, options, callback) {
         debug('update', lbModelName, data, options);
         let composerModelName = this.getComposerModelName(lbModelName);
 
@@ -687,13 +700,59 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Issue an identity to the specified participant.
+     * @param {string} participant The fully qualified participant ID.
+     * @param {string} userID The user ID for the new identity.
+     * @param {Object} issueOptions Options for creating the new identity.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    issueIdentity(participant, userID, issueOptions, options, callback) {
+        debug('issueIdentity', participant, userID, issueOptions, options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.issueIdentity(participant, userID, issueOptions);
+            })
+            .then((result) => {
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('issueIdentity', 'error thrown doing issueIdentity', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Revoke the specified identity by removing any existing mapping to a participant.
+     * @param {string} userID The user ID for the identity.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    revokeIdentity(userID, options, callback) {
+        debug('revokeIdentity', userID, options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.revokeIdentity(userID);
+            })
+            .then((result) => {
+                callback(null);
+            })
+            .catch((error) => {
+                debug('revokeIdentity', 'error thrown doing revokeIdentity', error);
+                callback(error);
+            });
+    }
+
+    /**
      * Retrieve the list of all available model names, or the model names in a
      * specified namespace.
      * @param {Object} options the options provided by Loopback.
      * @param {function} callback the callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    discoverModelDefinitions (options, callback) {
+    discoverModelDefinitions(options, callback) {
         debug('discoverClassDeclarations', options);
         return this.ensureConnected(options)
             .then(() => {
@@ -770,7 +829,7 @@ class BusinessNetworkConnector extends Connector {
      * @param {function} callback The callback to call when complete.
      * @returns {Promise} A promise that is resolved when complete.
      */
-    discoverSchemas (object, options, callback) {
+    discoverSchemas(object, options, callback) {
         debug('discoverSchemas', object, options);
         return this.ensureConnected(options)
             .then(() => {

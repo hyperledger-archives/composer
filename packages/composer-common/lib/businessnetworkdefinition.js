@@ -23,7 +23,6 @@ const Factory = require('./factory');
 const Serializer = require('./serializer');
 const ScriptManager = require('./scriptmanager');
 const BusinessNetworkMetadata = require('./businessnetworkmetadata');
-const ModelCollector = require('./tools/modelcollector');
 const JSZip = require('jszip');
 const semver = require('semver');
 const fs = require('fs');
@@ -339,28 +338,23 @@ class BusinessNetworkDefinition {
      */
     static fromDirectory(path, options) {
 
-        const method = 'fromDirectory';
-
-        // collect all the CTO files, following the npm dependencies
-        const modelCollector = new ModelCollector();
-        const models = modelCollector.collect(path, options);
-        const modelFiles = [];
-        const modelFileNames = [];
-
-        for(let modelInfo of models) {
-            LOG.debug(method, 'Adding model', JSON.stringify(modelInfo));
-            modelFiles.push(modelInfo.contents);
-            modelFileNames.push(modelInfo.module + '/' + modelInfo.relativePath + '/' + modelInfo.file);
-        }
-
         if(!options) {
             options = {};
+        }
+
+        if(!options.dependencyGlob) {
+            options.dependencyGlob = '**';
+        }
+
+        if(!options.modelFileGlob) {
+            options.modelFileGlob = '**/models/**/*.cto';
         }
 
         if(!options.scriptGlob) {
             options.scriptGlob = '**/lib/**/*.js';
         }
 
+        const method = 'fromDirectory';
         LOG.entry(method, path);
 
          // grab the README.md
@@ -384,17 +378,20 @@ class BusinessNetworkDefinition {
 
         // parse the package.json
         let jsonObject = JSON.parse(packageJsonContents);
+        let packageName = jsonObject.name;
 
         // create the business network definition
         const businessNetwork = new BusinessNetworkDefinition(null, null, jsonObject, readmeContents);
+        const modelFiles = [];
+        const modelFileNames = [];
 
-        // define a helper function that will filter out files
+        // define a help function that will filter out files
         // that are inside a node_modules directory under the path
         // we are processing
-        const isFileInNodeModuleDir = function(file) {
+        const isFileInNodeModuleDir = function(file, basePath) {
             const method = 'isFileInNodeModuleDir';
             let filePath = fsPath.parse(file);
-            let subPath = filePath.dir.substring(path.length);
+            let subPath = filePath.dir.substring(basePath.length);
             let result = subPath.split(fsPath.sep).some((element) => {
                 return element === 'node_modules';
             });
@@ -403,6 +400,58 @@ class BusinessNetworkDefinition {
             return result;
         };
 
+        // process each module dependency
+        // filtering using a glob on the module dependency name
+        if(jsonObject.dependencies) {
+            LOG.debug(method, 'All dependencies', Object.keys(jsonObject.dependencies).toString());
+            const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob));
+            LOG.debug(method, 'Matched dependencies', dependencies);
+
+            for( let dep of dependencies) {
+                // find all the *.cto files under the npm install dependency path
+                let dependencyPath = fsPath.resolve(path, 'node_modules', dep);
+                LOG.debug(method, 'Checking dependency path', dependencyPath);
+                if (!fs.existsSync(dependencyPath)) {
+                    // need to check to see if this is in a peer directory as well
+                    //
+                    LOG.debug(method,'trying different path '+path.replace(packageName,''));
+                    dependencyPath = fsPath.resolve(path.replace(packageName,''),dep);
+                    if(!fs.existsSync(dependencyPath)){
+                        throw new Error('npm dependency path ' + dependencyPath + ' does not exist. Did you run npm install?');
+                    }
+                }
+
+                BusinessNetworkDefinition.processDirectory(dependencyPath, {
+                    accepts: function(file) {
+                        return isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob);
+                    },
+                    acceptsDir: function(dir) {
+                        return !isFileInNodeModuleDir(dir, dependencyPath);
+                    },
+                    process: function(path,contents) {
+                        modelFiles.push(contents);
+                        LOG.debug(method, 'Found model file', path);
+                    }
+                });
+            }
+        }
+
+        // find CTO files outside the npm install directory
+        //
+        BusinessNetworkDefinition.processDirectory(path, {
+            accepts: function(file) {
+                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob);
+            },
+            acceptsDir: function(dir) {
+                return !isFileInNodeModuleDir(dir, path);
+            },
+            process: function(path,contents) {
+                modelFiles.push(contents);
+                modelFileNames.push(path);
+                LOG.debug(method, 'Found model file', path);
+            }
+        });
+
         businessNetwork.getModelManager().addModelFiles(modelFiles,modelFileNames);
         LOG.debug(method, 'Added model files',  modelFiles.length);
 
@@ -410,10 +459,10 @@ class BusinessNetworkDefinition {
         const scriptFiles = [];
         BusinessNetworkDefinition.processDirectory(path, {
             accepts: function(file) {
-                return isFileInNodeModuleDir(file) === false && minimatch(file, options.scriptGlob);
+                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob);
             },
             acceptsDir: function(dir) {
-                return !isFileInNodeModuleDir(dir);
+                return !isFileInNodeModuleDir(dir, path);
             },
             process: function(path,contents) {
                 let filePath = fsPath.parse(path);

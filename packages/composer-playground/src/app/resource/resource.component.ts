@@ -79,15 +79,13 @@ export class ResourceComponent implements OnInit {
 
             if (this.editMode()) {
                 this.resourceAction = 'Update';
+                let serializer = this.clientService.getBusinessNetwork().getSerializer();
+                this.resourceDefinition = JSON.stringify(serializer.toJSON(this.resource), null, 2);
             } else {
                 // Stub out json definition
                 this.resourceAction = 'Create New';
                 this.generateResource();
             }
-            this.resourceDefinition = this.getResourceJSON();
-
-            // Run validator on json definition
-            this.onDefinitionChanged();
           }
         });
 
@@ -96,11 +94,6 @@ export class ResourceComponent implements OnInit {
 
   private editMode(): boolean {
       return (this.resource ? true : false);
-  }
-
-  private generateSampleData(): void {
-    this.generateResource(true);
-    this.onDefinitionChanged();
   }
 
   /**
@@ -122,6 +115,7 @@ export class ResourceComponent implements OnInit {
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let json = serializer.toJSON(resource);
         this.resourceDefinition = JSON.stringify(json, null, 2);
+        this.onDefinitionChanged();
     } catch (error) {
         // We can't generate a sample instance for some reason.
         this.definitionError = error.toString();
@@ -129,10 +123,6 @@ export class ResourceComponent implements OnInit {
     }
   }
 
-  private getResourceJSON(): any {
-    let serializer = this.clientService.getBusinessNetwork().getSerializer();
-    return JSON.stringify(serializer.toJSON(this.resource), null, 2);
-  }
 
   /**
    *  Create resource via json serialisation
@@ -165,15 +155,15 @@ export class ResourceComponent implements OnInit {
   /**
    * Validate json definition of resource
    */
-  private onDefinitionChanged() {
+  onDefinitionChanged() {
     try {
       let json = JSON.parse(this.resourceDefinition);
       let serializer = this.clientService.getBusinessNetwork().getSerializer();
       let resource = serializer.fromJSON(json);
       resource.validate();
       this.definitionError = null;
-    } catch (e) {
-      this.definitionError = e.toString();
+    } catch (error) {
+      this.definitionError = error.toString();
     }
   }
 
@@ -188,20 +178,6 @@ export class ResourceComponent implements OnInit {
     } else if (modelClassDeclaration instanceof ParticipantDeclaration) {
       return 'Participant';
     }
-  }
-
-  /**
-   * Generate a stub resource definition
-   */
-  private generateDefinitionStub(registryID, modelClassDeclaration): string {
-    let stub = '';
-    stub = '{\n  "$class": "' + registryID + '"';
-    let resourceProperties = modelClassDeclaration.getProperties();
-    resourceProperties.forEach((property) => {
-      stub += ',\n  "' + property.getName() + '": ""';
-    });
-    stub += '\n}';
-    return stub;
   }
 
   /**
