@@ -6,11 +6,6 @@
     "node": ">=6",
     "npm": ">=3"
   },
-  "files": [
-    "generators/app",
-    "generators/cli",
-    "generators/angular"
-  ],
   "keywords": [
     "yeoman-generator"
   ],
