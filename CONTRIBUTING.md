@@ -23,7 +23,7 @@ The following is a list of the repositories that are part of the Fabric Composer
 
 ### Our development process
 
-The source and issue tracking system for Fabric Composer is [github](https://github.com/fabric-composer). All changes should be developed in a fork of the Fabric Composer repository, and the changes submitted for approval in the form of pull requests. Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
+The source and issue tracking system for Fabric Composer is [GitHub](https://github.com/hyperledger/composer). All changes should be developed in a fork of the Fabric Composer repository, and the changes submitted for approval in the form of pull requests. Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
 The master branches are currently being used, a release build is run weekly to fix the release at a new level.  See the [release process](./contrib-notes/release-process.md)
 
@@ -74,6 +74,6 @@ Our linter **eslint** will catch most styling issues that may exist in your code
 
 
 ### Issue Management
-Issues are tracked in Github. If you are looking for a place to start with the code then it might be worth [tackling a] defect(https://github.com/fabric-composer/fabric-composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/fabric-composer/fabric-composer/issues?q=is%3Aissue+label%3A%22help+wanted%22)
+Issues are tracked in Github. If you are looking for a place to start with the code then it might be worth [tackling a] defect(https://github.com/hyperledger/composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/hyperledger/composer/issues?q=is%3Aissue+label%3A%22help+wanted%22)
 
 Please try and use the [issue template](./ISSUE_TEMPLATED.md) when raising new issues.
