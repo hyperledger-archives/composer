@@ -114,7 +114,7 @@ export class <%= currentAsset.name %>Component implements OnInit {
     this.currentId = id;
   }
 
-  getForm(id: gany): Promise<any>{
+  getForm(id: any): Promise<any>{
 
     return this.service<%= currentAsset.name %>.getAsset(id)
     .toPromise()
