@@ -211,7 +211,7 @@ describe('SampleBusinessNetworkService', () => {
           throw('Should not get here');
         })
         .catch((error) => {
-          error.should.equal('no connection to github');
+          error.should.equal('no connection to GitHub');
         })
     }));
 
@@ -266,7 +266,7 @@ describe('SampleBusinessNetworkService', () => {
           throw('Should not get here');
         })
         .catch((error) => {
-          error.should.equal('no connection to github');
+          error.should.equal('no connection to GitHub');
         });
 
       tick();
@@ -353,7 +353,7 @@ describe('SampleBusinessNetworkService', () => {
           throw('Should not get here');
         })
         .catch((error) => {
-          error.should.equal('no connection to github');
+          error.should.equal('no connection to GitHub');
         });
 
       tick();
@@ -441,7 +441,7 @@ describe('SampleBusinessNetworkService', () => {
           throw('Should not get here');
         })
         .catch((error) => {
-          error.should.equal('no connection to github');
+          error.should.equal('no connection to GitHub');
         });
 
       tick();
@@ -570,7 +570,7 @@ describe('SampleBusinessNetworkService', () => {
           throw('Should not get here');
         })
         .catch((error) => {
-          error.should.equal('no connection to github');
+          error.should.equal('no connection to GitHub');
         });
 
       tick();
@@ -670,7 +670,7 @@ describe('SampleBusinessNetworkService', () => {
           throw('Should not get here');
         })
         .catch((error) => {
-          error.should.equal('no connection to github');
+          error.should.equal('no connection to GitHub');
         });
 
       tick();
@@ -761,7 +761,7 @@ describe('SampleBusinessNetworkService', () => {
           throw('Should not get here');
         })
         .catch((error) => {
-          error.should.equal('no connection to github');
+          error.should.equal('no connection to GitHub');
         });
 
       tick();
