@@ -62,8 +62,9 @@ class Factory {
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      * @deprecated - use newResource instead
@@ -80,8 +81,9 @@ class Factory {
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
@@ -143,14 +145,15 @@ class Factory {
         newObj.assignFieldDefaults();
 
         if(options.generate) {
-            let visitor = new InstanceGenerator();
-            const generator = options.withSampleData ? ValueGeneratorFactory.sample() : ValueGeneratorFactory.default();
-            let parameters = {
+            const visitor = new InstanceGenerator();
+            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
+            const parameters = {
                 stack: new TypedStack(newObj),
                 modelManager: this.modelManager,
                 factory: this,
                 valueGenerator: generator
             };
+
             classDecl.accept(visitor, parameters);
         }
 
@@ -168,8 +171,9 @@ class Factory {
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
@@ -216,11 +220,13 @@ class Factory {
         newObj.assignFieldDefaults();
 
         if(options.generate) {
-            let visitor = new InstanceGenerator();
-            let parameters = {
+            const visitor = new InstanceGenerator();
+            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
+            const parameters = {
                 stack: new TypedStack(newObj),
                 modelManager: this.modelManager,
-                factory: this
+                factory: this,
+                valueGenerator: generator
             };
             classDecl.accept(visitor, parameters);
         }
@@ -231,7 +237,7 @@ class Factory {
 
     /**
      * Create a new Relationship with a given namespace, type and identifier.
-`     * A relationship is a typed pointer to an instance. I.e the relationship
+     * A relationship is a typed pointer to an instance. I.e the relationship
      * with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates`
      * a pointer that points at an instance of org.acme.Vehicle with the id
      * ABC.
@@ -273,8 +279,9 @@ class Factory {
      * @param {string} [id] - an optional identifier for the transaction; if you do not specify
      * one then an identifier will be automatically generated.
      * @param {Object} [options] - an optional set of options
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} A resource for the new transaction.
      */
     newTransaction(ns, type, id, options) {
