@@ -82,18 +82,29 @@ describe('Factory', () => {
             should.equal(resource.validate, undefined);
         });
 
-        it('should create a new instance with a specified ID and generated default data', () => {
-            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true });
+        it('should create a new instance with a specified ID and generated empty data', () => {
+            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: 'empty' });
             resource.assetId.should.equal('MY_ID_1');
             resource.newValue.should.be.a('string');
+            resource.newValue.length.should.equal(0);
             should.not.equal(resource.validate, undefined);
         });
 
-        it('should create a new instance with a specified ID and generated sample data', () => {
-            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true, withSampleData: true });
+        const validateSampleData = (resource) => {
             resource.assetId.should.equal('MY_ID_1');
             resource.newValue.should.be.a('string');
+            resource.newValue.length.should.not.equal(0);
             should.not.equal(resource.validate, undefined);
+        };
+
+        it('should create a new instance with a specified ID and generated sample data', () => {
+            const resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: 'sample' });
+            validateSampleData(resource);
+        });
+
+        it('should generate sample data if \'generate\' option is a boolean', () => {
+            const resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true });
+            validateSampleData(resource);
         });
 
     });

@@ -106,12 +106,12 @@ export class ResourceComponent implements OnInit {
     idx = leftPad(idx, 4, '0');
     let id = `${this.resourceDeclaration.getIdentifierFieldName()}:${idx}`;
     try {
+        const generateParameters = { generate: withSampleData ? 'sample' : 'empty' };
         let resource = factory.newResource(
-            this.resourceDeclaration.getModelFile().getNamespace(),
-            this.resourceDeclaration.getName(),
-            id,
-            { generate: true, 'withSampleData': withSampleData }
-        );
+          this.resourceDeclaration.getModelFile().getNamespace(),
+          this.resourceDeclaration.getName(),
+          id,
+          generateParameters);
         let serializer = this.clientService.getBusinessNetwork().getSerializer();
         let json = serializer.toJSON(resource);
         this.resourceDefinition = JSON.stringify(json, null, 2);
