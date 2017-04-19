@@ -91,20 +91,22 @@ export class EditorComponent implements OnInit {
   }
 
   updatePackageInfo() {
-  this.deployedPackageName = this.clientService.getMetaData().getName(); // Set Name
+    this.deployedPackageName = this.clientService.getMetaData().getName(); // Set Name
     this.deployedPackageVersion = this.clientService.getMetaData().getVersion(); // Set Version
     this.deployedPackageDescription = this.clientService.getMetaData().getDescription(); // Set Description
     this.inputPackageName = this.clientService.getMetaData().getName();
     this.inputPackageVersion = this.clientService.getMetaData().getVersion();
   }
 
-  setCurrentFile(file) {
-  if (this.editingPackage) {
+  setCurrentFile(file) {    
+    if (this.editingPackage) {
       this.updatePackageInfo();
       this.editingPackage = false;
     }
-
-  this.editorService.setCurrentFile(file);
+    // Reset editActive
+    this.editActive = false;
+    // Set selected file
+    this.editorService.setCurrentFile(file);
     this.currentFile = file;
   }
 
@@ -308,9 +310,7 @@ export class EditorComponent implements OnInit {
   editPackageName() {
     this.deployedPackageName = this.inputPackageName;
     
-  this.clientService.setBusinessNetworkName(this.deployedPackageName);
-
-    this.editActive = false;
+    this.clientService.setBusinessNetworkName(this.deployedPackageName);
   }
 
   /*
@@ -320,12 +320,10 @@ export class EditorComponent implements OnInit {
     this.deployedPackageVersion = this.inputPackageVersion;
 
     this.clientService.setBusinessNetworkVersion(this.deployedPackageVersion);
-
-    this.editActive = false;
   }
 
   hideEdit() {
-    this.toggleEditActive();
+    this.editActive = false;
     this.editingPackage = true;
   }
 }

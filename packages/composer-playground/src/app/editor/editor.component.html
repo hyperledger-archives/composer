@@ -54,7 +54,7 @@
       <div style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}
       </div>
       <div style="flex-shrink:1;align-self:center">
-        <button type="button" class="action" style="padding-top:4px;" (click)="toggleEditActive()">
+        <button id="editFileButton" type="button" class="action" style="padding-top:4px;" (click)="toggleEditActive()">
           <svg class="ibm-icon vertical-top" aria-hidden="true">
             <use xlink:href="#icon-edit_24"></use>
           </svg>
@@ -68,7 +68,7 @@
       <input class="margin-right" id="editVersion" type="text" (blur)="editPackageVersion()"
              [(ngModel)]="inputPackageVersion">
       <div class="edit-package-text margin-right">
-        <button type="button" class="action" (click)="setCurrentFile({
+        <button id="editPackageButton" type="button" class="action" (click)="setCurrentFile({
           package: true,
           id: 'package',
           displayID: 'package.json'
