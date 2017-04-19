@@ -359,7 +359,7 @@ describe('ImportComponent', () => {
 
       component.deployFromGitHub();
 
-      mockBusinessNetworkService.deploySample.should.have.been.calledWith('fabric-composer', 'sample-networks', {name: 'fred'});
+      mockBusinessNetworkService.deploySample.should.have.been.calledWith('hyperledger', 'composer-sample-networks', {name: 'fred'});
     });
 
     it('should deploy from github using custom repo', () => {
