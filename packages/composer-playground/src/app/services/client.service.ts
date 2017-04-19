@@ -152,14 +152,18 @@ export class ClientService {
     let oldBusinessNetwork = this.getBusinessNetwork();
 
     this.currentBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
-    this.currentBusinessNetwork.getModelManager().addModelFiles(oldBusinessNetwork.getModelManager().getModelFiles());
+  this.currentBusinessNetwork.getModelManager().addModelFiles(oldBusinessNetwork.getModelManager().getModelFiles());
 
     oldBusinessNetwork.getScriptManager().getScripts().forEach((script) => {
       this.currentBusinessNetwork.getScriptManager().addScript(script);
     });
 
-    this.currentBusinessNetwork.getAclManager().setAclFile(oldBusinessNetwork.getAclManager().getAclFile());
+    if (oldBusinessNetwork.getAclManager().getAclFile()) {
+      this.currentBusinessNetwork.getAclManager().setAclFile(oldBusinessNetwork.getAclManager().getAclFile());
+    }
+  
     this.businessNetworkChanged$.next(true);
+    
   }
 
   ensureConnected(): Promise<any> {
