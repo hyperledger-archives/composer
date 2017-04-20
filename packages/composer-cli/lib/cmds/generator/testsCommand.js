@@ -31,11 +31,13 @@ module.exports.handler = (argv) => {
     .then(() => {
         console.log ('Command completed successfully.');
         return;
+
     })
     .catch((error) => {
         console.log(error);
         console.log('Command failed.');
         throw error;
+
     });
     return argv.thePromise;
 };

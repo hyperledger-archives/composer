@@ -101,9 +101,11 @@ class Download {
 
         }).catch( (error) => {
             console.log(error);
+
             if (spinner) {
                 spinner.fail();
             }
+
             throw error;
         })
         ;
