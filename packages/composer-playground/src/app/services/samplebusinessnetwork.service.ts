@@ -17,8 +17,8 @@ export class SampleBusinessNetworkService {
   private octo;
 
   public OPEN_SAMPLE: boolean = false;
-  public RATE_LIMIT_MESSAGE = 'The rate limit to github api has been exceeded, to fix this problem setup oauth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
-  public NO_CLIENT_ID = 'The client id for the github api has not been set, to fix this problem setup ouath as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public RATE_LIMIT_MESSAGE = 'The rate limit to the GitHub API has been exceeded, to fix this problem setup OAuth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public NO_CLIENT_ID = 'The client ID for the GitHub API has not been set, to fix this problem setup OAuth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
   public CLIENT_ID = null;
 
   constructor(private adminService: AdminService,
@@ -117,7 +117,7 @@ export class SampleBusinessNetworkService {
 
   public getModelsInfo(owner: string, repository: string): Promise<any> {
     if (!this.octo) {
-      return Promise.reject('no connection to github');
+      return Promise.reject('no connection to GitHub');
     }
     let repo = this.octo.repos(owner, repository);
 
@@ -140,7 +140,7 @@ export class SampleBusinessNetworkService {
 
   public getSampleNetworkInfo(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
-      return Promise.reject('no connection to github');
+      return Promise.reject('no connection to GitHub');
     }
 
     let repo = this.octo.repos(owner, repository);
@@ -160,7 +160,7 @@ export class SampleBusinessNetworkService {
 
   getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
     if (!this.octo) {
-      return Promise.reject('no connection to github');
+      return Promise.reject('no connection to GitHub');
     }
 
     let repo = this.octo.repos(owner, repository);
@@ -185,7 +185,7 @@ export class SampleBusinessNetworkService {
 
   getModel(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
-      return Promise.reject('no connection to github');
+      return Promise.reject('no connection to GitHub');
     }
 
     let repo = this.octo.repos(owner, repository);
@@ -254,7 +254,7 @@ export class SampleBusinessNetworkService {
 
   getScripts(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
-      return Promise.reject('no connection to github');
+      return Promise.reject('no connection to GitHub');
     }
 
     let repo = this.octo.repos(owner, repository);
@@ -287,7 +287,7 @@ export class SampleBusinessNetworkService {
 
   getAcls(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
-      return Promise.reject('no connection to github');
+      return Promise.reject('no connection to GitHub');
     }
 
     let repo = this.octo.repos(owner, repository);
@@ -312,7 +312,7 @@ export class SampleBusinessNetworkService {
 
   getReadme(owner: string, repository: string, path: string): Promise<any> {
     if (!this.octo) {
-      return Promise.reject('no connection to github');
+      return Promise.reject('no connection to GitHub');
     }
 
     let repo = this.octo.repos(owner, repository);
