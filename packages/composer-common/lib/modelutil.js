@@ -94,8 +94,10 @@ class ModelUtil {
             return false;
         }
 
+        // console.log( 'model file ns ' + modelFile.getNamespace() );
         // console.log( 'type ' + type );
         // console.log( 'property ' + property.getFullyQualifiedName() );
+        // console.log( 'property type ' + property.getFullyQualifiedTypeName() );
 
         // simple case
         if(type === property.getFullyQualifiedTypeName()) {
@@ -111,7 +113,19 @@ class ModelUtil {
         }
 
         let superTypeName = typeDeclaration.getSuperType();
-        let superType = modelFile.getType(superTypeName);
+        let superType = null;
+
+        if(superTypeName) {
+            // we cannot assume that the super type is in the same namespace as the derived type!
+            superType = modelFile.getModelManager().getType(superTypeName);
+
+            if(!superType) {
+                throw new Error('Cannot find type ' + superTypeName );
+            }
+
+            // console.log( 'superTypeName ' + superTypeName );
+            // console.log( 'superType ' + superType.getFullyQualifiedName() );
+        }
 
         while(superType) {
             if(superType.getFullyQualifiedName() === property.getFullyQualifiedTypeName()) {

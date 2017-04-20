@@ -23,11 +23,14 @@ const session = require('express-session');
 
 module.exports = function (composer) {
 
+
     // Ensure that the configuration has been provided.
     if (!composer) {
         throw new Error('composer not specified');
 
+
     }
+
 
     // Create the LoopBack application.
     const app = loopback();
