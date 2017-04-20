@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-web",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "description": "The web runtime container for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -61,8 +61,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.5.12",
-    "composer-runtime": "^0.5.12",
+    "composer-common": "^0.5.13",
+    "composer-runtime": "^0.5.13",
     "dexie": "^1.5.1",
     "uuid": "^3.0.1"
   }
