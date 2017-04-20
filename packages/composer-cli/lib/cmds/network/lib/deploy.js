@@ -121,13 +121,11 @@ class Deploy {
 
             return result;
         }).catch((error) => {
-<<<<<<< HEAD
+
             if (spinner) {
                 spinner.fail();
             }
-=======
-            spinner.fail();
->>>>>>> 487267b... cli tidy up
+
             console.log();
 
             throw error;

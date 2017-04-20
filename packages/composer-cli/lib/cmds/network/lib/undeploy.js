@@ -74,13 +74,11 @@ class Undeploy {
               spinner.succeed();
               return result;
           }).catch((error) => {
-<<<<<<< HEAD
+
               if (spinner) {
                   spinner.fail();
               }
-=======
-              spinner.fail();
->>>>>>> 487267b... cli tidy up
+
               throw error;
           });
     }

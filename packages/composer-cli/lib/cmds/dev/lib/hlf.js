@@ -65,11 +65,6 @@ class hlf {
     */
     static runCmd(argv){
 
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 487267b... cli tidy up
         if (argv.start === undefined && argv.stop === undefined && argv.download===undefined && argv.delete === undefined && argv.purgeProfiles === undefined){
             return this._cmd('docker ps');
         }
