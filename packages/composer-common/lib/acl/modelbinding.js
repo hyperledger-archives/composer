@@ -76,7 +76,7 @@ class ModelBinding {
     /**
      * Process the AST and build the model
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {
@@ -157,7 +157,7 @@ class ModelBinding {
      * --- If instanceId and variableName are null
      * --- Try to resolve ns
      * </pre>
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate() {

@@ -30,7 +30,7 @@ class StringValidator extends Validator{
      * @param {Object} validator - The validation string. This must be a regex
      * expression.
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(field, validator) {
         super(field,validator);
@@ -47,7 +47,7 @@ class StringValidator extends Validator{
      * Validate the property
      * @param {string} identifier the identifier of the instance being validated
      * @param {Object} value the value to validate
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate(identifier, value) {

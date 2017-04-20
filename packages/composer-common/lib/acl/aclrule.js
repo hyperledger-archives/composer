@@ -70,7 +70,7 @@ class AclRule {
     /**
      * Process the AST and build the model
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {
@@ -99,7 +99,7 @@ class AclRule {
     /**
      * Semantic validation of the structure of this AclRule.
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate() {
