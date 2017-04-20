@@ -16,8 +16,6 @@ import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/scroll/simplescrollbars';
 
 const uuid = require('uuid');
-const fabricComposerOwner = 'fabric-composer';
-const fabricComposerRepository = 'sample-networks';
 
 @Component({
   selector: 'transaction-modal',
