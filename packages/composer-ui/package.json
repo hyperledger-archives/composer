@@ -1,6 +1,6 @@
 {
   "name": "composer-ui",
-  "version": "0.5.9",
+  "version": "0.5.11",
   "description": "A test harness/UI for the web runtime container for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "scripts": {
     "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
@@ -70,8 +70,8 @@
     "webpack": "webpack"
   },
   "dependencies": {
-    "composer-common": "^0.5.9",
-    "composer-playground-api": "^0.5.9",
+    "composer-common": "^0.5.11",
+    "composer-playground-api": "^0.5.11",
     "express": "^4.15.2",
     "fast-json-patch": "^1.1.8",
     "is-docker": "^1.1.0",
@@ -80,12 +80,12 @@
     "socket.io": "^1.7.3"
   },
   "devDependencies": {
-    "composer-admin": "^0.5.9",
-    "composer-client": "^0.5.9",
-    "composer-connector-proxy": "^0.5.9",
-    "composer-connector-web": "^0.5.9",
-    "composer-runtime": "^0.5.9",
-    "composer-runtime-web": "^0.5.9",
+    "composer-admin": "^0.5.11",
+    "composer-client": "^0.5.11",
+    "composer-connector-proxy": "^0.5.11",
+    "composer-connector-web": "^0.5.11",
+    "composer-runtime": "^0.5.11",
+    "composer-runtime-web": "^0.5.11",
     "@angular/common": "^2.4.8",
     "@angular/compiler": "^2.4.8",
     "@angular/core": "^2.4.8",

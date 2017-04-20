@@ -21,23 +21,6 @@ let hfc = require('fabric-client');
 let copService = require('fabric-ca-client/lib/FabricCAClientImpl.js');
 let User = require('fabric-client/lib/User.js');
 
-module.exports.END2END = {
-    channel: 'mychannel',
-    chaincodeId: 'end2end',
-    chaincodeVersion: 'v0'
-};
-
-// directory for file based KeyValueStore
-module.exports.KVS = '/tmp/hfc-test-kvs';
-module.exports.storePathForOrg = function (org) {
-    return module.exports.KVS + '_' + org;
-};
-
-// temporarily set $GOPATH to the test fixture folder
-module.exports.setupChaincodeDeploy = function () {
-    process.env.GOPATH = path.join(__dirname, '../fixtures');
-};
-
 // specifically set the values to defaults because they may have been overridden when
 // running in the overall test bucket ('gulp test')
 module.exports.resetDefaults = function () {
@@ -68,8 +51,13 @@ module.exports.existsSync = function (absolutePath /*string*/) {
     }
 };
 
+let useTls = process.env.SYSTEST.match('tls$');
 
-hfc.addConfigFile(path.join(__dirname, './config.json'));
+if (useTls) {
+    hfc.addConfigFile(path.join(__dirname, './config.tls.json'));
+} else {
+    hfc.addConfigFile(path.join(__dirname, './config.json'));
+}
 let ORGS = hfc.getConfigSetting('test-network');
 
 /**

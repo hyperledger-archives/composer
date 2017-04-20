@@ -839,6 +839,15 @@ describe('HFCUtil', function () {
 
     describe('#createIdentity', () => {
 
+        let memberServices;
+
+        beforeEach(() => {
+            memberServices = {
+                register: sinon.stub()
+            };
+            chain.getMemberServices.returns(memberServices);
+        });
+
         it('shoud throw if enrollment ID not specified', () => {
             (() => {
                 HFCUtil.createIdentity(securityContext, null);
@@ -854,11 +863,11 @@ describe('HFCUtil', function () {
                     value: 'doge'
                 }]
             };
-            chain.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
+            memberServices.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
             return HFCUtil.createIdentity(securityContext, 'doge')
                 .then((identity) => {
-                    sinon.assert.calledOnce(chain.register);
-                    sinon.assert.calledWith(chain.register, registerRequest);
+                    sinon.assert.calledOnce(memberServices.register);
+                    sinon.assert.calledWith(memberServices.register, registerRequest);
                     identity.should.deep.equal({
                         userID: 'doge',
                         userSecret: 'suchpassword'
@@ -879,11 +888,11 @@ describe('HFCUtil', function () {
                     delegateRoles: ['client']
                 }
             };
-            chain.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
+            memberServices.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
             return HFCUtil.createIdentity(securityContext, 'doge', { issuer: true })
                 .then((identity) => {
-                    sinon.assert.calledOnce(chain.register);
-                    sinon.assert.calledWith(chain.register, registerRequest);
+                    sinon.assert.calledOnce(memberServices.register);
+                    sinon.assert.calledWith(memberServices.register, registerRequest);
                     identity.should.deep.equal({
                         userID: 'doge',
                         userSecret: 'suchpassword'
@@ -900,11 +909,11 @@ describe('HFCUtil', function () {
                     value: 'doge'
                 }]
             };
-            chain.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
+            memberServices.register.withArgs(registerRequest, sinon.match.any).yields(null, 'suchpassword');
             return HFCUtil.createIdentity(securityContext, 'doge', { affiliation: 'dogecorp' })
                 .then((identity) => {
-                    sinon.assert.calledOnce(chain.register);
-                    sinon.assert.calledWith(chain.register, registerRequest);
+                    sinon.assert.calledOnce(memberServices.register);
+                    sinon.assert.calledWith(memberServices.register, registerRequest);
                     identity.should.deep.equal({
                         userID: 'doge',
                         userSecret: 'suchpassword'
@@ -913,7 +922,7 @@ describe('HFCUtil', function () {
         });
 
         it('should handle an error from registering a new user', () => {
-            chain.register.yields(new Error('such error'));
+            memberServices.register.yields(new Error('such error'));
             return HFCUtil.createIdentity(securityContext, 'doge')
                 .should.be.rejectedWith(/such error/);
         });

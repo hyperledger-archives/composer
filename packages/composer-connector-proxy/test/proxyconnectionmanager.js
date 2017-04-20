@@ -14,6 +14,147 @@
 
 'use strict';
 
+const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
+const ProxyConnection = require('../lib/proxyconnection');
+/* const ProxyConnectionManager = */ require('..');
+const serializerr = require('serializerr');
+
+require('chai').should();
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
+
 describe('ProxyConnectionManager', () => {
+
+    const connectionProfile = 'defaultProfile';
+    const businessNetworkIdentifier = 'org.acme.biznet';
+    const connectionOptions = {
+        type: 'embedded'
+    };
+    const connectionID = '3d382385-47a5-4be9-99b0-6b10166b9497';
+    const serializedError = serializerr(new TypeError('such type error'));
+
+    let mockSocketFactory;
+    let mockSocket;
+    let mockConnectionProfileManager;
+    let ProxyConnectionManager;
+
+    beforeEach(() => {
+        mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
+        mockSocket = {
+            emit: sinon.stub(),
+            once: sinon.stub(),
+            on: sinon.stub()
+        };
+        mockSocket.emit.throws(new Error('unexpected call'));
+        mockSocket.once.throws(new Error('unexpected call'));
+        mockSocket.on.throws(new Error('unexpected call'));
+        mockSocketFactory = sinon.stub().returns(mockSocket);
+        ProxyConnectionManager = proxyquire('../lib/proxyconnectionmanager', {
+            'socket.io-client': mockSocketFactory
+        });
+    });
+
+    describe('#setConnectorServerURL', () => {
+
+        it('should change the URL used to connect to the connector server', () => {
+            ProxyConnectionManager.setConnectorServerURL('http://blah.com:2393');
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            new ProxyConnectionManager(mockConnectionProfileManager);
+            sinon.assert.calledOnce(mockSocketFactory);
+            sinon.assert.calledWith(mockSocketFactory, 'http://blah.com:2393');
+        });
+
+    });
+
+    describe('#constructor', () => {
+
+        let connectionManager;
+
+        beforeEach(() => {
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            connectionManager = new ProxyConnectionManager(mockConnectionProfileManager);
+        });
+
+        it('should create a new socket connection and listen for a connect event', () => {
+            sinon.assert.calledOnce(mockSocketFactory);
+            sinon.assert.calledWith(mockSocketFactory, 'http://localhost:15699');
+            // Trigger the connect callback.
+            connectionManager.connected.should.be.false;
+            mockSocket.on.args[0][0].should.equal('connect');
+            mockSocket.on.args[0][1]();
+            connectionManager.connected.should.be.true;
+        });
+
+        it('should create a new socket connection and listen for a disconnect event', () => {
+            sinon.assert.calledOnce(mockSocketFactory);
+            sinon.assert.calledWith(mockSocketFactory, 'http://localhost:15699');
+            // Trigger the disconnect callback.
+            connectionManager.connected = true;
+            mockSocket.on.args[1][0].should.equal('disconnect');
+            mockSocket.on.args[1][1]();
+            connectionManager.connected.should.be.false;
+        });
+
+    });
+
+    describe('#ensureConnected', () => {
+
+        let connectionManager;
+
+        beforeEach(() => {
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            connectionManager = new ProxyConnectionManager(mockConnectionProfileManager);
+        });
+
+        it('should do nothing if already connected', () => {
+            connectionManager.connected = true;
+            return connectionManager.ensureConnected();
+        });
+
+        it('should wait for a connection if not connected', () => {
+            mockSocket.once.withArgs('connect').yields();
+            connectionManager.connected = false;
+            return connectionManager.ensureConnected()
+                .then(() => {
+                    sinon.assert.calledOnce(mockSocket.once);
+                    sinon.assert.calledWith(mockSocket.once, 'connect');
+                });
+        });
+
+    });
+
+    describe('#connect', () => {
+
+        let connectionManager;
+
+        beforeEach(() => {
+            mockSocket.on.withArgs('connect').returns();
+            mockSocket.on.withArgs('disconnect').returns();
+            connectionManager = new ProxyConnectionManager(mockConnectionProfileManager);
+            connectionManager.connected = true;
+        });
+
+        it('should send a connect call to the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, sinon.match.func).yields(null, connectionID);
+            return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)
+                .then((connection) => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, sinon.match.func);
+                    connection.should.be.an.instanceOf(ProxyConnection);
+                    connection.socket.should.equal(mockSocket);
+                    connection.connectionID.should.equal(connectionID);
+                });
+        });
+
+        it('should handle an error from the connector server', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, sinon.match.func).yields(serializedError);
+            return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)
+                .should.be.rejectedWith(TypeError, /such type error/);
+        });
+
+    });
 
 });

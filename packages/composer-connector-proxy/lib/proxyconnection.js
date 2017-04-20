@@ -15,7 +15,7 @@
 'use strict';
 
 const Connection = require('composer-common').Connection;
-const inflaterr = require('./proxyutil').inflaterr;
+const ProxyUtil = require('./proxyutil');
 const ProxySecurityContext = require('./proxysecuritycontext');
 
 /**
@@ -48,7 +48,7 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionDisconnect', this.connectionID, (error) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
                 resolve();
             });
@@ -66,9 +66,9 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionLogin', this.connectionID, enrollmentID, enrollmentSecret, (error, securityContextID) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
-                let securityContext = new ProxySecurityContext(this, securityContextID);
+                let securityContext = new ProxySecurityContext(this, enrollmentID, securityContextID);
                 resolve(securityContext);
             });
         });
@@ -88,7 +88,7 @@ class ProxyConnection extends Connection {
                 return new Promise((resolve, reject) => {
                     this.socket.emit('/api/connectionDeploy', this.connectionID, securityContext.securityContextID, force, businessNetworkArchive.toString('base64'), (error) => {
                         if (error) {
-                            return reject(inflaterr(error));
+                            return reject(ProxyUtil.inflaterr(error));
                         }
                         resolve();
                     });
@@ -109,7 +109,7 @@ class ProxyConnection extends Connection {
                 return new Promise((resolve, reject) => {
                     this.socket.emit('/api/connectionUpdate', this.connectionID, securityContext.securityContextID, businessNetworkArchive.toString('base64'), (error) => {
                         if (error) {
-                            return reject(inflaterr(error));
+                            return reject(ProxyUtil.inflaterr(error));
                         }
                         resolve();
                     });
@@ -128,7 +128,7 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionUndeploy', this.connectionID, securityContext.securityContextID, businessNetworkIdentifier, (error) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
                 resolve();
             });
@@ -145,7 +145,7 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionPing', this.connectionID, securityContext.securityContextID, (error, result) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
                 resolve(result);
             });
@@ -164,7 +164,7 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionQueryChainCode', this.connectionID, securityContext.securityContextID, functionName, args, (error, result) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
                 resolve(Buffer.from(result));
             });
@@ -183,7 +183,7 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionInvokeChainCode', this.connectionID, securityContext.securityContextID, functionName, args, (error) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
                 resolve();
             });
@@ -206,7 +206,7 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionCreateIdentity', this.connectionID, securityContext.securityContextID, userID, options, (error, result) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
                 resolve(result);
             });
@@ -224,7 +224,7 @@ class ProxyConnection extends Connection {
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionList', this.connectionID, securityContext.securityContextID, (error, result) => {
                 if (error) {
-                    return reject(inflaterr(error));
+                    return reject(ProxyUtil.inflaterr(error));
                 }
                 resolve(result);
             });

@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-embedded",
-  "version": "0.5.9",
+  "version": "0.5.11",
   "description": "The embedded client connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "license-check-config": {
     "src": [
@@ -52,9 +52,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.5.9",
-    "composer-runtime": "^0.5.9",
-    "composer-runtime-embedded": "^0.5.9"
+    "composer-common": "^0.5.11",
+    "composer-runtime": "^0.5.11",
+    "composer-runtime-embedded": "^0.5.11"
   },
   "nyc": {
     "exclude": [

@@ -22,7 +22,7 @@ type ComposerPool struct {
 // NewComposerPool creates a new pool of Composer objects.
 func NewComposerPool(max int) (result *ComposerPool) {
 	logger.Debug("Entering NewComposerPool", max)
-	defer func() { logger.Debug("Exiting NewChaincode", result) }()
+	defer func() { logger.Debug("Exiting NewComposerPool", result) }()
 
 	return &ComposerPool{
 		Pool: make(chan *Composer, max),

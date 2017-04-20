@@ -26,11 +26,11 @@ class BusinessNetworkMetadata {
 }
 class Factory {
    + void constructor(ModelManager) 
-   + Resource newInstance(string,string,string,Object,boolean,boolean) throws ModelException
-   + Resource newResource(string,string,string,Object,boolean,boolean) throws ModelException
-   + Resource newConcept(string,string,Object,boolean,boolean) throws ModelException
+   + Resource newInstance(string,string,string,Object,boolean,string) throws ModelException
+   + Resource newResource(string,string,string,Object,boolean,string) throws ModelException
+   + Resource newConcept(string,string,Object,boolean,string) throws ModelException
    + Relationship newRelationship(string,string,string) throws ModelException
-   + Resource newTransaction(string,string,string,Object,boolean) 
+   + Resource newTransaction(string,string,string,Object,string) 
    + Object toJSON() 
 }
 class FileWallet extends Wallet {
@@ -55,6 +55,10 @@ class Introspector {
 }
 class ParseException extends BaseException {
    + void constructor(string) 
+}
+class ConsoleLogger {
+   + string format(string,string,undefined) 
+   + void log(string,string,string,undefined) 
 }
 class Concept extends Typed {
    + boolean isConcept() 

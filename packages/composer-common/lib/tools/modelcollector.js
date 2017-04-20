@@ -85,10 +85,7 @@ class ModelCollector {
         // grab all the model files that are beneath the current directory
         ModelCollector.processDirectory(path, {
             accepts: function (file) {
-                // we use this dirty hack to prevent
-                // finding the test CTO files that are part of composer-common
-                return (minimatch(file, options.modelFileGlob) &&
-                    file.indexOf('/node_modules/composer-common/test/') <0);
+                return minimatch(file, options.modelFileGlob);
             },
             acceptsDir: function (dir) {
                 return true;
