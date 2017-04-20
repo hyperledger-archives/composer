@@ -40,6 +40,7 @@ module.exports.handler = (argv) => {
     .then(() => {
         console.log ('Command completed successfully.');
         return;
+
     })
     .catch((error) => {
         console.log(error.stack);
@@ -48,4 +49,5 @@ module.exports.handler = (argv) => {
     });
 
     return argv.thePromise;
+
 };

@@ -6,10 +6,13 @@
     "node": ">=6",
     "npm": ">=3"
   },
+
   "main": "index.js",
+
   "bin": {
     "composer-rest-server": "cli.js"
   },
+
   "scripts": {
     "start": "node .",
     "pretest": "npm run licchk",
@@ -22,14 +25,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "dependencies": {
     "body-parser": "^1.17.0",

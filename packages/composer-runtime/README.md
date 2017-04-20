@@ -30,8 +30,8 @@ via a set of **Services**.
 
 Two **Container** implementations currently exist:
 
-* Hyperledger Fabric (Go): [Composer-Runtime-Hyperledger-Fabric](https://github.com/fabric-composer/fabric-composer/tree/develop/packages/composer-runtime-hlf)
-* Web/in-browser (JavaScript): [Composer-Runtime-Web](https://github.com/fabric-composer/fabric-composer/tree/develop/packages/composer-runtime-web)
+* Hyperledger Fabric (Go): [Composer-Runtime-Hyperledger-Fabric](https://github.com/hyperledger/composer/tree/develop/packages/composer-runtime-hlf)
+* Web/in-browser (JavaScript): [Composer-Runtime-Web](https://github.com/hyperledger/composer/tree/develop/packages/composer-runtime-web)
 
 The **Container** interface is defined in [lib/container.js](./lib/container.js).
 
