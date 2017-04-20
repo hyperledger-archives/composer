@@ -121,9 +121,11 @@ class Deploy {
 
             return result;
         }).catch((error) => {
+
             if (spinner) {
                 spinner.fail();
             }
+
             console.log();
 
             throw error;

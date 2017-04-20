@@ -57,7 +57,7 @@ function getYargsInstance(){
         enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
         enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }},
     function (argv) {
-        console.log(argv);
+
         enrollId = argv.enrollId;
         enrollSecret = argv.enrollSecret;
         console.log(chalk.green('Cached the enrollId and secret for this session ONLY.'));
@@ -103,13 +103,17 @@ function runShell(resolve,reject) {
                 // appending to the end of the line is not sustainable
                 let y = getYargsInstance();
                 if (typeof(enrollId) !== 'undefined' ){
+
                     // line = line + ' --enrollId '+ enrollId +' --enrollSecret '+enrollSecret;
+
                 }
 
                 // remove any duplicate or more spaces... YARGS can't handle this using the parse method
                 line = line.replace(/\s\s+/g, ' ');
                 console.log(chalk.blue.italic('submitted :'+line+':'));
+
                 let results = y.parse(line,{enrollId : enrollId , enrollSecret : enrollSecret },function (err, argv, output) {
+
                     if (output){
                         console.log(output);
                     }
@@ -187,6 +191,7 @@ function shellPromise(){
 
     return shellPromise;
 }
+
 
 /**
   @return {String} block

@@ -74,9 +74,11 @@ class Undeploy {
               spinner.succeed();
               return result;
           }).catch((error) => {
+
               if (spinner) {
                   spinner.fail();
               }
+
               throw error;
           });
     }
