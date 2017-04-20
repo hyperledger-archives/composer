@@ -19,14 +19,14 @@ The recommended versions are:
 
 
 
-## Installation for Ubuntu 14.04 LTS
+## Installation for supported Ubuntu 14.04 or 16.04 LTS platforms
 
-There is an automated installation script that will install *node* *docker* *docker-compose*.  
-If some of the tools are already installed or to do the installation step-by-step follow the [manual instructions](./manual_prerequisites.md).
+There is an automated installation script and checker that will install *node* *docker* *docker-compose*.  
+If some of the tools are already installed, or to do the installation step-by-step, follow the [manual instructions](./manual_prerequisites.md).
 
 
 ```bash
-$ curl -O https://raw.githubusercontent.com/fabric-composer/sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+$ curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
 $ chmod u+x prereqs-ubuntu.sh
 ```
 
