@@ -41,13 +41,13 @@ $ npm install -g composer-cli
 
 In this step, **choose from either the v0.6 sample application or the v1.0 sample application** - the former will stand up a Hyperledger Fabric v0.6 environment - whereas the latter will stand up a newer Hyperledger Fabric v1.0 environment using docker commands.
 
-** v0.6 **
+**v0.6**
 
 ```
 $ git clone https://github.com/hyperledger/composer-sample-applications.git
 ```
 
-** v1.0 **
+**v1.0**
 
 ```
 $ git clone https://github.com/fabric-composer/sample-applications-hlfv1.git
@@ -57,13 +57,13 @@ $ git clone https://github.com/fabric-composer/sample-applications-hlfv1.git
 
 Change directory to the Composer sample application repository (v0.6 or v1.0) you wish to install - choose one of the following:
 
-** v0.6 **
+**v0.6**
 
 ```
 $ cd sample-applications/packages/getting-started
 $ npm install
 ```
-** v1.0 **
+**v1.0**
 
 ```
 $ cd sample-applications/packages/getting-started-hlfv1
