@@ -12,7 +12,7 @@ excerpt: How to install the development pre-requisites manually
 
 The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in Github so *git* will be needed as well.
 
-Automatic installations scripts are available for [Ubuntu 14.04](./prerequisites.md)
+Automatic installations scripts are available for supported [Ubuntu 14.04 / 16.04 LTS platforms](./prerequisites.md)
 
 The recommended versions are:
 *Docker*: v1.12.5
