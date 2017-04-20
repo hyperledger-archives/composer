@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-proxy",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "description": "The proxying client connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -54,7 +54,7 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.5.12",
+    "composer-common": "^0.5.13",
     "socket.io-client": "^1.7.3"
   },
   "nyc": {
