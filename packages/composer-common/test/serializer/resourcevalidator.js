@@ -57,9 +57,14 @@ describe('ResourceValidator', function () {
 
     const levelTwoModel = `namespace org.acme.l2
     import org.acme.l1.Base
+    import org.acme.l1.Person
     asset Vehicle extends Base  {
       o Integer numberOfWheels
-    }`;
+    }
+    participant PrivateOwner identified by employeeId extends Person {
+      o String employeeId
+    }
+    `;
 
     const levelThreeModel = `namespace org.acme.l3
     import org.acme.l2.Vehicle
@@ -113,7 +118,7 @@ describe('ResourceValidator', function () {
             }).should.throw(/.+expected a Relationship/);
         });
         it('should allow assigning a relationship to a derived type', function () {
-            const baseRel = factory.newRelationship('org.acme.l1', 'Person', 'DAN');
+            const baseRel = factory.newRelationship('org.acme.l2', 'PrivateOwner', 'DAN');
             const typedStack = new TypedStack( baseRel );
             const vehicleDeclaration = modelManager.getType('org.acme.l3.Car');
             const field = vehicleDeclaration.getProperty('owner');
