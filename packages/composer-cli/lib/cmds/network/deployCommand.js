@@ -33,6 +33,7 @@ module.exports.handler = (argv) => {
     })
     .catch((error) => {
         throw error;
+
     });
 
     return argv.thePromise;
