@@ -446,7 +446,7 @@ class LoopbackVisitor {
             }
 
             // Look up the type of the property.
-            let type = parameters.modelFile.getType(field.getType());
+            let type = field.getParent().getModelFile().getType(field.getType());
 
             // Visit it, but ignore the response.
             type.accept(this, parameters);
@@ -461,7 +461,7 @@ class LoopbackVisitor {
             };
 
             // Look up the type of the property.
-            let type = parameters.modelFile.getType(field.getType());
+            let type = field.getParent().getModelFile().getType(field.getType());
 
             // Visit it, but ignore the response.
             type.accept(this, parameters);
