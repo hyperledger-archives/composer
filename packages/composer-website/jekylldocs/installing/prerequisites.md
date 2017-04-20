@@ -21,7 +21,7 @@ The recommended versions are:
 
 ## Installation for supported Ubuntu 14.04 or 16.04 LTS platforms
 
-There is an automated installation script and checker that will install *node* *docker* *docker-compose*.  
+There is an automated installation script and checker that will install *node*, *docker* and *docker-compose*.  
 If some of the tools are already installed, or to do the installation step-by-step, follow the [manual instructions](./manual_prerequisites.md).
 
 
