@@ -16,8 +16,6 @@ import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/scroll/simplescrollbars';
 
 const uuid = require('uuid');
-const fabricComposerOwner = 'fabric-composer';
-const fabricComposerRepository = 'sample-networks';
 
 @Component({
   selector: 'transaction-modal',
@@ -104,8 +102,12 @@ export class TransactionComponent implements OnInit {
   private generateTransactionDeclaration(withSampleData?: boolean): void {
     let businessNetworkDefinition = this.clientService.getBusinessNetwork();
     let factory = businessNetworkDefinition.getFactory();
-    const generateParameters = { generate: true, 'withSampleData': withSampleData };
-    let resource = factory.newTransaction(this.selectedTransaction.getModelFile().getNamespace(), this.selectedTransaction.getName(), undefined, generateParameters);
+    const generateParameters = { generate: withSampleData ? 'sample' : 'empty' };
+    let resource = factory.newTransaction(
+      this.selectedTransaction.getModelFile().getNamespace(),
+      this.selectedTransaction.getName(),
+      undefined,
+      generateParameters);
     let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
       let json = serializer.toJSON(resource);

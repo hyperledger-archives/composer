@@ -6,11 +6,6 @@
     "node": ">=6",
     "npm": ">=3"
   },
-  "files": [
-    "generators/app",
-    "generators/cli",
-    "generators/angular"
-  ],
   "keywords": [
     "yeoman-generator"
   ],
@@ -34,12 +29,11 @@
     "underscore.string": "^3.3.4",
     "yeoman-generator": "^0.24.1"
   },
-  "homepage": "https://github.com/fabric-composer/fabric-composer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer"
+    "url": "https://github.com/hyperledger/composer.git"
   },
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
     "@angular/cli": "^1.0.0-rc.0",

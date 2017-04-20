@@ -26,13 +26,13 @@ If you finish using the Fabric Composer UI, and wish to delete the container, th
 
 # License
 
-View [license information](https://github.com/fabric-composer/fabric-composer/blob/master/LICENSE.txt) for the software contained in this image.
+View [license information](https://github.com/hyperledger/composer/blob/master/LICENSE.txt) for the software contained in this image.
 
 # Feedback and support
 
 If you have any questions about using this image, Fabric Composer UI, or Fabric Composer in general, then please raise a question on Stack Overflow using the `fabric-composer` tag: [http://stackoverflow.com/questions/tagged/fabric-composer](http://stackoverflow.com/questions/tagged/fabric-composer)
 
-If you find an issue with this image, please raise a GitHub issue, ensuring that you include all relevant information in order for the team to reproduce the problem, on the main GitHub repository: [https://github.com/fabric-composer/fabric-composer](https://github.com/fabric-composer/fabric-composer)
+If you find an issue with this image, please raise a GitHub issue, ensuring that you include all relevant information in order for the team to reproduce the problem, on the main GitHub repository: [https://github.com/hyperledger/composer](https://github.com/hyperledger/composer)
 
 You can speak to the Fabric Composer team on the Hyperledger RocketChat in the `#fabric-composer` channel: [http://chat.hyperledger.org](http://chat.hyperledger.org)
 

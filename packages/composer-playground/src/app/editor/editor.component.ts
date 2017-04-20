@@ -23,6 +23,7 @@ import {saveAs} from 'file-saver';
     './editor.component.scss'.toString()
   ]
 })
+
 export class EditorComponent implements OnInit {
 
   private files: any = [];
@@ -74,10 +75,8 @@ export class EditorComponent implements OnInit {
         this.updateFiles();
 
         if(this.editorService.getCurrentFile() !== null) {
-          // console.log('A: ', this.editorService.getCurrentFile());
           this.currentFile = this.editorService.getCurrentFile();
         } else {
-          // console.log('B');
           if (this.files.length) {
             let initialFile = this.files.find((file) => {
               return file.readme;
@@ -99,12 +98,14 @@ export class EditorComponent implements OnInit {
     this.inputPackageVersion = this.clientService.getMetaData().getVersion();
   }
 
-  setCurrentFile(file) {
+  setCurrentFile(file) {    
     if (this.editingPackage) {
       this.updatePackageInfo();
       this.editingPackage = false;
     }
-
+    // Reset editActive
+    this.editActive = false;
+    // Set selected file
     this.editorService.setCurrentFile(file);
     this.currentFile = file;
   }
@@ -142,6 +143,7 @@ export class EditorComponent implements OnInit {
     });
     newFiles.push.apply(newFiles, newScriptFiles);
 
+    // deal with acl files
     let aclFile = this.clientService.getAclFile();
     if (aclFile) {
       newFiles.push({
@@ -151,6 +153,7 @@ export class EditorComponent implements OnInit {
       });
     }
 
+    // deal with readme
     let readme = this.clientService.getMetaData().getREADME();
     if (readme) {
       //add it first so it appears at the top of the list
@@ -233,7 +236,7 @@ export class EditorComponent implements OnInit {
     });
   }
 
-  openExportModal() {
+  exportBNA() {
     return this.clientService.getBusinessNetwork().toArchive().then((exportedData) => {
       let file = new File([exportedData],
                           this.clientService.getBusinessNetworkName() + '.bna',
@@ -306,10 +309,8 @@ export class EditorComponent implements OnInit {
    */
   editPackageName() {
     this.deployedPackageName = this.inputPackageName;
-
+    
     this.clientService.setBusinessNetworkName(this.deployedPackageName);
-
-    this.editActive = false;
   }
 
   /*
@@ -319,12 +320,10 @@ export class EditorComponent implements OnInit {
     this.deployedPackageVersion = this.inputPackageVersion;
 
     this.clientService.setBusinessNetworkVersion(this.deployedPackageVersion);
-
-    this.editActive = false;
   }
 
   hideEdit() {
-    this.toggleEditActive();
+    this.editActive = false;
     this.editingPackage = true;
   }
 }

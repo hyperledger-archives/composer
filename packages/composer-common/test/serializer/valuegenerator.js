@@ -69,4 +69,16 @@ describe('ValueGenerator', () => {
         assertFunctionReturnsType('getString', 'string');
     });
 
+    it('EmptyValueGenerator.getEnum should return the first value', () => {
+        const inputs = ['One', 'Two', 'Three'];
+        const output = ValueGeneratorFactory.empty().getEnum(inputs);
+        expect(output).to.equal(inputs[0]);
+    });
+
+    it('SampleValueGenerator.getEnum should return one of the input values', () => {
+        const inputs = ['One', 'Two', 'Three'];
+        const output = ValueGeneratorFactory.sample().getEnum(inputs);
+        expect(inputs).to.include(output);
+    });
+
 });

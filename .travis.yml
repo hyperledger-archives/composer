@@ -5,10 +5,10 @@ matrix:
     include:
         - env: DOCS=full FC_TASK=docs
         - env: SYSTEST=embedded FC_TASK=systest
+        - env: SYSTEST=hlf FC_TASK=systest
+        - env: SYSTEST=hlfv1 FC_TASK=systest
+        - env: SYSTEST=proxy FC_TASK=systest
         - env: SYSTEST=web FC_TASK=systest
-        - env: SYSTEST=hlf SYSTEST_HLF=hlf FC_TASK=systest
-        - env: SYSTEST=hlfv1-1 SYSTEST_HLF=hlf FC_TASK=systest
-        - env: SYSTEST=hlfv1-2 SYSTEST_HLF=hlf FC_TASK=systest
 dist: trusty
 addons:
     apt:
