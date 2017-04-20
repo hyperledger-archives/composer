@@ -14,8 +14,10 @@
 
 'use strict';
 
+
 // const loopback = require('loopback');
 const server = require('./server');
+
 
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
@@ -23,10 +25,12 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 /**
  * Starts the rest server
+
  * @param {Object} composer the settings for the Loopback REST server
  * @return {Promise} resolved when server started
  */
 function startRestServer(composer){
+
 
     // Create the LoopBack application.
     return server(composer)
@@ -44,6 +48,7 @@ function startRestServer(composer){
                 }
             });
         });
+
 
 }
 
