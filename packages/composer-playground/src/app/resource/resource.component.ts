@@ -19,9 +19,6 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/scroll/simplescrollbars';
 
-const fabricComposerOwner = 'fabric-composer';
-const fabricComposerRepository = 'sample-networks';
-
 @Component({
   selector: 'resource-modal',
   templateUrl: './resource.component.html',
