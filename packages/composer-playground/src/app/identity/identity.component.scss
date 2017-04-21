@@ -1,0 +1,28 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+identity {
+  display: flex;
+  width: 100%;
+
+  .main-view {
+    overflow-y: auto;
+
+    i {
+      color: $secondary-text;
+    }
+
+    table {
+      margin: $space-large 0;
+    }
+
+    // TODO This should be a common style (see also .registry button)
+    button {
+      box-shadow: 0 2px 5px -1px $fifth-highlight;
+
+      &.secondary {
+        border-color: $white;
+      }
+    }
+  }
+}

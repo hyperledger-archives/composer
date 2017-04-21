@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Subject} from 'rxjs/Rx';
 import {ConnectionProfileService} from './connectionprofile.service';
-import {IdentityService} from '../identity.service';
+import {WalletService} from './wallet.service';
+import {IdentityService} from './identity.service';
 import {AlertService} from './alert.service';
 import {AdminConnection} from 'composer-admin';
 import {ConnectionProfileManager, Logger, BusinessNetworkDefinition} from 'composer-common';

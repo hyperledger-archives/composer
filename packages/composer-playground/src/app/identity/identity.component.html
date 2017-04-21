@@ -1,0 +1,42 @@
+<section class="main-view">
+  <div class="flex-container">
+    <h1 class="flex">My Wallet</h1>
+
+    <button type="button" class="secondary" (click)="addId()">
+      <span>+ Add to Wallet</span>
+    </button>
+
+    <button type="button" class="primary" (click)="issueNewId()">
+      <span>+ Issue New Identity</span>
+    </button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID Name</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let id of identities">
+        <td class="clickable" (click)="setCurrentIdentity(id)">
+          {{id}}
+        </td>
+
+        <td class="clickable" *ngIf="id===currentIdentity" (click)="setCurrentIdentity(id)">
+          In use
+          <svg class="standard-icon" aria-hidden="true">
+            <use xlink:href="#icon-selected_16"></use>
+          </svg>
+        </td>
+
+        <td class="clickable" *ngIf="id!==currentIdentity" (click)="setCurrentIdentity(id)">
+          <i>In my wallet</i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</section>
