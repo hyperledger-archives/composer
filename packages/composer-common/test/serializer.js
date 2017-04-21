@@ -104,7 +104,7 @@ describe('Serializer', () => {
             json.should.deep.equal({
                 $class: 'org.acme.sample.SampleAsset',
                 assetId: '1',
-                owner: 'alice@email.com',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
                 value: 'the value'
             });
         });
@@ -163,7 +163,7 @@ describe('Serializer', () => {
             let json = {
                 $class: 'org.acme.sample.SampleAsset',
                 assetId: '1',
-                owner: 'alice@email.com',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
                 value: 'the value'
             };
             let resource = serializer.fromJSON(json);
@@ -176,7 +176,7 @@ describe('Serializer', () => {
         it('should deserialize a valid transaction', () => {
             let json = {
                 $class: 'org.acme.sample.SampleTransaction',
-                asset: '1',
+                asset: 'resource:org.acme.sampl.SampleAsset#1',
                 newValue: 'the value'
             };
             let resource = serializer.fromJSON(json);

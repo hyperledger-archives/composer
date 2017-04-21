@@ -15,6 +15,8 @@
 'use strict';
 
 const Identifiable = require('./identifiable');
+const ModelUtils = require('../modelutil');
+const URI = require('uri-js');
 
 /**
 * A Relationship is a typed pointer to an instance. I.e the relationship
@@ -63,6 +65,36 @@ class Relationship extends Identifiable {
         return true;
     }
 
+    /**
+     * Contructs a Relationship instance from a URI representation (created using toURI).
+     * @param {ModelManager} modelManager - the model manager to bind the relationship to
+     * @param {String} uriAsString - the URI as a string, generated using Identifiable.toURI()
+     * @param {String} defaultNamespace - default namespace to use for backwards compatability (optional)
+     * @param {String} defaultType - default type to use for backwards compatability (optional)
+     * @return {Relationship} the relationship
+     */
+    static fromURI(modelManager, uriAsString, defaultNamespace, defaultType) {
+
+        let ns = null;
+        let type = null;
+        let id = null;
+
+        // parse the URI
+        const components = URI.parse(uriAsString, {unicodeSupport:true});
+
+        // old style relationships do not have a schema
+        if(components.scheme !== 'resource') {
+            ns = defaultNamespace;
+            type = defaultType;
+            id = uriAsString;
+        }
+        else {
+            ns = ModelUtils.getNamespace(components.path);
+            type = ModelUtils.getShortName(components.path);
+            id = components.fragment;
+        }
+        return new Relationship( modelManager, ns, type, id );
+    }
 }
 
 module.exports = Relationship;
