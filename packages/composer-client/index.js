@@ -48,3 +48,4 @@ module.exports.TransactionRegistry = require('./lib/transactionregistry');
  * @ignore
  */
 module.exports.Logger = require('composer-common').Logger;
+module.exports.version = require('./package.json');
