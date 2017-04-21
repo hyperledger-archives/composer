@@ -1,10 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { <%= currentAsset.name %>Service } from './<%= currentAsset.name %>.service';
+import 'rxjs/add/operator/toPromise';
 @Component({
 	selector: 'app-<%= currentAsset.name %>',
 	templateUrl: './<%= currentAsset.name %>.component.html',
-	styleUrls: ['./<%= currentAsset.name %>.component.css']
+	styleUrls: ['./<%= currentAsset.name %>.component.css'],
+  providers: [<%= currentAsset.name %>Service]
 })
 export class <%= currentAsset.name %>Component implements OnInit {
 
@@ -31,13 +33,15 @@ export class <%= currentAsset.name %>Component implements OnInit {
     });
   };
 
-  ngOnInit():void {
+  ngOnInit(): void {
     this.loadAll();
   }
 
   loadAll(): Promise<any> {
     let tempList = [];
-    return this.service<%= currentAsset.name %>.getAll().then((result) => {
+    return this.service<%= currentAsset.name %>.getAll()
+    .toPromise()
+    .then((result) => {
       result.forEach(asset => {
         tempList.push(asset);
       });
@@ -68,7 +72,9 @@ export class <%= currentAsset.name %>Component implements OnInit {
       <% }%>
     });
 
-    return this.service<%= currentAsset.name %>.addAsset(this.asset).then(() => {
+    return this.service<%= currentAsset.name %>.addAsset(this.asset)
+    .toPromise()
+    .then(() => {
       this.myForm.setValue({
       <% for(var x=0;x<currentAsset.properties.length;x++){ %>
         <% if(x == currentAsset.properties.length-1){ %>
@@ -95,22 +101,24 @@ export class <%= currentAsset.name %>Component implements OnInit {
     };
 
 
-    return this.service<%= currentAsset.name %>.updateAsset(this.asset.<%=assetIdentifier%>,this.asset);
+    return this.service<%= currentAsset.name %>.updateAsset(this.asset.<%=assetIdentifier%>,this.asset).toPromise();
   }
 
 
   deleteAsset(): Promise<any> {
 
-    return this.service<%= currentAsset.name %>.deleteAsset(this.currentId);
+    return this.service<%= currentAsset.name %>.deleteAsset(this.currentId).toPromise();
   }
 
-  setId(id:any):void{
+  setId(id: any): void{
     this.currentId = id;
   }
 
-  getForm(id:any):Promise<any>{
+  getForm(id: any): Promise<any>{
 
-    return this.service<%= currentAsset.name %>.getAsset(id).then((result) => {
+    return this.service<%= currentAsset.name %>.getAsset(id)
+    .toPromise()
+    .then((result) => {
 
       let formObject = {
         <% for(var x=0;x<currentAsset.properties.length;x++){ %>
@@ -134,11 +142,11 @@ export class <%= currentAsset.name %>Component implements OnInit {
 
       this.myForm.setValue(formObject);
 
-    })
+    });
 
   }
 
-  resetForm():void{
+  resetForm(): void{
     this.myForm.setValue({
       <% for(var x=0;x<currentAsset.properties.length;x++){ %>
         <% if(x == currentAsset.properties.length-1){ %>
