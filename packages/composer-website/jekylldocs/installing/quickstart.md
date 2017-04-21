@@ -15,6 +15,7 @@ The steps below enable you to get started with the Composer sample application.
 
 You can choose to install the latest  **v0.6** Composer sample application (uses a Hyperledger Fabric v0.6 environment) or the **v1.0** sample application (uses a Hyperledger Fabric v1.0 environment) and give us feedback.
 
+
 **1. Check that your system has the required software (at the required versions) installed:**
 
 **Operating Systems:** Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
