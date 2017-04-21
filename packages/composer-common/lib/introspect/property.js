@@ -96,7 +96,7 @@ class Property {
      */
     validate(classDecl) {
         if(this.type) {
-            classDecl.getModelFile().resolveType('Property type ' + this.name, this.type);
+            classDecl.getModelFile().resolveType( 'property ' + this.getFullyQualifiedName(), this.type);
         }
     }
 
