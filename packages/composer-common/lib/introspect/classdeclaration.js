@@ -129,6 +129,72 @@ class ClassDeclaration {
      * @private
      */
     validate() {
+
+        const assetDeclarations = this.getModelFile().getAssetDeclarations();
+        for(let n=0; n < assetDeclarations.length; n++) {
+            let declaration = assetDeclarations[n];
+
+            // check we don't have an asset with the same name
+            for(let i=n+1; i < assetDeclarations.length; i++) {
+                let otherDeclaration = assetDeclarations[i];
+                if(declaration.getFullyQualifiedName() === otherDeclaration.getFullyQualifiedName()) {
+                    throw new IllegalModelException(`Duplicate asset name ${declaration.getName()}`);
+                }
+            }
+        }
+
+        const participantDeclarations = this.getModelFile().getParticipantDeclarations();
+        for(let n=0; n < participantDeclarations.length; n++) {
+            let declaration = participantDeclarations[n];
+
+            // check we don't have an asset with the same name
+            for(let i=n+1; i < participantDeclarations.length; i++) {
+                let otherDeclaration = participantDeclarations[i];
+                if(declaration.getFullyQualifiedName() === otherDeclaration.getFullyQualifiedName()) {
+                    throw new IllegalModelException(`Duplicate participant name ${declaration.getName()}`);
+                }
+            }
+        }
+
+        const transactionDeclarations = this.getModelFile().getTransactionDeclarations();
+        for(let n=0; n < transactionDeclarations.length; n++) {
+            let declaration = transactionDeclarations[n];
+
+            // check we don't have an asset with the same name
+            for(let i=n+1; i < transactionDeclarations.length; i++) {
+                let otherDeclaration = transactionDeclarations[i];
+                if(declaration.getFullyQualifiedName() === otherDeclaration.getFullyQualifiedName()) {
+                    throw new IllegalModelException(`Duplicate transaction name ${declaration.getName()}`);
+                }
+            }
+        }
+
+        const conceptDeclarations = this.getModelFile().getConceptDeclarations();
+        for(let n=0; n < conceptDeclarations.length; n++) {
+            let declaration = conceptDeclarations[n];
+
+            // check we don't have an asset with the same name
+            for(let i=n+1; i < conceptDeclarations.length; i++) {
+                let otherDeclaration = conceptDeclarations[i];
+                if(declaration.getFullyQualifiedName() === otherDeclaration.getFullyQualifiedName()) {
+                    throw new IllegalModelException(`Duplicate concept name ${declaration.getName()}`);
+                }
+            }
+        }
+
+        const enumDeclarations = this.getModelFile().getEnumDeclarations();
+        for(let n=0; n < enumDeclarations.length; n++) {
+            let declaration = enumDeclarations[n];
+
+            // check we don't have an asset with the same name
+            for(let i=n+1; i < enumDeclarations.length; i++) {
+                let otherDeclaration = enumDeclarations[i];
+                if(declaration.getFullyQualifiedName() === otherDeclaration.getFullyQualifiedName()) {
+                    throw new IllegalModelException(`Duplicate enum name ${declaration.getName()}`);
+                }
+            }
+        }
+
         // TODO (LG) check that all imported classes exist, rather than just
         // used imports
 
