@@ -173,7 +173,7 @@ describe('Globalization', function() {
             invalidFile.should.not.be.null;
             expect(function() {
                 modelManager.addModelFile(invalidFile,fileName);
-            }).to.throw(IllegalModelException, 'Undeclared type Person in Property type fooProperty');
+            }).to.throw(IllegalModelException, 'Undeclared type Person in property Bar.foo.fooProperty');
         });
 
         it('check message in resolveImport()', function() {
