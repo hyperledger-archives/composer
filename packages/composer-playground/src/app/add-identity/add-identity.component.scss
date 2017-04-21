@@ -3,6 +3,10 @@
 
 add-identity-modal {
   .add-identity {
+    p {
+      color: $secondary-text;
+    }
+    
     footer {
       .circle-path {
         stroke: $white;

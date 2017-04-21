@@ -157,5 +157,34 @@
       border: 1px solid $fourth-highlight;
       border-radius: 0.25em;
     }
+
+    &.link {
+      color: $first-highlight;
+      background: none;
+      border: none;
+      display: inline;
+      font: inherit;
+      margin: 0;
+      padding: 0;
+      outline: none;
+      outline-offset: 0;
+      cursor: pointer;
+      text-decoration: underline;
+      border-bottom: 2px solid $first-highlight;
+
+      &:hover {
+			  border-bottom: 2px solid $second-highlight;
+			  text-decoration: none;
+			  color: $second-highlight;
+		  }
+
+		  &:active,
+		  &:focus {
+			  outline: none;
+			  border-bottom: 2px solid $first-highlight;
+			  text-decoration: none;
+			  color: $first-highlight;
+		  }
+    }
   }
 }
