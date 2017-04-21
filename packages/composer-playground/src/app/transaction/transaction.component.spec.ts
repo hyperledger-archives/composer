@@ -285,7 +285,7 @@ describe('TransactionComponent', () => {
     });
 
     it('should show definition errors to users', () => {      
-      
+      sinon.stub(component, 'ngOnInit');
       component['definitionError'] = 'Error: forced error';
 
       // Check that the UI is showing the error
@@ -296,7 +296,7 @@ describe('TransactionComponent', () => {
     });
 
     it('should disable the submit transaction button if definition error detected', () => {
-
+      sinon.stub(component, 'ngOnInit');
       component['definitionError'] = 'Error: forced error';
       
       // Check that the transaction submission button is disabled in UI
@@ -307,7 +307,7 @@ describe('TransactionComponent', () => {
     });
 
     it('should re-enable the submit transaction button if definition error is fixed', () => {
- 
+      sinon.stub(component, 'ngOnInit');
       component['definitionError'] = 'Error: forced error';
       
       // Check that the transaction submission button is disabled
@@ -330,6 +330,7 @@ describe('TransactionComponent', () => {
   describe('#submitTransaction', () => {
     
     it('should change button display on transaction submission', () => {
+      sinon.stub(component, 'ngOnInit');
       mockSerializer.fromJSON.returns(mockTransaction);
       component['hiddenTransactionItems'].set('transactionId', 'transactionId');
       component['hiddenTransactionItems'].set('timestamp', 'transactionId');
