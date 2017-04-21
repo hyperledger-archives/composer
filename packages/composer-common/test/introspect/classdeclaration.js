@@ -85,35 +85,35 @@ describe('ClassDeclaration', () => {
             let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeassetname.cto', AssetDeclaration);
             (() => {
                 asset.validate();
-            }).should.throw(/Duplicate asset/);
+            }).should.throw(/Duplicate class/);
         });
 
         it('should throw when transaction name is duplicted in a modelfile', () => {
             let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupetransactionname.cto', TransactionDeclaration);
             (() => {
                 asset.validate();
-            }).should.throw(/Duplicate transaction/);
+            }).should.throw(/Duplicate class/);
         });
 
         it('should throw when participant name is duplicted in a modelfile', () => {
             let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeparticipantname.cto', ParticipantDeclaration);
             (() => {
                 asset.validate();
-            }).should.throw(/Duplicate participant/);
+            }).should.throw(/Duplicate class/);
         });
 
         it('should throw when concept name is duplicted in a modelfile', () => {
             let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeconceptname.cto', ConceptDeclaration);
             (() => {
                 asset.validate();
-            }).should.throw(/Duplicate concept/);
+            }).should.throw(/Duplicate class/);
         });
 
         it('should throw when enum name is duplicted in a modelfile', () => {
             let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeenumname.cto', EnumDeclaration);
             (() => {
                 asset.validate();
-            }).should.throw(/Duplicate enum/);
+            }).should.throw(/Duplicate class/);
         });
 
     });
