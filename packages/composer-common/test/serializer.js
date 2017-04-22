@@ -176,7 +176,7 @@ describe('Serializer', () => {
         it('should deserialize a valid transaction', () => {
             let json = {
                 $class: 'org.acme.sample.SampleTransaction',
-                asset: 'resource:org.acme.sampl.SampleAsset#1',
+                asset: 'resource:org.acme.sample.SampleAsset#1',
                 newValue: 'the value'
             };
             let resource = serializer.fromJSON(json);

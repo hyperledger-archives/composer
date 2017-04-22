@@ -94,13 +94,8 @@ return Promise.resolve()
                 // Go regexes do not support PCRE features such as lookahead.
                 {
                     // This ugly hack changes a JavaScript only regex used by acorn into something safe for Go.
-                    from: /[^"]\[\^\]/g,
-                    to: '[^\\x{FFFF}]'
-                },
-                {
-                    // This ugly hack changes a JavaScript only regex in a string (used by uri-js) into something safe for Go.
                     from: /\[\^\]/g,
-                    to: "[^\\\\x{FFFF}]"
+                    to: '[^\\x{FFFF}]'
                 },
                 {
                     // This ugly hack changes a JavaScript only regex used by thenify into something safe for Go.

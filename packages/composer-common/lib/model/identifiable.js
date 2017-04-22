@@ -15,7 +15,6 @@
 'use strict';
 
 const Typed = require('./typed');
-const URI = require('uri-js');
 
 /**
  * Identifiable is an entity with a namespace, type and an identifier.
@@ -104,10 +103,9 @@ class Identifiable extends Typed{
      * @return {String} the URI for the identifiable
      */
     toURI() {
-        const result = URI.serialize( { scheme: 'resource', path: this.getFullyQualifiedType(), fragment: this.getIdentifier()}, {iri:false});
+        const result = 'resource:' + this.getFullyQualifiedType() + '#' + encodeURI(this.getIdentifier());
         //console.log( '***** URI for ' + this.toString() + ' is ' + result );
         return result;
-
     }
 }
 

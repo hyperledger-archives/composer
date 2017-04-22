@@ -16,18 +16,18 @@
 
 const Identifiable = require('./identifiable');
 const ModelUtils = require('../modelutil');
-const URI = require('uri-js');
+const Globalize = require('../globalize');
 
 /**
-* A Relationship is a typed pointer to an instance. I.e the relationship
-* with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates
-* a pointer that points at an instance of org.acme.Vehicle with the id
-* ABC.
-* @extends Identifiable
-* @see See [Identifiable]{@link module:composer-common.Identifiable}
-* @class
-* @memberof module:composer-common
-*/
+ * A Relationship is a typed pointer to an instance. I.e the relationship
+ * with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates
+ * a pointer that points at an instance of org.acme.Vehicle with the id
+ * ABC.
+ * @extends Identifiable
+ * @see See [Identifiable]{@link module:composer-common.Identifiable}
+ * @class
+ * @memberof module:composer-common
+ */
 class Relationship extends Identifiable {
     /**
      * Create an asset. Use the Factory to create instances.
@@ -53,7 +53,7 @@ class Relationship extends Identifiable {
      * @return {String} the string representation of the class
      */
     toString() {
-        return 'Relationship {id=' + this.getFullyQualifiedIdentifier() +'}';
+        return 'Relationship {id=' + this.getFullyQualifiedIdentifier() + '}';
     }
 
     /**
@@ -75,25 +75,59 @@ class Relationship extends Identifiable {
      */
     static fromURI(modelManager, uriAsString, defaultNamespace, defaultType) {
 
-        let ns = null;
+        // parse the URI, we do it by hand because we know the format
+        const indexOfColon = uriAsString.indexOf(':');
+        let protocol = null;
+        let id = uriAsString;
         let type = null;
-        let id = null;
+        let ns = null;
+        let resource = null;
 
-        // parse the URI
-        const components = URI.parse(uriAsString, {unicodeSupport:true});
+        // protocol
+        if(indexOfColon > 0) {
+            protocol = uriAsString.substring(0, indexOfColon);
+            uriAsString = uriAsString.substr(indexOfColon+1);
+        }
+
+        // id and resource
+        const indexOfHash = uriAsString.indexOf('#');
+        if(indexOfHash > 0) {
+            id = uriAsString.substr(indexOfHash+1);
+            resource = uriAsString.substring(0,indexOfHash);
+        }
 
         // old style relationships do not have a schema
-        if(components.scheme !== 'resource') {
+        if (protocol !== 'resource') {
             ns = defaultNamespace;
             type = defaultType;
             id = uriAsString;
+        } else {
+            ns = ModelUtils.getNamespace(resource);
+            type = ModelUtils.getShortName(resource);
         }
-        else {
-            ns = ModelUtils.getNamespace(components.path);
-            type = ModelUtils.getShortName(components.path);
-            id = components.fragment;
+
+        id = decodeURI(id);
+
+        let modelFile = modelManager.getModelFile(ns);
+        if(!modelFile) {
+            let formatter = Globalize.messageFormatter('factory-newrelationship-notregisteredwithmm');
+
+            throw new Error(formatter({
+                namespace: ns
+            }));
         }
-        return new Relationship( modelManager, ns, type, id );
+
+        if(!modelFile.isDefined(type)) {
+            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
+
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        let relationship = new Relationship(modelManager,ns,type,id);
+        return relationship;
     }
 }
 
