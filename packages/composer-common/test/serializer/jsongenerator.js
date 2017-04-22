@@ -52,7 +52,7 @@ describe('JSONGenerator', () => {
                 o String assetId
                 o MyAsset1 myAsset
             }
-            asset MyContainerAsset1 identified by assetId {
+            asset MyContainerAsset2 identified by assetId {
                 o String assetId
                 o MyAsset1[] myAssets
             }
