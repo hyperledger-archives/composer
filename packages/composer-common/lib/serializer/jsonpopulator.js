@@ -17,6 +17,7 @@
 const ClassDeclaration = require('../introspect/classdeclaration');
 const Field = require('../introspect/field');
 const RelationshipDeclaration = require('../introspect/relationshipdeclaration');
+const Relationship = require('../model/relationship');
 const Util = require('../util');
 const ModelUtil = require('../modelutil');
 
@@ -206,18 +207,18 @@ class JSONPopulator {
         let result = null;
 
         let typeFQN = relationshipDeclaration.getFullyQualifiedTypeName();
-        let namespace = ModelUtil.getNamespace(typeFQN);
-        if(!namespace) {
-            namespace = relationshipDeclaration.getNamespace();
+        let defaultNamespace = ModelUtil.getNamespace(typeFQN);
+        if(!defaultNamespace) {
+            defaultNamespace = relationshipDeclaration.getNamespace();
         }
-        let type = ModelUtil.getShortName(typeFQN);
+        let defaultType = ModelUtil.getShortName(typeFQN);
 
         if(relationshipDeclaration.isArray()) {
             result = [];
             for(let n=0; n < jsonObj.length; n++) {
                 let jsonItem = jsonObj[n];
                 if (typeof jsonItem === 'string') {
-                    result.push(parameters.factory.newRelationship(namespace, type, jsonItem));
+                    result.push(Relationship.fromURI(parameters.modelManager, jsonItem, defaultNamespace, defaultType ));
                 } else {
                     if (!this.acceptResourcesForRelationships) {
                         throw new Error('Invalid JSON data. Found a value that is not a string: ' + jsonObj + ' for relationship ' + relationshipDeclaration);
@@ -245,7 +246,7 @@ class JSONPopulator {
         }
         else {
             if (typeof jsonObj === 'string') {
-                result = parameters.factory.newRelationship(namespace, type, jsonObj);
+                result = Relationship.fromURI(parameters.modelManager, jsonObj, defaultNamespace, defaultType );
             } else {
                 if (!this.acceptResourcesForRelationships) {
                     throw new Error('Invalid JSON data. Found a value that is not a string: ' + jsonObj + ' for relationship ' + relationshipDeclaration);

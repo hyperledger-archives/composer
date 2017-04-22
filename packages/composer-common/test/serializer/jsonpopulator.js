@@ -63,6 +63,12 @@ describe('JSONPopulator', () => {
                 --> MyAsset1[] myAssets
             }
         `);
+        modelManager.addModelFile(`
+            namespace org.acme.different
+            asset MyAsset1 identified by assetId {
+                o String assetId
+            }
+        `);
         assetDeclaration1 = modelManager.getType('org.acme.MyContainerAsset1').getProperty('myAsset');
         relationshipDeclaration1 = modelManager.getType('org.acme.MyTx1').getProperty('myAsset');
         relationshipDeclaration2 = modelManager.getType('org.acme.MyTx2').getProperty('myAssets');

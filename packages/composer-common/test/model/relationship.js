@@ -90,4 +90,39 @@ describe('Relationship', function () {
             relationship.isResource().should.be.false;
         });
     });
+
+    describe('#uri serialization', function() {
+        it('check that relationships can be serialized to URI', function() {
+            const rel = new Relationship(modelManager, 'org.acme.l1', 'Person', '123' );
+            rel.toURI().should.equal('resource:org.acme.l1.Person#123');
+        });
+
+        it('check that unicode relationships can be serialized to URI', function() {
+            let Omega = '\u03A9';
+            const rel = new Relationship(modelManager, 'org.acme.l1', 'Person', Omega );
+            rel.toURI().should.equal('resource:org.acme.l1.Person#%CE%A9');
+        });
+
+        it('check that relationships can be created from a URI', function() {
+            const rel = Relationship.fromURI(modelManager, 'resource:org.acme.l1.Person#123' );
+            rel.getNamespace().should.equal('org.acme.l1');
+            rel.getType().should.equal('Person');
+            rel.getIdentifier().should.equal('123');
+        });
+
+        it('check that relationships can be created from a unicode URI', function() {
+            const rel = Relationship.fromURI(modelManager, 'resource:org.acme.l1.Person#%CE%A9' );
+            rel.getNamespace().should.equal('org.acme.l1');
+            rel.getType().should.equal('Person');
+            let Omega = '\u03A9';
+            rel.getIdentifier().should.equal(Omega);
+        });
+
+        it('check that relationships can be created from a legacy URI', function() {
+            const rel = Relationship.fromURI(modelManager, '123', 'org.acme.l1', 'Person' );
+            rel.getNamespace().should.equal('org.acme.l1');
+            rel.getType().should.equal('Person');
+            rel.getIdentifier().should.equal('123');
+        });
+    });
 });
