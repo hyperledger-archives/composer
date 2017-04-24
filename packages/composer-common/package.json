@@ -1,6 +1,6 @@
 {
   "name": "composer-common",
-  "version": "0.5.11",
+  "version": "0.5.13",
   "description": "Fabric Composer Common, code that is common across client, admin and runtime.",
   "engines": {
     "node": ">=6",
@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
     "ajv": "^4.8.2",

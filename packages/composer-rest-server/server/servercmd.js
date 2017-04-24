@@ -14,8 +14,10 @@
 
 'use strict';
 
+
 // const loopback = require('loopback');
 const server = require('./server');
+
 
 
 process.env.SUPPRESS_NO_CONFIG_WARNING = true;
@@ -23,27 +25,30 @@ process.env.SUPPRESS_NO_CONFIG_WARNING = true;
 
 /**
  * Starts the rest server
-* @param {Object} composer the settings for the Loopback REST server
-* @return {Promise} resolved when server started
-*/
+
+ * @param {Object} composer the settings for the Loopback REST server
+ * @return {Promise} resolved when server started
+ */
 function startRestServer(composer){
 
-  // Create the LoopBack application.
-    return server(composer)
-  .then((app) => {
 
-        // Start the LoopBack application.
-      return app.listen(function () {
-          app.emit('started');
-          let baseUrl = app.get('url').replace(/\/$/, '');
-          console.log('Web server listening at: %s', baseUrl);
-          /* istanbul ignore next */
-          if (app.get('loopback-component-explorer')) {
-              let explorerPath = app.get('loopback-component-explorer').mountPath;
-              console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
-          }
-      });
-  });
+    // Create the LoopBack application.
+    return server(composer)
+        .then((app) => {
+
+            // Start the LoopBack application.
+            return app.listen(function () {
+                app.emit('started');
+                let baseUrl = app.get('url').replace(/\/$/, '');
+                console.log('Web server listening at: %s', baseUrl);
+                /* istanbul ignore next */
+                if (app.get('loopback-component-explorer')) {
+                    let explorerPath = app.get('loopback-component-explorer').mountPath;
+                    console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
+                }
+            });
+        });
+
 
 }
 

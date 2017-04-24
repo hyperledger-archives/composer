@@ -61,6 +61,7 @@ export class EditorFileComponent {
 
   loadFile() {
     this.changingCurrentFile = true;
+    this.currentError = null;
     if (this._editorFile.model) {
       let modelFile = this.clientService.getModelFile(this._editorFile.id);
       if (modelFile) {

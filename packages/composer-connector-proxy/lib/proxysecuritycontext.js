@@ -24,10 +24,12 @@ class ProxySecurityContext extends SecurityContext {
     /**
      * Constructor.
      * @param {Connection} connection The owning connection.
+     * @param {string} enrollmentID The enrollment ID.
      * @param {string} securityContextID The security context ID.
      */
-    constructor(connection, securityContextID) {
+    constructor(connection, enrollmentID, securityContextID) {
         super(connection);
+        this.enrollmentID = enrollmentID;
         this.securityContextID = securityContextID;
     }
 
@@ -37,8 +39,7 @@ class ProxySecurityContext extends SecurityContext {
      * @return {string} The username
      */
     getUser() {
-        // TODO: this is not a promise based API!
-        throw new Error('TODO TODO TODO');
+        return this.enrollmentID;
     }
 
     /**

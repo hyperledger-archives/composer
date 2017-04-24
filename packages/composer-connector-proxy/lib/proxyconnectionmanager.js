@@ -15,8 +15,8 @@
 'use strict';
 
 const ConnectionManager = require('composer-common').ConnectionManager;
-const inflaterr = require('./proxyutil').inflaterr;
 const ProxyConnection = require('./proxyconnection');
+const ProxyUtil = require('./proxyutil');
 const socketIOClient = require('socket.io-client');
 
 let connectorServerURL = 'http://localhost:15699';
@@ -85,7 +85,7 @@ class ProxyConnectionManager extends ConnectionManager {
                 return new Promise((resolve, reject) => {
                     this.socket.emit('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, (error, connectionID) => {
                         if (error) {
-                            return reject(inflaterr(error));
+                            return reject(ProxyUtil.inflaterr(error));
                         }
                         let connection = new ProxyConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
                         resolve(connection);

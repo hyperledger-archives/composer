@@ -6,8 +6,8 @@ import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
 
-const fabricComposerOwner = 'fabric-composer';
-const fabricComposerRepository = 'sample-networks';
+const fabricComposerOwner = 'hyperledger';
+const fabricComposerRepository = 'composer-sample-networks';
 
 @Component({
   selector: 'import-modal',

@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.5.11",
+  "version": "0.5.13",
   "private": true,
   "description": "Fabric Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -18,20 +18,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "^0.5.11",
-    "composer-client": "^0.5.11",
-    "composer-common": "^0.5.11",
-    "composer-runtime": "^0.5.11",
+    "composer-admin": "^0.5.13",
+    "composer-client": "^0.5.13",
+    "composer-common": "^0.5.13",
+    "composer-runtime": "^0.5.13",
     "jsdoc": "^3.4.3",
     "node-plantuml": "^0.5.0",
     "sanitize-html": "^1.14.1"

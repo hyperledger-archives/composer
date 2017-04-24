@@ -14,81 +14,103 @@
 
 'use strict';
 
-const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const fs = require('fs');
-const path = require('path');
-const startRestServer = require('../../server/servercmd').startRestServer;
+/* const startRestServer = */ require('../..').startRestServer;
 
-const chai = require('chai');
-chai.should();
-chai.use(require('chai-as-promised'));
+require('chai').should();
+const proxyquire =  require('proxyquire').noPreserveCache();
 const sinon = require('sinon');
-
-const bfs_fs = BrowserFS.BFSRequire('fs');
+require('sinon-as-promised');
 
 describe('servercmd', () => {
 
-    let composerConfig;
+    const composerConfig = {
+        connectionProfileName: 'defaultProfile',
+        businessNetworkIdentifier: 'bond-network',
+        participantId: 'admin',
+        participantPwd: 'adminpw'
+    };
 
-    before(() => {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type : 'embedded'
-        })
-        .then(() => {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
-        })
-        .then(() => {
-            const banana = fs.readFileSync(path.resolve(__dirname, '..', 'bond-network.bna'));
-            return BusinessNetworkDefinition.fromArchive(banana);
-        })
-        .then((businessNetworkDefinition) => {
-            return adminConnection.deploy(businessNetworkDefinition);
-        });
-    });
+    let sandbox;
 
     beforeEach(() => {
-        composerConfig = {
-            connectionProfileName: 'defaultProfile',
-            businessNetworkIdentifier: 'bond-network',
-            participantId: 'admin',
-            participantPwd: 'adminpw',
-            fs: bfs_fs
-        };
-        delete process.env.COMPOSER_DATASOURCES;
-        delete process.env.COMPOSER_PROVIDERS;
+        sandbox = sinon.sandbox.create();
+        sandbox.spy(console, 'log');
+        sandbox.spy(console, 'error');
     });
 
     afterEach(() => {
-        delete process.env.COMPOSER_DATASOURCES;
-        delete process.env.COMPOSER_PROVIDERS;
+        sandbox.restore();
     });
 
-    it('should throw if composer not specified', () => {
-        (() => {
-            startRestServer(null);
-        }).should.throw(/composer not specified/);
+    it('should be exported from the module', () => {
+        const module = require('../..');
+        const servercmd = require('../../server/servercmd');
+        module.startRestServer.should.equal(servercmd.startRestServer);
     });
 
-    it('test the index.js', () => {
-        require('../../index.js');
-        // (() => {
-        //     require('../../index.js').restserver(null);
-        // }).should.throw(/composer not specified/);
-    });
-
-    it('should create an application without security enabled', () => {
-        return startRestServer(composerConfig)
+    it('should start and log information when running with explorer', () => {
+        let listen = sinon.stub();
+        let emit = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('url').returns('http://localhost:3000');
+        get.withArgs('loopback-component-explorer').returns(true);
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-p', 'defaultProfile',
+            '-n', 'org.acme.biznet',
+            '-i', 'admin',
+            '-s', 'adminpw'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub();
+        server.resolves({
+            listen: listen,
+            emit: emit,
+            get: get
+        });
+        return proxyquire('../../server/servercmd', {
+            './server': server
+        }).startRestServer(composerConfig)
             .then(() => {
-                sinon.assert.pass(true);
-            }).catch( (error)=>{
-                sinon.assert.fail(error);
-            } );
+                sinon.assert.calledOnce(listen);
+                listen.args[0][0]();
+                sinon.assert.calledOnce(emit);
+                sinon.assert.calledWith(emit, 'started');
+                sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
+                sinon.assert.calledWith(console.log, sinon.match(/Browse your REST API at/));
+            });
     });
 
-
+    it('should start and log information when running without explorer', () => {
+        let listen = sinon.stub();
+        let emit = sinon.stub();
+        let get = sinon.stub();
+        get.withArgs('url').returns('http://localhost:3000');
+        process.argv = [
+            process.argv0, 'cli.js',
+            '-p', 'defaultProfile',
+            '-n', 'org.acme.biznet',
+            '-i', 'admin',
+            '-s', 'adminpw'
+        ];
+        delete require.cache[require.resolve('yargs')];
+        const server = sinon.stub();
+        server.resolves({
+            listen: listen,
+            emit: emit,
+            get: get
+        });
+        return proxyquire('../../server/servercmd', {
+            './server': server
+        }).startRestServer(composerConfig)
+            .then(() => {
+                sinon.assert.calledOnce(listen);
+                listen.args[0][0]();
+                sinon.assert.calledOnce(emit);
+                sinon.assert.calledWith(emit, 'started');
+                sinon.assert.calledWith(console.log, sinon.match(/Web server listening at/));
+                sinon.assert.neverCalledWith(console.log, sinon.match(/Browse your REST API at/));
+            });
+    });
 
 });

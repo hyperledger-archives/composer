@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime",
-  "version": "0.5.11",
+  "version": "0.5.13",
   "description": "The runtime execution environment for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
     "babel-polyfill": "^6.23.0",
@@ -63,7 +63,7 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.5.11",
+    "composer-common": "^0.5.13",
     "debug": "^2.6.2",
     "fast-json-patch": "^1.1.8",
     "jsonata": "^1.1.1",

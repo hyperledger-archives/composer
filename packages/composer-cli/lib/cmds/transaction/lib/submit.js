@@ -68,7 +68,7 @@ class Submit {
                 try {
                     data = JSON.parse(data);
                 } catch(e) {
-                    throw new Error('JSON error. Are have you quoted the JSON string?', e);
+                    throw new Error('JSON error. Have you quoted the JSON string?', e);
                 }
             } else {
                 throw new Error('Data must be a string');

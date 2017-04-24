@@ -68,7 +68,7 @@ registry {
 
         &.expanded {
           pre {
-            max-height: 600px;
+            max-height: 100%;
             overflow: hidden;
 
             @include transition(all);

@@ -23,8 +23,8 @@
 
 ## Existing issues
 <!-- Have you searched for any existing issues or are their any similar issues that you've found? -->
-- [ ] [StackOverflow issues](http://stackoverflow.com/tags/fabric-composer)
-- [ ] [GitHub Issues](https://github.com/fabric-composer/fabric-composer/issues)
+- [ ] [Stack Overflow issues](http://stackoverflow.com/tags/fabric-composer)
+- [ ] [GitHub Issues](https://github.com/hyperledger/composer/issues)
 - [ ] [Rocket Chat history](https://chat.hyperledger.org/channel/fabric-composer)
 
 <!-- please include any links to issues here -->
@@ -39,4 +39,4 @@
 <!-- Please describe the automated tests that are put in place to stop this recurring -->
 
 ## What documentation has been provided for this pull request
-<!-- JSDocs, WebSite and answers to StackOverflow questions are possible documentation sources -->
+<!-- JSDocs, WebSite and answers to Stack Overflow questions are possible documentation sources -->

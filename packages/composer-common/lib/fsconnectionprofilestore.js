@@ -84,7 +84,7 @@ class FSConnectionProfileStore extends ConnectionProfileStore {
             })
             .catch((err) => {
                 LOG.error('load','Failed to loaded connection profile ' + connectionProfile, err);
-                throw new Error('Failed to load connection profile ' + connectionProfile);
+                throw new Error('Failed to load connection profile ' + connectionProfile + '. Error was ' + err);
             });
     }
 

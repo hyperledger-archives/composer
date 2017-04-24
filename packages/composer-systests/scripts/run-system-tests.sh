@@ -12,26 +12,26 @@ cd "${DIR}"
 
 # Barf if we don't recognize this test suite.
 if [ "${SYSTEST}" = "" ]; then
-    echo You must set SYSTEST to 'embedded', 'web', or 'hlf'
+    echo You must set SYSTEST to 'embedded', 'hlf', 'hlfv1', 'proxy', or 'web'
     echo For example:
     echo  export SYSTEST=hlf
     exit 1
 fi
 
 # Set default timeouts
-export CONCERTO_PORT_WAIT_SECS=30
-export CONCERTO_DEPLOY_WAIT_SECS=500
+export COMPOSER_PORT_WAIT_SECS=30
+export COMPOSER_DEPLOY_WAIT_SECS=500
 
 # Pull any required Docker images.
-if [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "hlf" ]; then
+if [ "${SYSTEST}" = "hlf"  ]; then
     DOCKER_FILE=${DIR}/hlf/hlf-docker-compose.yml
     docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
     docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
     docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
     docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
-    docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
-    docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
-elif [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
+    docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
+    docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+elif [[ ${SYSTEST} == hlfv1* ]]; then
     if [[ ${SYSTEST} == *tls ]]; then
         DOCKER_FILE=${DIR}/hlfv1/hlfv1_alpha-docker-compose.tls.yml
     else
@@ -42,25 +42,6 @@ elif [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
     docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha
     docker pull hyperledger/fabric-orderer:x86_64-1.0.0-alpha
     docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-alpha
-elif [ "${SYSTEST}" = "hlf" ] && [ "${SYSTEST_HLF}" = "ibm" ]; then
-
-  if [ "${TRAVIS_EVENT_TYPE}" = "cron" ]; then
-    DOCKER_FILE=${DIR}/hlf/ibm-docker-compose.yml
-    docker pull ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview
-    docker tag ibmblockchain/fabric-membersrvc:x86_64-0.6.1-preview ibmblockchain/fabric-membersrvc:latest
-    docker pull ibmblockchain/fabric-peer:x86_64-0.6.1-preview
-    docker tag ibmblockchain/fabric-peer:x86_64-0.6.1-preview ibmblockchain/fabric-peer:latest
-    docker pull hyperledger/fabric-baseimage:x86_64-0.2.0
-    docker tag hyperledger/fabric-baseimage:x86_64-0.2.0 hyperledger/fabric-baseimage:latest
-  else
-    echo Not running as a PR or merge build
-    exit 0
-  fi
-elif [ "${SYSTEST}" = "hlf" -a "${SYSTEST_HLF}" = "" ]; then
-    echo You must set SYSTEST_HLF to 'hlf' or 'ibm'
-    echo For example:
-    echo     export SYSTEST_HLF=hlf
-    exit 1
 fi
 
 # Start any required Docker images.
@@ -72,11 +53,12 @@ if [ "${DOCKER_FILE}" != "" ]; then
 fi
 
 # Delete any existing configuration.
-rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
-rm -rf ${HOME}/.concerto-credentials/concerto-systests
+rm -rf ${HOME}/.composer-connection-profiles/composer-systests
+rm -rf ${HOME}/.composer-credentials/composer-systests
+rm -rf ${HOME}/.hfc-key-store
 
 # configure v1 to run the tests
-if [[ ${SYSTEST} == hlfv1*  && "${SYSTEST_HLF}" = "hlf" ]]; then
+if [[ ${SYSTEST} == hlfv1* ]]; then
     sleep 10
     cd hlfv1
     node create-channel.js
@@ -95,8 +77,6 @@ fi
 
 
 # Delete any written configuration.
-rm -rf ${HOME}/.composer-connection-profiles/concerto-systests
-rm -rf ${HOME}/.concerto-credentials/concerto-systests
-
-# Run getting started system test
-#sh $DIR/scripts/getting-started.sh $DIR
+rm -rf ${HOME}/.composer-connection-profiles/composer-systests
+rm -rf ${HOME}/.composer-credentials/composer-systests
+rm -rf ${HOME}/.hfc-key-store

@@ -22,11 +22,11 @@ const randomWords = require('random-words');
  */
 class ValueGeneratorFactory {
     /**
-     * Create a value generator that supplies default values.
+     * Create a value generator that supplies empty values.
      * @return {ValueGenerator} a value generator.
      */
-    static default() {
-        return new ValueGenerator();
+    static empty() {
+        return new EmptyValueGenerator();
     }
 
     /**
@@ -39,10 +39,10 @@ class ValueGeneratorFactory {
 }
 
 /**
- * Default value generator.
+ * Empty value generator.
  * @private
  */
-class ValueGenerator {
+class EmptyValueGenerator {
     /**
      * This constructor should not be called directly.
      * @private
@@ -98,13 +98,22 @@ class ValueGenerator {
     getString() {
         return '';
     }
+
+    /**
+     * Get the first enum value from the supplied array.
+     * @param {Array} enumValues Array of possible enum values.
+     * @return {*} an enum value.
+     */
+    getEnum(enumValues) {
+        return enumValues[0];
+    }
 }
 
 /**
  * Sample data value generator.
  * @private
  */
-class SampleValueGenerator extends ValueGenerator {
+class SampleValueGenerator extends EmptyValueGenerator {
     /**
      * This constructor should not be called directly.
      * @private
@@ -151,6 +160,15 @@ class SampleValueGenerator extends ValueGenerator {
      */
     getString() {
         return randomWords({min: 1, max: 5}).join(' ');
+    }
+
+    /**
+     * Get a randomly selected enum value from the supplied array.
+     * @param {Array} enumValues Array of possible enum values.
+     * @return {*} an enum value.
+     */
+    getEnum(enumValues) {
+        return enumValues[Math.floor(Math.random() * enumValues.length)];
     }
 }
 

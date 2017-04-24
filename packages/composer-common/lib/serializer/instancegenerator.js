@@ -86,23 +86,23 @@ class InstanceGenerator {
         if (field.isArray()) {
             let result = [];
             for (let i = 0; i < 3; i++) {
-                result.push(this.getSampleValue(field, parameters));
+                result.push(this.getFieldValue(field, parameters));
             }
             return result;
         } else {
-            return this.getSampleValue(field, parameters);
+            return this.getFieldValue(field, parameters);
         }
     }
 
     /**
-     * Get a sample value for the specified field.
+     * Get a value for the specified field.
      * @param {Field} field - the object being visited
      * @param {Object} parameters  - the parameter
-     * @return {*} A sample value for the specified field.
+     * @return {*} A value for the specified field.
      */
-    getSampleValue(field, parameters) {
+    getFieldValue(field, parameters) {
         let type = field.getFullyQualifiedTypeName();
-        const valueGenerator = parameters.valueGenerator || ValueGeneratorFactory.default();
+        let valueGenerator = parameters.valueGenerator || ValueGeneratorFactory.sample();
         if (ModelUtil.isPrimitiveType(type)) {
             switch(type) {
             case 'DateTime':
@@ -122,7 +122,7 @@ class InstanceGenerator {
         let classDeclaration = parameters.modelManager.getType(type);
         if (classDeclaration instanceof EnumDeclaration) {
             let enumValues = classDeclaration.getOwnProperties();
-            return enumValues[Math.floor(Math.random() * enumValues.length)].getName();
+            return valueGenerator.getEnum(enumValues).getName();
         }
         else if (classDeclaration.isAbstract) {
             let newClassDecl = this.findExtendingLeafType(classDeclaration);
@@ -136,7 +136,7 @@ class InstanceGenerator {
             let concept = parameters.factory.newConcept(classDeclaration.getModelFile().getNamespace(), classDeclaration.getName());
             parameters.stack.push(concept);
             return classDeclaration.accept(this, parameters);
-        }  else {
+        } else {
             let identifierFieldName = classDeclaration.getIdentifierFieldName();
             let idx = Math.round(Math.random() * 9999).toString();
             idx = leftPad(idx, 4, '0');

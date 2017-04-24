@@ -35,10 +35,10 @@ let results = yargs
     .epilogue('For more information on Fabric Composer: https://fabric-composer.github.io/')
     .alias('v', 'version')
     .version(function() {
-        return getInfo('composer-cli')+'\n'+
-          getInfo('composer-admin')+'\n'+getInfo('composer-client')+'\n'+
-          getInfo('composer-common')+'\n'+getInfo('composer-runtime-hlf')+
-          '\n'+getInfo('composer-connector-hlf')+'\n';
+        return getInfo('composer-cli')+
+          getInfo('composer-admin')+getInfo('composer-client')+
+          getInfo('composer-common')+getInfo('composer-runtime-hlf')+
+          getInfo('composer-connector-hlf');
     })
     .describe('v', 'show version information')
     .command(
@@ -58,10 +58,12 @@ let results = yargs
 
 if (typeof(results.thePromise) !== 'undefined'){
     results.thePromise.then( () => {
+
         console.log(chalk.green('\nCommand succeeded\n'));
         process.exit(0);
     }).catch((error) => {
         console.log(error+chalk.red('\nCommand failed\n'));
+
         process.exit(1);
     });
 } else {
@@ -74,6 +76,14 @@ if (typeof(results.thePromise) !== 'undefined'){
  * @return {[type]}            [description]
  */
 function getInfo(moduleName){
-    let pjson = require(moduleName+'/package.json');
-    return _.padEnd(pjson.name,30) + ' v'+pjson.version;
+
+    try{
+        let pjson = ((moduleName=== 'composer-cli') ? require('./package.json') : require(moduleName).version);
+        return _.padEnd(pjson.name,30) + ' v'+pjson.version+'\n';
+    }
+    catch (error){
+      // oh well - we'll just return a blank string
+        return '';
+    }
+
 }

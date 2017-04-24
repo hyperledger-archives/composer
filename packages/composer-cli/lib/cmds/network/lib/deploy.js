@@ -85,7 +85,11 @@ class Deploy {
             // Read archive file contents
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
             // Get the connection ioptions
-            connectOptions = Deploy.getConnectOptions(connectionProfileName);
+            try {
+                connectOptions = Deploy.getConnectOptions(connectionProfileName);
+            } catch (error) {
+                throw new Error('Failed to read connection profile \'' + connectionProfileName + '\'. Error was ' + error);
+            }
             return BusinessNetworkDefinition.fromArchive(archiveFileContents);
         })
         .then ((result) => {
@@ -117,7 +121,11 @@ class Deploy {
 
             return result;
         }).catch((error) => {
-            spinner.fail();
+
+            if (spinner) {
+                spinner.fail();
+            }
+
             console.log();
 
             throw error;

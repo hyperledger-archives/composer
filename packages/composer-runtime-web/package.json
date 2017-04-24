@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-web",
-  "version": "0.5.11",
+  "version": "0.5.13",
   "description": "The web runtime container for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
     "brfs": "^1.4.3",
@@ -61,8 +61,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.5.11",
-    "composer-runtime": "^0.5.11",
+    "composer-common": "^0.5.13",
+    "composer-runtime": "^0.5.13",
     "dexie": "^1.5.1",
     "uuid": "^3.0.1"
   }
