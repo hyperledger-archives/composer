@@ -20,7 +20,6 @@ const RelationshipDeclaration = require('../introspect/relationshipdeclaration')
 const Resource = require('../model/resource');
 const Typed = require('../model/typed');
 const Concept = require('../model/concept');
-const Relationship = require('../model/relationship');
 const ModelUtil = require('../modelutil');
 const Util = require('../util');
 
@@ -215,25 +214,20 @@ class JSONGenerator {
     }
 
     /**
-    *
     * Returns the persistent format for a relationship.
     * @param {RelationshipDeclaration} relationshipDeclaration - the relationship being persisted
-    * @param {Relationship} relationship - the text for the item
+    * @param {Identifiable} relationshipOrResource - the relationship or the resource
     * @returns {string} the text to use to persist the relationship
     */
-    getRelationshipText(relationshipDeclaration, relationship) {
-        let identifiable;
-        if(relationship instanceof Relationship) {
-            identifiable = relationship;
-        } else if (this.convertResourcesToRelationships && relationship instanceof Resource) {
-            identifiable = relationship;
-        } else if (this.permitResourcesForRelationships && relationship instanceof Resource) {
-            identifiable = relationship;
-        } else {
-            throw new Error('Did not find a relationship for ' + relationshipDeclaration.getFullyQualifiedTypeName() + ' found ' + relationship );
+    getRelationshipText(relationshipDeclaration, relationshipOrResource) {
+        if(relationshipOrResource instanceof Resource) {
+            const allowRelationships =
+                this.convertResourcesToRelationships || this.permitResourcesForRelationships;
+            if(!allowRelationships) {
+                throw new Error('Did not find a relationship for ' + relationshipDeclaration.getFullyQualifiedTypeName() + ' found ' + relationshipOrResource );
+            }
         }
-
-        return identifiable.getIdentifier();
+        return relationshipOrResource.toURI();
     }
 }
 
