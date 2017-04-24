@@ -11,33 +11,27 @@ For additional help with Fabric Composer the following are good places
 
 # Contributing to this repository
 
-*Please read the contributing notes before starting. There is a [specific channel](https://chat.hyperledger.org/channel/fabric-composer-dev) on RocketChat for contributors*
+*Please read the [contributing notes](contrib-notes/readme.md) before starting. There is a [specific channel](https://chat.hyperledger.org/channel/fabric-composer-dev) on RocketChat for contributors*
 
-To start development of Fabric Composer, first clone this repository.
+The repositories are:
 
-You must run the following commands in order to pull the Hyperledger fabric chaincode dependencies from their repositories:
+- [hyperledger/composer](https://github.com/hyperledger/composer)  All the code, cli and documentation
+- [hyperledger/composer-sample-models](https://github.com/hyperledger/composer-sample-models)  Sample Business Models
+- [hyperledger/composer-sample-networks](https://github.com/hyperledger/composer-sample-networks)  Sample Business Networks
+- [hyperledger/composer-sample-applications](https://github.com/hyperledger/composer-sample-applications)  Sample Applications using the Composer API (using v0.6 Hyperledger Fabric)
+- [hyperledger/composer-sample-applications-hlfv1](https://github.com/hyperledger/composer-sample-applications-hlfv1)  Sample Applications using the Composer API (using v1.0.0-alha Hyperledger Fabric).  **Note this is ALPHA**
+- [hyperledger/composer-atom-plugin](https://github.com/hyperledger/composer-atom-plugin)  Plugin for the Atom editor
+- [hyperledger/composer-vscode-plugin](https://github.com/hyperledger/composer-vscode-plugin)  Plugin for the vsCode editor
+- [hyperledger/composer-tools](https://github.com/hyperledger/composer-tools)  Additional tools to help working with Composer
 
-    $ git submodule init
-    $ git submodule update
+# Getting started with building an application
 
-You should see messages indicating that the required git repositories have been cloned into the correct vendor subdirectory.
+**Try the [online-playground](https://composer-playground.mybluemix.net/editor) to get going quickly.** 
 
-> The git submodule should not be required now, they have been added to the npm install step. When this has been confirmed as working well, this will be updated.
+Suggested reading list is
 
-You must install [Lerna](https://lernajs.io) to build this multi-package repository:
-
-    $ npm install -g lerna@2.0.0-beta.38
-
-You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
-
-    $ lerna bootstrap
-
-You can then work with the packages under [packages/](packages/) on a per-package
-basis as any normal node.js package.
-
-Alternatively, you can execute npm commands across all of the packages at once using
-Lerna:
-
-    $ lerna run test
-
-You're now ready to start with the Fabric Composer project.
+- [Introduction](https://fabric-composer.github.io/introduction/introduction.html)
+  - [Introduction Video](https://www.youtube.com/watch?v=fdFUsrsv5iw&t=23s)
+- [Quick Start](https://fabric-composer.github.io/installing/quickstart.html)
+  - [Quick Start Video](https://www.youtube.com/watch?v=pEHBIfb_iqc&t=5s)
+- [Tutorials](https://fabric-composer.github.io/tutorials/tutorialindex.html)
