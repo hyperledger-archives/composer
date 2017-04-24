@@ -1,6 +1,6 @@
 **[Introduction](../introduction/introduction.html)**
 **[Tutorials](../tutorials/tutorialindex.html)**
-**[Installing](../installing/prerequisites.html)**
+**[Installing](../installing/installingindex.html)**
 **[Defining Business Networks](../business-network/businessnetwork.html)**
 [What is a business network?](../business-network/businessnetwork.html)
 [What is a business network definition?](../business-network/businessnetworkdefinition.html)
