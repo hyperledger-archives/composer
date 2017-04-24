@@ -39,7 +39,7 @@ The Docker Engine is essential for running system tests and running the HyperLed
 ## Optional Installs
 
 ### 1. Installing an editor
-Fabric Composer allows you to edit its project files with any editor.
+{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor.
 
 However, we recommend either using Atom or Visual Studio Code as both have excellent support for Javascript
 development. We have even created an experimental CTO file syntax highlighting plugin for Atom.
