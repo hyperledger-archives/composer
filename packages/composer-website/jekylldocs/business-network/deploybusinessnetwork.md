@@ -34,7 +34,7 @@ A business network is deployed using the `composer network deploy` command.
 
 2. Start [Hyperledger Fabric Peer and Membership Service](runtime-start.md)
 
-3. [Create a Connection Profile](../installing/createconnectionprofile.html) or do *not* use `-p` and allow Fabric Composer to create a `Default Connection Profile` for you.
+3. [Create a Connection Profile](../installing/createconnectionprofile.html) or do *not* use `-p` and allow {{site.data.conrefs.composer_full}} to create a `Default Connection Profile` for you.
 
 4. Enter the command on a single line. For example:
 

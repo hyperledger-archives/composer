@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Fabric Composer Quickstart
+title: Hyperledger Composer Quickstart
 category: start
 sidebar: sidebars/installing.md
 excerpt: Quickstart
 
 ---
 
-# Fabric Composer Quickstart
+# {{site.data.conrefs.composer_full}} Quickstart
 
 ---
 

@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Fabric Composer Quickstart
+title: Hyperledger Composer Quickstart
 category: start
-excerpt: Getting Started with Fabric Composer
+excerpt: Getting Started with Hyperledger Composer
 ---
 
 ## Getting Started - Overview
@@ -12,8 +12,8 @@ excerpt: Getting Started with Fabric Composer
 
 ---
 
->This section provides a set of guides that will help you explore the functionality of Fabric Composer in a hands-on fashion.
-Before you pick a guide, you should make sure you've followed the essential Fabric Composer setup steps in Quickstart:
+>This section provides a set of guides that will help you explore the functionality of {{site.data.conrefs.composer_full}} in a hands-on fashion.
+Before you pick a guide, you should make sure you've followed the essential {{site.data.conrefs.composer_full}} setup steps in Quickstart:
 [Developer Quickstart](./quickstart.md)
 
 

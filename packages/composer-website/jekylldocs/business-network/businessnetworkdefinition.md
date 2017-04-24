@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Fabric Composer - Business Network Definition
+title: Hyperledger Composer - Business Network Definition
 category: concepts
 sidebar: sidebars/businessnetworks.md
 excerpt: Overview of the Business Network Definition
@@ -10,7 +10,7 @@ excerpt: Overview of the Business Network Definition
 
 ---
 
-Business Network Definitions are a key concept of the Fabric Composer programming model. They are represented by the `BusinessNetworkDefinition` class, defined in the `composer-common` module and exported by both `composer-admin` and `composer-client`.
+Business Network Definitions are a key concept of the {{site.data.conrefs.composer_full}} programming model. They are represented by the `BusinessNetworkDefinition` class, defined in the `composer-common` module and exported by both `composer-admin` and `composer-client`.
 
 Business Network Definitions are composed of:
 

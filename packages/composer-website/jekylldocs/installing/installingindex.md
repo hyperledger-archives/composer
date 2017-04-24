@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Installing Fabric Composer
+title: Installing Hyperledger Composer
 sidebar: sidebars/installing.md
-excerpt: Installing Fabric Composer
+excerpt: Installing Hyperledger Composer
 ---
 
 # Installing {{site.data.conrefs.composer_full}}

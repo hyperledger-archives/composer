@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Getting Started with Fabric Composer
+title: Getting Started with Hyperledger Composer
 category: start
 sidebar: sidebars/tutorials.md
-excerpt: Getting Started with Fabric Composer
+excerpt: Getting Started with Hyperledger Composer
 ---
 
 # Running a sample with the CLI
@@ -50,10 +50,10 @@ transaction RegisterPropertyForSale identified by transactionId{
 }
 ```
 
-The applications we're going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the Fabric Composer backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.
+The applications we're going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the {{site.data.conrefs.composer_full}} backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.
 
 ## But what is an asset?
-An asset is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.
+An asset is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using {{site.data.conrefs.composer_full}} has a single source of truth for the state of these assets and their history.
 
 It's worth reading the [introduction](../introduction/introduction.html) page to get an idea of how everything fits together. The [Glossary](../reference/glossary.md) provides a detailed description of each term.
 
@@ -64,7 +64,7 @@ The first thing to do is to ensure that you have a suitable system ready for dev
 
 **Ensure that you have followed the steps in our [Quickstart](./quickstart.md) before continuing!**
 
-Let's go ahead and make a change to start to show how easy it is to develop with Fabric Composer.
+Let's go ahead and make a change to start to show how easy it is to develop with {{site.data.conrefs.composer_full}}.
 
 ### Clone the Repository and Install Dependencies
 First clone the repository that contains the Business Network Definition (note this is not the same as the sample-applications repository).
@@ -104,7 +104,7 @@ function onRegisterPropertyForSale(propertyForSale) {
 ### Update the Business Network Definition
 In a real-life scenario at this point you would edit `package.json` to increment the version number in the `DigitalProperty-Network` directory and publish this to npm. Please do npt publish to the DigitalProperty-Network in npm.
 
-What we'll do therefore is adopt a different approach to create the Business Network Archive. From within the DigitalProperty-Network directory..
+What we'll do therefore is adopt a different approach to create the Business Network Archive. From within the DigitalProperty-Network directory.
 
 ```bash
 $ composer archive create --sourceType dir --sourceName .
@@ -196,12 +196,12 @@ info: [Composer-GettingStarted]
 
 ## Digging Deeper
 
-* `scripts/download-hyperledger.sh` This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Fabric Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.`npm install` uses this script.
+* `scripts/download-hyperledger.sh` This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the {{site.data.conrefs.composer_full}} Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.`npm install` uses this script.
 
 * `scripts/start-hyperledger.sh` This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger fabric has started.
 `npm run startHLF` can also be used to call this script.
 * `scripts/stop-hyperledger.sh` This is the opposite of the start script, and will stop the Hyperledger Fabric - but it critically does not delete or remove any state. Therefore it canbe restarted with the start script.  `npm run stopHLF` can also be used to call this script.
-* `scripts/teardown.sh` This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Fabric Composer Connection Profiles.
+* `scripts/teardown.sh` This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the {{site.data.conrefs.composer_full}} Connection Profiles.
 
 **Composer CLI**
 
@@ -215,14 +215,14 @@ This lists the deployed business network details. `-n` is the name of the busine
 
 **Sample Applications**
 
-There are 3 sample Javascript applications that use the Fabric Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.
+There are 3 sample Javascript applications that use the {{site.data.conrefs.composer_full}} Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.
 
 * `node cli.js landregistry submit`  This applications connects, and submits a transaction.
 * `node cli.js landregistry list`   This lists the contents of the asset registries that have been defined in the business network.
 * `node cli.js landregistry bootstrap` This applications puts some pretend assets into the registries to work with.
 
 ### Completed!
-We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Fabric Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.
+We have downloaded the Hyperledger docker containers and stated a fabric. We have used the {{site.data.conrefs.composer_full}} Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.
 
 If you want to continue exploring, check out our other Getting Started guides:
 

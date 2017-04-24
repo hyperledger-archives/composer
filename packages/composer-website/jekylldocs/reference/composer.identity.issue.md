@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Fabric Composer Identity Issue Command
+title: Hyperledger Composer Identity Issue Command
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Fabric Composer Identity Issue Command
+excerpt: Hyperledger Composer Identity Issue Command
 ---
 
 # Composer Identity Issue

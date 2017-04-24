@@ -10,7 +10,7 @@ excerpt: How to generate a starter application
 
 ---
 
-We're going to assume that you've been through the Getting Started section and would like to now start to look at writing your own application to use Fabric Composer.
+We're going to assume that you've been through the Getting Started section and would like to now start to look at writing your own application to use {{site.data.conrefs.composer_full}}.
 
 To help getting started with this, there's a [Yeoman](http://yeoman.io/) generator that creates a suitable directory structure and helps bring in the required model and network modules.
 
@@ -49,7 +49,7 @@ yo fabric-composer
 ```
 
 ```
-Welcome to the Fabric Composer Skeleton Application Generator
+Welcome to the Hyperledger Composer Skeleton Application Generator
 ? Please select the type of Application: (Use arrow keys)
 ❯ CLI Application
   Angular2 Application
@@ -90,7 +90,7 @@ configuring: composer-sample-app
 
 #### What does this do?
 Firstly it creates a standard npm module with the usual attributes of name, author, description.
-Secondly it asks a set of Fabric Composer questions to help create the sample structure.
+Secondly it asks a set of {{site.data.conrefs.composer_full}} questions to help create the sample structure.
 
 - NPM Module name:  What is the name of the business network you want to connect to - and is this the same as the modules NPM registry name
 - Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric
@@ -122,7 +122,7 @@ Welcome to the Angular2 skeleton app generator
 ? Do you want to connect to a running Business Network? Yes
 
 ? What is the name of the application you wish to generate?: angular-app
-? Description of the application: Skeleton Fabric Composer Angular2 project
+? Description of the application: Skeleton Hyperledger Composer Angular2 project
 ? Author name: Sophie Black
 ? Author email: sophie@ampretia.com
 ? What is the Business Network Identifier?: org.acme.biznet
@@ -144,7 +144,7 @@ Welcome to the Angular2 skeleton app generator
 ? Do you want to connect to a running Business Network? No
 
 ? What is the name of the application you wish to generate?: angular-app
-? Description of the application: Skeleton Fabric Composer Angular2 project
+? Description of the application: Skeleton Hyperledger Composer Angular2 project
 ? Author name: Sophie Black
 ? Author email: sophie@ampretia.com
 ? What is the name of the business network archive file? (Path from the current working direc

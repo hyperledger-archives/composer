@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Key Concepts in Fabric Composer
+title: Key Concepts in Hyperledger Composer
 sidebar: sidebars/introduction.md
 excerpt:
 ---
@@ -9,7 +9,7 @@ excerpt:
 
 ---
 
-Fabric Composer is a programming model containing a modeling language, and a set of APIs to quickly define and deploy business networks and applications that allow **participants** to send **transactions** that exchange **assets**.
+{{site.data.conrefs.composer_full}} is a programming model containing a modeling language, and a set of APIs to quickly define and deploy business networks and applications that allow **participants** to send **transactions** that exchange **assets**.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Fabric Composer - Participants and Identities
+title: Hyperledger Composer - Participants and Identities
 category: concepts
 sidebar: sidebars/introduction.md
 excerpt: Business Network
