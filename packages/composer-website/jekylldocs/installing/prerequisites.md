@@ -71,14 +71,20 @@ Fabric Composer allows you to edit its project files with any editor. We recomme
 
 Suggested Plugins:
 
-[Atom Composer Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom) A plugin for model file highlighting. 
+* [Atom Composer Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom) A plugin for model file highlighting. 
 
-[File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
+* [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
 
 **Visual Studio Code**
 
 [Visual Studio Code](https://code.visualstudio.com/) is a lightweight and powerful editor.
 
-Suggested Extensions:
+Extensions may be installed into VS Code by searching the Extensions repository for the desired extension package and selecting the install option once identified. Suggested extentions include:
 
-Composer VSCode Plugin. A plugin for syntax highlighting, autocomplete and error checking. This may be installed into VSCode by searching the Extensions repository for 'Composer' and Installing the listed Composer VSCode Plugin.
+* Composer VS Code Plugin. Provides syntax highlighting for CTO files within VS Code
+
+* ESLint. Integrates ESLint into VS Code. 
+
+* TSLint. Integrates the tslint linter for the TypeScript language into VS Code. 
+
+* EditorConfig for VS Code. Enables the definition and maintainance of consistent coding styles between different editors and IDEs.
