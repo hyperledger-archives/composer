@@ -14,25 +14,34 @@
 
 'use strict';
 
-const hlf = require ('./lib/hlf.js');
+// const hlf = require ('./lib/hlf.js');
 
-module.exports.command = 'hlf [options]';
-module.exports.describe = 'Controls a local HLF instance';
+module.exports.command = 'fabric [options]';
+module.exports.describe = 'Controls a local Hyperledger Fabric instance and related Composer profiles';
 module.exports.builder = function (yargs){
 
-    return yargs.option('hlfversion',{alias: 'h', required: false,  describe: 'Which version of HLF to start [ 0.6 | 1.0 ], defualt 0.6', type: 'string', default :'0.6' })
-            .option('download',{alias: 't', required: false, describe:'Pulls and tags the latest version of the HLF docker images'})
-            .option('start',{alias: 's', required: false, describe:'Starts the HLF instance for a developmnet use'})
-            .option('stop',{alias: 'e', required: false, describe:'Stops the HLF intstance, can be restarted'})
-            .option('delete',{alias: 'd', required: false, describe:'Removes the HLF instance and cleans up Composer conneciton profiles. (Cached Docker images not removed)'})
-            .option('purgeProfiles', {alias: 'p', required: false, describe: 'Deletes the Composer Default connection profiles'})
+    return yargs.option('release',{alias: 'r', required: false,  describe: 'Which release of Hyperledger Fabric to use [ 0.6 | 1.0 ], default 1.0', type: 'string', default :'0.6' })
+            .option('download',{alias: 't', required: false, describe:'Pulls and tags the latest version of the Hyperledger Fabric Docker images'})
+            .option('start',{alias: 's', required: false, describe:'Configures and Starts the Hyperledger Fabric instance for a development use ONLY'})
+            .option('stop',{alias: 'e', required: false, describe:'Stops the Hyperledger Fabric intstance, can be restarted with start'})
+            .option('delete',{alias: 'd', required: false, describe:'Removes the Hyperledger Fabric instance and cleans up Composer connection profiles. (Cached Docker images not removed)'})
+            .option('purge', {alias: 'p', required: false, describe: 'Deletes the Composer default connection profiles'})
             .conflicts({'download':'stop','start':'stop','stop':'','delete':'start'})
-            .usage('composer dev hlf --downloand --hlfversion 0.6  \n  composer dev hlf --start')
+            .usage('composer dev fabric --downloand --release 0.6  \n  composer dev fabric --start')
             ;
 
 };
 
 module.exports.handler = (argv) => {
+    let hlf;
+
+    if (argv.release === '0.6'){
+        console.log('Hyperledger Fabric v0.6 starting with default configuration for Composer development');
+        hlf = require ('./lib/hlf.js');
+    } else {
+        console.log('Hyperledger Fabric v1-alpha starting with default configuration for Composer development');
+        hlf = require ('./lib/hlfv1.js');
+    }
 
     argv.thePromise = hlf.handler(argv)
     .then(() => {
