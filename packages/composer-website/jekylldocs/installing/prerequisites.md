@@ -15,7 +15,7 @@ The essential tools you will need are *npm*, *docker*, *docker-compose* and a co
 The recommended *minimum* versions are:
 *Docker*: v1.12.3
 *Docker-compose*: v1.10.0
-*npm*: v3.10
+*npm*: v4.6.0
 *node.js*: v6.9.5
 
 
@@ -61,8 +61,7 @@ This is probably already installed on most Linux machines. Pay particular attent
 
 ### 1. Installing an editor
 
-{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. Atom and Visual Studio Code both have excellent support for JavaScript
-development. Atom also includes a syntax highlighting plugin for `.cto` files.
+{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. We recommend using either Atom or Visual Studio Code, as not only do both have excellent support for Javascript development, a `.cto` file syntax highlighting plugin exists for these editors.
 
 **Atom**
 
