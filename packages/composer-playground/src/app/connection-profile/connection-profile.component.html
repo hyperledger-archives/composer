@@ -1,15 +1,14 @@
 <section class="side-bar">
-  <div class="profiles" style="flex:1">
+  <div class="profiles flex">
     <span class="uppercase">Connection Profiles</span>
     <div class="side-bar-nav">
       <ul>
-        <li *ngFor="let profile of profiles" [class.active]="profile.id === currentProfile.id" (click)="setCurrentProfile(profile)">
-          <div style="display: flex">
-            <div style="flex:1;">
-            {{profile.displayID}}
-            </div>
-            <div style="flex:1;text-align:right">
-            <svg class="ibm-icon blue-icon" aria-hidden="true">
+        <li *ngFor="let connectionProfile of connectionProfiles" [class.active]="connectionProfile.name === currentConnectionProfile.name" [class.disabled]="connectionProfile.default" (click)="setCurrentProfile(connectionProfile)">
+          <div class="flex-container">
+            <div class="flex" *ngIf="connectionProfile.default">Web browser</div>
+            <div class="flex" *ngIf="!connectionProfile.default">{{connectionProfile.name}}</div>
+            <div class="flex" style="text-align:right">
+            <svg *ngIf="connectionProfile.name == activeProfile" class="ibm-icon blue-icon" aria-hidden="true">
               <use xlink:href="#icon-confirm_24"></use>
             </svg>
             </div>
@@ -17,8 +16,14 @@
         </li>
       </ul>
     </div>
+    <div class="actions">
+      <div>
+        <button type="button" class="action" (click)="openAddProfileModal()">+ Import or Create a Profile
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="about">
+  <!--<div class="about">
     <about></about>
     <h2>Contact Us</h2>
     <p>
@@ -33,7 +38,7 @@
       </svg>
       Join the discussion in the fabric-composer channel on the Hyperledger-hosted <a href="https://chat.hyperledger.org/channel/fabric-composer">RocketChat</a>
     </p>
-  </div>
+  </div>-->
 </section>
 <section class="main-view">
   <div class="playground-profile-warning" *ngIf="warningVisible">
@@ -61,9 +66,6 @@
   </div>
 
   <div class="current-profile">
-    <h1>{{currentProfile.displayID}}</h1>
-    <p>{{currentProfile.details}}</p>
-    <button class="button secondary" type="button" disabled>Delete this profile</button>
-    <button class="button primary" type="button" disabled>Use this profile</button>
+    <connection-profile-data (profileUpdated)="profileUpdated($event)" [connectionProfile]="currentConnectionProfile"></connection-profile-data>
   </div>
 </section>

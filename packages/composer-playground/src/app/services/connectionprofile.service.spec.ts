@@ -3,6 +3,8 @@
 import {TestBed, async, inject} from '@angular/core/testing';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {LocalStorageService} from 'angular-2-local-storage';
+import {WalletService} from '../wallet.service';
+import * as sinon from 'sinon';
 
 class LocalStorageMock {
   val: Object = '$default';
@@ -16,11 +18,14 @@ class LocalStorageMock {
   }
 }
 
+let mockWalletService = sinon.createStubInstance(WalletService);
+
 describe('ConnectionProfileService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [ConnectionProfileService,
-        {provide: LocalStorageService, useClass: LocalStorageMock}]
+        {provide: LocalStorageService, useClass: LocalStorageMock},
+        {provide: WalletService, useValue:mockWalletService }]
     });
   });
 

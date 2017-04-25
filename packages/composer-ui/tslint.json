@@ -1,7 +1,5 @@
 {
-  "rulesDirectory": [
-    "node_modules/codelyzer"
-  ],
+
   "rules": {
     "member-access": false,
     "member-ordering": [
