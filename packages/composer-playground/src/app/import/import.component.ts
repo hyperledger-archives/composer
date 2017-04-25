@@ -1,10 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {AdminService} from '../services/admin.service';
 import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
+
+import { ErrorComponent } from '../error';
 
 const fabricComposerOwner = 'hyperledger';
 const fabricComposerRepository = 'composer-sample-networks';
@@ -36,6 +38,7 @@ export class ImportComponent implements OnInit {
   constructor(private adminService: AdminService,
               private clientService: ClientService,
               public activeModal: NgbActiveModal,
+              public modalService: NgbModal,
               private sampleBusinessNetworkService: SampleBusinessNetworkService,
               private alertService: AlertService) {
 
@@ -91,7 +94,9 @@ export class ImportComponent implements OnInit {
           }
 
           this.gitHubInProgress = false;
-          this.activeModal.dismiss(error);
+
+          let modalRef = this.modalService.open(ErrorComponent);
+          modalRef.componentInstance.error = error;
         });
     }
   }
@@ -176,7 +181,9 @@ export class ImportComponent implements OnInit {
         }
 
         this.deployInProgress = false;
-        this.activeModal.dismiss(error);
+
+        let modalRef = this.modalService.open(ErrorComponent);
+        modalRef.componentInstance.error = error;
       });
 
 
