@@ -242,4 +242,10 @@ export class AdminService {
     this.initialDeploy = false;
     return result;
   }
+
+  isWebOnly(): Promise<any> {
+    return this.ensureConnected().then(() => {
+      return this.config.webonly;
+    })
+  }
 }

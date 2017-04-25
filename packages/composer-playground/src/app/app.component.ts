@@ -7,7 +7,6 @@ import {AppState} from './app.service';
 import {AdminService} from './services/admin.service';
 import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
-import {EditorService} from './services/editor.service';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from './wallet.service';
 import {IdentityService} from './identity.service';
@@ -23,8 +22,6 @@ import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
 
 const LZString = require('lz-string');
-
-const composerPackageVersion = require('../../package.json').version;
 
 /*
  * App Component
@@ -42,17 +39,14 @@ const composerPackageVersion = require('../../package.json').version;
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  angularclassLogo = 'assets/img/angularclass-avatar.png';
-  name = 'Angular 2 Webpack Starter';
-  url = 'https://twitter.com/AngularClass';
-
   private connectionProfiles: any = [];
   private currentConnectionProfile: any = null;
   private identities: any = [];
   private currentIdentity: any = null;
   private subs: any = null;
 
-  private composerPackageVersion = composerPackageVersion;
+  private usingLocally = false;
+
   private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
 
@@ -68,8 +62,7 @@ export class AppComponent {
               private alertService: AlertService,
               private modalService: NgbModal,
               private localStorageService: LocalStorageService,
-              private aboutService: AboutService,
-              private editorService: EditorService) {
+              private aboutService: AboutService) {
 
   }
 
@@ -179,6 +172,15 @@ export class AppComponent {
       })
       .then((currentIdentity) => {
         this.currentIdentity = currentIdentity;
+        return this.adminService.isWebOnly();
+      })
+      .then((webOnly) => {
+        if(webOnly) {
+          this.usingLocally = false;
+        }
+        else {
+          this.usingLocally = true;
+        }
       });
   }
 
@@ -348,6 +350,4 @@ export class AppComponent {
     let result = this.localStorageService.get<string>(key);
     return result;
   }
-
-
 }
