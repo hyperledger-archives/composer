@@ -204,10 +204,14 @@ class TestUtil {
                     let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
                     if (process.env.SYSTEST.match('^hlfv1')) {
+                        let connectorType = 'hlfv1';
+                        if (process.env.SYSTEST.match('^hlfv1-latest')) {
+                            connectorType= 'hlfv1-latest';
+                        }
                         if (process.env.SYSTEST.match('tls$')) {
                             console.log('setting up TLS Connection Profile for HLF V1');
                             adminOptions = {
-                                type: 'hlfv1',
+                                type: connectorType,
                                 orderers: [
                                     {
                                         url: 'grpcs://localhost:7050',
@@ -239,7 +243,7 @@ class TestUtil {
                         } else {
                             console.log('setting up Non-TLS Connection Profile for HLF V1');
                             adminOptions = {
-                                type: 'hlfv1',
+                                type: connectorType,
                                 orderers: [
                                     'grpc://localhost:7050'
                                 ],

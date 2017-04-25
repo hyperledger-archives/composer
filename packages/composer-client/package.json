@@ -45,6 +45,7 @@
     "composer-common": "^0.7.0",
     "composer-connector-hlf": "^0.7.0",
     "composer-connector-hlfv1": "^0.7.0",
+	"composer-connector-hlfv1-latest": "^0.7.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {

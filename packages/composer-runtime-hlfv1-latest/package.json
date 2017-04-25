@@ -1,0 +1,37 @@
+{
+  "name": "composer-runtime-hlfv1-latest",
+  "version": "0.5.11",
+  "description": "The Hyperledger Fabric v1.x runtime container for Fabric Composer",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "node ./scripts/build.js",
+    "test": "echo \"Warning: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperledger/composer.git"
+  },
+  "keywords": [
+    "blockchain",
+    "hyperledger",
+    "solutions"
+  ],
+  "author": "Hyperledger Composer",
+  "license": "Apache-2.0",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.3.0",
+    "browserify-replace": "^0.9.0",
+    "composer-runtime": "^0.5.11",
+    "exorcist": "^0.4.0",
+    "fs-extra": "^1.0.0",
+    "uglify-js": "^2.7.5"
+  }
+}

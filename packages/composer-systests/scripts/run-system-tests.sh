@@ -31,6 +31,12 @@ if [ "${SYSTEST}" = "hlf"  ]; then
     docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
     docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
     docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+elif [[ ${SYSTEST} == hlfv1-latest* ]]; then
+    if [[ ${SYSTEST} == *tls ]]; then
+        DOCKER_FILE=${DIR}/hlfv1-latest/hlfv1_latest-docker-compose.tls.yml
+    else
+        DOCKER_FILE=${DIR}/hlfv1-latest/hlfv1_latest-docker-compose.yml
+    fi
 elif [[ ${SYSTEST} == hlfv1* ]]; then
     if [[ ${SYSTEST} == *tls ]]; then
         DOCKER_FILE=${DIR}/hlfv1/hlfv1_alpha-docker-compose.tls.yml
@@ -60,9 +66,15 @@ rm -rf ${HOME}/.hfc-key-store
 # configure v1 to run the tests
 if [[ ${SYSTEST} == hlfv1* ]]; then
     sleep 10
-    cd hlfv1
-    node create-channel.js
-    node join-channel.js
+    if [[ ${SYSTEST} == hlfv1-latest* ]]; then
+        cd hlfv1-latest
+        node create-channel-latest.js
+        node join-channel-latest.js
+    else
+        cd hlfv1
+        node create-channel.js
+        node join-channel.js
+    fi
     cd ..
 fi
 
