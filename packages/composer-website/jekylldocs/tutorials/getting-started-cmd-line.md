@@ -170,14 +170,14 @@ $ npm run submitTransaction
 > getting-started@1.0.0 submitTransaction /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry submit && node cli.js landregistry list
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started appliation
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
 info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
 info: [Composer-GettingStarted] updateForSale Submitting transaction
 info: [Composer-GettingStarted] Transaction Submitted
 undefined
 info: [Composer-GettingStarted] Command completed successfully.
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started appliation
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
 info: [Composer-GettingStarted] listTitles Getting the asset registry
 info: [Composer-GettingStarted] listTitles Getting all assest from the registry.

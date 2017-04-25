@@ -24,7 +24,7 @@ $ npm run listAssets
 > getting-started@1.0.0 listAssets /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry list
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started appliation
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
 info: [Composer-GettingStarted] listTitles Getting the asset registry
 info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
@@ -65,17 +65,24 @@ composer-rest-server
 You will then be asked to enter a few simple details about your business network.
 
 ```bash
-  _____           _              _                   ____                                                         
- |  ___|   __ _  | |__    _ __  (_)   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __
- | |_     / _` | | '_ \  | '__| | |  / __|  _____  | |      / _ \  | '_ ` _ \  | '_ \   / _ \  / __|  / _ \ | '__|
- |  _|   | (_| | | |_) | | |    | | | (__  |_____| | |___  | (_) | | | | | | | | |_) | | (_) | \__ \ |  __/ | |   
- |_|      \__,_| |_.__/  |_|    |_|  \___|          \____|  \___/  |_| |_| |_| | .__/   \___/  |___/  \___| |_|   
-                                                                               |_|                                
+
+ _   _                       _          _                 
+| | | |_   _ _ __   ___ _ __| | ___  __| | __ _  ___ _ __
+| |_| | | | | '_ \ / _ \ '__| |/ _ \/ _` |/ _` |/ _ \ '__|
+|  _  | |_| | |_) |  __/ |  | |  __/ (_| | (_| |  __/ |   
+|_| |_|\__, | .__/ \___|_|  |_|\___|\__,_|\__, |\___|_|   
+       |___/|_|                           |___/           
+  ____                                          
+ / ___|___  _ __ ___  _ __   ___  ___  ___ _ __
+| |   / _ \| '_ ` _ \| '_ \ / _ \/ __|/ _ \ '__|
+| |__| (_) | | | | | | |_) | (_) \__ \  __/ |   
+ \____\___/|_| |_| |_| .__/ \___/|___/\___|_|   
+                     |_|                                                     
 ? Enter your Fabric Connection Profile Name: defaultProfile
 ? Enter your Business Network Identifier : digitalproperty-network
 ? Enter your Fabric username : WebAppAdmin
 ? Enter your secret: DJY27pEnl16d
-Loopback Connector for Fabric Composer
+Loopback Connector for Hyperledger Composer
 Models Loaded Now
 Browse your REST API at http://0.0.0.0:3000/explorer
 ```
@@ -151,7 +158,7 @@ $ npm run listAssets
 > getting-started@1.0.0 listAssets /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry list
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started appliation
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.22
 info: [Composer-GettingStarted] listTitles Getting the asset registry
 info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
