@@ -13,7 +13,7 @@
  */
 
 'use strict';
-
+const fs = require('fs');
 
 const shell = require('shelljs');
 const path = require('path');
@@ -66,7 +66,7 @@ class hlf {
     */
     static runCmd(argv){
 
-        if (argv.start === undefined && argv.stop === undefined && argv.download===undefined && argv.delete === undefined && argv.purgeProfiles === undefined){
+        if (argv.scripts === undefined && argv.start === undefined && argv.stop === undefined && argv.download===undefined && argv.delete === undefined && argv.purgeProfiles === undefined){
             return this._cmd('docker ps');
         }
 
@@ -86,23 +86,30 @@ class hlf {
         let cmdString;
         let errorCode = 0;
         if (argv.start){
-            console.log('Starting Hyperledger Fabric');
-
-            let createProfile = path.resolve(dir,'..',scripts,'createProfile.sh');
-            let createChannel = path.resolve(dir,'..',scripts,'create-channel.js');
-            let joinChannel = path.resolve(dir,'..',scripts,'join-channel.js');
-
-            cmdString = 'docker-compose -f '+composeYML+' up -d  ';
 
             console.log('Creating Composer connection profile');
+            let createProfile = path.resolve(dir,'..',scripts,'createProfile.sh');
             errorCode = this._cmd(createProfile);
-            errorCode = (errorCode===0) ? this._cmd(cmdString) : errorCode;
 
-            this._cmd('/bin/sleep 15');
+            console.log('Starting Hyperledger Fabric v1.0');
+            let startHLF = path.resolve(dir,'..',scripts,'start-hyperledger.sh');
+            this._cmd(startHLF);
 
-            console.log('Creating default channel and organization');
-            this._cmd('node '+createChannel);
-            this._cmd('node '+joinChannel);
+            // let createProfile = path.resolve(dir,'..',scripts,'createProfile.sh');
+            // let createChannel = path.resolve(dir,'..',scripts,'create-channel.js');
+            // let joinChannel = path.resolve(dir,'..',scripts,'join-channel.js');
+            //
+            // cmdString = 'docker-compose -f '+composeYML+' up -d  ';
+            //
+            // console.log('Creating Composer connection profile');
+            // errorCode = this._cmd(createProfile);
+            // errorCode = (errorCode===0) ? this._cmd(cmdString) : errorCode;
+            //
+            // this._cmd('/bin/sleep 15');
+            //
+            // console.log('Creating default channel and organization');
+            // this._cmd('node '+createChannel);
+            // this._cmd('node '+joinChannel);
 
 
         } else if (argv.stop){
@@ -132,6 +139,25 @@ class hlf {
 
             errorCode = this._cmd(cmdString);
 
+        } else if (argv.scripts){
+            let shell = require('shelljs');
+            let files = shell.ls(path.resolve(dir,'..',scripts));
+
+            console.log(chalk.blue('\nScripts to control Fabric v1.0 are in ')+path.resolve(dir,'..',scripts));
+            console.log(files.join('\n'));
+
+
+            let marked = require('marked');
+            let TerminalRenderer = require('marked-terminal');
+
+            marked.setOptions({
+                          // Define custom renderer
+                renderer: new TerminalRenderer()
+            });
+
+            let readmefile = path.resolve(dir,'..',scripts,'README.md');
+            let text = fs.readFileSync(readmefile,'utf8');
+            console.log ('\n> cat '+readmefile+'\n'+marked(text));
         }
 
         if (argv.purgeProfiles && errorCode === 0){
@@ -139,6 +165,8 @@ class hlf {
 
             errorCode = shell.rm('-rf','~/.composer-connection-profiles/hlfv1').code;
             errorCode = (errorCode===0) ? shell.rm('-r','~/.hfc-key-store/*').code : errorCode;
+
+
 
         }
 

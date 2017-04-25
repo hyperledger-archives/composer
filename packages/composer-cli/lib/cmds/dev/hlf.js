@@ -17,16 +17,17 @@
 // const hlf = require ('./lib/hlf.js');
 
 module.exports.command = 'fabric [options]';
-module.exports.describe = 'Controls a local Hyperledger Fabric instance and related Composer profiles';
+module.exports.describe = 'Controls a local Hyperledger Fabric instance and related Composer profiles for Development only use';
 module.exports.builder = function (yargs){
 
-    return yargs.option('release',{alias: 'r', required: false,  describe: 'Which release of Hyperledger Fabric to use [ 0.6 | 1.0 ], default 1.0', type: 'string', default :'0.6' })
-            .option('download',{alias: 't', required: false, describe:'Pulls and tags the latest version of the Hyperledger Fabric Docker images'})
+    return yargs.option('release',{alias: 'r', required: false,  describe: 'Which release of Hyperledger Fabric to use [ 0.6 | 1 ]', type: 'string', default :'1' })
+            .option('download',{alias: 'g', required: false, describe:'Pulls and tags the latest version of the Hyperledger Fabric Docker images'})
             .option('start',{alias: 's', required: false, describe:'Configures and Starts the Hyperledger Fabric instance for a development use ONLY'})
             .option('stop',{alias: 'e', required: false, describe:'Stops the Hyperledger Fabric intstance, can be restarted with start'})
             .option('delete',{alias: 'd', required: false, describe:'Removes the Hyperledger Fabric instance and cleans up Composer connection profiles. (Cached Docker images not removed)'})
             .option('purge', {alias: 'p', required: false, describe: 'Deletes the Composer default connection profiles'})
             .conflicts({'download':'stop','start':'stop','stop':'','delete':'start'})
+            .option('scripts', {alias: 't', required:false, describe: 'Shows the directory of the example Fabric control scripts '})
             .usage('composer dev fabric --downloand --release 0.6  \n  composer dev fabric --start')
             ;
 
