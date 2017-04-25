@@ -1,4 +1,4 @@
-To start development of Fabric Composer, first clone this repository.
+To start development of Hyperledger Composer, first clone this repository.
 
   $ git clone git@github.com:hyperledger/composer.git
 
@@ -17,4 +17,4 @@ To run the whole test suite
 
     $ npm test
 
-You're now ready to start with the Fabric Composer project.
+You're now ready to start with the Hyperledger Composer project.

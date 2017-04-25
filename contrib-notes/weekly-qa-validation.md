@@ -1,7 +1,7 @@
 
-# Validation of the the quality of Fabric Composer
+# Validation of the the quality of Hyperledger Composer
 
-Fabric Composer is a open source technology that is developed in the open. Therefore every Pull Request that is merged is a *public* release of code, api and documentation.
+Hyperledger Composer is a open source technology that is developed in the open. Therefore every Pull Request that is merged is a *public* release of code, api and documentation.
 
 First impressions and the overall first experience do count. Even if something isn't perfect for whatever reason, then we can still retain this new relationship _if_ the solution is easily found.
 
