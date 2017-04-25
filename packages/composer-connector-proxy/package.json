@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-proxy",
-  "version": "0.5.6",
+  "version": "0.5.13",
   "description": "The proxying client connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "license-check-config": {
     "src": [
@@ -47,12 +47,14 @@
     "license-check": "^1.1.5",
     "mocha": "^3.2.0",
     "nyc": "^10.1.2",
+    "proxyquire": "^1.7.11",
+    "serializerr": "^1.0.3",
     "sinon": "^1.17.7",
     "sinon-as-promised": "^4.0.2",
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.5.6",
+    "composer-common": "^0.5.13",
     "socket.io-client": "^1.7.3"
   },
   "nyc": {
@@ -69,9 +71,9 @@
     ],
     "all": true,
     "check-coverage": true,
-    "statements": 11,
-    "branches": 0,
-    "functions": 6,
-    "lines": 11
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
   }
 }

@@ -1,0 +1,111 @@
+version: '2'
+
+services:
+  ca0:
+    image: hyperledger/fabric-ca:x86_64-1.0.0-alpha
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/peerOrg1-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/d8a5b3cac1b821f6e4b487ceaf1fd239cdcfc310894150908b90f05e9179556a_sk -b admin:adminpw' -d
+    volumes:
+      - ./crypto-config/peerOrganizations/peerOrg1/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerOrg1
+
+  orderer0:
+    container_name: orderer0
+    image: hyperledger/fabric-orderer:x86_64-1.0.0-alpha
+    environment:
+#      - GRPC_TRACE=all
+#      - GRPC_VERBOSITY=debug
+#      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/twoorgs.orderer.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer
+      - ORDERER_GENERAL_TLS_ENABLED=false
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/tls/orderer/key.pem
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/tls/orderer/cert.pem
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/tls/orderer/ca-cert.pem, /etc/hyperledger/tls/peers/peer0/ca-cert.pem, /etc/hyperledger/tls/peers/peer2/ca-cert.pem]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+        - ./:/etc/hyperledger/configtx
+        - ./crypto-config/ordererOrganizations/ordererOrg1/orderers/ordererOrg1orderer1/:/etc/hyperledger/msp/orderer
+#        - ./tls/orderer:/etc/hyperledger/tls/orderer
+#        - ./tls/peers:/etc/hyperledger/tls/peers
+
+  peer0:
+    container_name: peer0
+    image: hyperledger/fabric-peer:x86_64-1.0.0-alpha
+    environment:
+      - CORE_CHAINCODE_EXECUTETIMEOUT=90000
+#      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_NEXT=true
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer0
+      - CORE_PEER_ENDORSER_ENABLED=true
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_GOSSIP_ORGLEADER=true
+      - CORE_PEER_ADDRESS=peer0:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0:7051
+      - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/tls/key.pem
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/tls/cert.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/tls/ca-cert.pem
+      # the following setting starts chaincode containers on the same
+      # bridge network as the peers
+      # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hlfv1_default
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start --peer-defaultchain=false
+    ports:
+      - 7051:7051
+      - 7053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/peerOrg1/peers/peerOrg1Peer1/:/etc/hyperledger/msp/peer
+#        - ./tls/peers/peer0:/etc/hyperledger/tls
+    depends_on:
+      - orderer0
+
+  peer1:
+    container_name: peer1
+    image: hyperledger/fabric-peer:x86_64-1.0.0-alpha
+    environment:
+      - CORE_CHAINCODE_EXECUTETIMEOUT=90000
+      - CORE_NEXT=true
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=peer1
+      - CORE_PEER_ENDORSER_ENABLED=true
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_ADDRESS=peer1:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1:7051
+      - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/tls/key.pem
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/tls/cert.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/tls/ca-cert.pem
+      # the following setting starts chaincode containers on the same
+      # bridge network as the peers
+      # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hlfv1_default
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start --peer-defaultchain=false
+    ports:
+      - 7056:7051
+      - 7058:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/peerOrg1/peers/peerOrg1Peer2/:/etc/hyperledger/msp/peer
+#        - ./tls/peers/peer1:/etc/hyperledger/tls
+    depends_on:
+      - orderer0
+      - peer0
+
+

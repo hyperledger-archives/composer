@@ -19,9 +19,6 @@ import 'codemirror/addon/fold/markdown-fold';
 import 'codemirror/addon/fold/xml-fold';
 import 'codemirror/addon/scroll/simplescrollbars';
 
-const fabricComposerOwner = 'fabric-composer';
-const fabricComposerRepository = 'sample-networks';
-
 @Component({
   selector: 'resource-modal',
   templateUrl: './resource.component.html',
@@ -38,7 +35,7 @@ export class ResourceComponent implements OnInit {
   private resourceDefinition: string = null;
   private resourceDeclaration: ClassDeclaration = null;
   private actionInProgress: boolean = false;
-  private defitionError: string = null;
+  private definitionError: string = null;
 
   private codeConfig = {
     lineNumbers: true,
@@ -79,15 +76,13 @@ export class ResourceComponent implements OnInit {
 
             if (this.editMode()) {
                 this.resourceAction = 'Update';
+                let serializer = this.clientService.getBusinessNetwork().getSerializer();
+                this.resourceDefinition = JSON.stringify(serializer.toJSON(this.resource), null, 2);
             } else {
                 // Stub out json definition
                 this.resourceAction = 'Create New';
                 this.generateResource();
             }
-            this.resourceDefinition = this.getResourceJSON();
-
-            // Run validator on json definition
-            this.onDefinitionChanged();
           }
         });
 
@@ -96,11 +91,6 @@ export class ResourceComponent implements OnInit {
 
   private editMode(): boolean {
       return (this.resource ? true : false);
-  }
-
-  private generateSampleData(): void {
-    this.generateResource(true);
-    this.onDefinitionChanged();
   }
 
   /**
@@ -112,26 +102,24 @@ export class ResourceComponent implements OnInit {
     let idx = Math.round(Math.random() * 9999).toString();
     idx = leftPad(idx, 4, '0');
     let id = `${this.resourceDeclaration.getIdentifierFieldName()}:${idx}`;
-    let resource = factory.newResource(
-      this.resourceDeclaration.getModelFile().getNamespace(),
-      this.resourceDeclaration.getName(),
-      id,
-      { generate: true, 'withSampleData': withSampleData });
-    let serializer = this.clientService.getBusinessNetwork().getSerializer();
     try {
-      let json = serializer.toJSON(resource);
-      this.resourceDefinition = JSON.stringify(json, null, 2);
+        const generateParameters = { generate: withSampleData ? 'sample' : 'empty' };
+        let resource = factory.newResource(
+          this.resourceDeclaration.getModelFile().getNamespace(),
+          this.resourceDeclaration.getName(),
+          id,
+          generateParameters);
+        let serializer = this.clientService.getBusinessNetwork().getSerializer();
+        let json = serializer.toJSON(resource);
+        this.resourceDefinition = JSON.stringify(json, null, 2);
+        this.onDefinitionChanged();
     } catch (error) {
-      // We can't generate a sample instance for some reason.
-      this.defitionError = error.toString();
-      this.resourceDefinition = '';
+        // We can't generate a sample instance for some reason.
+        this.definitionError = error.toString();
+        this.resourceDefinition = '';
     }
   }
 
-  private getResourceJSON(): any {
-    let serializer = this.clientService.getBusinessNetwork().getSerializer();
-    return JSON.stringify(serializer.toJSON(this.resource), null, 2);
-  }
 
   /**
    *  Create resource via json serialisation
@@ -155,7 +143,7 @@ export class ResourceComponent implements OnInit {
         this.activeModal.close();
       })
       .catch((error) => {
-        this.defitionError = error.toString();
+        this.definitionError = error.toString();
         this.actionInProgress = false;
       });
   }
@@ -164,15 +152,15 @@ export class ResourceComponent implements OnInit {
   /**
    * Validate json definition of resource
    */
-  private onDefinitionChanged() {
+  onDefinitionChanged() {
     try {
       let json = JSON.parse(this.resourceDefinition);
       let serializer = this.clientService.getBusinessNetwork().getSerializer();
       let resource = serializer.fromJSON(json);
       resource.validate();
-      this.defitionError = null;
-    } catch (e) {
-      this.defitionError = e.toString();
+      this.definitionError = null;
+    } catch (error) {
+      this.definitionError = error.toString();
     }
   }
 
@@ -187,20 +175,6 @@ export class ResourceComponent implements OnInit {
     } else if (modelClassDeclaration instanceof ParticipantDeclaration) {
       return 'Participant';
     }
-  }
-
-  /**
-   * Generate a stub resource definition
-   */
-  private generateDefinitionStub(registryID, modelClassDeclaration): string {
-    let stub = '';
-    stub = '{\n  "$class": "' + registryID + '"';
-    let resourceProperties = modelClassDeclaration.getProperties();
-    resourceProperties.forEach((property) => {
-      stub += ',\n  "' + property.getName() + '": ""';
-    });
-    stub += '\n}';
-    return stub;
   }
 
   /**

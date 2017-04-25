@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-hlfv1",
-  "version": "0.5.6",
+  "version": "0.5.13",
   "description": "The Hyperledger Fabric v1.x Client connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "license-check-config": {
     "src": [
@@ -40,8 +40,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.5.6",
-    "composer-runtime-hlfv1": "^0.5.6",
+    "composer-common": "^0.5.13",
+    "composer-runtime-hlfv1": "^0.5.13",
     "fabric-client": "1.0.0-alpha",
     "fabric-ca-client": "1.0.0-alpha.0",
     "fs-extra": "^1.0.0",

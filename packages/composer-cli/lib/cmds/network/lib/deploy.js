@@ -20,11 +20,16 @@ const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const homedir = require('homedir');
 
+
 const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
 const CONNECTION_FILE = 'connection.json';
 
 const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
+
+const ora = require('ora');
+const chalk = require('chalk');
+
 
 /**
  * <p>
@@ -54,10 +59,10 @@ class Deploy {
         let enrollSecret;
         let connectionProfileName = Deploy.getDefaultProfileName(argv);
         let businessNetworkName;
-
+        let spinner;
         return (() => {
+            console.log(chalk.blue.bold('Deploying business network from archive: ')+argv.archiveFile);
 
-            console.log ('Deploying business network from archive '+argv.archiveFile);
             if (!argv.enrollSecret) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
@@ -80,15 +85,20 @@ class Deploy {
             // Read archive file contents
             archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
             // Get the connection ioptions
-            connectOptions = Deploy.getConnectOptions(connectionProfileName);
+            try {
+                connectOptions = Deploy.getConnectOptions(connectionProfileName);
+            } catch (error) {
+                throw new Error('Failed to read connection profile \'' + connectionProfileName + '\'. Error was ' + error);
+            }
             return BusinessNetworkDefinition.fromArchive(archiveFileContents);
         })
         .then ((result) => {
             businessNetworkDefinition = result;
             businessNetworkName = businessNetworkDefinition.getIdentifier();
-            console.log('Business network definition:');
-            console.log('\tIdentifier: '+businessNetworkName);
-            console.log('\tDescription: '+businessNetworkDefinition.getDescription());
+            console.log(chalk.blue.bold('Business network definition:'));
+            console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
+            console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
+            console.log();
             adminConnection = cmdUtil.createAdminConnection();
             return adminConnection.createProfile(connectionProfileName, connectOptions);
         })
@@ -99,12 +109,26 @@ class Deploy {
         })
         .then((result) => {
             if (updateBusinessNetwork === false) {
-                console.log('Deploying business network definition. This may take a minute...');
+                spinner = ora('Deploying business network definition. This may take a minute...').start();
                 return adminConnection.deploy(businessNetworkDefinition);
             } else {
-                console.log('Updating business network definition. This may take a few seconds...');
+                spinner = ora('Updating business network definition. This may take a few seconds...').start();
                 return adminConnection.update(businessNetworkDefinition);
             }
+        }).then((result) => {
+            spinner.succeed();
+            console.log();
+
+            return result;
+        }).catch((error) => {
+
+            if (spinner) {
+                spinner.fail();
+            }
+
+            console.log();
+
+            throw error;
         });
     }
 

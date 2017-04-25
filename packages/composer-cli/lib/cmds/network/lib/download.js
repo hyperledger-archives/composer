@@ -14,18 +14,23 @@
 
 'use strict';
 
-const Admin = require('composer-admin');
-const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
+
+// const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
 const homedir = require('homedir');
-
+// const cmdUtil = require('../../utils/cmdutils');
+const sanitize = require('sanitize-filename');
 const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
 const CONNECTION_FILE = 'connection.json';
 
 const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
+const ora = require('ora');
+const chalk = require('chalk');
+
+let businessNetworkConnection ;
 /**
  * <p>
  * Composer deploy command
@@ -33,7 +38,7 @@ const DEFAULT_PROFILE_NAME = 'defaultProfile';
  * <p><a href="diagrams/Deploy.svg"><img src="diagrams/deploy.svg" style="width:100%;"/></a></p>
  * @private
  */
-class Deploy {
+class Download {
 
   /**
     * Command process for deploy command
@@ -41,23 +46,18 @@ class Deploy {
     * @param {boolean} updateOption true if the network is to be updated
     * @return {Promise} promise when command complete
     */
-    static handler(argv, updateOption) {
+    static handler(argv) {
 
-        let updateBusinessNetwork = (updateOption === true)
-                                  ? true
-                                  : false;
+
         let businessNetworkDefinition;
-
-        let connectOptions;
-        let adminConnection;
-        let enrollId;
-        let enrollSecret;
-        let connectionProfileName = Deploy.getDefaultProfileName(argv);
         let businessNetworkName;
+        let spinner;
+
+        businessNetworkConnection = cmdUtil.createBusinessNetworkConnection();
 
         return (() => {
 
-            console.log ('Deploying business network from archive '+argv.archiveFile);
+
             if (!argv.enrollSecret) {
                 return cmdUtil.prompt({
                     name: 'enrollmentSecret',
@@ -74,38 +74,41 @@ class Deploy {
             }
         })()
         .then (() => {
-            enrollId = argv.enrollId;
-            enrollSecret = argv.enrollSecret;
-            let archiveFileContents = null;
-            // Read archive file contents
-            archiveFileContents = Deploy.getArchiveFileContents(argv.archiveFile);
-            // Get the connection ioptions
-            connectOptions = Deploy.getConnectOptions(connectionProfileName);
-            return BusinessNetworkDefinition.fromArchive(archiveFileContents);
+            spinner = ora('Downloading deployed Business Network Archive').start();
+            return businessNetworkConnection.connect(Download.getDefaultProfileName(argv), argv.businessNetworkName, argv.enrollId, argv.enrollSecret)
+                .then((result) => {
+                    businessNetworkDefinition = result;
+                    return businessNetworkConnection.disconnect();
+                });
         })
-        .then ((result) => {
-            businessNetworkDefinition = result;
+        .then (() => {
+            spinner.succeed();
             businessNetworkName = businessNetworkDefinition.getIdentifier();
-            console.log('Business network definition:');
-            console.log('\tIdentifier: '+businessNetworkName);
-            console.log('\tDescription: '+businessNetworkDefinition.getDescription());
-            adminConnection = cmdUtil.createAdminConnection();
-            return adminConnection.createProfile(connectionProfileName, connectOptions);
-        })
-        .then ((result) => {
-            // if we are performing an update we have to actually connect to the network
-            // we want to update!
-            return adminConnection.connect(connectionProfileName, enrollId, enrollSecret, updateBusinessNetwork ? businessNetworkDefinition.getName() : null);
-        })
-        .then((result) => {
-            if (updateBusinessNetwork === false) {
-                console.log('Deploying business network definition. This may take a minute...');
-                return adminConnection.deploy(businessNetworkDefinition);
-            } else {
-                console.log('Updating business network definition. This may take a few seconds...');
-                return adminConnection.update(businessNetworkDefinition);
+            console.log(chalk.blue.bold('Business network definition:'));
+            console.log(chalk.blue('\tIdentifier: ')+businessNetworkName);
+            console.log(chalk.blue('\tDescription: ')+businessNetworkDefinition.getDescription());
+            console.log();
+
+            if (!argv.archiveFile){
+                argv.archiveFile = sanitize(businessNetworkName,{replacement:'_'})+'.bna';
             }
-        });
+          // need to write this out to the required file now.
+            return businessNetworkDefinition.toArchive();
+        }).then ( (result) => {
+            //write the buffer to a file
+            fs.writeFileSync(argv.archiveFile,result);
+            console.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to: ')+argv.archiveFile);
+
+        }).catch( (error) => {
+            console.log(error);
+
+            if (spinner) {
+                spinner.fail();
+            }
+
+            throw error;
+        })
+        ;
     }
 
     /**
@@ -135,21 +138,6 @@ class Deploy {
     }
 
     /**
-      * Get contents from archive file
-      * @param {string} archiveFile connection profile name
-      * @return {String} archiveFileContents archive file contents
-      */
-    static getArchiveFileContents(archiveFile) {
-        let archiveFileContents;
-        if (fs.existsSync(archiveFile)) {
-            archiveFileContents = fs.readFileSync(archiveFile);
-        } else {
-            throw new Error('Archive file '+archiveFile+' does not exist.');
-        }
-        return archiveFileContents;
-    }
-
-    /**
       * Get default profile name
       * @param {argv} argv program arguments
       * @return {String} defaultConnection profile name
@@ -160,4 +148,4 @@ class Deploy {
 
 }
 
-module.exports = Deploy;
+module.exports = Download;

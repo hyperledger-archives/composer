@@ -21,18 +21,6 @@
  * @module composer-common
  */
 
-/* istanbul ignore next */
-if (!nodeHasNewBufferVersion()) {
-    const originalBufferFrom = Buffer.from;
-    const newBufferFrom = function (str, encoding) {
-        if (arguments.length === 2 && typeof str === 'string' && encoding === 'base64') {
-            return new Buffer(str, encoding);
-        }
-        return originalBufferFrom.apply(null, arguments);
-    };
-    Object.defineProperty(Buffer, 'from', { value: newBufferFrom });
-}
-
 /**
  * Check whether we're running in a version of node which has the updated Buffer implementation
  * Used above to fall back to the old version if needed.
@@ -43,8 +31,21 @@ function nodeHasNewBufferVersion() {
         Buffer.from('b2xkbm9kZQ==', 'base64');
         return true;
     } catch (e) {
+        /* istanbul ignore next */
         return false;
     }
+}
+
+/* istanbul ignore next */
+if (!nodeHasNewBufferVersion()) {
+    const originalBufferFrom = Buffer.from;
+    const newBufferFrom = function (str, encoding) {
+        if (arguments.length === 2 && typeof str === 'string' && encoding === 'base64') {
+            return new Buffer(str, encoding);
+        }
+        return originalBufferFrom.apply(null, arguments);
+    };
+    Object.defineProperty(Buffer, 'from', { value: newBufferFrom });
 }
 
 module.exports.AclFile = require('./lib/acl/aclfile');
@@ -60,6 +61,7 @@ module.exports.Connection = require('./lib/connection');
 module.exports.ConnectionManager = require('./lib/connectionmanager');
 module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanager');
 module.exports.ConnectionProfileStore = require('./lib/connectionprofilestore');
+module.exports.ConsoleLogger = require('./lib/log/consolelogger');
 module.exports.EnvConnectionProfileStore = require('./lib/envconnectionprofilestore');
 module.exports.Factory = require('./lib/factory');
 module.exports.FileWallet = require('./lib/filewallet');
@@ -87,3 +89,4 @@ module.exports.TypescriptVisitor = require('./lib/codegen/fromcto/typescript/typ
 module.exports.Util = require('./lib/util');
 module.exports.Wallet = require('./lib/wallet');
 module.exports.CodeGen = require('./lib/codegen/codegen.js');
+module.exports.version = require('./package.json');

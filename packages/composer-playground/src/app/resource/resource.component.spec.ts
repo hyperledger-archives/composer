@@ -43,6 +43,7 @@ class MockCodeMirrorComponent {
 describe('ResourceComponent', () => {
   let component: ResourceComponent;
   let fixture: ComponentFixture<ResourceComponent>;
+  let element: HTMLElement;
 
   let mockNgbActiveModal;
   let mockClientService;
@@ -124,7 +125,6 @@ describe('ResourceComponent', () => {
       component['retrieveResourceType'] = sandbox.stub();
       component['generateResource'] = sandbox.stub();
       component['onDefinitionChanged'] = sandbox.stub();
-      component['getResourceJSON'] = sandbox.stub();
       mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
       mockClassDeclaration.getFullyQualifiedName.returns('org.acme.fqn');
       mockIntrospector.getClassDeclarations.returns([mockClassDeclaration]);
@@ -141,8 +141,6 @@ describe('ResourceComponent', () => {
       component['retrieveResourceType'].should.be.called;
       component['editMode'].should.be.called;
       component['generateResource'].should.be.called;
-      component['onDefinitionChanged'].should.be.called;
-      component['getResourceJSON'].should.be.called;
     }));
 
     it('should prepare to edit a resource', fakeAsync(() => {
@@ -151,8 +149,6 @@ describe('ResourceComponent', () => {
       tick();
       component['retrieveResourceType'].should.be.called;
       component['editMode'].should.be.called;
-      component['onDefinitionChanged'].should.be.called;
-      component['getResourceJSON'].should.be.called;
       component['generateResource'].should.not.be.called;
     }));
 
@@ -164,7 +160,6 @@ describe('ResourceComponent', () => {
       component['retrieveResourceType'].should.not.be.called;
       component['editMode'].should.not.be.called;
       component['onDefinitionChanged'].should.not.be.called;
-      component['getResourceJSON'].should.not.be.called;
       component['generateResource'].should.not.be.called;
     }));
   });
@@ -182,17 +177,6 @@ describe('ResourceComponent', () => {
     });
   });
 
-  describe('#generateSampleData', () => {
-    it('should call generateResource and onDefinitionChanged', () => {
-      sandbox.stub(component, 'generateResource');
-      sandbox.stub(component, 'onDefinitionChanged');
-      component['generateSampleData']();
-      component['generateResource'].should.be.called;
-      component['generateResource'].should.be.calledWith(true);
-      component['onDefinitionChanged'].should.be.called;
-    });
-  });
-
   describe('#generateResource', () => {
     let mockClassDeclaration;
     let mockModelFile;
@@ -202,34 +186,70 @@ describe('ResourceComponent', () => {
       mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
       mockClassDeclaration.getModelFile.returns(mockModelFile);
       mockClassDeclaration.getName.returns('class.declaration');
-      mockSerializer.toJSON.returns({'$class': 'com.org'});
+      mockClassDeclaration.getIdentifierFieldName.returns('resourceId');
+      
     });
 
     it('should generate a valid resource', () => {
+
+      mockSerializer.toJSON.returns({'$class': 'com.org'});   
+      mockSerializer.fromJSON.returns(mockResource); 
+      mockResource.validate = sandbox.stub(); 
       component['resourceDeclaration'] = mockClassDeclaration;
+
+      // should start clean
+      should.not.exist(component['definitionError']);
+
+      // run method
       component['generateResource']();
+
+      // should not result in definitionError
+      should.not.exist(component['definitionError']);
+
+      // resourceDefinition should be set as per serializer.toJSON output
       component['resourceDefinition'].should.equal('{\n  "$class": "com.org"\n}');
+
+      // We use the following internal calls
+      mockFactory.newResource.should.be.called;
+      component.onDefinitionChanged.should.be.calledOn;
     });
 
-    it('should set definitionError', () => {
+    it('should set definitionError on serializer fail', () => {
+      component['resourceDeclaration'] = mockClassDeclaration;
+      
+      // Set serializer to throw
       mockSerializer.toJSON = () => {
         throw new Error('error');
       };
-      component['resourceDeclaration'] = mockClassDeclaration;
-      component['generateResource']();
-      should.exist(component['defitionError']);
-    });
-  });
 
-  describe('#getResourceJSON', () => {
-    it('should return stringified json', () => {
-      let json = {
-        '$class': 'com.acme',
+      // should start clean
+      should.not.exist(component['definitionError']);
+      
+      // Run method
+      component['generateResource']();
+
+      // should be in error state
+      should.exist(component['definitionError']);
+    });
+
+    it('should set definitionError on validation fail', () => {
+      mockSerializer.toJSON.returns({'$class': 'com.org'});   
+      mockSerializer.fromJSON.returns(mockResource); 
+      component['resourceDeclaration'] = mockClassDeclaration;
+
+      // Set validate to throw
+      mockResource.validate = () => {
+        throw new Error('error');
       };
-      component['resource'] = mockResource;
-      mockSerializer.toJSON.returns(json);
-      const result = component['getResourceJSON']();
-      result.should.equal(JSON.stringify(json, null, 2));
+
+      // should start clean
+      should.not.exist(component['definitionError']);
+
+      // Run method
+      component['generateResource']();
+
+      // should be in error state
+      should.exist(component['definitionError']);
     });
   });
 
@@ -247,7 +267,7 @@ describe('ResourceComponent', () => {
       sandbox.restore();
     });
 
-    it('should add a resource', fakeAsync(() => {
+    it('should call registry add and close the modal', fakeAsync(() => {
       component['editMode'] = sandbox.stub().returns(false);
       component['resourceDefinition'] = '{"class": "org.acme"}';
       mockSerializer.fromJSON.returns(mockResource);
@@ -265,7 +285,7 @@ describe('ResourceComponent', () => {
       mockNgbActiveModal.close.should.be.called;
     }));
 
-    it('should update a resource', fakeAsync(() => {
+    it('should call registry update and close the modal', fakeAsync(() => {
       component['editMode'] = sandbox.stub().returns(true);
       component['resourceDefinition'] = '{"class": "org.acme"}';
       mockSerializer.fromJSON.returns(mockResource);
@@ -283,12 +303,12 @@ describe('ResourceComponent', () => {
       mockNgbActiveModal.close.should.be.called;
     }));
 
-    it('should set definitionError', fakeAsync(() => {
+    it('should set definitionError if error thrown', fakeAsync(() => {
       component['resourceDefinition'] = 'will error';
 
       component['addOrUpdateResource']();
       tick();
-      should.exist(component['defitionError']);
+      should.exist(component['definitionError']);
       component['actionInProgress'].should.be.false;
     }));
   });
@@ -304,14 +324,59 @@ describe('ResourceComponent', () => {
       mockSerializer.fromJSON.should.be.called;
       mockSerializer.fromJSON.should.be.calledWith({'$class': 'org.acme'});
       mockResource.validate.should.be.called;
-      should.not.exist(component['defitionError']);
+      should.not.exist(component['definitionError']);
     });
 
     it('should set definitionError', () => {
       component['resourceDefinition'] = 'will error';
       component['onDefinitionChanged']();
-      should.exist(component['defitionError']);
+      should.exist(component['definitionError']);
     });
+
+    it('should show definition errors to users', () => {
+      
+      // Insert definition error
+      component['definitionError'] = 'Error: forced error content';
+      
+      // Check that the UI is showing the error
+      fixture.detectChanges();      
+      element = fixture.debugElement.query(By.css('.resource-error-text')).nativeElement;
+      element.textContent.should.contain('Error: forced error content');
+
+    });
+
+     it('should disable the create resource button if definition error present', () => {
+      
+      // Insert definition error
+      component['definitionError'] = 'Error: forced error content';
+          
+      // Check that the transaction submission button is disabled in UI
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;      
+      (element as HTMLButtonElement).disabled.should.be.true;
+
+    });
+
+    it('should re-enable the create resource button if definition error is fixed', () => {
+     
+      // Insert definition error
+      component['definitionError'] = 'Error: forced error content';
+      
+      // Check that the transaction submission button is disabled
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;      
+      (element as HTMLButtonElement).disabled.should.be.true;
+
+      // Fix the definition error
+      component['definitionError'] = undefined;
+       
+      // Check that the transaction submission button is enabled
+      fixture.detectChanges();
+      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;      
+      (element as HTMLButtonElement).disabled.should.be.false;
+
+    });
+
   });
 
   describe('#retrieveResourceType', () => {
@@ -340,24 +405,6 @@ describe('ResourceComponent', () => {
     });
   });
 
-  describe('#generateDefinitionStub', () => {
-    it('should return a json schema stub', () => {
-      let registryId = 'com.acme.registry';
-      let mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
-      let mockProperty1 = sinon.createStubInstance(Property);
-      mockProperty1.getName.returns('prop1');
-      let mockProperty2 = sinon.createStubInstance(Property);
-      mockProperty2.getName.returns('prop2');
-      mockClassDeclaration.getProperties.returns([
-        mockProperty1,
-        mockProperty2
-      ]);
-
-      let result = component['generateDefinitionStub'](registryId, mockClassDeclaration);
-      result.should.equal('{\n  "$class": "com.acme.registry",\n  "prop1": "",\n  "prop2": ""\n}');
-    });
-  });
-
   describe('#retrieveResourceRegistry', () => {
     it('should return an AssetRegistry', () => {
       let registryId = 'registryId';
@@ -370,7 +417,7 @@ describe('ResourceComponent', () => {
       result.should.equal('testing');
     });
 
-    it('should return an PerticipantRegistry', () => {
+    it('should return a ParticipantRegistry', () => {
       let registryId = 'registryId';
       component['registryID'] = registryId;
       mockBusinessNetworkConnection.getParticipantRegistry.returns('testing');

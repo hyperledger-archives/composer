@@ -40,3 +40,4 @@ module.exports.AdminConnection = require('./lib/adminconnection');
  */
 module.exports.BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 module.exports.Logger = require('composer-common').Logger;
+module.exports.version = require('./package.json');

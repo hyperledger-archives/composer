@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-web",
-  "version": "0.5.6",
+  "version": "0.5.13",
   "description": "The web client connector for Fabric Composer",
   "engines": {
     "node": ">=6",
@@ -20,14 +20,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
+  "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "license-check-config": {
     "src": [
@@ -62,9 +62,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.5.6",
-    "composer-runtime": "^0.5.6",
-    "composer-runtime-web": "^0.5.6",
+    "composer-common": "^0.5.13",
+    "composer-runtime": "^0.5.13",
+    "composer-runtime-web": "^0.5.13",
     "uuid": "^3.0.1"
   }
 }

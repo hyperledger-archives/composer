@@ -56,6 +56,18 @@ describe('Factory', () => {
 
     describe('#newResource', () => {
 
+        it('should throw creating a new instance without an ID', () => {
+            (() => {
+                factory.newResource('org.acme.test', 'MyAsset', null);
+            }).should.throw(/Invalid or missing identifier/);
+        });
+
+        it('should throw creating a new instance with an ID that is just whitespace', () => {
+            (() => {
+                factory.newResource('org.acme.test', 'MyAsset', '     ');
+            }).should.throw(/Missing identifier/);
+        });
+
         it('should create a new instance with a specified ID', () => {
             let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1');
             resource.assetId.should.equal('MY_ID_1');
@@ -70,18 +82,29 @@ describe('Factory', () => {
             should.equal(resource.validate, undefined);
         });
 
-        it('should create a new instance with a specified ID and generated default data', () => {
-            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true });
+        it('should create a new instance with a specified ID and generated empty data', () => {
+            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: 'empty' });
             resource.assetId.should.equal('MY_ID_1');
             resource.newValue.should.be.a('string');
+            resource.newValue.length.should.equal(0);
             should.not.equal(resource.validate, undefined);
         });
 
-        it('should create a new instance with a specified ID and generated sample data', () => {
-            let resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true, withSampleData: true });
+        const validateSampleData = (resource) => {
             resource.assetId.should.equal('MY_ID_1');
             resource.newValue.should.be.a('string');
+            resource.newValue.length.should.not.equal(0);
             should.not.equal(resource.validate, undefined);
+        };
+
+        it('should create a new instance with a specified ID and generated sample data', () => {
+            const resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: 'sample' });
+            validateSampleData(resource);
+        });
+
+        it('should generate sample data if \'generate\' option is a boolean', () => {
+            const resource = factory.newResource('org.acme.test', 'MyAsset', 'MY_ID_1', { generate: true });
+            validateSampleData(resource);
         });
 
     });
@@ -128,7 +151,7 @@ describe('Factory', () => {
         it('should throw if concept is abstract', () => {
             (() => {
                 factory.newConcept('org.acme.test', 'AbstractConcept');
-            }).should.throw(/Cannot create abstract type org.acme.test.AbstractConcept/);
+            }).should.throw(/Cannot instantiate Abstract Type AbstractConcept in namespace org.acme.test/);
         });
 
         it('should create a new concept', () => {

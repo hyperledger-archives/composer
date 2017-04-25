@@ -16,20 +16,22 @@
 
 const debug = require('debug')('ibm-concerto');
 const Globalize = require('./globalize');
+
 const InstanceGenerator = require('./serializer/instancegenerator');
 const ValueGeneratorFactory = require('./serializer/valuegenerator');
-const Relationship = require('./model/relationship');
+const ResourceValidator = require('./serializer/resourcevalidator');
+const TypedStack = require('./serializer/typedstack');
 
+const Relationship = require('./model/relationship');
 const Resource = require('./model/resource');
 const ValidatedResource = require('./model/validatedresource');
-
 const Concept = require('./model/concept');
 const ValidatedConcept = require('./model/validatedconcept');
 
-const ResourceValidator = require('./serializer/resourcevalidator');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
-const TypedStack = require('./serializer/typedstack');
+
 const uuid = require('uuid');
+
 
 /**
  * Use the Factory to create instances of Resource: transactions, participants
@@ -60,8 +62,9 @@ class Factory {
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      * @deprecated - use newResource instead
@@ -78,13 +81,13 @@ class Factory {
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
-
         if(!id || typeof(id) !== 'string') {
             let formatter = Globalize.messageFormatter('factory-newinstance-invalididentifier');
             throw new Error(formatter({
@@ -119,39 +122,44 @@ class Factory {
         }
 
         let classDecl = modelFile.getType(type);
-
         if(classDecl.isAbstract()) {
-            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+            let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        if(classDecl.isConcept()) {
+            throw new Error('Use newConcept to create concepts ' + classDecl.getFullyQualifiedName());
         }
 
         let newObj = null;
         options = options || {};
         if(options.disableValidation) {
-            newObj = new Resource(this.modelManager,ns,type,id);
+            newObj = new Resource(this.modelManager, ns, type, id);
         }
         else {
-            newObj = new ValidatedResource(this.modelManager,ns,type,id, new ResourceValidator());
+            newObj = new ValidatedResource(this.modelManager, ns, type, id, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
 
         if(options.generate) {
-            let visitor = new InstanceGenerator();
-            const generator = options.withSampleData ? ValueGeneratorFactory.sample() : ValueGeneratorFactory.default();
-            let parameters = {
+            const visitor = new InstanceGenerator();
+            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
+            const parameters = {
                 stack: new TypedStack(newObj),
                 modelManager: this.modelManager,
                 factory: this,
                 valueGenerator: generator
             };
+
             classDecl.accept(visitor, parameters);
         }
 
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
-        if(idField) {
-            newObj[idField] = id;
-        }
-
+        newObj[idField] = id;
         debug('Factory.newResource created %s', id );
         return newObj;
     }
@@ -163,8 +171,9 @@ class Factory {
      * @param {Object} [options] - an optional set of options
      * @param {boolean} [options.disableValidation] - pass true if you want the factory to
      * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
      * @throws {ModelException} if the type is not registered with the ModelManager
      */
@@ -189,7 +198,15 @@ class Factory {
         let classDecl = modelFile.getType(type);
 
         if(classDecl.isAbstract()) {
-            throw new Error('Cannot create abstract type ' + classDecl.getFullyQualifiedName());
+            let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
+            throw new Error(formatter({
+                namespace: ns,
+                type: type
+            }));
+        }
+
+        if(!classDecl.isConcept()) {
+            throw new Error('Class is not a concept ' + classDecl.getFullyQualifiedName());
         }
 
         let newObj = null;
@@ -203,11 +220,13 @@ class Factory {
         newObj.assignFieldDefaults();
 
         if(options.generate) {
-            let visitor = new InstanceGenerator();
-            let parameters = {
+            const visitor = new InstanceGenerator();
+            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
+            const parameters = {
                 stack: new TypedStack(newObj),
                 modelManager: this.modelManager,
-                factory: this
+                factory: this,
+                valueGenerator: generator
             };
             classDecl.accept(visitor, parameters);
         }
@@ -218,7 +237,7 @@ class Factory {
 
     /**
      * Create a new Relationship with a given namespace, type and identifier.
-`     * A relationship is a typed pointer to an instance. I.e the relationship
+     * A relationship is a typed pointer to an instance. I.e the relationship
      * with namespace = 'org.acme', type = 'Vehicle' and id = 'ABC' creates`
      * a pointer that points at an instance of org.acme.Vehicle with the id
      * ABC.
@@ -260,8 +279,9 @@ class Factory {
      * @param {string} [id] - an optional identifier for the transaction; if you do not specify
      * one then an identifier will be automatically generated.
      * @param {Object} [options] - an optional set of options
-     * @param {boolean} [options.generate] - pass true if you want the factory to return a
-     * resource instance with generated sample data.
+     * @param {string} [options.generate] - Pass one of: <dl>
+     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
+     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} A resource for the new transaction.
      */
     newTransaction(ns, type, id, options) {

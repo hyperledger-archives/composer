@@ -28,11 +28,21 @@ let adminConnection;
 let client;
 
 /**
+ * Trick browserify by making the ID parameter to require dynamic.
+ * @param {string} id The module ID.
+ * @return {*} The module.
+ */
+function dynamicRequire(id) {
+    return require(id);
+}
+
+/**
  * A class containing test utilities for use in BusinessNetworkConnection system tests.
  *
  * @private
  */
 class TestUtil {
+
 
     /**
      * Check to see if running under a web browser.
@@ -51,11 +61,19 @@ class TestUtil {
     }
 
     /**
+     * Check to see if running in proxy mode.
+     * @return {boolean} True if running in proxy mode, false if not.
+     */
+    static isProxy() {
+        return process.env.npm_lifecycle_event === 'systest:proxy';
+    }
+
+    /**
      * Check to see if running in Hyperledger Fabric mode.
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabric() {
-        return !TestUtil.isWeb() && !TestUtil.isEmbedded();
+        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy();
     }
 
     /**
@@ -67,9 +85,9 @@ class TestUtil {
      */
     static waitForPort(hostname, port) {
         let waitTime = 30;
-        if (process.env.CONCERTO_PORT_WAIT_SECS) {
-            waitTime = parseInt(process.env.CONCERTO_PORT_WAIT_SECS);
-            console.log('CONCERTO_PORT_WAIT_SECS set, using: ', waitTime);
+        if (process.env.COMPOSER_PORT_WAIT_SECS) {
+            waitTime = parseInt(process.env.COMPOSER_PORT_WAIT_SECS);
+            console.log('COMPOSER_PORT_WAIT_SECS set, using: ', waitTime);
         }
         return new Promise(function (resolve, reject) {
             let testConnect = function (count) {
@@ -150,9 +168,39 @@ class TestUtil {
                     adminOptions = {
                         type: 'embedded'
                     };
-                } else {
+                } else if (TestUtil.isProxy()) {
+                    // A whole bunch of dynamic requires to trick browserify.
+                    const ConnectorServer = dynamicRequire('composer-connector-server');
+                    const EmbeddedConnectionManager = dynamicRequire('composer-connector-embedded');
+                    const FSConnectionProfileStore = dynamicRequire('composer-common').FSConnectionProfileStore;
+                    const fs = dynamicRequire('fs');
+                    const ProxyConnectionManager = dynamicRequire('composer-connector-proxy');
+                    const socketIO = dynamicRequire('socket.io');
+                    // We are using the embedded connector, but we configure it to route through the
+                    // proxy connector and connector server.
+                    adminOptions = {
+                        type: 'embedded'
+                    };
+                    const connectionProfileStore = new FSConnectionProfileStore(fs);
+                    ConnectionProfileManager.registerConnectionManager('embedded', ProxyConnectionManager);
+                    const connectionProfileManager = new ConnectionProfileManager(connectionProfileStore);
+                    // Since we're a single process, we have to force the embedded connection manager into
+                    // the connection profile manager that the connector server is using.
+                    const connectionManager = new EmbeddedConnectionManager(connectionProfileManager);
+                    connectionProfileManager.getConnectionManager = () => {
+                        return connectionManager;
+                    };
+                    const io = socketIO(15699);
+                    io.on('connect', (socket) => {
+                        console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' connected`);
+                        new ConnectorServer(connectionProfileStore, connectionProfileManager, socket);
+                    });
+                    io.on('disconnect', (socket) => {
+                        console.log(`Client with ID '${socket.id}' on host '${socket.request.connection.remoteAddress}' disconnected`);
+                    });
+                } else if (TestUtil.isHyperledgerFabric()) {
                     // hlf need to decide if v1 or 0.6
-                    let keyValStore = path.resolve(homedir(), '.concerto-credentials', 'concerto-systests');
+                    let keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
                     let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
                     if (process.env.SYSTEST.match('^hlfv1')) {
@@ -163,7 +211,7 @@ class TestUtil {
                                 orderers: [
                                     {
                                         url: 'grpcs://localhost:7050',
-                                        cert: './systestv1/tls/orderer/ca-cert.pem',
+                                        cert: './hlfv1/tls/orderer/ca-cert.pem',
                                         hostnameOverride: 'orderer0'
                                     }
                                 ],
@@ -172,13 +220,13 @@ class TestUtil {
                                     {
                                         requestURL: 'grpcs://localhost:7051',
                                         eventURL: 'grpcs://localhost:7053',
-                                        cert: './systestv1/tls/peers/peer0/ca-cert.pem',
+                                        cert: './hlfv1/tls/peers/peer0/ca-cert.pem',
                                         hostnameOverride: 'peer0'
                                     },
                                     {
                                         requestURL: 'grpcs://localhost:7056',
                                         eventURL: 'grpcs://localhost:7058',
-                                        cert: './systestv1/tls/peers/peer1/ca-cert.pem',
+                                        cert: './hlfv1/tls/peers/peer1/ca-cert.pem',
                                         hostnameOverride: 'peer1'
                                     }
                                 ],
@@ -222,23 +270,25 @@ class TestUtil {
                             eventHubURL: 'grpc://localhost:7053'
                         };
                     }
+                } else {
+                    throw new Error('I do not know what kind of tests you want me to run!');
                 }
-                if (process.env.CONCERTO_DEPLOY_WAIT_SECS) {
-                    adminOptions.deployWaitTime = parseInt(process.env.CONCERTO_DEPLOY_WAIT_SECS);
-                    console.log('CONCERTO_DEPLOY_WAIT_SECS set, using: ', adminOptions.deployWaitTime);
+                if (process.env.COMPOSER_DEPLOY_WAIT_SECS) {
+                    adminOptions.deployWaitTime = parseInt(process.env.COMPOSER_DEPLOY_WAIT_SECS);
+                    console.log('COMPOSER_DEPLOY_WAIT_SECS set, using: ', adminOptions.deployWaitTime);
                 }
-                if (process.env.CONCERTO_INVOKE_WAIT_SECS) {
-                    adminOptions.invokeWaitTime = parseInt(process.env.CONCERTO_INVOKE_WAIT_SECS);
-                    console.log('CONCERTO_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
+                if (process.env.COMPOSER_INVOKE_WAIT_SECS) {
+                    adminOptions.invokeWaitTime = parseInt(process.env.COMPOSER_INVOKE_WAIT_SECS);
+                    console.log('COMPOSER_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
                 console.log('Calling AdminConnection.createProfile() ...');
-                return adminConnection.createProfile('concerto-systests', adminOptions);
+                return adminConnection.createProfile('composer-systests', adminOptions);
             })
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
                 console.log('Calling AdminConnection.connect() ...');
                 let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
-                return adminConnection.connect('concerto-systests', 'admin', password);
+                return adminConnection.connect('composer-systests', 'admin', password);
             })
             .then(function () {
                 console.log('Called AdminConnection.connect()');
@@ -303,8 +353,8 @@ class TestUtil {
             enrollmentID = enrollmentID || 'admin';
             let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
             enrollmentSecret = enrollmentSecret || password;
-            console.log(`Calling Client.connect('concerto-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
-            return thisClient.connect('concerto-systests', network, enrollmentID, enrollmentSecret);
+            console.log(`Calling Client.connect('composer-systest', '${network}', '${enrollmentID}', '${enrollmentSecret}') ...`);
+            return thisClient.connect('composer-systests', network, enrollmentID, enrollmentSecret);
         })
         .then(() => {
             return thisClient;

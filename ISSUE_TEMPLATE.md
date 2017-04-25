@@ -22,8 +22,8 @@
 
 ## Existing issues
 <!-- Have you searched for any existing issues or are their any similar issues that you've found? -->
-- [ ] [StackOverflow issues](http://stackoverflow.com/tags/fabric-composer)
-- [ ] [GitHub Issues](https://github.com/fabric-composer/fabric-composer/issues)
+- [ ] [Stack Overflow issues](http://stackoverflow.com/tags/fabric-composer)
+- [ ] [GitHub Issues](https://github.com/hyperledger/composer/issues)
 - [ ] [Rocket Chat history](https://chat.hyperledger.org/channel/fabric-composer)
 
 <!-- please include any links to issues here -->

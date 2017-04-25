@@ -15,14 +15,22 @@
 'use strict';
 
 /**
- * Inflate an error that was serialized using serializerr back into an Error
- * instance of the correct type.
- * @param {object} error An error that was serialized using serializerr.
- * @return {Error} The inflated error.
+ * Utility methods for the proxy connector.
  */
-function inflaterr(error) {
-    let result = global[error.name](error.message);
-    result.stack = error.stack;
-    return result;
+class ProxyUtil {
+
+    /**
+     * Inflate an error that was serialized using serializerr back into an Error
+     * instance of the correct type.
+     * @param {object} error An error that was serialized using serializerr.
+     * @return {Error} The inflated error.
+     */
+    static inflaterr(error) {
+        let result = global[error.name](error.message);
+        result.stack = error.stack;
+        return result;
+    }
+
 }
-module.exports.inflaterr = inflaterr;
+
+module.exports = ProxyUtil;

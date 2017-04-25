@@ -66,7 +66,7 @@ describe('Model Tests', function(){
             let factory = new Factory(modelManager);
 
             // attempt to create an abstract asset
-            assert.throws( function() {factory.newResource('org.acme.base', 'AbstractAsset', '123' );}, /.+Cannot create abstract type org.acme.base.AbstractAsset/, 'did not throw with expected message');
+            assert.throws( function() {factory.newResource('org.acme.base', 'AbstractAsset', '123' );}, /.+Cannot instantiate Abstract Type AbstractAsset in namespace org.acme.base/, 'did not throw with expected message');
 
             // create a new instance
             let resource = factory.newResource(
@@ -198,7 +198,7 @@ describe('Model Tests', function(){
             let json = serializer.toJSON(resource);
 
             // assert on the entire format of the JSON serialization
-            JSON.stringify(json).should.be.equal('{"$class":"org.acme.base.BaseAsset","stringProperty":"string","integerProperty":999,"doubleProperty":10,"booleanProperty":true,"dateTimeProperty":"2016-10-11T02:30:26.571Z","longProperty":100,"stateProperty":"GOLD","stringArrayProperty":["string"],"integerArrayProperty":[999],"doubleArrayProperty":[999],"booleanArrayProperty":[true,false],"dateTimeArrayProperty":["2016-10-11T02:30:26.571Z"],"longArrayProperty":[1,2,3],"stateArrayProperty":["GOLD","SILVER"],"singlePerson":"DAN","personArray":["DAN","DAN"],"myPerson":{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}},"myPeople":[{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}},{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}}]}');
+            JSON.stringify(json).should.be.equal('{"$class":"org.acme.base.BaseAsset","stringProperty":"string","integerProperty":999,"doubleProperty":10,"booleanProperty":true,"dateTimeProperty":"2016-10-11T02:30:26.571Z","longProperty":100,"stateProperty":"GOLD","stringArrayProperty":["string"],"integerArrayProperty":[999],"doubleArrayProperty":[999],"booleanArrayProperty":[true,false],"dateTimeArrayProperty":["2016-10-11T02:30:26.571Z"],"longArrayProperty":[1,2,3],"stateArrayProperty":["GOLD","SILVER"],"singlePerson":"resource:org.acme.base.Person#DAN","personArray":["resource:org.acme.base.Person#DAN","resource:org.acme.base.Person#DAN"],"myPerson":{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}},"myPeople":[{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}},{"$class":"org.acme.base.Person","stringProperty":"P1","address":{"$class":"org.acme.base.UnitedStatesAddress","zipcode":"CA","street":"Test","city":"Winchester","country":"UK"}}]}');
 
             // check we can convert back to an object
             const newResource = serializer.fromJSON(json);

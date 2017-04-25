@@ -14,7 +14,9 @@
 
 'use strict';
 
-let LOG;
+const Logger = require('./log/logger');
+
+const LOG = Logger.getLog('ConnectionProfileManager');
 
 const connectionManagerLoaders = [];
 const connectionManagerClasses = {};
@@ -55,9 +57,6 @@ class ConnectionProfileManager {
      * @param {ConnectionProfileStore} connectionProfileStore - Node.js FS implementation, for example BrowserFS
      */
     constructor(connectionProfileStore) {
-        if (!LOG) {
-            LOG = require('./log/logger').getLog('common/ConnectionProfileManager');
-        }
         LOG.info('constructor','Created a new ConnectionProfileManager', connectionProfileStore);
 
         if(!connectionProfileStore) {

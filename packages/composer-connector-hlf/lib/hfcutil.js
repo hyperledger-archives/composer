@@ -370,8 +370,8 @@ class HFCUtil {
                     value: attributes[attribute]
                 });
             }
-            chain.setRegistrar(enrolledMember);
-            chain.register(registerRequest, (error, userSecret) => {
+            const memberServices = chain.getMemberServices();
+            memberServices.register(registerRequest, enrolledMember, (error, userSecret) => {
                 if (error) {
                     LOG.error(method, 'Register request failed', error);
                     return reject(error);

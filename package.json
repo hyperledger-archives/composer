@@ -7,9 +7,9 @@
     "semver": "^5.3.0",
     "sleep-promise": "^2.0.0"
   },
-  "name": "fabric-composer",
+  "name": "composer",
   "description": "You must install [Lerna](https://lernajs.io) to build this multi-package repository.",
-  "version": "0.5.6",
+  "version": "0.5.13",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -23,13 +23,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fabric-composer/fabric-composer.git"
+    "url": "https://github.com/hyperledger/composer.git"
   },
   "keywords": [
     "blockchain",
     "hyperledger",
     "solutions"
   ],
-  "author": "Fabric Composer",
-  "license": "Apache-2"
+  "author": "Hyperledger Composer",
+  "license": "Apache-2.0"
 }

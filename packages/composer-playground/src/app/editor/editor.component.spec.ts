@@ -458,9 +458,8 @@ describe('EditorComponent', () => {
     }));
   });
 
-  //TODO: workout how to do this
-  xdescribe('openExportModal', () => {
-    it('should export file', fakeAsync(() => {
+  describe('exportBNA', () => {
+    it('should export file', (done) => {
       mockClientService.getBusinessNetwork.returns({
         toArchive: sinon.stub().returns(Promise.resolve('my data'))
       });
@@ -471,12 +470,13 @@ describe('EditorComponent', () => {
         next: sinon.stub()
       };
 
-      component.openExportModal();
+      component.exportBNA();
 
-      tick();
-
-      mockAlertService.successStatus$.next.should.have.been.called;
-    }));
+      fixture.whenStable().then(() => {
+        mockAlertService.successStatus$.next.should.have.been.called;
+        done();
+      });
+    });
   });
 
   describe('openAddFileModal', () => {
@@ -630,9 +630,82 @@ describe('EditorComponent', () => {
 
       component['editActive'].should.equal(true);
     });
+
+    it('should make edit fields visible when true', () => {
+      component['editActive'] = false;
+      component['editingPackage'] = false;
+      component['deployedPackageName'] = 'TestPackageName';
+      component['deployedPackageVersion'] = '1.0.0';
+      fixture.detectChanges();
+
+      // Expect to see "deployedPackageName" visible within class="business-network-details"
+      // Expect to have "edit" option available within class="business-network-details"
+      let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
+      element.textContent.should.contain('TestPackageName');
+      element.innerHTML.should.contain('id="editFileButton"');
+
+      // Flip editActive boolean
+      component['editActive'] = true;
+      fixture.detectChanges();
+
+      // Expect three visible edit fields:
+      // 1) Name (input text)
+      // 2) Version (input text)
+      // 3) Full package (button)
+      element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
+      element.innerHTML.should.not.contain('id="editFileButton"');
+      element.innerHTML.should.contain('id="editPackageButton"');
+      element.textContent.should.contain('Name');
+      element.textContent.should.contain('Version');
+      element.textContent.should.contain('View/edit full metadata in package.json');
+
+    });
+
+    it('should make edit fields interactable when true', () => {
+      component['editActive'] = true;
+
+      fixture.detectChanges();
+
+      // Expect edit fields:
+      // 1) Name & Version (input text) should not be editable (focused)
+      // 3) Full package (button) to be enabled
+
+      let editItem = fixture.debugElement.query(By.css('#editName')).nativeElement;
+      (editItem as HTMLInputElement).isContentEditable.should.be.false;
+
+      editItem = fixture.debugElement.query(By.css('#editVersion')).nativeElement;
+      (editItem as HTMLInputElement).isContentEditable.should.be.false;
+
+      editItem = fixture.debugElement.query(By.css('#editPackageButton')).nativeElement;
+      (editItem as HTMLButtonElement).disabled.should.be.false;
+
+    });
+
+    it('should only show package information if editingPackage==true', () => {
+      component['editingPackage'] = true;
+      component['deployedPackageName'] = 'TestPackageName';
+
+      fixture.detectChanges();
+
+      // Grab element
+      let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
+
+      // Should contain package name edit only
+      element.textContent.should.contain('Editing package.json');
+
+      // Should not contain any buttons/text entry
+      should.not.exist(fixture.debugElement.query(By.css('#editName')));
+      should.not.exist(fixture.debugElement.query(By.css('#editVersion')));
+      should.not.exist(fixture.debugElement.query(By.css('#editPackageButton')));
+    });
+
   });
 
   describe('editPackageName', () => {
+    beforeEach(() => {
+      mockClientService.setBusinessNetworkName.reset();
+    });
+
     it('should edit the package name', () => {
       component['inputPackageName'] = 'my name';
 
@@ -642,9 +715,22 @@ describe('EditorComponent', () => {
       component['editActive'].should.equal(false);
       component['deployedPackageName'].should.equal('my name');
     });
+
+    it('should not edit the package name if not changed', () => {
+      component['deployedPackageName'] = 'my name';
+      component['inputPackageName'] = 'my name';
+
+      component.editPackageName();
+
+      mockClientService.setBusinessNetworkName.should.not.have.been.called;
+    });
   });
 
   describe('editPackageVersion', () => {
+    beforeEach(() => {
+      mockClientService.setBusinessNetworkVersion.reset();
+    });
+
     it('should edit the package version', () => {
       component['inputPackageVersion'] = 'my version';
 
@@ -654,16 +740,26 @@ describe('EditorComponent', () => {
       component['editActive'].should.equal(false);
       component['deployedPackageVersion'].should.equal('my version');
     });
+
+    it('should not edit the package version if not changed', () => {
+      component['deployedPackageVersion'] = 'my version';
+      component['inputPackageVersion'] = 'my version';
+
+      component.editPackageVersion();
+
+      mockClientService.setBusinessNetworkVersion.should.not.have.been.called;
+    });
   });
 
   describe('hide edit', () => {
-    it('should hide edit', () => {
-      let mockToggleEdit = sinon.stub(component, 'toggleEditActive');
+    it('should set editActive false, and editingPackage true', () => {
+      component['editingPackage'] = false;
+      component['editActive'] = true;
 
       component.hideEdit();
 
-      mockToggleEdit.should.have.been.called;
       component['editingPackage'].should.equal(true);
+      component['editActive'].should.equal(false);
     });
   });
 });

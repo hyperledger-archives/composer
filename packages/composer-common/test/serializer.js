@@ -16,22 +16,46 @@
 
 const Factory = require('../lib/factory');
 const ModelManager = require('../lib/modelmanager');
+const Relationship = require('../lib/model/relationship');
 const Resource = require('../lib/model/resource');
-const ResourceValidator = require('../lib/serializer/resourcevalidator');
 const Serializer = require('../lib/serializer');
+
 require('chai').should();
 const sinon = require('sinon');
 
 describe('Serializer', () => {
 
     let sandbox;
-    let mockFactory;
-    let mockModelManager;
+    let factory;
+    let modelManager;
+    let serializer;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockFactory = sinon.createStubInstance(Factory);
-        mockModelManager = sinon.createStubInstance(ModelManager);
+
+        modelManager = new ModelManager();
+        modelManager.addModelFile(`
+        namespace org.acme.sample
+
+        asset SampleAsset identified by assetId {
+        o String assetId
+        --> SampleParticipant owner
+        o String value
+        }
+
+        participant SampleParticipant identified by participantId {
+        o String participantId
+        o String firstName
+        o String lastName
+        }
+
+        transaction SampleTransaction identified by transactionId {
+        o String transactionId
+        --> SampleAsset asset
+        o String newValue
+        }`);
+        factory = new Factory(modelManager);
+        serializer = new Serializer(factory, modelManager);
     });
 
     afterEach(() => {
@@ -42,13 +66,13 @@ describe('Serializer', () => {
 
         it('should throw if factory not specified', () => {
             (() => {
-                new Serializer(null, mockModelManager);
+                new Serializer(null, modelManager);
             }).should.throw(/Factory cannot be null/);
         });
 
         it('should throw if modelManager not specified', () => {
             (() => {
-                new Serializer(mockFactory, null);
+                new Serializer(factory, null);
             }).should.throw(/ModelManager cannot be null/);
         });
 
@@ -57,7 +81,6 @@ describe('Serializer', () => {
     describe('#toJSON', () => {
 
         it('should throw if resource not a Resource', () => {
-            let serializer = new Serializer(mockFactory, mockModelManager);
             (() => {
                 serializer.toJSON([{}]);
             }).should.throw(/only accepts instances of Resource/);
@@ -65,67 +88,54 @@ describe('Serializer', () => {
 
         it('should throw if the class declaration cannot be found', () => {
             let mockResource = sinon.createStubInstance(Resource);
-            let serializer = new Serializer(mockFactory, mockModelManager);
+            mockResource.getFullyQualifiedType.returns('org.acme.sample.NoSuchAsset');
             (() => {
-                mockModelManager.getType.returns(null);
                 serializer.toJSON(mockResource);
-            }).should.throw(/Failed to find type/);
+            }).should.throw(/No type/);
         });
 
-        it('should validate if the validate flag is set to true', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            let serializer = new Serializer(mockFactory, mockModelManager);
-            let mockClassDeclaration = {
-                accept: (generator, parameters) => {
-                    parameters.writer = {
-                        getBuffer: () => { return '{}'; }
-                    };
-                }
-            };
-            sandbox.spy(mockClassDeclaration, 'accept');
-            mockModelManager.getType.returns(mockClassDeclaration);
-            serializer.toJSON(mockResource, {
-                validate: true
+        it('should validate if the validate flag is set to false', () => {
+            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.value = 'the value';
+            let json = serializer.toJSON(resource, {
+                validate: false
             });
-            sinon.assert.calledTwice(mockClassDeclaration.accept);
-            sinon.assert.calledWith(mockClassDeclaration.accept, sinon.match.instanceOf(ResourceValidator));
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
+                value: 'the value'
+            });
+        });
+
+        it('should throw validation errors if the validate flag is set to true', () => {
+            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            (() => {
+                serializer.toJSON(resource, {
+                    validate: true
+                });
+            }).should.throw(/missing required field/);
         });
 
         it('should not validate if the validate flag is set to false', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            let serializer = new Serializer(mockFactory, mockModelManager);
-            let mockClassDeclaration = {
-                accept: (generator, parameters) => {
-                    parameters.writer = {
-                        getBuffer: () => { return '{}'; }
-                    };
-                }
-            };
-            sandbox.spy(mockClassDeclaration, 'accept');
-            mockModelManager.getType.returns(mockClassDeclaration);
-            serializer.toJSON(mockResource, {
+            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            let json = serializer.toJSON(resource, {
                 validate: false
             });
-            sinon.assert.calledOnce(mockClassDeclaration.accept);
-            sinon.assert.neverCalledWith(mockClassDeclaration.accept, sinon.match.instanceOf(ResourceValidator));
+            json.should.deep.equal({
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1'
+            });
         });
 
         it('should handle an error parsing the generated JSON', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            let serializer = new Serializer(mockFactory, mockModelManager);
-            let mockClassDeclaration = {
-                accept: (generator, parameters) => {
-                    parameters.writer = {
-                        getBuffer: () => { return '{}'; }
-                    };
-                }
-            };
-            sandbox.spy(mockClassDeclaration, 'accept');
-            mockModelManager.getType.returns(mockClassDeclaration);
-            serializer.toJSON(mockResource);
+            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
+            resource.value = 'the value';
             sandbox.stub(JSON, 'parse').throws();
             (() => {
-                serializer.toJSON(mockResource);
+                serializer.toJSON(resource);
             }).should.throw(/Generated invalid JSON/);
         });
 
@@ -134,7 +144,7 @@ describe('Serializer', () => {
     describe('#fromJSON', () => {
 
         it('should throw if object is not a class', () => {
-            let serializer = new Serializer(mockFactory, mockModelManager);
+            let serializer = new Serializer(factory, modelManager);
             (() => {
                 serializer.fromJSON({});
             }).should.throw(/Does not contain a \$class type identifier/);
@@ -142,12 +152,39 @@ describe('Serializer', () => {
 
         it('should throw if the class declaration cannot be found', () => {
             let mockResource = sinon.createStubInstance(Resource);
-            mockResource.$class = 'com.ibm.test.Asset';
-            let serializer = new Serializer(mockFactory, mockModelManager);
+            mockResource.$class = 'org.acme.sample.NoSuchAsset';
+            let serializer = new Serializer(factory, modelManager);
             (() => {
-                mockModelManager.getType.returns(null);
                 serializer.fromJSON(mockResource);
-            }).should.throw(/Failed to find type/);
+            }).should.throw(/No type/);
+        });
+
+        it('should deserialize a valid asset', () => {
+            let json = {
+                $class: 'org.acme.sample.SampleAsset',
+                assetId: '1',
+                owner: 'resource:org.acme.sample.SampleParticipant#alice@email.com',
+                value: 'the value'
+            };
+            let resource = serializer.fromJSON(json);
+            resource.should.be.an.instanceOf(Resource);
+            resource.assetId.should.equal('1');
+            resource.owner.should.be.an.instanceOf(Relationship);
+            resource.value.should.equal('the value');
+        });
+
+        it('should deserialize a valid transaction', () => {
+            let json = {
+                $class: 'org.acme.sample.SampleTransaction',
+                asset: 'resource:org.acme.sample.SampleAsset#1',
+                newValue: 'the value'
+            };
+            let resource = serializer.fromJSON(json);
+            resource.should.be.an.instanceOf(Resource);
+            resource.transactionId.should.exist;
+            resource.timestamp.should.exist;
+            resource.asset.should.be.an.instanceOf(Relationship);
+            resource.newValue.should.equal('the value');
         });
 
     });

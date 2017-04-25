@@ -29,41 +29,13 @@ const argv = require('yargs')
 
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const ConnectorServer = require('.');
+const ConsoleLogger = require('composer-common').ConsoleLogger;
 const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const io = require('socket.io')(argv.port);
 const Logger = require('composer-common').Logger;
-const util = require('util');
 
-Logger.setFunctionalLogger({
-    log: (level, method, msg, args) => {
-        args = args || [];
-        let formattedArguments = args.map((arg) => {
-            if (arg === Object(arg)) {
-                // It's an object, array, or function, so serialize it as JSON.
-                try {
-                    return JSON.stringify(arg);
-                } catch (e) {
-                    return arg;
-                }
-            } else {
-                return arg;
-            }
-        }).join(', ');
-        switch (level) {
-        case 'debug':
-            return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'warn':
-            return console.warn(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'info':
-            return console.info(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'verbose':
-            return console.log(util.format('%s %s %s', method, msg, formattedArguments));
-        case 'error':
-            return console.error(util.format('%s %s %s', method, msg, formattedArguments));
-        }
-    }
-});
+Logger.setFunctionalLogger(new ConsoleLogger());
 
 const LOG = Logger.getLog('ConnectorServer');
 

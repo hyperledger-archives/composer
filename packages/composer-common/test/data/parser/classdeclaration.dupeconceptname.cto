@@ -1,0 +1,11 @@
+namespace com.testing
+
+concept Concept{
+  o String id
+  o String newValue
+}
+
+concept Concept{
+  o String id
+  o String newValue
+}

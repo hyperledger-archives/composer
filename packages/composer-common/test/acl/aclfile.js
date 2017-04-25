@@ -82,6 +82,13 @@ describe('AclFile', () => {
                 new AclFile('test.acl', modelManager, invalidAcl);
             }).should.throw(/Line 5/);
         });
+
+        it('should throw an error if it does not have a location', () => {
+            (() => {
+                sandbox.stub(parser, 'parse').throws(new Error('such error'));
+                new AclFile('test.acl', modelManager, invalidAcl);
+            }).should.throw(/such error/);
+        });
     });
 
     describe('#constructor', () => {

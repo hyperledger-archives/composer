@@ -522,6 +522,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyTransaction' : 'MyTransaction',
@@ -543,13 +544,14 @@ describe('LoopbackVisitor', () => {
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             },
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             }
                         },
@@ -573,6 +575,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyBaseTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyBaseTransaction' : 'MyBaseTransaction',
@@ -596,11 +599,12 @@ describe('LoopbackVisitor', () => {
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             }
                         },
@@ -610,6 +614,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyTransaction' : 'MyTransaction',
@@ -633,11 +638,12 @@ describe('LoopbackVisitor', () => {
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             },
                             theValue: {
@@ -665,6 +671,7 @@ describe('LoopbackVisitor', () => {
                         acls: [],
                         base: 'PersistedModel',
                         description: 'A transaction named MyTransaction',
+                        forceId: true,
                         idInjection: false,
                         methods: [],
                         name: namespaces ? 'org_acme_MyTransaction' : 'MyTransaction',
@@ -688,11 +695,12 @@ describe('LoopbackVisitor', () => {
                             transactionId: {
                                 description: 'The instance identifier for this type',
                                 id: true,
-                                required: true,
+                                generated: true,
+                                required: false,
                                 type: 'string'
                             },
                             timestamp: {
-                                required: true,
+                                required: false,
                                 type: 'date'
                             },
                             theValue: {
@@ -874,6 +882,237 @@ describe('LoopbackVisitor', () => {
                         relations: {},
                         validations: []
                     }]);
+                });
+
+                it('should use the model file of the referencing type to resolve enumeration types', () => {
+                    modelManager.addModelFile(`
+                    namespace org.acme.base
+                    enum Enum {
+                        o SOME_VALUE
+                        o SOME_OTHER_VALUE
+                    }
+                    asset MyAsset identified by assetId {
+                        o String assetId
+                        o Enum value
+                    }`);
+                    modelManager.addModelFile(`
+                    namespace org.acme.ext
+                    import org.acme.base.MyAsset
+                    asset MyOtherAsset identified by assetId {
+                        o String assetId
+                        o MyAsset asset
+                    }`);
+                    const schemas = modelManager.accept(visitor, { fileWriter: mockFileWriter });
+                    schemas.should.deep.equal([
+                        {
+                            name: namespaces ? 'org_acme_base_MyAsset' : 'MyAsset',
+                            description: 'An asset named MyAsset',
+                            plural: namespaces ? 'org.acme.base.MyAsset' : 'MyAsset',
+                            base: 'PersistedModel',
+                            idInjection: false,
+                            options: {
+                                validateUpsert: true,
+                                composer: {
+                                    type: 'asset',
+                                    namespace: 'org.acme.base',
+                                    name: 'MyAsset',
+                                    fqn: 'org.acme.base.MyAsset'
+                                }
+                            },
+                            properties: {
+                                $class: {
+                                    type: 'string',
+                                    default: 'org.acme.base.MyAsset',
+                                    required: false,
+                                    description: 'The class identifier for this type'
+                                },
+                                assetId: {
+                                    type: 'string',
+                                    id: true,
+                                    description: 'The instance identifier for this type',
+                                    required: true
+                                },
+                                value: {
+                                    type: 'string',
+                                    required: true
+                                }
+                            },
+                            validations: [],
+                            relations: {},
+                            acls: [],
+                            methods: []
+                        },
+                        {
+                            name: namespaces ? 'org_acme_ext_MyOtherAsset' : 'MyOtherAsset',
+                            description: 'An asset named MyOtherAsset',
+                            plural: namespaces ? 'org.acme.ext.MyOtherAsset' : 'MyOtherAsset',
+                            base: 'PersistedModel',
+                            idInjection: false,
+                            options: {
+                                validateUpsert: true,
+                                composer: {
+                                    type: 'asset',
+                                    namespace: 'org.acme.ext',
+                                    name: 'MyOtherAsset',
+                                    fqn: 'org.acme.ext.MyOtherAsset'
+                                }
+                            },
+                            properties: {
+                                $class: {
+                                    type: 'string',
+                                    default: 'org.acme.ext.MyOtherAsset',
+                                    required: false,
+                                    description: 'The class identifier for this type'
+                                },
+                                assetId: {
+                                    type: 'string',
+                                    id: true,
+                                    description: 'The instance identifier for this type',
+                                    required: true
+                                },
+                                asset: {
+                                    type: namespaces ? 'org_acme_base_MyAsset' : 'MyAsset',
+                                    required: true
+                                }
+                            },
+                            validations: [],
+                            relations: {},
+                            acls: [],
+                            methods: []
+                        }
+                    ]);
+                });
+
+                it('should use the model file of the referencing type to resolve other types', () => {
+                    modelManager.addModelFile(`
+                    namespace org.acme.base
+                    asset MyInlineAsset identified by assetId {
+                        o String assetId
+                    }
+                    asset MyAsset identified by assetId {
+                        o String assetId
+                        o MyInlineAsset value
+                    }`);
+                    modelManager.addModelFile(`
+                    namespace org.acme.ext
+                    import org.acme.base.MyAsset
+                    asset MyOtherAsset identified by assetId {
+                        o String assetId
+                        o MyAsset asset
+                    }`);
+                    const schemas = modelManager.accept(visitor, { fileWriter: mockFileWriter });
+                    schemas.should.deep.equal([
+                        {
+                            name: namespaces ? 'org_acme_base_MyInlineAsset' : 'MyInlineAsset',
+                            description: 'An asset named MyInlineAsset',
+                            plural: namespaces ? 'org.acme.base.MyInlineAsset' : 'MyInlineAsset',
+                            base: 'PersistedModel',
+                            idInjection: false,
+                            options: {
+                                validateUpsert: true,
+                                composer: {
+                                    type: 'asset',
+                                    namespace: 'org.acme.base',
+                                    name: 'MyInlineAsset',
+                                    fqn: 'org.acme.base.MyInlineAsset'
+                                }
+                            },
+                            properties: {
+                                $class: {
+                                    type: 'string',
+                                    default: 'org.acme.base.MyInlineAsset',
+                                    required: false,
+                                    description: 'The class identifier for this type'
+                                },
+                                assetId: {
+                                    type: 'string',
+                                    id: true,
+                                    description: 'The instance identifier for this type',
+                                    required: true
+                                }
+                            },
+                            validations: [],
+                            relations: {},
+                            acls: [],
+                            methods: []
+                        },
+                        {
+                            name: namespaces ? 'org_acme_base_MyAsset' : 'MyAsset',
+                            description: 'An asset named MyAsset',
+                            plural: namespaces ? 'org.acme.base.MyAsset' : 'MyAsset',
+                            base: 'PersistedModel',
+                            idInjection: false,
+                            options: {
+                                validateUpsert: true,
+                                composer: {
+                                    type: 'asset',
+                                    namespace: 'org.acme.base',
+                                    name: 'MyAsset',
+                                    fqn: 'org.acme.base.MyAsset'
+                                }
+                            },
+                            properties: {
+                                $class: {
+                                    type: 'string',
+                                    default: 'org.acme.base.MyAsset',
+                                    required: false,
+                                    description: 'The class identifier for this type'
+                                },
+                                assetId: {
+                                    type: 'string',
+                                    id: true,
+                                    description: 'The instance identifier for this type',
+                                    required: true
+                                },
+                                value: {
+                                    type: namespaces ? 'org_acme_base_MyInlineAsset' : 'MyInlineAsset',
+                                    required: true
+                                }
+                            },
+                            validations: [],
+                            relations: {},
+                            acls: [],
+                            methods: []
+                        },
+                        {
+                            name: namespaces ? 'org_acme_ext_MyOtherAsset' : 'MyOtherAsset',
+                            description: 'An asset named MyOtherAsset',
+                            plural: namespaces ? 'org.acme.ext.MyOtherAsset' : 'MyOtherAsset',
+                            base: 'PersistedModel',
+                            idInjection: false,
+                            options: {
+                                validateUpsert: true,
+                                composer: {
+                                    type: 'asset',
+                                    namespace: 'org.acme.ext',
+                                    name: 'MyOtherAsset',
+                                    fqn: 'org.acme.ext.MyOtherAsset'
+                                }
+                            },
+                            properties: {
+                                $class: {
+                                    type: 'string',
+                                    default: 'org.acme.ext.MyOtherAsset',
+                                    required: false,
+                                    description: 'The class identifier for this type'
+                                },
+                                assetId: {
+                                    type: 'string',
+                                    id: true,
+                                    description: 'The instance identifier for this type',
+                                    required: true
+                                },
+                                asset: {
+                                    type: namespaces ? 'org_acme_base_MyAsset' : 'MyAsset',
+                                    required: true
+                                }
+                            },
+                            validations: [],
+                            relations: {},
+                            acls: [],
+                            methods: []
+                        }
+                    ]);
                 });
 
             });
