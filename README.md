@@ -20,6 +20,7 @@ We welcome contributions to the code base. If you are interested in becoming a c
 
 There is a [specific channel](https://chat.hyperledger.org/channel/fabric-composer-dev) on RocketChat for contributors*
 
+
 # Getting started with building an application
 
 **Try the [online playground](https://composer-playground.mybluemix.net/) to get going quickly.**
