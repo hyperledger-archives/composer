@@ -10,7 +10,7 @@ excerpt: How to install the development pre-requisites
 
 ---
 
-The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in Github so *git* will be needed as well.
+The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in GitHub so *git* will be needed as well.
 
 The recommended *minimum* versions are:
 *Docker*: v1.12.3

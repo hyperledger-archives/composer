@@ -10,7 +10,7 @@ excerpt: How to install the development pre-requisites manually
 
 ---
 
-The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor, for example *Atom* or *VSCode*. Samples are held in Github so *git* will be needed as well.
+The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor, for example *Atom* or *VSCode*. Samples are held in GitHub so *git* will be needed as well.
 
 Automatic installations scripts are available for [Ubuntu](./prerequisites.md)
 
@@ -25,7 +25,7 @@ The recommended *minimum* versions are:
 ### 1. Installing NVM
 We highly recommend installing NVM to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version higher than v4.6.0.
 
-[Official nvm Github repository](https://github.com/creationix/nvm)
+[Official nvm GitHub repository](https://github.com/creationix/nvm)
 
 ### 2. Kernel Packages
 If running on Ubuntu Trusty or Utopic, it is necessary to obtain additional Kernel packages to enable use of the [AUFS storage driver](https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/#renaming-directories-with-the-aufs-storage-driver) for Docker.
