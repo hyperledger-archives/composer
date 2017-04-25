@@ -50,7 +50,7 @@ describe('JSONPopulator', () => {
                 o String assetId
                 o MyAsset1 myAsset
             }
-            asset MyContainerAsset1 identified by assetId {
+            asset MyContainerAsset2 identified by assetId {
                 o String assetId
                 o MyAsset1[] myAssets
             }
@@ -61,6 +61,12 @@ describe('JSONPopulator', () => {
             transaction MyTx2 identified by transactionId {
                 o String transactionId
                 --> MyAsset1[] myAssets
+            }
+        `);
+        modelManager.addModelFile(`
+            namespace org.acme.different
+            asset MyAsset1 identified by assetId {
+                o String assetId
             }
         `);
         assetDeclaration1 = modelManager.getType('org.acme.MyContainerAsset1').getProperty('myAsset');

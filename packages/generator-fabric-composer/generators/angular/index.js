@@ -471,3 +471,4 @@ module.exports = yeoman.Base.extend({
         shell.exec('pkill yo');
     }
 });
+

@@ -3,16 +3,16 @@
 
 registry {
 
-  $highlighted : #e4e4e4;
+  $highlighted: #e4e4e4;
 
-  .resource-header{
+  .resource-header {
     min-height: 50px;
     display: flex;
-    color:$secondary-text;
+    color: $secondary-text;
   }
 
-  .resource-header-left{
-    flex:1;
+  .resource-header-left {
+    flex: 1;
     align-self: center;
   }
 
@@ -27,7 +27,7 @@ registry {
     }
 
     &[disabled], &[disabled]:hover {
-      background-color:$highlighted;
+      background-color: $highlighted;
       border-color: $highlighted;
     }
   }
@@ -68,7 +68,7 @@ registry {
 
         &.expanded {
           pre {
-            max-height: 100%;
+            max-height: 999px;
             overflow: hidden;
 
             @include transition(all);
@@ -85,13 +85,38 @@ registry {
 
           @include transition(all);
 
-          &.gradient {
-            @include gradient-text('linear-gradient(to top, #f3f3f3 0%,#19273c 30%)');
+          &.gradient, &.tiny-gradient {
+            position: relative;
+          }
+          &.gradient:after, &.tiny-gradient:after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+          }
+
+          &.gradient:after {
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff', GradientType=0);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(100%, rgba(255, 255, 255, 0)), color-stop(100%, rgba(255, 255, 255, 0)));
+            background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100%);
+            background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100%);
+            background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100%);
+            background: -o-linear-gradient(top, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100%);
+            background: linear-gradient(top, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100%);
           }
 
           //needed so you don't see the background change when gradient isn't needed
-          &.tiny-gradient {
-            @include gradient-text('linear-gradient(to top, #f3f3f3 0%,#19273c 1%)');
+          &.tiny-gradient:after {
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff', GradientType=0);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(100%, rgba(255, 255, 255, 0)), color-stop(100%, rgba(255, 255, 255, 0)));
+            background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 99%, rgba(255, 255, 255, 1) 100%);
+            background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 99%, rgba(255, 255, 255, 1) 100%);
+            background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) 99%, rgba(255, 255, 255, 1) 100%);
+            background: -o-linear-gradient(top, rgba(255, 255, 255, 0) 99%, rgba(255, 255, 255, 1) 100%);
+            background: linear-gradient(top, rgba(255, 255, 255, 0) 99%, rgba(255, 255, 255, 1) 100%);
           }
         }
       }

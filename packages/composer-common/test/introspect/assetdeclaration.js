@@ -118,7 +118,6 @@ describe('AssetDeclaration', () => {
                 asset.validate();
             }).should.throw(/more than one field named/);
         });
-
     });
 
     describe('#getSuperType', () => {
