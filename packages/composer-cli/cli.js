@@ -29,7 +29,7 @@ let results = yargs
     .commandDir('./lib/cmds')
     .help()
     .example('composer archive create --inputDir .\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
-    .demand(1)
+    // .demand(1)
     .wrap(null)
     .strict()
     .epilogue('For more information on Fabric Composer: https://fabric-composer.github.io/')

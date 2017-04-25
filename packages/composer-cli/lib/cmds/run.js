@@ -14,11 +14,9 @@
 
 'use strict';
 
-exports.command = 'run <subcommand>';
-exports.desc = 'Composer command to run scripts to help create local Hyperledger Fabric instances';
-
-
-exports.builder = function (yargs){
+module.exports.command = 'run [options]';
+module.exports.desc = 'Composer command to run scripts to help create local Hyperledger Fabric instances';
+module.exports.builder = function (yargs){
 
     return yargs.option('dir',{alias: 'r', required: true,  describe: 'Which release of Hyperledger Fabric to use [ hlf | hlfv1 ]', type: 'string' , default:'hlfv1'})
             .option('download',{alias: 'd', required: false, describe:'Pulls and tags the latest version of the Hyperledger Fabric Docker images'})
@@ -29,19 +27,21 @@ exports.builder = function (yargs){
             .conflicts({'download':'stop','start':'stop','stop':'','delete':'start'})
             .option('list', {alias: 'l', required:false, describe: 'Shows the directory of the example Fabric control scripts '})
             .option('run', {alias: 'r', required:false, describe: 'runs the script name as an argurment to this options'})
-            .usage('composer run  --download # download docker images for Fabric v1.0 \n  composer run  fabric --start')
+            // .usage('composer run  --download \n  composer run  fabric --start')
             .group(['download','start','stop','teardown'],'Script Shortcuts')
             .group(['run','list','dir'],'Run Scripts')
+            .demand(0)
             ;
-
 };
 
 module.exports.handler = (argv) => {
     let hlf;
 
-    if (argv.scripts === '0.6'){
+    // console.log(argv);
+
+    if (argv.dir === 'hlf'){
         console.log('Hyperledger Fabric v0.6 starting with default configuration for Composer development');
-        hlf = require ('./dev/lib/hlf.js');
+        hlf = require ('./dev/lib/scripts.js');
     } else {
         console.log('Hyperledger Fabric v1-alpha starting with default configuration for Composer development');
         hlf = require ('./dev/lib/hlfv1.js');

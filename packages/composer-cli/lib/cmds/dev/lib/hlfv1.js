@@ -65,25 +65,11 @@ class hlf {
     *  @return {int} error code
     */
     static runCmd(argv){
-
-        // if (argv.scripts === undefined && argv.start === undefined && argv.stop === undefined && argv.download===undefined && argv.delete === undefined && argv.purgeProfiles === undefined){
-        //     return this._cmd('docker ps');
-        // }
-
         let dir;
         let scripts;
-        if (argv.release === '0.6'){
-            dir = path.dirname(require.resolve('./hlf.js'));
-            scripts = 'scripts';
-        } else {
-            dir = path.dirname(require.resolve('./hlfv1.js'));
-            scripts = 'hlfv1';
-        }
+        path.dirname(require.resolve('./hlfv1.js'));
+        scripts = 'hlfv1';
 
-
-
-        let composeYML = path.resolve(dir,'..',scripts,'hlfv1_alpha-docker-compose.yml');
-        let cmdString;
         let errorCode = 0;
         if (argv.start){
 
@@ -94,80 +80,35 @@ class hlf {
             console.log('Starting Hyperledger Fabric v1.0');
             let startHLF = path.resolve(dir,'..',scripts,'start-hyperledger.sh');
             this._cmd(startHLF);
-
-            // let createProfile = path.resolve(dir,'..',scripts,'createProfile.sh');
-            // let createChannel = path.resolve(dir,'..',scripts,'create-channel.js');
-            // let joinChannel = path.resolve(dir,'..',scripts,'join-channel.js');
-            //
-            // cmdString = 'docker-compose -f '+composeYML+' up -d  ';
-            //
-            // console.log('Creating Composer connection profile');
-            // errorCode = this._cmd(createProfile);
-            // errorCode = (errorCode===0) ? this._cmd(cmdString) : errorCode;
-            //
-            // this._cmd('/bin/sleep 15');
-            //
-            // console.log('Creating default channel and organization');
-            // this._cmd('node '+createChannel);
-            // this._cmd('node '+joinChannel);
-
-
         } else if (argv.stop){
             console.log('Stopping Hyperledger Fabric');
-            cmdString = 'docker-compose -f '+composeYML+' stop ';
-            errorCode =  this._cmd(cmdString);
-
+            errorCode =  this._cmd(path.resolve(dir,'..',scripts,'stop-hyperledger.sh'));
         } else if (argv.download){
-
-            let dockerImages = [ 'docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha',
-                'docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha',
-                'docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha',
-                'docker pull hyperledger/fabric-orderer:x86_64-1.0.0-alpha',
-                'docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-alpha'];
-            console.log('Pulling down Hyperledger Fabric Docker images');
-            dockerImages.forEach(function(cmdString){
-                this._cmd(cmdString);
-            },this );
-
-
-        } else if (argv.delete){
-          // todo put prompt here
-          /*docker-compose kill && docker-compose down
-          */
+            console.log('Downloading Docker images Hyperledger Fabric');
+            errorCode =  this._cmd(path.resolve(dir,'..',scripts,'download-hyperledger.sh'));
+        } else if (argv.teardown){
             console.log('Killing and stoping Hypledger Fabric docker containers');
-            cmdString = ['docker-compose','-f',composeYML,'kill && docker-compose','-f',composeYML,'down'].join(' ');
-
-            errorCode = this._cmd(cmdString);
-
-        } else if (argv.scripts){
+            console.log('Downloading Docker images Hyperledger Fabric');
+            errorCode =  this._cmd(path.resolve(dir,'..',scripts,'teardown.sh'));
+        } else if (argv.list){
             let shell = require('shelljs');
             let files = shell.ls(path.resolve(dir,'..',scripts));
 
             console.log(chalk.blue('\nScripts to control Fabric v1.0 are in ')+path.resolve(dir,'..',scripts));
             console.log(files.join('\n'));
 
-
-            let marked = require('marked');
-            let TerminalRenderer = require('marked-terminal');
-
-            marked.setOptions({
-                          // Define custom renderer
-                renderer: new TerminalRenderer()
-            });
+            // let marked = require('marked');
+            // let TerminalRenderer = require('marked-terminal');
+            //
+            // marked.setOptions({
+            //               // Define custom renderer
+            //     renderer: new TerminalRenderer()
+            // });
 
             let readmefile = path.resolve(dir,'..',scripts,'README.md');
             let text = fs.readFileSync(readmefile,'utf8');
-            console.log ('\n> cat '+readmefile+'\n'+marked(text));
-        }
-
-        if (argv.purgeProfiles && errorCode === 0){
-            console.log('Deleting the default connection profile');
-
-            errorCode = shell.rm('-rf','~/.composer-connection-profiles/hlfv1').code;
-            errorCode = (errorCode===0) ? shell.rm('-r','~/.hfc-key-store/*').code : errorCode;
-
-
-
+            console.log ('\n> cat '+readmefile+'\n'+(text));
+            // console.log ('\n> cat '+readmefile+'\n'+marked(text));
         }
 
         return errorCode;
