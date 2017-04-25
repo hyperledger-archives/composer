@@ -637,10 +637,10 @@ describe('EditorComponent', () => {
       component['deployedPackageName'] = 'TestPackageName';
       component['deployedPackageVersion'] = '1.0.0';
       fixture.detectChanges();
-      
+
       // Expect to see "deployedPackageName" visible within class="business-network-details"
       // Expect to have "edit" option available within class="business-network-details"
-      let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement; 
+      let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
       element.textContent.should.contain('TestPackageName');
       element.innerHTML.should.contain('id="editFileButton"');
 
@@ -651,8 +651,8 @@ describe('EditorComponent', () => {
       // Expect three visible edit fields:
       // 1) Name (input text)
       // 2) Version (input text)
-      // 3) Full package (button)      
-      element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement; 
+      // 3) Full package (button)
+      element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
       element.innerHTML.should.not.contain('id="editFileButton"');
       element.innerHTML.should.contain('id="editPackageButton"');
       element.textContent.should.contain('Name');
@@ -671,12 +671,12 @@ describe('EditorComponent', () => {
       // 3) Full package (button) to be enabled
 
       let editItem = fixture.debugElement.query(By.css('#editName')).nativeElement;
-      (editItem as HTMLInputElement).isContentEditable.should.be.false;      
+      (editItem as HTMLInputElement).isContentEditable.should.be.false;
 
       editItem = fixture.debugElement.query(By.css('#editVersion')).nativeElement;
       (editItem as HTMLInputElement).isContentEditable.should.be.false;
 
-      editItem = fixture.debugElement.query(By.css('#editPackageButton')).nativeElement; 
+      editItem = fixture.debugElement.query(By.css('#editPackageButton')).nativeElement;
       (editItem as HTMLButtonElement).disabled.should.be.false;
 
     });
@@ -688,12 +688,12 @@ describe('EditorComponent', () => {
       fixture.detectChanges();
 
       // Grab element
-      let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement; 
-      
+      let element = fixture.debugElement.query(By.css('.business-network-details')).nativeElement;
+
       // Should contain package name edit only
       element.textContent.should.contain('Editing package.json');
 
-      // Should not contain any buttons/text entry      
+      // Should not contain any buttons/text entry
       should.not.exist(fixture.debugElement.query(By.css('#editName')));
       should.not.exist(fixture.debugElement.query(By.css('#editVersion')));
       should.not.exist(fixture.debugElement.query(By.css('#editPackageButton')));
@@ -702,6 +702,10 @@ describe('EditorComponent', () => {
   });
 
   describe('editPackageName', () => {
+    beforeEach(() => {
+      mockClientService.setBusinessNetworkName.reset();
+    });
+
     it('should edit the package name', () => {
       component['inputPackageName'] = 'my name';
 
@@ -711,9 +715,22 @@ describe('EditorComponent', () => {
       component['editActive'].should.equal(false);
       component['deployedPackageName'].should.equal('my name');
     });
+
+    it('should not edit the package name if not changed', () => {
+      component['deployedPackageName'] = 'my name';
+      component['inputPackageName'] = 'my name';
+
+      component.editPackageName();
+
+      mockClientService.setBusinessNetworkName.should.not.have.been.called;
+    });
   });
 
   describe('editPackageVersion', () => {
+    beforeEach(() => {
+      mockClientService.setBusinessNetworkVersion.reset();
+    });
+
     it('should edit the package version', () => {
       component['inputPackageVersion'] = 'my version';
 
@@ -723,10 +740,19 @@ describe('EditorComponent', () => {
       component['editActive'].should.equal(false);
       component['deployedPackageVersion'].should.equal('my version');
     });
+
+    it('should not edit the package version if not changed', () => {
+      component['deployedPackageVersion'] = 'my version';
+      component['inputPackageVersion'] = 'my version';
+
+      component.editPackageVersion();
+
+      mockClientService.setBusinessNetworkVersion.should.not.have.been.called;
+    });
   });
 
   describe('hide edit', () => {
-    it('should set editActive false, and editingPackage true', () => {      
+    it('should set editActive false, and editingPackage true', () => {
       component['editingPackage'] = false;
       component['editActive'] = true;
 

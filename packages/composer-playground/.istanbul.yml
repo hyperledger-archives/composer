@@ -9,4 +9,4 @@ check:
         statements: 68
         branches: 57
         functions: 55
-        lines: 68
+        lines: 67
