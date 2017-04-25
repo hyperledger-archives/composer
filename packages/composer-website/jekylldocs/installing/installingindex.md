@@ -15,6 +15,8 @@ If you want to develop and test applications, connect to a running {{site.data.c
 
 If you want a more guided "Getting Started" experience, see our [Tutorials and Getting Started guides](../tutorials/tutorialindex.html).
 
+After installing, create a connection profile to connect to a running {{site.data.conrefs.hyperledger_fabric_full}} instance. See [creating a connection profile](../installing/createconnectionprofile.html)
+
 ---
 
 ## Related Links
