@@ -54,7 +54,7 @@ This is probably already installed on most Linux machines. Pay particular attent
 However, we recommend either using Atom or Visual Studio Code as both have excellent support for Javascript
 development. We have even created an experimental CTO file syntax highlighting plugin for Atom.
 =======
-Fabric Composer allows you to edit its project files with any editor. We recommend using either Atom or Visual Studio Code, as not only do both have excellent support for Javascript development, a CTO file syntax highlighting plugin exists for these editors.
+{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. We recommend using either Atom or Visual Studio Code, as not only do both have excellent support for Javascript development, a CTO file syntax highlighting plugin exists for these editors.
 >>>>>>> refs/remotes/hyperledger/master
 
 
@@ -66,7 +66,7 @@ Fabric Composer allows you to edit its project files with any editor. We recomme
 
 Suggested Plugins:
 
-* [Atom Composer Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom) A plugin for model file highlighting. 
+* [Atom Composer Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom) A plugin for model file highlighting.
 
 * [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
 
@@ -78,8 +78,8 @@ Extensions may be installed into VS Code by searching the Extensions repository 
 
 * Composer VS Code Plugin. Provides syntax highlighting for CTO files within VS Code
 
-* ESLint. Integrates ESLint into VS Code. 
+* ESLint. Integrates ESLint into VS Code.
 
-* TSLint. Integrates the tslint linter for the TypeScript language into VS Code. 
+* TSLint. Integrates the tslint linter for the TypeScript language into VS Code.
 
 * EditorConfig for VS Code. Enables the definition and maintainance of consistent coding styles between different editors and IDEs.
