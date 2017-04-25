@@ -4,9 +4,9 @@
 
 ### Good Coding Practices Using ESLint
 
-Hyperledger Composer uses a utility to ensure the codebase conforms to good language practice. Composer is written in both `node.js` and `golang`, with [ESLint](http://eslint.org/) being used for `node.js`.
+Hyperledger Composer uses a utility to ensure the codebase conforms to good language practice. Hyperledger Composer is written in both `node.js` and `golang`, with [ESLint](http://eslint.org/) being used for `node.js`.
 
-The Hyperledger Composer project includes a set of lint definitions in its initialization file ``.eslintrc.yml`` that will be used whenever lint is run, so you should use the one in the Composer project, as it contains the default Composer configurations.
+The Hyperledger Composer project includes a set of lint definitions in its initialization file ``.eslintrc.yml`` that will be used whenever lint is run, so you should use the one in the project, as it contains the default configurations.
 
 ### API Documentation Using JSDoc
 
@@ -16,7 +16,7 @@ If you change APIs, update the documentation. Note that the linter settings will
 
 ## Testing
 
-All changes pushed to Composer must include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes without associated automated unit tests will **not** be accepted. Unit tests should aim for 100% code coverage and may be run locally with `npm test`. 
+All changes pushed to Hyperledger Composer must include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes without associated automated unit tests will **not** be accepted. Unit tests should aim for 100% code coverage and may be run locally with `npm test`. 
 
 Our current test suites make use of:
 
@@ -28,7 +28,7 @@ Our current test suites make use of:
 
 ### Unit Test Framework Using Mocha
 
-Composer requires that all code added to the project is provided with unit tests. These tests operate inside a test framework called [mocha](https://mochajs.org/) which controls their execution. Mocha is triggered every time code is pushed to either a user's repository or the Blockchain-WW-Labs Hyperledger Composer repository.
+Hyperledger Composer requires that all code added to the project is provided with unit tests. These tests operate inside a test framework called [mocha](https://mochajs.org/) which controls their execution. Mocha is triggered every time code is pushed to either a user's repository or the Hyperledger Composer repository.
 
 ### Unit Test Framework using Karma and Jasmine
 The default configuration is set to target the Chrome browser.
@@ -36,7 +36,7 @@ The default configuration is set to target the Chrome browser.
 
 ### Simplify writing tests using the chai assertion library, chai-things and sinon
 
-Composer tests use an assertion library called [chai](http://chaijs.com/) to help write these tests, which run in the mocha. Chai allows developers to easily write tests that verify the behaviour of their code using `should`, `expect` and `assert` interfaces.  [chai-things](https://www.npmjs.com/package/chai-things) is a chai extension which helps writing units tests involving arrays. Hyperledger Composer sometimes relies on external systems like Hyperledger and to enable the creation of unit tests, Hyperledger Composer [sinon](https://www.npmjs.com/package/sinon) to create realistic units tests which do not draw in huge amounts of infrastructure.  sinon has technology called "test spies", "stubs" and "mocks" which greatly help this process.
+Hyperledger Composer tests use an assertion library called [chai](http://chaijs.com/) to help write these tests, which run in the mocha. Chai allows developers to easily write tests that verify the behaviour of their code using `should`, `expect` and `assert` interfaces.  [chai-things](https://www.npmjs.com/package/chai-things) is a chai extension which helps writing units tests involving arrays. Hyperledger Composer sometimes relies on external systems like Hyperledger and to enable the creation of unit tests, Hyperledger Composer [sinon](https://www.npmjs.com/package/sinon) to create realistic units tests which do not draw in huge amounts of infrastructure.  sinon has technology called "test spies", "stubs" and "mocks" which greatly help this process.
 
 ### Code Coverage Using Istanbul
 
@@ -54,4 +54,4 @@ Hyperledger Composer provides its programming interfaces in JavaScript, and also
 
 ### Checking of files for Hyperledger Composer license agreement using license-check
 
-Hyperledger Composer source files are is provided under a license agreement which provides the appropriate level of intellectual property protection, and [license-check](https://www.npmjs.com/package/license-check) is used to enforce that the same agreement terms is in every Composer file.  These license terms may change during the development lifecycle according to the commercial and community needs of the Composer.
+Hyperledger Composer source files are is provided under a license agreement which provides the appropriate level of intellectual property protection, and [license-check](https://www.npmjs.com/package/license-check) is used to enforce that the same agreement terms is in every Hyperledger Composer file. These license terms may change during the development lifecycle of Hyperledger Composer.

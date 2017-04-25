@@ -28,10 +28,10 @@ This is a summary of the tools that will be required to work on Hyperledger Comp
 Once those tools are installed you are ready to get going with the Hyperledger Composer repository.Let's show you how to create your own version of the Hyperledger Composer repository in GitHub, and clone it to your local machine to allow you to make your own changes, which you can subsequently contribute to the Hyperledger Composer project.
 
 - Navigate to the [Hyperledger Project](https://github.com/hyperledger) on GitHub to see the
-different Composer repositories.
-- Select the [composer repository](https://github.com/hyperledger/composer)
+different Hyperledger Composer repositories.
+- Select the [Hyperledger Composer repository](https://github.com/hyperledger/composer)
 - Click on the `Fork` button to fork this repository to your user space.
-- Navigate to your home page on GitHub, you'll be able to see your fork of the composer repository.
+- Navigate to your home page on GitHub, you'll be able to see your fork of the repository.
 
 ## Choosing a location for your clone
 
@@ -47,20 +47,20 @@ _IMPORTANT_ Do NOT have any directory in the path to the git repository director
 Final step is to issue the clone command. This format is assuming that you have setup the ssh keys for GitHub.
 
 ```bash
-git clone git@github.ibm.com:<your-username>/composer.git
+git clone git@github.ibm.com:<your-username>/hyperledger/composer.git
 cd composer
 ```
 
 ### Hyperledger code dependencies
 
-There is a temporary requirement for Composer to include the Hyperledger source code in its project directory. The following commands will pull the code from the Hyperledger code repository, as defined in the `.gitmodules` file in the Composer project directory.
+There is a temporary requirement for Hyperledger Composer to include the Hyperledger source code in its project directory. The following commands will pull the code from the Hyperledger code repository, as defined in the `.gitmodules` file in the Hyperledger Composer project directory.
 
 ```bash
 git submodule init
 git submodule update
 ```
 
-You can see where the Hyperledger source code is pulled from; it is saved in the `.git` directory of the Composer project.
+You can see where the Hyperledger source code is pulled from; it is saved in the `.git` directory of the Hyperledger Composer project.
 
 ## Installing Hyperledger Composer prerequisites
 
