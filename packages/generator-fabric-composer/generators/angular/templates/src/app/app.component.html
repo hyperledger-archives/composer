@@ -4,13 +4,13 @@
       <a class="navbar-brand" href="#"><%=businessNetworkIdentifier%></a>
     </div>
     <ul class="nav navbar-nav navbar-right">
-      <li class=""><a href="/">Home</a></li>
+      <li class=""><a [routerLink]="['/']">Home</a></li>
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Assets
-        <span class="caret"></span></a>
+          <span class="caret"></span></a>
         <ul class="dropdown-menu">
           <% for(var x=0;x<assetList.length;x++){ %>
-            <li><a href="/<%=assetList[x].name%>"><%=assetList[x].name%></a></li>
+          <li><a [routerLink]="['/<%=assetList[x].name%>']"><%=assetList[x].name%></a></li>
           <%}%>
         </ul>
       </li>

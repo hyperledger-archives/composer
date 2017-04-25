@@ -15,8 +15,14 @@
 'use strict';
 
 const ClassDeclaration = require('../../lib/introspect/classdeclaration');
+const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
+const EnumDeclaration = require('../../lib/introspect/enumdeclaration');
+const ConceptDeclaration = require('../../lib/introspect/conceptdeclaration');
+const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
+const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
+const fs = require('fs');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -31,6 +37,13 @@ describe('ClassDeclaration', () => {
         mockModelFile = sinon.createStubInstance(ModelFile);
         mockModelFile.getModelManager.returns(mockModelManager);
     });
+
+    let loadLastDeclaration = (modelFileName, type) => {
+        let modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
+        let modelFile = new ModelFile(mockModelManager, modelDefinitions);
+        let assets = modelFile.getDeclarations(type);
+        return assets[assets.length - 1];
+    };
 
     describe('#constructor', () => {
 
@@ -61,6 +74,46 @@ describe('ClassDeclaration', () => {
                     }
                 });
             }).should.throw(/Unrecognised model element/);
+        });
+
+    });
+
+    describe('#validate', () => {
+
+
+        it('should throw when asset name is duplicted in a modelfile', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeassetname.cto', AssetDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Duplicate class/);
+        });
+
+        it('should throw when transaction name is duplicted in a modelfile', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupetransactionname.cto', TransactionDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Duplicate class/);
+        });
+
+        it('should throw when participant name is duplicted in a modelfile', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeparticipantname.cto', ParticipantDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Duplicate class/);
+        });
+
+        it('should throw when concept name is duplicted in a modelfile', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeconceptname.cto', ConceptDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Duplicate class/);
+        });
+
+        it('should throw when enum name is duplicted in a modelfile', () => {
+            let asset = loadLastDeclaration('test/data/parser/classdeclaration.dupeenumname.cto', EnumDeclaration);
+            (() => {
+                asset.validate();
+            }).should.throw(/Duplicate class/);
         });
 
     });

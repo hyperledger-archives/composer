@@ -154,16 +154,6 @@ describe('SampleBusinessNetworkService', () => {
     })));
   });
 
-  xdescribe('setUpGithub', () => {
-    it('should use access token if set', inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-      service.setUpGithub('1234');
-    }));
-
-    it('should just create instance if no token set', inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-      service.setUpGithub(null);
-    }));
-  });
-
   describe('isAuthenticatedWithGitHub', () => {
     it('should return true if authenticated', inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
       service['octo'] = {};

@@ -4,8 +4,8 @@ This directory ( fabric-composer/composer-website ) hold the documentation for F
 
 # Getting Started for local work
 - Assume that you have a clone of the fabric-composer repository locally.
-- Install Ruby;  a good guide to installing ruby is [here](https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04) but *stop* before installing Rails.  Ruby and Gem are all that are required.
-- Install Jeykll, jekyll-sitemap, redcarpet.  The scripts directory contains a setup-jekyll script that does setup these . But you must have done the Ruby installation first.
+- Install Ruby;  a good guide to installing ruby is [here](https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04) but *stop* before installing Rails.  Installation of Ruby-dev, and subsequently Gem, are all that are required.
+- Install Jeykll, jekyll-sitemap, redcarpet.  The scripts directory contains a setup-jekyll script that does setup these. But you must have performed the Ruby installation first.
 
 ```
 $ ./scripts/setup-jekyll.sh
