@@ -17,6 +17,7 @@ $success-colour: #40d5bb;
 $keyline-highlight: #E3ECEC;
 $white: #FDFDFD;
 $black: #000000;
+$callout: #FFD640;
 
 
 html {
@@ -226,7 +227,7 @@ button {
   background:
   url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAGUlEQVQImWPwS9olhQsz+CXtkmLABQabJABXUBO1fQxIrwAAAABJRU5ErkJggg==) repeat,
   linear-gradient(137deg, #3F55AF 0%, #5376D4 40%, #5477D5 42%, #597FDE 52%, #B4E4FF 100%);
-  box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.20);
+  // box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.20);
   overflow: hidden;
   top: 0;
   left: 0;
@@ -310,6 +311,30 @@ li {
   display: flex;
 
 }
+
+//Homepage callout section
+
+.homepage-callout {
+  display: flex;
+  background-color: $callout;
+  box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.20);
+  .callout-copy {
+    margin: auto;
+    width: 70vh;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    a {
+      text-decoration: none;
+      border-bottom: 1px solid $primary-text;
+      color: $primary-text;
+      &:hover {
+        border-bottom: 1px solid $primary-text;
+      }
+    }
+  }
+
+}
+
 
 //Navbar overrides of bootstrap
 
@@ -674,6 +699,13 @@ li {
 
     .hero_container {
       -webkit-flex-direction: row;
+    }
+
+    .homepage-callout {
+      .callout-copy {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
     }
 
   .trio {
