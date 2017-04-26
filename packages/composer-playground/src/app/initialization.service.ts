@@ -120,4 +120,12 @@ export class InitializationService {
         })
     }, Promise.resolve());
   }
+
+
+  isWebOnly(): boolean {
+    if(!this.config) {
+      return false;
+    }
+    return this.config.webonly;
+  }
 }

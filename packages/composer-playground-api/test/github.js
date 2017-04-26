@@ -58,7 +58,7 @@ describe('GitHub routes', () => {
             child_process : {'exec' : execStub},
             request : requestMock,
             '../config/environment' : configMock
-    };
+        };
 
         //app = Util.createApp();
 
