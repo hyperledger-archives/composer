@@ -29,7 +29,6 @@ export class ConnectionProfileDataComponent {
     if (this.connectionProfileData && this.connectionProfileData.name === 'New Connection Profile'){
       this.startEditing();
     }
-    console.log('Profile Loaded', this.connectionProfileData);
   }
 
   @Output() profileUpdated = new EventEmitter();
@@ -85,6 +84,9 @@ export class ConnectionProfileDataComponent {
           this.expandedSection.push(sectionToExpand);
         }
       }
+    }
+    else{
+      throw new Error('Invalid connection profile type')
     }
 
 
@@ -189,7 +191,7 @@ export class ConnectionProfileDataComponent {
 
     }
     else{
-      console.log('Unknown connection profile type');
+      throw new Error('Unknown connection profile type');
     }
 
 
@@ -287,52 +289,54 @@ export class ConnectionProfileDataComponent {
     let form;
     let formErrors;
     let validationMessages;
-
-    if (this.connectionProfileData.profile.type === 'hlf'){
-      if (!this.v06Form){
-        return;
-      }
-      form = this.v06Form;
-      formErrors = this.v06FormErrors;
-      validationMessages = this.v06ValidationMessages;
+    if(!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')){
+      throw new Error('Invalid connection profile type')
     }
-    else if (this.connectionProfileData.profile.type === 'hlfv1'){
-      if (!this.v1Form){
-        return;
+    else{
+      if (this.connectionProfileData.profile.type === 'hlf'){
+        if (!this.v06Form){
+          return;
+        }
+        form = this.v06Form;
+        formErrors = this.v06FormErrors;
+        validationMessages = this.v06ValidationMessages;
       }
-      form = this.v1Form;
-      formErrors = this.v1FormErrors;
-      validationMessages = this.v1ValidationMessages;
-    }
+      else{
+        if (!this.v1Form){
+          return;
+        }
+        form = this.v1Form;
+        formErrors = this.v1FormErrors;
+        validationMessages = this.v1ValidationMessages;
+      }
 
-
-
-    for (const field in formErrors) {
-      // clear previous error message (if any)
-      formErrors[field] = '';
-      const control = form.get(field);
-
-      if (!control.valid) {
-        const messages = validationMessages[field];
-        if(control.constructor.name === 'FormArray'){
-          formErrors[field] = {};
-          for(let attribute in control.controls[0].controls){
-            for(const key in control.controls[0].controls[attribute].errors){
-              formErrors[field][attribute] = messages[attribute][key];
+      for (const field in formErrors) {
+        // clear previous error message (if any)
+        formErrors[field] = '';
+        const control = form.get(field);
+        if (!control.valid) {
+          const messages = validationMessages[field];
+          if(control.constructor.name === 'FormArray'){
+            formErrors[field] = {};
+            for(let attribute in control.controls[0].controls){
+              for(const key in control.controls[0].controls[attribute].errors){
+                formErrors[field][attribute] = messages[attribute][key];
+              }
             }
           }
-        }
-        else{
-          for (const key in control.errors) {
-            formErrors[field] += messages[key] + ' ';
+          else{
+            for (const key in control.errors) {
+              formErrors[field] += messages[key] + ' ';
+            }
           }
-        }
 
+        }
       }
     }
+
   }
 
-  private v06FormErrors = {
+  public v06FormErrors = {
     'name': '',
     'peerURL': '',
     'membershipServicesURL': '',
@@ -342,7 +346,7 @@ export class ConnectionProfileDataComponent {
     'invokeWaitTime': ''
   };
 
-  private v1FormErrors = {
+  public v1FormErrors = {
     'name': '',
     'peers': {},
     'orderers': {},
@@ -355,7 +359,7 @@ export class ConnectionProfileDataComponent {
 
   };
 
-  v06ValidationMessages = {
+  public v06ValidationMessages = {
     'name': {
       'required': 'A connection profile name is required.',
       'pattern': 'A new connection profile cannot use the default name.'
@@ -381,7 +385,7 @@ export class ConnectionProfileDataComponent {
 
   };
 
-  v1ValidationMessages = {
+  public v1ValidationMessages = {
     'name': {
       'required': 'A connection profile name is required.',
       'pattern': 'A new connection profile cannot use the default name.'
@@ -391,7 +395,7 @@ export class ConnectionProfileDataComponent {
         'required': 'Every Peer Request URL is required.'
       },
       'eventURL': {
-        'required': 'Every Peer Event URL is required'
+        'required': 'Every Peer Event URL is required.'
       },
       'cert': {
 
@@ -436,46 +440,51 @@ export class ConnectionProfileDataComponent {
   onSubmit() {
 
     let connectionProfile;
-    if (this.connectionProfileData.profile.type === 'hlf'){
-      connectionProfile = this.v06Form.value;
+    if(!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')){
+      throw new Error('Unknown profile type');
     }
-    else if (this.connectionProfileData.profile.type === 'hlfv1'){
-      connectionProfile = this.v1Form.value;
-    }
+    else{
+      if (this.connectionProfileData.profile.type === 'hlf'){
+        connectionProfile = this.v06Form.value;
+      }
+      else {
+        connectionProfile = this.v1Form.value;
+      }
+      // Need to set this as user doesn't input profile type
+      connectionProfile.type = this.connectionProfileData.profile.type;
+      this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {
+        this.editing = false;
 
-    // Need to set this as user doesn't input profile type
-    connectionProfile.type = this.connectionProfileData.profile.type;
-    this.connectionProfileService.createProfile(connectionProfile.name, connectionProfile).then(() => {
-      this.editing = false;
-
-      // Need to set the profile back to its original form
-      let profileToSet = {
-        name: connectionProfile.name,
-        profile: connectionProfile,
-        default: false
-      };
+        // Need to set the profile back to its original form
+        let profileToSet = {
+          name: connectionProfile.name,
+          profile: connectionProfile,
+          default: false
+        };
 
 
 
 
-      return this.connectionProfileService.getAllProfiles().then((connectionProfiles) => {
-        let profiles = Object.keys(connectionProfiles).sort();
-        profiles.forEach((profile) => {
-          let connectionProfile = connectionProfiles[profile];
-          if(profileToSet.name !== connectionProfile.name){
-            if (connectionProfile.name === this.connectionProfileData.name){
+        return this.connectionProfileService.getAllProfiles().then((connectionProfiles) => {
+          let profiles = Object.keys(connectionProfiles).sort();
+          profiles.forEach((profile) => {
+            let connectionProfile = connectionProfiles[profile];
+            if(profileToSet.name !== connectionProfile.name && connectionProfile.name === this.connectionProfileData.name){
               return this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
             }
-          }
+          });
+
+
+        }).then(() => {
+          this.connectionProfileData = profileToSet;
+          this.profileUpdated.emit(true);
         });
 
-
-      }).then(() => {
-        this.connectionProfileData = profileToSet;
-        this.profileUpdated.emit(true);
       });
+    }
 
-    });
+
+
   }
 
   stopEditing(){
@@ -507,7 +516,7 @@ export class ConnectionProfileDataComponent {
 
 
 
-  private openAddCertificateModal(index,type){
+  openAddCertificateModal(index,type){
 
 
     if(type === 'orderers'){
@@ -534,7 +543,7 @@ export class ConnectionProfileDataComponent {
         this.v1Form.controls['peers']['controls'][index].patchValue({'cert':result.cert,'hostnameOverride':result.hostnameOverride})
       }
       else{
-        console.log('Type unrecognised:',type)
+        throw new Error('Unrecognized type ' + type)
       }
     })
     .catch((closed) => {});

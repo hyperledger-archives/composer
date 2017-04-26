@@ -45,8 +45,6 @@ export class AppComponent {
   private currentIdentity: any = null;
   private subs: any = null;
 
-  private usingLocally = false;
-
   private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
 
