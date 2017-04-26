@@ -59,6 +59,12 @@ class hlf {
         return shell.exec(cmdString).code;
     }
 
+    /** Get the location of the hlf code
+    * @return {Object} }here the hlfv1 file is
+    */
+    static getLocn() {
+        return require.resolve('./hlfv1.js');
+    }
 
     /**
     *  @param {Array} argv command arguments
@@ -67,7 +73,7 @@ class hlf {
     static runCmd(argv){
         // work out where we are and also get the directory of the scripts
         // that has already been processed by the
-        let dir = path.dirname(require.resolve('./hlfv1.js'));
+        let dir = path.dirname(this.getLocn());
         let scripts = argv.resolveDir;
 
         let errorCode = 0;

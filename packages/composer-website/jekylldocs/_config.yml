@@ -9,7 +9,7 @@ url: "https://fabric-composer.github.io/fabric-composer/"
 #be the sitebaseurl - but the build scripts handle this for you.
 #
 #baseurl: "/"
-
+#baseurl: "/unstable"
 
 
 
