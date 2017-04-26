@@ -45,6 +45,8 @@ export class AppComponent {
   private currentIdentity: any = null;
   private subs: any = null;
 
+  private usingLocally = false;
+
   private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
 
@@ -170,6 +172,15 @@ export class AppComponent {
       })
       .then((currentIdentity) => {
         this.currentIdentity = currentIdentity;
+        return this.adminService.isWebOnly();
+      })
+      .then((webOnly) => {
+        if(webOnly) {
+          this.usingLocally = false;
+        }
+        else {
+          this.usingLocally = true;
+        }
       });
   }
 

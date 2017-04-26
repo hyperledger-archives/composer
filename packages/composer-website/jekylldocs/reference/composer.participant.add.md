@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Fabric Composer Participant Add Command
+title: Hyperledger Composer Participant Add Command
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Fabric Composer Participant Add Command
+excerpt: Hyperledger Composer Participant Add Command
 ---
 
 # Composer participant add

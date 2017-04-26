@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Network Undeploy CLI
+title: Hyperledger Composer Network Undeploy CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Composer Network Undeploy CLI
 ---
 
-# Fabric Composer Network Undeploy
+# {{site.data.conrefs.composer_full}} Network Undeploy
 
 ---
 

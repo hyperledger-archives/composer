@@ -104,6 +104,7 @@ if [ -z "${TRAVIS_TAG}" ]; then
     cf set-env composer-playground-unstable CLIENT_ID ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_ID}
     cf set-env composer-playground-unstable CLIENT_SECRET ${GH_NEXT_UNSTABLE_OAUTH_CLIENT_SECRET}
     cf set-env composer-playground-unstable USABILLA_ID ${USABILLA_ID}
+    cf set-env composer-playground-unstable COMPOSER_CONFIG '{"webonly":true}'
     cf start composer-playground-unstable
     popd
 
@@ -145,6 +146,7 @@ else
     cf set-env composer-playground CLIENT_ID ${GH_NEXT_OAUTH_CLIENT_ID}
     cf set-env composer-playground CLIENT_SECRET ${GH_NEXT_OAUTH_CLIENT_SECRET}
     cf set-env composer-playground USABILLA_ID ${USABILLA_ID}
+    cf set-env composer-playground COMPOSER_CONFIG '{"webonly":true}'
     cf start composer-playground
     popd
 

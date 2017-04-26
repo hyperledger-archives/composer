@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Network List CLI
+title: Hyperledger Composer Network List CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Composer Network List CLI
 ---
 
-# Fabric Composer Network List
+# {{site.data.conrefs.composer_full}} Network List
 
 ---
 

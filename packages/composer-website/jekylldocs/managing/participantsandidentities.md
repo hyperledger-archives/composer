@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer - Participants and Identities
 category: concepts
-sidebar: sidebars/introduction.md
+sidebar: sidebars/managing.md
 excerpt: Business Network
 ---
 
@@ -64,6 +64,6 @@ function to use.
 
 ## Related Reference
 
-[Participant add command](../reference/composer.participant.add.html)  
-[Identity issue command](../reference/composer.identity.issue.html)  
-[Identity revoke command](../reference/composer.identity.revoke.html)  
+[Participant add command](../reference/participant-add.html)  
+[Identity issue command](../reference/identity-issue.html)  
+[Identity revoke command](../reference/identity-revoke.html)  
