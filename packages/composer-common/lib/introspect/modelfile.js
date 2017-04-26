@@ -20,6 +20,7 @@ const EnumDeclaration = require('./enumdeclaration');
 const ConceptDeclaration = require('./conceptdeclaration');
 const ParticipantDeclaration = require('./participantdeclaration');
 const TransactionDeclaration = require('./transactiondeclaration');
+const EventDeclaration = require('./eventdeclaration');
 const IllegalModelException = require('./illegalmodelexception');
 const ParseException = require('./parseexception');
 const ModelUtil = require('../modelutil');
@@ -86,6 +87,9 @@ class ModelFile {
             }
             else if(thing.type === 'TransactionDeclaration') {
                 this.declarations.push( new TransactionDeclaration(this, thing) );
+            }
+            else if(thing.type === 'EventDeclaration') {
+                this.declarations.push( new EventDeclaration(this, thing) );
             }
             else if(thing.type === 'ParticipantDeclaration') {
                 this.declarations.push( new ParticipantDeclaration(this, thing) );
@@ -357,6 +361,20 @@ class ModelFile {
     }
 
     /**
+     * Get the EventDeclaration defined in this ModelFile or null
+     * @param {string} name the name of the type
+     * @return {EventDeclaration} the EventDeclaration with the given short name
+     */
+    getEventDeclaration(name) {
+        let classDeclaration = this.getLocalType(name);
+        if(classDeclaration instanceof EventDeclaration) {
+            return classDeclaration;
+        }
+
+        return null;
+    }
+
+    /**
      * Get the ParticipantDeclaration defined in this ModelFile or null
      * @param {string} name the name of the type
      * @return {ParticipantDeclaration} the ParticipantDeclaration with the given short name
@@ -410,6 +428,14 @@ class ModelFile {
      */
     getTransactionDeclarations() {
         return this.getDeclarations(TransactionDeclaration);
+    }
+
+    /**
+     * Get the EventDeclarations defined in this ModelFile
+     * @return {EventDeclaration[]} the EventDeclarations defined in the model file
+     */
+    getEventDeclarations() {
+        return this.getDeclarations(EventDeclaration);
     }
 
     /**

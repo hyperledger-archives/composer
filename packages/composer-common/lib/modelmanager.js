@@ -312,6 +312,16 @@ class ModelManager {
     }
 
     /**
+     * Get the EventDeclarations defined in this model manager
+     * @return {EventDeclaration[]} the EventDeclaration defined in the model manager
+     */
+    getEventDeclarations() {
+        return this.getModelFiles().reduce((prev, cur) => {
+            return prev.concat(cur.getEventDeclarations());
+        }, []);
+    }
+
+    /**
      * Get the ParticipantDeclarations defined in this model manager
      * @return {ParticipantDeclaration[]} the ParticipantDeclaration defined in the model manager
      */
