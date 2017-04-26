@@ -65,21 +65,20 @@ class hlf {
     *  @return {int} error code
     */
     static runCmd(argv){
-        let dir;
-        let scripts;
-        path.dirname(require.resolve('./hlfv1.js'));
-        scripts = 'hlfv1';
+        // work out where we are and also get the directory of the scripts
+        // that has already been processed by the
+        let dir = path.dirname(require.resolve('./hlfv1.js'));
+        let scripts = argv.resolveDir;
 
         let errorCode = 0;
         if (argv.start){
-
-            console.log('Creating Composer connection profile');
-            let createProfile = path.resolve(dir,'..',scripts,'createProfile.sh');
-            errorCode = this._cmd(createProfile);
-
             console.log('Starting Hyperledger Fabric v1.0');
             let startHLF = path.resolve(dir,'..',scripts,'start-hyperledger.sh');
             this._cmd(startHLF);
+        } else if (argv.createProfile) {
+            console.log('Creating Composer connection profile');
+            let createProfile = path.resolve(dir,'..',scripts,'createProfile.sh');
+            errorCode = this._cmd(createProfile);
         } else if (argv.stop){
             console.log('Stopping Hyperledger Fabric');
             errorCode =  this._cmd(path.resolve(dir,'..',scripts,'stop-hyperledger.sh'));
@@ -90,7 +89,7 @@ class hlf {
             console.log('Killing and stoping Hypledger Fabric docker containers');
             console.log('Downloading Docker images Hyperledger Fabric');
             errorCode =  this._cmd(path.resolve(dir,'..',scripts,'teardown.sh'));
-        } else if (argv.list){
+        } else /*if (argv.list)*/{
             let shell = require('shelljs');
             let files = shell.ls(path.resolve(dir,'..',scripts));
 

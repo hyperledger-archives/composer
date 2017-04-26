@@ -19,17 +19,18 @@ module.exports.desc = 'Composer command to run scripts to help create local Hype
 module.exports.builder = function (yargs){
 
     return yargs.option('dir',{alias: 'r', required: true,  describe: 'Which release of Hyperledger Fabric to use [ hlf | hlfv1 ]', type: 'string' , default:'hlfv1'})
-            .option('download',{alias: 'd', required: false, describe:'Pulls and tags the latest version of the Hyperledger Fabric Docker images'})
-            .option('start',{alias: 's', required: false, describe:'Configures and Starts the Hyperledger Fabric instance for a development use ONLY'})
+            .option('download',{alias: 'd', required: false, describe:'Runs the script to pull the Hyperledger Fabric Docker images'})
+            .option('createProfile',{alias: 'c', required: false, describe:'Run the createProfile script to create basic Composer Connection Profike'})
+            .option('start',{alias: 's', required: false, describe:'Configures and Starts the Hyperledger Fabric instance for a development use'})
             .option('stop',{alias: 'x', required: false, describe:'Stops the Hyperledger Fabric intstance, can be restarted with start'})
             .option('teardown',{alias: 't', required: false, describe:'Removes the Hyperledger Fabric instance and cleans up Composer connection profiles. (Cached Docker images not removed)'})
             // .option('purge', {alias: 'p', required: false, describe: 'Deletes the Composer default connection profiles'})
-            .conflicts({'download':'stop','start':'stop','stop':'','delete':'start'})
+            .conflicts({'download':'stop','start':'stop','stop':'','teardown':'start'})
             .option('list', {alias: 'l', required:false, describe: 'Shows the directory of the example Fabric control scripts '})
-            .option('run', {alias: 'r', required:false, describe: 'runs the script name as an argurment to this options'})
-            // .usage('composer run  --download \n  composer run  fabric --start')
-            .group(['download','start','stop','teardown'],'Script Shortcuts')
-            .group(['run','list','dir'],'Run Scripts')
+            // .option('run', {alias: 'r', required:false, describe: 'runs the script name as an argurment to this options'})
+            .usage('Runs scripts to help control a Hyperledger Fabric for development use. ')
+            .group(['download','start','stop','teardown','createProfile'],'Script Shortcuts')
+            .group(['list','dir'],'List scripts and specify directory')
             .demand(0)
             ;
 };
@@ -38,14 +39,17 @@ module.exports.handler = (argv) => {
     let hlf;
 
     // console.log(argv);
-
+    // for safety, we create and then later use the resolveDir property.
+    // don't want anybody running anything that shouldn't really be run
     if (argv.dir === 'hlf'){
         console.log('Hyperledger Fabric v0.6 starting with default configuration for Composer development');
-        hlf = require ('./dev/lib/scripts.js');
+        argv.resolveDir = 'scripts';
     } else {
         console.log('Hyperledger Fabric v1-alpha starting with default configuration for Composer development');
-        hlf = require ('./dev/lib/hlfv1.js');
+        argv.resolveDir = 'hlfv1';
     }
+
+    hlf = require ('./dev/lib/hlfv1.js');
 
     argv.thePromise = hlf.handler(argv)
     .then(() => {
