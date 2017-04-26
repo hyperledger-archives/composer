@@ -104,7 +104,7 @@ module.exports = function (options) {
         'HMR' : METADATA.HMR,
         'DOCKER' : DOCKER,
         'DOCKER_COMPOSE' : DOCKER_COMPOSE,
-        'PLAYGROUND_API' : JSON.stringify(PLAYGROUND_API)
+        'PLAYGROUND_API' : JSON.stringify(PLAYGROUND_API),
         /* 'process.env': {
          'ENV': JSON.stringify(METADATA.ENV),
          'NODE_ENV': JSON.stringify(METADATA.ENV),
@@ -166,4 +166,4 @@ module.exports = function (options) {
     }
 
   });
-}
+};

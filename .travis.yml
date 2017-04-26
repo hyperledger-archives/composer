@@ -36,3 +36,4 @@ sudo: required
 notifications:
   pushover:
     api_key: ayq7zvsxc641sfna65njkik1x9y25b
+    webhooks: https://chat.hyperledger.org/hooks/BG3PeSerMSWRDSceE/GPCnCSqxMoyfqaTvLePSGudWjoCBwAcCT6bAKYRjK2sKSCM9
