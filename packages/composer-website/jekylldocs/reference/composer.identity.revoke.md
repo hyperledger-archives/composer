@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Fabric Composer Identity Revoke Command
+title: Hyperledger Composer Identity Revoke Command
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Fabric Composer Identity Revoke Command
+excerpt: Hyperledger Composer Identity Revoke Command
 ---
 
 # composer identity revoke

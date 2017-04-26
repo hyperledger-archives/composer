@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Network Ping CLI
+title: Hyperledger Composer Network Ping CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Composer Network Ping CLI
 ---
 
-# Fabric Composer Network Ping
+# {{site.data.conrefs.composer_full}} Network Ping
 
 ---
 

@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Network Deploy CLI
+title: Hyperledger Composer Network Deploy CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Composer Network Deploy CLI
 ---
 
-# Fabric Composer Network Deploy
+# {{site.data.conrefs.composer_full}} Network Deploy
 
 ---
 
