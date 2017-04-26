@@ -2,14 +2,14 @@
 layout: default
 title: Reference
 category: reference
-excerpt: Fabric Composer module info
+excerpt: Hyperledger Composer module info
 ---
 
 ## Reference - Overview
 
 ---
 
->The Reference section serves to provide more detailed information about subjects such as Fabric Composer, its modules and components, the Domain Specific language, APIs, Transaction Processors and so on.
+>The Reference section serves to provide more detailed information about subjects such as {{site.data.conrefs.composer_full}}, its modules and components, the Domain Specific language, APIs, Transaction Processors and so on.
 
 ---
 

@@ -1,10 +1,11 @@
 **[Introduction](../introduction/introduction.html)**
 **[Tutorials](../tutorials/tutorialindex.html)**
-**[Installing](../installing/prerequisites.html)**
+**[Installing](../installing/installingindex.html)**
 **[Defining Business Networks](../business-network/businessnetwork.html)**
 **[Writing Applications](../applications/genapp.html)**
 **[Integrating Existing Systems](../integrating/integrating-index.html)**
-**[Managing and Operating](../managing/participant-add.html)**
+**[Managing and Operating](../managing/managingindex.html)**
+[Participants and Identities](../managing/participantsandidentities.html)
 [Adding a participant](../managing/participant-add.html)
 [Issuing an identity to a participant](../managing/identity-issue.html)
 [Revoking an identity from a participant](../managing/identity-revoke.html)

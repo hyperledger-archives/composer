@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Archive Create CLI
+title: Hyperledger Composer Archive Create CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Composer Archive Create CLI
 ---
 
-# Fabric Composer Archive Create
+# {{site.data.conrefs.composer_full}} Archive Create
 
 ---
 

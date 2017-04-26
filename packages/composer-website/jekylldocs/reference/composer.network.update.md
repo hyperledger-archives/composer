@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Network Update CLI
+title: Hyperledger Composer Network Update CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Composer Network Update CLI
 ---
 
-# Fabric Composer Network Update
+# {{site.data.conrefs.composer_full}} Network Update
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Fabric Composer - Transaction Processor Functions
+title: Hyperledger Composer - Transaction Processor Functions
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Creating transaction processor functions in Javascript
@@ -10,7 +10,7 @@ excerpt: Creating transaction processor functions in Javascript
 
 ---
 
-A Fabric Composer Business Network Definition is composed of a set of model files
+A {{site.data.conrefs.composer_full}} Business Network Definition is composed of a set of model files
 and a set of scripts. The scripts may contain transaction processor
 functions that implement the transactions defined in the Business
 Network Definition's model files.
