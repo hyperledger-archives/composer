@@ -8,24 +8,17 @@ import {AlertService} from '../services/alert.service';
   templateUrl: './add-certificate.component.html',
   styleUrls: ['./add-certificate.component.scss'.toString()]
 })
+
 export class AddCertificateComponent {
 
   @Input() initialData: any = {};
 
-  someData:any = {};
-  currentFile = null;
-  currentFileName = null;
   fileType = '';
-
   expandInput: boolean = false;
-
   maxFileSize: number = 5242880;
   supportedFileTypes: string[] = ['.pem'];
-
   addedCertificate: string = '';
   addedHostname: string = '';
-
-  error = null;
 
   constructor(private alertService: AlertService,
               public activeModal: NgbActiveModal,
@@ -33,14 +26,6 @@ export class AddCertificateComponent {
 
               this.addedCertificate = this.connectionProfileService.getCertificate();
               this.addedHostname = this.connectionProfileService.getHostname();
-
-  }
-
-  removeFile() {
-    this.expandInput = false;
-    this.currentFile = null;
-    this.currentFileName = null;
-    this.fileType = '';
   }
 
   fileDetected() {
@@ -52,15 +37,17 @@ export class AddCertificateComponent {
   }
 
   fileAccepted(file: File) {
-    let type = file.name.substr(file.name.lastIndexOf('.') + 1);
+    let type = file.name.substring(file.name.lastIndexOf('.'));
+
     this.getDataBuffer(file)
       .then((data) => {
-        if (type === 'pem') {
+        if (this.supportedFileTypes.indexOf(type) > -1) {
+          // Is supported
           this.expandInput = true;
-          this.createCertificate(file, data);
-        }
-        else {
-          throw new Error('Unexpected File Type');
+          this.createCertificate(type, data);
+        } else {
+          // Not supported
+          throw new Error('Unsupported File Type');
         }
       })
       .catch((err) => {
@@ -83,30 +70,19 @@ export class AddCertificateComponent {
     });
   }
 
-  createCertificate(file: File, dataBuffer) {
-    this.fileType = 'pem';
-
+  createCertificate(type: string, dataBuffer) {
+    this.fileType = type;
     this.addedCertificate = dataBuffer.toString();
-
-    // this.currentFileName = this.currentFile.getIdentifier();
   }
-
-
 
   fileRejected(reason: string) {
     this.alertService.errorStatus$.next(reason);
   }
 
-
-  changeCurrentFileType() {
-    this.currentFile = null;
-  }
-
-  private addCertificate(): void {
+  addCertificate(): void {
     let additionalData = {};
     additionalData['cert'] = this.addedCertificate;
     additionalData['hostnameOverride'] = this.addedHostname;
     this.activeModal.close(additionalData);
-
   }
 }

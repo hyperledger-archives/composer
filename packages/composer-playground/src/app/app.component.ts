@@ -45,6 +45,8 @@ export class AppComponent {
   private currentIdentity: any = null;
   private subs: any = null;
 
+  private usingLocally = false;
+
   private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
 
@@ -117,7 +119,7 @@ export class AppComponent {
       let userID = invitationData.userID;
       let userSecret = invitationData.userSecret;
       // Create the connection profile and set it as the default.
-      this.connectionProfileService.createProfile(connectionProfileName, connectionProfile);
+      this.adminService.getAdminConnection().createProfile(connectionProfileName, connectionProfile);
       this.connectionProfileService.setCurrentConnectionProfile(connectionProfileName);
       // Add the credentials to the wallet.
       let wallet = this.walletService.getWallet(connectionProfileName);
@@ -192,7 +194,7 @@ export class AppComponent {
 
   private updateConnectionData(): Promise <any > {
     let newConnectionProfiles = [];
-    return this.connectionProfileService.getAllProfiles()
+    return this.adminService.getAdminConnection().getAllProfiles()
       .then((connectionProfiles) => {
         let keys = Object.keys(connectionProfiles).sort();
         keys.forEach((key) => {
