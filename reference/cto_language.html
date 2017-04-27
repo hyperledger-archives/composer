@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Fabric Composer - Modeling Language | Fabric Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-1', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="http://composer-playground.mybluemix.net/">Playground</a>
+                </li>
+                <li>
+                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                </li>
+                <li>
+                    <a href="../introduction/introduction.html">Docs</a>
+                </li>
+                <li>
+                    <a href="../support/index.html">Community</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-3">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
+<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<a href="../reference/MeetTheModules.html">Meet the Modules</a>
+<a href="../reference/platforms.html">Supported Platforms</a>
+<a href="../reference/cto_language.html">Modeling Language</a>
+<a href="../reference/acl_language.html">Access Control Language</a>
+<a href="../reference/connectionprofile.html">Connection Profile</a>
+<a href="../reference/js_scripts.html">Transaction Processor Functions</a>
+<a href="../reference/commands.html">Command Line Interface</a>
+<a href="../reference/composer.generator.tests.html">Application Generator</a>
+<a href="../reference/composer.participant.add.html">CLI Add Participant</a>
+<a href="../reference/composer.identity.issue.html">CLI Issue Identity </a>
+<a href="../reference/composer.identity.revoke.html">CLI Revoke Identity</a>
+<a href="../jsdoc/index.html">API Documentation</a>
+<a href="../reference/glossary.html">Glossary</a>
+<strong><a href="../support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-9">
+          <section class="content-chunk">
+            
+              <h1 id="fabric-composer-modeling-language">Fabric Composer Modeling Language</h1>
+
+<hr>
+
+<p>Fabric Composer includes an Object-Oriented modeling language that is used to define
+the domain model for a business network definition.</p>
+
+<p>A Fabric Composer CTO file is composed of the following elements:</p>
+
+<ol>
+<li>A single namespace. All resource declarations within the file are implicitly
+in this namespace.</li>
+<li>Optional import declarations that import resources from other namespaces.</li>
+<li>A set of resource definitions (see below).</li>
+</ol>
+
+<h3 id="declarations-of-enumerated-types">Declarations of enumerated types</h3>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+* An enumerated type
+*/
+enum AnimalType {
+o SHEEP_GOAT
+o CATTLE
+o PIG
+o DEER_OTHER
+}
+</code></pre></div>
+<h3 id="declarations-of-assets-participants-transactions">Declarations of Assets, Participants, Transactions</h3>
+
+<p>Assets, Participants and Transactions are class definitions. The
+concepts of Asset, Participant and Transaction may be considered to be different
+stereotypes of the class type.</p>
+
+<p>A class in Fabric Composer is referred to as a Resource Definition. Therefore an
+Asset (instance) has-an Asset Definition.</p>
+
+<p>A resource definition has the following properties:</p>
+
+<ol>
+<li>A name</li>
+<li>A namespace defined by the namespace of its parent file</li>
+<li>An identifying field. For example, the Vehicle asset might be identified by
+the vin field. Identifying fields must be Strings.</li>
+<li>An optional super-type, which the resource definition extends.</li>
+<li>An optional &#39;abstract&#39; declaration, to indicate that this type cannot be created</li>
+<li>A set of named fields (data owned by the resource, using a has-a relationship)</li>
+<li><p>A set of relationships to other Composer types that are not owned by the resource
+but that may be referenced from the resource. Relationships are unidirectional.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * A Field asset. A Field is related to a list of animals
+ */
+asset Field identified by fieldId {
+  o String fieldId
+  o String name
+  --&gt; Animal[] animals
+}
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">/**
+ * A Farmer participant
+ */
+participant Farmer identified by farmerId {
+    o String farmerId
+    o String firstName
+    o String lastName
+    o String address1
+    o String address2
+    o String county
+    o String postcode
+}
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">/**
+ * An abstract transaction type for animal movements
+ */
+abstract transaction AnimalMovement identified by transactionId {
+  o String transactionId
+    --&gt; Animal animal
+}
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">/**
+ * A transaction type for an animal leaving a farm
+ */
+transaction AnimalMovementDeparture extends AnimalMovement {
+  --&gt; Field departureField
+}
+</code></pre></div></li>
+</ol>
+
+<h3 id="concepts">Concepts</h3>
+
+<p>Concepts are complex types (classes) that are not assets, participants or transactions. They are typically contained by an asset, participant or transaction.</p>
+
+<p>For example, below an abstract concept <code>Address</code> is defined, and then specialized into a <code>UnitedStatesAddress</code>. Note that concepts do not have an <code>identified by</code> field as they cannot be directly stored in registries or referenced in relationships.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">abstract concept Address {
+  o String street
+  o String city default ="Winchester"
+  o String country default = "UK"
+  o Integer[] counts optional
+}
+
+concept UnitedStatesAddress extends Address {
+  o String zipcode
+}
+</code></pre></div>
+<h3 id="primitive-types">Primitive types</h3>
+
+<p>Composer resources are defined in terms of the following primitive types:</p>
+
+<ol>
+<li>String : a UTF8 encoded String</li>
+<li>Double : a double precision 64 bit numeric value</li>
+<li>Integer : a 32 bit signed whole number</li>
+<li>Long : a 64 bit signed whole number</li>
+<li>DateTime : an ISO-8601 compatible time instance, with optional time zone
+and UTZ offset</li>
+<li>Boolean : a Boolean value, either true or false.</li>
+</ol>
+
+<h3 id="arrays">Arrays</h3>
+
+<p>All types in Composer may be declared as arrays using the [] notation. Hence</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Integer[] integerArray
+</code></pre></div>
+<p>Is an array of Integers stored in a field called &#39;integerArray&#39;. While</p>
+<div class="highlight"><pre><code class="language-" data-lang="">--&gt; Animal[] incoming
+</code></pre></div>
+<p>Is an array of relationships to the Animal type, stored in a field called
+&#39;incoming&#39;.</p>
+
+<h3 id="relationships">Relationships</h3>
+
+<p>A relationship in the Composer language is a tuple composed of:</p>
+
+<ol>
+<li>The namespace of the type being referenced</li>
+<li>The type name of the type being referenced</li>
+<li>The identifier of the instance being referenced</li>
+</ol>
+
+<p>Hence a relationship could be to:
+    org.acme.Vehicle#123456</p>
+
+<p>This would be a relationship to the Vehicle type declared in the org.acme
+namespace with the identifier 123456.</p>
+
+<p>Relationships are unidirectional and deletes do not cascade, ie. removing the relationship has no impact on the thing that is being pointed to. Removing the thing being pointed to does not invalidate the relationship.</p>
+
+<p>Relationships must be <em>resolved</em> to retrieve an instance of the object being
+referenced. The act of resolution may result in null, if the object no longer
+exists or the information in the relationship is invalid.</p>
+
+<h3 id="field-validators">Field Validators</h3>
+
+<p>String fields may include an optional regular expression, which is used to validate the contents of the field. Careful use of field validators allows Composer to perform rich data validation, leading to fewer errors and less boilerplate code.</p>
+
+<p>The example below declares that the <code>Farmer</code> participant contains a field <code>postcode</code> that must conform to the regular expression for valid UK postcodes.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">participant Farmer extends Participant {
+    o String firstName default="Old"
+    o String lastName default="McDonald"
+    o String address1
+    o String address2
+    o String county
+    o String postcode regex=/(GIR 0AA)|((([A-Z-[QVf]][0-9][0-9]?)|(([A-Z-[QVf]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVf]][0-9][A-HJKPSTUW])|([A-Z-[QVf]][A-Z-[IJZ]][0-9][ABEHMNPRVWfY])))) [0-9][A-Z-[CIKMOV]]{2})/
+}
+</code></pre></div>
+<p>Double, Long or Integer fields may include an optional range expression, which is used to validate the contents of the field.</p>
+
+<p>The example below declared that the <code>Vehicle</code> asset has an Integer field <code>year</code> which defaults to 2016 and must be 1990, or higher. Range expressions may omit the lower or upper bound if checking is not required.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset Vehicle extends Base {
+  // An asset contains Fields, each of which can have an optional default value
+  o String model default="F150"
+  o String make default="FORD"
+  o String reg default="ABC123"
+  // A numeric field can have a range validation expression
+  o Integer year default=2016 range=[1990,] optional // model year must be 1990 or higher
+  o Integer[] integerArray
+  o State state
+  o Double value
+  o String colour
+  o String V5cID regex=/^[A-z][A-z][0-9]{7}/
+  o String LeaseContractID
+  o Boolean scrapped default=false
+  o DateTime lastUpdate optional
+  --&gt; Participant owner //relationship to a Participant, with the field named 'owner'.
+  --&gt; Participant[] previousOwners optional // Nary relationship
+  o Customer customer
+}
+</code></pre></div>
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+    </article>
+</div>
+
+    
+
+    
+    <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/fabric-composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
+      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+
+      new Clipboard('.btn', {
+    text: function() {
+
+        return document.querySelector("[style='display:none;']").value;
+    }
+});
+  });
+
+</script>
+
+</html>

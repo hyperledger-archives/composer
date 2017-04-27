@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Hyperledger Composer - Business Network Definition | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="http://composer-playground.mybluemix.net/">Playground</a>
+                </li>
+                <li>
+                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                </li>
+                <li>
+                    <a href="../introduction/introduction.html">Docs</a>
+                </li>
+                <li>
+                    <a href="../support/index.html">Community</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-3">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<a href="../introduction/key-concepts.html">Components and Concepts</a>
+<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
+<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-9">
+          <section class="content-chunk">
+            
+              <h1 id="business-network-definition">Business Network Definition</h1>
+
+<hr>
+
+<p>Business Network Definitions are a key concept of the Hyperledger Composer programming model. They are represented by the <code>BusinessNetworkDefinition</code> class, defined in the <code>composer-common</code> module and exported by both <code>composer-admin</code> and <code>composer-client</code>.</p>
+
+<p>Business Network Definitions are composed of:</p>
+
+<ul>
+<li>a set of model files</li>
+<li>a set of Javascript files</li>
+</ul>
+
+<p>The model files defined the business domain for a business network, while the Javascript files contain transaction processor functions. The transaction processor functions run on a Hyperledger Fabric and have access to the asset registries that are stored in the world state of the Hyperledger Fabric blockchain.</p>
+
+<p>The model files are typically created by business analysts, as they define the structure and relationships between model elements: assets, participants and transactions.</p>
+
+<p>The Javascript files are typically created by developers who are implementing business requirements provided by business analysts.</p>
+
+<p>Once defined, a Business Network Definition can be packaged into an archive using the <code>composer</code> command line interface. These archives can then be deployed, undeployed or updated on a Fabric, using the <code>AdminConnection</code> class from the <code>composer-admin</code> module.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+
+    
+
+    
+    <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/fabric-composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
+      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+
+      new Clipboard('.btn', {
+    text: function() {
+
+        return document.querySelector("[style='display:none;']").value;
+    }
+});
+  });
+
+</script>
+
+</html>

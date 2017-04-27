@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Fabric Composer -  Overview | Fabric Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-1', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="http://composer-playground.mybluemix.net/">Playground</a>
+                </li>
+                <li>
+                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                </li>
+                <li>
+                    <a href="../introduction/introduction.html">Docs</a>
+                </li>
+                <li>
+                    <a href="../support/index.html">Community</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-3">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<a href="../introduction/businessnetwork.html">Understanding Business Networks</a>
+<a href="../introduction/businessnetworkdefinition.html">Business Network Definition</a>
+<a href="../introduction/participantsandidentities.html">Participants and Transactions</a>
+<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
+<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-9">
+          <section class="content-chunk">
+            
+              <hr>
+
+<h1 id="welcome-to-fabric-composer">Welcome to Fabric Composer</h1>
+
+<hr>
+
+<p>You can use Fabric Composer to easily define your business network, creating and tracking assets and performing transactions. Business networks represent an economic network made up of participants, assets, and the transactions that are performed between them. Assets are tangible or intangible goods, services, or property, and are stored in registries. Transactions are operations which may transform, create, and transfer assets or participants. Participants can interact with multiple business networks and maintain assets as they move between them using set identities.</p>
+
+<p>Applications can consume the data from business networks, providing end users with simple and controlled access points to the business network. Business networks can also be integrated with existing systems to create assets, transactions, and participants based on existing data.</p>
+
+<p>Fabric Composer requires and exploits the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> technology, using the blockchain consensus protocol to ensure that transactions are validated by business network participants.</p>
+
+<hr>
+
+<h2 id="key-fabric-composer-concepts-diagram">Key Fabric Composer concepts diagram</h2>
+
+<hr>
+
+<p><img src="/assets/img/Composer-Diagram.svg" alt="Diagram of Fabric Composer"></p>
+
+<hr>
+
+<h2 id="how-does-fabric-composer-work-in-practise">How does Fabric Composer work in practise?</h2>
+
+<hr>
+
+<p>For an example of a business network in action; a realtor may have a business network containing houses and listings as assets. Participants could include buyers and homeowners. Transactions might include buying or selling houses, and creating and closing listings. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor may want to create an application to present buyers and sellers participants with a simple user interface for viewing open listings and making offers. This business network could also be integrated with the existing inventory system for the realtor, allowing for the addition of new houses as assets. Relevant other parties can be registered as participants whilst maintaining their own business network, for example a land registry might interact with a buyer winner to transfer ownership of the land.</p>
+
+<hr>
+
+<h2 id="where-do-i-go-from-here">Where do I go from here?</h2>
+
+<hr>
+
+<p>To get started with Fabric Composer right away, try the <a href="../tutorials/tutorialindex.html">Fabric Composer tutorials</a>, to learn more about Fabric Composer read <a href="../introduction/businessnetwork.html">understanding business networks</a>, to get installed and trying the full product immediately go to <a href="../installing/prerequisites.html">installing Fabric Composer</a>.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+    </article>
+</div>
+
+    
+
+    
+    <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/fabric-composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
+      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+
+      new Clipboard('.btn', {
+    text: function() {
+
+        return document.querySelector("[style='display:none;']").value;
+    }
+});
+  });
+
+</script>
+
+</html>

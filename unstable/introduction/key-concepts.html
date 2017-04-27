@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Key Concepts in Hyperledger Composer | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  <script src="/assets/js/clipboard.min.js"></script>
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="/assets/css/footer.css" rel="stylesheet">
+    <link href="/assets/css/prettify.css" rel="stylesheet">
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="http://composer-playground.mybluemix.net/">Playground</a>
+                </li>
+                <li>
+                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                </li>
+                <li>
+                    <a href="../introduction/introduction.html">Docs</a>
+                </li>
+                <li>
+                    <a href="../support/index.html">Community</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-3">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<a href="../introduction/key-concepts.html">Components and Concepts</a>
+<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
+<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-9">
+          <section class="content-chunk">
+            
+              <h1 id="features-and-concepts-in-hyperledger-composer">Features and Concepts in Hyperledger Composer</h1>
+
+<hr>
+
+<p>Hyperledger Composer is a programming model containing a modeling language, and a set of APIs to quickly define and deploy business networks and applications that allow <strong>participants</strong> to send <strong>transactions</strong> that exchange <strong>assets</strong>.</p>
+
+<hr>
+
+<h2 id="framework-features">Framework Features</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: center">Component</th>
+<th style="text-align: center">Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: center">composer-admin, composer-client, composer-common</td>
+<td style="text-align: center">Composer-admin, composer-client, and composer-common contain the APIs to interact with a Hyperledger Composer runtime. Composer-admin contains APIs for deploying and updating a business network, composer-client contains APIs for manipulating resources within registries via transactions.</td>
+</tr>
+<tr>
+<td style="text-align: center">composer-cli</td>
+<td style="text-align: center">Composer-cli contains</td>
+</tr>
+<tr>
+<td style="text-align: center">composer-runtime</td>
+<td style="text-align: center">There are several versions of the composer-runtime designed for different environments. The embedded runtime runs within local storage, the hlf and hlfv1 runtimes run on Hyperledger Fabric versions 0.6 and 1.0.</td>
+</tr>
+<tr>
+<td style="text-align: center">composer-connector</td>
+<td style="text-align: center">The composer-connector components connect your Composer to a Hyperledger Fabric instance.</td>
+</tr>
+<tr>
+<td style="text-align: center">composer-rest-server</td>
+<td style="text-align: center">The composer-rest-server component creates and connects you to a REST API interface containing APIs for interacting with your business network.</td>
+</tr>
+<tr>
+<td style="text-align: center">generator-fabric-composer</td>
+<td style="text-align: center">The generator-fabric-composer component contains a Yeoman module for generating applications using data from your business network.</td>
+</tr>
+<tr>
+<td style="text-align: center">loopback-connector-composer</td>
+<td style="text-align: center">The loopback-connector-composer component allows you to connect loopback-compatible systems to your Composer business network.</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="key-concepts-in-hyperledger-composer">Key Concepts in Hyperledger Composer</h2>
+
+<h3 id="blockchain-state-storage">Blockchain State Storage</h3>
+
+<p>The current state of assets and participants are stored on the blockchain, administered by Hyperledger Fabric. Hyperledger Fabric runs consensus checks to ensure the validity of all blocks in the blockchain. For more information on Hyperledger Fabric consensus, see the <a href="https://hyperledger-fabric.readthedocs.io/en/latest/fabric_model.html#consensus">Hyperledger Fabric documentation</a>.</p>
+
+<hr>
+
+<h3 id="assets">Assets</h3>
+
+<p>Assets are tangible or intangible goods, services, or property, and are stored in registries. Assets can represent almost anything in a business network, for example, a house for sale, the sale listing, the land registry certificate for that house, and the insurance documents for that house may all be assets in one or more business networks.</p>
+
+<p>Assets must have a unique identifier, but other than that, they can contain whatever properties you define.</p>
+
+<hr>
+
+<h3 id="participants">Participants</h3>
+
+<p>Participants are members of a business network. Participant types can be defined and limited by an access control document which makes up part of the business network definition.</p>
+
+<hr>
+
+<h3 id="transactions">Transactions</h3>
+
+<p>Transactions are the mechanism by which participants interact with assets. This could be as simple as a participant placing a bid on a asset in an auction, or an auctioneer marking an auction closed, automatically transferring ownership of the asset to the highest bidder.</p>
+
+<hr>
+
+<h3 id="apis">APIs</h3>
+
+<p>The <code>composer-admin</code>, <code>composer-client</code>, and <code>composer-common</code> components contain the APIs to interact with a Hyperledger Composer runtime. The <code>composer-rest-server</code> component generates a unique RESTful API for interacting with your deployed business network.</p>
+
+<hr>
+
+<h3 id="hyperledger-fabric-1-0-support">Hyperledger Fabric 1.0 Support</h3>
+
+<p>Hyperledger Composer supports the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.</p>
+
+<p>Hyperledger Fabric v1.0 adds support for channels, orderers, and certificate authorities. For more information on Hyperledger Fabric v1.0, see the <a href="https://hyperledger.org">Hyperledger Fabric documentation</a>.</p>
+
+<p>Hyperledger Fabric versions 0.6 and 1.0 are supported.</p>
+
+<hr>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+
+    
+
+    
+    <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/fabric-composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
+      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+
+      new Clipboard('.btn', {
+    text: function() {
+
+        return document.querySelector("[style='display:none;']").value;
+    }
+});
+  });
+
+</script>
+
+</html>
