@@ -6,6 +6,7 @@ import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
 
+import {BusinessNetworkDefinition} from 'composer-common';
 import { ErrorComponent } from '../error';
 
 const fabricComposerOwner = 'hyperledger';
@@ -34,6 +35,10 @@ export class ImportComponent implements OnInit {
   private supportedFileTypes: string[] = ['.bna'];
 
   private currentBusinessNetwork = null;
+
+  private NAME = 'Empty Business Network';
+  private DESC = 'Start from scratch with a blank business network';
+  private EMPTY_BIZNET = {name: this.NAME, description: this.DESC};
 
   constructor(private adminService: AdminService,
               private clientService: ClientService,
@@ -89,6 +94,8 @@ export class ImportComponent implements OnInit {
           this.gitHubInProgress = false;
         })
         .catch((error) => {
+          console.log(typeof error.message);
+          console.log(error.message['message']);
           if (error.message.includes('API rate limit exceeded')) {
             error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
           }
@@ -101,8 +108,11 @@ export class ImportComponent implements OnInit {
     }
   }
 
-  private orderGitHubProjects(networks: any[]): any[] {
+  orderGitHubProjects(networks: any[]): any[] {
+    console.log(JSON.stringify(networks[1]));
     let newOrder = [];
+    newOrder.push(this.EMPTY_BIZNET);
+
     for(let i=0; i<this.primaryNetworkNames.length; i++) {
       let primaryName = this.primaryNetworkNames[i];
       for(let j=0; j<networks.length; j++) {
@@ -134,6 +144,7 @@ export class ImportComponent implements OnInit {
   private fileAccepted(file: File) {
     let fileReader = new FileReader();
     fileReader.onload = () => {
+      // console.log('Typeof result: '+fileReader.result);
       let dataBuffer = Buffer.from(fileReader.result);
       this.sampleBusinessNetworkService.getBusinessNetworkFromArchive(dataBuffer)
         .then((businessNetwork) => {
@@ -142,7 +153,7 @@ export class ImportComponent implements OnInit {
           this.expandInput = true;
         })
         .catch((error) => {
-          let failMessage = "Cannot import an invalid Business Network Definition. Found "+error.toString();;
+          let failMessage = 'Cannot import an invalid Business Network Definition. Found '+error.toString();;
           this.alertService.errorStatus$.next(failMessage);
           this.expandInput = false;
         });
@@ -166,7 +177,7 @@ export class ImportComponent implements OnInit {
     let deployPromise;
 
     if (this.currentBusinessNetwork) {
-      deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork)
+      deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
     } else {
       deployPromise = this.deployFromGitHub();
     }
@@ -192,12 +203,60 @@ export class ImportComponent implements OnInit {
 
 
   deployFromGitHub(): Promise < any > {
-    let chosenSampleNetwork = this.sampleNetworks.find((sampleNetwork) => {
-      return sampleNetwork.name === this.chosenNetwork;
-    });
+    
+    if(this.chosenNetwork === this.NAME) {
+        let readme = 'This is the readme file for the Business Network Definition created in Playground';
+        let packageJson = {
+          'name': 'unnamed-network',
+          'author': 'author',
+          'description': 'Empty Business Network',
+          'version': '0.0.1',
+          'devDependencies': {
+              'browserfs': '^1.2.0',
+              'chai': '^3.5.0',
+              'composer-admin': 'latest',
+              'composer-cli': 'latest',
+              'composer-client': 'latest',
+              'composer-connector-embedded': 'latest',
+              'eslint': '^3.6.1',
+              'istanbul': '^0.4.5',
+              'jsdoc': '^3.4.1',
+              'mkdirp': '^0.5.1',
+              'mocha': '^3.2.0',
+              'moment': '^2.17.1'
+          },
+          'keywords': [
+          ],
+          'license': 'Apache 2.0',
+          'repository': {
+              'type': 'e.g. git',
+              'url': 'URL'
+          },
+          'scripts': {
+              'deploy': './scripts/deploy.sh',
+              'doc': 'jsdoc --pedantic --recurse -c jsdoc.conf',
+              'lint': 'eslint .',
+              'postlicchk': 'npm run doc',
+              'postlint': 'npm run licchk',
+              'prepublish': 'mkdirp ./dist && composer archive create  --sourceType dir --sourceName . -a ./dist/unnamed-network.bna',
+              'pretest': 'npm run lint',
+              'test': 'mocha --recursive'
+          }
+      };
+      let emptyBizNetDef = new BusinessNetworkDefinition('', '', packageJson, readme);
+      this.currentBusinessNetwork = emptyBizNetDef;
+      return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
 
-    let chosenOwner = this.owner !== '' ? this.owner : fabricComposerOwner;
-    let chosenRepository = this.repository !== '' ? this.repository : fabricComposerRepository;
-    return this.sampleBusinessNetworkService.deploySample(chosenOwner, chosenRepository, chosenSampleNetwork)
+    } else {
+      
+      let chosenSampleNetwork = this.sampleNetworks.find((sampleNetwork) => {
+        return sampleNetwork.name === this.chosenNetwork;
+      });
+
+      let chosenOwner = this.owner !== '' ? this.owner : fabricComposerOwner;
+      let chosenRepository = this.repository !== '' ? this.repository : fabricComposerRepository;
+      return this.sampleBusinessNetworkService.deploySample(chosenOwner, chosenRepository, chosenSampleNetwork)
+
+    }
   }
 }

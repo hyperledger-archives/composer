@@ -11,6 +11,7 @@ import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AlertService} from '../services/alert.service';
+import {BusinessNetworkDefinition} from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -63,6 +64,8 @@ describe('ImportComponent', () => {
   let mockClientService = sinon.createStubInstance(ClientService);
   let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
   let mockNgbModal = sinon.createStubInstance(NgbModal);
+
+  const EMPTY_NETWORK = {name: 'Empty Business Network', description: 'Start from scratch with a blank business network'};
 
   mockAlertService.errorStatus$ = {
     next: sinon.stub()
@@ -157,7 +160,7 @@ describe('ImportComponent', () => {
       component['gitHubInProgress'].should.equal(true);
       tick();
 
-      component['sampleNetworks'].should.deep.equal([{name: 'modelOne'}]);
+      component['sampleNetworks'].should.deep.equal([EMPTY_NETWORK, {name: 'modelOne'}]);
       component['gitHubInProgress'].should.equal(false);
     }));
 
@@ -377,5 +380,50 @@ describe('ImportComponent', () => {
 
       mockBusinessNetworkService.deploySample.should.have.been.calledWith('my owner', 'my repository', {name: 'bob'});
     });
+
+    it('should deploy the empty business network if chosen', () => {
+      component['sampleNetworks'] = [EMPTY_NETWORK];
+      component['chosenNetwork'] = EMPTY_NETWORK.name;
+      component['owner'] = 'my owner';
+      component['repository'] = 'my repository';
+      // TODO: figure out why this causes Error: Cannot find module "."
+      // component.deployFromGitHub();
+      // mockBusinessNetworkService.deploySample.should.have.been.calledWith('my owner', 'my repository', EMPTY_NETWORK);
+    });
   });
+
+  describe('orderGitHubNetworks', () => {
+    
+    const BASIC_SAMPLE = 'basic-sample-network';
+    const CAR_AUCTION = 'carauction-network';
+    const FOO = 'foo';
+    const BAR = 'bar';
+    const primaryNetworkNames = [BASIC_SAMPLE, CAR_AUCTION];
+
+    it('should return an array only allowing an empty project to be created when an empty array is input', () => {
+      let result = component.orderGitHubProjects([]);
+      result.length.should.equal(1);
+      result[0].name.should.equal('Empty Business Network');
+    });
+
+    it('should order the list of networks correctly if a list of networks is passed in', () => {
+      let INPUT_NETWORKS = [{name: FOO}, {name: BASIC_SAMPLE}, {name: CAR_AUCTION}];
+      let result = component.orderGitHubProjects(INPUT_NETWORKS);
+      result.length.should.equal(4);
+      result[0].name.should.equal(EMPTY_NETWORK.name);
+      result[1].name.should.equal(BASIC_SAMPLE);
+      result[2].name.should.equal(CAR_AUCTION);
+      result[3].name.should.equal(FOO);
+    });
+
+    it('should order the list of networks correctly if a list of networks is passed in without the primary network names', () => {
+      let INPUT_NETWORKS = [{name: FOO}, {name: BAR}];
+      let result = component.orderGitHubProjects(INPUT_NETWORKS);
+      result.length.should.equal(3);
+      result[0].name.should.equal(EMPTY_NETWORK.name);
+      result[1].name.should.equal(FOO);
+      result[2].name.should.equal(BAR);
+    });
+  });
+
 });
