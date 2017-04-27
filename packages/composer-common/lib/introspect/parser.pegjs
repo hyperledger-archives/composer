@@ -1268,6 +1268,7 @@ AbstractToken     = "abstract"    !IdentifierPart
 ConceptToken      = "concept"     !IdentifierPart
 AssetToken        = "asset"       !IdentifierPart
 TransactionToken  = "transaction" !IdentifierPart
+EventToken        = "event"       !IdentifierPart
 ParticipantToken  = "participant" !IdentifierPart
 
 /* Primitive Types */
@@ -1371,6 +1372,21 @@ TransactionDeclaration
     {
       return {
         type:   "TransactionDeclaration",
+        id:     id,
+        classExtension: classExtension,
+        body:   body,
+        idField: idField,
+        abstract: abstract,
+        location: location()
+      };
+    }
+
+EventDeclaration
+  = abstract:AbstractToken? __ EventToken __ id:Identifier __ idField:IdentifiedByField? __ classExtension: ClassExtension? __
+    "{" __ body:ClassDeclarationBody __ "}"
+    {
+      return {
+        type:   "EventDeclaration",
         id:     id,
         classExtension: classExtension,
         body:   body,
@@ -1621,6 +1637,7 @@ SourceElements
 SourceElement
   = AssetDeclaration
   / TransactionDeclaration
+  / EventDeclaration
   / ParticipantDeclaration
   / EnumDeclaration
   / ConceptDeclaration
