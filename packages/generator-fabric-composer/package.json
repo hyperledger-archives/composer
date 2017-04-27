@@ -1,7 +1,7 @@
 {
   "name": "generator-fabric-composer",
-  "version": "0.5.13",
-  "description": "Generates skeleton projects from Fabric Composer business network definitions",
+  "version": "0.7.0",
+  "description": "Generates skeleton projects from Hyperledger Composer business network definitions",
   "engines": {
     "node": ">=6",
     "npm": ">=3"
@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "bower": "^1.8.0",
-    "composer-client": "^0.5.13",
-    "composer-common": "^0.5.13",
+    "composer-client": "^0.7.0",
+    "composer-common": "^0.7.0",
     "fs": "0.0.1-security",
     "shelljs": "^0.7.5",
     "underscore.string": "^3.3.4",

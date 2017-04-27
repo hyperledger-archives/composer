@@ -1,7 +1,7 @@
 {
   "name": "composer-connector-web",
-  "version": "0.5.13",
-  "description": "The web client connector for Fabric Composer",
+  "version": "0.7.0",
+  "description": "The web client connector for Hyperledger Composer",
   "engines": {
     "node": ">=6",
     "npm": ">=3"
@@ -62,9 +62,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.5.13",
-    "composer-runtime": "^0.5.13",
-    "composer-runtime-web": "^0.5.13",
+    "composer-common": "^0.7.0",
+    "composer-runtime": "^0.7.0",
+    "composer-runtime-web": "^0.7.0",
     "uuid": "^3.0.1"
   }
 }

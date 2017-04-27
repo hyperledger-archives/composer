@@ -66,7 +66,7 @@ development. We have even created an experimental CTO file syntax highlighting p
 
 Suggested Plugins:
 
-* [Atom Composer Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom) A plugin for model file highlighting.
+* [Composer Atom Syntax Highlighter](https://github.com/hyperledger/composer-atom) A plugin for model file highlighting.
 
 * [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
 

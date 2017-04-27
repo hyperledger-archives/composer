@@ -4,7 +4,7 @@
 set -ev
 set -o pipefail
 
-# Grab the  directory.
+# Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 date
 # Set the GitHub deploy key we will use to publish.
