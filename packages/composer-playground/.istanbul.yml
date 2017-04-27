@@ -7,6 +7,6 @@ instrumentation:
 check:
     global:
         statements: 70
-        branches: 60
-        functions: 58
+        branches: 62
+        functions: 59
         lines: 70
