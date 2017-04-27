@@ -13,7 +13,7 @@ docker-compose -f hlfv1_alpha-docker-compose.yml down
 docker rm $(docker ps -aq) || docker-compose -f hlfv1_alpha-docker-compose.yml up -d
 
 # wait for Hyperledger Fabric to start
-sleep 17
+sleep 25
 
 node create-channel.js
 node join-channel.js
