@@ -4,7 +4,7 @@
 set -ev
 set -o pipefail
 
-# Grab the  directory.
+# Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 date
 # Set the GitHub deploy key we will use to publish.
@@ -38,6 +38,8 @@ mkdir -p ${TODIR}/unstable
 rm -rf ${TODIR}/unstable/*
 cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/unstable/
 
+# Add all the changes, commit, and push to the GitHub repository.
+cd ${TODIR}
 git add .
 git commit -m "Automatic deployment of website"
 git push origin gh-pages
