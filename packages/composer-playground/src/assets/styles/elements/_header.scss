@@ -56,6 +56,22 @@
       align-items: center;
       margin-right: 2rem;
 
+      a {
+        display: flex;
+        align-items: center;
+        height: 63px;
+        color: $white;
+        text-decoration: none;
+
+        svg {
+          margin-right: $space-small;
+        }
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
       .action {
         display: flex;
         margin-left: 1rem;

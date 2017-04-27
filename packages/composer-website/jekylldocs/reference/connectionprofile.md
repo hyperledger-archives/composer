@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Fabric Composer - Connection Profile
+title: Hyperledger Composer - Connection Profile
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Overview of the Connection Profiles

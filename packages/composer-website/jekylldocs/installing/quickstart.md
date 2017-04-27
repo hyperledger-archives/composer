@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Fabric Composer Quickstart
+title: Hyperledger Composer Quickstart
 category: start
 sidebar: sidebars/installing.md
 excerpt: Quickstart
 
 ---
 
-# Fabric Composer Quickstart
+# {{site.data.conrefs.composer_full}} Quickstart
 
 ---
 
@@ -108,7 +108,7 @@ $ npm test
     > getting-started@1.0.0 bootstrapAssets /home/ibm/samples/sample-applications/packages/getting-started
 > node cli.js landregistry bootstrap
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started application
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
 info: [Composer-GettingStarted] Adding default land titles to the asset registry
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
 info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles getting asset registry for "net.biz.digitalPropertyNetwork.LandTitle"
@@ -125,7 +125,7 @@ info: [Composer-GettingStarted] Command completed successfully.
 > getting-started@1.0.0 listAssets /home/ibm/samples/sample-applications/packages/getting-started
 > node cli.js landregistry list
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started application
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
 info: [Composer-GettingStarted] listTitles Getting the asset registry
 info: [Composer-GettingStarted] listTitles Getting all assets from the registry.
@@ -146,13 +146,13 @@ info: [Composer-GettingStarted] Command completed successfully.
 > getting-started@1.0.0 submitTransaction /home/ibm/samples/sample-applications/packages/getting-started
 > node cli.js landregistry submit && node cli.js landregistry list
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started application
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
 info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
 info: [Composer-GettingStarted] updateForSale Submitting transaction
 info: [Composer-GettingStarted] Transaction Submitted
 info: [Composer-GettingStarted] Command completed successfully.
-info: [Composer-GettingStarted] Fabric Composer: Getting Started application
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
 info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
 info: [Composer-GettingStarted] listTitles Getting the asset registry
 info: [Composer-GettingStarted] listTitles Getting all assets from the registry.

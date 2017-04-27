@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Fabric Composer Transaction Submit Command
+title: Hyperledger Composer Transaction Submit Command
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Fabric Composer Transaction Submit Command
+excerpt: Hyperledger Composer Transaction Submit Command
 ---
 
 # composer transaction submit

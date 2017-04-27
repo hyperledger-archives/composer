@@ -9,7 +9,7 @@ import {ImportComponent} from './import.component';
 import {AdminService} from '../services/admin.service';
 import {ClientService} from '../services/client.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AlertService} from '../services/alert.service';
 import {BusinessNetworkDefinition} from 'composer-common';
 
@@ -63,6 +63,7 @@ describe('ImportComponent', () => {
   let mockAlertService = sinon.createStubInstance(AlertService);
   let mockClientService = sinon.createStubInstance(ClientService);
   let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
+  let mockNgbModal = sinon.createStubInstance(NgbModal);
 
   const EMPTY_NETWORK = {name: 'Empty Business Network', description: 'Start from scratch with a blank business network'};
 
@@ -79,10 +80,13 @@ describe('ImportComponent', () => {
         {provide: AdminService, useValue: mockAdminService},
         {provide: ClientService, useValue: mockClientService},
         {provide: NgbActiveModal, useValue: mockActiveModal},
-        {provide: AlertService, useValue: mockAlertService}]
+        {provide: AlertService, useValue: mockAlertService},
+        {provide: NgbModal, useValue: mockNgbModal}]
     });
 
     sandbox = sinon.sandbox.create();
+
+    mockNgbModal.open.returns({componentInstance: {}});
 
     fixture = TestBed.createComponent(ImportComponent);
     component = fixture.componentInstance;
@@ -335,7 +339,7 @@ describe('ImportComponent', () => {
       tick();
 
       component['deployInProgress'].should.equal(false);
-      mockActiveModal.dismiss.should.have.been.called;
+      component.modalService.open.should.have.been.called;
     }));
 
     it('should handle error', fakeAsync(() => {
@@ -351,7 +355,7 @@ describe('ImportComponent', () => {
       tick();
 
       component['deployInProgress'].should.equal(false);
-      mockActiveModal.dismiss.should.have.been.called;
+      component.modalService.open.should.have.been.called;
     }));
   });
 
