@@ -12,13 +12,13 @@ excerpt: Hyperledger Composer overview
 
 ---
 
-You can use {{site.data.conrefs.composer_full}} to rapidly develop and deploy a blockchain solution; modeling your business network and integrating existing systems and data.
+{{site.data.conrefs.composer_full}} is an extensive, open development toolset and framework to make developing blockchain applications easier. Our primary goal is to accelerate time to value, and make it easier to integrate your blockchain applications with the existing business systems. You can use {{site.data.conrefs.composer_full}} to rapidly develop use cases and deploy a blockchain solution in weeks rather than months. {{site.data.conrefs.composer_full}} allows you to model your business network and integrate existing systems and data with your blockchain applications.
 
-{{site.data.conrefs.composer_full}} requires and exploits the existing [Hyperledger Fabric blockchain](https://hyperledger.org) technology, using the blockchain consensus protocol to ensure that transactions are validated by business network participants.
+{{site.data.conrefs.composer_full}} supports the existing [Hyperledger Fabric blockchain](https://hyperledger.org) infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.
 
-Applications can consume the data from business networks, providing end users with simple and controlled access points. Existing data can also be integrated you modeled network, allowing complex systems and solutions to contribute data and .
+Everyday applications can consume the data from business networks, providing end users with simple and controlled access points.
 
-You can use {{site.data.conrefs.composer_full}} to quickly model your business network, containing your existing assets and the transactions related to them, whether your assets are tangible or intangible goods, services, or property. As part of your business network model, you define the transactions which are used to interact with assets. Business networks also include the participants who interact with them, each of which can be associated with a unique identity across multiple business networks.
+You can use {{site.data.conrefs.composer_full}} to quickly model your current business network, containing your existing assets and the transactions related to them; assets are tangible or intangible goods, services, or property. As part of your business network model, you define the transactions which can interact with assets. Business networks also include the participants who interact with them, each of which can be associated with a unique identity, across multiple business networks.
 
 ---
 
@@ -32,13 +32,8 @@ You can use {{site.data.conrefs.composer_full}} to quickly model your business n
 
 ## How does {{site.data.conrefs.composer_full}} work in practise?
 
-<<<<<<< HEAD
-<!-- diagram of solution/stack -->For an example of a business network in action; a realtor can quickly model their business network; including houses and listings assets, buyers and homeowners as participants, and buying or selling houses, and creating and closing listings as transactions. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.
-=======
----
+For an example of a business network in action; a realtor can quickly model their business network; including houses and listings assets, buyers and homeowners as participants, and buying or selling houses, and creating and closing listings as transactions. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.
 
-For an example of a business network in action; a realtor may have a business network containing houses and listings as assets. Participants could include buyers and homeowners. Transactions might include buying or selling houses, and creating and closing listings. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor may want to create an application to present buyers and sellers participants with a simple user interface for viewing open listings and making offers. This business network could also be integrated with the existing inventory system for the realtor, allowing for the addition of new houses as assets. Relevant other parties can be registered as participants whilst maintaining their own business network, for example a land registry might interact with a buyer winner to transfer ownership of the land.
->>>>>>> refs/remotes/fabric-composer/master
 
 ---
 
@@ -46,4 +41,4 @@ For an example of a business network in action; a realtor may have a business ne
 
 ---
 
-<!-- Adding links for different personas -->To get started with {{site.data.conrefs.composer_full}} right away, try the [{{site.data.conrefs.composer_full}} tutorials](../tutorials/tutorialindex.html), to learn more about {{site.data.conrefs.composer_full}} read [understanding {{site.data.conrefs.composer_full}}](../introduction/key-concepts.html), to get installed and trying the full product immediately go to [installing {{site.data.conrefs.composer_full}}](../installing/prerequisites.html).
+To get started with {{site.data.conrefs.composer_full}} right away, try the [{{site.data.conrefs.composer_full}} tutorials](../tutorials/tutorialindex.html), to learn more about {{site.data.conrefs.composer_full}} read [understanding {{site.data.conrefs.composer_full}}](../introduction/key-concepts.html), to get installed and trying the full product immediately go to [installing {{site.data.conrefs.composer_full}}](../installing/prerequisites.html).
