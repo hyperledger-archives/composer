@@ -47,7 +47,6 @@ export class ConnectionProfileComponent implements OnInit {
   hideWarning(){
     this.warningVisible = false;
   }
- 
   openAddProfileModal() {
     this.modalService.open(AddConnectionProfileComponent).result
     .then((result) => {
@@ -56,7 +55,7 @@ export class ConnectionProfileComponent implements OnInit {
     .catch((closed) => {});
   }
 
-  private updateConnectionProfiles(): Promise<any> {
+  updateConnectionProfiles(): Promise<any> {
     let newConnectionProfiles = [];
     return this.connectionProfileService.getAllProfiles()
       .then((connectionProfiles) => {
@@ -76,12 +75,11 @@ export class ConnectionProfileComponent implements OnInit {
       });
   }
 
-  profileUpdated(event) {
+  profileUpdated(event){
     // If form is cancelled, we want to switch to the previous file selected
-    if(!event) {
+    if(!event){
       this.currentConnectionProfile = this.previousConnectionProfile;
     }
     return this.updateConnectionProfiles();
   }
-
 }
