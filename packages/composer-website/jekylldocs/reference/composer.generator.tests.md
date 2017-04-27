@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Generator CLI
+title: Hyperledger Composer Generator CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Generator CLI
 ---
 
-# Fabric Composer Generator
+# {{site.data.conrefs.composer_full}} Generator
 
 ---
 

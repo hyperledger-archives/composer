@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Fabric Composer Release Change Log
+title: Hyperledger Composer Release Change Log
 category: support
-excerpt: Fabric Composer Release Change Log
+excerpt: Hyperledger Composer Release Change Log
 ---
 ## Change Log
 
