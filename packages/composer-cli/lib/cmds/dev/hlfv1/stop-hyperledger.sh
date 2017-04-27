@@ -7,5 +7,6 @@ set -ev
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Shut down the Docker containers that might be currently running.
-cd "${DIR}"/scripts
-docker-compose stop
+cd "${DIR}"/hlfv1
+#docker-compose stop
+docker-compose -f hlfv1_alpha-docker-compose.yml stop

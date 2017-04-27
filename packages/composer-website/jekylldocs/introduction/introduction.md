@@ -26,13 +26,18 @@ You can use {{site.data.conrefs.composer_full}} to quickly model your current bu
 
 ---
 
-![Diagram of {{site.data.conrefs.composer_full}}](/assets/img/Composer-Diagram.svg)
+![Diagram of {{site.data.conrefs.composer_full}}](../assets/img/Composer-Diagram.svg)
 
 ---
 
 ## How does {{site.data.conrefs.composer_full}} work in practise?
 
+<<<<<<< HEAD
+
+<!-- diagram of solution/stack -->For an example of a business network in action; a realtor can quickly model their business network; including houses and listings assets, buyers and homeowners as participants, and buying or selling houses, and creating and closing listings as transactions. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.
+=======
 For an example of a business network in action; a realtor can quickly model their business network; including houses and listings assets, buyers and homeowners as participants, and buying or selling houses, and creating and closing listings as transactions. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.
+>>>>>>> 9f58631e84d98178c00e0732876d5494f6b96a64
 
 
 ---

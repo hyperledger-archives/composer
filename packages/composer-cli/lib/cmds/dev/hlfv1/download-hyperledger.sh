@@ -7,12 +7,10 @@ set -ev
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Shut down the Docker containers that might be currently running.
-cd "${DIR}"/scripts
-docker-compose kill && docker-compose down
 
 # TODO change this to alter the default profile which is, by convention, a local running hyperledger fabric
-rm -rf ~/.composer-connection-profiles/defaultProfile/*
-rm -rf ~/.composer-credentials/*
+#rm -rf ~/.composer-connection-profiles/defaultProfile/*
+#rm -rf ~/.composer-credentials/*
 
 
 # delete all existing containers and images
@@ -26,5 +24,8 @@ rm -rf ~/.composer-credentials/*
 #fi
 
 # Pull and tag the latest Hyperledger Fabric base image.
-docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
-docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha
+docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha
+docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha
+docker pull hyperledger/fabric-orderer:x86_64-1.0.0-alpha
+docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-alpha

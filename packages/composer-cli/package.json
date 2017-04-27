@@ -74,7 +74,9 @@
       "out/**",
       "scripts/**",
       "systest/**",
-      "test/**"
+      "test/**",
+      "**/dev/hlfv1/**",
+      "**/dev/scripts/**"
     ],
     "reporter": [
       "text-summary",

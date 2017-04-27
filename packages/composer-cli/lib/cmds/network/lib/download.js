@@ -18,13 +18,13 @@
 // const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const cmdUtil = require('../../utils/cmdutils');
 const fs = require('fs');
-const homedir = require('homedir');
+// const homedir = require('homedir');
 // const cmdUtil = require('../../utils/cmdutils');
 const sanitize = require('sanitize-filename');
-const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
-const CONNECTION_FILE = 'connection.json';
-
-const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
+// const PROFILE_ROOT = homedir() + '/.composer-connection-profiles/';
+// const CONNECTION_FILE = 'connection.json';
+//
+// const CREDENTIALS_ROOT = homedir() + '/.composer-credentials';
 const DEFAULT_PROFILE_NAME = 'defaultProfile';
 
 const ora = require('ora');
@@ -111,31 +111,31 @@ class Download {
         ;
     }
 
-    /**
-      * Get connection options from profile
-      * @param {string} connectionProfileName connection profile name
-      * @return {connectOptions} connectOptions options
-      */
-    static getConnectOptions(connectionProfileName) {
-
-        let connectOptions;
-        let connectionProfile = PROFILE_ROOT + connectionProfileName + '/' + CONNECTION_FILE;
-        if (fs.existsSync(connectionProfile)) {
-            let connectionProfileContents = fs.readFileSync(connectionProfile);
-            connectOptions = JSON.parse(connectionProfileContents);
-        } else {
-            let defaultKeyValStore = CREDENTIALS_ROOT;
-
-            connectOptions = {type: 'hlf'
-                             ,membershipServicesURL: 'grpc://localhost:7054'
-                             ,peerURL: 'grpc://localhost:7051'
-                             ,eventHubURL: 'grpc://localhost:7053'
-                             ,keyValStore: defaultKeyValStore
-                             ,deployWaitTime: '300'
-                             ,invokeWaitTime: '100'};
-        }
-        return connectOptions;
-    }
+    // /**
+    //   * Get connection options from profile
+    //   * @param {string} connectionProfileName connection profile name
+    //   * @return {connectOptions} connectOptions options
+    //   */
+    // static getConnectOptions(connectionProfileName) {
+    //
+    //     let connectOptions;
+    //     let connectionProfile = PROFILE_ROOT + connectionProfileName + '/' + CONNECTION_FILE;
+    //     if (fs.existsSync(connectionProfile)) {
+    //         let connectionProfileContents = fs.readFileSync(connectionProfile);
+    //         connectOptions = JSON.parse(connectionProfileContents);
+    //     } else {
+    //         let defaultKeyValStore = CREDENTIALS_ROOT;
+    //
+    //         connectOptions = {type: 'hlf'
+    //                          ,membershipServicesURL: 'grpc://localhost:7054'
+    //                          ,peerURL: 'grpc://localhost:7051'
+    //                          ,eventHubURL: 'grpc://localhost:7053'
+    //                          ,keyValStore: defaultKeyValStore
+    //                          ,deployWaitTime: '300'
+    //                          ,invokeWaitTime: '100'};
+    //     }
+    //     return connectOptions;
+    // }
 
     /**
       * Get default profile name

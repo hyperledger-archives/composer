@@ -17,10 +17,12 @@
 const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+const Registry = require('composer-client').AssetRegistry;
 // const homedir = require('homedir');
 const fs = require('fs');
 // const Download = require('../../lib/cmds/network/lib/download.js');
 const List = require('../../lib/cmds/network/listCommand.js');
+const ListFn = require('../../lib/cmds/network/lib/list.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 //require('../lib/deploy.js');
@@ -44,6 +46,7 @@ let mockBusinessNetworkDefinition;
 // const DEFAULT_PROFILE_NAME = 'defaultProfile';
 // let businessNetworkConnection = new BusinessNetworkConnection();
 let mockBusinessNetworkConnection;
+let mockRegistry;
 
 describe('composer network download CLI unit tests', function () {
 
@@ -58,6 +61,12 @@ describe('composer network download CLI unit tests', function () {
 
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
+        mockBusinessNetworkConnection.getAllAssetRegistries.resolves([]);
+        mockBusinessNetworkConnection.getAssetRegistry.resolves([]);
+
+        mockRegistry = sinon.createStubInstance(Registry);
+        mockRegistry.getAll.resolves([]);
+        mockRegistry.get.resolves(true);
 
         mockBusinessNetworkDefinition.toArchive.resolves('bytearray');
         // sandbox.stub(Download.businessNetworkConnection,mockBusinessNetworkConnection);
@@ -90,7 +99,57 @@ describe('composer network download CLI unit tests', function () {
             });
         });
 
+        it('getMatchingRegistries', function () {
 
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'defaultProfile'
+                       ,businessNetworkName: 'testBusinessNetworkId'};
+
+
+
+            return ListFn.getMatchingRegistries(argv,mockBusinessNetworkConnection)
+            .then ((result) => {
+                // sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+
+            });
+        });
+
+        it('getMatchingAssets', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'defaultProfile'
+                       ,businessNetworkName: 'testBusinessNetworkId'};
+
+
+
+            return ListFn.getMatchingAssets(mockRegistry,argv,mockBusinessNetworkConnection)
+            .then ((result) => {
+                // sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+
+            });
+        });
+
+        it('getMatchingAssets', function () {
+
+            let argv = {enrollId: 'WebAppAdmin'
+                       ,enrollSecret: 'DJY27pEnl16d'
+                       ,archiveFile: 'testArchiveFile.zip'
+                       ,connectionProfileName: 'defaultProfile'
+                       ,businessNetworkName: 'testBusinessNetworkId'
+                       ,asset:'testAsset'};
+
+
+
+            return ListFn.getMatchingAssets(mockRegistry,argv,mockBusinessNetworkConnection)
+            .then ((result) => {
+                // sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
+
+            });
+        });
 
     });
 
