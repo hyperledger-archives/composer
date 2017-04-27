@@ -9,7 +9,13 @@
         <button class="action" [routerLink]="['./test']" [routerLinkActive]="['active']">Test</button>
       </div>
       <div class="icon-links">
-        <button class="action" [routerLink]="['./profile']" [routerLinkActive]="['active']">
+          <a *ngIf="!usingLocally" href="https://fabric-composer.github.io/tutorials/getting-started-playground.html" target="_blank">
+          <svg class="nav-icon" aria-hidden="true">
+            <use xlink:href="#icon-simple_docker"></use>
+          </svg>
+          Get local version
+        </a>
+        <button *ngIf="usingLocally" class="action" [routerLink]="['./profile']" [routerLinkActive]="['active']">
           <svg class="nav-icon" aria-hidden="true">
             <use xlink:href="#icon-world_24"></use>
           </svg>

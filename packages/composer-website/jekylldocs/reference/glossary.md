@@ -20,13 +20,13 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 **Hyperledger** is the name of the Linux Foundation project to produce an open blockchain platform that is ready for business. It will provide an implementation of the shared ledger, smart contracts, privacy and consensus mechanisms. It will not provide any value added services (like monitoring or cloud hosting). IBM is one of many sponsors of the Hyperledger project.
 
-# Fabric Composer Narrative
+# {{site.data.conrefs.composer_full}} Narrative
 
 An **Economic Business Network** refers to the organizations that work together to take part in the digital business network. In many (all!) such networks there are multiple organisations that need to correlate their business process. In addition, in some industries, there are regulators that oversee the market. For example, within the food distribution network, the regulator is DEFRA in the UK or the Department of Agriculture in the US. To have a system that, for example, tracks food assets and the participants in the network, is very applicable to a Blockchain's quality of service. However, writing direct to the Hyperledger's core SDK requires a very low level API - and one that is not readily available or accessible to in-house developers. There is a high barrier to entry for practically solving business problems. So to help address this problem the ..tbc
 
-**Fabric Composer**
+**{{site.data.conrefs.composer_full}}**
 
-Fabric Composer has been developed to permit architects and developers to use a runtime, tooling, client and administration APIs, that runs utilising a Hyperledger blockchain to provide a business-centric programming model, the starting point for this is the ...tbc
+{{site.data.conrefs.composer_full}} has been developed to permit architects and developers to use a runtime, tooling, client and administration APIs, that runs utilising a Hyperledger blockchain to provide a business-centric programming model, the starting point for this is the ...tbc
 
 **Domain Specific Language** that they can use to describe the ...tbc
 
@@ -46,14 +46,14 @@ Fabric Composer has been developed to permit architects and developers to use a 
 
 **Business Network Archive** that can be deployed as an administrative action to the Composer system running on a Hyperledger fabric.
 
-# Development of a system using Fabric Composer
+# Development of a system using {{site.data.conrefs.composer_full}}
 
 There are two 'phases' to running an application using the Composer framework; the Business Network Definition should be deployed to a Hyperledger Fabric; then the application will run against this fabric, but using APIs applicable to the business model.
 
 The Composer system is defined in a number of [modules](../reference/MeetTheModules.html).
 
-**Fabric Composer Client API** This is the API that is used by applications to connect to a business network and submit transactions. These end applications might be either command line, gui web applications using for example Angular-2.  These APIs permit CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets for example.
+**{{site.data.conrefs.composer_full}} Client API** This is the API that is used by applications to connect to a business network and submit transactions. These end applications might be either command line, gui web applications using for example Angular-2.  These APIs permit CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets for example.
 
-**Fabric Composer Admin API** is an administrative API to build admin applications. This can deploy and update business network definitions on the Composer fabric runtime.
+**{{site.data.conrefs.composer_full}} Admin API** is an administrative API to build admin applications. This can deploy and update business network definitions on the Composer fabric runtime.
 
 To facilitate the application development process there are helper tools to permit the development.

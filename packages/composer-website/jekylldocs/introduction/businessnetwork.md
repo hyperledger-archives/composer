@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Fabric Composer - Business Network
+title: Hyperledger Composer - Business Network
 category: concepts
 sidebar: sidebars/introduction.md
 excerpt: Business Network
@@ -10,7 +10,7 @@ excerpt: Business Network
 
 ---
 
-A `Business Network` describes the structures and processes that exist in the exchange of assets between participants in economic networks. Fabric Composer helps you to easily develop applications for business networks, to digitize these networks - making them more efficient.
+A `Business Network` describes the structures and processes that exist in the exchange of assets between participants in economic networks. {{site.data.conrefs.composer_full}} helps you to easily develop applications for business networks, to digitize these networks - making them more efficient.
 
 There are many elements in a business network; the most fundamental of which are participants, assets, registries and transactions.  We're going to start by explaining these so that you get a feeling for this most important concepts.  We'll then reinforce these slightly abstract concepts with a concrete example involving a digital property network.
 
@@ -38,7 +38,7 @@ Here are the key elements of this property network.
 
 * Transactions. There are many transactions going on in this property network. Sellers sell property and buyers buy them.  Conveyancers create and exchange legal contracts with other conveyancers on behalf of buyers and sellers and their respective property sales.  The Land Registry records updates to property ownership, and estate agents (realtors) indicate that properties are for sale in a market and remove them from that market once they have been sold.
 
-Fabric Composer makes it easy to create these elements in a business network, and the applications which capture interactions between different participants.  
+{{site.data.conrefs.composer_full}} makes it easy to create these elements in a business network, and the applications which capture interactions between different participants.  
 
 ## Related Concepts
 
