@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { AddConnectionProfileComponent } from '../add-connection-profile/add-connection-profile.component.ts';
@@ -14,12 +13,12 @@ import { ConnectionProfileService } from '../services/connectionprofile.service'
 })
 export class ConnectionProfileComponent implements OnInit {
 
-  private warningVisible: boolean = false; //NEED TO HAVE THIS AUTOMATICALLY CHANGE DEPENDING ON IF WE'RE IN WEB BROWSER MODE OR NOT
+  public warningVisible: boolean = false; //NEED TO HAVE THIS AUTOMATICALLY CHANGE DEPENDING ON IF WE'RE IN WEB BROWSER MODE OR NOT
 
-  private connectionProfiles: any;
-  private currentConnectionProfile;
-  private previousConnectionProfile;
-  private activeProfile;
+  public connectionProfiles: any;
+  public currentConnectionProfile;
+  public previousConnectionProfile;
+  public activeProfile;
 
   constructor(private connectionProfileService: ConnectionProfileService,
               private modalService: NgbModal) {
@@ -27,14 +26,10 @@ export class ConnectionProfileComponent implements OnInit {
               }
 
   ngOnInit(): any {
-    console.log('Loaded ConnectionProfileComponent');
     this.activeProfile = this.connectionProfileService.getCurrentConnectionProfile();
-    console.log('what is activeProfile',this.activeProfile);
     return this.updateConnectionProfiles().then(() => {
-      console.log('Set initial profiles',this.connectionProfiles);
       for(let profile in this.connectionProfiles){
         if(this.connectionProfiles[profile].name === this.activeProfile){
-          console.log('Found profile',this.connectionProfiles[profile],'is found from',this.activeProfile)
           this.setCurrentProfile(this.connectionProfiles[profile]);
           break;
         }
@@ -42,25 +37,18 @@ export class ConnectionProfileComponent implements OnInit {
     })
   }
 
-  private setCurrentProfile(connectionProfile) {
+  setCurrentProfile(connectionProfile) {
     this.previousConnectionProfile = this.currentConnectionProfile;
     this.currentConnectionProfile = connectionProfile;
     return this.updateConnectionProfiles();
-    // this.profileReload = !this.profileReload;
-
   }
 
 
-  private hideWarning(){
+  hideWarning(){
     this.warningVisible = false;
   }
-    // private getProfileDetails() {
-    //   // To be edited once we add the ability to import new profiles
-    //   return "web browser details";
-    // }
-
-
-  private openAddProfileModal() {
+ 
+  openAddProfileModal() {
     this.modalService.open(AddConnectionProfileComponent).result
     .then((result) => {
       this.setCurrentProfile(result);
@@ -88,13 +76,11 @@ export class ConnectionProfileComponent implements OnInit {
       });
   }
 
-  profileUpdated(event){
-
+  profileUpdated(event) {
     // If form is cancelled, we want to switch to the previous file selected
-    if(!event){
+    if(!event) {
       this.currentConnectionProfile = this.previousConnectionProfile;
     }
-
     return this.updateConnectionProfiles();
   }
 

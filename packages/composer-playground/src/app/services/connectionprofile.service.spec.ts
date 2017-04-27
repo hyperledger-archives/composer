@@ -84,6 +84,25 @@ describe('ConnectionProfileService', () => {
       }
     ));
 
+  it('should have no currentlySelectedProfileName if not set',
+    inject([ConnectionProfileService, LocalStorageService],
+      (connectionProfileService, mockLocalStorage) => {
+        connectionProfileService.should.be.ok;
+        expect(connectionProfileService.getCurrentlySelectedProfileName()).to.not.exist;
+      }
+    ));
+
+  it('should set currentlySelectedProfileName',
+    inject([ConnectionProfileService, LocalStorageService],
+      (connectionProfileService, mockLocalStorage) => {
+        connectionProfileService.should.be.ok;
+        const currentlySelectedProfileName: string = 'SOMETHING';
+        connectionProfileService.setCurrentlySelectedProfileName(currentlySelectedProfileName);
+        connectionProfileService.getCurrentlySelectedProfileName().should.equal(currentlySelectedProfileName);
+      }
+    ));
+  
+
   it('should return admin connection if set',
     inject([ConnectionProfileService, LocalStorageService],
       (connectionProfileService, mockLocalStorage) => {
