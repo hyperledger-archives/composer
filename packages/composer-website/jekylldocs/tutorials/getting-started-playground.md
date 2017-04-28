@@ -109,7 +109,7 @@ Verify that no errors occurred. If you see an error similar to the following err
 
 If you see this error, ensure that all of these ports are free before you run any commands.
 
-If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://docker-machine-ip:8080" target="_blank">http://<span></span>docker-machine-ip:8080</a>
 
 # <a name="installationoptions"></a>Alternative installation options
 

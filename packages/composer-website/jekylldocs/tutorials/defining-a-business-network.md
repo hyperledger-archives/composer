@@ -85,7 +85,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
   "$class": "org.acme.vehicle.auction.Offer",
   "bidPrice": "1000",
   "listing": "listing_1",
-  "member": "alice@biznet.org",
+  "member": "alice@biznet.org"
 }
 ```
 
