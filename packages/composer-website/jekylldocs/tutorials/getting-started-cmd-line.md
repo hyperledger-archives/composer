@@ -226,8 +226,8 @@ We have downloaded the Hyperledger Fabric Docker containers and started a locall
 
 If you want to continue exploring, check out our other Getting Started guides:
 
-[Coding a Business Network Definition](./getting-started-coding-bnd.md)
+[Coding a Business Network Definition](../business-network/getting-started-coding-bnd.html)
 
-[Generating a REST API](./getting-started-rest-api.md)
+[Generating a REST API](../integrating/getting-started-rest-api.html)
 
-[Writing a Node.js App](./getting-started-nodejs-app.md)
+[Writing a Node.js App](../applications/getting-started-nodejs-app.html)
