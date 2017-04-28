@@ -26,7 +26,7 @@ You can use {{site.data.conrefs.composer_full}} to quickly model your current bu
 
 ---
 
-![Diagram of {{site.data.conrefs.composer_full}}](/assets/img/Composer-Diagram.svg)
+![Diagram of {{site.data.conrefs.composer_full}}](../assets/img/Composer-Diagram.svg)
 
 ---
 
