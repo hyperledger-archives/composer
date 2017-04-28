@@ -62,7 +62,7 @@ All the resources and scripts you'll need are in a git repository that we'll clo
 
 The first thing to do is to ensure that you have a suitable system ready for development.
 
-**Ensure that you have followed the steps in our [Quickstart](./quickstart.md) before continuing!**
+**Ensure that you have followed the steps in our [Quickstart](../installing/quickstart.md) before continuing!**
 
 Let's go ahead and make a change to start to show how easy it is to develop with {{site.data.conrefs.composer_full}}.
 
