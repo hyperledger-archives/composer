@@ -7,39 +7,39 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Diagnosing Problems | Fabric Composer</title>
+    <title>Task - Diagnosing Problems | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/assets/js/clipboard.min.js"></script>
+  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-1', 'auto');
+ga('create', 'UA-91314349-2', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/assets/css/normalize.css" rel="stylesheet">
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <link href="/assets/css/footer.css" rel="stylesheet">
-    <link href="/assets/css/prettify.css" rel="stylesheet">
-    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
   
 </head>
 
@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -101,11 +101,11 @@ ga('send', 'pageview');
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <a href="../problems/diagnostics.html">Diagnosing problems</a>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
@@ -125,7 +125,7 @@ ga('send', 'pageview');
 
 <p>Let&#39;s look at the Getting Started application, and use that to explain how to get diagnostics out of the Framework.</p>
 
-<p>Key Point: This is a framework - so your application will need to have it&#39;s own logging framework. Plus, your application could also have configuration information to control Fabric Composer&#39;s own logging. Composer does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.</p>
+<p>Key Point: This is a framework - so your application will need to have it&#39;s own logging framework. Plus, your application could also have configuration information to control Hyperledger Composer&#39;s own logging. Composer does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.</p>
 
 <p>Note that the config module does write out a warning, if there are no configuration files set. Eg. <code>WARNING: No configurations found in configuration directory</code>. This can be suppressed with an environment variable if you are happy with the defaults and don&#39;t wish to use config in your application. See more information <a href="https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning">here</a>.</p>
 
@@ -138,7 +138,7 @@ ga('send', 'pageview');
 
 <h2 id="application">Application</h2>
 
-<p>Internally, Fabric Composer uses the <a href="https://github.com/winstonjs/winston">Winston</a> node.js logging package by default, with an initial level of log points and destinations set up.</p>
+<p>Internally, Hyperledger Composer uses the <a href="https://github.com/winstonjs/winston">Winston</a> node.js logging package by default, with an initial level of log points and destinations set up.</p>
 
 <h2 id="default-configuration">Default Configuration</h2>
 
@@ -195,7 +195,7 @@ ga('send', 'pageview');
 
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<p>The first section is specific to the Getting Started application, the second <code>ComposerConfig</code> section is for the Fabric Composer.</p>
+<p>The first section is specific to the Getting Started application, the second <code>ComposerConfig</code> section is for the Hyperledger Composer.</p>
 
 <ul>
 <li><code>logger</code> is used to refer the module that does actual logging. default is implying that this is the winston framework</li>
@@ -244,6 +244,10 @@ bb5db2ca4e6a hyperledger/fabric-peer
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
       </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
     </article>
 </div>
 
@@ -259,7 +263,7 @@ bb5db2ca4e6a hyperledger/fabric-peer
     <ul>
       <li><a href="https://github.com/fabric-composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
-      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -272,10 +276,10 @@ bb5db2ca4e6a hyperledger/fabric-peer
 </body>
 
 <!-- jQuery -->
-<script src="/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="/assets/js/bootstrap.js"></script>
+<script src="/composer/assets/js/bootstrap.js"></script>
 
 <script>
 

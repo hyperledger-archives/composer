@@ -7,39 +7,39 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Getting Started with Fabric Composer | Fabric Composer</title>
+    <title>Getting Started with Hyperledger Composer | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/assets/js/clipboard.min.js"></script>
+  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-1', 'auto');
+ga('create', 'UA-91314349-2', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/assets/css/normalize.css" rel="stylesheet">
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <link href="/assets/css/footer.css" rel="stylesheet">
-    <link href="/assets/css/prettify.css" rel="stylesheet">
-    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
   
 </head>
 
@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -104,11 +104,11 @@ ga('send', 'pageview');
 <a href="../tutorials/defining-a-business-network.html">Tutorial 1: Building your first business network</a>
 <a href="../tutorials/getting-started-cmd-line.html">Getting started with the command line</a>
 <a href="../tutorials/getting-started-playground.html">Getting started with the playground</a>
-<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -154,11 +154,11 @@ ga('send', 'pageview');
   --&gt; LandTitle title
 }
 </code></pre></div>
-<p>The applications we&#39;re going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the Fabric Composer backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.</p>
+<p>The applications we&#39;re going to look at are going to store a number of (pretend) land titles, and mark them for sale. All this will be using the Hyperledger Composer backed by a real blockchain in the shape of a locally executing Hyperledger Fabric.</p>
 
 <h2 id="but-what-is-an-asset">But what is an asset?</h2>
 
-<p>An asset is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Fabric Composer has a single source of truth for the state of these assets and their history.</p>
+<p>An asset is a term used to describe things of value both in the physical world and the equally real intangible world. These are stored in Asset Registries. Participants can act on these assets by submitting transactions. With the features of a blockchain provided by the Hyperledger Fabric, an application using Hyperledger Composer has a single source of truth for the state of these assets and their history.</p>
 
 <p>It&#39;s worth reading the <a href="../introduction/introduction.html">introduction</a> page to get an idea of how everything fits together. The <a href="../reference/glossary.html">Glossary</a> provides a detailed description of each term.</p>
 
@@ -168,9 +168,9 @@ ga('send', 'pageview');
 
 <p>The first thing to do is to ensure that you have a suitable system ready for development.</p>
 
-<p><strong>Ensure that you have followed the steps in our <a href="../installing/quickstart.html">Quickstart</a> before continuing!</strong></p>
+<p><strong>Ensure that you have followed the steps in our <a href="./quickstart.html">Quickstart</a> before continuing!</strong></p>
 
-<p>Let&#39;s go ahead and make a change to start to show how easy it is to develop with Fabric Composer.</p>
+<p>Let&#39;s go ahead and make a change to start to show how easy it is to develop with Hyperledger Composer.</p>
 
 <h3 id="clone-the-repository-and-install-dependencies">Clone the Repository and Install Dependencies</h3>
 
@@ -206,7 +206,7 @@ ga('send', 'pageview');
 
 <p>In a real-life scenario at this point you would edit <code>package.json</code> to increment the version number in the <code>DigitalProperty-Network</code> directory and publish this to npm. Please do npt publish to the DigitalProperty-Network in npm.</p>
 
-<p>What we&#39;ll do therefore is adopt a different approach to create the Business Network Archive. From within the DigitalProperty-Network directory..</p>
+<p>What we&#39;ll do therefore is adopt a different approach to create the Business Network Archive. From within the DigitalProperty-Network directory.</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer archive create --sourceType dir --sourceName .
 Creating Business Network Archive
 Looking <span class="k">for </span>package.json of Business Network Definition <span class="k">in</span> /home/matthew/git17/DigitalProperty-Network
@@ -262,14 +262,14 @@ available via <span class="sb">`</span>npm run-script<span class="sb">`</span>:
 &gt; getting-started@1.0.0 submitTransaction /home/matthew/github_lenny/sample-applications/packages/getting-started
 &gt; node cli.js landregistry submit &amp;&amp; node cli.js landregistry list
 
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started appliation
 info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.22
 info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
 info: [Composer-GettingStarted] updateForSale Submitting transaction
 info: [Composer-GettingStarted] Transaction Submitted
 undefined
 info: [Composer-GettingStarted] Command completed successfully.
-info: [Composer-GettingStarted] Fabric Composer: Getting Started appliation
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started appliation
 info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.22
 info: [Composer-GettingStarted] listTitles Getting the asset registry
 info: [Composer-GettingStarted] listTitles Getting all assest from the registry.
@@ -288,11 +288,11 @@ info: [Composer-GettingStarted]
 <h2 id="digging-deeper">Digging Deeper</h2>
 
 <ul>
-<li><p><code>scripts/download-hyperledger.sh</code> This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Fabric Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.<code>npm install</code> uses this script.</p></li>
+<li><p><code>scripts/download-hyperledger.sh</code> This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Hyperledger Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.<code>npm install</code> uses this script.</p></li>
 <li><p><code>scripts/start-hyperledger.sh</code> This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger fabric has started.
 <code>npm run startHLF</code> can also be used to call this script.</p></li>
 <li><p><code>scripts/stop-hyperledger.sh</code> This is the opposite of the start script, and will stop the Hyperledger Fabric - but it critically does not delete or remove any state. Therefore it canbe restarted with the start script.  <code>npm run stopHLF</code> can also be used to call this script.</p></li>
-<li><p><code>scripts/teardown.sh</code> This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Fabric Composer Connection Profiles.</p></li>
+<li><p><code>scripts/teardown.sh</code> This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Hyperledger Composer Connection Profiles.</p></li>
 </ul>
 
 <p><strong>Composer CLI</strong></p>
@@ -308,7 +308,7 @@ This lists the deployed business network details. <code>-n</code> is the name of
 
 <p><strong>Sample Applications</strong></p>
 
-<p>There are 3 sample Javascript applications that use the Fabric Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.</p>
+<p>There are 3 sample Javascript applications that use the Hyperledger Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.</p>
 
 <ul>
 <li><code>node cli.js landregistry submit</code>  This applications connects, and submits a transaction.</li>
@@ -318,15 +318,15 @@ This lists the deployed business network details. <code>-n</code> is the name of
 
 <h3 id="completed">Completed!</h3>
 
-<p>We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Fabric Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.</p>
+<p>We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Hyperledger Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.</p>
 
 <p>If you want to continue exploring, check out our other Getting Started guides:</p>
 
-<p><a href="../business-network/getting-started-coding-bnd.html">Coding a Business Network Definition</a></p>
+<p><a href="./getting-started-coding-bnd.html">Coding a Business Network Definition</a></p>
 
-<p><a href="../integrating/getting-started-rest-api.html">Generating a REST API</a></p>
+<p><a href="./getting-started-rest-api.html">Generating a REST API</a></p>
 
-<p><a href="../applications/getting-started-nodejs-app.html">Writing a Node.js App</a></p>
+<p><a href="./getting-started-nodejs-app.html">Writing a Node.js App</a></p>
 
             
           </section>
@@ -334,6 +334,10 @@ This lists the deployed business network details. <code>-n</code> is the name of
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
       </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
     </article>
 </div>
 
@@ -349,7 +353,7 @@ This lists the deployed business network details. <code>-n</code> is the name of
     <ul>
       <li><a href="https://github.com/fabric-composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
-      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -362,10 +366,10 @@ This lists the deployed business network details. <code>-n</code> is the name of
 </body>
 
 <!-- jQuery -->
-<script src="/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="/assets/js/bootstrap.js"></script>
+<script src="/composer/assets/js/bootstrap.js"></script>
 
 <script>
 

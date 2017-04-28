@@ -7,39 +7,39 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Getting Started with a Fabric Composer node.js application | Fabric Composer</title>
+    <title>Getting Started with a Hyperledger Composer node.js application | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/assets/js/clipboard.min.js"></script>
+  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-1', 'auto');
+ga('create', 'UA-91314349-2', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/assets/css/normalize.css" rel="stylesheet">
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <link href="/assets/css/footer.css" rel="stylesheet">
-    <link href="/assets/css/prettify.css" rel="stylesheet">
-    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
   
 </head>
 
@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -101,14 +101,14 @@ ga('send', 'pageview');
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <a href="../applications/genapp.html">Generating a starter application</a>
 <a href="../applications/getting-started-nodejs-app.html">Writing a node.js application</a>
 <a href="../applications/rest-api-server.html">Generating a REST API</a>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -125,21 +125,21 @@ ga('send', 'pageview');
 
 <p>We&#39;ll walk through the sample node.js applications here. The git repo is the GettingStarted repo that was cloned for the Getting Started.
 The <a href="https://github.com/fabric-composer/sample-applications/blob/master/packages/getting-started/lib/landRegistry.js"><code>landregistry.js</code></a> file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.
-This has been implemented using a javascript class; however you are free to structure your code as you wish. The framework&#39;s API is agnostic to this.
+This has been implemented using a JavaScript class; however you are free to structure your code as you wish. The framework&#39;s API is agnostic to this.
 The application is also setup as a command line driven application using yargs (see the files in the cmd directory).</p>
 
-<p>We&#39;ll look at section of functionality in turn after first looking at the modules that are required and how to connect to a Fabric Composer hosted application on the Hyperledger Fabric.</p>
+<p>We&#39;ll look at section of functionality in turn after first looking at the modules that are required and how to connect to a Hyperledger Composer hosted application on the Hyperledger Fabric.</p>
 
 <h2 id="promises">Promises</h2>
 
-<p>It&#39;s worth highlighting that the style of the API is to use promises. Typically Fabric Composer APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.</p>
+<p>It&#39;s worth highlighting that the style of the API is to use promises. Typically Hyperledger Composer APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.</p>
 
 <p>If you&#39;re not familiar with Promise based development it&#39;s worth reviewing some of the tutorials online to get an idea. For example [<a href="https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics">https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics</a>]</p>
 
 <h2 id="modules-required">Modules required</h2>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
 </code></pre></div>
-<p>For a client application this is only Fabric Composer require needed. In this getting started application we also use the <code>cli-table</code> and <code>winston</code> and <code>config</code> modules for support processing. We use these to get information from the command line options, formatting of output and logging.</p>
+<p>For a client application this is only Hyperledger Composer require needed. In this getting started application we also use the <code>cli-table</code> and <code>winston</code> and <code>config</code> modules for support processing. We use these to get information from the command line options, formatting of output and logging.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">winston</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'winston'</span><span class="p">);</span>
 <span class="kd">let</span> <span class="nx">config</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'config'</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s1">'gettingstarted'</span><span class="p">);</span>
 
@@ -148,7 +148,7 @@ The application is also setup as a command line driven application using yargs (
 <span class="kd">let</span> <span class="nx">participantPwd</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'participantPwd'</span><span class="p">);</span>
 <span class="kr">const</span> <span class="nx">LOG</span> <span class="o">=</span> <span class="nx">winston</span><span class="p">.</span><span class="nx">loggers</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'application'</span><span class="p">);</span>
 </code></pre></div>
-<h2 id="connecting-to-the-fabric-composer-runtime">Connecting to the Fabric Composer Runtime</h2>
+<h2 id="connecting-to-the-hyperledger-composer-runtime">Connecting to the Hyperledger Composer Runtime</h2>
 
 <p>We&#39;ve split the code to connect into two parts, part in the constructor of the object and part in an initialization method. This is an implementation decision made for this example - you are free to structure this in the way that best suits your application. What&#39;s important is the API calls and the data.</p>
 
@@ -157,7 +157,7 @@ The application is also setup as a command line driven application using yargs (
 <span class="k">this</span><span class="p">.</span><span class="nx">CONNECTION_PROFILE_NAME</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'connectionProfile'</span><span class="p">);</span>
 <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkIdentifier</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'businessNetworkIdentifier'</span><span class="p">);</span>
 </code></pre></div>
-<p>The first Fabric Composer API call that we are going to make here, is the connect() API, to establish the connection to the Fabric Composer runtime on the Hyperledger Fabric.
+<p>The first Hyperledger Composer API call that we are going to make here, is the connect() API, to establish the connection to the Hyperledger Composer runtime on the Hyperledger Fabric.
 This API returns the businessNetworkDefinition if successful - which we hold onto.  The API takes, the connection profile name, business network identifier and participant details.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">CONNECTION_PROFILE_NAME</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkIdentifier</span><span class="p">,</span> <span class="nx">participantId</span><span class="p">,</span> <span class="nx">participantPwd</span><span class="p">)</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -168,7 +168,7 @@ This API returns the businessNetworkDefinition if successful - which we hold ont
 
 <h2 id="adding-assets-to-a-regsitry">Adding assets to a regsitry</h2>
 
-<p>The Fabric Composer runtime will create a default registry to store assets in. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. This <code>getAssetRegistry()</code> takes the fully qualified asset name as defined in the CTO model file (That&#39;s namespace plus asset name). It returns a promise that is resolved with the asset registry, which we hold onto.</p>
+<p>The Hyperledger Composer runtime will create a default registry to store assets in. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. This <code>getAssetRegistry()</code> takes the fully qualified asset name as defined in the CTO model file (That&#39;s namespace plus asset name). It returns a promise that is resolved with the asset registry, which we hold onto.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">)</span>
 <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">titlesRegistry</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
@@ -223,7 +223,7 @@ This API returns the businessNetworkDefinition if successful - which we hold ont
   <span class="k">return</span><span class="p">(</span><span class="nx">table</span><span class="p">);</span>
 <span class="p">})</span>
 </code></pre></div>
-<p>Most of this isn&#39;t Fabric Composer API code - but it shows how to access the details of the objects that have been returned. At this point it&#39;s worth just looking again at the model.</p>
+<p>Most of this isn&#39;t Hyperledger Composer API code - but it shows how to access the details of the objects that have been returned. At this point it&#39;s worth just looking again at the model.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">asset LandTitle identified by titleId {
   o String   titleId
   o Person   owner
@@ -276,6 +276,10 @@ Note that the transaction JSON matches the structure specified in the model file
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
       </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
     </article>
 </div>
 
@@ -291,7 +295,7 @@ Note that the transaction JSON matches the structure specified in the model file
     <ul>
       <li><a href="https://github.com/fabric-composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
-      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -304,10 +308,10 @@ Note that the transaction JSON matches the structure specified in the model file
 </body>
 
 <!-- jQuery -->
-<script src="/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="/assets/js/bootstrap.js"></script>
+<script src="/composer/assets/js/bootstrap.js"></script>
 
 <script>
 

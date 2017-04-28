@@ -7,39 +7,39 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Installing and running the Fabric Composer Playground | Fabric Composer</title>
+    <title>Installing and running the Hyperledger Composer Playground | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/assets/js/clipboard.min.js"></script>
+  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-1', 'auto');
+ga('create', 'UA-91314349-2', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/assets/css/normalize.css" rel="stylesheet">
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <link href="/assets/css/footer.css" rel="stylesheet">
-    <link href="/assets/css/prettify.css" rel="stylesheet">
-    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
   
 </head>
 
@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -104,11 +104,11 @@ ga('send', 'pageview');
 <a href="../tutorials/defining-a-business-network.html">Tutorial 1: Building your first business network</a>
 <a href="../tutorials/getting-started-cmd-line.html">Getting started with the command line</a>
 <a href="../tutorials/getting-started-playground.html">Getting started with the playground</a>
-<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -119,19 +119,19 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="installing-and-running-the-fabric-composer-playground">Installing and running the Fabric Composer Playground</h1>
+              <h1 id="installing-and-running-the-hyperledger-composer-playground">Installing and running the Hyperledger Composer Playground</h1>
 
-<p>This tutorial will take you through how to install and run the Fabric Composer Playground.</p>
+<p>This tutorial will take you through how to install and run the Hyperledger Composer Playground.</p>
 
-<p>The Fabric Composer Playground is a web development experience that allows you to develop a business network definition, deploy that business network definition to a running instance of Hyperledger Fabric, and test the deployed business network by working with assets, participants, and transactions.</p>
+<p>The Hyperledger Composer Playground is a web development experience that allows you to develop a business network definition, deploy that business network definition to a running instance of Hyperledger Fabric, and test the deployed business network by working with assets, participants, and transactions.</p>
 
-<p>Fabric Composer Playground can also be used in a &quot;browser only&quot; mode, without a running instance of Hyperledger Fabric. When used in this mode, all the functionality of Fabric Composer Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.</p>
+<p>Hyperledger Composer Playground can also be used in a &quot;browser only&quot; mode, without a running instance of Hyperledger Fabric. When used in this mode, all the functionality of Hyperledger Composer Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.</p>
 
-<p>This tutorial will show you how to start a Hyperledger Fabric instance for use with Fabric Composer Playground by using Docker Compose. If you already have a running instance of Hyperledger Fabric, or you only want to work in &quot;browser only&quot; mode, then skip to <a href="#installationoptions">alternative installation options</a>.</p>
+<p>This tutorial will show you how to start a Hyperledger Fabric instance for use with Hyperledger Composer Playground by using Docker Compose. If you already have a running instance of Hyperledger Fabric, or you only want to work in &quot;browser only&quot; mode, then skip to <a href="#installationoptions">alternative installation options</a>.</p>
 
 <h1 id="prerequisites">Prerequisites</h1>
 
-<p>In order to install Fabric Composer Playground, you need the following software installed:</p>
+<p>In order to install Hyperledger Composer Playground, you need the following software installed:</p>
 
 <ul>
 <li><p>Docker Engine 1.12.3 or greater</p>
@@ -174,7 +174,7 @@ docker-compose version 1.10.0, build 4bd6f1a
 <p>This container will use ports 8080</p></li>
 </ul>
 
-<p>In a terminal or command prompt, navigate to the directory that you downloaded the <code>docker-compose.yml</code> file into, and run the following commands to start a Hyperledger Fabric instance and Fabric Composer Playground:</p>
+<p>In a terminal or command prompt, navigate to the directory that you downloaded the <code>docker-compose.yml</code> file into, and run the following commands to start a Hyperledger Fabric instance and Hyperledger Composer Playground:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
   docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
   docker-compose up -d
@@ -202,18 +202,18 @@ docker-compose version 1.10.0, build 4bd6f1a
 </code></pre></div>
 <p>If you see this error, ensure that all of these ports are free before you run any commands.</p>
 
-<p>If everything started OK, you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
+<p>If everything started OK, you should be able to access Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
 
 <h1 id="alternative-installation-options"><a name="installationoptions"></a>Alternative installation options</h1>
 
-<p>If you have an existing Hyperledger Fabric instance you want to use with Fabric Composer Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.</p>
+<p>If you have an existing Hyperledger Fabric instance you want to use with Hyperledger Composer Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.</p>
 
-<p>There are two options for installing the Fabric Composer Playground.
+<p>There are two options for installing the Hyperledger Composer Playground.
 You can choose to install using npm (the Node.js package manager), or you can choose to install with Docker. We recommend that you:</p>
 
 <ul>
-<li>  <a href="#installnpm">Install using npm</a> if you wish to run to Fabric Composer Playground on your local workstation.</li>
-<li>  <a href="#installdocker">Install using Docker</a> if you wish to run Fabric Composer Playground on a server or cloud platform.</li>
+<li>  <a href="#installnpm">Install using npm</a> if you wish to run to Hyperledger Composer Playground on your local workstation.</li>
+<li>  <a href="#installdocker">Install using Docker</a> if you wish to run Hyperledger Composer Playground on a server or cloud platform.</li>
 </ul>
 
 <p></p>
@@ -224,7 +224,7 @@ You can choose to install using npm (the Node.js package manager), or you can ch
 
 <h3 id="prerequisites">Prerequisites</h3>
 
-<p>In order to install Fabric Composer Playground with npm, you need the following software installed:</p>
+<p>In order to install Hyperledger Composer Playground with npm, you need the following software installed:</p>
 
 <ul>
 <li><p>Node.js v4.6.2 or greater, or Node.js v6.x (note that Node.js v7.x is unsupported)</p>
@@ -253,7 +253,7 @@ v4.6.2
 
 <h3 id="installation">Installation</h3>
 
-<p>You can install Fabric Composer Playground by running the following command in your terminal or command prompt:</p>
+<p>You can install Hyperledger Composer Playground by running the following command in your terminal or command prompt:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  sudo npm install -g composer-playground
 </code></pre></div>
 <p>You should see the following output in your terminal or command prompt:</p>
@@ -264,12 +264,12 @@ v4.6.2
   └─┬ composer-playground@0.4.3
   ...
 </code></pre></div>
-<p>Verify that no errors occurred. If any part of this process fails, then Fabric Composer Playground will fail to work correctly. You may see errors from a program called <code>node-gyp</code>. These errors indicate that your system is not set up correctly to build Node.js C/C++ native modules. You may need to install additional software to correct this error.</p>
+<p>Verify that no errors occurred. If any part of this process fails, then Hyperledger Composer Playground will fail to work correctly. You may see errors from a program called <code>node-gyp</code>. These errors indicate that your system is not set up correctly to build Node.js C/C++ native modules. You may need to install additional software to correct this error.</p>
 
-<p>You can then start Fabric Composer Playground by running the following command in your terminal or command prompt:</p>
+<p>You can then start Hyperledger Composer Playground by running the following command in your terminal or command prompt:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  composer-playground
 </code></pre></div>
-<p>A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
+<p>A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
 
 <p>This tutorial is now <strong>complete</strong>. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!</p>
 
@@ -277,7 +277,7 @@ v4.6.2
 
 <h3 id="prerequisites">Prerequisites</h3>
 
-<p>In order to install Fabric Composer Playground with Docker, you need the following software installed:</p>
+<p>In order to install Hyperledger Composer Playground with Docker, you need the following software installed:</p>
 
 <ul>
 <li><p>Docker Engine 1.12.3 or greater</p>
@@ -294,7 +294,7 @@ Docker version 1.13.0, build 49bf474
 
 <h3 id="installation">Installation</h3>
 
-<p>You can install Fabric Composer Playground by running the following Docker command in your terminal or command prompt:</p>
+<p>You can install Hyperledger Composer Playground by running the following Docker command in your terminal or command prompt:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">  docker run -d -p 8080:8080 fabriccomposer/composer-playground
 </code></pre></div>
 <p>You should see the following output in your terminal or command prompt:</p>
@@ -303,7 +303,7 @@ Docker version 1.13.0, build 49bf474
 </code></pre></div>
 <p>Verify that no errors occurred.</p>
 
-<p>You can then start Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
+<p>You can then start Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
 
 <p>This tutorial is now <strong>complete</strong>. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!</p>
 
@@ -313,6 +313,10 @@ Docker version 1.13.0, build 49bf474
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
       </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
     </article>
 </div>
 
@@ -328,7 +332,7 @@ Docker version 1.13.0, build 49bf474
     <ul>
       <li><a href="https://github.com/fabric-composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
-      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -341,10 +345,10 @@ Docker version 1.13.0, build 49bf474
 </body>
 
 <!-- jQuery -->
-<script src="/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="/assets/js/bootstrap.js"></script>
+<script src="/composer/assets/js/bootstrap.js"></script>
 
 <script>
 

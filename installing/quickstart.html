@@ -7,39 +7,39 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Fabric Composer Quickstart | Fabric Composer</title>
+    <title>Hyperledger Composer Quickstart | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/assets/js/clipboard.min.js"></script>
+  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-1', 'auto');
+ga('create', 'UA-91314349-2', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/assets/css/normalize.css" rel="stylesheet">
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <link href="/assets/css/footer.css" rel="stylesheet">
-    <link href="/assets/css/prettify.css" rel="stylesheet">
-    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
   
 </head>
 
@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -101,15 +101,15 @@ ga('send', 'pageview');
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
 <a href="../installing/prerequisites.html">Prerequisites</a>
 <a href="../installing/quickstart.html">Quickstart</a>
-<a href="../installing/runtime-start.html">Start a Fabric runtime</a>
+<a href="../installing/runtime-start.html">Start a Composer runtime</a>
 <a href="../installing/createconnectionprofile.html">Creating a network connection profile</a>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -120,140 +120,146 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="fabric-composer-quickstart">Fabric Composer Quickstart</h1>
+              <h1 id="hyperledger-composer-quickstart">Hyperledger Composer Quickstart</h1>
 
 <hr>
 
+<p>The steps below enable you to get started with the Composer sample application.</p>
+
+<p>These steps will install the Composer sample application running against Hyperledger Fabric v1.0. To use Hyperledger Fabric v0.6 run the optional command in step 2.</p>
+
+<h2 id="before-you-begin">Before you begin</h2>
+
 <p>Check that your system has the required software (at the required versions) installed:</p>
-
-<p><strong>Operating Systems:</strong> Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12</p>
-
-<p><strong>Docker Engine:</strong> Version 1.12.x</p>
-
-<p><strong>Docker-Compose:</strong> Version 1.8.x</p>
-
-<p><strong>Node:</strong> 6.x (note version 7 is not supported)</p>
-
-<p><strong>npm:</strong> 4.0.x</p>
-
-<p><strong>git:</strong> 2.9.x</p>
-
-<p>If you need to update or install anything please refer to the install guides:
-<a href="../installing/prerequisites.html">Installing Prerequisites</a></p>
-
-<p><strong>Install the command line tools:</strong></p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ npm install -g composer-cli
+<div class="highlight"><pre><code class="language-" data-lang="">Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
+Docker Engine: Version 1.12.x
+Docker-Compose: Version 1.8.x
+Node: 6.x (note version 7 is not supported)
+npm: 4.0.x
+git: 2.9.x
 </code></pre></div>
-<p><strong>Clone the Sample Applications Repository:</strong></p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ git clone https://github.com/fabric-composer/sample-applications.git
-</code></pre></div>
-<p><strong>Install the Getting Started Application:</strong></p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ cd sample-applications/packages/getting-started
-$ npm install
-$ composer network list -n digitalproperty-network --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-</code></pre></div>
-<p><strong><em>npm install</em></strong></p>
+<p>If you need to update or install any of the prerequisites, please refer to <a href="../installing/prerequisites.html">installing prerequisites</a></p>
 
-<p><code>npm install</code> will run several scripts that are packaged into the getting-started repository.</p>
+<h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><em>scripts/download-hyperledger.sh</em> - This kills any docker images started with the <em>/scripts/docker-compose.yml</em> file, remove the current default connection profile, <em>~/.composer-connection-profiles/defaultProfile</em> and pull the required Hyperledger Fabric base image.</li>
-<li><em>scripts/start-hyperledger.sh</em> - This uses the <em>/scripts/docker-compose.yml</em> by running <code>docker-compose up -d --build</code> to create a Hyperledger Fabric peer and memebership service docker container.</li>
-<li><em>composer archive create</em> - using Composer CLI, create an archive of the <em>npm</em> module <em>digitalproperty-network</em> and <em>archive</em> it into a <em>digitalPropertyNetwork.bna</em>.</li>
-<li><em>composer network deploy</em> - Deploy the <code>digitalPropertyNetwork.bna</code> business network to the deployed fabric using the <em>defaultProfile</em> connection progfile.</li>
-<li><em>composer network list</em> - Lists the contents of a deployed business network.</li>
+<li>To install the Composer command line tools:
+<code>
+$ npm install -g composer-cli
+</code></li>
+<li>Clone the Composer sample applications GitHub repository:
+<code>
+$ git clone https://github.com/hyperledger/composer-sample-applications.git
+</code>
+<strong><em>Optional:</em></strong> To run this sample with Hyperledger Fabric v0.6, run the following command.
+<code>
+npm set getting-started:fabric hlf
+</code></li>
+<li>To install the getting started application run the following commands.
+<code>
+$ cd composer-sample-applications/packages/getting-started
+$ npm install
+</code>
+Amongst the steps (described below), the command returns information about the deployed digital property network such as name, models, registries etc.</li>
 </ol>
 
-<p>There is <a href="https://fabric-composer.github.io/reference/commands.html">Reference material</a> for Composer CLI</p>
+<p><code>npm install</code> runs several scripts that are packaged into the getting-started directory and uses the docker-compose <code>.yml</code> file mentioned below to pull/download the relevant Hyperledger Fabric docker images.</p>
 
-<p><strong>Run the Getting Started Application:</strong></p>
+<p>There is <a href="https://fabric-composer.github.io/reference/commands.html">reference material</a> for Composer CLI.</p>
 
-<p>Run the <code>npm test</code> command. You should see output as below.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>npm <span class="nb">test</span>
-<span class="gp">&gt; </span>getting-started@1.0.0 <span class="nb">test</span> /Users/dselman/dev/git/sample-applications/packages/getting-started
-<span class="gp">&gt; </span>mocha --recursive <span class="o">&amp;&amp;</span> npm run bootstrapAssets <span class="o">&amp;&amp;</span> npm run listAssets <span class="o">&amp;&amp;</span> npm run submitTransaction
+<ol>
+<li>Run the <code>npm test</code> command. You should see output similar to that shown below (output below is for a v0.6 sample application)</li>
+</ol>
+<div class="highlight"><pre><code class="language-" data-lang="">$ npm test
+&gt; getting-started@1.0.0 test /home/ibm/samples/sample-applications/packages/getting-started
+&gt; mocha --recursive &amp;&amp; npm run bootstrapAssets &amp;&amp; npm run listAssets &amp;&amp; npm run submitTransaction
 
 
   Default
-    <span class="c">#sample test</span>
+    #sample test
       ✓ should pass
 
 
-  1 passing <span class="o">(</span>8ms<span class="o">)</span>
+  1 passing (8ms)
 
 
-<span class="gp">&gt; </span>getting-started@1.0.0 bootstrapAssets /Users/dselman/dev/git/sample-applications/packages/getting-started
-<span class="gp">&gt; </span>node cli.js landregistry bootstrap
+    &gt; getting-started@1.0.0 bootstrapAssets /home/ibm/samples/sample-applications/packages/getting-started
+&gt; node cli.js landregistry bootstrap
 
-info: <span class="o">[</span>Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: <span class="o">[</span>Composer-GettingStarted] Adding default land titles to the asset registry
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:_bootstrapTitles getting asset registry <span class="k">for</span> <span class="s2">"net.biz.digitalPropertyNetwork.LandTitle"</span>
-info: <span class="o">[</span>Composer-GettingStarted] about to get asset registry
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:_bootstrapTitles got asset registry
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:_bootstrapTitles getting factory and adding assets
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a person
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#1
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#2
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:_bootstrapTitles Adding these to the registry
-info: <span class="o">[</span>Composer-GettingStarted] Default titles added
-info: <span class="o">[</span>Composer-GettingStarted] Command completed successfully.
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
+info: [Composer-GettingStarted] Adding default land titles to the asset registry
+info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.6
+info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles getting asset registry for "net.biz.digitalPropertyNetwork.LandTitle"
+info: [Composer-GettingStarted] about to get asset registry
+info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles got asset registry
+info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles getting factory and adding assets
+info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a person
+info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#1
+info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#2
+info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Adding these to the registry
+info: [Composer-GettingStarted] Default titles added
+info: [Composer-GettingStarted] Command completed successfully.
 
-<span class="gp">&gt; </span>getting-started@1.0.0 listAssets /Users/dselman/dev/git/sample-applications/packages/getting-started
-<span class="gp">&gt; </span>node cli.js landregistry list
+&gt; getting-started@1.0.0 listAssets /home/ibm/samples/sample-applications/packages/getting-started
+&gt; node cli.js landregistry list
 
-info: <span class="o">[</span>Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: <span class="o">[</span>Composer-GettingStarted] listTitles Getting the asset registry
-info: <span class="o">[</span>Composer-GettingStarted] listTitles Getting all assest from the registry.
-info: <span class="o">[</span>Composer-GettingStarted] listTitles Current Land Titles
-info: <span class="o">[</span>Composer-GettingStarted] Titles listed
-info: <span class="o">[</span>Composer-GettingStarted]
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
+info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.6
+info: [Composer-GettingStarted] listTitles Getting the asset registry
+info: [Composer-GettingStarted] listTitles Getting all assets from the registry.
+info: [Composer-GettingStarted] listTitles Current Land Titles
+info: [Composer-GettingStarted] Titles listed
+info: [Composer-GettingStarted]
+
 ┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
 │ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
 ├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat <span class="k">in </span>the city    │ No      │
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ No      │
 ├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house <span class="k">in </span>the country │ No      │
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
 └──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: <span class="o">[</span>Composer-GettingStarted] Command completed successfully.
 
-<span class="gp">&gt; </span>getting-started@1.0.0 submitTransaction /Users/dselman/dev/git/sample-applications/packages/getting-started
-<span class="gp">&gt; </span>node cli.js landregistry submit <span class="o">&amp;&amp;</span> node cli.js landregistry list
+info: [Composer-GettingStarted] Command completed successfully.
 
-info: <span class="o">[</span>Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: <span class="o">[</span>Composer-GettingStarted] updateForSale Getting assest from the registry.
-info: <span class="o">[</span>Composer-GettingStarted] updateForSale Submitting transaction
-info: <span class="o">[</span>Composer-GettingStarted] Transaction Submitted
-info: <span class="o">[</span>Composer-GettingStarted] Command completed successfully.
-info: <span class="o">[</span>Composer-GettingStarted] Fabric Composer: Getting Started appliation
-info: <span class="o">[</span>Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.1
-info: <span class="o">[</span>Composer-GettingStarted] listTitles Getting the asset registry
-info: <span class="o">[</span>Composer-GettingStarted] listTitles Getting all assest from the registry.
-info: <span class="o">[</span>Composer-GettingStarted] listTitles Current Land Titles
-info: <span class="o">[</span>Composer-GettingStarted] Titles listed
-info: <span class="o">[</span>Composer-GettingStarted]
+&gt; getting-started@1.0.0 submitTransaction /home/ibm/samples/sample-applications/packages/getting-started
+&gt; node cli.js landregistry submit &amp;&amp; node cli.js landregistry list
+
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
+info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.6
+info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
+info: [Composer-GettingStarted] updateForSale Submitting transaction
+info: [Composer-GettingStarted] Transaction Submitted
+info: [Composer-GettingStarted] Command completed successfully.
+info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
+info: [Composer-GettingStarted] LandRegistry:&lt;init&gt; businessNetworkDefinition obtained digitalproperty-network@0.0.6
+info: [Composer-GettingStarted] listTitles Getting the asset registry
+info: [Composer-GettingStarted] listTitles Getting all assets from the registry.
+info: [Composer-GettingStarted] listTitles Current Land Titles
+info: [Composer-GettingStarted] Titles listed
+info: [Composer-GettingStarted]
+
+
 ┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
 │ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
 ├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat <span class="k">in </span>the city    │ No      │
+│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ Yes     │
 ├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house <span class="k">in </span>the country │ Yes     │
+│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
 └──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-info: <span class="o">[</span>Composer-GettingStarted] Command completed successfully.
+
+info: [Composer-GettingStarted] Command completed successfully.
 
 </code></pre></div>
-<p><strong><em>npm test</em></strong></p>
+<h2 id="testing-the-application">Testing the application</h2>
 
 <ol>
 <li><code>mocha --recursive</code> - Runs all unit tests in the <em>/tests</em> directory.</li>
-<li><code>node cli.js landregistry bootstrap</code> - Run the boostrap command included in getting-started to create two land titles owned by Fred Bloggs.</li>
-<li><code>node cli.js landregistry list</code> - Run the list command included the getting-started to lists all of the assets in the LandTitles asset registry.</li>
-<li><code>node cli.js landregistry submit</code> - Run the submit command included the getting-started to submit a transaction that changes LandTitle <em>LID:6789</em>&#39;s <em>ForSale</em> property to <em>Yes</em>.</li>
+<li><code>node cli.js landregistry bootstrap</code> - Run the bootstrap command to create two land titles owned by Fred Bloggs.</li>
+<li><code>node cli.js landregistry list</code> - Run the list command to list all of the assets in the LandTitles asset registry.</li>
+<li><code>node cli.js landregistry submit</code> - Run the submit command to submit a transaction that changes LandTitle <em>LID:1148</em>&#39;s <em>ForSale</em>&#39; property to <em>Yes</em>.</li>
 </ol>
 
-<p><strong>Where next?</strong></p>
+<h2 id="where-next">Where next?</h2>
 
 <ul>
 <li>Learn more about the Digital Property Network and running the tests in the first <a href="../tutorials/getting-started-cmd-line.html">Getting Started Tutorial</a></li>
@@ -265,6 +271,10 @@ info: <span class="o">[</span>Composer-GettingStarted] Command completed success
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
       </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
     </article>
 </div>
 
@@ -280,7 +290,7 @@ info: <span class="o">[</span>Composer-GettingStarted] Command completed success
     <ul>
       <li><a href="https://github.com/fabric-composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
-      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -293,10 +303,10 @@ info: <span class="o">[</span>Composer-GettingStarted] Command completed success
 </body>
 
 <!-- jQuery -->
-<script src="/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="/assets/js/bootstrap.js"></script>
+<script src="/composer/assets/js/bootstrap.js"></script>
 
 <script>
 

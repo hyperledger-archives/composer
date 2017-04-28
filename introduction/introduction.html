@@ -7,39 +7,39 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Fabric Composer -  Overview | Fabric Composer</title>
+    <title>Hyperledger Composer -  Overview | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/assets/js/clipboard.min.js"></script>
+  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-1', 'auto');
+ga('create', 'UA-91314349-2', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/assets/css/normalize.css" rel="stylesheet">
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <link href="/assets/css/footer.css" rel="stylesheet">
-    <link href="/assets/css/prettify.css" rel="stylesheet">
-    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
   
 </head>
 
@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -100,15 +100,13 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<a href="../introduction/businessnetwork.html">Understanding Business Networks</a>
-<a href="../introduction/businessnetworkdefinition.html">Business Network Definition</a>
-<a href="../introduction/participantsandidentities.html">Participants and Transactions</a>
+<a href="../introduction/key-concepts.html">Components and Concepts</a>
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -121,31 +119,31 @@ ga('send', 'pageview');
             
               <hr>
 
-<h1 id="welcome-to-fabric-composer">Welcome to Fabric Composer</h1>
+<h1 id="welcome-to-hyperledger-composer">Welcome to Hyperledger Composer</h1>
 
 <hr>
 
-<p>You can use Fabric Composer to easily define your business network, creating and tracking assets and performing transactions. Business networks represent an economic network made up of participants, assets, and the transactions that are performed between them. Assets are tangible or intangible goods, services, or property, and are stored in registries. Transactions are operations which may transform, create, and transfer assets or participants. Participants can interact with multiple business networks and maintain assets as they move between them using set identities.</p>
+<p>Hyperledger Composer is an extensive, open development toolset and framework to make developing blockchain applications easier. Our primary goal is to accelerate time to value, and make it easier to integrate your blockchain applications with the existing business systems. You can use Hyperledger Composer to rapidly develop use cases and deploy a blockchain solution in weeks rather than months. Hyperledger Composer allows you to model your business network and integrate existing systems and data with your blockchain applications.</p>
 
-<p>Applications can consume the data from business networks, providing end users with simple and controlled access points to the business network. Business networks can also be integrated with existing systems to create assets, transactions, and participants based on existing data.</p>
+<p>Hyperledger Composer supports the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.</p>
 
-<p>Fabric Composer requires and exploits the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> technology, using the blockchain consensus protocol to ensure that transactions are validated by business network participants.</p>
+<p>Everyday applications can consume the data from business networks, providing end users with simple and controlled access points.</p>
 
-<hr>
-
-<h2 id="key-fabric-composer-concepts-diagram">Key Fabric Composer concepts diagram</h2>
+<p>You can use Hyperledger Composer to quickly model your current business network, containing your existing assets and the transactions related to them; assets are tangible or intangible goods, services, or property. As part of your business network model, you define the transactions which can interact with assets. Business networks also include the participants who interact with them, each of which can be associated with a unique identity, across multiple business networks.</p>
 
 <hr>
 
-<p><img src="/assets/img/Composer-Diagram.svg" alt="Diagram of Fabric Composer"></p>
+<h2 id="key-hyperledger-composer-concepts-diagram">Key Hyperledger Composer concepts diagram</h2>
 
 <hr>
 
-<h2 id="how-does-fabric-composer-work-in-practise">How does Fabric Composer work in practise?</h2>
+<p><img src="/assets/img/Composer-Diagram.svg" alt="Diagram of Hyperledger Composer"></p>
 
 <hr>
 
-<p>For an example of a business network in action; a realtor may have a business network containing houses and listings as assets. Participants could include buyers and homeowners. Transactions might include buying or selling houses, and creating and closing listings. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor may want to create an application to present buyers and sellers participants with a simple user interface for viewing open listings and making offers. This business network could also be integrated with the existing inventory system for the realtor, allowing for the addition of new houses as assets. Relevant other parties can be registered as participants whilst maintaining their own business network, for example a land registry might interact with a buyer winner to transfer ownership of the land.</p>
+<h2 id="how-does-hyperledger-composer-work-in-practise">How does Hyperledger Composer work in practise?</h2>
+
+<p>For an example of a business network in action; a realtor can quickly model their business network; including houses and listings assets, buyers and homeowners as participants, and buying or selling houses, and creating and closing listings as transactions. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.</p>
 
 <hr>
 
@@ -153,7 +151,7 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>To get started with Fabric Composer right away, try the <a href="../tutorials/tutorialindex.html">Fabric Composer tutorials</a>, to learn more about Fabric Composer read <a href="../introduction/businessnetwork.html">understanding business networks</a>, to get installed and trying the full product immediately go to <a href="../installing/prerequisites.html">installing Fabric Composer</a>.</p>
+<p>To get started with Hyperledger Composer right away, try the <a href="../tutorials/tutorialindex.html">Hyperledger Composer tutorials</a>, to learn more about Hyperledger Composer read <a href="../introduction/key-concepts.html">understanding Hyperledger Composer</a>, to get installed and trying the full product immediately go to <a href="../installing/prerequisites.html">installing Hyperledger Composer</a>.</p>
 
             
           </section>
@@ -161,6 +159,10 @@ ga('send', 'pageview');
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
       </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
     </article>
 </div>
 
@@ -176,7 +178,7 @@ ga('send', 'pageview');
     <ul>
       <li><a href="https://github.com/fabric-composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
-      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -189,10 +191,10 @@ ga('send', 'pageview');
 </body>
 
 <!-- jQuery -->
-<script src="/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="/assets/js/bootstrap.js"></script>
+<script src="/composer/assets/js/bootstrap.js"></script>
 
 <script>
 

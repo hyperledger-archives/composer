@@ -7,39 +7,39 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Fabric Composer -  Overview | Fabric Composer</title>
+    <title>Hyperledger Composer -  Overview | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
   <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/assets/js/clipboard.min.js"></script>
+  <script src="/composer/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-1', 'auto');
+ga('create', 'UA-91314349-2', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-<script async src="/assets/js/autotrack.js"></script>
+<script async src="/composer/assets/js/autotrack.js"></script>
 <!-- End Google Analytics -->
 
   
 
   
-    <link href="/assets/css/normalize.css" rel="stylesheet">
-    <link href="/assets/css/main.css" rel="stylesheet">
-    <link href="/assets/css/footer.css" rel="stylesheet">
-    <link href="/assets/css/prettify.css" rel="stylesheet">
-    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/assets/css/composer-style.css" rel="stylesheet">
-    <link href="/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/assets/css/new-style.min.css" rel="stylesheet">
   
 </head>
 
@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -100,15 +100,13 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<a href="../introduction/businessnetwork.html">Understanding Business Networks</a>
-<a href="../introduction/businessnetworkdefinition.html">Business Network Definition</a>
-<a href="../introduction/participantsandidentities.html">Participants and Transactions</a>
+<a href="../introduction/key-concepts.html">Components and Concepts</a>
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/prerequisites.html">Installing</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/participant-add.html">Managing and Operating</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -123,7 +121,7 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>Fabric Composer is a set of APIs, a modeling language and
+<p>Hyperledger Composer is a set of APIs, a modeling language and
 a programming model to quickly define and deploy business networks and applications
 that allow <strong>participants</strong> to send <strong>transactions</strong> that exchange <strong>assets</strong>.</p>
 
@@ -176,18 +174,18 @@ are validated by concerned organizations in the business network.</p>
 </tr>
 </tbody></table>
 
-<h2 id="fabric-composer-programming-model">Fabric Composer Programming Model</h2>
+<h2 id="hyperledger-composer-programming-model">Hyperledger Composer Programming Model</h2>
 
-<p>The Fabric Composer programming model is based on defining and deploying a Business Network
+<p>The Hyperledger Composer programming model is based on defining and deploying a Business Network
 Definition, which contains a data model that defines the name and structure of assets, participants
 and transactions in the business network. The business network also specifies <em>transaction processor functions</em>
 (written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.</p>
 
-<p>Fabric Composer defines <a href="https://fabric-composer.github.io/jsdoc/index.html">Javascript APIs</a>to submit transactions and to create, retrieve, update and delete assets within asset registries.</p>
+<p>Hyperledger Composer defines <a href="https://fabric-composer.github.io/jsdoc/index.html">Javascript APIs</a>to submit transactions and to create, retrieve, update and delete assets within asset registries.</p>
 
 <h3 id="roles-responsibilities-and-tasks">Roles, Responsibilities and Tasks</h3>
 
-<p>A typical project using Fabric Composer goes through a lifecycle of:</p>
+<p>A typical project using Hyperledger Composer goes through a lifecycle of:</p>
 
 <p><em>Model -&gt; Define Business Network -&gt; Deploy Runtime -&gt; Deploying Business Network -&gt; Test -&gt; Generate Application</em></p>
 
@@ -199,9 +197,9 @@ and transactions in the business network. The business network also specifies <e
 
 <h2 id="modeling-the-business-domain">Modeling the Business Domain</h2>
 
-<p>Fabric Composer includes a powerful Object-Oriented modeling language, used to specify a domain model; the structure of assets, participants and transactions. The domain model is used across the Framework for code generation, type validation, user interface generation, API generation, amongst other things.</p>
+<p>Hyperledger Composer includes a powerful Object-Oriented modeling language, used to specify a domain model; the structure of assets, participants and transactions. The domain model is used across the Framework for code generation, type validation, user interface generation, API generation, amongst other things.</p>
 
-<h3 id="sample-fabric-composer-domain-model">Sample Fabric Composer Domain Model</h3>
+<h3 id="sample-hyperledger-composer-domain-model">Sample Hyperledger Composer Domain Model</h3>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">namespace</span> <span class="nx">net</span><span class="p">.</span><span class="nx">biz</span><span class="p">.</span><span class="nx">digitalPropertyNetwork</span>
 
 <span class="nx">asset</span> <span class="nx">LandTitle</span> <span class="nx">identified</span> <span class="nx">by</span> <span class="nx">titleId</span> <span class="p">{</span>
@@ -247,7 +245,7 @@ and transactions in the business network. The business network also specifies <e
 </code></pre></div>
 <h2 id="rapidly-create-applications">Rapidly Create Applications</h2>
 
-<p>Fabric Composer includes <a href="../tasks/genapp.html">code generators</a> so that web and mid-tier application developers can quickly generate starter applications that interact with a deployed business network definition. These code generators allow application developers to quickly focus on the integration and visual aspects of their projects, rather than writing boilerplate and configuration.</p>
+<p>Hyperledger Composer includes <a href="../tasks/genapp.html">code generators</a> so that web and mid-tier application developers can quickly generate starter applications that interact with a deployed business network definition. These code generators allow application developers to quickly focus on the integration and visual aspects of their projects, rather than writing boilerplate and configuration.</p>
 
 <p>High-level administration and client APIs provide easy access to a deployed business network.</p>
 
@@ -338,6 +336,10 @@ and transactions in the business network. The business network also specifies <e
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
       </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
     </article>
 </div>
 
@@ -353,7 +355,7 @@ and transactions in the business network. The business network also specifies <e
     <ul>
       <li><a href="https://github.com/fabric-composer">GitHub</a></li>
       <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
-      <li><a href="/jsdoc/index.html">APIs</a></li>
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
       <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
@@ -366,10 +368,10 @@ and transactions in the business network. The business network also specifies <e
 </body>
 
 <!-- jQuery -->
-<script src="/assets/js/jquery.js"></script>
+<script src="/composer/assets/js/jquery.js"></script>
 
 <!-- Bootstrap Core JavaScript -->
-<script src="/assets/js/bootstrap.js"></script>
+<script src="/composer/assets/js/bootstrap.js"></script>
 
 <script>
 

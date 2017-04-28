@@ -1,1 +1,1 @@
-Sitemap: https://fabric-composer.github.io/fabric-composer//sitemap.xml
+Sitemap: https://hyperledger.github.io/composer//composer/sitemap.xml

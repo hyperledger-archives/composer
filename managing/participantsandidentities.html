@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer - Business Network Definition | Hyperledger Composer</title>
+    <title>Hyperledger Composer - Participants and Identities | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -100,13 +100,18 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<a href="../introduction/key-concepts.html">Components and Concepts</a>
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
 <strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
+<a href="../managing/participantsandidentities.html">Participants and Identities</a>
+<a href="../managing/participant-add.html">Adding a participant</a>
+<a href="../managing/identity-issue.html">Issuing an identity to a participant</a>
+<a href="../managing/identity-revoke.html">Revoking an identity from a participant</a>
+<a href="../managing/github-oauth.html">Enabling OAuth using GitHub</a>
+<a href="../managing/current-participant.html">Enabling access control using the current participant</a>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -117,26 +122,69 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="business-network-definition">Business Network Definition</h1>
+              <h1 id="participants-and-identities">Participants and Identities</h1>
 
 <hr>
 
-<p>Business Network Definitions are a key concept of the Hyperledger Composer programming model. They are represented by the <code>BusinessNetworkDefinition</code> class, defined in the <code>composer-common</code> module and exported by both <code>composer-admin</code> and <code>composer-client</code>.</p>
+<p>A <code>Participant</code> is an actor in a business network. A participant might be an
+individual or an organization. A participant can create assets, and also exchange
+assets with other participants. A participant works with assets by submitting transactions.</p>
 
-<p>Business Network Definitions are composed of:</p>
+<p>A participant has a set of <code>Identity</code> documents that can be validated to prove the
+identity of that participant. For example, an individual may have one or more of
+the following identity documents that prove who they are:</p>
 
 <ul>
-<li>a set of model files</li>
-<li>a set of Javascript files</li>
+<li>Passport</li>
+<li>Driving license</li>
+<li>Fingerprints</li>
+<li>Retina scan</li>
+<li>SSL certificate</li>
 </ul>
 
-<p>The model files defined the business domain for a business network, while the Javascript files contain transaction processor functions. The transaction processor functions run on a Hyperledger Fabric and have access to the asset registries that are stored in the world state of the Hyperledger Fabric blockchain.</p>
+<p>In order for a new participant to join a business network, a new instance of that
+participant must be created in the business network. An identity document must
+then be <code>Issued</code> to that participant. The new participant can then use that identity
+document to interact with the business network.</p>
 
-<p>The model files are typically created by business analysts, as they define the structure and relationships between model elements: assets, participants and transactions.</p>
+<p>Identity documents usually expire after a set period of time. Identity documents may
+also be lost or stolen. If the identity document expires, or if it needs to be
+replaced, then it must be <code>Revoked</code> so it can no longer be used to interact with
+the business network.</p>
 
-<p>The Javascript files are typically created by developers who are implementing business requirements provided by business analysts.</p>
+<p>These actions are performed by an existing participant in the business network,
+for example a regulatory body, or a participant in the same organization who has
+been trusted to manage participants/identities in that organization.</p>
 
-<p>Once defined, a Business Network Definition can be packaged into an archive using the <code>composer</code> command line interface. These archives can then be deployed, undeployed or updated on a Fabric, using the <code>AdminConnection</code> class from the <code>composer-admin</code> module.</p>
+<p>In Hyperledger Composer, the structure of a participant is modelled in a
+model file. This structure may include various information about the participant,
+for example the participants name, address, e-mail address, date of birth, etc.
+New instances of that modelled participant can then be created and stored in a
+participant registry.</p>
+
+<p>Hyperledger Composer uses Hyperledger Fabric enrollment certificates as
+identity documents. APIs and command line applications are provided to issue and
+revoke enrollment certificates to participants that are stored in a participant
+registry. When transactions are submitted using those enrollment certificates, the
+participant is identified and is made available for the transaction processor
+function to use.</p>
+
+<h2 id="related-concepts">Related Concepts</h2>
+
+<p><a href="../introduction/businessnetwork.html">Business Network</a></p>
+
+<h2 id="related-tasks">Related Tasks</h2>
+
+<p><a href="../business-network/model-define.html">Create a Business Domain Model</a><br>
+<a href="../managing/participant-add.html">Add a Participant</a><br>
+<a href="../managing/identity-issue.html">Issue an Identity to a Participant</a><br>
+<a href="../managing/identity-revoke.html">Revoke an Identity from a Participant</a></p>
+
+<h2 id="related-reference">Related Reference</h2>
+
+<p><a href="../reference/participant-add.html">Participant add command</a><br>
+<a href="../reference/identity-issue.html">Identity issue command</a><br>
+<a href="../reference/identity-revoke.html">Identity revoke command</a>  </p>
 
             
           </section>

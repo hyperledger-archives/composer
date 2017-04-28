@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer - Business Network Definition | Hyperledger Composer</title>
+    <title>Installing Hyperledger Composer | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -100,9 +100,12 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<a href="../introduction/key-concepts.html">Components and Concepts</a>
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
 <strong><a href="../installing/installingindex.html">Installing</a></strong>
+<a href="../installing/prerequisites.html">Prerequisites</a>
+<a href="../installing/quickstart.html">Quickstart</a>
+<a href="../installing/runtime-start.html">Start a Composer runtime</a>
+<a href="../installing/createconnectionprofile.html">Creating a network connection profile</a>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
@@ -117,26 +120,29 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="business-network-definition">Business Network Definition</h1>
+              <h1 id="installing-hyperledger-composer">Installing Hyperledger Composer</h1>
 
 <hr>
 
-<p>Business Network Definitions are a key concept of the Hyperledger Composer programming model. They are represented by the <code>BusinessNetworkDefinition</code> class, defined in the <code>composer-common</code> module and exported by both <code>composer-admin</code> and <code>composer-client</code>.</p>
+<p>There are two ways to install Composer. To model, develop, or test business networks, <a href="../tutorials/getting-started-playground.html">install the Composer Playground locally</a> or <a href="https://composer-playground.mybluemix.net">use the playground online</a>.</p>
 
-<p>Business Network Definitions are composed of:</p>
+<p>If you want to develop and test applications, connect to a running Hyperledger Fabric instance, or run Hyperledger Composer and Hyperledger Fabric locally, see <a href="../installing/quickstart.html">installing Hyperledger Composer</a>.</p>
+
+<p>If you want a more guided &quot;Getting Started&quot; experience, see our <a href="../tutorials/tutorialindex.html">Tutorials and Getting Started guides</a>.</p>
+
+<p>After installing, create a connection profile to connect to a running Hyperledger Fabric instance. See <a href="../installing/createconnectionprofile.html">creating a connection profile</a></p>
+
+<hr>
+
+<h2 id="related-links">Related Links</h2>
 
 <ul>
-<li>a set of model files</li>
-<li>a set of Javascript files</li>
+<li><a href="../tutorials/getting-started-playground.html">Installing the Playground locally</a></li>
+<li><a href="../tutorials/">Run the Playground online</a></li>
+<li><a href="../installing/prerequisites.html">Installation Pre-Requisites</a></li>
+<li><a href="../installing/quickstart.html">Installing Hyperledger Composer</a></li>
+<li><a href="../tutorials/tutorialindex.html">Tutorials and Getting Started</a></li>
 </ul>
-
-<p>The model files defined the business domain for a business network, while the Javascript files contain transaction processor functions. The transaction processor functions run on a Hyperledger Fabric and have access to the asset registries that are stored in the world state of the Hyperledger Fabric blockchain.</p>
-
-<p>The model files are typically created by business analysts, as they define the structure and relationships between model elements: assets, participants and transactions.</p>
-
-<p>The Javascript files are typically created by developers who are implementing business requirements provided by business analysts.</p>
-
-<p>Once defined, a Business Network Definition can be packaged into an archive using the <code>composer</code> command line interface. These archives can then be deployed, undeployed or updated on a Fabric, using the <code>AdminConnection</code> class from the <code>composer-admin</code> module.</p>
 
             
           </section>
