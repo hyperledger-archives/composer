@@ -53,7 +53,7 @@ If you need to update or install any of the prerequisites, please refer to [inst
 
   `npm install` runs several scripts that are packaged into the getting-started directory and uses the docker-compose `.yml` file mentioned below to pull/download the relevant Hyperledger Fabric docker images.
 
-  There is [reference material](https://fabric-composer.github.io/reference/commands.html) for Composer CLI.
+  There is [reference material](https://hyperledger.github.io/composer/reference/commands.html) for Composer CLI.
 
 4. Run the `npm test` command. You should see output similar to that shown below (output below is for a v0.6 sample application)
 
