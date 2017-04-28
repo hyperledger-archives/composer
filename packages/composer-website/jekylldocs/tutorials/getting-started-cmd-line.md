@@ -70,7 +70,7 @@ Let's go ahead and make a change to start to show how easy it is to develop with
 First clone the repository that contains the Business Network Definition (note this is not the same as the sample-applications repository).
 
 ```bash
-$ git clone https://github.com/fabric-composer/sample-networks.git
+$ git clone https://github.com/hyperledger/composer-sample-networks.git
 $ cd sample-networks/packages/DigitalProperty-Network
 $ npm install
 ```
@@ -198,10 +198,10 @@ info: [Composer-GettingStarted]
 
 * `scripts/download-hyperledger.sh` This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the {{site.data.conrefs.composer_full}} Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.`npm install` uses this script.
 
-* `scripts/start-hyperledger.sh` This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger fabric has started.
+* `scripts/start-hyperledger.sh` This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger Fabric has started.
 `npm run startHLF` can also be used to call this script.
 * `scripts/stop-hyperledger.sh` This is the opposite of the start script, and will stop the Hyperledger Fabric - but it critically does not delete or remove any state. Therefore it canbe restarted with the start script.  `npm run stopHLF` can also be used to call this script.
-* `scripts/teardown.sh` This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the {{site.data.conrefs.composer_full}} Connection Profiles.
+* `scripts/teardown.sh` This will stop and remove all the docker images related to Hyperledger Fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the {{site.data.conrefs.composer_full}} Connection Profiles.
 
 **Composer CLI**
 
@@ -215,14 +215,14 @@ This lists the deployed business network details. `-n` is the name of the busine
 
 **Sample Applications**
 
-There are 3 sample Javascript applications that use the {{site.data.conrefs.composer_full}} Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.
+There are 3 sample JavaScript applications that use the {{site.data.conrefs.composer_full}} Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.
 
 * `node cli.js landregistry submit`  This applications connects, and submits a transaction.
 * `node cli.js landregistry list`   This lists the contents of the asset registries that have been defined in the business network.
 * `node cli.js landregistry bootstrap` This applications puts some pretend assets into the registries to work with.
 
 ### Completed!
-We have downloaded the Hyperledger docker containers and stated a fabric. We have used the {{site.data.conrefs.composer_full}} Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.
+We have downloaded the Hyperledger Fabric Docker containers and started a locally running fabric. We have used the {{site.data.conrefs.composer_full}} Command line to deploy and update the DigitalProperty Network. We have used some JavaScript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.
 
 If you want to continue exploring, check out our other Getting Started guides:
 

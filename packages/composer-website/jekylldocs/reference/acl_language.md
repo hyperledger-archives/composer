@@ -34,7 +34,7 @@ rule SimpleRule {
 }
 ````
 
-Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean Javascript expression, which, when true, can either ALLOW or DENY access to the resource by the participant.
+Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean JavaScript expression, which, when true, can either ALLOW or DENY access to the resource by the participant.
 
 For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset` IF the participant is the owner of the asset.
 
@@ -64,7 +64,7 @@ Resource Examples:
 
 **Participant** defines the person or entity that has submitted a transaction for processing. If a Participant is specified they must exist in the Participant Registry. The PARTICIPANT may optionally be bound to a variable for use in a PREDICATE. The special value 'ANY' may be used to denote that participant type checking is not enforced for a rule.
 
-**Condition** is a Boolean Javascript expression over bound variables. Any Javascript expression that is legal with the an `if(...)` expression may be used here.
+**Condition** is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal with the an `if(...)` expression may be used here.
 
 **Action** identifies the action of the rule. It must be one of: ALLOW, DENY.
 
