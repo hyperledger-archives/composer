@@ -73,10 +73,12 @@ func (concerto *Concerto) createJavaScript() {
 	// Register event loop functions.
 	concerto.registerEventLoop()
 
-	// Register the global and window objects (which Otto does not have ...)
+	// Register the global, window and document objects (which Otto does not have ...)
 	_, err := vm.Run(`
 		var global = Function('return this')();
 		var window = global;
+		var document = undefined;
+		var navigator = undefined;
 	`)
 	if err != nil {
 		panic(err)
