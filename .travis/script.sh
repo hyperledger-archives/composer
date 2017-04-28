@@ -27,12 +27,14 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
+    cd "${DIR}/packages/composer-website"
+    npm install
     if [ -n "${TRAVIS_TAG}" ]; then
-        export JEKYLL_ENV=production
+       export JEKYLL_ENV=production
+       npm run full:prod
+    else
+       npm run full:unstable
     fi
-	cd "${DIR}/packages/composer-website"
-	npm install
-	npm run full
 # Are we running system tests?
 elif [ "${SYSTEST}" != "" ]; then
 
