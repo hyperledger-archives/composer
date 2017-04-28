@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -175,7 +175,7 @@ ga('send', 'pageview');
 <h3 id="clone-the-repository-and-install-dependencies">Clone the Repository and Install Dependencies</h3>
 
 <p>First clone the repository that contains the Business Network Definition (note this is not the same as the sample-applications repository).</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>git clone https://github.com/fabric-composer/sample-networks.git
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>git clone https://github.com/hyperledger/composer-sample-networks.git
 <span class="gp">$ </span><span class="nb">cd </span>sample-networks/packages/DigitalProperty-Network
 <span class="gp">$ </span>npm install
 </code></pre></div>
@@ -289,10 +289,10 @@ info: [Composer-GettingStarted]
 
 <ul>
 <li><p><code>scripts/download-hyperledger.sh</code> This is a shell script that will download and tag the docker images for Hyperledger v0.6. It is important to note that this script will also delete the Hyperledger Composer Connection Profiles. This is important if you have connected to other Hyperledger Fabrics, or have changed the default ports that Hyperledger uses.<code>npm install</code> uses this script.</p></li>
-<li><p><code>scripts/start-hyperledger.sh</code> This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger fabric has started.
+<li><p><code>scripts/start-hyperledger.sh</code> This is a shell script that starts the Hyperledger Fabric, this will also wait to make sure the Hyperledger Fabric has started.
 <code>npm run startHLF</code> can also be used to call this script.</p></li>
 <li><p><code>scripts/stop-hyperledger.sh</code> This is the opposite of the start script, and will stop the Hyperledger Fabric - but it critically does not delete or remove any state. Therefore it canbe restarted with the start script.  <code>npm run stopHLF</code> can also be used to call this script.</p></li>
-<li><p><code>scripts/teardown.sh</code> This will stop and remove all the docker images related to Hyperledger fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Hyperledger Composer Connection Profiles.</p></li>
+<li><p><code>scripts/teardown.sh</code> This will stop and remove all the docker images related to Hyperledger Fabric. This can be used to do an effective clean-up of the Hyperledger Fabric and the Hyperledger Composer Connection Profiles.</p></li>
 </ul>
 
 <p><strong>Composer CLI</strong></p>
@@ -308,7 +308,7 @@ This lists the deployed business network details. <code>-n</code> is the name of
 
 <p><strong>Sample Applications</strong></p>
 
-<p>There are 3 sample Javascript applications that use the Hyperledger Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.</p>
+<p>There are 3 sample JavaScript applications that use the Hyperledger Composer Client API to perform operations on the business network. These are applications that specific to the business network that has been defined in this Digital Property Network.</p>
 
 <ul>
 <li><code>node cli.js landregistry submit</code>  This applications connects, and submits a transaction.</li>
@@ -318,7 +318,7 @@ This lists the deployed business network details. <code>-n</code> is the name of
 
 <h3 id="completed">Completed!</h3>
 
-<p>We have downloaded the Hyperledger docker containers and stated a fabric. We have used the Hyperledger Composer Command line to deploy and update the DigitalProperty Network. We have used some Javascript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.</p>
+<p>We have downloaded the Hyperledger Fabric Docker containers and started a locally running fabric. We have used the Hyperledger Composer Command line to deploy and update the DigitalProperty Network. We have used some JavaScript applications in node.js to list assets and submit transactions to work on those assets.  A simple change and update has been made to one of the transaction functions.</p>
 
 <p>If you want to continue exploring, check out our other Getting Started guides:</p>
 
@@ -347,14 +347,14 @@ This lists the deployed business network details. <code>-n</code> is the name of
     <div class="footer-bg docs-footer">
 <div class="footer-container">
     <div class="footer-left">
-      <p>Released under the Apache License v2</p>
+      <p>Released under the Apache License v2.0</p>
     </div>
   <div class="footer-right">
     <ul>
-      <li><a href="https://github.com/fabric-composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
       <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
   </div>
