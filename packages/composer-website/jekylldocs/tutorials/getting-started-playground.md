@@ -75,16 +75,16 @@ The Docker Compose file describes a multi-container application that is made up 
 In a terminal or command prompt, navigate to the directory that you downloaded the `docker-compose.yml` file into, and run the following commands to start a Hyperledger Fabric instance and {{site.data.conrefs.composer_full}} Playground:
 
   ```
-  docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
-  docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+  docker pull hyperledger/fabric-baseimage:x86_64-0.3.0
+  docker tag hyperledger/fabric-baseimage:x86_64-0.3.0 hyperledger/fabric-baseimage:latest
   docker-compose up -d
   ```
 
 You should see the following output in your terminal or command prompt:
 
   ```
-  $ docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
-  x86_64-0.1.0: Pulling from hyperledger/fabric-baseimage
+  $ docker pull hyperledger/fabric-baseimage:x86_64-0.3.0
+  x86_64-0.3.0: Pulling from hyperledger/fabric-baseimage
   862a3e9af0ae: Already exists
   6498e51874bf: Already exists
   159ebdd1959b: Already exists
@@ -93,8 +93,8 @@ You should see the following output in your terminal or command prompt:
   0620a24d487d: Pull complete
   b46385a2c430: Pull complete
   Digest: sha256:ac6a2784cfd028ae62f5688f4436f95d7a60eeacd8506eb303c9c6335328c388
-  Status: Downloaded newer image for hyperledger/fabric-baseimage:x86_64-0.1.0
-  $ docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+  Status: Downloaded newer image for hyperledger/fabric-baseimage:x86_64-0.3.0
+  $ docker tag hyperledger/fabric-baseimage:x86_64-0.3.0 hyperledger/fabric-baseimage:latest
   $ docker-compose up -d
   Creating start_membersrvc_1
   Creating start_vp0_1

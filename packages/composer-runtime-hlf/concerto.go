@@ -17,27 +17,15 @@ package main
 import (
 	"errors"
 	"strings"
-	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
-
-// A JavaScript timer.
-// From https://github.com/robertkrimen/natto
-type _timer struct {
-	timer    *time.Timer
-	duration time.Duration
-	interval bool
-	call     otto.FunctionCall
-}
 
 // Concerto is the chaincode class. It is an implementation of the
 // Chaincode interface.
 type Concerto struct {
-	VM            *otto.Otto
-	TimerRegistry map[*_timer]*_timer
-	TimerReady    chan *_timer
+	VM  	      *duktape.Context
 	Container     *Container
 	Engine        *Engine
 }
@@ -64,152 +52,64 @@ func (concerto *Concerto) createJavaScript() {
 	defer func() { logger.Debug("Exiting Concerto.createJavaScript") }()
 
 	// Create a new JavaScript virtual machine.
-	vm := otto.New()
+	vm := duktape.New()
 	if vm == nil {
 		panic("Failed to create JavaScript virtual machine")
 	}
 	concerto.VM = vm
 
 	// Register event loop functions.
-	concerto.registerEventLoop()
+	vm.PushTimers()
 
-	// Register the global, window and document objects (which Otto does not have ...)
-	_, err := vm.Run(`
-		var global = Function('return this')();
-		var window = global;
-		var document = undefined;
-		var navigator = undefined;
+		// Install the global object, and the window alias to it.
+	err := vm.PevalString(`
+		if (typeof global === 'undefined') {
+			(function () {
+				var global = new Function('return this;')();
+				Object.defineProperty(global, 'global', {
+					value: global,
+					writable: true,
+					enumerable: false,
+					configurable: true
+				});
+				Object.defineProperty(global, 'window', {
+					value: global,
+					writable: true,
+					enumerable: false,
+					configurable: true
+				});
+				Object.defineProperty(global, 'document', {
+					value: undefined,
+					writable: true,
+					enumerable: false,
+					configurable: true
+				});
+				Object.defineProperty(global, 'navigator', {
+					value: undefined,
+					writable: true,
+					enumerable: false,
+					configurable: true
+				});
+			})();
+		}
 	`)
 	if err != nil {
 		panic(err)
 	}
 
 	// Execute the Babel Polyfill JavaScript source inside the JavaScript virtual machine.
-	_, err = vm.Run(babelPolyfillJavaScript)
+	err = vm.PevalString(babelPolyfillJavaScript)
 	if err != nil {
 		panic(err)
 	}
 
-	// Execute the Concerto JavaScript source inside the JavaScript virtual machine.
+	// Execute the Composer JavaScript source inside the JavaScript virtual machine.
 	// We trim any trailing newlines as this is required for Otto to find the source maps.
-	_, err = vm.Run(strings.TrimRight(concertoJavaScript, "\n"))
+	err = vm.PevalString(strings.TrimRight(concertoJavaScript, "\n"))
 	if err != nil {
 		panic(err)
 	}
 
-}
-
-// registerEventLoop ...
-// From https://github.com/robertkrimen/natto
-func (concerto *Concerto) registerEventLoop() {
-	logger.Debug("Entering Concerto.registerEventLoop")
-	defer func() { logger.Debug("Exiting Concerto.registerEventLoop") }()
-
-	concerto.TimerRegistry = map[*_timer]*_timer{}
-	concerto.TimerReady = make(chan *_timer)
-
-	newTimer := func(call otto.FunctionCall, interval bool) (*_timer, otto.Value) {
-		delay, _ := call.Argument(1).ToInteger()
-		if 0 >= delay {
-			delay = 1
-		}
-
-		timer := &_timer{
-			duration: time.Duration(delay) * time.Millisecond,
-			call:     call,
-			interval: interval,
-		}
-		concerto.TimerRegistry[timer] = timer
-
-		timer.timer = time.AfterFunc(timer.duration, func() {
-			concerto.TimerReady <- timer
-		})
-
-		value, err := call.Otto.ToValue(timer)
-		if err != nil {
-			panic(err)
-		}
-
-		return timer, value
-	}
-
-	setTimeout := func(call otto.FunctionCall) otto.Value {
-		_, value := newTimer(call, false)
-		return value
-	}
-	concerto.VM.Set("setTimeout", setTimeout)
-
-	setInterval := func(call otto.FunctionCall) otto.Value {
-		_, value := newTimer(call, true)
-		return value
-	}
-	concerto.VM.Set("setInterval", setInterval)
-
-	clearTimeout := func(call otto.FunctionCall) otto.Value {
-		timer, _ := call.Argument(0).Export()
-		if timer, ok := timer.(*_timer); ok {
-			timer.timer.Stop()
-			delete(concerto.TimerRegistry, timer)
-		}
-		return otto.UndefinedValue()
-	}
-	concerto.VM.Set("clearTimeout", clearTimeout)
-	concerto.VM.Set("clearInterval", clearTimeout)
-}
-
-// pumpEventLoop ...
-// From https://github.com/robertkrimen/natto
-func (concerto *Concerto) pumpEventLoop() (err error) {
-	logger.Debug("Entering Concerto.pumpEventLoop")
-	defer func() { logger.Debug("Exiting Concerto.pumpEventLoop") }()
-
-	for {
-		select {
-		case timer := <-concerto.TimerReady:
-			var arguments []interface{}
-			if len(timer.call.ArgumentList) > 2 {
-				tmp := timer.call.ArgumentList[2:]
-				arguments = make([]interface{}, 2+len(tmp))
-				for i, value := range tmp {
-					arguments[i+2] = value
-				}
-			} else {
-				arguments = make([]interface{}, 1)
-			}
-			arguments[0] = timer.call.ArgumentList[0]
-			_, err := concerto.VM.Call(`Function.call.call`, nil, arguments...)
-			if err != nil {
-				for _, timer := range concerto.TimerRegistry {
-					timer.timer.Stop()
-					delete(concerto.TimerRegistry, timer)
-					return err
-				}
-			}
-			if timer.interval {
-				timer.timer.Reset(timer.duration)
-			} else {
-				delete(concerto.TimerRegistry, timer)
-			}
-		default:
-			// Escape valve!
-			// If this isn't here, we deadlock...
-		}
-		if len(concerto.TimerRegistry) == 0 {
-			break
-		}
-	}
-	return nil
-}
-
-// handleError ...
-func (concerto *Concerto) handleError(err error) (result error) {
-	logger.Debug("Entering Concerto.handleError", err)
-	defer func() { logger.Debug("Exiting Concerto.handleError", result) }()
-
-	if jsError, ok := err.(*otto.Error); ok {
-		return errors.New(jsError.String())
-	}
-	return err
 }
 
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
@@ -224,21 +124,13 @@ func (concerto *Concerto) Init(stub shim.ChaincodeStubInterface, function string
 	// Defer to the JavaScript function.
 	channel := concerto.Engine.Init(context, function, arguments)
 
-	// Pump the event loop.
-	err = concerto.pumpEventLoop()
-	if err != nil {
-		return nil, err
-	}
-
-	// Now read from the channel.
+	// Now read from the channel. This will be triggered when the JavaScript
+	// code calls the callback function.
 	data, ok := <-channel
 	if !ok {
 		return nil, errors.New("Failed to receive callback from JavaScript function")
 	}
-	result = data.Result
-	err = data.Error
-	return result, concerto.handleError(err)
-
+	return data.Result, data.Error
 }
 
 // Invoke is called by the Hyperledger Fabric when the chaincode is invoked.
@@ -253,21 +145,13 @@ func (concerto *Concerto) Invoke(stub shim.ChaincodeStubInterface, function stri
 	// Defer to the JavaScript function.
 	channel := concerto.Engine.Invoke(context, function, arguments)
 
-	// Pump the event loop.
-	err = concerto.pumpEventLoop()
-	if err != nil {
-		return nil, concerto.handleError(err)
-	}
-
-	// Now read from the channel.
+	// Now read from the channel. This will be triggered when the JavaScript
+	// code calls the callback function.
 	data, ok := <-channel
 	if !ok {
 		return nil, errors.New("Failed to receive callback from JavaScript function")
 	}
-	result = data.Result
-	err = data.Error
-	return result, concerto.handleError(err)
-
+	return data.Result, data.Error
 }
 
 // Query is called by the Hyperledger Fabric when the chaincode is queried.
@@ -282,19 +166,11 @@ func (concerto *Concerto) Query(stub shim.ChaincodeStubInterface, function strin
 	// Defer to the JavaScript function.
 	channel := concerto.Engine.Query(context, function, arguments)
 
-	// Pump the event loop.
-	err = concerto.pumpEventLoop()
-	if err != nil {
-		return nil, concerto.handleError(err)
-	}
-
-	// Now read from the channel.
+	// Now read from the channel. This will be triggered when the JavaScript
+	// code calls the callback function.
 	data, ok := <-channel
 	if !ok {
 		return nil, errors.New("Failed to receive callback from JavaScript function")
 	}
-	result = data.Result
-	err = data.Error
-	return result, concerto.handleError(err)
-
+	return data.Result, data.Error
 }

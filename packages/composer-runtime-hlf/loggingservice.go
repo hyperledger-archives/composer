@@ -15,100 +15,108 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
 
 // LoggingService is a Go wrapper around an instance of the LoggingService JavaScript class.
 type LoggingService struct {
-	This *otto.Object
+	VM   *duktape.Context
 	Stub shim.ChaincodeStubInterface
 }
 
 // NewLoggingService creates a Go wrapper around a new instance of the LoggingService JavaScript class.
-func NewLoggingService(vm *otto.Otto, container *Container, stub shim.ChaincodeStubInterface) (result *LoggingService) {
-	logger.Debug("Entering NewLoggingService", vm, container, stub)
+func NewLoggingService(vm *duktape.Context, container *Container, stub shim.ChaincodeStubInterface) (result *LoggingService) {
+	logger.Debug("Entering NewLoggingService", vm, container, &stub)
 	defer func() { logger.Debug("Exiting NewLoggingService", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new concerto.LoggingService", nil, container.This)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of LoggingService JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of LoggingService JavaScript class is not an object")
-	}
-	object := temp.Object()
+	// Ensure the JavaScript stack is reset.
+	defer vm.SetTop(vm.GetTop())
 
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &LoggingService{This: temp.Object(), Stub: stub}
-	err = object.Set("$this", result)
+	// Create the new logging service.
+	result = &LoggingService{VM: vm, Stub: stub}
+
+	// Create a new instance of the JavaScript LoggingService class.
+	vm.PushGlobalObject()                  // [ global ]
+	vm.GetPropString(-1, "composer")       // [ global composer ]
+	vm.GetPropString(-1, "LoggingService") // [ global composer LoggingService ]
+	err := vm.Pnew(0)                      // [ global composer theLoggingService ]
 	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in LoggingService JavaScript object: %v", err))
+		panic(err)
 	}
+
+	// Store the logging service into the global stash.
+	vm.PushGlobalStash()                   // [ global composer theLoggingService stash ]
+	vm.Dup(-2)                             // [ global composer theLoggingService stash theLoggingService  ]
+	vm.PutPropString(-2, "loggingService") // [ global composer theLoggingService stash ]
+	vm.Pop()                               // [ global composer theLoggingService ]
 
 	// Bind the methods into the JavaScript object.
-	result.This.Set("logCritical", result.logCritical)
-	result.This.Set("logDebug", result.logDebug)
-	result.This.Set("logError", result.logError)
-	result.This.Set("logInfo", result.logInfo)
-	result.This.Set("logNotice", result.logNotice)
-	result.This.Set("logWarning", result.logWarning)
-	return result
+	vm.PushGoFunction(result.logCritical) // [ global composer theLoggingService logCritical ]
+	vm.PutPropString(-2, "logCritical")   // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logDebug)    // [ global composer theLoggingService logDebug ]
+	vm.PutPropString(-2, "logDebug")      // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logError)    // [ global composer theLoggingService logError ]
+	vm.PutPropString(-2, "logError")      // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logInfo)     // [ global composer theLoggingService logInfo ]
+	vm.PutPropString(-2, "logInfo")       // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logNotice)   // [ global composer theLoggingService logNotice ]
+	vm.PutPropString(-2, "logNotice")     // [ global composer theLoggingService ]
+	vm.PushGoFunction(result.logWarning)  // [ global composer theLoggingService logWarning ]
+	vm.PutPropString(-2, "logWarning")    // [ global composer theLoggingService ]
 
+	// Return the new logging service.
+	return result
 }
 
-func (loggingService *LoggingService) getLogInserts(call otto.FunctionCall) (result []interface{}) {
+// getLogInserts extracts the list of JavaScript arguments and converts them into a Go array.
+func (loggingService *LoggingService) getLogInserts(vm *duktape.Context) (result []interface{}) {
 	result = []interface{}{}
-	for _, arg := range call.ArgumentList {
-		str, err := arg.ToString()
-		if err != nil {
-			str = err.Error()
-		}
+	for i := 0; i < vm.GetTop(); i++ {
+		str := vm.ToString(i)
 		result = append(result, str)
 	}
 	return result
 }
 
-// LogCritical ...
-func (loggingService *LoggingService) logCritical(call otto.FunctionCall) otto.Value {
-	strings := loggingService.getLogInserts(call)
+// logCritical writes a critical message to the log.
+func (loggingService *LoggingService) logCritical(vm *duktape.Context) (result int) {
+	strings := loggingService.getLogInserts(vm)
 	logger.Critical(strings...)
-	return otto.UndefinedValue()
+	return 0
 }
 
-// LogDebug ...
-func (loggingService *LoggingService) logDebug(call otto.FunctionCall) otto.Value {
-	strings := loggingService.getLogInserts(call)
+// logDebug writes a debug message to the log.
+func (loggingService *LoggingService) logDebug(vm *duktape.Context) (result int) {
+	strings := loggingService.getLogInserts(vm)
 	logger.Debug(strings...)
-	return otto.UndefinedValue()
+	return 0
 }
 
-// LogError ...
-func (loggingService *LoggingService) logError(call otto.FunctionCall) otto.Value {
-	strings := loggingService.getLogInserts(call)
+// logError writes a error message to the log.
+func (loggingService *LoggingService) logError(vm *duktape.Context) (result int) {
+	strings := loggingService.getLogInserts(vm)
 	logger.Error(strings...)
-	return otto.UndefinedValue()
+	return 0
 }
 
-// LogInfo ...
-func (loggingService *LoggingService) logInfo(call otto.FunctionCall) otto.Value {
-	strings := loggingService.getLogInserts(call)
+// logInfo writes a info message to the log.
+func (loggingService *LoggingService) logInfo(vm *duktape.Context) (result int) {
+	strings := loggingService.getLogInserts(vm)
 	logger.Info(strings...)
-	return otto.UndefinedValue()
+	return 0
 }
 
-// LogNotice ...
-func (loggingService *LoggingService) logNotice(call otto.FunctionCall) otto.Value {
-	strings := loggingService.getLogInserts(call)
+// logNotice writes a notice message to the log.
+func (loggingService *LoggingService) logNotice(vm *duktape.Context) (result int) {
+	strings := loggingService.getLogInserts(vm)
 	logger.Notice(strings...)
-	return otto.UndefinedValue()
+	return 0
 }
 
-// LogWarning ...
-func (loggingService *LoggingService) logWarning(call otto.FunctionCall) otto.Value {
-	strings := loggingService.getLogInserts(call)
+// logWarning writes a warning message to the log.
+func (loggingService *LoggingService) logWarning(vm *duktape.Context) (result int) {
+	strings := loggingService.getLogInserts(vm)
 	logger.Warning(strings...)
-	return otto.UndefinedValue()
+	return 0
 }

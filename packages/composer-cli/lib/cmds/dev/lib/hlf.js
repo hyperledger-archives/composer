@@ -86,14 +86,14 @@ class hlf {
         } else if (argv.download){
           /*
           # Pull and tag the latest Hyperledger Fabric base image.
-          docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
-          docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+          docker pull hyperledger/fabric-baseimage:x86_64-0.3.0
+          docker tag hyperledger/fabric-baseimage:x86_64-0.3.0 hyperledger/fabric-baseimage:latest
           */
             console.log('Pulling down Hyperledger Fabric Docker images');
-            cmdString = 'docker pull hyperledger/fabric-baseimage:x86_64-0.1.0';
+            cmdString = 'docker pull hyperledger/fabric-baseimage:x86_64-0.3.0';
             errorCode = this._cmd(cmdString);
 
-            cmdString = 'docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest';
+            cmdString = 'docker tag hyperledger/fabric-baseimage:x86_64-0.3.0 hyperledger/fabric-baseimage:latest';
             errorCode = this._cmd(cmdString);
 
         } else if (argv.delete){
