@@ -48,17 +48,6 @@ This is probably already installed on most Linux machines. Pay particular attent
 ## Optional Installs
 
 ### 1. Installing an editor
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor.
-
-However, we recommend either using Atom or Visual Studio Code as both have excellent support for JavaScript
-development. We have even created an experimental CTO file syntax highlighting plugin for Atom.
-=======
-{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. We recommend using either Atom or Visual Studio Code, as not only do both have excellent support for JavaScript development, a CTO file syntax highlighting plugin exists for these editors.
->>>>>>> refs/remotes/hyperledger/master
->>>>>>> refs/remotes/hyperledger/master
 
 {{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. Atom and Visual Studio Code both have excellent support for JavaScript
 development. Atom also includes a syntax highlighting plugin for `.cto` files.
