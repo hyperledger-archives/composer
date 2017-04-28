@@ -1,35 +1,34 @@
-# Contributing to Fabric Composer
-We welcome contributions to Fabric Composer!
+# Contributing to Hyperledger Composer
+We welcome contributions to Hyperledger Composer!
 
-This document explains how you should work with the Fabric Composer repositories.  More information is in the 'contrib-docs' directory for specific topics
+This document explains how you should work with the Hyperledger Composer repositories.  More information is in the 'contrib-docs' directory for specific topics
 
 * [Suggested ide setup](./contrib-notes/ide-setup.md)
 * [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
 
-There is a contributors [RocketChat channel](https://chat.hyperledger.org/channel/fabric-composer-dev) it is worth introducing yourself on.
+There is a contributors [Rocket.Chat channel](https://chat.hyperledger.org/channel/composer-dev) that it is worth introducing yourself on.
 
-## Github Repositories
+## GitHub Repositories
 
-The following is a list of the repositories that are part of the Fabric Composer project, the fabric-composer repository itself is a monorepo and holds all the source code in multiple npm modules.
+The following is a list of the repositories that are part of the Hyperledger Composer project, the composer repository itself is a monorepo and holds all the source code in multiple npm modules.
 
-| fabric-composer  | Main monorepo with the project source code, including tests and documetnation |
-| fabric-composer.github.io | The built HTML for the organisation website, DO NOT EDIT OR ENABLE BUILDS on this |
-| sample-applications | Sample applications for Fabric Composer; including the 'Getting Started' tutorial |
-| sample-networks     | Sample Fabric Composer Business Networks |
-| sample-models       | Sample Fabric Composer Models |
+| composer  | Main monorepo with the project source code, including tests and documetnation |
+| composer-sample-applications | Sample applications for Hyperledger Composer; including the 'Getting Started' tutorial |
+| composer-sample-networks     | Sample Hyperledger Composer Business Networks |
+| composer-sample-models       | Sample Hyperledger Composer Models |
 | composer-atom-plugin | A syntax checker for the Atom.io editor |
 | composer-vscode-plugin | A syntax checker for the VSCode editor |
-| tools                  | Tools for use with Fabric Composser    |
+| composer-tools                  | Tools for use with Hyperledger Composser    |
 
 ### Our development process
 
-The source and issue tracking system for Fabric Composer is [GitHub](https://github.com/hyperledger/composer). All changes should be developed in a fork of the Fabric Composer repository, and the changes submitted for approval in the form of pull requests. Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
+The source and issue tracking system for Hyperledger Composer is [GitHub](https://github.com/hyperledger/composer). All changes should be developed in a fork of the Hyperledger Composer repository, and the changes submitted for approval in the form of pull requests. Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
 The master branches are currently being used, a release build is run weekly to fix the release at a new level.  See the [release process](./contrib-notes/release-process.md)
 
 ### Testing
 
-All changes pushed to Fabric Composer must include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes which are not covered by automated unit tests will **not** be accepted.
+All changes pushed to Hyperledger Composer must include unit tests that ensure that the new functionality works as designed, or that fixed bugs stay fixed. Pull requests that add code changes which are not covered by automated unit tests will **not** be accepted.
 
 Unit testing is for ensuring that small units of code *Do The Right Thing*, with an extremely quick turnaround time. An example of this might be the `AssetRegistryFactory.create()` method. The code in this method *probably* needs to do two things; send the correct invoke request to the chain-code, and correctly handle all of the possible responses from that chain-code.
 

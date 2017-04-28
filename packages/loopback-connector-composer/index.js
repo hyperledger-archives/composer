@@ -15,7 +15,7 @@
 'use strict';
 
 const BusinessNetworkConnector = require('./lib/businessnetworkconnector');
-const debug = require('debug')('loopback:connector:concertobusinessnetwork');
+const debug = require('debug')('loopback:connector:composer');
 
 /**
  * Create a new instance of the connector class.
