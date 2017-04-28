@@ -13,7 +13,7 @@ excerpt: Quickstart
 
 The steps below enable you to get started with the Composer sample application.
 
-These steps will install the Composer sample application running against Hyperledger Fabric v1.0. To use Hyperledger Fabric v0.6 run the optional command in step 2.
+<!-- These steps will install the Composer sample application running against Hyperledger Fabric v1.0. To use Hyperledger Fabric v0.6 run the optional command in step 2. -->You can choose to install the latest  **v0.6** Composer sample application (uses a Hyperledger Fabric v0.6 environment) or the **v1.0** sample application (uses a Hyperledger Fabric v1.0 environment) and give us feedback.
 
 ## Before you begin
 
@@ -36,17 +36,26 @@ If you need to update or install any of the prerequisites, please refer to [inst
   ```
   $ npm install -g composer-cli
   ```
-2. Clone the Composer sample applications GitHub repository:
+2. Clone the Composer sample applications GitHub repository. Choose from either the v0.6 sample application or the v1.0 sample application, the former will stand up a Hyperledger Fabric v0.6 environment ; the latter will stand up a newer Hyperledger Fabric v1.0 environment using a docker command sequence. For Hyperledger v0.6 use the following command:
   ```
   $ git clone https://github.com/hyperledger/composer-sample-applications.git
   ```
-  ***Optional:*** To run this sample with Hyperledger Fabric v0.6, run the following command.
+  <!--***Optional:*** To run this sample with Hyperledger Fabric v0.6, run the following command.
   ```
   npm set getting-started:fabric hlf
+  ```-->
+  For Hyperledger v1.0 use the following command:
   ```
-3. To install the getting started application run the following commands.
+  $ git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
+  ```
+3. Install the getting started application using one of the following commands. If you are using Hyperledger v0.6 use the following command:
   ```
   $ cd composer-sample-applications/packages/getting-started
+  $ npm install
+  ```
+  If you are using Hyperledger v1.0, use the following command:
+  ```
+  $ cd composer-sample-applications-hlfv1/packages/getting-started
   $ npm install
   ```
   Amongst the steps (described below), the command returns information about the deployed digital property network such as name, models, registries etc.
