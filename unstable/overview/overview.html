@@ -58,7 +58,7 @@ ga('send', 'pageview');
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/composer/index.html"><b>Fabric</b> Composer</a>
+            <a class="navbar-brand" href="/composer/index.html"><b>Hyperledger</b> Composer</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -154,7 +154,7 @@ are validated by concerned organizations in the business network.</p>
 </tr>
 <tr>
 <td>Transaction Processors</td>
-<td>Write Transaction Processor functions using Javascript, that can update the state of assets and asset registries</td>
+<td>Write Transaction Processor functions using JavaScript, that can update the state of assets and asset registries</td>
 </tr>
 <tr>
 <td>REST APIs</td>
@@ -179,9 +179,9 @@ are validated by concerned organizations in the business network.</p>
 <p>The Hyperledger Composer programming model is based on defining and deploying a Business Network
 Definition, which contains a data model that defines the name and structure of assets, participants
 and transactions in the business network. The business network also specifies <em>transaction processor functions</em>
-(written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.</p>
+(written in ES5 JavaScript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.</p>
 
-<p>Hyperledger Composer defines <a href="https://fabric-composer.github.io/jsdoc/index.html">Javascript APIs</a>to submit transactions and to create, retrieve, update and delete assets within asset registries.</p>
+<p>Hyperledger Composer defines <a href="https://hyperledger.github.io/composer/jsdoc/index.html">JavaScript APIs</a>to submit transactions and to create, retrieve, update and delete assets within asset registries.</p>
 
 <h3 id="roles-responsibilities-and-tasks">Roles, Responsibilities and Tasks</h3>
 
@@ -231,7 +231,7 @@ and transactions in the business network. The business network also specifies <e
 </code></pre></div>
 <h2 id="writing-transaction-processor-functions">Writing Transaction Processor functions</h2>
 
-<p>Technical Analysts write transaction processor functions using ES5 Javascript. These scripts are included in a business network definition and will be automatically executed when a transaction is submitted for processing. The transaction processor scripts can create, update, retrieve and delete assets based on the incoming transaction.</p>
+<p>Technical Analysts write transaction processor functions using ES5 JavaScript. These scripts are included in a business network definition and will be automatically executed when a transaction is submitted for processing. The transaction processor scripts can create, update, retrieve and delete assets based on the incoming transaction.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="s1">'use strict'</span><span class="p">;</span>
 
 <span class="cm">/** Process a property that is held for sale
@@ -249,9 +249,9 @@ and transactions in the business network. The business network also specifies <e
 
 <p>High-level administration and client APIs provide easy access to a deployed business network.</p>
 
-<h3 id="using-the-javascript-client-and-admin-apis">Using the Javascript Client and Admin APIs</h3>
+<h3 id="using-the-javascript-client-and-admin-apis">Using the JavaScript Client and Admin APIs</h3>
 
-<p>Mid-tier developers use Javascript APIs to interact with the framework. The <code>AdminConnection</code> API exposes administration operations, such as deploying, undeploying and updating a Business Network Definition.</p>
+<p>Mid-tier developers use JavaScript APIs to interact with the framework. The <code>AdminConnection</code> API exposes administration operations, such as deploying, undeploying and updating a Business Network Definition.</p>
 
 <p>The <code>BusinessNetworkConnection</code> API is used to interact with a deployed business network: retrieving assets from asset registries, or submitting transactions.</p>
 
@@ -349,14 +349,14 @@ and transactions in the business network. The business network also specifies <e
     <div class="footer-bg docs-footer">
 <div class="footer-container">
     <div class="footer-left">
-      <p>Released under the Apache License v2</p>
+      <p>Released under the Apache License v2.0</p>
     </div>
   <div class="footer-right">
     <ul>
-      <li><a href="https://github.com/fabric-composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/fabric-composer/fabric-composer">Legal</a></li> -->
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
       <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stackoverflow</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
       <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
     </ul>
   </div>
