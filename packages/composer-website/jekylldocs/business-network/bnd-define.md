@@ -75,7 +75,7 @@ A domain model may either be packaged within the business network definition (ty
 
 ## Scripts
 
-The scripts for a business network definition are typically stored under the `lib` directory and are packaged within the business network definition. The scripts are written in ES 5 Javascript and refer to the types that are defined in the domain models for the business network.
+The scripts for a business network definition are typically stored under the `lib` directory and are packaged within the business network definition. The scripts are written in ES 5 JavaScript and refer to the types that are defined in the domain models for the business network.
 
 # Business Network Archive
 
