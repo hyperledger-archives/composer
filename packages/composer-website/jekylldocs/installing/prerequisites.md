@@ -15,7 +15,7 @@ The essential tools you will need are *npm*, *docker*, *docker-compose* and a co
 The recommended *minimum* versions are:
 *Docker*: v1.12.3
 *Docker-compose*: v1.10.0
-*npm*: v4.6.0
+*npm*: v3.10
 *node.js*: v6.9.5
 
 
@@ -72,7 +72,7 @@ development. Atom also includes a syntax highlighting plugin for `.cto` files.
 
 Suggested Plugins:
 
-* [Composer Atom Syntax Highlighter](https://github.com/hyperledger/composer-atom) A plugin for model file highlighting.
+* [Composer Atom Syntax Highlighter](https://github.com/hyperledger/composer-atom-plugin) A plugin for model file highlighting.
 
 * [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
 

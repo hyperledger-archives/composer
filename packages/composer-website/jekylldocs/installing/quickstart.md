@@ -25,7 +25,7 @@ Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
 Docker Engine: Version 1.12.x
 Docker-Compose: Version 1.8.x
 Node: 6.x (note version 7 is not supported)
-npm: 4.0.x
+npm: 3.10.x
 git: 2.9.x
 ```
 
