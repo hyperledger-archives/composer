@@ -25,7 +25,7 @@ are validated by concerned organizations in the business network.
 | Assets | Use Assets and Asset Registries to define the data to be stored and exchanged across the business network |
 | Participants | Define Participants and ensure transactions are associated with known and authenticated members of the Hyperledger Fabric |
 | Transactions | Define Transactions and provide APIs to submit them for processing |
-| Transaction Processors | Write Transaction Processor functions using Javascript, that can update the state of assets and asset registries |
+| Transaction Processors | Write Transaction Processor functions using JavaScript, that can update the state of assets and asset registries |
 | REST APIs | Provides REST APIs to interact with assets and the transaction registry |
 | Loopback Connector | Provides a Loopback Connector to submit transactions from external systems |
 | Analytics and Monitoring integration | Provides integration extension points to send transactions to external analytics data stores |
@@ -36,9 +36,9 @@ are validated by concerned organizations in the business network.
 The {{site.data.conrefs.composer_full}} programming model is based on defining and deploying a Business Network
 Definition, which contains a data model that defines the name and structure of assets, participants
 and transactions in the business network. The business network also specifies *transaction processor functions*
-(written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
+(written in ES5 JavaScript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
 
-{{site.data.conrefs.composer_full}} defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
+{{site.data.conrefs.composer_full}} defines [JavaScript APIs](https://hyperledger.github.io/composer/jsdoc/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
 
 ### Roles, Responsibilities and Tasks
 
@@ -91,7 +91,7 @@ transaction RegisterPropertyForSale identified by transactionId{
 
 ## Writing Transaction Processor functions
 
-Technical Analysts write transaction processor functions using ES5 Javascript. These scripts are included in a business network definition and will be automatically executed when a transaction is submitted for processing. The transaction processor scripts can create, update, retrieve and delete assets based on the incoming transaction.
+Technical Analysts write transaction processor functions using ES5 JavaScript. These scripts are included in a business network definition and will be automatically executed when a transaction is submitted for processing. The transaction processor scripts can create, update, retrieve and delete assets based on the incoming transaction.
 
 ```javascript
 'use strict';
@@ -112,9 +112,9 @@ function onRegisterPropertyForSale(propertyForSale){
 
 High-level administration and client APIs provide easy access to a deployed business network.
 
-### Using the Javascript Client and Admin APIs
+### Using the JavaScript Client and Admin APIs
 
-Mid-tier developers use Javascript APIs to interact with the framework. The ```AdminConnection``` API exposes administration operations, such as deploying, undeploying and updating a Business Network Definition.
+Mid-tier developers use JavaScript APIs to interact with the framework. The ```AdminConnection``` API exposes administration operations, such as deploying, undeploying and updating a Business Network Definition.
 
 The ```BusinessNetworkConnection``` API is used to interact with a deployed business network: retrieving assets from asset registries, or submitting transactions.
 
