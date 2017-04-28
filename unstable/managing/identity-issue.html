@@ -156,48 +156,46 @@ of that participant has been created and placed into a participant registry.</p>
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><p>Issue an identity to the participant</p>
+<li>Issue an identity to the participant
 
 <ul>
 <li>JavaScript API</li>
-</ul>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="cm">/* TODO: get a business network connection */</span>
-<span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.Person#mae@biznet.org'</span><span class="p">,</span> <span class="s1">'maeid1'</span><span class="p">)</span>
-    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">userID</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">userID</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">userSecret</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">userSecret</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
-    <span class="p">});</span>
-</code></pre></div></li>
+</ul></li>
 </ol>
-
-<ul>
-<li><p>Command line</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer identity issue -n <span class="s1">'digitalproperty-network'</span> -i admin -s Xurw3yU9zI0l -u maeid1 -a <span class="s2">"net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="cm">/* TODO: get a business network connection */</span>
+  <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">issueIdentity</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.Person#mae@biznet.org'</span><span class="p">,</span> <span class="s1">'maeid1'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">userID</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">userID</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">userSecret</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">userSecret</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
+      <span class="p">});</span>
 </code></pre></div>
-<p>The enrollment secret will be printed to the console.</p></li>
+<ul>
+<li>Command line</li>
 </ul>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer identity issue -n <span class="s1">'digitalproperty-network'</span> -i admin -s Xurw3yU9zI0l -u maeid1 -a <span class="s2">"net.biz.digitalPropertyNetwork.Person#mae@biznet.org"</span>
+</code></pre></div>
+<p>The enrollment secret will be printed to the console.</p>
 
 <ol>
-<li><p>As the participant, test the connection to the business network</p>
+<li>As the participant, test the connection to the business network
 
 <ul>
 <li>JavaScript API</li>
-</ul>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="cm">/* TODO: get a business network connection */</span>
-<span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">ping</span><span class="p">()</span>
-    <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">participant</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">?</span> <span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">:</span> <span class="s1">'&lt;no participant found&gt;'</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
-    <span class="p">});</span>
-</code></pre></div></li>
+</ul></li>
 </ol>
-
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">  <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="cm">/* TODO: get a business network connection */</span>
+  <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">ping</span><span class="p">()</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">participant</span> <span class="o">=</span> <span class="nx">$</span><span class="p">{</span><span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">?</span> <span class="nx">result</span><span class="p">.</span><span class="nx">participant</span> <span class="p">:</span> <span class="s1">'&lt;no participant found&gt;'</span><span class="p">}</span><span class="err">`</span><span class="p">);</span>
+      <span class="p">});</span>
+</code></pre></div>
 <ul>
-<li><p>Command line</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer network ping -n <span class="s1">'digitalproperty-network'</span> -i maeid1 -s RJJmlOpvNVRV
+<li>Command line</li>
+</ul>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">  composer network ping -n <span class="s1">'digitalproperty-network'</span> -i maeid1 -s RJJmlOpvNVRV
 </code></pre></div>
 <p>The participant ID will be printed to the console, and should match the participant
-ID that was specified in the <code>composer identity issue</code> command.</p></li>
-</ul>
+  ID that was specified in the <code>composer identity issue</code> command.</p>
 
             
           </section>
