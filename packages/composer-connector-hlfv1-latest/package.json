@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-hlfv1-latest",
-  "version": "0.5.11",
+  "version": "0.7.0",
   "description": "The Hyperledger Fabric v1.x Client connector for Fabric Composer",
   "engines": {
     "node": ">=6",

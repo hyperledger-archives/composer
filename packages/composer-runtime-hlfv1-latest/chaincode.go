@@ -36,25 +36,28 @@ func NewChaincode() (result *Chaincode) {
 }
 
 func EnableLogging(stub shim.ChaincodeStubInterface) {
-	levelStr string
-	levelStr, err := stub.GetState("ComposerLogLevel")
-	if err != nil || levelStr == nil {
-		levelStr, isSet := os.LookupEnv("CORE_CHAINCODE_LOGLEVEL")
+	var levelStr string
+	levelBytes, err := stub.GetState("ComposerLogLevel")
+	if err != nil || levelBytes == nil {
+		var isSet bool
+		levelStr, isSet = os.LookupEnv("CORE_CHAINCODE_LOGLEVEL")
 		if !isSet {
 			levelStr = "INFO"
 		}
+	} else {
+		levelStr = string(levelBytes)
 	}
 	level, _ := shim.LogLevel(levelStr)
 	logger.SetLevel(level)
-	logger.warn("Setting loglevel to", levelStr)
+	logger.Warning("Setting loglevel to", levelStr)
 }
 
 func SetLogging(stub shim.ChaincodeStubInterface, levelStr string) {
-	newLevel = strings.ToUpper(levelStr)
-	stub.PutState("ComposerLogLevel", levelStr)
-	level, _ := shim.LogLevel(levelStr)
+	newLevel := strings.ToUpper(levelStr)
+	stub.PutState("ComposerLogLevel", []byte(newLevel))
+	level, _ := shim.LogLevel(newLevel)
 	logger.SetLevel(level)
-	logger.warn("Setting loglevel to", levelStr)
+	logger.Warning("Setting loglevel to", newLevel)
 }
 
 
@@ -62,7 +65,7 @@ func SetLogging(stub shim.ChaincodeStubInterface, levelStr string) {
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
 // Init can read from and write to the world state.
 func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.Response) {
-	EnableLogging()
+	EnableLogging(stub)
 	logger.Debug("Entering Chaincode.Init", &stub)
 	defer func() {
 		logger.Debug("Exiting Chaincode.Init", response.Status, response.Message, string(response.Payload))
@@ -85,7 +88,7 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 // Invoke is called by the Hyperledger Fabric when the chaincode is invoked.
 // Invoke can read from and write to the world state.
 func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response pb.Response) {
-	EnableLogging()
+	EnableLogging(stub)
 	logger.Debug("Entering Chaincode.Invoke", &stub)
 	defer func() {
 		logger.Debug("Exiting Chaincode.Invoke", response.Status, response.Message, string(response.Payload))
