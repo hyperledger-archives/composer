@@ -17,6 +17,7 @@
     "systest:embedded": "mocha -t 0 systest",
     "systest:hlf": "mocha -t 0 systest",
     "systest:hlfv1": "mocha -t 0 systest",
+    "systest:hlfv1-latest": "mocha -t 0 systest",
     "systest:hlfv1_tls": "mocha -t 0 systest",
     "systest:hlfv1-1": "mocha -t 0 systest/[a-p]*.js systest/setup.js",
     "systest:hlfv1-2": "mocha -t 0 systest/[q-z]*.js systest/setup.js",
@@ -63,8 +64,8 @@
     "socket.io": "^1.7.3",
     "uuid": "^3.0.1",
     "watchify": "^3.7.0",
-    "fabric-ca-client": "1.0.0-alpha.0",
-    "fabric-client": "1.0.0-alpha"
+    "fabric-ca-client": "unstable",
+    "fabric-client": "unstable"
   },
   "license-check-config": {
     "src": [

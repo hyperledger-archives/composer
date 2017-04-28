@@ -27,7 +27,7 @@ var logger = shim.NewLogger("Composer")
 // Fabric and registers the chaincode for deploys, queries, and invokes.
 func main() {
 	//TODO: Need to control this via env var and/or api call.
-	logger.SetLevel(shim.LogDebug)
+	//logger.SetLevel(shim.LogDebug)
 	logger.Debug("Entering main")
 	defer func() { logger.Debug("Exiting main") }()
 	chaincode := NewChaincode()

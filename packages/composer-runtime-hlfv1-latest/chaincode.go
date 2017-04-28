@@ -16,6 +16,8 @@ package main
 
 import "github.com/hyperledger/fabric/core/chaincode/shim"
 import pb "github.com/hyperledger/fabric/protos/peer"
+import "os"
+import "strings"
 
 // Chaincode is the chaincode class. It is an implementation of the
 // Chaincode interface.
@@ -33,13 +35,34 @@ func NewChaincode() (result *Chaincode) {
 	}
 }
 
+func EnableLogging(stub shim.ChaincodeStubInterface) {
+	levelStr string
+	levelStr, err := stub.GetState("ComposerLogLevel")
+	if err != nil || levelStr == nil {
+		levelStr, isSet := os.LookupEnv("CORE_CHAINCODE_LOGLEVEL")
+		if !isSet {
+			levelStr = "INFO"
+		}
+	}
+	level, _ := shim.LogLevel(levelStr)
+	logger.SetLevel(level)
+	logger.warn("Setting loglevel to", levelStr)
+}
+
+func SetLogging(stub shim.ChaincodeStubInterface, levelStr string) {
+	newLevel = strings.ToUpper(levelStr)
+	stub.PutState("ComposerLogLevel", levelStr)
+	level, _ := shim.LogLevel(levelStr)
+	logger.SetLevel(level)
+	logger.warn("Setting loglevel to", levelStr)
+}
+
+
+
 // Init is called by the Hyperledger Fabric when the chaincode is deployed.
 // Init can read from and write to the world state.
 func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.Response) {
-	//TODO: Need to control this via env var and/or api call.
-	//logging needs to be set here again as the fabric chaincode disables it
-	//even though it was enabled in main.
-	logger.SetLevel(shim.LogDebug)
+	EnableLogging()
 	logger.Debug("Entering Chaincode.Init", &stub)
 	defer func() {
 		logger.Debug("Exiting Chaincode.Init", response.Status, response.Message, string(response.Payload))
@@ -52,6 +75,7 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 	// Execute the init function.
 	function, arguments := stub.GetFunctionAndParameters()
 	payload, err := composer.Init(stub, function, arguments)
+    
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -61,10 +85,7 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 // Invoke is called by the Hyperledger Fabric when the chaincode is invoked.
 // Invoke can read from and write to the world state.
 func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response pb.Response) {
-	//TODO: Need to control this via env var and/or api call.
-	//logging needs to be set here again as the fabric chaincode disables it
-	//even though it was enabled in main.
-	logger.SetLevel(shim.LogDebug)
+	EnableLogging()
 	logger.Debug("Entering Chaincode.Invoke", &stub)
 	defer func() {
 		logger.Debug("Exiting Chaincode.Invoke", response.Status, response.Message, string(response.Payload))
