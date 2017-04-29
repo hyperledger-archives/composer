@@ -21,7 +21,7 @@
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-2', 'auto');
+ga('create', 'UA-91314349-1', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
@@ -141,15 +141,14 @@ mkdir ./MyProfile
 <code>
 cd MyProfile
 </code></li>
-<li>Create a new file called <code>connection.json</code> that contains the following information for either Hyperledger Fabric v0.6 or v1.0.
-If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:
+<li>Create a new file called <code>connection.json</code> that contains the following information for either Hyperledger Fabric v0.6 or v1.0. If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:
 <code>
 {
-    &quot;type&quot;: &lt;hlf|web&gt;,
-    &quot;keyValStore&quot;:&quot;/home/&lt;your-username&gt;/.composer-credentials&quot;,
-    &quot;membershipServicesURL&quot;: &lt;your-membership-services-url&gt;,
-    &quot;peerURL&quot;: &lt;your-peer-url&gt;,
-    &quot;eventHubURL&quot;: &lt;your-event-hub-url&gt;
+  &quot;type&quot;: &lt;hlf|web&gt;,
+  &quot;keyValStore&quot;:&quot;/home/&lt;your-username&gt;/.composer-credentials&quot;,
+  &quot;membershipServicesURL&quot;: &lt;your-membership-services-url&gt;,
+  &quot;peerURL&quot;: &lt;your-peer-url&gt;,
+  &quot;eventHubURL&quot;: &lt;your-event-hub-url&gt;
 }
 </code>
 If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:
@@ -157,18 +156,18 @@ If you are creating a connection profile for Hyperledger Fabric v1.0, use the fo
 {
 &quot;type&quot;: &quot;hlfv1&quot;,
 &quot;orderers&quot;: [
-    &quot;grpc://localhost:7050&quot;
+  &quot;grpc://localhost:7050&quot;
 ],
 &quot;ca&quot;: &quot;http://localhost:7054&quot;,
 &quot;peers&quot;: [
-    {
-        &quot;requestURL&quot;: &quot;grpc://localhost:7051&quot;,
-        &quot;eventURL&quot;: &quot;grpc://localhost:7053&quot;
-    },
-    {
-        &quot;requestURL&quot;: &quot;grpc://localhost:7056&quot;,
-        &quot;eventURL&quot;: &quot;grpc://localhost:7058&quot;
-    }
+  {
+      &quot;requestURL&quot;: &quot;grpc://localhost:7051&quot;,
+      &quot;eventURL&quot;: &quot;grpc://localhost:7053&quot;
+  },
+  {
+      &quot;requestURL&quot;: &quot;grpc://localhost:7056&quot;,
+      &quot;eventURL&quot;: &quot;grpc://localhost:7058&quot;
+  }
 ],
 &quot;keyValStore&quot;: &quot;/home/matthew/.hfc-key-store&quot;,
 &quot;channel&quot;: &quot;mychannel&quot;,

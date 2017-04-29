@@ -21,7 +21,7 @@
     <!-- Google Analytics -->
 <script>
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-91314349-2', 'auto');
+ga('create', 'UA-91314349-1', 'auto');
 ga('require', 'outboundLinkTracker');
 ga('require', 'eventTracker');
 ga('send', 'pageview');
@@ -134,39 +134,46 @@ ga('send', 'pageview');
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><p>Before deploying a business network, a <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a> is needed as a <code>zip</code> file with the following structure:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">BusinessNetworkArchive.zip
-├── lib
-│   └── mozart.cto.js
-├── models
-│   └── mozart.cto
-└── package.json
-</code></pre></div></li>
+<li>Before deploying a business network, a <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a> is needed as a <code>zip</code> file with the following structure:</li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">-   **lib** contains all of the transactions processor functions
--   **models** contains all of the model files written in the [CTO Language](../reference/cto_language.html).
--   **package.json** is required, and is used to create the [Business Network Definition](../business-network/businessnetworkdefinition.html)'s identifier
-
-You can use the `composer archive` command to create an archive with the correct format.
-
-**NOTE**: *Do not zip a a folder containing **lib**, **models**, and **package.json** to create an Business Network Archive, zip the contents themselves*
+<div class="highlight"><pre><code class="language-" data-lang="">  BusinessNetworkArchive.zip
+  ├── lib
+  │   └── mozart.cto.js
+  ├── models
+  │   └── mozart.cto
+  └── package.json
 </code></pre></div>
+<ul>
+<li><em>lib</em> contains all of the transactions processor functions</li>
+<li><em>models</em> contains all of the model files written in the <a href="../reference/cto_language.html">CTO Language</a>.</li>
+<li><em>package.json</em> is required, and is used to create the <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a>&#39;s identifier</li>
+</ul>
+
+<p>You can use the <code>composer archive</code> command to create an archive with the correct format.</p>
+
+<p><strong>NOTE</strong>: <em>Do not zip a a folder containing **lib</em><em>, **models</em><em>, and **package.json</em>* to create an Business Network Archive, zip the contents themselves*</p>
+
 <ol>
 <li><p>Start <a href="runtime-start.html">Hyperledger Fabric Peer and Membership Service</a></p></li>
 <li><p><a href="../installing/createconnectionprofile.html">Create a Connection Profile</a> or do <em>not</em> use <code>-p</code> and allow Hyperledger Composer to create a <code>Default Connection Profile</code> for you.</p></li>
-<li><p>Enter the command on a single line. For example:</p>
-
-<p><code>composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;</code></p></li>
-<li><p>Enter your Enrollment Secret when prompted.</p>
-
-<p><code>prompt: What is the enrollment secret of the user?:</code></p></li>
-<li><p>When you see</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Deploying business network definition. This may take a little time.
-Command completed successfully.
-</code></pre></div>
-<p>you have successfully deployed a business network!</p></li>
+<li><p>Enter the command on a single line. For example:</p></li>
 </ol>
 
+<p><code>composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;</code></p>
+
+<ol>
+<li>Enter your Enrollment Secret when prompted.</li>
+</ol>
+
+<p><code>prompt: What is the enrollment secret of the user?:</code></p>
+
+<ol>
+<li>When you see</li>
+</ol>
+<div class="highlight"><pre><code class="language-" data-lang="">  Deploying business network definition. This may take a little time.
+  Command completed successfully.
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">you have successfully deployed a business network!
+</code></pre></div>
             
           </section>
         </div>
