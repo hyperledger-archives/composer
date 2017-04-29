@@ -24,7 +24,7 @@ export COMPOSER_DEPLOY_WAIT_SECS=500
 
 # Pull any required Docker images.
 if [ "${SYSTEST}" = "hlf"  ]; then
-    DOCKER_FILE=${DIR}/hlf/hlf-docker-compose.yml
+    DOCKER_FILE=${DIR}/hlf/docker-compose.yml
     docker pull hyperledger/fabric-membersrvc:x86_64-0.6.1-preview
     docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
     docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
@@ -33,9 +33,9 @@ if [ "${SYSTEST}" = "hlf"  ]; then
     docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
 elif [[ ${SYSTEST} == hlfv1* ]]; then
     if [[ ${SYSTEST} == *tls ]]; then
-        DOCKER_FILE=${DIR}/hlfv1/hlfv1_alpha-docker-compose.tls.yml
+        DOCKER_FILE=${DIR}/hlfv1/docker-compose.tls.yml
     else
-        DOCKER_FILE=${DIR}/hlfv1/hlfv1_alpha-docker-compose.yml
+        DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
     fi
     docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha
     docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha
