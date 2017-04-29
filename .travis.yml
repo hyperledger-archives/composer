@@ -32,6 +32,7 @@ deploy:
     on:
         all_branches: true
 cache:
+  yarn: true
   directories:
     - node_modules
 sudo: required

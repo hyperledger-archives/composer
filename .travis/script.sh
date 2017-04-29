@@ -35,12 +35,12 @@ if [ "${DOCS}" != "" ]; then
     ./build-installers.sh
 
     # Build the documentation.
-    npm install
+    yarn install
     if [ -n "${TRAVIS_TAG}" ]; then
        export JEKYLL_ENV=production
-       npm run full:prod
+       yarn run full:prod
     else
-       npm run full:unstable
+       yarn run full:unstable
     fi
 
 # Are we running system tests?
@@ -53,11 +53,11 @@ elif [ "${SYSTEST}" != "" ]; then
 else
 
     # Run the unit tests.
-    npm test 2>&1 | tee
+    yarn test 2>&1 | tee
 
     # Build the Composer Playground.
     cd "${DIR}/packages/composer-playground"
-    npm run build:prod
+    yarn run build:prod
 
 fi
 

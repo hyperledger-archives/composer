@@ -23,4 +23,4 @@ fi
 
 
 cd ${DIR}
-npm install 2>&1 | tee
+yarn install 2>&1 | tee
