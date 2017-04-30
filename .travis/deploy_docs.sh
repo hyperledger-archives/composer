@@ -4,12 +4,12 @@
 set -ev
 set -o pipefail
 
-# Grab the  directory.
+# Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 date
 # Set the GitHub deploy key we will use to publish.
-set-up-ssh --key "$encrypted_8496d53a6fac_key" \
-           --iv "$encrypted_8496d53a6fac_iv" \
+set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
+           --iv "$encrypted_17b59ce72ad7_iv" \
            --path-encrypted-key ".travis/github_deploy_key.enc"
 
 # push the html documents
@@ -21,24 +21,26 @@ git config push.default simple
 echo ${DIR}
 cd "${DIR}/packages/composer-website/out"
 
-export REPO="fabric-composer.github.io"
+# Set the target directory to load the GitHub repository.
+export TODIR="${DIR}/packages/composer-website/out/gh-pages"
 
-git clone git@github.com:fabric-composer/${REPO}.git
-git remote set-url origin ${REPO}.git
+# Load the GitHub repository using the gh-pages branch.
+git clone -b gh-pages git@github.com:${TRAVIS_REPO_SLUG}.git ${TODIR}
 
-cd "${DIR}/packages/composer-website/out/${REPO}"
-
+# If this is a full docs build, copy the docs into the GitHub repository as the main website.
 if [ "${DOCS}" == "full" ]; then
-    rm -rf ${DIR}/packages/composer-website/out/${REPO}/*
-    cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* .
+    rm -rf ${TODIR}/*
+    cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/
 fi
 
-mkdir -p ${DIR}/packages/composer-website/out/${REPO}/unstable
-rm -rf ${DIR}/packages/composer-website/out/${REPO}/unstable/*
-cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ./unstable
+# Always copy the docs into the GitHub repository as the unstable website.
+mkdir -p ${TODIR}/unstable
+rm -rf ${TODIR}/unstable/*
+cp -rf ${DIR}/packages/composer-website/jekylldocs/_site/* ${TODIR}/unstable/
 
+# Add all the changes, commit, and push to the GitHub repository.
+cd ${TODIR}
 git add .
-
-git commit -m "Automated deploy to ${REPO}"
-git push
+git commit -m "Automatic deployment of website"
+git push origin gh-pages
 date

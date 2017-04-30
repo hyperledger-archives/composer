@@ -60,16 +60,13 @@ Transactions are the mechanism by which participants interact with assets. This 
 The `composer-admin`, `composer-client`, and `composer-common` components contain the APIs to interact with a {{site.data.conrefs.composer_full}} runtime. The `composer-rest-server` component generates a unique RESTful API for interacting with your deployed business network.
 
 ---
-<!--
-### Loopback Connector
 
+### Hyperledger Fabric 1.0 Support
 
+{{site.data.conrefs.composer_full}} supports the existing [Hyperledger Fabric blockchain](https://hyperledger.org) infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.
 
----
+Hyperledger Fabric v1.0 adds support for channels, orderers, and certificate authorities. For more information on Hyperledger Fabric v1.0, see the [Hyperledger Fabric documentation](https://hyperledger.org).
 
-### <a name="applications"></a>
-
-
+Hyperledger Fabric versions 0.6 and 1.0 are supported.
 
 ---
--->

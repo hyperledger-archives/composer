@@ -1,8 +1,8 @@
 {
   "name": "composer-systests",
-  "version": "0.5.13",
+  "version": "0.7.0",
   "private": true,
-  "description": "System tests and automation for Fabric Composer",
+  "description": "System tests and automation for Hyperledger Composer",
   "engines": {
     "node": ">=6",
     "npm": ">=3"
@@ -42,14 +42,16 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "chai-subset": "^1.3.0",
-    "composer-admin": "^0.5.13",
-    "composer-client": "^0.5.13",
-    "composer-common": "^0.5.13",
-    "composer-connector-embedded": "^0.5.13",
-    "composer-connector-server": "^0.5.13",
-    "composer-connector-proxy": "^0.5.13",
-    "composer-connector-web": "^0.5.13",
+    "composer-admin": "^0.7.0",
+    "composer-client": "^0.7.0",
+    "composer-common": "^0.7.0",
+    "composer-connector-embedded": "^0.7.0",
+    "composer-connector-server": "^0.7.0",
+    "composer-connector-proxy": "^0.7.0",
+    "composer-connector-web": "^0.7.0",
     "eslint": "^3.17.1",
+    "fabric-client": "1.0.0-alpha.1",
+    "fabric-ca-client": "1.0.0-alpha.1",
     "homedir": "^0.6.0",
     "karma": "^1.3.0",
     "karma-browserify": "^5.1.0",
@@ -62,9 +64,7 @@
     "sleep-promise": "^2.0.0",
     "socket.io": "^1.7.3",
     "uuid": "^3.0.1",
-    "watchify": "^3.7.0",
-    "fabric-ca-client": "1.0.0-alpha.0",
-    "fabric-client": "1.0.0-alpha"
+    "watchify": "^3.7.0"
   },
   "license-check-config": {
     "src": [

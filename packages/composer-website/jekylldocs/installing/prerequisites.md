@@ -15,7 +15,7 @@ The essential tools you will need are *npm*, *docker*, *docker-compose* and a co
 The recommended *minimum* versions are:
 *Docker*: v1.12.3
 *Docker-compose*: v1.10.0
-*npm*: v4.6.0
+*npm*: v3.10
 *node.js*: v6.9.5
 
 
@@ -28,7 +28,7 @@ If some of the tools are already installed or to do the installation step-by-ste
 
 
 ```bash
-$ curl -O https://raw.githubusercontent.com/fabric-composer/sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+$ curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
 $ chmod u+x prereqs-ubuntu.sh
 ```
 
@@ -60,15 +60,9 @@ This is probably already installed on most Linux machines. Pay particular attent
 ## Optional Installs
 
 ### 1. Installing an editor
-<<<<<<< HEAD
-{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor.
 
-However, we recommend either using Atom or Visual Studio Code as both have excellent support for Javascript
-development. We have even created an experimental CTO file syntax highlighting plugin for Atom.
-=======
-{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. We recommend using either Atom or Visual Studio Code, as not only do both have excellent support for Javascript development, a CTO file syntax highlighting plugin exists for these editors.
->>>>>>> refs/remotes/hyperledger/master
-
+{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. Atom and Visual Studio Code both have excellent support for JavaScript
+development. Atom also includes a syntax highlighting plugin for `.cto` files.
 
 **Atom**
 
@@ -78,7 +72,7 @@ development. We have even created an experimental CTO file syntax highlighting p
 
 Suggested Plugins:
 
-* [Atom Composer Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom) A plugin for model file highlighting.
+* [Composer Atom Syntax Highlighter](https://github.com/hyperledger/composer-atom-plugin) A plugin for model file highlighting.
 
 * [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
 

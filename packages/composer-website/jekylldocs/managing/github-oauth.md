@@ -16,7 +16,7 @@ To enable importing of samples without receiving an error when the rate limit is
 3. On the command line navigate to the `composer-connector-server` config directory.
 
     ```
-    cd fabric-composer/packages/composer-connector-server/config
+    cd composer/packages/composer-connector-server/config
     ```  
 4. Copy the file.
 

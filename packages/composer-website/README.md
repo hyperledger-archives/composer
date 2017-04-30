@@ -1,9 +1,9 @@
-# Fabric Composer Documentation
+# Hyperledger Composer Documentation
 
-This directory ( fabric-composer/composer-website ) hold the documentation for Fabric Composer and the tools to create the static website for Fabric Composer. This static site is hosted on an organization static site in GitHub (https://github.com/fabric-composer/fabric-composer.github.io).
+This directory ( composer/packages/composer-website ) hold the documentation for Hyperledger Composer and the tools to create the static website for Hyperledger Composer. This static site is hosted on an organization static site in GitHub (https://github.com/hyperledger/composer).
 
 # Getting Started for local work
-- Assume that you have a clone of the fabric-composer repository locally.
+- Assume that you have a clone of the composer repository locally.
 - Install Ruby;  a good guide to installing ruby is [here](https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-16-04) but *stop* before installing Rails.  Installation of Ruby-dev, and subsequently Gem, are all that are required.
 - Install Jeykll, jekyll-sitemap, redcarpet.  The scripts directory contains a setup-jekyll script that does setup these. But you must have performed the Ruby installation first.
 
@@ -11,7 +11,7 @@ This directory ( fabric-composer/composer-website ) hold the documentation for F
 $ ./scripts/setup-jekyll.sh
 ```
 
-- Next step is to run or rerun the `lerna bootstrap` in the root of the fabric-composer repoistory.
+- Next step is to run or rerun the `lerna bootstrap` in the root of the composer repoistory.
 - Make the changes you want to any of the md files under the jekylldocs directories. Be careful if modifing anything in a directory starting with an underscore. Those are the template files.
 - Issue `npm run jeykllserve` and then go to the url that you get given at the end.
 - What you can do is modify the file you are working on and jekyll will rebuild the docs dynamically. (though you have to refresh the browser).
@@ -20,7 +20,7 @@ $ ./scripts/setup-jekyll.sh
 # Reference information
 
 ## High Level Process
-In summary the documentation is generated using both Jekyll and the jsdoc tool. These are run using scripts within Travis, with output being pushed to fabric-composer.github.io when a merge build occurs. Pull Request builds do build all the docs but do nothing with them.
+In summary the documentation is generated using both Jekyll and the jsdoc tool. These are run using scripts within Travis, with output being pushed to hyperledger.github.io/composer when a merge build occurs. Pull Request builds do build all the docs but do nothing with them.
 
 * The markdown files with the documentation are contained in a simple directory structure under `jekylldocs`
   * Images should be in the directory structure and reference like any other file *using relative paths*
@@ -47,7 +47,7 @@ _to write... note that a Java Runtime is required for the plantuml even though i
 
  The template for the jsdocs is within the jsdoc-template directory, along with the all the jsdoc configuration files.
 
-1. The API documentation using jsdoc are created initially; the source for these are in the node_modules directory. This is achieved by the fact the Fabric Composer npms are dependancies in the package.json. So the source code that contains the jsdoc comments will be pulled down and be contained within the node_modules directory,
+1. The API documentation using jsdoc are created initially; the source for these are in the node_modules directory. This is achieved by the fact the Hyperledger Composer npms are dependancies in the package.json. So the source code that contains the jsdoc comments will be pulled down and be contained within the node_modules directory,
 2.
     ```
     "composer-admin": "latest",

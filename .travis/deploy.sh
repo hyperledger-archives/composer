@@ -4,7 +4,7 @@
 set -ev
 set -o pipefail
 
-# Grab the Concerto directory.
+# Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 date
 ME=`basename "$0"`
@@ -51,8 +51,8 @@ npm config set registry https://registry.npmjs.org/
 npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
 
 # Set the GitHub deploy key we will use to publish.
-set-up-ssh --key "$encrypted_8496d53a6fac_key" \
-           --iv "$encrypted_8496d53a6fac_iv" \
+set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
+           --iv "$encrypted_17b59ce72ad7_iv" \
            --path-encrypted-key ".travis/github_deploy_key.enc"
 
 # Change from HTTPS to SSH.
