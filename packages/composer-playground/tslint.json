@@ -5,7 +5,7 @@
   "rules": {
     "member-access": false,
     "member-ordering": [
-      true,
+      false,
       "public-before-private",
       "static-before-instance",
       "variables-before-functions"
@@ -35,7 +35,7 @@
 
     "ban": false,
     "curly": false,
-    "forin": true,
+    "forin": false,
     "label-position": true,
     "no-arg": true,
     "no-bitwise": true,
@@ -54,7 +54,7 @@
     "no-empty": false,
     "no-eval": true,
     "no-null-keyword": false,
-    "no-shadowed-variable": true,
+    "no-shadowed-variable": false,
     "no-string-literal": false,
     "no-switch-case-fall-through": true,
     "no-unused-expression": true,
@@ -73,7 +73,7 @@
       "spaces"
     ],
     "max-line-length": [
-      true,
+      false,
       100
     ],
     "no-require-imports": false,
@@ -126,12 +126,11 @@
     ],
     "whitespace": [
       true,
-      "check-branch",
-      "check-decl",
+
       "check-operator",
       "check-separator",
       "check-type"
     ],
-    "import-destructuring-spacing": true
+    "import-destructuring-spacing": false
   }
 }

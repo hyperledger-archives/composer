@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {ConnectionProfileService} from '../connectionprofile.service';
+import {ConnectionProfileService} from '../services/connectionprofile.service';
 import {WalletService} from '../wallet.service';
 
 @Component({
