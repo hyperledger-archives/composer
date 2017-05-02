@@ -13,10 +13,10 @@ For additional help with Hyperledger Composer the following are good places:
 
 We welcome contributions to the code base. If you are interested in becoming a contributor, please read the [contributing guide](CONTRIBUTING.md) that covers the following:
 
-- [raising an issue]
-- [getting started]
-- [coding guidelines]
-- [submitting a pull request]
+- [getting started](./contrib-notes/getting-started.md)
+- [coding guidelines](./contrib-notes/coding-guidelines.md)
+- [raising an issue](./contrib-notes/raising-issues.md)
+- [submitting a pull request](./contrib-notes/submitting-pull-request.md)
 
 There is a [specific channel](https://chat.hyperledger.org/channel/fabric-composer-dev) on RocketChat for contributors*
 
