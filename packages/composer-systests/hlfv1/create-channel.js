@@ -25,7 +25,7 @@ const homedir = require('homedir');
 
 let logger = utils.getLogger('create-channel');
 
-let useTls = process.env.SYSTEST.match('tls$');
+let useTls = process.env.SYSTEST ? process.env.SYSTEST.match('tls$') : false;
 
 if (useTls) {
     console.log('using tls connection to create the channel');
