@@ -93,15 +93,18 @@ export class <%= currentAsset.name %>Component implements OnInit {
       $class: "<%= namespace %>.<%= currentAsset.name %>",
       <% for(var x=0;x<currentAsset.properties.length;x++){ %>
         <% if(x == currentAsset.properties.length-1){ %>
-          "<%= currentAsset.properties[x].name %>":this.<%= currentAsset.properties[x].name %>.value
+          <% if(currentAsset.properties[x].name != currentAsset.identifier){ %>
+            "<%= currentAsset.properties[x].name %>":this.<%= currentAsset.properties[x].name %>.value
+          <% } %>
         <% }else{ %>
-          "<%=currentAsset.properties[x].name%>":this.<%= currentAsset.properties[x].name %>.value,
+          <% if(currentAsset.properties[x].name != currentAsset.identifier){ %>
+            "<%=currentAsset.properties[x].name%>":this.<%= currentAsset.properties[x].name %>.value,
+          <% } %>
         <% } %>
     <% }%>
     };
 
-
-    return this.service<%= currentAsset.name %>.updateAsset(this.asset.<%=assetIdentifier%>,this.asset).toPromise();
+    return this.service<%= currentAsset.name %>.updateAsset(form.get("<%=assetIdentifier%>").value,this.asset).toPromise();
   }
 
 
