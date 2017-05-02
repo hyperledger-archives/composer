@@ -17,7 +17,7 @@ This document explains how you should work with the Composer repositories within
 
 If you have a question or problem that relates to general support, please ask the question on either [RocketChat](https://chat.hyperledger.org/channel/fabric-composer) or [Stack Overflow](http://stackoverflow.com/questions/tagged/fabric-composer), where the question should be tagged with 'fabric-composer'. We would like to exclusively use GitHub issues for bug reports and feature requests.
 
-If you find a bug in the source code, an error in any documentation, or would like a new feature, you can help us by [submitting an issue](./contrib-notes/raising-issues.md) to our GitHub Repository or delivering a fix via a [pull request](./contrib-notes/submitting-pull-request.md).
+If you find a bug in the source code, an error in any documentation, or would like a new feature, you can help us by [raising an issue](./contrib-notes/raising-issues.md) to our GitHub Repository or delivering a fix via a [pull request](./contrib-notes/submitting-pull-request.md).
 
 
 ### Getting Started
@@ -47,4 +47,4 @@ To enable us to quickly review and accept your pull requests, always create one 
 
 ### The Release
 
-The master branches are currently being used as a base to cut new realeases. The release process itself follows a process to ensure that the release is of suitable quallity. For more information, please see the [release process](./contrib-notes/release-process.md)
+The master branches are currently being used as a base to cut new realeases. The release process itself follows a process to ensure that the release is of suitable quallity. For more information, please see the [release process](./contrib-notes/weekly-qa-validation.md)
