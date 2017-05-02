@@ -262,15 +262,13 @@ class AccessController {
             return true;
         }
 
-        // Determine the input fully qualified name and ID.
+        // Check to see if the participant is an instance of the
+        // required participant type, or is in the required
+        // namespace.
         let ns = participant.getNamespace();
-        let fqn = participant.getFullyQualifiedType();
-        let id = participant.getIdentifier();
-
-        // Check to see if the fully qualified name matches.
         let reqFQN = reqParticipant.getFullyQualifiedName();
-        if (fqn === reqFQN) {
-            // Participant is matching fully qualified type.
+        if (participant.instanceOf(reqFQN)) {
+            // Participant is matching type or subtype.
         } else if (ns === reqFQN) {
             // Participant is matching namespace.
         } else {
@@ -280,6 +278,7 @@ class AccessController {
         }
 
         // Check to see if the identifier matches (if specified).
+        let id = participant.getIdentifier();
         let reqID = reqParticipant.getInstanceIdentifier();
         if (reqID) {
             if (id === reqID) {
