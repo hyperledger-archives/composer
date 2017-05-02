@@ -83,7 +83,7 @@ $ cat ./config/default.json
 
 
 
-  "fabric-composer": {
+  "hyperledger-composer": {
 	   "debug": {
        "logger": "./winstonInjector.js",
        "config": {
@@ -176,8 +176,8 @@ exports.getLogger = function (config,configElements){
         ]
     };
 
-    winston.loggers.add('Fabric-Composer',newWinstonLogger);
-    return winston.loggers.get('Fabric-Composer');
+    winston.loggers.add('Hyperledger-Composer',newWinstonLogger);
+    return winston.loggers.get('Hyperledger-Composer');
 
 
 };
@@ -188,7 +188,7 @@ and in a configuration file - where the logger is a reference to the code above.
 
 ```
 {
-  "fabric-composer": {
+  "hyperledger-composer": {
      "debug": {
        "logger": "/home/matthew/github/waste-notes/winstonPapertrailInjector.js",
        "config": {

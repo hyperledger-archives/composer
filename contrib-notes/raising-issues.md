@@ -2,7 +2,7 @@
 
 Before you submit an issue, please search to see if your issue has already been identified. It may be that there is a workaround available that will let you progress whilst the fix is being worked on. The following channels are where to search for existing issues:
 
-- [Stack Overflow issues](http://stackoverflow.com/tags/fabric-composer)
+- [Stack Overflow issues](http://stackoverflow.com/tags/hyperledger-composer)
 - [GitHub Issues](https://github.com/hyperledger/composer/issues)
 - [Rocket Chat history](https://chat.hyperledger.org/channel/fabric-composer)
 
