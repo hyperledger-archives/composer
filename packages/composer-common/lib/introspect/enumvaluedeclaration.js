@@ -30,7 +30,7 @@ class EnumValueDeclaration extends Property {
      * Create a EnumValueDeclaration.
      * @param {ClassDeclaration} parent - The owner of this property
      * @param {Object} ast - The AST created by the parser
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(parent, ast) {
         super(parent, ast);
@@ -39,7 +39,7 @@ class EnumValueDeclaration extends Property {
     /**
      * Validate the property
      * @param {ClassDeclaration} classDecl the class declaration of the property
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate(classDecl) {
