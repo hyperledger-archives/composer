@@ -1,16 +1,16 @@
-# Getting started developing Hyperledger Composer
+# Getting Started Developing Hyperledger Composer
 
 This guide will help you start to contribute to the Hyperledger Composer project. It will show you how to set up your local environment and walk through the development, code, test and deploy process. You will do this by creating a small change of your own.
 
 Please note that this is the **Getting Started** for developing Hyperledger Composer itself, and not a guide to developing applications **using** Hyperledger Composer.  (Though a lot of the tool chain will be useful for that purpose as well).
 
-## Setup scripts
+## Setup Scripts
 
 The requirements for developing Hyperledger Composer are the same as developing an application using Hyperledger Composer. Follow these [instructions](https://fabric-composer.github.io/installing/prerequisites.html)  
 
 If you wish to install manually or review the indiviual tool's own documentation the details are below.
 
-## Tool Chain reference details
+## Tool Chain Reference Details
 This is a summary of the tools that will be required to work on Hyperledger Composer. Other tools are required but these will be installed automatically.  
 
 - **Git** This is probably already installed on most Linux machines. Setup is well documented on the [ibm.git website](https://help.github.com/enterprise/2.7/user/articles/set-up-git/) . Pay particular attention to[ setting up the SSL keys](https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux) that are required.
@@ -23,9 +23,9 @@ This is a summary of the tools that will be required to work on Hyperledger Comp
 
 - **Chrome** Web test suites use **karma** to launch a browser, and consequently **Chrome** must be installed to prevent test failures without editing the karma configuration to use a supported browser that you already have installed.
 
-## Forking and cloning the Hyperledger Composer repository
+## Forking and Cloning the Hyperledger Composer Repository
 
-Once those tools are installed you are ready to get going with the Hyperledger Composer repository.Let's show you how to create your own version of the Hyperledger Composer repository in GitHub, and clone it to your local machine to allow you to make your own changes, which you can subsequently contribute to the Hyperledger Composer project.
+Once those tools are installed you are ready to get going with the Hyperledger Composer repository. Let's show you how to create your own version of the Hyperledger Composer repository in GitHub, and clone it to your local machine to allow you to make your own changes, which you can subsequently contribute to the Hyperledger Composer project.
 
 - Navigate to the [Hyperledger Project](https://github.com/hyperledger) on GitHub to see the
 different Hyperledger Composer repositories.
@@ -33,9 +33,9 @@ different Hyperledger Composer repositories.
 - Click on the `Fork` button to fork this repository to your user space.
 - Navigate to your home page on GitHub, you'll be able to see your fork of the repository.
 
-## Choosing a location for your clone
+## Choosing a Location For Your Clone
 
-If this is your first Git project then you might like to spend a few moments creating a specific directory for all your local git repositories, e.g. ``~/github/`` on unix file systems, which will put the project under your home directory, which is good default location.   Windows note: this will all be done in the git bash shell that was installed for you.
+If this is your first Git project then you might like to spend a few moments creating a specific directory for all your local git repositories, e.g. ``~/github/`` on unix file systems, which will put the project under your home directory, which is good default location. Windows note: this will all be done in the git bash shell that was installed for you.
 
 ```bash
 mkdir -p ~/github
@@ -51,7 +51,7 @@ git clone git@github.ibm.com:<your-username>/hyperledger/composer.git
 cd composer
 ```
 
-### Hyperledger code dependencies
+### Hyperledger Code Dependencies
 
 There is a temporary requirement for Hyperledger Composer to include the Hyperledger source code in its project directory. The following commands will pull the code from the Hyperledger code repository, as defined in the `.gitmodules` file in the Hyperledger Composer project directory.
 
@@ -62,11 +62,11 @@ git submodule update
 
 You can see where the Hyperledger source code is pulled from; it is saved in the `.git` directory of the Hyperledger Composer project.
 
-## Installing Hyperledger Composer prerequisites
+## Installing Hyperledger Composer Prerequisites
 
 Hyperledger Composer has a number of prerequisites - for its runtime, code hygiene, tests, API documentation, and more.  Before you can develop locally, you need to install these using [npm](https://www.npmjs.com/). These prerequisites are installed as development dependencies. The packages are installed locally rather than globally, so that their versions do not interfere with other projects you may be developing, or global installations of these packages on your local machine.  You can also install these prerequisites globally, though it is required to have some packages locally, e.g. the test framework.
 
-### Installing the npm dependencies
+### Installing the npm Dependencies
 
 You must install [Lerna](https://lernajs.io) to build this multi-package repository:
 
@@ -83,8 +83,6 @@ Alternatively, you can execute npm commands across all of the packages at once u
 Lerna:
 
     $ lerna run test
-
-We'll now step through each of these prerequisite packages installed by npm to explain what they do. You can [skip this section](#verify) if you are already familiar with these tools.
 
 To clean the updates
 

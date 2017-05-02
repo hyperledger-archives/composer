@@ -1,10 +1,9 @@
 # Submitting a Pull Request
 
-*Before* submitting a pull request, please make sure the following is done:
+*Before* submitting a pull request, please search carefully for any open or closed pull requests that relate to the issue you are targetting.
 
-1. Fork the repo and create your branch from `master`.
-2. If you've added code, add tests!
-3. If you've changed APIs, update the documentation.
-4. Ensure the test suite passes (`npm test`).
-5. Make sure your code lints.
-6. Pull requests that have associated builds that are not 100% clean will be closed.
+- Fork the repo and create your branch from `master`.
+- Follow our [coding guidelines]() when making your coding changes.
+- Ensure that all test suites pass locally (`npm test`).
+- Commit any changes using a descriptive commit message.
+- Pull requests that have associated builds that are not 100% clean will be closed.

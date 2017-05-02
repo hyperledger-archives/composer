@@ -47,4 +47,4 @@ To enable us to quickly review and accept your pull requests, always create one 
 
 ### The Release
 
-The master branches are currently being used, a release build is run weekly to fix the release at a new level.  See the [release process](./contrib-notes/release-process.md)
+The master branches are currently being used as a base to cut new realeases. The release process itself follows a process to ensure that the release is of suitable quallity. For more information, please see the [release process](./contrib-notes/release-process.md)

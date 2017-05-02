@@ -31,12 +31,11 @@ Our current test suites make use of:
 Hyperledger Composer requires that all code added to the project is provided with unit tests. These tests operate inside a test framework called [mocha](https://mochajs.org/) which controls their execution. Mocha is triggered every time code is pushed to either a user's repository or the Hyperledger Composer repository.
 
 ### Unit Test Framework using Karma and Jasmine
-The default configuration is set to target the Chrome browser.
-
+The default configuration is set to target the Chrome browser, and this is the target browser during the build process. Unit tests should rigorously test controller files and where appropriate inspect the view to ensure that mapped logic is operating as expected.
 
 ### Simplify writing tests using the chai assertion library, chai-things and sinon
 
-Hyperledger Composer tests use an assertion library called [chai](http://chaijs.com/) to help write these tests, which run in the mocha. Chai allows developers to easily write tests that verify the behaviour of their code using `should`, `expect` and `assert` interfaces.  [chai-things](https://www.npmjs.com/package/chai-things) is a chai extension which helps writing units tests involving arrays. Hyperledger Composer sometimes relies on external systems like Hyperledger and to enable the creation of unit tests, Hyperledger Composer [sinon](https://www.npmjs.com/package/sinon) to create realistic units tests which do not draw in huge amounts of infrastructure.  sinon has technology called "test spies", "stubs" and "mocks" which greatly help this process.
+Hyperledger Composer tests use an assertion library called [chai](http://chaijs.com/) to help write these tests, which run in the mocha. Chai allows developers to easily write tests that verify the behaviour of their code using `should`, `expect` and `assert` interfaces. [chai-things](https://www.npmjs.com/package/chai-things) is a chai extension which helps writing units tests involving arrays. Hyperledger Composer sometimes relies on external systems like Hyperledger and to enable the creation of unit tests, Hyperledger Composer [sinon](https://www.npmjs.com/package/sinon) to create realistic units tests which do not draw in huge amounts of infrastructure.  sinon has technology called "test spies", "stubs" and "mocks" which greatly help this process.
 
 ### Code Coverage Using Istanbul
 
@@ -46,11 +45,11 @@ The Hyperledger Composer project uses a code coverage tool called [Istanbul](htt
 
 Hyperledger Composer is investigating the use of [cucumber](https://www.npmjs.com/package/cucumber) to for system or integration test. In contrast to unit tests, these tests are focussed on verifying end-user functionality in a realistic environment.
 
-## Misc
+## Miscellaneous
 
 ### JavaScript Parsing using acorn
 
-Hyperledger Composer provides its programming interfaces in JavaScript, and also has the ability to uses JavaScript to express user processing rules which are executed as smart contracts.  [acorn](https://www.npmjs.com/package/acorn) is a JavaScript parsing library that significantly assist this process.
+Hyperledger Composer provides its programming interfaces in JavaScript, and also has the ability to uses JavaScript to express user processing rules which are executed as smart contracts. [acorn](https://www.npmjs.com/package/acorn) is a JavaScript parsing library that significantly assist this process.
 
 ### Checking of files for Hyperledger Composer license agreement using license-check
 
