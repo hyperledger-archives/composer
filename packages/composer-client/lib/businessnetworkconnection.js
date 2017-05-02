@@ -385,7 +385,7 @@ class BusinessNetworkConnection extends EventEmitter {
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
      * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.ping();
+     *     return businessNetwork.ping();
      * })
      * .then(function(){
      *     // Connection tested.

@@ -1,25 +1,25 @@
-# Fabric Composer API
-Fabric Composer  is an application development framework for building blockchain applications based on Hyperledger. This is the API JSDoc for the Fabric Composer Client, Admin and Runtime Javascript APIs.
+# Hyperledger Composer API
+Hyperledger Composer  is an application development framework for building Blockchain applications based on Hyperledger. This is the JavaScript documentation for the Hyperledger Composer Client, Admin, and Runtime JavaScript APIs.
 
 
 ## Overview
-The major components of Fabric Composer are:
+The major components of Hyperledger Composer are:
 
-1. The Fabric Composer language for describing the structure of resources (assets, participants
+1. The Hyperledger Composer language for describing the structure of resources (assets, participants
 and transactions) that participate in a blockchain backed business network.
-2. Javascript APIs to query, create, update and delete resources and submit transactions
- from client applications. Fabric Composer resources are stored on the blockchain.
-3. Javascript transaction processor functions that runs on Hyperledger when transactions are
+2. JavaScript APIs to query, create, update and delete resources and submit transactions
+ from client applications. Hyperledger Composer resources are stored on the Blockchain.
+3. JavaScript transaction processor functions that runs on Hyperledger Fabric when transactions are
 submitted for processing. These functions may update the state of resources
-stored on the blockchain via server-side Fabric Composer APIs.
+stored on the Blockchain via server-side Hyperledger Composer APIs.
 
 ##  Resources
 
-- [Documentation](https://fabric-composer.github.io/)
-- [npm modules](https://www.npmjs.com/search?q=fabric-composer)
-- [github repositories](https://github.com/fabric-composer)
+- [Documentation](https://hyperledger.github.io/composer/)
+- [npm modules](https://www.npmjs.com/search?q=hyperledger-composer)
+- [GitHub repositories](https://github.com/hyperledger/composer)
 
 ## Contributing
 
 To read more about the community and guidelines for submitting pull requests,
-please read the [Contributing document](https://github.com/fabric-composer/fabric-composer/blob/master/CONTRIBUTING.md).
+please read the [Contributing document](https://github.com/hyperledger/composer/blob/master/CONTRIBUTING.md).

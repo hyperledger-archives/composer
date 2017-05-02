@@ -17,6 +17,7 @@
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
+const EventDeclaration = require('../../lib/introspect/eventdeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const ParseException = require('../../lib/introspect/parseexception');
@@ -55,6 +56,12 @@ describe('ModelFile', () => {
             (() => {
                 new ModelFile(mockModelManager, [{}]);
             }).should.throw(/as a string as input/);
+        });
+
+        it('should throw when invalid filename provided', () => {
+            (() => {
+                new ModelFile(mockModelManager, 'fake', {});
+            }).should.throw(/filename as a string/);
         });
 
         it('should call the parser with the definitions and save the abstract syntax tree', () => {
@@ -138,9 +145,18 @@ describe('ModelFile', () => {
 
     describe('#getDefinitions', () => {
 
-        it('should return the name of the model', () => {
+        it('should return the definitions for the model', () => {
             let modelFile = new ModelFile(mockModelManager, carLeaseModel);
             modelFile.getDefinitions().should.equal(carLeaseModel);
+        });
+
+    });
+
+    describe('#getName', () => {
+
+        it('should return the name of the model', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel, 'car lease');
+            modelFile.getName().should.equal('car lease');
         });
 
     });
@@ -243,6 +259,31 @@ describe('ModelFile', () => {
             should.equal(transaction, null);
         });
 
+    });
+
+    describe('#getEventDeclaration', () => {
+
+        it('should return the specified Event declaration', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let event = modelFile.getEventDeclaration('TestEvent');
+            event.should.be.an.instanceOf(EventDeclaration);
+        });
+
+        it('should return null if it cannot find the specified Event declaration', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let transaction = modelFile.getEventDeclaration('Blobby');
+            should.equal(transaction, null);
+        });
+
+    });
+
+    describe('#getEventDeclarations', () => {
+
+        it('should return the expected number of Event declarations', () => {
+            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
+            let events = modelFile.getEventDeclarations();
+            events.length.should.equal(1);
+        });
     });
 
 });
