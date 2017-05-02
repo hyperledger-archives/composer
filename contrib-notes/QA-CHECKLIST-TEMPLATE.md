@@ -1,4 +1,4 @@
-# Fabric-Composer QA
+# Hyperledger Composer QA
 
 ## Platform & version
   - [ ] ubuntu 16.04
@@ -6,7 +6,7 @@
   - [ ] MacOs
   - [ ] Windows 10
 
-## Fabric Composer
+## Hyperledger Composer
 
 - Version tested: v.r.m - xxxxxxxxxx
 
