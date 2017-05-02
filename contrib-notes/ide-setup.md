@@ -6,7 +6,7 @@ Both Atom.io and VS Code are popular editors amongts the Hyperledger Composer co
 
 [Atom](https://atom.io/) is the preferred code editor for contributors the Hyperledger Composer project.  Many developers find Atom especially productive due to the wide range of plugins availability to assist with code development activities. These include syntax highlighting for node.js code, JavaScript and the Hyperledger Composer modelling language, or *linting* to help eliminate potential bugs and ensure a consistent coding style. Developers can also develop their own plugins. Here's a list of Atom plugins  for you consider as you develop within the Hyperledger Composer project.
 
-## Javascipt and node.js linting
+## JavaScript and Node.js linting
 
 Use the [linter-eslint plugin](https://atom.io/packages/linter-eslint) to help with linting node.js and JavaScript code. For an example of the eslinter config file see [here](../packages/composer-admin/.eslintrc.yml).
 

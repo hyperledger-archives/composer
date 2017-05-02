@@ -20,31 +20,30 @@ If you have a question or problem that relates to general support, please ask th
 If you find a bug in the source code, an error in any documentation, or would like a new feature, you can help us by [raising an issue](./contrib-notes/raising-issues.md) to our GitHub Repository or delivering a fix via a [pull request](./contrib-notes/submitting-pull-request.md).
 
 
-### Getting Started
+## Getting Started
 
 In order to assist anybody starting from scratch, we have produced guides on setting up an IDE and a development environment that will enable you to build and run from source:
 * [Suggested IDE setup](./contrib-notes/ide-setup.md)
 * [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
 
-Issues are tracked in GitHub. If you are looking for a place to start with the code then it might be worth tackling a [bug](https://github.com/hyperledger/composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/hyperledger/composer/issues?q=is%3Aissue+label%3A%22help+wanted%22)
+Everything installed and ready code? Great! Issues are tracked in GitHub, if you are looking for a place to start with the code then it might be worth tackling a [bug](https://github.com/hyperledger/composer/issues?q=is%3Aissue+is%3Aopen+label%3Abug) or look for those issues tagged with [*help wanted*](https://github.com/hyperledger/composer/issues?q=is%3Aissue+label%3A%22help+wanted%22).
 
-All changes should be developed in a fork of the relevant Hyperldger Composer repository, and the changes submitted for approval in the form of pull requests. Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
-
-
-### Coding Guidelines
+## Coding Guidelines
 
 To ensure consistency and quality through the project, we enforce rules detailed within our [Coding Guidelines](./contrib-notes/coding-guidelines.md). As a summary:
 
+ - All changes should be developed in a fork of the relevant Hyperldger Composer repository, and the changes submitted for approval in the form of pull requests.
  - All delivered code must follow the linting rules
  - All features or bug fixes must be tested.
  - All public API methods must be documented.
+ - Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
 
-### Submitting a Pull Request
+## Submitting a Pull Request
 
 To enable us to quickly review and accept your pull requests, always create one pull request per issue and link the issue in the pull request. Never merge multiple requests in one unless they have the same root cause. Be sure to follow our Coding Guidelines before following our [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md).
 
 
-### The Release
+## The Release
 
-The master branches are currently being used as a base to cut new realeases. The release process itself follows a process to ensure that the release is of suitable quallity. For more information, please see the [release process](./contrib-notes/weekly-qa-validation.md)
+The master branches are currently being used as a base to cut new releases. The release process itself follows a process to ensure that the release is of suitable quallity. For more information, please see the [release process](./contrib-notes/weekly-qa-validation.md)
