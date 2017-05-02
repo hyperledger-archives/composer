@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from 'angular-2-local-storage';
 
-import { ConnectionProfileService } from './connectionprofile.service';
+import { ConnectionProfileService } from './services/connectionprofile.service';
 import { WalletService } from './wallet.service';
 
 @Injectable()

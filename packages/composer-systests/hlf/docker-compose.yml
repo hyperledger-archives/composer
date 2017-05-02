@@ -1,14 +1,14 @@
 version: "2"
 services:
   membersrvc:
-    image: ibmblockchain/fabric-membersrvc:latest
+    image: hyperledger/fabric-membersrvc
     ports:
       - '7054:7054'
     environment:
       - MEMBERSRVC_CA_ACA_ENABLED=true
     command: membersrvc
   vp0:
-    image: ibmblockchain/fabric-peer:latest
+    image: hyperledger/fabric-peer
     ports:
       - '7050:7050'
       - '7051:7051'
@@ -25,6 +25,7 @@ services:
       - CORE_SECURITY_ENABLED=true
       - CORE_SECURITY_ENROLLID=test_vp0
       - CORE_SECURITY_ENROLLSECRET=MwYpmSRjupbT
+      - CORE_NOOPS_BLOCK_WAIT=250ms
     links:
       - membersrvc
     command: sh -c 'sleep 5; peer node start'
