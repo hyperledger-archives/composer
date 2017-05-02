@@ -16,8 +16,8 @@ docker-compose kill && docker-compose down
 
 
 # Pull and tag the latest Hyperledger Fabric base image.
-docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
-docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+docker pull hyperledger/fabric-baseimage:x86_64-0.3.0
+docker tag hyperledger/fabric-baseimage:x86_64-0.3.0 hyperledger/fabric-baseimage:latest
 
 # Start up the Docker containers
 docker-compose build

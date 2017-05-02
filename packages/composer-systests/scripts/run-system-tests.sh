@@ -29,8 +29,8 @@ if [ "${SYSTEST}" = "hlf"  ]; then
     docker tag hyperledger/fabric-membersrvc:x86_64-0.6.1-preview hyperledger/fabric-membersrvc:latest
     docker pull hyperledger/fabric-peer:x86_64-0.6.1-preview
     docker tag hyperledger/fabric-peer:x86_64-0.6.1-preview hyperledger/fabric-peer:latest
-    docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
-    docker tag hyperledger/fabric-baseimage:x86_64-0.1.0 hyperledger/fabric-baseimage:latest
+    docker pull hyperledger/fabric-baseimage:x86_64-0.3.0
+    docker tag hyperledger/fabric-baseimage:x86_64-0.3.0 hyperledger/fabric-baseimage:latest
 elif [[ ${SYSTEST} == hlfv1* ]]; then
     if [[ ${SYSTEST} == *tls ]]; then
         DOCKER_FILE=${DIR}/hlfv1/docker-compose.tls.yml
