@@ -17,8 +17,8 @@ export class SampleBusinessNetworkService {
   private octo;
 
   public OPEN_SAMPLE: boolean = false;
-  public RATE_LIMIT_MESSAGE = 'The rate limit to the GitHub API has been exceeded, to fix this problem setup OAuth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
-  public NO_CLIENT_ID = 'The client ID for the GitHub API has not been set, to fix this problem setup OAuth as documented <a href="https://fabric-composer.github.io/tasks/github-oauth.html" target="_blank">here</a>';
+  public RATE_LIMIT_MESSAGE = 'The rate limit to the GitHub API has been exceeded, to fix this problem setup OAuth as documented <a href="https://hyperledger.github.io/composer/managing/github-oauth.html" target="_blank">here</a>';
+  public NO_CLIENT_ID = 'The client ID for the GitHub API has not been set, to fix this problem setup OAuth as documented <a href="https://hyperledger.github.io/composer/managing/github-oauth.html" target="_blank">here</a>';
   public CLIENT_ID = null;
 
   constructor(private adminService: AdminService,

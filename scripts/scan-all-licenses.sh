@@ -3,7 +3,7 @@
 # Exit on first error, print all commands.
 set -e
 
-# Grab the Concerto directory.
+# Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 BIN=${DIR}/node_modules/.bin
@@ -20,11 +20,11 @@ touch "${DIR}/license-full.txt"
 
 ls -d "${DIR}"/packages/* | while read dirname
 do
-  cd "${dirname}" 
+  cd "${dirname}"
   ${BIN}/licensecheck --tsv >>  "${DIR}/license-raw.txt"
   ${BIN}/licensecheck >> "${DIR}/license-full.txt"
   echo "-------------------------------------------" >> "${DIR}/license-full.txt"
-  	
+
 done
 
 exit

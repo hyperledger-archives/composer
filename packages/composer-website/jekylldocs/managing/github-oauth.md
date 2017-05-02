@@ -1,22 +1,22 @@
 ---
 layout: default
-title: Task - Enable OAuth with Github
+title: Task - Enable OAuth with GitHub
 category: tasks
 sidebar: sidebars/managing.md
-excerpt: How to enable OAuth with Github
+excerpt: How to enable OAuth with GitHub
 ---
 
-# Enable OAuth with Github
+# Enable OAuth with GitHub
 
 To enable importing of samples without receiving an error when the rate limit is hit follow these steps.
 
-1. Go to [Github OAuth Applications](https://github.com/settings/developers).
+1. Go to [GitHub OAuth Applications](https://github.com/settings/developers).
 2. Register a new application.
     - The `Authorization callback URL` should be set to `localhost:<port>/github`.
 3. On the command line navigate to the `composer-connector-server` config directory.
 
     ```
-    cd fabric-composer/packages/composer-connector-server/config
+    cd composer/packages/composer-connector-server/config
     ```  
 4. Copy the file.
 

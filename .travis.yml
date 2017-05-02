@@ -36,3 +36,11 @@ sudo: required
 notifications:
   pushover:
     api_key: ayq7zvsxc641sfna65njkik1x9y25b
+  webhooks:
+    urls:
+      - https://chat.hyperledger.org/hooks/BG3PeSerMSWRDSceE/GPCnCSqxMoyfqaTvLePSGudWjoCBwAcCT6bAKYRjK2sKSCM9
+    on_success: always # default: always
+    on_failure: always # default: always
+    on_start: always   # default: never
+    on_cancel: always # default: always
+    on_error: always # default: always

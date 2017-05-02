@@ -1,16 +1,16 @@
 ---
 layout: default
-title: Fabric Composer - Meet the Modules and Git Repos
+title: Hyperledger Composer - Meet the Modules and Git Repos
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Fabric Composer module info
+excerpt: Hyperledger Composer module info
 ---
 
 # Meet the npm Modules
 
 ---
 
-Fabric Composer has 3 main modules for application developers. If you are writing an application this is your entry point.
+{{site.data.conrefs.composer_full}} has 3 main modules for application developers. If you are writing an application this is your entry point.
 
 1. `composer-client`
 

@@ -72,7 +72,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 	creator, err := identityService.Stub.GetCreator()
 	if err != nil {
 		logger.Debug("Error received on GetCreator", err)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		vm.Throw()
 		return 0
 	}
@@ -81,7 +81,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 	certStart := bytes.IndexAny(creator, "----BEGIN CERTIFICATE-----")
 	if certStart == -1 {
 		logger.Debug("No certificate found")
-		vm.PushErrorObject(duktape.ErrError, "%s", "No certificate found")
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", "No certificate found")
 		vm.Throw()
 		return 0
 	}
@@ -89,7 +89,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 	block, _ := pem.Decode(certText)
 	if block == nil {
 		logger.Debug("Error received on pem.Decode of certificate", certText)
-		vm.PushErrorObject(duktape.ErrError, "Error received on pem.Decode of certificate: %s", certText)
+		vm.PushErrorObjectVa(duktape.ErrError, "Error received on pem.Decode of certificate: %s", certText)
 		vm.Throw()
 		return 0
 	}
@@ -98,7 +98,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 
 	if err != nil {
 		logger.Debug("Error received on ParseCertificate", err)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		vm.Throw()
 		return 0
 	}

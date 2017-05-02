@@ -10,14 +10,14 @@ excerpt: How to install the development pre-requisites manually
 
 ---
 
-The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor, for example *Atom* or *VSCode*. Samples are held in Github so *git* will be needed as well.
+The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor, for example *Atom* or *VSCode*. Samples are held in GitHub so *git* will be needed as well.
 
 Automatic installations scripts are available for [Ubuntu](./prerequisites.md)
 
 The recommended *minimum* versions are:
 *Docker*: v1.12.3
 *Docker-compose*: v1.10.0
-*npm*: v4.6.0
+*npm*: v3.10
 *node.js*: v6.9.5
 
 ## Manual Installation
@@ -25,7 +25,7 @@ The recommended *minimum* versions are:
 ### 1. Installing NVM
 We highly recommend installing NVM to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version higher than v4.6.0.
 
-[Official nvm Github repository](https://github.com/creationix/nvm)
+[Official nvm GitHub repository](https://github.com/creationix/nvm)
 
 ### 2. Kernel Packages
 If running on Ubuntu Trusty or Utopic, it is necessary to obtain additional Kernel packages to enable use of the [AUFS storage driver](https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/#renaming-directories-with-the-aufs-storage-driver) for Docker.
@@ -48,8 +48,9 @@ This is probably already installed on most Linux machines. Pay particular attent
 ## Optional Installs
 
 ### 1. Installing an editor
-Fabric Composer allows you to edit its project files with any editor. We recommend using either Atom or Visual Studio Code, as not only do both have excellent support for Javascript development, a CTO file syntax highlighting plugin exists for these editors.
 
+{{site.data.conrefs.composer_full}} allows you to edit its project files with any editor. Atom and Visual Studio Code both have excellent support for JavaScript
+development. Atom also includes a syntax highlighting plugin for `.cto` files.
 
 **Atom**
 
@@ -59,7 +60,7 @@ Fabric Composer allows you to edit its project files with any editor. We recomme
 
 Suggested Plugins:
 
-* [Atom Composer Syntax Highlighter](https://github.ibm.com/Blockchain-WW-Labs/Concerto-Atom) A plugin for model file highlighting. 
+* [Composer Atom Syntax Highlighter](https://github.com/hyperledger/composer-atom-plugin) A plugin for model file highlighting.
 
 * [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
 
@@ -71,8 +72,8 @@ Extensions may be installed into VS Code by searching the Extensions repository 
 
 * Composer VS Code Plugin. Provides syntax highlighting for CTO files within VS Code
 
-* ESLint. Integrates ESLint into VS Code. 
+* ESLint. Integrates ESLint into VS Code.
 
-* TSLint. Integrates the tslint linter for the TypeScript language into VS Code. 
+* TSLint. Integrates the tslint linter for the TypeScript language into VS Code.
 
 * EditorConfig for VS Code. Enables the definition and maintainance of consistent coding styles between different editors and IDEs.

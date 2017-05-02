@@ -14,7 +14,7 @@ This tutorial will take you through how to code and deploy a Business Network De
 This is after the important step of modeling the actual business network and the entities within it.  For this tutorial we are going to continue to use the Digital Property Network but from the position of having only the model file and the transction function file.
 
 # Style of creation
-The final form of the Business Network Archive is mandatory for Fabric Composer. This file is created using the `composer archive create` command; however how the files that are taken as input to that command are created and managed is not mandatory. In all the documents and websites we are showing a selection of approaches we consider to be good practice.
+The final form of the Business Network Archive is mandatory for {{site.data.conrefs.composer_full}}. This file is created using the `composer archive create` command; however how the files that are taken as input to that command are created and managed is not mandatory. In all the documents and websites we are showing a selection of approaches we consider to be good practice.
 
 For this tutorial, a single NPM module will be created for both the model and transaction functions. An archive will be created from this locally and deployed.
 In production this NPM module would be published to a NPM repository, in development/test context this is not required.
@@ -24,7 +24,7 @@ Also the command line set of tools will be used.
 #Creating the npm Module.
 
 ## Basic Infrastrure
-We will need to have the command line Fabric Composer tools installed. If you've not done this yet
+We will need to have the command line {{site.data.conrefs.composer_full}} tools installed. If you've not done this yet
 
 ```bash
 $ npm install -g composer-cli
@@ -92,7 +92,7 @@ $ touch models/DigitalLandTitle.cto
 Load that file up in any editor and then add your own model, or copy in the code below that is the DigitalLandTitle Getting Started Example
 
 ```
-/**  A 'Getting Started Tutorial' to work with Fabric Composer
+/**  A 'Getting Started Tutorial' to work with Hyperledger Composer
 */
 
 namespace net.biz.digitalPropertyNetwork

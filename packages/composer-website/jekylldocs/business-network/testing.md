@@ -28,7 +28,7 @@ Use the `composer-client` module and the `BusinessNetworkConnection` API to add 
 
 ## Writing Assertions
 
-Use popular Javascript assertion libraries such as Sinon and Chai.
+Use popular JavaScript assertion libraries such as Sinon and Chai.
 
 # Generating Tests
 

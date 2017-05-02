@@ -78,6 +78,18 @@ func (composer *Composer) createJavaScript() {
 					enumerable: false,
 					configurable: true
 				});
+				Object.defineProperty(global, 'document', {
+					value: undefined,
+					writable: true,
+					enumerable: false,
+					configurable: true
+				});
+				Object.defineProperty(global, 'navigator', {
+					value: undefined,
+					writable: true,
+					enumerable: false,
+					configurable: true
+				});
 			})();
 		}
 	`)

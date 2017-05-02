@@ -659,7 +659,7 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
-     * Destroy all instances of the specified objects in Concerto.
+     * Destroy all instances of the specified objects in the Business Network.
      * @param {string} lbModelName The fully qualified model name.
      * @param {string} where The filter to identify the asset or participant to be removed.
      * @param {Object} options The LoopBack options.

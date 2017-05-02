@@ -1,38 +1,39 @@
 ---
 layout: default
-title: Fabric Composer -  Overview
+title: Hyperledger Composer -  Overview
 category: overview
 sidebar: sidebars/introduction.md
-excerpt: Fabric Composer overview
+excerpt: Hyperledger Composer overview
 ---
 
 ---
 
-# Welcome to Fabric Composer
+# Welcome to {{site.data.conrefs.composer_full}}
 
 ---
 
-You can use Fabric Composer to easily define your business network, creating and tracking assets and performing transactions. Business networks represent an economic network made up of participants, assets, and the transactions that are performed between them. Assets are tangible or intangible goods, services, or property, and are stored in registries. Transactions are operations which may transform, create, and transfer assets or participants. Participants can interact with multiple business networks and maintain assets as they move between them using set identities.
+{{site.data.conrefs.composer_full}} is an extensive, open development toolset and framework to make developing blockchain applications easier. Our primary goal is to accelerate time to value, and make it easier to integrate your blockchain applications with the existing business systems. You can use {{site.data.conrefs.composer_full}} to rapidly develop use cases and deploy a blockchain solution in weeks rather than months. {{site.data.conrefs.composer_full}} allows you to model your business network and integrate existing systems and data with your blockchain applications.
 
-Applications can consume the data from business networks, providing end users with simple and controlled access points to the business network. Business networks can also be integrated with existing systems to create assets, transactions, and participants based on existing data.
+{{site.data.conrefs.composer_full}} supports the existing [Hyperledger Fabric blockchain](https://hyperledger.org) infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.
 
-Fabric Composer requires and exploits the existing [Hyperledger Fabric blockchain](https://hyperledger.org) technology, using the blockchain consensus protocol to ensure that transactions are validated by business network participants.
+Everyday applications can consume the data from business networks, providing end users with simple and controlled access points.
 
----
-
-## Key Fabric Composer concepts diagram
+You can use {{site.data.conrefs.composer_full}} to quickly model your current business network, containing your existing assets and the transactions related to them; assets are tangible or intangible goods, services, or property. As part of your business network model, you define the transactions which can interact with assets. Business networks also include the participants who interact with them, each of which can be associated with a unique identity, across multiple business networks.
 
 ---
 
-![Diagram of Fabric Composer](/assets/img/Composer-Diagram.svg)
+## Key {{site.data.conrefs.composer_full}} concepts diagram
 
 ---
 
-## How does Fabric Composer work in practise?
+![Diagram of {{site.data.conrefs.composer_full}}](../assets/img/Composer-Diagram.svg)
 
 ---
 
-For an example of a business network in action; a realtor may have a business network containing houses and listings as assets. Participants could include buyers and homeowners. Transactions might include buying or selling houses, and creating and closing listings. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor may want to create an application to present buyers and sellers participants with a simple user interface for viewing open listings and making offers. This business network could also be integrated with the existing inventory system for the realtor, allowing for the addition of new houses as assets. Relevant other parties can be registered as participants whilst maintaining their own business network, for example a land registry might interact with a buyer winner to transfer ownership of the land.
+## How does {{site.data.conrefs.composer_full}} work in practise?
+
+For an example of a business network in action; a realtor can quickly model their business network; including houses and listings assets, buyers and homeowners as participants, and buying or selling houses, and creating and closing listings as transactions. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.
+
 
 ---
 
@@ -40,4 +41,4 @@ For an example of a business network in action; a realtor may have a business ne
 
 ---
 
-To get started with Fabric Composer right away, try the [Fabric Composer tutorials](../tutorials/tutorialindex.html), to learn more about Fabric Composer read [understanding business networks](../introduction/businessnetwork.html), to get installed and trying the full product immediately go to [installing Fabric Composer](../installing/prerequisites.html).
+To get started with {{site.data.conrefs.composer_full}} right away, try the [{{site.data.conrefs.composer_full}} tutorials](../tutorials/tutorialindex.html), to learn more about {{site.data.conrefs.composer_full}} read [understanding {{site.data.conrefs.composer_full}}](../introduction/key-concepts.html), to get installed and trying the full product immediately go to [installing {{site.data.conrefs.composer_full}}](../installing/prerequisites.html).

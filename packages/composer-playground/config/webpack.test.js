@@ -244,7 +244,7 @@ module.exports = function (options) {
         'HMR': false,
         'DOCKER': DOCKER,
         'DOCKER_COMPOSE': DOCKER_COMPOSE,
-        'PLAYGROUND_API' : JSON.stringify(PLAYGROUND_API)
+        'PLAYGROUND_API' : JSON.stringify(PLAYGROUND_API),
         /* 'process.env': {
           'ENV': JSON.stringify(ENV),
           'NODE_ENV': JSON.stringify(ENV),

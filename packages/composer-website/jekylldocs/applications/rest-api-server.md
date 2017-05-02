@@ -60,7 +60,7 @@ You will then be asked to enter a few simple details about your business network
 ? Enter your secret: DJY27pEnl16d
 WARNING: No configurations found in configuration directory:/Users/samsmith/Projects/BlockChain/Composer/fabric-composer/packages/composer-rest-server/config
 WARNING: To disable this warning set SUPPRESS_NO_CONFIG_WARNING in the environment.
-Loopback Connector for Fabric Composer
+Loopback Connector for Hyperledger Composer
 Models Loaded Now
 Browse your REST API at http://0.0.0.0:3000/explorer
 ```
@@ -70,7 +70,7 @@ Browse your REST API at http://0.0.0.0:3000/explorer
 Alternatively you can run the server specifying all the parameters on the command line
 ```bash
 $ composer-rest-server -c car-sample -b org.acme.biznet -i WebAppAdmin -p DJY27pEnl16d
-Loopback Connector for Fabric Composer
+Loopback Connector for Hyperledger Composer
 Models Loaded Now
 Browse your REST API at http://0.0.0.0:3000/explorer
 ```

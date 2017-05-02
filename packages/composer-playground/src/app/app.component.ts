@@ -7,7 +7,7 @@ import {AppState} from './app.service';
 import {AdminService} from './services/admin.service';
 import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
-import {ConnectionProfileService} from './connectionprofile.service';
+import {ConnectionProfileService} from './services/connectionprofile.service';
 import {WalletService} from './wallet.service';
 import {IdentityService} from './identity.service';
 import {InitializationService} from './initialization.service';
@@ -44,6 +44,8 @@ export class AppComponent {
   private identities: any = [];
   private currentIdentity: any = null;
   private subs: any = null;
+
+  private usingLocally = false;
 
   private composerRuntimeVersion = '<none>';
   private participantFQI = '<none>';
@@ -170,6 +172,15 @@ export class AppComponent {
       })
       .then((currentIdentity) => {
         this.currentIdentity = currentIdentity;
+        return this.initializationService.isWebOnly();
+      })
+      .then((webOnly) => {
+        if(webOnly) {
+          this.usingLocally = false;
+        }
+        else {
+          this.usingLocally = true;
+        }
       });
   }
 
