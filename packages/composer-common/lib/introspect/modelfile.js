@@ -43,7 +43,7 @@ class ModelFile {
      * ModelFile
      * @param {string} definitions - The DSL model as a string.
      * @param {string} fileName - The optional filename for this modelfile
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(modelManager, definitions, fileName) {
         this.modelManager = modelManager;
