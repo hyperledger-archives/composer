@@ -404,7 +404,7 @@ class BusinessNetworkDefinition {
         // filtering using a glob on the module dependency name
         if(jsonObject.dependencies) {
             LOG.debug(method, 'All dependencies', Object.keys(jsonObject.dependencies).toString());
-            const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob));
+            const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob, { dot: true }));
             LOG.debug(method, 'Matched dependencies', dependencies);
 
             for( let dep of dependencies) {
@@ -423,7 +423,7 @@ class BusinessNetworkDefinition {
 
                 BusinessNetworkDefinition.processDirectory(dependencyPath, {
                     accepts: function(file) {
-                        return isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob);
+                        return isFileInNodeModuleDir(file, dependencyPath) === false && minimatch(file, options.modelFileGlob, { dot: true });
                     },
                     acceptsDir: function(dir) {
                         return !isFileInNodeModuleDir(dir, dependencyPath);
@@ -440,7 +440,7 @@ class BusinessNetworkDefinition {
         //
         BusinessNetworkDefinition.processDirectory(path, {
             accepts: function(file) {
-                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob);
+                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.modelFileGlob, { dot: true });
             },
             acceptsDir: function(dir) {
                 return !isFileInNodeModuleDir(dir, path);
@@ -459,7 +459,7 @@ class BusinessNetworkDefinition {
         const scriptFiles = [];
         BusinessNetworkDefinition.processDirectory(path, {
             accepts: function(file) {
-                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob);
+                return isFileInNodeModuleDir(file, path) === false && minimatch(file, options.scriptGlob, { dot: true });
             },
             acceptsDir: function(dir) {
                 return !isFileInNodeModuleDir(dir, path);
