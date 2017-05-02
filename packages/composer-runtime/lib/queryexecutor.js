@@ -121,22 +121,21 @@ class QueryExecutor {
         LOG.debug(method, 'Compiled JSONata expression');
 
         // Prepare the root resources.
-        let accessedRelationships = [];
         let cachedResources = new Map();
         resources.forEach((resource) => {
             LOG.debug(method, 'Preparing resource', resource.getFullyQualifiedIdentifier());
             let fqi = resource.getFullyQualifiedIdentifier();
             cachedResources.set(fqi, resource);
-            this.prepareResource(resource, accessedRelationships);
+            this.prepareResource(resource);
         });
 
-        // Process the query by calling the recursive method that does the bulk of the work.
+        // Process the query by calling the method that does the bulk of the work.
         let promise = Promise.resolve();
         let result = [];
         resources.forEach((resource) => {
             promise = promise.then(() => {
                 LOG.debug(method, 'Executing query on resource', resource.getFullyQualifiedIdentifier());
-                return this.queryInternal(compiledExpression, resource, accessedRelationships, cachedResources)
+                return this.queryInternal(compiledExpression, resource, cachedResources)
                     .then((thisResult) => {
                         LOG.debug(method, 'Executed query, adding result to list');
                         result.push(thisResult);
@@ -168,14 +167,13 @@ class QueryExecutor {
         LOG.debug(method, 'Compiled JSONata expression');
 
         // Prepare the root resource.
-        let accessedRelationships = [];
         let cachedResources = new Map();
         let fqi = resource.getFullyQualifiedIdentifier();
         cachedResources.set(fqi, resource);
-        this.prepareResource(resource, accessedRelationships);
+        this.prepareResource(resource);
 
-        // Process the query by calling the recursive method that does the bulk of the work.
-        return this.queryInternal(compiledExpression, resource, accessedRelationships, cachedResources)
+        // Process the query by calling the method that does the bulk of the work.
+        return this.queryInternal(compiledExpression, resource, cachedResources)
             .then((result) => {
                 LOG.exit(method, result);
                 return result;
@@ -195,55 +193,24 @@ class QueryExecutor {
      * @private
      * @param {Object} compiledExpression The compiled JSONata expression.
      * @param {Resource} resource The resource to query.
-     * @param {FoundRelationship[]} accessedRelationships The working array of accessed relationships.
      * @param {Map} cachedResources The cache of resources.
      * @return {Promise} A promise that will be resolved with the results of the
      * query, or rejected with an error.
      */
-    queryInternal(compiledExpression, resource, accessedRelationships, cachedResources) {
+    queryInternal(compiledExpression, resource, cachedResources) {
         const method = 'queryInternal';
-        LOG.entry(method, compiledExpression, resource, accessedRelationships, cachedResources);
+        LOG.entry(method, compiledExpression, resource, cachedResources);
 
         // Evaluate the expression.
         LOG.debug(method, 'Evaluating JSONata expression');
-        let result = compiledExpression.evaluate(resource);
-        LOG.debug(method, 'Evaluated JSONata expression', result);
-
-        // Did we hit any relationships?
-        if (accessedRelationships.length === 0) {
-
-            // The result is safe to use.
-            LOG.debug(method, 'No relationships were accessed');
-            LOG.exit(method, result);
-            return Promise.resolve(result);
-
-        }
-
-        // The result will be a promise chain of resolves and a retry.
-        result = Promise.resolve();
-
-        // Resolve all accessed relationships.
-        while (accessedRelationships.length !== 0) {
-            let accessedRelationship = accessedRelationships.shift();
-            result = result.then(() => {
-                LOG.debug(method, 'Resolving accessed relationship', accessedRelationship.relationship.toString());
-                return this.resolver.resolveRelationship(accessedRelationship.relationship, {
-                    cachedResources: new Map(),
-                    skipRecursion: true
-                })
-                .then((resolvedResource) => {
-                    LOG.debug(method, 'Resolved accessed relationship', accessedRelationship.relationship.toString());
-                    this.prepareResource(resolvedResource, accessedRelationships);
-                    accessedRelationship.resolve(resolvedResource);
-                });
+        return new Promise((resolve, reject) => {
+            compiledExpression.evaluate(resource, null, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                LOG.exit(method);
+                resolve(result);
             });
-        }
-
-        // Try again.
-        return result.then(() => {
-            LOG.debug(method, 'Relationships were accessed and resolved, trying again');
-            LOG.exit(method);
-            return this.queryInternal(compiledExpression, resource, accessedRelationships, cachedResources);
         });
 
     }
@@ -269,7 +236,16 @@ class QueryExecutor {
                 LOG.debug(method, 'Found relationship property');
                 result.push({
                     relationship: value,
-                    resolve: (newValue) => { resource[property.getName()] = newValue; }
+                    resolve: (newValue) => {
+                        LOG.debug(
+                            method,
+                            'Replacing relationship property with resolved resource',
+                            resource.getFullyQualifiedIdentifier(),
+                            property.getName(),
+                            newValue.getFullyQualifiedIdentifier()
+                        );
+                        resource[property.getName()] = newValue;
+                    }
                 });
             } else if (Array.isArray(value)) {
                 LOG.debug(method, 'Found array property, iterating');
@@ -281,7 +257,17 @@ class QueryExecutor {
                         LOG.debug(method, 'Found array relationship property');
                         result.push({
                             relationship: item,
-                            resolve: (newValue) => { resource[property.getName()][index] = newValue; }
+                            resolve: (newValue) => {
+                                LOG.debug(
+                                    method,
+                                    'Replacing array relationship property with resolved resource',
+                                    resource.getFullyQualifiedIdentifier(),
+                                    property.getName(),
+                                    index,
+                                    newValue.getFullyQualifiedIdentifier()
+                                );
+                                resource[property.getName()][index] = newValue;
+                            }
                         });
                     } else {
                         LOG.debug(method, 'Found array primitive value, ignoring');
@@ -321,11 +307,12 @@ class QueryExecutor {
                 enumerable: true,
                 configurable: false,
                 get: () => {
-                    if (!relationship.$resolved) {
-                        callback();
-                        relationship.$resolved = true;
-                    }
-                    return undefined;
+                    LOG.debug(method, 'Special property accessed', relationship.getFullyQualifiedIdentifier(), property.getName());
+                    return callback()
+                        .then((resource) => {
+                            LOG.debug(method, 'Special property resolved, returning property value', resource.getFullyQualifiedIdentifier(), property.getName());
+                            return resource[property.getName()];
+                        });
                 }
             });
         });
@@ -338,11 +325,10 @@ class QueryExecutor {
      * list of accessed relationships.
      * @private
      * @param {Resource} resource The resource to prepare.
-     * @param {FoundRelationship[]} accessedRelationships The working array of accessed relationships.
      */
-    prepareResource(resource, accessedRelationships) {
+    prepareResource(resource) {
         const method = 'prepareResource';
-        LOG.entry(method, resource.toString(), accessedRelationships);
+        LOG.entry(method, resource.toString());
 
         // Don't prepare an already prepared resource.
         if (resource.hasOwnProperty('$prepared')) {
@@ -362,8 +348,18 @@ class QueryExecutor {
         // Add properties to each relationship.
         foundRelationships.forEach((foundRelationship) => {
             LOG.debug(method, 'Found relationship object', foundRelationship.relationship.toString());
-            this.modifyRelationship(foundRelationship.relationship, () => {
-                accessedRelationships.push(foundRelationship);
+            this.modifyRelationship(foundRelationship.relationship, (name) => {
+                LOG.debug('Relationship accessed', foundRelationship.relationship.toString());
+                return this.resolver.resolveRelationship(foundRelationship.relationship, {
+                    cachedResources: new Map(),
+                    skipRecursion: true
+                })
+                .then((resolvedResource) => {
+                    LOG.debug(method, 'Resolved accessed relationship', foundRelationship.relationship.toString());
+                    this.prepareResource(resolvedResource);
+                    foundRelationship.resolve(resolvedResource);
+                    return resolvedResource;
+                });
             });
         });
 
