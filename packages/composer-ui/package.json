@@ -1,6 +1,6 @@
 {
   "name": "composer-ui",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A test harness/UI for the web runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -70,8 +70,8 @@
     "webpack": "webpack"
   },
   "dependencies": {
-    "composer-common": "^0.7.0",
-    "composer-playground-api": "^0.7.0",
+    "composer-common": "^0.7.1",
+    "composer-playground-api": "^0.7.1",
     "express": "^4.15.2",
     "fast-json-patch": "^1.1.8",
     "is-docker": "^1.1.0",
@@ -80,12 +80,6 @@
     "socket.io": "^1.7.3"
   },
   "devDependencies": {
-    "composer-admin": "^0.7.0",
-    "composer-client": "^0.7.0",
-    "composer-connector-proxy": "^0.7.0",
-    "composer-connector-web": "^0.7.0",
-    "composer-runtime": "^0.7.0",
-    "composer-runtime-web": "^0.7.0",
     "@angular/common": "^2.4.8",
     "@angular/compiler": "^2.4.8",
     "@angular/core": "^2.4.8",
@@ -120,6 +114,12 @@
     "browserfs": "^1.1.0",
     "codelyzer": "^2.0.1",
     "codemirror": "^5.22.0",
+    "composer-admin": "^0.7.1",
+    "composer-client": "^0.7.1",
+    "composer-connector-proxy": "^0.7.1",
+    "composer-connector-web": "^0.7.1",
+    "composer-runtime": "^0.7.1",
+    "composer-runtime-web": "^0.7.1",
     "copy-webpack-plugin": "^4.0.1",
     "core-js": "^2.4.1",
     "css-loader": "^0.26.1",
@@ -133,7 +133,6 @@
     "gh-pages": "^0.12.0",
     "homedir": "^0.6.0",
     "html-webpack-plugin": "^2.25.0",
-    "spa-http-server": "^0.9.0",
     "ie-shim": "^0.1.0",
     "imports-loader": "^0.7.0",
     "istanbul-instrumenter-loader": "^2.0.0",
@@ -163,6 +162,7 @@
     "semver": "^5.3.0",
     "setimmediate": "^1.0.5",
     "source-map-loader": "^0.1.5",
+    "spa-http-server": "^0.9.0",
     "string-replace-loader": "^1.0.5",
     "style-loader": "^0.13.1",
     "thenify": "^3.2.1",
