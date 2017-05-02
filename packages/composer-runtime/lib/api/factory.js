@@ -139,7 +139,7 @@ class Factory {
          * // Get the factory.
          * var factory = getFactory();
          * // Create a new relationship to the vehicle.
-         * var record = factory.newConcept('org.acme', 'Record', 'RECORD_1');
+         * var record = factory.newConcept('org.acme', 'Record');
          * // Add the record to the persons array of records.
          * person.records.push(record);
          * @public
