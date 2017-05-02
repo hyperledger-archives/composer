@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Subject} from 'rxjs/Rx';
 
 import {AdminService} from './admin.service';
-import {ConnectionProfileService} from '../connectionprofile.service';
+import {ConnectionProfileService} from './connectionprofile.service';
 import {IdentityService} from '../identity.service';
 import {AlertService} from './alert.service'
 
@@ -161,9 +161,9 @@ export class ClientService {
     if (oldBusinessNetwork.getAclManager().getAclFile()) {
       this.currentBusinessNetwork.getAclManager().setAclFile(oldBusinessNetwork.getAclManager().getAclFile());
     }
-  
+
     this.businessNetworkChanged$.next(true);
-    
+
   }
 
   ensureConnected(): Promise<any> {

@@ -3,10 +3,10 @@ layout: default
 title: Hyperledger Composer - Transaction Processor Functions
 category: reference
 sidebar: sidebars/reference.md
-excerpt: Creating transaction processor functions in Javascript
+excerpt: Creating transaction processor functions in JavaScript
 ---
 
-# Javascript Functions
+# JavaScript Functions
 
 ---
 

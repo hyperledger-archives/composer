@@ -2,13 +2,13 @@ title: Hyperledger Composer
 description: Create business networks and application for Hyperledger
 
 email:
-url: "https://fabric-composer.github.io/fabric-composer/"
+url: "https://hyperledger.github.io/composer/"
 
 
 #For publishing to your own gh-pages branch of the Docs repo this will need to
 #be the sitebaseurl - but the build scripts handle this for you.
 #
-#baseurl: "/"
+baseurl: "/composer"
 
 
 

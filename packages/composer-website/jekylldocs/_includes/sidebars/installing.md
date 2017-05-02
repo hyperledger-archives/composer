@@ -3,7 +3,7 @@
 **[Installing](../installing/installingindex.html)**
 [Prerequisites](../installing/prerequisites.html)
 [Quickstart](../installing/quickstart.html)
-[Start a Fabric runtime](../installing/runtime-start.html)
+[Start a Composer runtime](../installing/runtime-start.html)
 [Creating a network connection profile](../installing/createconnectionprofile.html)
 **[Defining Business Networks](../business-network/businessnetwork.html)**
 **[Writing Applications](../applications/genapp.html)**

@@ -15,7 +15,7 @@ Operating a business network may require management tasks, for information on ho
 ---
 * [What are participants and identities](../managing/participantsandidentities.html)
 * [Adding a participant](../managing/participant-add.html)
-* [Issuing an identity](../managng/identity-issue.html)
+* [Issuing an identity](../managing/identity-issue.html)
 * [Revoking an identity](../managing/identity-revoke.html)
 * [Enabling OAuth with GitHub](../managing/github-oauth.html)
 * [Enabling access control as a set participant](current-participant.html)
