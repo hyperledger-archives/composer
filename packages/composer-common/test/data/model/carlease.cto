@@ -107,3 +107,7 @@ transaction VehicleTransferredToScrapMerchant extends VehicleTransaction{
 
 transaction VehicleScrapped extends VehicleTransaction{
 }
+
+event TestEvent identified by eventId {
+  o String eventId
+}

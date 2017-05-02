@@ -129,6 +129,20 @@ class ClassDeclaration {
      * @private
      */
     validate() {
+
+        const declarations = this.getModelFile().getAllDeclarations();
+        for(let n=0; n < declarations.length; n++) {
+            let declaration = declarations[n];
+
+            // check we don't have an asset with the same name
+            for(let i=n+1; i < declarations.length; i++) {
+                let otherDeclaration = declarations[i];
+                if(declaration.getFullyQualifiedName() === otherDeclaration.getFullyQualifiedName()) {
+                    throw new IllegalModelException(`Duplicate class name ${declaration.getName()}`);
+                }
+            }
+        }
+
         // TODO (LG) check that all imported classes exist, rather than just
         // used imports
 

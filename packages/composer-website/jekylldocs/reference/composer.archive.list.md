@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Fabric Composer Archive List CLI
+title: Hyperledger Composer Archive List CLI
 category: reference
 sidebar: sidebars/reference.md
 excerpt: Composer Archive List CLI
 ---
 
-# Fabric Composer Archive List
+# {{site.data.conrefs.composer_full}} Archive List
 
 ---
 

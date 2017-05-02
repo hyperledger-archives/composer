@@ -1,0 +1,11 @@
+namespace com.testing
+
+enum list {
+  o ENTRY1
+  o ENTRY2
+}
+
+enum list {
+  o ENTRY1
+  o ENTRY2
+}

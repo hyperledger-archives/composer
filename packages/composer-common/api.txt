@@ -70,10 +70,12 @@ class Identifiable extends Typed {
    + String toString() 
    + boolean isRelationship() 
    + boolean isResource() 
+   + String toURI() 
 }
 class Relationship extends Identifiable {
    + String toString() 
    + boolean isRelationship() 
+   + Relationship fromURI(ModelManager,String,String,String) 
 }
 class Resource extends Identifiable {
    + String toString() 
@@ -85,6 +87,7 @@ class Typed {
    + string getNamespace() 
    + void setPropertyValue(string,string) 
    + void addArrayValue(string,string) 
+   + boolean instanceOf(String) 
 }
 class ValidatedConcept extends Concept {
    + void setPropertyValue(string,string) throws Error

@@ -74,7 +74,7 @@ export class EditorComponent implements OnInit {
         this.updatePackageInfo();
         this.updateFiles();
 
-        if(this.editorService.getCurrentFile() !== null) {
+        if (this.editorService.getCurrentFile() !== null) {
           this.currentFile = this.editorService.getCurrentFile();
         } else {
           if (this.files.length) {
@@ -98,7 +98,7 @@ export class EditorComponent implements OnInit {
     this.inputPackageVersion = this.clientService.getMetaData().getVersion();
   }
 
-  setCurrentFile(file) {    
+  setCurrentFile(file) {
     if (this.editingPackage) {
       this.updatePackageInfo();
       this.editingPackage = false;
@@ -239,8 +239,8 @@ export class EditorComponent implements OnInit {
   exportBNA() {
     return this.clientService.getBusinessNetwork().toArchive().then((exportedData) => {
       let file = new File([exportedData],
-                          this.clientService.getBusinessNetworkName() + '.bna',
-                          {type: 'application/octet-stream'});
+        this.clientService.getBusinessNetworkName() + '.bna',
+        {type: 'application/octet-stream'});
       saveAs(file);
       this.alertService.successStatus$.next(this.clientService.getBusinessNetworkName() + '.bna was exported');
     });
@@ -308,18 +308,21 @@ export class EditorComponent implements OnInit {
    * When user edits the package name (in the input box), the package.json needs to be updated, and the BND needs to be updated
    */
   editPackageName() {
-    this.deployedPackageName = this.inputPackageName;
-    
-    this.clientService.setBusinessNetworkName(this.deployedPackageName);
+    if (this.deployedPackageName !== this.inputPackageName) {
+      this.deployedPackageName = this.inputPackageName;
+      this.clientService.setBusinessNetworkName(this.deployedPackageName);
+    }
   }
 
   /*
    * When user edits the package version (in the input box), the package.json needs to be updated, and the BND needs to be updated
    */
   editPackageVersion() {
-    this.deployedPackageVersion = this.inputPackageVersion;
+    if (this.deployedPackageVersion !== this.inputPackageVersion) {
+      this.deployedPackageVersion = this.inputPackageVersion;
 
-    this.clientService.setBusinessNetworkVersion(this.deployedPackageVersion);
+      this.clientService.setBusinessNetworkVersion(this.deployedPackageVersion);
+    }
   }
 
   hideEdit() {

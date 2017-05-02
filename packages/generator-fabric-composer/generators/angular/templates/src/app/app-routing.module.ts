@@ -6,6 +6,7 @@ import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= as
 
 const routes: Routes = [
     // { path: 'transaction', component: TransactionComponent },
+    {path: '', redirectTo: '<%= assetComponentNames[0] %>', pathMatch: 'full'},
 <% for(var x=0;x<assetComponentNames.length;x++){ %><% if(x == assetList.length-1){ %>
     { path: '<%= assetList[x].name %>', component: <%= assetComponentNames[x] %>}<% } else{ %>
     { path: '<%= assetList[x].name %>', component: <%= assetComponentNames[x] %>},<% } %><% } %>

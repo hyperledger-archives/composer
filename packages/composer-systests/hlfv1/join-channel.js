@@ -35,7 +35,7 @@ let channel = 'mychannel';
 
 let logger = utils.getLogger('join-channel');
 
-let useTls = process.env.SYSTEST.match('tls$');
+let useTls = process.env.SYSTEST ? process.env.SYSTEST.match('tls$') : false;
 
 if (useTls) {
     hfc.addConfigFile(path.join(__dirname, './config.tls.json'));

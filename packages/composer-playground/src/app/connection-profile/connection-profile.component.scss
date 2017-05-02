@@ -1,0 +1,72 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+connection-profile {
+  display: flex;
+  width: 100%;
+
+  .side-bar {
+    display: flex;
+    flex-direction: column;
+
+    .profiles {
+      & > * {
+        padding: $space-medium $space-large;
+      }
+      margin-top: $space-large;
+
+      span {
+        color: $secondary-text;
+      }
+
+      .side-bar-nav {
+        padding: 0;
+      }
+
+    }
+
+    .about {
+      flex: 1;
+      justify-content: flex-end;
+      padding: $space-medium $space-large;
+    }
+  }
+
+  .main-view {
+    overflow-y: auto;
+    background-color: $fourth-highlight;
+    padding: $space-large $space-large $space-medium $space-large;
+    overflow-y:auto;
+
+    .playground-profile-warning {
+      background-color: $white;
+      border: 1px solid $fourth-highlight;
+      border-radius: 0.25em;
+      padding: $space-medium;
+      margin-bottom: $space-large;
+
+      .profile-warning-content {
+        display: flex;
+
+        .profile-warning-text {
+          margin: 0 $space-smedium;
+        }
+      }
+    }
+
+    .business-network-details {
+      display: flex;
+
+      .business-network-version {
+        margin-right: $space-smedium;
+        color: $secondary-text;
+      }
+      .margin-right {
+        margin-right: $space-smedium;
+      }
+      .edit-package-text {
+        font-style: italic;
+      }
+    }
+  }
+}

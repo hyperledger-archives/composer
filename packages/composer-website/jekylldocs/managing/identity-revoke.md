@@ -14,7 +14,7 @@ An identity can be revoked from a participant using either the API or the comman
 Once an identity has been revoked, the identity can no longer be used by the participant
 to interact with the business network in the context of that participant.
 
-Fabric Composer issues identities as Hyperledger Fabric enrollment
+{{site.data.conrefs.composer_full}} issues identities as Hyperledger Fabric enrollment
 certificates (ECerts). When an identity is revoked, the enrollment certificate is
 still valid, but it cannot be used to interact with the business network. This is
 due to a current limitation in Hyperledger Fabric that does not allow the IBM

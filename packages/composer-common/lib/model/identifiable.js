@@ -97,6 +97,16 @@ class Identifiable extends Typed{
     isResource() {
         return false;
     }
+
+    /**
+     * Returns a URI representation of a reference to this identifiable
+     * @return {String} the URI for the identifiable
+     */
+    toURI() {
+        const result = 'resource:' + this.getFullyQualifiedType() + '#' + encodeURI(this.getIdentifier());
+        //console.log( '***** URI for ' + this.toString() + ' is ' + result );
+        return result;
+    }
 }
 
 module.exports = Identifiable;

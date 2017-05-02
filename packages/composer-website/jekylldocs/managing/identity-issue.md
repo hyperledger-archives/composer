@@ -14,7 +14,7 @@ An identity can be issued to a participant using either the API or the command l
 Once an identity has been issued, the identity can then be used by the participant
 to interact with the business network in the context of that participant.
 
-Fabric Composer issues identities as Hyperledger Fabric enrollment
+{{site.data.conrefs.composer_full}} issues identities as Hyperledger Fabric enrollment
 certificates (ECerts). An enrollment secret is generated that should be given to
 the participant, who can use the enrollment secret to download their enrollment
 certificate.
@@ -45,39 +45,38 @@ of that participant has been created and placed into a participant registry.
 1. Issue an identity to the participant
   * JavaScript API
 
-    ```javascript
-    let businessNetworkConnection = /* TODO: get a business network connection */
-    businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
-        .then((result) => {
-            console.log(`userID = ${result.userID}`);
-            console.log(`userSecret = ${result.userSecret}`);
-        });
-    ```
-
+  ```javascript
+  let businessNetworkConnection = /* TODO: get a business network connection */
+  businessNetworkConnection.issueIdentity('net.biz.digitalPropertyNetwork.Person#mae@biznet.org', 'maeid1')
+      .then((result) => {
+          console.log(`userID = ${result.userID}`);
+          console.log(`userSecret = ${result.userSecret}`);
+      });
+  ```
   * Command line
 
-    ```bash
-    composer identity issue -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1 -a "net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
-    ```
+  ```bash
+  composer identity issue -n 'digitalproperty-network' -i admin -s Xurw3yU9zI0l -u maeid1 -a "net.biz.digitalPropertyNetwork.Person#mae@biznet.org"
+  ```
 
-    The enrollment secret will be printed to the console.
+  The enrollment secret will be printed to the console.
 
 2. As the participant, test the connection to the business network
   * JavaScript API
 
-    ```javascript
-    let businessNetworkConnection = /* TODO: get a business network connection */
-    businessNetworkConnection.ping()
-        .then((result) => {
-            console.log(`participant = ${result.participant ? result.participant : '<no participant found>'}`);
-        });
-    ```
+  ```javascript
+  let businessNetworkConnection = /* TODO: get a business network connection */
+  businessNetworkConnection.ping()
+      .then((result) => {
+          console.log(`participant = ${result.participant ? result.participant : '<no participant found>'}`);
+      });
+  ```
 
   * Command line
 
-    ```bash
-    composer network ping -n 'digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
-    ```
+  ```bash
+  composer network ping -n 'digitalproperty-network' -i maeid1 -s RJJmlOpvNVRV
+  ```
 
-    The participant ID will be printed to the console, and should match the participant
-    ID that was specified in the `composer identity issue` command.
+  The participant ID will be printed to the console, and should match the participant
+  ID that was specified in the `composer identity issue` command.

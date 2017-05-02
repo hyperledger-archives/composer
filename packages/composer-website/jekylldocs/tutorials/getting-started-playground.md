@@ -1,24 +1,24 @@
 ---
 layout: default
-title: Installing and running the Fabric Composer Playground
+title: Installing and running the Hyperledger Composer Playground
 category: start
 sidebar: sidebars/tutorials.md
-excerpt: Installing and running the Fabric Composer Playground
+excerpt: Installing and running the Hyperledger Composer Playground
 ---
 
-# Installing and running the Fabric Composer Playground
+# Installing and running the {{site.data.conrefs.composer_full}} Playground
 
-This tutorial will take you through how to install and run the Fabric Composer Playground.
+This tutorial will take you through how to install and run the {{site.data.conrefs.composer_full}} Playground.
 
-The Fabric Composer Playground is a web development experience that allows you to develop a business network definition, deploy that business network definition to a running instance of Hyperledger Fabric, and test the deployed business network by working with assets, participants, and transactions.
+The {{site.data.conrefs.composer_full}} Playground is a web development experience that allows you to develop a business network definition, deploy that business network definition to a running instance of Hyperledger Fabric, and test the deployed business network by working with assets, participants, and transactions.
 
-Fabric Composer Playground can also be used in a "browser only" mode, without a running instance of Hyperledger Fabric. When used in this mode, all the functionality of Fabric Composer Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.
+{{site.data.conrefs.composer_full}} Playground can also be used in a "browser only" mode, without a running instance of Hyperledger Fabric. When used in this mode, all the functionality of {{site.data.conrefs.composer_full}} Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.
 
-This tutorial will show you how to start a Hyperledger Fabric instance for use with Fabric Composer Playground by using Docker Compose. If you already have a running instance of Hyperledger Fabric, or you only want to work in "browser only" mode, then skip to [alternative installation options](#installationoptions).
+This tutorial will show you how to start a Hyperledger Fabric instance for use with {{site.data.conrefs.composer_full}} Playground by using Docker Compose. If you already have a running instance of Hyperledger Fabric, or you only want to work in "browser only" mode, then skip to [alternative installation options](#installationoptions).
 
 # Prerequisites
 
-In order to install Fabric Composer Playground, you need the following software installed:
+In order to install {{site.data.conrefs.composer_full}} Playground, you need the following software installed:
 
 *   Docker Engine 1.12.3 or greater
 
@@ -72,7 +72,7 @@ The Docker Compose file describes a multi-container application that is made up 
 
     This container will use ports 8080
 
-In a terminal or command prompt, navigate to the directory that you downloaded the `docker-compose.yml` file into, and run the following commands to start a Hyperledger Fabric instance and Fabric Composer Playground:
+In a terminal or command prompt, navigate to the directory that you downloaded the `docker-compose.yml` file into, and run the following commands to start a Hyperledger Fabric instance and {{site.data.conrefs.composer_full}} Playground:
 
   ```
   docker pull hyperledger/fabric-baseimage:x86_64-0.1.0
@@ -109,17 +109,17 @@ Verify that no errors occurred. If you see an error similar to the following err
 
 If you see this error, ensure that all of these ports are free before you run any commands.
 
-If everything started OK, you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://docker-machine-ip:8080" target="_blank">http://<span></span>docker-machine-ip:8080</a>
 
 # <a name="installationoptions"></a>Alternative installation options
 
-If you have an existing Hyperledger Fabric instance you want to use with Fabric Composer Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.
+If you have an existing Hyperledger Fabric instance you want to use with {{site.data.conrefs.composer_full}} Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.
 
-There are two options for installing the Fabric Composer Playground.
+There are two options for installing the {{site.data.conrefs.composer_full}} Playground.
 You can choose to install using npm (the Node.js package manager), or you can choose to install with Docker. We recommend that you:
 
-*   <a href="#installnpm">Install using npm</a> if you wish to run to Fabric Composer Playground on your local workstation.
-*   <a href="#installdocker">Install using Docker</a> if you wish to run Fabric Composer Playground on a server or cloud platform.
+*   <a href="#installnpm">Install using npm</a> if you wish to run to {{site.data.conrefs.composer_full}} Playground on your local workstation.
+*   <a href="#installdocker">Install using Docker</a> if you wish to run {{site.data.conrefs.composer_full}} Playground on a server or cloud platform.
 
 <p></p>
 Note that the same set of features is available regardless of the installation method that you choose.
@@ -128,7 +128,7 @@ Note that the same set of features is available regardless of the installation m
 
 ### Prerequisites
 
-In order to install Fabric Composer Playground with npm, you need the following software installed:
+In order to install {{site.data.conrefs.composer_full}} Playground with npm, you need the following software installed:
 
 *   Node.js v4.6.2 or greater, or Node.js v6.x (note that Node.js v7.x is unsupported)
 
@@ -170,7 +170,7 @@ In order to install Fabric Composer Playground with npm, you need the following 
 
 ### Installation
 
-You can install Fabric Composer Playground by running the following command in your terminal or command prompt:
+You can install {{site.data.conrefs.composer_full}} Playground by running the following command in your terminal or command prompt:
 
   ```
   sudo npm install -g composer-playground
@@ -187,15 +187,15 @@ You should see the following output in your terminal or command prompt:
   ...
   ```
 
-Verify that no errors occurred. If any part of this process fails, then Fabric Composer Playground will fail to work correctly. You may see errors from a program called `node-gyp`. These errors indicate that your system is not set up correctly to build Node.js C/C++ native modules. You may need to install additional software to correct this error.
+Verify that no errors occurred. If any part of this process fails, then {{site.data.conrefs.composer_full}} Playground will fail to work correctly. You may see errors from a program called `node-gyp`. These errors indicate that your system is not set up correctly to build Node.js C/C++ native modules. You may need to install additional software to correct this error.
 
-You can then start Fabric Composer Playground by running the following command in your terminal or command prompt:
+You can then start {{site.data.conrefs.composer_full}} Playground by running the following command in your terminal or command prompt:
 
   ```
   composer-playground
   ```
 
-A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
 This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
 
@@ -203,7 +203,7 @@ This tutorial is now **complete**. We plan on extending this tutorial with a gui
 
 ### Prerequisites
 
-In order to install Fabric Composer Playground with Docker, you need the following software installed:
+In order to install {{site.data.conrefs.composer_full}} Playground with Docker, you need the following software installed:
 
 *   Docker Engine 1.12.3 or greater
 
@@ -224,7 +224,7 @@ In order to install Fabric Composer Playground with Docker, you need the followi
 
 ### Installation
 
-You can install Fabric Composer Playground by running the following Docker command in your terminal or command prompt:
+You can install {{site.data.conrefs.composer_full}} Playground by running the following Docker command in your terminal or command prompt:
 
   ```
   docker run -d -p 8080:8080 fabriccomposer/composer-playground
@@ -239,6 +239,6 @@ You should see the following output in your terminal or command prompt:
 
 Verify that no errors occurred.
 
-You can then start Fabric Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+You can then start {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
 This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!

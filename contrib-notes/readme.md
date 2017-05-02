@@ -1,0 +1,1 @@
+To start development of Hyperledger Composer, please follow out [getting started guide](./getting-started.md).

@@ -1,16 +1,16 @@
 ---
 layout: default
-title: Fabric Composer -  Overview
+title: Hyperledger Composer -  Overview
 category: overview
 sidebar: sidebars/introduction.md
-excerpt: Fabric Composer overview
+excerpt: Hyperledger Composer overview
 ---
 
 # Overview
 
 ---
 
-Fabric Composer is a set of APIs, a modeling language and
+{{site.data.conrefs.composer_full}} is a set of APIs, a modeling language and
 a programming model to quickly define and deploy business networks and applications
 that allow **participants** to send **transactions** that exchange **assets**.
 
@@ -25,24 +25,24 @@ are validated by concerned organizations in the business network.
 | Assets | Use Assets and Asset Registries to define the data to be stored and exchanged across the business network |
 | Participants | Define Participants and ensure transactions are associated with known and authenticated members of the Hyperledger Fabric |
 | Transactions | Define Transactions and provide APIs to submit them for processing |
-| Transaction Processors | Write Transaction Processor functions using Javascript, that can update the state of assets and asset registries |
+| Transaction Processors | Write Transaction Processor functions using JavaScript, that can update the state of assets and asset registries |
 | REST APIs | Provides REST APIs to interact with assets and the transaction registry |
 | Loopback Connector | Provides a Loopback Connector to submit transactions from external systems |
 | Analytics and Monitoring integration | Provides integration extension points to send transactions to external analytics data stores |
 | Starter Applications | Generate starter applications from a Business Network Definition |
 
-## Fabric Composer Programming Model
+## {{site.data.conrefs.composer_full}} Programming Model
 
-The Fabric Composer programming model is based on defining and deploying a Business Network
+The {{site.data.conrefs.composer_full}} programming model is based on defining and deploying a Business Network
 Definition, which contains a data model that defines the name and structure of assets, participants
 and transactions in the business network. The business network also specifies *transaction processor functions*
-(written in ES5 Javascript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
+(written in ES5 JavaScript) that are automatically run on a Hyperledger Fabric when transactions are submitted by clients.
 
-Fabric Composer defines [Javascript APIs](https://fabric-composer.github.io/jsdoc/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
+{{site.data.conrefs.composer_full}} defines [JavaScript APIs](https://hyperledger.github.io/composer/jsdoc/index.html)to submit transactions and to create, retrieve, update and delete assets within asset registries.
 
 ### Roles, Responsibilities and Tasks
 
-A typical project using Fabric Composer goes through a lifecycle of:
+A typical project using {{site.data.conrefs.composer_full}} goes through a lifecycle of:
 
 *Model -> Define Business Network -> Deploy Runtime -> Deploying Business Network -> Test -> Generate Application*
 
@@ -54,9 +54,9 @@ These tasks may all be performed by a single full-stack developer, but are more 
 
 ## Modeling the Business Domain
 
-Fabric Composer includes a powerful Object-Oriented modeling language, used to specify a domain model; the structure of assets, participants and transactions. The domain model is used across the Framework for code generation, type validation, user interface generation, API generation, amongst other things.
+{{site.data.conrefs.composer_full}} includes a powerful Object-Oriented modeling language, used to specify a domain model; the structure of assets, participants and transactions. The domain model is used across the Framework for code generation, type validation, user interface generation, API generation, amongst other things.
 
-### Sample Fabric Composer Domain Model
+### Sample {{site.data.conrefs.composer_full}} Domain Model
 
 ```javascript
 namespace net.biz.digitalPropertyNetwork
@@ -91,7 +91,7 @@ transaction RegisterPropertyForSale identified by transactionId{
 
 ## Writing Transaction Processor functions
 
-Technical Analysts write transaction processor functions using ES5 Javascript. These scripts are included in a business network definition and will be automatically executed when a transaction is submitted for processing. The transaction processor scripts can create, update, retrieve and delete assets based on the incoming transaction.
+Technical Analysts write transaction processor functions using ES5 JavaScript. These scripts are included in a business network definition and will be automatically executed when a transaction is submitted for processing. The transaction processor scripts can create, update, retrieve and delete assets based on the incoming transaction.
 
 ```javascript
 'use strict';
@@ -108,13 +108,13 @@ function onRegisterPropertyForSale(propertyForSale){
 
 ## Rapidly Create Applications
 
-Fabric Composer includes [code generators](../tasks/genapp.md) so that web and mid-tier application developers can quickly generate starter applications that interact with a deployed business network definition. These code generators allow application developers to quickly focus on the integration and visual aspects of their projects, rather than writing boilerplate and configuration.
+{{site.data.conrefs.composer_full}} includes [code generators](../tasks/genapp.md) so that web and mid-tier application developers can quickly generate starter applications that interact with a deployed business network definition. These code generators allow application developers to quickly focus on the integration and visual aspects of their projects, rather than writing boilerplate and configuration.
 
 High-level administration and client APIs provide easy access to a deployed business network.
 
-### Using the Javascript Client and Admin APIs
+### Using the JavaScript Client and Admin APIs
 
-Mid-tier developers use Javascript APIs to interact with the framework. The ```AdminConnection``` API exposes administration operations, such as deploying, undeploying and updating a Business Network Definition.
+Mid-tier developers use JavaScript APIs to interact with the framework. The ```AdminConnection``` API exposes administration operations, such as deploying, undeploying and updating a Business Network Definition.
 
 The ```BusinessNetworkConnection``` API is used to interact with a deployed business network: retrieving assets from asset registries, or submitting transactions.
 
