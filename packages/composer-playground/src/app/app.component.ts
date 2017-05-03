@@ -10,7 +10,7 @@ import {AlertService} from './services/alert.service';
 import {ConnectionProfileService} from './services/connectionprofile.service';
 import {WalletService} from './services/wallet.service';
 import {IdentityService} from './services/identity.service';
-import {InitializationService} from './initialization.service';
+import {InitializationService} from './services/initialization.service';
 import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';

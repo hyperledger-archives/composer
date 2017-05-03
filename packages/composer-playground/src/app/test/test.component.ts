@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
-import { InitializationService } from '../initialization.service';
+import { InitializationService } from '../services/initialization.service';
 import { AlertService } from '../services/alert.service';
 import { TransactionComponent } from '../transaction/transaction.component';
 
@@ -71,7 +71,7 @@ export class TestComponent implements OnInit {
               this.chosenRegistry = this.transactionRegistry;
             }
 
-            // set the default registry selection 
+            // set the default registry selection
             if(this.participantRegistries.length != 0) {
               this.chosenRegistry = this.participantRegistries[0];
             } else if(this.assetRegistries.length != 0) {

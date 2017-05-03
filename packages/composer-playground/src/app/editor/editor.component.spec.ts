@@ -11,7 +11,7 @@ import {EditorComponent} from './editor.component';
 import {AdminService} from '../services/admin.service';
 import {ClientService} from '../services/client.service';
 import {EditorService} from '../services/editor.service';
-import {InitializationService} from '../initialization.service';
+import {InitializationService} from '../services/initialization.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';

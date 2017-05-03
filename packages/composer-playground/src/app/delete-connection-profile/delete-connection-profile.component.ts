@@ -10,10 +10,12 @@ import {ConnectionProfileService} from '../services/connectionprofile.service';
 })
 export class DeleteConnectionProfileComponent {
 
-  constructor(public activeModal: NgbActiveModal) {
+  constructor(public activeModal: NgbActiveModal,
+              private connectionProfileService: ConnectionProfileService) {
   }
 
-  deleteProfile(){
+  deleteProfile(name: string) {
+    this.connectionProfileService.deleteProfile(this.connectionProfileService.getCurrentlySelectedProfileName());
     this.activeModal.close(true);
   }
 }
