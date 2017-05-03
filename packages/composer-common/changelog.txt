@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.7.0 {632a80837e835bbe0343d4b37ce12742} 2017-05-01
+- Added Typed.instanceOf
+
 Version 0.5.11 {a87cb53cac0fc49f273aa840ce2a9860} 2017-04-21
 - Added Identifiable.toURI
 - Added Relationship.fromURI

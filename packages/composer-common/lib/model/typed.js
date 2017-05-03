@@ -170,6 +170,29 @@ class Typed {
     }
 
     /**
+     * Check to see if this instance is an instance of the specified fully qualified
+     * type name.
+     * @param {String} fqt The fully qualified type name.
+     * @returns {boolean} True if this instance is an instance of the specified fully
+     * qualified type name, false otherwise.
+     */
+    instanceOf(fqt) {
+        let classDeclaration = this.getClassDeclaration();
+        if (classDeclaration.getFullyQualifiedName() === fqt) {
+            return true;
+        }
+        let superType = classDeclaration.getSuperType();
+        while (superType) {
+            classDeclaration = this.$modelManager.getType(superType);
+            if (classDeclaration.getFullyQualifiedName() === fqt) {
+                return true;
+            }
+            superType = classDeclaration.getSuperType();
+        }
+        return false;
+    }
+
+    /**
      * Overriden to prevent people accidentally converting a resource to JSON
      * without using the Serializer.
      * @private
