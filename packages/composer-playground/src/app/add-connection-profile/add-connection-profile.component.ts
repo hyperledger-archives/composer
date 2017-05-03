@@ -159,14 +159,10 @@ export class AddConnectionProfileComponent {
   }
 
   changeCurrentFileType() {
-    console.log('***HERE 1: ', this.version);
-    console.log('***HERE 2: ', this.addConnectionProfileType);
     this.currentFile = null;
 
     if (this.version === 'v06' || this.addConnectionProfileType === 'hlf') {
-      console.log('***HERE 3');
       return this.setV06Defaults().then(() => {
-        console.log('***HERE');
         this.newConnectionProfile = {
           description: this.addConnectionProfileDescription,
           type: 'hlf',
@@ -255,7 +251,6 @@ export class AddConnectionProfileComponent {
       profile: connectionProfile,
       default: this.addConnectionProfileName === '$default'
     };
-    console.log('Closing add modal, returning profile',completeConnectionProfile);
     this.activeModal.close(completeConnectionProfile);
 
   }

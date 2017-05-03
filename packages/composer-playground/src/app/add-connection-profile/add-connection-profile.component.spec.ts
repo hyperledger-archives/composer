@@ -58,7 +58,6 @@ class MockAlertService {
 
 class MockConnectionProfileService {
     getAllProfiles(): Promise<any> {
-        console.log('*** Mock Profile Service Called...');
         return new Promise((resolve, reject) => {
             resolve({ profile0: 'a', profile2: 'c', profile1: 'b' });
         });
@@ -385,7 +384,6 @@ fdescribe('AddConnectionProfileComponent', () => {
             tick();
             setMock.should.have.been.called;
             expect(component.currentFile).to.be.null;
-            console.log('xx', component['newConnectionProfile']);
             component['newConnectionProfile'].type.should.equal('hlf');
             component['newConnectionProfile'].description.should.equal(TEST_DESC);
         }));
@@ -397,7 +395,6 @@ fdescribe('AddConnectionProfileComponent', () => {
             tick();
             setMock.should.have.been.called;
             expect(component.currentFile).to.be.null;
-            console.log('xx', component['newConnectionProfile']);
             component['newConnectionProfile'].type.should.equal('hlf');
             component['newConnectionProfile'].description.should.equal(TEST_DESC);
         }));
@@ -409,7 +406,6 @@ fdescribe('AddConnectionProfileComponent', () => {
             tick();
             setMock.should.have.been.called;
             expect(component.currentFile).to.be.null;
-            console.log('xx', component['newConnectionProfile']);
             component['newConnectionProfile'].type.should.equal('hlfv1');
             component['newConnectionProfile'].description.should.equal(TEST_DESC);
         }));
@@ -506,7 +502,6 @@ fdescribe('AddConnectionProfileComponent', () => {
 
         it('should update/refresh the list of connection profiles', fakeAsync(() => {
             component.updateConnectionProfiles().then(() => {
-                console.log(component['connectionProfiles']);
                 component['connectionProfiles'].should.deep.equal([
                                                                     {name: 'profile0', profile: 'a', default: false}, 
                                                                     {name: 'profile1', profile: 'b', default: false}, 
