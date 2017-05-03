@@ -3,7 +3,7 @@
 import {TestBed, async, inject} from '@angular/core/testing';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {LocalStorageService} from 'angular-2-local-storage';
-import {WalletService} from '../wallet.service';
+import {WalletService} from './wallet.service';
 import { FileWallet } from 'composer-common';
 import { AdminConnection } from 'composer-admin';
 import * as sinon from 'sinon';

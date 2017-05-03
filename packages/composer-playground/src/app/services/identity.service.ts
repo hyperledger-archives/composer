@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from 'angular-2-local-storage';
 
-import { ConnectionProfileService } from './services/connectionprofile.service';
+import { ConnectionProfileService } from './connectionprofile.service';
+import { ClientService } from './client.service';
 import { WalletService } from './wallet.service';
 
 @Injectable()
 export class IdentityService {
 
-  constructor(private localStorageService: LocalStorageService, private connectionProfileService: ConnectionProfileService, private walletService: WalletService) {
+  constructor(private localStorageService: LocalStorageService,
+              private connectionProfileService: ConnectionProfileService,
+              private walletService: WalletService) {
   }
 
   getCurrentIdentities(): Promise<string[]> {
