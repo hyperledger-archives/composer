@@ -163,6 +163,18 @@ module.exports = yeoman.Base.extend({
                                 return 'Enrollment Secret email cannot be null or empty.';
                             }
                         }
+                    },
+                    {
+                        type: 'input',
+                        name: 'apiIP',
+                        message: 'What is the address of the running REST server?:',
+                        default: 'http://localhost'
+                    },
+                    {
+                        type: 'input',
+                        name: 'apiPort',
+                        message: 'What is the Port number of the running REST server?:',
+                        default: '3000'
                     }
                 ];
             }
@@ -255,6 +267,8 @@ module.exports = yeoman.Base.extend({
                     this.connectionProfileName = answers.connectionProfileName;
                     this.enrollmentId = answers.enrollmentId;
                     this.enrollmentSecret = answers.enrollmentSecret;
+                    this.apiIP = answers.apiIP;
+                    this.apiPort = answers.apiPort;
                 }
                 else{
                     this.fileName = answers.fileName;
@@ -342,13 +356,7 @@ module.exports = yeoman.Base.extend({
                     assetProperties.forEach((property) =>   {
 
                         if(property.constructor.name === 'Field'){
-                            if(property.isTypeEnum()){
-                                tempList.push({'name':property.getName(),'type':property.getType()});
-                            }
-                            else if(property.isPrimitive()){
-                                tempList.push({'name':property.getName(),'type':property.getType()});
-                            }
-                            else if(!property.isPrimitive()){
+                            if(property.isTypeEnum() || property.isPrimitive() || !property.isPrimitive()){
                                 tempList.push({'name':property.getName(),'type':property.getType()});
                             }
                             else{
@@ -463,7 +471,9 @@ module.exports = yeoman.Base.extend({
             networkIdentifier: this.networkIdentifier,
             connectionProfileName: this.connectionProfileName,
             enrollmentId: this.enrollmentId,
-            enrollmentSecret: this.enrollmentSecret
+            enrollmentSecret: this.enrollmentSecret,
+            apiIP: this.apiIP,
+            apiPort: this.apiPort
         };
     },
 
