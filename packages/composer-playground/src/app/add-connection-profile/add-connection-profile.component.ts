@@ -81,7 +81,7 @@ export class AddConnectionProfileComponent {
       .then((data) => {
         if (type === 'json') {
           this.expandInput = true;
-          this.createProfile(file, data);
+          this.createProfile(data);
         }
         else {
           throw new Error('Unexpected File Type');
@@ -100,21 +100,23 @@ export class AddConnectionProfileComponent {
         let dataBuffer = Buffer.from(fileReader.result);
         resolve(dataBuffer);
       };
-
       fileReader.onerror = (err) => {
         reject(err);
       };
     });
   }
 
-  createProfile(file: File, profileBuffer) {
+  createProfile(profileBuffer) {
 
+    let profileData;
     // Converts buffer to string
-    let profileData = JSON.parse(profileBuffer.toString());
+    try {
+       profileData = JSON.parse(profileBuffer.toString());
+    } catch (e) {
+      throw new Error('Parse error: '+e.message);
+    }
 
     // Set defaults
-
-    console.log('Profile data read in is',profileData);
     if(profileData.type === 'hlf'){
       return this.setV06Defaults().then(() => {
         this.addConnectionProfileDescription = profileData.description;
@@ -147,9 +149,8 @@ export class AddConnectionProfileComponent {
       })
     }
     else{
-      console.log('Couldnt read profile with type:',profileData.type);
+      throw new Error('Invalid type in profile: '+profileData.type);
     }
-
   }
 
 
@@ -158,11 +159,14 @@ export class AddConnectionProfileComponent {
   }
 
   changeCurrentFileType() {
+    console.log('***HERE 1: ', this.version);
+    console.log('***HERE 2: ', this.addConnectionProfileType);
     this.currentFile = null;
 
     if (this.version === 'v06' || this.addConnectionProfileType === 'hlf') {
-
+      console.log('***HERE 3');
       return this.setV06Defaults().then(() => {
+        console.log('***HERE');
         this.newConnectionProfile = {
           description: this.addConnectionProfileDescription,
           type: 'hlf',
@@ -179,7 +183,6 @@ export class AddConnectionProfileComponent {
 
     }
     else if (this.version === 'v1') {
-      console.log('Add v1 file');
 
       return this.setV1Defaults().then(() => {
         this.newConnectionProfile = {
@@ -195,15 +198,13 @@ export class AddConnectionProfileComponent {
           certificatePath: this.addConnectionProfileCertificatePath
         };
       })
-
-
     }
     else {
       throw new Error('Unsupported version');
     }
   }
 
-  private addConnectionProfile(): void {
+  addConnectionProfile(): void {
     let connectionProfile;
 
     if(this.version === 'v06' || this.addConnectionProfileType === 'hlf'){
@@ -245,7 +246,7 @@ export class AddConnectionProfileComponent {
       };
     }
     else{
-      console.log('Unknown connection profile version selected');
+      throw new Error('Unknown connection profile version selected');
     }
 
 
@@ -260,7 +261,7 @@ export class AddConnectionProfileComponent {
   }
 
 
-  private setV06Defaults(): Promise<any> {
+  setV06Defaults(): Promise<any> {
     return this.updateConnectionProfiles().then(() => {
       let connectionProfileBase = 'New Connection Profile';
       let connectionProfileName = connectionProfileBase;
@@ -270,7 +271,7 @@ export class AddConnectionProfileComponent {
         return cp.name === connectionProfileName;
       })) {
         counter++;
-        connectionProfileName = connectionProfileBase + counter;
+        connectionProfileName = connectionProfileBase + ' ' + counter;
       }
 
       this.addConnectionProfileName = connectionProfileName;
@@ -288,10 +289,7 @@ export class AddConnectionProfileComponent {
 
   }
 
-
-
-  private setV1Defaults(): Promise<any> {
-    console.log('Ran setV1Defaults()')
+  setV1Defaults(): Promise<any> {
     return this.updateConnectionProfiles().then(() => {
       let connectionProfileBase = 'New Connection Profile';
       let connectionProfileName = connectionProfileBase;
@@ -301,7 +299,7 @@ export class AddConnectionProfileComponent {
         return cp.name === connectionProfileName;
       })) {
         counter++;
-        connectionProfileName = connectionProfileBase + counter;
+        connectionProfileName = connectionProfileBase + ' ' + counter;
       }
 
       this.addConnectionProfileName = connectionProfileName;
@@ -329,11 +327,7 @@ export class AddConnectionProfileComponent {
 
   }
 
-
-
-
-
-  private updateConnectionProfiles(): Promise<any> {
+  updateConnectionProfiles(): Promise<any> {
     let newConnectionProfiles = [];
     return this.connectionProfileService.getAllProfiles()
       .then((connectionProfiles) => {
