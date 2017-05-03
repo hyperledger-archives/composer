@@ -14,31 +14,13 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 > A blockchain— originally block chain — is a distributed database that maintains a continuously-growing list of records called blocks. Each block contains a timestamp and a link to a previous block. The data in a block cannot be altered retrospectively. Blockchains are an example of a distributed computing system with high byzantine fault tolerance.
 
+**Blockchain** is a shared, replicated ledger that can record asset transfers. An implemented blockchain platform is often referred to as a Blockchain Fabric.
+
+**Blockchain fabric** or just fabric. This is a platform that user applications connect to in order to interact with such a ledger, as well as the ledger itself. Examples of blockchain fabrics include Bitcoin, Ethereum, Open Blockchain and of course Hyperledger ...
+
 **Hyperledger** is the name of the Linux Foundation project to produce an open blockchain platform that is ready for business. It will provide an implementation of the shared ledger, smart contracts, privacy and consensus mechanisms. It will not provide any value added services (like monitoring or cloud hosting). IBM is one of many sponsors of the Hyperledger project.
 
-**Access Control List**:
-**Asset**:
-
-**Blockchain**: A blockchain is a shared, replicated ledger that can record asset transfers. An implemented blockchain platform is often referred to as a Blockchain Fabric.
-
-**Business Network Definition**:
-**Business Network Archive**:
-**Composer Playground**:
-**Connection Profile**:
-
-**Fabric**: Fabric is a platform that user applications connect to in order to interact with a distrubuted ledger. Examples of blockchain fabrics include Bitcoin, Ethereum, Open Blockchain and Hyperledger.
-
-**Hyperledger**: Hyperledger is a Linux Foundation project to produce an open blockchain platform that is ready for business. It provides an implementation of the shared ledger, smart contracts, privacy and consensus mechanisms. It does not provide any value added services (like monitoring or cloud hosting).
-
-**Identity**:
-**Modelling language**: (Concepts)
-**Participant**:
-**Registry**:
-**Transaction**:
-**Transaction Processor Functions**:
-
-
-<!-- //This is good, but doesn't belong in the Glossary// # {{site.data.conrefs.composer_full}} Narrative
+# {{site.data.conrefs.composer_full}} Narrative
 
 An **Economic Business Network** refers to the organizations that work together to take part in the digital business network. In many (all!) such networks there are multiple organisations that need to correlate their business process. In addition, in some industries, there are regulators that oversee the market. For example, within the food distribution network, the regulator is DEFRA in the UK or the Department of Agriculture in the US. To have a system that, for example, tracks food assets and the participants in the network, is very applicable to a Blockchain's quality of service. However, writing direct to the Hyperledger's core SDK requires a very low level API - and one that is not readily available or accessible to in-house developers. There is a high barrier to entry for practically solving business problems. So to help address this problem the ..tbc
 
@@ -75,4 +57,3 @@ The Composer system is defined in a number of [modules](../reference/MeetTheModu
 **{{site.data.conrefs.composer_full}} Admin API** is an administrative API to build admin applications. This can deploy and update business network definitions on the Composer fabric runtime.
 
 To facilitate the application development process there are helper tools to permit the development.
--->

@@ -27,7 +27,6 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
   cd MyProfile
   ```
 4. Create a new file called `connection.json` that contains the following information for either Hyperledger Fabric v0.6 or v1.0. If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:
-
   ```
   {
       "type": <hlf|web>,
@@ -37,9 +36,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
       "eventHubURL": <your-event-hub-url>
   }
   ```
-
   If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:
-
   ```
   {
   "type": "hlfv1",
