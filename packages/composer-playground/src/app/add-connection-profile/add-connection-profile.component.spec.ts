@@ -97,7 +97,7 @@ class MockFileImporterDirective {
   public svgName: string = '#icon-BNA_Upload';
 }
 
-fdescribe('AddConnectionProfileComponent', () => {
+describe('AddConnectionProfileComponent', () => {
     let sandbox;
     let component: AddConnectionProfileComponent;
     let fixture: ComponentFixture<AddConnectionProfileComponent>;
