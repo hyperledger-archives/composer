@@ -37,7 +37,6 @@ class MockBusinessNetworkConnection {
   }
 
   issueIdentity(participant, userID, options) {
-    console.log('into mock');
     return Promise.resolve({'participant':participant, 'userID': userID, 'options':options});
   }
 }
