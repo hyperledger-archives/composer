@@ -1,0 +1,10 @@
+{
+  "<%= appName %>" : {
+    "connectionProfileName":"<%= connectionProfileName %>",
+    "networkIdentifier":"<%= networkIdentifier %>",
+    "enrollmentId":"<%= enrollmentId %>",
+    "enrollmentSecret":"<%= enrollmentSecret %>",
+    "apiIP":"<%= apiIP %>",
+    "apiPort":"<%= apiPort %>"
+  }
+}

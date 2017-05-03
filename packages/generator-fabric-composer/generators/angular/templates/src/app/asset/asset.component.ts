@@ -147,7 +147,7 @@ export class <%= currentAsset.name %>Component implements OnInit {
 			this.errorMessage = null;
 		})
 		.catch((error) => {
-      if(error == 'Server error'){
+            if(error == 'Server error'){
 				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
 			}
 			else if(error == '404 - Not Found'){
