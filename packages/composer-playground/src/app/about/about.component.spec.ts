@@ -34,16 +34,20 @@ describe('AboutComponent', () => {
         });
 
         fixture = TestBed.createComponent(AboutComponent);
+        component = fixture.componentInstance;
 
         //  query for the title <h2> by CSS element selector
         de = fixture.debugElement.query(By.css('h2'));
         el = de.nativeElement;
     });
 
-    it ('Should display the correct title for the AboutComponent', () => {
+    it ('Should display the correct title for the AboutComponent', fakeAsync(() => {
         fixture.detectChanges();
+
+        tick();
+
         el.textContent.should.equal('About');
-    });
+    }));
 
     it ('Should call getVersions when the component is created', fakeAsync(() => {
         fixture.detectChanges();

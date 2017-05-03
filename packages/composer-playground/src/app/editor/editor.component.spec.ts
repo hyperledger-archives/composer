@@ -629,6 +629,11 @@ describe('EditorComponent', () => {
   });
 
   describe('toggleEditActive', () => {
+
+    beforeEach(() => {
+      sinon.stub(component, 'ngOnInit');
+    });
+    
     it('should toggle editing', () => {
       component['editActive'] = false;
 

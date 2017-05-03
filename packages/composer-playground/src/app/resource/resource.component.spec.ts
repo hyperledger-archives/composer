@@ -334,7 +334,8 @@ describe('ResourceComponent', () => {
     });
 
     it('should show definition errors to users', () => {
-      
+      sinon.stub(component, 'ngOnInit');
+
       // Insert definition error
       component['definitionError'] = 'Error: forced error content';
       
@@ -345,8 +346,9 @@ describe('ResourceComponent', () => {
 
     });
 
-     it('should disable the create resource button if definition error present', () => {
-      
+    it('should disable the create resource button if definition error present', () => {
+      sinon.stub(component, 'ngOnInit');
+
       // Insert definition error
       component['definitionError'] = 'Error: forced error content';
           
@@ -358,7 +360,8 @@ describe('ResourceComponent', () => {
     });
 
     it('should re-enable the create resource button if definition error is fixed', () => {
-     
+      sinon.stub(component, 'ngOnInit');
+
       // Insert definition error
       component['definitionError'] = 'Error: forced error content';
       
