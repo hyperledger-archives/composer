@@ -131,7 +131,7 @@ class FunctionDeclaration {
     /**
      * Semantic validation of the structure of this function.
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate() {
