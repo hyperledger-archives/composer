@@ -1,0 +1,44 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+identity-issued-modal {
+  .identity-issued {
+    .justified-value {
+      display: flex;
+      margin-bottom: 1.3em;
+
+      p {
+        margin: 0;
+
+        &.name {
+          flex: 1;
+        }
+
+        &.value {
+          flex: 5;
+        }
+      }
+    }
+
+    .id-option {
+      display: flex;
+      margin-top: 1.5rem;
+      margin-bottom: 1.3em;
+
+      h2 {
+        flex: 1;
+      }
+
+      p {
+        flex: 5;
+        margin: 0;
+      }
+    }
+
+    footer {
+      p.footer-text {
+        flex: 1;
+      }
+    }
+  }
+}
