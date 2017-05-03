@@ -75,7 +75,7 @@ class ClassDeclaration {
     /**
      * Process the AST and build the model
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {
@@ -125,7 +125,7 @@ class ClassDeclaration {
      * override this method to impose additional semantic constraints on the
      * contents/relations of fields.
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate() {
