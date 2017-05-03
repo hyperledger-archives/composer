@@ -28,7 +28,7 @@ class Validator {
      * Create a Property.
      * @param {Field} field - the field this validator is attached to
      * @param {Object} validator - The validation string
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(field, validator) {
         this.validator = validator;
@@ -67,7 +67,7 @@ class Validator {
      * Validate the property against a value
      * @param {string} identifier the identifier of the instance being validated
      * @param {Object} value the value to validate
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate(identifier, value) {
