@@ -1,5 +1,5 @@
 # Composer-Playground
-The UI for Fabric Composer
+The UI for Hyperledger Composer
 
 Check that the versions of 
 
@@ -28,6 +28,6 @@ Lerna:
 
     $ lerna run test
 
-You're now ready to start with the Fabric Composer project. 
+You're now ready to start with the Hyperledger Composer project. 
 
     $ npm start
