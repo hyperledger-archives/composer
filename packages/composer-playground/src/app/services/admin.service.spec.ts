@@ -10,7 +10,7 @@ let should = chai.should();
 import {AlertService} from './alert.service';
 import {BusinessNetworkDefinition} from 'composer-common';
 import {ConnectionProfileService} from './connectionprofile.service';
-import {IdentityService} from '../identity.service';
+import {IdentityService} from './identity.service';
 import {AdminConnection} from 'composer-admin';
 
 describe('AdminService', () => {
