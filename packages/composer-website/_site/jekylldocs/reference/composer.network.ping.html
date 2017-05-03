@@ -1,0 +1,31 @@
+<h1 id="network-ping">Network Ping</h1>
+
+<hr />
+
+<p>The <code class="highlighter-rouge">composer network ping</code> utility is used to verify the connection to a business network deployed to a Hyperledger Fabric.
+Note that ping also returns the participant information for the identity that was used to connect to the network, if
+an identity has been issued for the participant.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>composer network ping -n &lt;business-network-id&gt; -i &lt;enrollment-id&gt; -s &lt;enrollment-secret&gt;
+</code></pre>
+</div>
+
+<h3 id="options">Options</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code> --help                       Show help  [boolean]
+  -v, --version                Show version number  [boolean]
+  --businessNetworkName, -n    The business network name  [string] [required]
+  --connectionProfileName, -p  The connection profile name  [string]
+  --enrollId, -i               The enrollment ID of the user  [string] [required]
+  --enrollSecret, -s           The enrollment secret of the user  [string]
+</code></pre>
+</div>
+
+<h2 id="example-output">Example Output</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>composer network ping -n digitalproperty-network -i WebAppAdmin -s DJY27pEnl16d
+The connection to the network was successfully tested:
+  version = 0.4.1
+  participant = &lt;no participant found&gt;
+Command completed successfully.
+</code></pre>
+</div>

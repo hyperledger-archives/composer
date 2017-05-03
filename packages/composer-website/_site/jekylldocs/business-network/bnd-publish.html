@@ -1,0 +1,7 @@
+<h1 id="publish-the-business-network-definition-for-use-by-applications">Publish the Business Network Definition for use by applications</h1>
+
+<hr />
+
+<p>The easiest way to publish a business network definition for use by applications it to push the business network definition to the <code class="highlighter-rouge">npm</code> package manager using the <code class="highlighter-rouge">npm publish</code> command. This will allow the applications that would like to use the business network definition (for example to deploy it via API) to reference the business network definition as a dependency in their <code class="highlighter-rouge">package.json</code> file.</p>
+
+<p>Thanks to <code class="highlighter-rouge">npm</code> the dependency between the application and the business network definition is versioned, and if semantic versioning is used to update the version number of the business network definition then applications can safely reference the network.</p>

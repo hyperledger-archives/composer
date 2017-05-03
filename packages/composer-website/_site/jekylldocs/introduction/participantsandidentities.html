@@ -1,0 +1,63 @@
+<h1 id="participants-and-identities">Participants and Identities</h1>
+
+<hr />
+
+<p>A <code class="highlighter-rouge">Participant</code> is an actor in a business network. A participant might be an
+individual or an organization. A participant can create assets, and also exchange
+assets with other participants. A participant works with assets by submitting transactions.</p>
+
+<p>A participant has a set of <code class="highlighter-rouge">Identity</code> documents that can be validated to prove the
+identity of that participant. For example, an individual may have one or more of
+the following identity documents that prove who they are:</p>
+
+<ul>
+  <li>Passport</li>
+  <li>Driving license</li>
+  <li>Fingerprints</li>
+  <li>Retina scan</li>
+  <li>SSL certificate</li>
+</ul>
+
+<p>In order for a new participant to join a business network, a new instance of that
+participant must be created in the business network. An identity document must
+then be <code class="highlighter-rouge">Issued</code> to that participant. The new participant can then use that identity
+document to interact with the business network.</p>
+
+<p>Identity documents usually expire after a set period of time. Identity documents may
+also be lost or stolen. If the identity document expires, or if it needs to be
+replaced, then it must be <code class="highlighter-rouge">Revoked</code> so it can no longer be used to interact with
+the business network.</p>
+
+<p>These actions are performed by an existing participant in the business network,
+for example a regulatory body, or a participant in the same organization who has
+been trusted to manage participants/identities in that organization.</p>
+
+<p>In , the structure of a participant is modelled in a
+model file. This structure may include various information about the participant,
+for example the participants name, address, e-mail address, date of birth, etc.
+New instances of that modelled participant can then be created and stored in a
+participant registry.</p>
+
+<p>uses Hyperledger Fabric enrollment certificates as
+identity documents. APIs and command line applications are provided to issue and
+revoke enrollment certificates to participants that are stored in a participant
+registry. When transactions are submitted using those enrollment certificates, the
+participant is identified and is made available for the transaction processor
+function to use.</p>
+
+<h2 id="related-concepts">Related Concepts</h2>
+
+<p><a href="../introduction/businessnetwork.html">Business Network</a></p>
+
+<h2 id="related-tasks">Related Tasks</h2>
+
+<p><a href="../business-network/model-define.html">Create a Business Domain Model</a><br />
+<a href="../managing/participant-add.html">Add a Participant</a><br />
+<a href="../managing/identity-issue.html">Issue an Identity to a Participant</a><br />
+<a href="../managing/identity-revoke.html">Revoke an Identity from a Participant</a></p>
+
+<h2 id="related-reference">Related Reference</h2>
+
+<p><a href="../reference/composer.participant.add.html">Participant add command</a><br />
+<a href="../reference/composer.identity.issue.html">Identity issue command</a><br />
+<a href="../reference/composer.identity.revoke.html">Identity revoke command</a></p>

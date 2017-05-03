@@ -22,28 +22,28 @@ ACL rules are defined in a file called `permissions.acl` in the root of the busi
 
 There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
 
-For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset`.
+For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampleAsset`.
 
 ````
 rule SimpleRule {
     description: "Description of the ACL rule"
     participant: "org.acme.SampleParticipant"
     operation: ALL
-    resource: "org.acme.SampeAsset"
+    resource: "org.acme.SampleAsset"
     action: ALLOW
 }
 ````
 
 Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean JavaScript expression, which, when true, can either ALLOW or DENY access to the resource by the participant.
 
-For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset` IF the participant is the owner of the asset.
+For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampleAsset` IF the participant is the owner of the asset.
 
 ````
 rule SampleConditionalRule {
     description: "Description of the ACL rule"
     participant(m): "org.acme.SampleParticipant"
     operation: ALL
-    resource(v): "org.acme.SampeAsset"
+    resource(v): "org.acme.SampleAsset"
     condition: (v.owner.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }

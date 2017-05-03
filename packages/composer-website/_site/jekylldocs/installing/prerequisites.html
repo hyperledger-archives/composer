@@ -1,0 +1,91 @@
+<h1 id="installing-development-pre-requisites">Installing Development Pre-requisites</h1>
+
+<hr />
+
+<p>The essential tools you will need are <em>npm</em>, <em>docker</em>, <em>docker-compose</em> and a code editor for example <em>Atom</em> or <em>VSCode</em>. Samples are held in GitHub so <em>git</em> will be needed as well.</p>
+
+<p>The recommended <em>minimum</em> versions are:
+<em>Docker</em>: v1.12.3
+<em>Docker-compose</em>: v1.10.0
+<em>npm</em>: v4.6.0
+<em>node.js</em>: v6.9.5</p>
+
+<h2 id="installation-for-ubuntu">Installation for Ubuntu</h2>
+
+<h3 id="1-installing-runtime-components">1. Installing Runtime Components</h3>
+<p>Supported versions of Ubuntu are: Trusty, Utopic, Xenial and Yakkety. There is an automated installation script that will install <em>node</em> <em>docker</em> <em>docker-compose</em>.  For Trusty and Utopic, additional kernel packages that allow the use of the AUFS storage driver required by Docker, will also be installed.</p>
+
+<p>If some of the tools are already installed or to do the installation step-by-step follow the <a href="./manual_prerequisites.md">manual instructions</a>.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+<span class="gp">$ </span>chmod u+x prereqs-ubuntu.sh
+</code></pre>
+</div>
+
+<p>Next run the script - as this uses sudo you will be prompted for your password.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>./prereqs-ubuntu.sh
+</code></pre>
+</div>
+
+<p><strong>Important:</strong> You will need to logout and login again before continuing.</p>
+
+<p>The script will print out the versions installed, if you wish to check here are the version commands.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>node --version
+v6.9.5
+<span class="gp">$ </span>docker --version
+Docker version 1.12.3
+<span class="gp">$ </span>docker-compose --version
+docker-compose version 1.10.0
+</code></pre>
+</div>
+
+<h3 id="2-installing-git">2. Installing Git</h3>
+<p>This is probably already installed on most Linux machines. Pay particular attention to <a href="https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux">setting up the SSL keys</a> that are required.</p>
+
+<p><a href="https://git-scm.com/downloads">Official Git Download</a></p>
+
+<h2 id="optional-installs">Optional Installs</h2>
+
+<h3 id="1-installing-an-editor">1. Installing an editor</h3>
+
+<p>allows you to edit its project files with any editor. We recommend using either Atom or Visual Studio Code, as not only do both have excellent support for Javascript development, a <code class="highlighter-rouge">.cto</code> file syntax highlighting plugin exists for these editors.</p>
+
+<p><strong>Atom</strong></p>
+
+<p><a href="https://atom.io/">Atom</a> is a very popular editor and several contributors use it.</p>
+
+<p><a href="http://flight-manual.atom.io/getting-started/sections/installing-atom/">Official Atom installation guide</a></p>
+
+<p>Suggested Plugins:</p>
+
+<ul>
+  <li>
+    <p><a href="https://github.com/hyperledger/composer-atom-plugin">Composer Atom Syntax Highlighter</a> A plugin for model file highlighting.</p>
+  </li>
+  <li>
+    <p><a href="https://atom.io/packages/file-icons">File Icons</a> is a useful UI enhancement to show different icons for different files.</p>
+  </li>
+</ul>
+
+<p><strong>Visual Studio Code</strong></p>
+
+<p><a href="https://code.visualstudio.com/">Visual Studio Code</a> is a lightweight and powerful editor.</p>
+
+<p>Extensions may be installed into VS Code by searching the Extensions repository for the desired extension package and selecting the install option once identified. Suggested extentions include:</p>
+
+<ul>
+  <li>
+    <p>Composer VS Code Plugin. Provides syntax highlighting for CTO files within VS Code</p>
+  </li>
+  <li>
+    <p>ESLint. Integrates ESLint into VS Code.</p>
+  </li>
+  <li>
+    <p>TSLint. Integrates the tslint linter for the TypeScript language into VS Code.</p>
+  </li>
+  <li>
+    <p>EditorConfig for VS Code. Enables the definition and maintainance of consistent coding styles between different editors and IDEs.</p>
+  </li>
+</ul>
