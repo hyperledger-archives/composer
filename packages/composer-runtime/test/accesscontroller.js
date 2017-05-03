@@ -31,6 +31,7 @@ describe('AccessController', () => {
     let factory;
     let asset;
     let participant;
+    let participant2;
     let controller;
 
     beforeEach(() => {
@@ -56,7 +57,10 @@ describe('AccessController', () => {
         participant TestParticipant identified by participantId extends BaseParticipant {
             o String participantId
         }
-        participant TestParticipant2 identified by participantId extends BaseParticipant {
+        participant TestParticipant2 extends TestParticipant {
+
+        }
+        participant TestParticipant3 identified by participantId extends BaseParticipant {
             o String participantId
         }`);
         modelManager.addModelFile(`
@@ -73,6 +77,7 @@ describe('AccessController', () => {
         factory = new Factory(modelManager);
         asset = factory.newResource('org.acme.test', 'TestAsset', 'A1234');
         participant = factory.newResource('org.acme.test', 'TestParticipant', 'P5678');
+        participant2 = factory.newResource('org.acme.test', 'TestParticipant2', 'P7890');
         controller = new AccessController(aclManager);
         controller.setParticipant(participant);
     });
@@ -365,6 +370,27 @@ describe('AccessController', () => {
 
         it('should return false if the ACL rule specifies a non-matching namespace', () => {
             setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test2" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            controller.matchParticipant(participant, aclManager.getAclRules()[0])
+                .should.be.false;
+        });
+
+        it('should return true if the ACL rule specifies a fully qualified name of a supertype', () => {
+            // Test with TestParticipant which extends BaseParticipant.
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.base.BaseParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            controller.matchParticipant(participant, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
+        it('should return true if the ACL rule specifies a fully qualified name of a nested supertype', () => {
+            // Test with TestParticipant2 which extends TestParticipant which extends BaseParticipant.
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.base.BaseParticipant" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+            controller.matchParticipant(participant2, aclManager.getAclRules()[0])
+                .should.be.true;
+        });
+
+        it('should return false if the ACL rule specifies a fully qualified name of a subtype', () => {
+            // Test with TestParticipant which is extended by TestParticipant3.
+            setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant3" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
             controller.matchParticipant(participant, aclManager.getAclRules()[0])
                 .should.be.false;
         });

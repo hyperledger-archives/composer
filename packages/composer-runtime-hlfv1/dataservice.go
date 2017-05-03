@@ -86,7 +86,7 @@ func (dataService *DataService) createCollection(vm *duktape.Context) (result in
 	key, err := dataService.Stub.CreateCompositeKey(collectionObjectType, []string{id})
 	if err != nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -98,14 +98,14 @@ func (dataService *DataService) createCollection(vm *duktape.Context) (result in
 		existingValue, err := dataService.Stub.GetState(key)
 		if err != nil {
 			vm.Dup(2)
-			vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+			vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
 			return 0
 		} else if existingValue != nil {
 			vm.Dup(2)
-			vm.PushErrorObject(duktape.ErrError, "Failed to add collection with ID '%s' as the collection already exists", id)
+			vm.PushErrorObjectVa(duktape.ErrError, "Failed to add collection with ID '%s' as the collection already exists", id)
 			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
@@ -118,7 +118,7 @@ func (dataService *DataService) createCollection(vm *duktape.Context) (result in
 	value, err := json.Marshal(collection)
 	if err != nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -127,7 +127,7 @@ func (dataService *DataService) createCollection(vm *duktape.Context) (result in
 	err = dataService.Stub.PutState(key, value)
 	if err != nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -163,7 +163,7 @@ func (dataService *DataService) deleteCollection(vm *duktape.Context) (result in
 	key, err := dataService.Stub.CreateCompositeKey(collectionObjectType, []string{id})
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -174,7 +174,7 @@ func (dataService *DataService) deleteCollection(vm *duktape.Context) (result in
 	err = dataService.clearCollection(id)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -185,7 +185,7 @@ func (dataService *DataService) deleteCollection(vm *duktape.Context) (result in
 	err = dataService.Stub.DelState(key)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -215,7 +215,7 @@ func (dataService *DataService) getCollection(vm *duktape.Context) (result int) 
 	key, err := dataService.Stub.CreateCompositeKey(collectionObjectType, []string{id})
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -226,14 +226,14 @@ func (dataService *DataService) getCollection(vm *duktape.Context) (result int) 
 	value, err := dataService.Stub.GetState(key)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
 		return 0
 	} else if value == nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "Collection with ID '%s' does not exist", id)
+		vm.PushErrorObjectVa(duktape.ErrError, "Collection with ID '%s' does not exist", id)
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -269,7 +269,7 @@ func (dataService *DataService) existsCollection(vm *duktape.Context) (result in
 	key, err := dataService.Stub.CreateCompositeKey(collectionObjectType, []string{id})
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -280,7 +280,7 @@ func (dataService *DataService) existsCollection(vm *duktape.Context) (result in
 	value, err := dataService.Stub.GetState(key)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}

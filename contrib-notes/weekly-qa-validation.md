@@ -1,7 +1,7 @@
 
-# Validation of the the quality of Fabric Composer
+# Validation of the the quality of Hyperledger Composer
 
-Fabric Composer is a open source technology that is developed in the open. Therefore every Pull Request that is merged is a *public* release of code, api and documentation.
+Hyperledger Composer is a open source technology that is developed in the open. Therefore every Pull Request that is merged is a *public* release of code, api and documentation.
 
 First impressions and the overall first experience do count. Even if something isn't perfect for whatever reason, then we can still retain this new relationship _if_ the solution is easily found.
 
@@ -20,7 +20,7 @@ In addition an objective is to find and close gaps that have been found within t
 
 ## Playbooks
 
-*Note links to some of the information have not been provided - if you can't find it on fabric-composer.org then raise a docs issue - as it should be finadable!*
+*Note links to some of the information have not been provided - if you can't find it on hyperledger-composer then raise a docs issue - as it should be findable!*
 
 ### Pre-requisties
 
@@ -48,10 +48,10 @@ composer-common                v0.5.2-20170313111819
 composer-runtime-hlf           v0.5.2-20170313111819
 composer-connector-hlf         v0.5.2-20170313111819
 
-$ git clone https://github.com/fabric-composer/sample-applications.git
+$ git clone https://github.com/hyperledger/composer-sample-applications.git
 <output redacted>
 $ cd sample-applications/packages/getting-started
-$ sed -i .ORIG 's/\("composer-.*".*\):.*"/\1:"unstable"/g' package.json
+$ sed -i.ORIG 's/\("composer-.*".*\):.*"/\1:"unstable"/g' package.json
 $ npm install --tag=unstable
 $ npm test
 
