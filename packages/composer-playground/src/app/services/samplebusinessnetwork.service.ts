@@ -9,7 +9,7 @@ import {AlertService} from './alert.service';
 
 import {BusinessNetworkDefinition, AclFile} from 'composer-common';
 
-const sampleBusinessNetworkArchive = require('sample-network/dist/sample-network.bna');
+const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
 
 @Injectable()
 export class SampleBusinessNetworkService {
