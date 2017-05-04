@@ -42,41 +42,31 @@ describe('AdminService', () => {
   });
 
   describe('ensureConnected', () => {
-    it('should return if connected', inject([AdminService], (service: AdminService) => {
+    it('should return if connected', fakeAsync(inject([AdminService], (service: AdminService) => {
       service['isConnected'] = true;
 
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
+      let connectSpy = sinon.spy(service, 'connect');
 
       service.ensureConnected();
 
-      alertMock.busyStatus$.next.should.not.have.been.called;
-    }));
+      connectSpy.should.not.have.been.called;
+    })));
 
     it('should return if connecting', inject([AdminService], (service: AdminService) => {
       service['connectingPromise'] = Promise.resolve();
 
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
+      let connectSpy = sinon.spy(service, 'connect');
 
       service.ensureConnected();
 
-      alertMock.busyStatus$.next.should.not.have.been.called;
+      connectSpy.should.not.have.been.called;
     }));
 
     it('should connect if not connected', fakeAsync(inject([AdminService], (service: AdminService) => {
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
-
       let connectMock = sinon.stub(service, 'connect').returns(Promise.resolve());
-      service.ensureConnected();
+      service.ensureConnected(false);
 
       tick();
-
-      alertMock.busyStatus$.next.should.have.been.calledWith('Establishing admin connection ...');
 
       connectMock.should.have.been.called;
 
@@ -85,18 +75,12 @@ describe('AdminService', () => {
     })));
 
     it('should connect without id if not deployed', fakeAsync(inject([AdminService], (service: AdminService) => {
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
-
       let connectMock = sinon.stub(service, 'connect').returns(Promise.reject('error'));
       let connectWithoutMock = sinon.stub(service, 'connectWithOutID').returns(Promise.resolve());
       service['madeItToConnect'] = true;
       service.ensureConnected();
 
       tick();
-
-      alertMock.busyStatus$.next.should.have.been.calledWith('Establishing admin connection ...');
 
       connectMock.should.have.been.called;
       connectWithoutMock.should.have.been.called;
@@ -122,8 +106,7 @@ describe('AdminService', () => {
 
       tick();
 
-      alertMock.busyStatus$.next.should.have.been.calledWith('Establishing admin connection ...');
-
+      alertMock.busyStatus$.next.should.have.been.called;
       connectMock.should.have.been.called;
       connectWithoutMock.should.have.been.called;
 
@@ -148,8 +131,21 @@ describe('AdminService', () => {
 
       tick();
 
-      alertMock.busyStatus$.next.should.have.been.calledWith('Establishing admin connection ...');
       connectMock.should.have.been.called;
+      alertMock.busyStatus$.next.should.have.been.called;
+    })));
+
+    it('should connect even if connected if forced', fakeAsync(inject([AdminService], (service: AdminService) => {
+      service['isConnected'] = true;
+      let connectMock = sinon.stub(service, 'connect').returns(Promise.resolve());
+      service.ensureConnected(true);
+
+      tick();
+
+      connectMock.should.have.been.called;
+
+      service['isConnected'].should.equal(true);
+      should.not.exist(service['connectingPromise']);
     })));
   });
 

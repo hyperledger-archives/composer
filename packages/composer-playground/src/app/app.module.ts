@@ -26,6 +26,7 @@ import {RegistryComponent} from './registry';
 import {AddIdentityComponent} from './add-identity';
 import {IssueIdentityComponent} from './issue-identity';
 import {IdentityIssuedComponent} from './identity-issued';
+import {SwitchIdentityComponent} from './switch-identity';
 import {AboutComponent} from './about';
 import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
@@ -58,7 +59,7 @@ import { ClientService } from './services/client.service';
 import { ConnectionProfileService } from './services/connectionprofile.service';
 import { WalletService } from './services/wallet.service';
 import { IdentityService } from './services/identity.service';
-import { InitializationService } from './initialization.service';
+import { InitializationService } from './services/initialization.service';
 import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.service';
 import { AboutService } from './services/about.service';
 import { AlertService } from './services/alert.service';
@@ -109,7 +110,8 @@ type StoreType = {
     WelcomeComponent,
     VersionCheckComponent,
     ResetComponent,
-    BusyComponent
+    BusyComponent,
+    SwitchIdentityComponent
   ],
   declarations: [
     AppComponent,
@@ -121,6 +123,7 @@ type StoreType = {
     AddIdentityComponent,
     IssueIdentityComponent,
     IdentityIssuedComponent,
+    SwitchIdentityComponent,
     BusyComponent,
     ErrorComponent,
     SuccessComponent,

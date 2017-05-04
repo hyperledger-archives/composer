@@ -29,7 +29,7 @@ export class AddIdentityComponent {
 
     let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
     let wallet = this.walletService.getWallet(connectionProfile);
-    
+
     return wallet.contains(this.userID)
       .then((contains) => {
         if (contains) {

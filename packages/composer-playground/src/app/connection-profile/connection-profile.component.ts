@@ -74,15 +74,15 @@ export class ConnectionProfileComponent implements OnInit {
         if(this.currentConnectionProfile === null){
           this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         }
+
+        this.activeProfile = this.connectionProfileService.getCurrentConnectionProfile();
       });
   }
 
   profileUpdated(event){
     // If form is cancelled, we want to switch to the previous file selected
     if(!event){
-      console.log('previous', this.previousConnectionProfile);
       this.currentConnectionProfile = this.previousConnectionProfile;
-      console.log('current', this.currentConnectionProfile);
     }
 
     return this.updateConnectionProfiles();
