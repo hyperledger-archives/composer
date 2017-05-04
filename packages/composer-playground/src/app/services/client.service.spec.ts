@@ -12,7 +12,7 @@ import {AlertService} from './alert.service';
 import {BusinessNetworkDefinition, ModelFile, Script, AclFile} from 'composer-common';
 import {ConnectionProfileService} from './connectionprofile.service';
 import {BusinessNetworkConnection} from 'composer-client';
-import {IdentityService} from '../identity.service';
+import {IdentityService} from './identity.service';
 
 describe('ClientService', () => {
 

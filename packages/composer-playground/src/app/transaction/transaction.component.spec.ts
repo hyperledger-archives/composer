@@ -7,8 +7,8 @@ import { FormsModule, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, NgForm } from '@an
 import { TransactionComponent } from './transaction.component';
 import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ClientService } from './../services/client.service';
-import { InitializationService } from './../initialization.service';
+import { ClientService } from '../services/client.service';
+import { InitializationService } from '../services/initialization.service';
 
 import {
   TransactionDeclaration,
@@ -94,7 +94,7 @@ describe('TransactionComponent', () => {
     .compileComponents();
   }));
 
-  beforeEach(() => {    
+  beforeEach(() => {
     fixture = TestBed.createComponent(TransactionComponent);
     component = fixture.componentInstance;
   });
@@ -171,13 +171,13 @@ describe('TransactionComponent', () => {
       mockModelFile.getNamespace.returns('com.test');
     });
 
-    it('should generate valid transaction definition', () => {      
-      mockSerializer.fromJSON.returns(mockTransaction);  
+    it('should generate valid transaction definition', () => {
+      mockSerializer.fromJSON.returns(mockTransaction);
       mockTransaction.getIdentifierFieldName.returns('transactionId');
-      mockTransaction.getModelFile.returns(mockModelFile);  
-      mockTransaction.validate = sandbox.stub();     
-      component['selectedTransaction'] = mockTransaction;      
-      
+      mockTransaction.getModelFile.returns(mockModelFile);
+      mockTransaction.validate = sandbox.stub();
+      component['selectedTransaction'] = mockTransaction;
+
       // should start clean
       should.not.exist(component['definitionError']);
 
@@ -192,7 +192,7 @@ describe('TransactionComponent', () => {
 
       // We use the following methods:
       mockFactory.newTransaction.should.be.called;
-      mockSerializer.toJSON.should.be.called;      
+      mockSerializer.toJSON.should.be.called;
       component.onDefinitionChanged.should.be.calledOn;
     });
 
@@ -218,7 +218,7 @@ describe('TransactionComponent', () => {
       component['selectedTransaction'] = mockTransaction;
       mockTransaction.getIdentifierFieldName.returns('transactionId');
       mockTransaction.getModelFile.returns(mockModelFile);
-            
+
       // Validation requires serialisation to pass
       mockSerializer.toJSON = () => {
         throw new Error();
@@ -233,8 +233,8 @@ describe('TransactionComponent', () => {
       component['selectedTransaction'] = mockTransaction;
       mockTransaction.getIdentifierFieldName.returns('transactionId');
       mockTransaction.getModelFile.returns(mockModelFile);
-      mockSerializer.toJSON.returns({'$class': 'com.org'});   
-      mockSerializer.fromJSON.returns(mockTransaction); 
+      mockSerializer.toJSON.returns({'$class': 'com.org'});
+      mockSerializer.fromJSON.returns(mockTransaction);
       mockTransaction.validate = () => {
         throw new Error('error');
       };
@@ -272,7 +272,7 @@ describe('TransactionComponent', () => {
         'timestamp': 'now',
         'transactionId': 'A'
       });
-      
+
       // Force a validation fail
       mockTransaction.validate = () => {
         throw new Error('error');
@@ -284,43 +284,43 @@ describe('TransactionComponent', () => {
 
     });
 
-    it('should show definition errors to users', () => {      
-      
+    it('should show definition errors to users', () => {
+      sinon.stub(component, 'ngOnInit');
       component['definitionError'] = 'Error: forced error';
 
       // Check that the UI is showing the error
-      fixture.detectChanges();      
+      fixture.detectChanges();
       element = fixture.debugElement.query(By.css('.resource-error-text')).nativeElement;
       element.textContent.should.contain('Error: forced error');
 
     });
 
     it('should disable the submit transaction button if definition error detected', () => {
-
+      sinon.stub(component, 'ngOnInit');
       component['definitionError'] = 'Error: forced error';
-      
+
       // Check that the transaction submission button is disabled in UI
       fixture.detectChanges();
-      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;      
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;
       (element as HTMLButtonElement).disabled.should.be.true;
 
     });
 
     it('should re-enable the submit transaction button if definition error is fixed', () => {
- 
+      sinon.stub(component, 'ngOnInit');
       component['definitionError'] = 'Error: forced error';
-      
+
       // Check that the transaction submission button is disabled
       fixture.detectChanges();
-      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;      
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;
       (element as HTMLButtonElement).disabled.should.be.true;
 
-      // Fix the definition error      
+      // Fix the definition error
       component['definitionError'] = null;
-       
+
       // Check that the transaction submission button is enabled
       fixture.detectChanges();
-      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;      
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;
       (element as HTMLButtonElement).disabled.should.be.false;
 
     });
@@ -328,8 +328,9 @@ describe('TransactionComponent', () => {
   });
 
   describe('#submitTransaction', () => {
-    
+
     it('should change button display on transaction submission', () => {
+      sinon.stub(component, 'ngOnInit');
       mockSerializer.fromJSON.returns(mockTransaction);
       component['hiddenTransactionItems'].set('transactionId', 'transactionId');
       component['hiddenTransactionItems'].set('timestamp', 'transactionId');
@@ -352,11 +353,11 @@ describe('TransactionComponent', () => {
 
       // Update element and check that button now contains spinner
       fixture.detectChanges();
-      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;   
+      element = fixture.debugElement.query(By.css('#submitTransactionButton')).nativeElement;
       element.innerHTML.should.contain('class="ibm-spinner-indeterminate small loop"');
 
     });
-    
+
     it('should submit a transaction and close the modal', fakeAsync(() => {
       mockSerializer.fromJSON.returns(mockTransaction);
       component['resourceDefinition'] = JSON.stringify({

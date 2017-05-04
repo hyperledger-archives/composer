@@ -1,5 +1,8 @@
 FROM node:6-alpine
 
+# Reset npm logging to default level.
+ENV NPM_CONFIG_LOGLEVEL warn
+
 # Need to install extra dependencies for native modules.
 RUN apk add --no-cache make gcc g++ python git libc6-compat
 

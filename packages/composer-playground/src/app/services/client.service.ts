@@ -3,7 +3,7 @@ import {BehaviorSubject, Subject} from 'rxjs/Rx';
 
 import {AdminService} from './admin.service';
 import {ConnectionProfileService} from './connectionprofile.service';
-import {IdentityService} from '../identity.service';
+import {IdentityService} from './identity.service';
 import {AlertService} from './alert.service'
 
 import {BusinessNetworkConnection} from 'composer-client';
@@ -166,14 +166,13 @@ export class ClientService {
 
   }
 
-  ensureConnected(): Promise<any> {
-    if (this.isConnected) {
+  ensureConnected(force : boolean = true): Promise<any> {
+    if (this.isConnected && !force) {
       return Promise.resolve();
     } else if (this.connectingPromise) {
       return this.connectingPromise;
     }
     let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-    this.alertService.busyStatus$.next('Establishing client connection ...');
     console.log('Connecting to connection profile', connectionProfile);
     let userID;
     this.connectingPromise = this.adminService.ensureConnected()

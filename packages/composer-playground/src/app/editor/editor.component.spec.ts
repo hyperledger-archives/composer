@@ -11,7 +11,7 @@ import {EditorComponent} from './editor.component';
 import {AdminService} from '../services/admin.service';
 import {ClientService} from '../services/client.service';
 import {EditorService} from '../services/editor.service';
-import {InitializationService} from '../initialization.service';
+import {InitializationService} from '../services/initialization.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
@@ -19,6 +19,8 @@ import {ModelFile, Script} from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+
+import * as fileSaver from 'file-saver';
 
 let should = chai.should();
 
@@ -460,11 +462,14 @@ describe('EditorComponent', () => {
 
   describe('exportBNA', () => {
     it('should export file', (done) => {
+
+      let mockSave = sinon.stub(fileSaver, 'saveAs');
+
       mockClientService.getBusinessNetwork.returns({
-        toArchive: sinon.stub().returns(Promise.resolve('my data'))
+        toArchive: sinon.stub().returns(Promise.resolve('my_data'))
       });
 
-      mockClientService.getBusinessNetworkName.returns('my name');
+      mockClientService.getBusinessNetworkName.returns('my_business_name');
 
       mockAlertService.successStatus$ = {
         next: sinon.stub()
@@ -473,6 +478,7 @@ describe('EditorComponent', () => {
       component.exportBNA();
 
       fixture.whenStable().then(() => {
+        mockSave.should.have.been.called;
         mockAlertService.successStatus$.next.should.have.been.called;
         done();
       });
@@ -623,6 +629,11 @@ describe('EditorComponent', () => {
   });
 
   describe('toggleEditActive', () => {
+
+    beforeEach(() => {
+      sinon.stub(component, 'ngOnInit');
+    });
+
     it('should toggle editing', () => {
       component['editActive'] = false;
 
