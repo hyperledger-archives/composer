@@ -18,6 +18,7 @@ const Context = require('composer-runtime').Context;
 const DataService = require('composer-runtime').DataService;
 const Engine = require('composer-runtime').Engine;
 const IdentityService = require('composer-runtime').IdentityService;
+const EventService = require('composer-runtime').EventService;
 const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
 
@@ -62,6 +63,15 @@ describe('WebContext', () => {
             let context = new WebContext(mockEngine, 'bob1');
             context.getIdentityService().should.be.an.instanceOf(IdentityService);
             context.getIdentityService().getCurrentUserID().should.equal('bob1');
+        });
+
+    });
+
+    describe('#getEventService', () => {
+
+        it('should return the container event service', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.getEventService().should.be.an.instanceOf(EventService);
         });
 
     });

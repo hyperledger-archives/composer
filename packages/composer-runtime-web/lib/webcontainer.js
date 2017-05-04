@@ -19,6 +19,7 @@ const uuidv4 = require('uuid');
 const version = require('../package.json').version;
 const WebDataService = require('./webdataservice');
 const WebLoggingService = require('./webloggingservice');
+const WebEventService = require('./webeventservice');
 
 /**
  * A class representing the chaincode container hosting the JavaScript engine.
@@ -35,6 +36,7 @@ class WebContainer extends Container {
         this.uuid = uuid || uuidv4.v4();
         this.dataService = new WebDataService(this.uuid);
         this.loggingService = new WebLoggingService();
+        this.eventService = new WebEventService();
     }
 
     /**

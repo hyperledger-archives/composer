@@ -17,6 +17,7 @@
 const Container = require('composer-runtime').Container;
 const DataService = require('composer-runtime').DataService;
 const LoggingService = require('composer-runtime').LoggingService;
+const EventService = require('composer-runtime').EventService;
 const WebContainer = require('..').WebContainer;
 const uuid = require('uuid');
 const version = require('../package.json').version;

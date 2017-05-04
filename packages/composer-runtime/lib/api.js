@@ -37,11 +37,12 @@ class Api {
      * @param {Factory} factory The factory to use.
      * @param {Resource} participant The current participant.
      * @param {RegistryManager} registryManager The registry manager to use.
+     * @param {EventService} eventService The event service to use.
      * @private
      */
-    constructor(factory, participant, registryManager) {
+    constructor(factory, participant, registryManager, eventService) {
         const method = 'constructor';
-        LOG.entry(method, factory, participant, registryManager);
+        LOG.entry(method, factory, participant, registryManager, eventService);
 
         /**
          * Get the factory. The factory can be used to create new instances of
@@ -159,6 +160,19 @@ class Api {
             let result = participant;
             LOG.exit(method, result);
             return result;
+        };
+
+        /**
+         * Emit an event defined in the transaction
+         * @method module:composer-runtime#emit
+         * @param {Resource} event The event to be emitted
+         * @public
+         */
+        this.emit = function emit(event) {
+            const method = 'emit';
+            LOG.entry(method);
+            eventService.emit(event);
+            LOG.exit(method);
         };
 
         Object.freeze(this);

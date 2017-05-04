@@ -154,6 +154,20 @@ class Factory {
             return factory.newConcept(ns, type);
         };
 
+        /**
+         * Create a new type with a given namespace and type
+         * @public
+         * @method module:composer-runtime.Factory#newEvent
+         * @param {string} ns The namespace of the event.
+         * @param {string} type The type of the event.
+         * @return {Resource} The new instance of the event.
+         * @throws {Error} If the specified type (specified by the namespace and
+         * type) is not defined in the current version of the business network.
+         */
+        this.newEvent = function newEvent(ns, type) {
+            return factory.newEvent(ns, type);
+        };
+
         Object.freeze(this);
         LOG.exit(method);
     }

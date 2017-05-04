@@ -238,6 +238,15 @@ class Context {
     }
 
     /**
+     * Get the event service provided by the chaincode container.
+     * @abstract
+     * @return {EventService} The event service provided by the chaincode container.
+     */
+    getEventService() {
+        throw new Error('abstract function called');
+    }
+
+    /**
      * Get the model manager.
      * @return {ModelManager} The model manager.
      */
@@ -331,7 +340,7 @@ class Context {
      */
     getApi() {
         if (!this.api) {
-            this.api = new Api(this.getFactory(), this.getParticipant(), this.getRegistryManager());
+            this.api = new Api(this.getFactory(), this.getParticipant(), this.getRegistryManager(), this.getEventService());
         }
         return this.api;
     }

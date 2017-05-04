@@ -22,6 +22,7 @@ const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
+const EventService = require('../lib/eventservice');
 const Factory = require('composer-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
@@ -266,6 +267,16 @@ describe('Context', () => {
 
     });
 
+    describe('#getEventService', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getEventService();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
     describe('#getModelManager', () => {
 
         it('should throw if not initialized', () => {
@@ -419,6 +430,8 @@ describe('Context', () => {
             sinon.stub(context, 'getParticipant').returns(mockParticipant);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockEventService = sinon.createStubInstance(EventService);
+            sinon.stub(context, 'getEventService').returns(mockEventService);
             context.getApi().should.be.an.instanceOf(Api);
         });
 
