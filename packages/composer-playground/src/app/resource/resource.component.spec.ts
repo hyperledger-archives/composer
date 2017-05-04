@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { TransactionComponent } from './transaction.component';
 import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ClientService } from './../services/client.service';
+import { ClientService } from '../services/client.service';
 import { InitializationService } from '../services/initialization.service';
 
 import {
@@ -187,14 +187,14 @@ describe('ResourceComponent', () => {
       mockClassDeclaration.getModelFile.returns(mockModelFile);
       mockClassDeclaration.getName.returns('class.declaration');
       mockClassDeclaration.getIdentifierFieldName.returns('resourceId');
-      
+
     });
 
     it('should generate a valid resource', () => {
 
-      mockSerializer.toJSON.returns({'$class': 'com.org'});   
-      mockSerializer.fromJSON.returns(mockResource); 
-      mockResource.validate = sandbox.stub(); 
+      mockSerializer.toJSON.returns({'$class': 'com.org'});
+      mockSerializer.fromJSON.returns(mockResource);
+      mockResource.validate = sandbox.stub();
       component['resourceDeclaration'] = mockClassDeclaration;
 
       // should start clean
@@ -216,7 +216,7 @@ describe('ResourceComponent', () => {
 
     it('should set definitionError on serializer fail', () => {
       component['resourceDeclaration'] = mockClassDeclaration;
-      
+
       // Set serializer to throw
       mockSerializer.toJSON = () => {
         throw new Error('error');
@@ -224,7 +224,7 @@ describe('ResourceComponent', () => {
 
       // should start clean
       should.not.exist(component['definitionError']);
-      
+
       // Run method
       component['generateResource']();
 
@@ -233,8 +233,8 @@ describe('ResourceComponent', () => {
     });
 
     it('should set definitionError on validation fail', () => {
-      mockSerializer.toJSON.returns({'$class': 'com.org'});   
-      mockSerializer.fromJSON.returns(mockResource); 
+      mockSerializer.toJSON.returns({'$class': 'com.org'});
+      mockSerializer.fromJSON.returns(mockResource);
       component['resourceDeclaration'] = mockClassDeclaration;
 
       // Set validate to throw
@@ -338,9 +338,9 @@ describe('ResourceComponent', () => {
 
       // Insert definition error
       component['definitionError'] = 'Error: forced error content';
-      
+
       // Check that the UI is showing the error
-      fixture.detectChanges();      
+      fixture.detectChanges();
       element = fixture.debugElement.query(By.css('.resource-error-text')).nativeElement;
       element.textContent.should.contain('Error: forced error content');
 
@@ -351,10 +351,10 @@ describe('ResourceComponent', () => {
 
       // Insert definition error
       component['definitionError'] = 'Error: forced error content';
-          
+
       // Check that the transaction submission button is disabled in UI
       fixture.detectChanges();
-      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;      
+      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;
       (element as HTMLButtonElement).disabled.should.be.true;
 
     });
@@ -364,18 +364,18 @@ describe('ResourceComponent', () => {
 
       // Insert definition error
       component['definitionError'] = 'Error: forced error content';
-      
+
       // Check that the transaction submission button is disabled
       fixture.detectChanges();
-      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;      
+      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;
       (element as HTMLButtonElement).disabled.should.be.true;
 
       // Fix the definition error
       component['definitionError'] = undefined;
-       
+
       // Check that the transaction submission button is enabled
       fixture.detectChanges();
-      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;      
+      element = fixture.debugElement.query(By.css('#createResourceButton')).nativeElement;
       (element as HTMLButtonElement).disabled.should.be.false;
 
     });
