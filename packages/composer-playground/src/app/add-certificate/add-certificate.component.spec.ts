@@ -161,7 +161,6 @@ describe('AddCertificateComponent', () => {
       // Call method
       component.fileAccepted(file);
       tick();
-      console.log('#### expand input value', component['expandInput']);
 
       // Check
       component.expandInput.should.equal(true);

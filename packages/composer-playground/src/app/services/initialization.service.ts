@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 
-import {AdminService} from './services/admin.service';
-import {ClientService} from './services/client.service';
-import {AlertService} from './services/alert.service';
-import {ConnectionProfileService} from './services/connectionprofile.service';
+import {AdminService} from './admin.service';
+import {ClientService} from './client.service';
+import {AlertService} from './alert.service';
+import {ConnectionProfileService} from './connectionprofile.service';
 import {WalletService} from './wallet.service'
-import {SampleBusinessNetworkService} from './services/samplebusinessnetwork.service';
+import {SampleBusinessNetworkService} from './samplebusinessnetwork.service';
 
 const fabricComposerOwner = 'hyperledger';
 const fabricComposerRepository = 'composer-sample-networks';
@@ -48,9 +48,11 @@ export class InitializationService {
         return this.createInitialIdentities();
       })
       .then(() => {
+        this.alertService.busyStatus$.next('Establishing admin connection ...');
         return this.adminService.ensureConnected();
       })
       .then(() => {
+        this.alertService.busyStatus$.next('Establishing client connection ...');
         return this.clientService.ensureConnected();
       })
       .then(() => {

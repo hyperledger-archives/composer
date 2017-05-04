@@ -13,7 +13,6 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^4.0.0",
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.0.0",
@@ -29,15 +28,14 @@
     "config": "^1.21.0",
     "core-js": "^2.4.1",
     "jquery": "^3.2.1",
-    "rxjs": "^5.3.0",
+    "rxjs": "^5.1.0",
     "tether": "^1.4.0",
-    "zone.js": "^0.8.5"
+    "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "@angular/cli": "1.0.0",
+    "@angular/cli": "1.0.1",
     "@angular/compiler-cli": "^4.0.0",
     "@types/jasmine": "2.5.38",
-    "@types/jquery": "^2.0.41",
     "@types/node": "~6.0.60",
     "codelyzer": "~2.0.0",
     "jasmine-core": "~2.5.2",
@@ -50,7 +48,7 @@
     "karma-coverage-istanbul-reporter": "^0.2.0",
     "protractor": "~5.1.0",
     "ts-node": "~2.0.0",
-    "tslint": "^4.5.1",
-    "typescript": "^2.3.0"
+    "tslint": "~4.5.0",
+    "typescript": "~2.2.0"
   }
 }

@@ -2,14 +2,13 @@
 .composer {
   table {
     width: 100%;
-    border-collapse: collapse;
+    border-spacing: 0 $space-smedium;
 
     thead {
       tr {
         th {
           text-align: left;
-          border-bottom: 2px solid $third-highlight;
-          padding: 8px;
+          padding: 0 $space-smedium;
           font-weight: 700;
         }
       }
@@ -17,9 +16,17 @@
 
     tbody {
       tr {
+        background-color: $white;
+        box-shadow: 0 2px 5px -1px $fifth-highlight;
+        margin-bottom: $space-medium;
+
+
         td {
-          border-top: 1px solid $third-highlight;
-          padding: 8px;
+          padding: $space-smedium;
+
+          &.clickable {
+            cursor: pointer;
+          }
         }
       }
     }
