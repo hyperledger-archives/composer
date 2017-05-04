@@ -38,7 +38,7 @@ export class InitializationService {
 
     this.initializingPromise = Promise.resolve()
       .then(() => {
-        this.loadConfig()
+        return this.loadConfig()
       })
       .then((config) => {
         this.config = config;
@@ -86,7 +86,10 @@ export class InitializationService {
     return this.connectionProfileService.createDefaultProfile()
       .then(() => {
         // Create all of the connection profiles specified in the configuration.
-        const connectionProfiles = this.config ? this.config.connectionProfiles : {};
+        let connectionProfiles = {};
+        if (this.config && this.config.connectionProfiles) {
+          connectionProfiles = this.config.connectionProfiles;
+        }
         const connectionProfileNames = Object.keys(connectionProfiles).sort();
         return connectionProfileNames.reduce((result, connectionProfileName) => {
           return result.then(() => {
@@ -102,7 +105,10 @@ export class InitializationService {
   }
 
   createInitialIdentities() {
-    const credentials = this.config ? this.config.credentials : {};
+    let credentials = {};
+    if (this.config && this.config.credentials) {
+      credentials = this.config.credentials;
+    }
     const connectionProfileNames = Object.keys(credentials).sort();
     return connectionProfileNames.reduce((result, connectionProfileName) => {
       return result.then(() => {
