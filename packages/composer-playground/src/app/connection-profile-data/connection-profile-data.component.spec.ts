@@ -14,9 +14,9 @@ import {
 import {ConnectionProfileDataComponent} from './connection-profile-data.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConnectionProfileService} from '../services/connectionprofile.service';
-import * as sinon from 'sinon';
-import {saveAs} from 'file-saver'
 import {AlertService} from "../services/alert.service";
+import * as sinon from 'sinon';
+import * as fileSaver from 'file-saver';
 
 describe('ConnectionProfileDataComponent', () => {
   let component: ConnectionProfileDataComponent;
@@ -25,7 +25,6 @@ describe('ConnectionProfileDataComponent', () => {
   let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
   let mockNgbModal = sinon.createStubInstance(NgbModal);
   let mockAlertService = sinon.createStubInstance(AlertService);
-
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -665,10 +664,41 @@ describe('ConnectionProfileDataComponent', () => {
   });
 
   describe('exportProfile', () => {
-    it('should export profile', () => {
-      component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
+
+    afterAll(() => {
+      fileSaver.saveAs.restore();
+      (window as any).File.restore();
+    })
+
+    it('should export profile matching name and type', () => {
+      component['connectionProfileData'] = {'name':'v1 Profile','profile':{'type':'hlfv1'}};
+
+      let mockSave = sinon.stub(fileSaver, 'saveAs');
+      let testFile = new File(['test'], 'connection.json', {type: 'application/json'});
+
       component.exportProfile();
-    });
+
+      mockSave.should.have.been.calledWith(testFile);
+      let passedFile = mockSave.getCall(0).args[0];
+      passedFile.name.should.equal(testFile.name);
+      passedFile.type.should.equal(testFile.type);
+
+    })
+
+    it('should export profile matching content', () => {
+      component['connectionProfileData'] = {'name':'v1 Profile','profile':{'type':'hlfv1'}};
+
+      let mockFile = sinon.stub(window, 'File');
+      mockFile.returns(new File(['test'], 'connection.json', {type: 'application/json'}));
+
+      component.exportProfile();
+
+      mockFile.should.have.been.calledWithNew;
+      let actualData = mockFile.getCall(0).args[0];
+      let expectedData = ['test'];
+      actualData.should.deep.equal(expectedData);
+
+    })
   });
 
   describe('openAddCertificateModal', () => {

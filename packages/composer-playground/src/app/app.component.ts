@@ -66,7 +66,6 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('Initial App State', this.appState.state);
 
     this.subs = [
           this.alertService.busyStatus$.subscribe((busyStatus) => {
@@ -146,8 +145,6 @@ export class AppComponent {
         .catch((error) => {
           this.alertService.errorStatus$.next(error);
         });
-    } else {
-      console.log('no invitation here');
     }
 
     // We load the connection profiles now, so we can immediately populate the menu.
