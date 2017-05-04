@@ -58,9 +58,7 @@
   color: grey;
   text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
   list-style: none;
-  // background-color: white;
   background-clip: padding-box;
-  // border: 0px solid lightgray;
 
   background: $third-highlight;
   border: 1px solid $keyline-highlight;
@@ -71,8 +69,10 @@
   width: 300px;
   text-align: left;
   // white-space: nowrap;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   text-overflow: ellipsis;
+  max-height: 250px;
 
   &:active {
     border-bottom: 2px solid transparent;
