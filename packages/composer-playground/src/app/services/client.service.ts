@@ -3,7 +3,7 @@ import {BehaviorSubject, Subject} from 'rxjs/Rx';
 
 import {AdminService} from './admin.service';
 import {ConnectionProfileService} from './connectionprofile.service';
-import {IdentityService} from '../identity.service';
+import {IdentityService} from './identity.service';
 import {AlertService} from './alert.service'
 
 import {BusinessNetworkConnection} from 'composer-client';

@@ -5,7 +5,7 @@ import {AdminService} from './services/admin.service';
 import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
 import {ConnectionProfileService} from './services/connectionprofile.service';
-import {WalletService} from './wallet.service'
+import {WalletService} from './services/wallet.service'
 import {SampleBusinessNetworkService} from './services/samplebusinessnetwork.service';
 
 const fabricComposerOwner = 'hyperledger';

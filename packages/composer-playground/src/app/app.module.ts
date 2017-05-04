@@ -23,7 +23,9 @@ import { EditorComponent } from './editor';
 import {EditorFileComponent} from './editor-file';
 import {TestComponent} from './test';
 import {RegistryComponent} from './registry';
-import {AddIdentityComponent} from './addidentity';
+import {AddIdentityComponent} from './add-identity';
+import {IssueIdentityComponent} from './issue-identity';
+import {IdentityIssuedComponent} from './identity-issued';
 import {AboutComponent} from './about';
 import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
@@ -34,6 +36,7 @@ import {ImportComponent} from './import';
 import {ResourceComponent} from './resource';
 import {AddFileComponent} from './add-file';
 import {TransactionComponent} from './transaction';
+import {IdentityComponent} from './identity';
 import {WelcomeComponent} from './welcome';
 import {ConfirmComponent} from './confirm';
 import {GithubComponent} from './github';
@@ -53,9 +56,8 @@ import {FocusHereDirective} from './directives/focus-here';
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
 import { ConnectionProfileService } from './services/connectionprofile.service';
-import { WalletService } from './wallet.service';
-import { IdentityService } from './identity.service';
-import { NotificationService } from './notification.service';
+import { WalletService } from './services/wallet.service';
+import { IdentityService } from './services/identity.service';
 import { InitializationService } from './initialization.service';
 import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.service';
 import { AboutService } from './services/about.service';
@@ -101,6 +103,9 @@ type StoreType = {
     AddCertificateComponent,
     DeleteConnectionProfileComponent,
     ViewCertificateComponent,
+    AddIdentityComponent,
+    IssueIdentityComponent,
+    IdentityIssuedComponent,
     WelcomeComponent,
     VersionCheckComponent,
     ResetComponent,
@@ -114,6 +119,8 @@ type StoreType = {
     TestComponent,
     RegistryComponent,
     AddIdentityComponent,
+    IssueIdentityComponent,
+    IdentityIssuedComponent,
     BusyComponent,
     ErrorComponent,
     SuccessComponent,
@@ -130,6 +137,7 @@ type StoreType = {
     DeleteConnectionProfileComponent,
     AddCertificateComponent,
     ViewCertificateComponent,
+    IdentityComponent,
     ResourceComponent,
     TransactionComponent,
     CheckOverFlowDirective,
@@ -162,7 +170,6 @@ type StoreType = {
     ConnectionProfileService,
     WalletService,
     IdentityService,
-    NotificationService,
     InitializationService,
     SampleBusinessNetworkService,
     AboutService,
