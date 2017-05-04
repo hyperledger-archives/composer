@@ -3,21 +3,23 @@
 .dropup,
 .dropdown {
   position: relative;
-  background-color: #F9F9F9;
+  background-color: $third-highlight;
   width: 300px;
   text-align: left;
   padding-left: 15px;
   margin: 0 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  border-bottom: 2px solid transparent;
+  transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+
+  &:hover {
+    background-color: $fourth-highlight;
+    border-bottom: 2px solid $first-highlight;
+  }
 }
 
 .dropdown-toggle {
-  // Generate the caret automatically
+  // Generate the caret
   &::after {
-    // display: inline-block;
-    // width: 10px;
-    // height: 10px;
     content:url(data:image/svg+xml;base64,DQo8c3ZnIHdpZHRoPSI5cHgiIGhlaWdodD0iNnB4IiB2aWV3Qm94PSIwIDAgOSA2IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPg0KICAgIDxkZWZzPjwvZGVmcz4NCiAgICA8ZyBpZD0iRmxvdyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+DQogICAgICAgIDxnIGlkPSJUZXh0LUVudHJ5LUZpZWxkcyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1OTEuMDAwMDAwLCAtMTA2LjAwMDAwMCkiIGZpbGw9IiMxOTI3M0MiPg0KICAgICAgICAgICAgPHBvbHlnb24gaWQ9IlNoYXBlLUNvcHkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1OTUuNTAwMDAwLCAxMDkuMDAwMDAwKSByb3RhdGUoLTkwLjAwMDAwMCkgdHJhbnNsYXRlKC0xNTk1LjUwMDAwMCwgLTEwOS4wMDAwMDApICIgcG9pbnRzPSIxNTk4LjUgMTEyIDE1OTUuNSAxMDkgMTU5OC41IDEwNiAxNTk3IDEwNC41IDE1OTIuNSAxMDkgMTU5NyAxMTMuNSI+PC9wb2x5Z29uPg0KICAgICAgICA8L2c+DQogICAgPC9nPg0KPC9zdmc+);
     position: fixed;
     right: 36%;
@@ -60,8 +62,8 @@
   background-clip: padding-box;
   // border: 0px solid lightgray;
 
-  background: #FBFCFC;
-  border: 1px solid #E3ECEC;
+  background: $third-highlight;
+  border: 1px solid $keyline-highlight;
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
   border-top: 2px solid $first-highlight;
@@ -102,7 +104,7 @@
             padding-left: 15px;
         &:hover {
           border: 2px solid transparent;
-          background-color: lighten($first-highlight,50%);
+          background-color: $fourth-highlight;
         }
       }
 
