@@ -8,10 +8,9 @@ import {AdminService} from './services/admin.service';
 import {ClientService} from './services/client.service';
 import {AlertService} from './services/alert.service';
 import {ConnectionProfileService} from './services/connectionprofile.service';
-import {WalletService} from './wallet.service';
-import {IdentityService} from './identity.service';
-import {InitializationService} from './initialization.service';
-import {AddIdentityComponent} from './addidentity';
+import {WalletService} from './services/wallet.service';
+import {IdentityService} from './services/identity.service';
+import {InitializationService} from './services/initialization.service';
 import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';
@@ -67,7 +66,6 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('Initial App State', this.appState.state);
 
     this.subs = [
           this.alertService.busyStatus$.subscribe((busyStatus) => {
@@ -147,8 +145,6 @@ export class AppComponent {
         .catch((error) => {
           this.alertService.errorStatus$.next(error);
         });
-    } else {
-      console.log('no invitation here');
     }
 
     // We load the connection profiles now, so we can immediately populate the menu.
@@ -211,68 +207,6 @@ export class AppComponent {
       .then((identities) => {
         this.identities = identities;
       });
-  }
-
-  private changeCurrentConnectionProfile(connectionProfile): Promise <any> {
-    console.log('Changing current connection profile', connectionProfile.name);
-    return this.identityService.getIdentities(connectionProfile.name)
-      .then((credentials) => {
-        // If there are no credentials in the wallet then we need to ask.
-        if (credentials.length === 0) {
-          console.log('No credentials in wallet');
-          // Ask for a new identity.
-          return this.addIdentity(connectionProfile.name)
-            .then((identity) => {
-              if (identity) {
-                // Set the current identity to the new identity.
-                this.identityService.setIdentity(connectionProfile.name, identity);
-                return identity;
-              }
-            });
-          // Otherwise there are credentials in the wallet, but we need to check
-          // that the current identity is valid.
-        } else {
-          console.log('Have credentials in wallet', credentials.join(', '));
-          // Get the current identity.
-          return this.identityService.getIdentity(connectionProfile.name)
-            .then((identity) => {
-              // Does it exist in the list, if not select another oen.
-              if (credentials.indexOf(identity) === -1) {
-                // Select the first identity.
-                identity = credentials[0];
-                // Set the current identity to the first identity.
-                this.identityService.setIdentity(connectionProfile.name, identity);
-              }
-              return identity;
-            });
-        }
-      }).then((result) => {
-        if (result) {
-          this.connectionProfileService.setCurrentConnectionProfile(connectionProfile.name);
-          window.location.reload();
-        }
-      });
-  }
-
-  private addIdentity(connectionProfile ?: string): Promise < string > {
-    let modalRef = this.modalService.open(AddIdentityComponent);
-    modalRef.componentInstance.connectionProfileOverride = connectionProfile;
-
-    return modalRef.result.then((result) => {
-      if (result) {
-        return this.updateConnectionData()
-          .then(() => {
-            return result;
-          });
-      } else {
-        return result;
-      }
-    });
-  }
-
-  private changeCurrentIdentity(identity) {
-    this.identityService.setCurrentIdentity(identity);
-    window.location.reload();
   }
 
   private onBusyStatus(busyStatus) {

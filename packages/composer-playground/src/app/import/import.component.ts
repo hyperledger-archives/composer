@@ -94,8 +94,7 @@ export class ImportComponent implements OnInit {
           this.gitHubInProgress = false;
         })
         .catch((error) => {
-          console.log(typeof error.message);
-          console.log(error.message['message']);
+
           if (error.message.includes('API rate limit exceeded')) {
             error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
           }
@@ -109,7 +108,7 @@ export class ImportComponent implements OnInit {
   }
 
   orderGitHubProjects(networks: any[]): any[] {
-    console.log(JSON.stringify(networks[1]));
+
     let newOrder = [];
     newOrder.push(this.EMPTY_BIZNET);
 
@@ -144,7 +143,6 @@ export class ImportComponent implements OnInit {
   private fileAccepted(file: File) {
     let fileReader = new FileReader();
     fileReader.onload = () => {
-      // console.log('Typeof result: '+fileReader.result);
       let dataBuffer = Buffer.from(fileReader.result);
       this.sampleBusinessNetworkService.getBusinessNetworkFromArchive(dataBuffer)
         .then((businessNetwork) => {
@@ -203,7 +201,7 @@ export class ImportComponent implements OnInit {
 
 
   deployFromGitHub(): Promise < any > {
-    
+
     if(this.chosenNetwork === this.NAME) {
         let readme = 'This is the readme file for the Business Network Definition created in Playground';
         let packageJson = {
@@ -248,7 +246,7 @@ export class ImportComponent implements OnInit {
       return this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
 
     } else {
-      
+
       let chosenSampleNetwork = this.sampleNetworks.find((sampleNetwork) => {
         return sampleNetwork.name === this.chosenNetwork;
       });

@@ -3,7 +3,7 @@ import {LocalStorageService} from 'angular-2-local-storage';
 
 import {AdminConnection} from 'composer-admin';
 
-import {WalletService} from '../wallet.service';
+import {WalletService} from './wallet.service';
 
 
 @Injectable()
@@ -12,6 +12,8 @@ export class ConnectionProfileService {
   private adminConnection: AdminConnection;
   private currentCertificate: string;
   private currentHostname: string;
+  private currentlySelectedProfileName: string;
+
 
   constructor(private localStorageService: LocalStorageService,
               private walletService: WalletService) {
@@ -77,8 +79,16 @@ export class ConnectionProfileService {
   getHostname(): string{
     return this.currentHostname;
   }
+
   setHostname(hostname:string){
     this.currentHostname = hostname;
   }
 
+  getCurrentlySelectedProfileName() : string {
+    return this.currentlySelectedProfileName;
+  }
+
+  setCurrentlySelectedProfileName(name: string) {
+    this.currentlySelectedProfileName = name;
+  }
 }
