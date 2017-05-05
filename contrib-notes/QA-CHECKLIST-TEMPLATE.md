@@ -19,9 +19,9 @@
 
 ## Standard Verification
 
-- [ ] Running the pre-req scripts on clean platform images (within a virtualized environment, install from ISO image of Ubuntu. Follow the preqrequistie tool chain as documented on the website.)
+- [ ] Running the pre-req scripts on clean platform images (within a virtualized environment, install from ISO image of Ubuntu. Follow the prerequisite tool chain as documented on the website.)
 - [ ] Run the QuickStart and follow on tutorials to ensure they are correct [_note currently this means following the instructions on the website, however there is a plan to automate this_]
-- [ ] Yo Generator (Angular + CLI) - generates and the code runs succesfully
+- [ ] Yo Generator (Angular + CLI) - generates and the code runs successfully
 - [ ] Expose as REST API tutorial
 
 *Documentation*
@@ -36,9 +36,9 @@
 ### Stable UI
  - [ ] Connect to the playground
  - [ ] Review model, and submit transaction
- - [ ] Update model, redploy, and submit updated transaction on that model
+ - [ ] Update model, redeploy, and submit updated transaction on that model
 
-<!-- The Engagement teams lab @ https://ibm.ent.box.com/file/141636016965 is a good source of the process and information for the Composuer-UI -->
+<!-- The Engagement teams lab @ https://ibm.ent.box.com/file/141636016965 is a good source of the process and information for the Composer-UI -->
 
 ### Next UI
  - [ ] Running the Car Auction scenario to validate the the new Playground-UI
@@ -51,4 +51,4 @@
 -
 -
 
-## General Obervations
+## General Observations
