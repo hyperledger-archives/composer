@@ -147,18 +147,6 @@ module.exports = yeoman.Base.extend({
                 },
                 {
                     type: 'input',
-                    name: 'apiIP',
-                    message: 'What is the address of the running REST server?:',
-                    default: 'http://localhost'
-                },
-                {
-                    type: 'input',
-                    name: 'apiPort',
-                    message: 'What is the Port number of the running REST server?:',
-                    default: '3000'
-                },
-                {
-                    type: 'input',
                     name: 'connectionProfileName',
                     message: 'What is the Connection Profile to use?',
                     default: 'defaultProfile',
