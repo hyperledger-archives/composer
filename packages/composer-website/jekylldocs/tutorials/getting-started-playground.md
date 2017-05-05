@@ -118,9 +118,15 @@ If you see this error, ensure that all of these ports are free before you run an
 
 If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://docker-machine-ip:8080" target="_blank">http://<span></span>localhost:8080</a>
 
+# Connecting to Hyperledger Fabric
+
+The Basic Sample Network is loaded into the UI by default - it's the "Hello World" of {{site.data.conrefs.composer_full}} samples.  The Web Browser Connection Profile is in use to start with, so any data you create by testing your model will be stored in browser memory.
+
+The docker-compose command you ran also started a Hyperledger Fabric instance that you can activate to have {{site.data.conrefs.composer_full}} Playground connected to a blockchain instance.  To do so, head to the Connection Profiles panel of the UI (click the globe icon in the top-right) and activate the "hlfabric" Connection Profile.
+
 ---
 
-**You're done!**  {{site.data.conrefs.composer_full}} Playground is now running on your machine.  The Basic Sample Network is loaded into the UI by default - it's the "Hello World" of {{site.data.conrefs.composer_full}} samples.  The Web Browser Connection Profile is in use to start with, and you can switch to use the Hyperledger Fabric instance that your docker-compose command also started up by heading to the Connection Profiles panel of the UI (click the globe icon in the top-right) and activating the "hlfabric" Connection Profile.
+>This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
 
 ---
 
@@ -212,7 +218,11 @@ You can then start {{site.data.conrefs.composer_full}} Playground by running the
 
 A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
-This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+---
+
+>This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+
+---
 
 ## <a name="installdocker"></a>Installing with Docker
 
@@ -225,14 +235,14 @@ In order to install {{site.data.conrefs.composer_full}} Playground with Docker, 
     Test that Docker Engine is installed by running the following command in your terminal or command prompt:
 
     ```
-    docker -v
+      docker -v
     ```
 
     You should see the following output in your terminal or command prompt:
 
     ```
-    $ docker -v
-    Docker version 1.13.0, build 49bf474
+      $ docker -v
+      Docker version 1.13.0, build 49bf474
     ```
 
     Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
@@ -256,4 +266,8 @@ Verify that no errors occurred.
 
 You can then start {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
-This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+---
+
+>This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+
+---
