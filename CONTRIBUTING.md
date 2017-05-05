@@ -1,6 +1,6 @@
 # Contributing to Hyperledger Composer
 
-We welcome contributions to the code base. There is a contributors [RocketChat channel](https://chat.hyperledger.org/channel/fabric-composer-dev) that we would encourage you to join and introduce yourself on.
+We welcome contributions to the code base. There is a contributors [RocketChat channel](https://chat.hyperledger.org/channel/composer-dev) that we would encourage you to join and introduce yourself on.
 
 This document explains how you should work with the Composer repositories within the Hyperledger project. The repositories are:
 
@@ -15,7 +15,7 @@ This document explains how you should work with the Composer repositories within
 
 ## Raising an Issue
 
-If you have a question or problem that relates to general support, please ask the question on either [RocketChat](https://chat.hyperledger.org/channel/fabric-composer) or [Stack Overflow](http://stackoverflow.com/questions/tagged/fabric-composer), where the question should be tagged with 'fabric-composer'. We would like to exclusively use GitHub issues for bug reports and feature requests.
+If you have a question or problem that relates to general support, please ask the question on either [RocketChat](https://chat.hyperledger.org/channel/composer) or [Stack Overflow](http://stackoverflow.com/questions/tagged/hyperledger-composer), where the question should be tagged with 'hyperledger-composer'. We would like to exclusively use GitHub issues for bug reports and feature requests.
 
 If you find a bug in the source code, an error in any documentation, or would like a new feature, you can help us by [raising an issue](./contrib-notes/raising-issues.md) to our GitHub Repository or delivering a fix via a [pull request](./contrib-notes/submitting-pull-request.md).
 
