@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { Configuration }     from './configuration';
 import { DataService }     from './data.service';
 import { AppComponent } from './app.component';
+import { HomeComponent } from './home/home.component';
 // import { TransactionComponent } from './Transaction/Transaction.component'
 <% for(var x=0;x<assetComponentNames.length;x++){ %>
 import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= assetList[x].name %>.component';<% } %>
@@ -13,10 +14,11 @@ import { <%= assetComponentNames[x] %> } from './<%= assetList[x].name %>/<%= as
 @NgModule({
   declarations: [
     AppComponent,
+		HomeComponent,
     // TransactionComponent,
     <% for(var x=0;x<assetComponentNames.length;x++){ %><% if(x == assetComponentNames.length-1){ %>
-    <%= assetComponentNames[x] %><% } else{ %>
-    <%= assetComponentNames[x] %>,<% } %><% } %>
+    <%= assetComponentNames[x] %><%}else{%><%= assetComponentNames[x] %>,<% } %>
+		<% } %>
   ],
   imports: [
     BrowserModule,
