@@ -1,1 +1,1 @@
-Sitemap: https://hyperledger.github.io/composer//composer/sitemap.xml
+Sitemap: https://hyperledger.github.io/composer//composer/unstable/sitemap.xml
