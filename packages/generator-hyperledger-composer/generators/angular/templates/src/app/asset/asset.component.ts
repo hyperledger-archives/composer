@@ -50,12 +50,15 @@ export class <%= currentAsset.name %>Component implements OnInit {
       this.allAssets = tempList;
     })
     .catch((error) => {
-      if(error == 'Server error'){
-				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-			}
-			else{
-				this.errorMessage = error;
-			}
+        if(error == 'Server error'){
+            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+        }
+        else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
+        }
+        else{
+            this.errorMessage = error;
+        }
     });
   }
 
@@ -96,13 +99,13 @@ export class <%= currentAsset.name %>Component implements OnInit {
       <% }%>
       });
     })
-		.catch((error) => {
-      if(error == 'Server error'){
-				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-			}
-			else{
-				this.errorMessage = error;
-			}
+    .catch((error) => {
+        if(error == 'Server error'){
+            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+        }
+        else{
+            this.errorMessage = error;
+        }
     });
   }
 
@@ -129,8 +132,11 @@ export class <%= currentAsset.name %>Component implements OnInit {
 			this.errorMessage = null;
 		})
 		.catch((error) => {
-      if(error == 'Server error'){
+            if(error == 'Server error'){
 				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+			}
+            else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
 			}
 			else{
 				this.errorMessage = error;
@@ -192,13 +198,16 @@ export class <%= currentAsset.name %>Component implements OnInit {
       this.myForm.setValue(formObject);
 
     })
-		.catch((error) => {
-      if(error == 'Server error'){
-				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
-			}
-			else{
-				this.errorMessage = error;
-			}
+    .catch((error) => {
+        if(error == 'Server error'){
+            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+        }
+        else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
+        }
+        else{
+            this.errorMessage = error;
+        }
     });
 
   }
