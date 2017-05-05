@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {ClientService} from '../services/client.service';
-import {InitializationService} from '../initialization.service';
+import {InitializationService} from '../services/initialization.service';
 
 @Component({
   selector: 'reset',

@@ -10,7 +10,7 @@ import {AlertService} from './services/alert.service';
 import {ConnectionProfileService} from './services/connectionprofile.service';
 import {WalletService} from './services/wallet.service';
 import {IdentityService} from './services/identity.service';
-import {InitializationService} from './initialization.service';
+import {InitializationService} from './services/initialization.service';
 import {BusyComponent} from './busy';
 import {ErrorComponent} from './error';
 import {ResetComponent} from './reset';
@@ -66,7 +66,6 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    console.log('Initial App State', this.appState.state);
 
     this.subs = [
           this.alertService.busyStatus$.subscribe((busyStatus) => {
@@ -146,8 +145,6 @@ export class AppComponent {
         .catch((error) => {
           this.alertService.errorStatus$.next(error);
         });
-    } else {
-      console.log('no invitation here');
     }
 
     // We load the connection profiles now, so we can immediately populate the menu.

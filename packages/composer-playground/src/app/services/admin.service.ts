@@ -51,15 +51,14 @@ export class AdminService {
     return this.adminConnection;
   }
 
-  public ensureConnected(): Promise<any> {
-    if (this.isConnected) {
+  public ensureConnected(force : boolean = false): Promise<any> {
+    if (this.isConnected && !force) {
       return Promise.resolve();
     } else if (this.connectingPromise) {
       return this.connectingPromise;
     }
 
-    this.alertService.busyStatus$.next('Establishing admin connection ...');
-    console.log('Establishing admin connection ...');
+       console.log('Establishing admin connection ...');
     this.connectingPromise = Promise.resolve()
       .then(() => {
         return this.connect();

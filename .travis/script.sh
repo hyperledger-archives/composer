@@ -47,10 +47,6 @@ else
     # Run the unit tests.
     npm test 2>&1 | tee
 
-    # Build the Composer UI.
-    cd "${DIR}/packages/composer-ui"
-    npm run build:prod
-
     # Build the Composer Playground.
     cd "${DIR}/packages/composer-playground"
     npm run build:prod

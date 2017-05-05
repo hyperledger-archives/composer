@@ -97,7 +97,6 @@ export class IssueIdentityComponent implements OnInit {
         this.activeModal.close(identity);
       })
       .catch((error) => {
-        console.log(error);
         this.issueInProgress = false;
         this.activeModal.dismiss(error);
       });
