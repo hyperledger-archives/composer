@@ -62,7 +62,7 @@ set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
 docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 
 # This is the list of Docker images to build.
-export DOCKER_IMAGES="composer-ui composer-playground composer-rest-server"
+export DOCKER_IMAGES="composer-playground composer-rest-server"
 
 # Push the code to npm.
 if [ -z "${TRAVIS_TAG}" ]; then
@@ -87,15 +87,6 @@ if [ -z "${TRAVIS_TAG}" ]; then
         docker push fabriccomposer/${i}:unstable
 
     done
-
-    # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-ui
-    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer-unstable -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env fabric-composer-unstable CLIENT_ID ${GH_UNSTABLE_OAUTH_CLIENT_ID}
-    cf set-env fabric-composer-unstable CLIENT_SECRET ${GH_UNSTABLE_OAUTH_CLIENT_SECRET}
-    cf start fabric-composer-unstable
-    popd
 
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-playground
@@ -129,15 +120,6 @@ else
         docker push fabriccomposer/${i}:latest
 
     done
-
-    # Push to public Bluemix.
-    pushd ${DIR}/packages/composer-ui
-    cf login -a https://api.ng.bluemix.net -u ${CF_USERNAME} -p ${CF_PASSWORD} -o ${CF_ORGANIZATION} -s ${CF_SPACE}
-    cf push fabric-composer -c "node cli.js" -i 2 -m 128M --no-start
-    cf set-env fabric-composer CLIENT_ID ${GH_OAUTH_CLIENT_ID}
-    cf set-env fabric-composer CLIENT_SECRET ${GH_OAUTH_CLIENT_SECRET}
-    cf start fabric-composer
-    popd
 
     # Push to public Bluemix.
     pushd ${DIR}/packages/composer-playground

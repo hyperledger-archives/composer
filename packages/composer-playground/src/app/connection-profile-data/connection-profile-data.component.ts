@@ -1,5 +1,13 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {FormsModule, ReactiveFormsModule, FormGroup, FormControl, FormArray, Validators, FormBuilder} from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  FormControl,
+  FormArray,
+  Validators,
+  FormBuilder
+} from '@angular/forms';
 
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConnectionProfileService} from '../services/connectionprofile.service';
@@ -7,6 +15,8 @@ import {DeleteConnectionProfileComponent} from '../delete-connection-profile/del
 import {AddCertificateComponent} from '../add-certificate/add-certificate.component.ts';
 import {ViewCertificateComponent} from '../view-certificate/view-certificate.component.ts';
 import {saveAs} from 'file-saver';
+import {SwitchIdentityComponent} from "../switch-identity/switch-identity.component";
+import {AlertService} from "../services/alert.service";
 
 @Component({
   selector: 'connection-profile-data',
@@ -21,12 +31,11 @@ export class ConnectionProfileDataComponent {
 
   private connectionProfileData = null;
   private expandedSection = ['Basic Configuration'];
-  private showExpand: boolean = true;
 
   @Input() set connectionProfile(connectionProfile: any) {
     this.editing = false;
     this.connectionProfileData = connectionProfile;
-    if (this.connectionProfileData && this.connectionProfileData.name === 'New Connection Profile'){
+    if (this.connectionProfileData && this.connectionProfileData.name === 'New Connection Profile') {
       this.startEditing();
     }
   }
@@ -40,7 +49,8 @@ export class ConnectionProfileDataComponent {
 
   constructor(private fb: FormBuilder,
               private connectionProfileService: ConnectionProfileService,
-              private modalService: NgbModal) {
+              private modalService: NgbModal,
+              private alertService: AlertService) {
   }
 
   expandSection(sectionToExpand) {
@@ -88,12 +98,20 @@ export class ConnectionProfileDataComponent {
     else{
       throw new Error('Invalid connection profile type')
     }
-
-
   }
 
   useProfile() {
-    this.connectionProfileService.setCurrentConnectionProfile(this.connectionProfileData.name);
+    let modalRef = this.modalService.open(SwitchIdentityComponent);
+    modalRef.componentInstance.connectionProfileName = this.connectionProfileData.name;
+    modalRef.result.then((result) => {
+      this.alertService.successStatus$.next('Successfully connected with profile ' + this.connectionProfileData.name);
+      this.profileUpdated.emit(true);
+
+    }, (reason) => {
+      if (reason) {
+        this.alertService.errorStatus$.next(reason);
+      }
+    });
   }
 
   startEditing() {
@@ -198,9 +216,6 @@ export class ConnectionProfileDataComponent {
     this.editing = true;
   }
 
-
-
-  /* Probably needs this all somewhere else */
   initOrderers(){
     let someList = [];
     if(this.connectionProfileData){
@@ -210,7 +225,6 @@ export class ConnectionProfileDataComponent {
           'cert': [this.connectionProfileData.profile.orderers[orderer].cert],
           'hostnameOverride': [this.connectionProfileData.profile.orderers[orderer].hostnameOverride],
         });
-        // console.log('What is ordererFormGroup',ordererFormGroup);
         someList.push(ordererFormGroup);
       }
       return someList;
@@ -234,6 +248,7 @@ export class ConnectionProfileDataComponent {
         'hostnameOverride': ['']
       }));
   }
+
   removeOrderer(i: number) {
     // remove orderer from the list
     const controls = <FormArray>this.v1Form.controls['orderers'];
@@ -241,8 +256,6 @@ export class ConnectionProfileDataComponent {
   }
 
   initPeers(){
-
-
     let someList = [];
     if(this.connectionProfileData){
       for(let peer in this.connectionProfileData.profile.peers){
@@ -264,8 +277,8 @@ export class ConnectionProfileDataComponent {
       }));
       return someList;
     }
-
   }
+
   addPeer() {
     const control = <FormArray>this.v1Form.controls['peers'];
     control.push(this.fb.group({
@@ -275,17 +288,14 @@ export class ConnectionProfileDataComponent {
         'hostnameOverride': ['']
       }));
   }
+
   removePeer(i: number) {
     // remove peer from the list
     const control = <FormArray>this.v1Form.controls['peers'];
     control.removeAt(i);
   }
 
-
-
-
   onValueChanged(data?: any) {
-
     let form;
     let formErrors;
     let validationMessages;
@@ -333,7 +343,6 @@ export class ConnectionProfileDataComponent {
         }
       }
     }
-
   }
 
   public v06FormErrors = {
@@ -356,7 +365,6 @@ export class ConnectionProfileDataComponent {
     'keyValStore': '',
     'deployWaitTime': '',
     'invokeWaitTime': ''
-
   };
 
   public v06ValidationMessages = {
@@ -382,7 +390,6 @@ export class ConnectionProfileDataComponent {
     'invokeWaitTime': {
       'pattern': 'The Invoke Wait Time (seconds) must be an integer.'
     }
-
   };
 
   public v1ValidationMessages = {
@@ -397,23 +404,15 @@ export class ConnectionProfileDataComponent {
       'eventURL': {
         'required': 'Every Peer Event URL is required.'
       },
-      'cert': {
-
-      },
-      'hostnameOverride': {
-
-      }
+      'cert': {},
+      'hostnameOverride': {}
     },
     'orderers': {
       'url': {
         'required': 'Every Orderer URL is required.'
       },
-      'cert': {
-
-      },
-      'hostnameOverride': {
-
-      }
+      'cert': {},
+      'hostnameOverride': {}
     },
     'channel': {
       'required': 'A Channel name is required.',
@@ -435,10 +434,7 @@ export class ConnectionProfileDataComponent {
     }
   };
 
-
-
   onSubmit() {
-
     let connectionProfile;
     if(!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')){
       throw new Error('Unknown profile type');
@@ -462,9 +458,6 @@ export class ConnectionProfileDataComponent {
           default: false
         };
 
-
-
-
         return this.connectionProfileService.getAllProfiles().then((connectionProfiles) => {
           let profiles = Object.keys(connectionProfiles).sort();
           profiles.forEach((profile) => {
@@ -473,8 +466,6 @@ export class ConnectionProfileDataComponent {
               return this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
             }
           });
-
-
         }).then(() => {
           this.connectionProfileData = profileToSet;
           this.profileUpdated.emit(true);
@@ -482,9 +473,6 @@ export class ConnectionProfileDataComponent {
 
       });
     }
-
-
-
   }
 
   stopEditing(){
@@ -502,23 +490,17 @@ export class ConnectionProfileDataComponent {
         this.profileUpdated.emit(true);
       }
     })
-    .catch((closed) => {});
+      .catch((closed) => {
+      });
   }
-
 
   exportProfile(){
     let profileData = JSON.stringify(this.connectionProfileData.profile, null, 4);
-
     let file = new File([profileData], 'connection.json', {type: 'application/json'});
     saveAs(file);
   }
 
-
-
-
   openAddCertificateModal(index,type){
-
-
     if(type === 'orderers'){
       this.connectionProfileService.setCertificate(this.v1Form.controls['orderers']['controls'][index]['value']['cert']);
       this.connectionProfileService.setHostname(this.v1Form.controls['orderers']['controls'][index]['value']['hostnameOverride']);
@@ -534,19 +516,26 @@ export class ConnectionProfileDataComponent {
         if(result.hostnameOverride === ''){
           result.hostnameOverride = 'orderer'+index;
         }
-        this.v1Form.controls['orderers']['controls'][index].patchValue({'cert':result.cert,'hostnameOverride':result.hostnameOverride})
+          this.v1Form.controls['orderers']['controls'][index].patchValue({
+            'cert': result.cert,
+            'hostnameOverride': result.hostnameOverride
+          })
       }
       else if(type === 'peers'){
         if(result.hostnameOverride === ''){
           result.hostnameOverride = 'peer'+index;
         }
-        this.v1Form.controls['peers']['controls'][index].patchValue({'cert':result.cert,'hostnameOverride':result.hostnameOverride})
+          this.v1Form.controls['peers']['controls'][index].patchValue({
+            'cert': result.cert,
+            'hostnameOverride': result.hostnameOverride
+          })
       }
       else{
         throw new Error('Unrecognized type ' + type)
       }
     })
-    .catch((closed) => {});
+      .catch((closed) => {
+      });
 
   }
 
@@ -555,8 +544,10 @@ export class ConnectionProfileDataComponent {
     this.connectionProfileService.setCertificate(cert);
     this.connectionProfileService.setHostname(hostname);
     this.modalService.open(ViewCertificateComponent).result
-    .then(() => {})
-    .catch(() => {});
+      .then(() => {
+      })
+      .catch(() => {
+      });
   }
 
 

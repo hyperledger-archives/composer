@@ -3,20 +3,29 @@
 .dropup,
 .dropdown {
   position: relative;
+  background-color: $third-highlight;
+  width: 300px;
+  text-align: left;
+  padding-left: 15px;
+  margin: 0 auto;
+  border-bottom: 2px solid transparent;
+  transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+
+  &:hover {
+    background-color: $fourth-highlight;
+    border-bottom: 2px solid $first-highlight;
+  }
 }
 
 .dropdown-toggle {
-  // Generate the caret automatically
+  // Generate the caret (base 64 encoded SVG) and place it on the right hand side
   &::after {
-    display: inline-block;
+    content:url(data:image/svg+xml;base64,DQo8c3ZnIHdpZHRoPSI5cHgiIGhlaWdodD0iNnB4IiB2aWV3Qm94PSIwIDAgOSA2IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPg0KICAgIDxkZWZzPjwvZGVmcz4NCiAgICA8ZyBpZD0iRmxvdyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+DQogICAgICAgIDxnIGlkPSJUZXh0LUVudHJ5LUZpZWxkcyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1OTEuMDAwMDAwLCAtMTA2LjAwMDAwMCkiIGZpbGw9IiMxOTI3M0MiPg0KICAgICAgICAgICAgPHBvbHlnb24gaWQ9IlNoYXBlLUNvcHkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1OTUuNTAwMDAwLCAxMDkuMDAwMDAwKSByb3RhdGUoLTkwLjAwMDAwMCkgdHJhbnNsYXRlKC0xNTk1LjUwMDAwMCwgLTEwOS4wMDAwMDApICIgcG9pbnRzPSIxNTk4LjUgMTEyIDE1OTUuNSAxMDkgMTU5OC41IDEwNiAxNTk3IDEwNC41IDE1OTIuNSAxMDkgMTU5NyAxMTMuNSI+PC9wb2x5Z29uPg0KICAgICAgICA8L2c+DQogICAgPC9nPg0KPC9zdmc+);
+    position: fixed;
+    right: 36%;
+    cursor: pointer;
     width: 0;
     height: 0;
-    margin-left: 10px;
-    vertical-align: middle;
-    content: "";
-    border-top: 10px solid;
-    border-right: 10px solid transparent;
-    border-left: 10px solid transparent;
   }
 
   // Prevent the focus on the dropdown toggle when closing dropdowns
@@ -49,9 +58,24 @@
   color: grey;
   text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
   list-style: none;
-  background-color: white;
   background-clip: padding-box;
-  border: 0px solid lightgray;
+
+  background: $third-highlight;
+  border: 1px solid $keyline-highlight;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top: 2px solid $first-highlight;
+  box-shadow: 0 1px 10px 0 rgba(0,0,0,0.10);
+  width: 300px;
+  text-align: left;
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-overflow: ellipsis;
+  max-height: 250px;
+
+  &:active {
+    border-bottom: 2px solid transparent;
+  }
 
 
 
@@ -68,11 +92,19 @@
     text-align: left; // For `<button>`s
     white-space: nowrap; // prevent links from randomly breaking onto new lines
     background: none; // For `<button>`s
-    border: 0; // For `<button>`s
+    border: 2px solid transparent; // For `<button>`s
     margin-left:0;
 
       .action {
         padding: 0 1rem;
+      }
+
+      &.action {
+            padding-left: 15px;
+        &:hover {
+          border: 2px solid transparent;
+          background-color: $fourth-highlight;
+        }
       }
 
     &.active,
@@ -150,4 +182,41 @@
     bottom: 100%;
     margin-bottom: 0;
   }
+}
+
+//Hover state overrides
+
+.composer {
+  button {
+    &.action {
+      &.dropdown-toggle {
+          &:hover {
+            border-bottom: 2px solid transparent;
+            color: $primary-text;
+          }
+          &:active {
+            border-bottom: 2px solid transparent;
+            color: $primary-text;
+
+            ::after {
+              transform: rotate(90);
+            }
+          }
+
+          &:focus {
+            border-bottom: 2px solid transparent;
+            color: $primary-text;
+
+            ::after {
+              transform: rotateX(90);
+            }
+          }
+      }
+    }
+  }
+}
+
+#dropdownMenu1 {
+  width: 100%;
+  text-align: left;
 }

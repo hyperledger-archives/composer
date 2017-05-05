@@ -7,7 +7,7 @@ import {AddFileComponent} from '../add-file/add-file.component';
 
 import {AdminService} from '../services/admin.service';
 import {ClientService} from '../services/client.service';
-import {InitializationService} from '../initialization.service';
+import {InitializationService} from '../services/initialization.service';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
 import {EditorService} from '../services/editor.service';

@@ -1283,24 +1283,26 @@ describe('BusinessNetworkConnector', () => {
 
         it('should submit a transaction', () => {
             mockTransactionDeclaration.getFullyQualifiedName.onFirstCall().returns('org.acme.Transaction');
+            mockResource.getIdentifier.returns('f7cf42d6-492f-4b7e-8b6a-2150ac5bcc5f');
             mockResource.getClassDeclaration.onFirstCall().returns(mockTransactionDeclaration);
 
             return new Promise((resolve, reject) => {
                 testConnector.create('org.acme.Transaction', {
                     $class : 'org.acme.Transaction',
                     some : 'data'
-                }, { test: 'options' }, (error) => {
+                }, { test: 'options' }, (error, identifier) => {
                     if (error) {
                         return reject(error);
                     }
-                    resolve();
+                    resolve(identifier);
                 });
             })
-                .then(() => {
+                .then((identifier) => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.submitTransaction);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.submitTransaction, mockResource);
+                    identifier.should.equal('f7cf42d6-492f-4b7e-8b6a-2150ac5bcc5f');
                 });
         });
 

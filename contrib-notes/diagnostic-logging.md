@@ -2,7 +2,7 @@
 Hyperledger Composer has a functional logger that can be used for both informational and diagnostic log messages. It also permits customization for different logging 'back-ends'.
 
 ## Log points
-Log points are added throughout the codebase, and should be very similar to other logging systems. The following APIs match to the standard log levels of *debug, verbose, info, warn, error*  Note that *silly* isnt' being used.
+Log points are added throughout the codebase, and should be very similar to other logging systems. The following APIs match to the standard log levels of *debug, verbose, info, warn, error*  Note that *silly* isn't being used.
 
 ```javascript
 debug(method, msg, data);
@@ -12,7 +12,7 @@ warn(method, msg, data);
 error(method, msg, data);
 ```
 
-In addition there are `entry` and `exit` APIs for use to indicate the entry and exit of functions - these are logged at the *debug* level.
+In addition, there are `entry` and `exit` APIs for use to indicate the entry and exit of functions - these are logged at the *debug* level.
 
 ```javascript
 entry(method, data);
@@ -49,7 +49,7 @@ All the log APIs can take a variable number of data arguments for logging. Any *
 
 ## Enabling the logging
 
-In commong with other node.js applications the `DEBUG` environment variable is used. This takes a comma separated list of the modules that need to be logged.
+In commong with other node.js applications, the `DEBUG` environment variable is used. This takes a comma separated list of the modules that need to be logged.
 
 Examples
 
@@ -60,12 +60,12 @@ Examples
  - `DEBUG=composer:client,composer:common` Logs everything from the Hyperledger-Composer common module (the composer-common npm module), and the client module
  - `DEBUG=composer:common:businessnetworkdefinition` Logs the businessnetworkdefinition ONLY
 
-## Controling the level and output
+## Controlling the level and output
 
 The structure of the Hyperledger-Composer log code is that it delegates the actually logging to a back-end service. This service can swapped by using configuration (see below) but by default uses the Winston library.
 
 ### Default configuration
-There are two streams setup in the default configuration - one to write log events to a file, the other to the console.  
+There are two streams setups in the default configuration - one to write log events to a file, the other to the console.  
 
 If log is not enabled for Hyperledger-Composer no events are sent to the Console but info events are sent to the file
 If the log is enabled then info events are sent to the console and all level of events are sent to the file.
@@ -104,7 +104,7 @@ $ cat ./config/default.json
 
 }
 ```
-### Modyifing the Winston logger
+### Modifying the Winston logger
 Here are two examples of how to change the back-end logger simply using Winston's changeable transport feature.
 
 Two cloud hosted application log sites are *Loggly.com* and *Papertrailapp.com*

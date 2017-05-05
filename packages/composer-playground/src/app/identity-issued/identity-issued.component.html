@@ -1,0 +1,62 @@
+<section class="identity-issued">
+  <header class="modal-header">
+    <h1>Identity Issued</h1>
+    <button class="icon modal-exit" (click)="activeModal.close()">
+      <svg class="ibm-icon" aria-hidden="true">
+       <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
+  </header>
+  <div class="modal-body">
+
+    <section class="id-option">
+      <header>
+        <dl>
+          <dt>Option 1</dt>
+          <dd>Send someone the new user ID and secret so that they can add it to their wallet</dd>
+        </dl>
+      </header>
+
+      <div class="id-option-details">
+        <dl>
+          <div>
+            <dt>User ID</dt>
+            <dd>{{userID}}</dd>
+          </div>
+
+          <div class="id-secret">
+            <dt>User Secret</dt>
+            <dd>{{userSecret}}</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="id-option">
+      <header>
+        <dl>
+          <dt>Option 2</dt>
+          <dd>Use it yourself</dd>
+        </dl>
+      </header>
+
+      <div class="id-option-details">
+        <button type="button" class="action" (click)="addToWallet();">+ Add to my Wallet</button>
+      </div>
+    </section>
+
+  </div>
+  <footer>
+    <p class="footer-text">
+      <svg class="standard-icon" aria-hidden="true">
+        <use xlink:href="#icon-warn_32"></use>
+      </svg>
+      For security, this secret will only ever be shown once.
+    </p>
+    <button type="button" class="primary" (click)="activeModal.close();">
+      <div>
+        <span>Ok</span>
+      </div>
+    </button>
+  </footer>
+</section>
