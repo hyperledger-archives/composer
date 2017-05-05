@@ -31,17 +31,9 @@
 - [ ] Look over the support pages, and the getting started tutorials; are their omissions broken links etc.  
 
 
-## UI
+## Plaground
 
-### Stable UI
- - [ ] Connect to the playground
- - [ ] Review model, and submit transaction
- - [ ] Update model, redeploy, and submit updated transaction on that model
-
-<!-- The Engagement teams lab @ https://ibm.ent.box.com/file/141636016965 is a good source of the process and information for the Composer-UI -->
-
-### Next UI
- - [ ] Running the Car Auction scenario to validate the the new Playground-UI
+- [ ] Running the Car Auction scenario to validate the Playground
 
 ## Issues Raised
 
