@@ -24,7 +24,7 @@ There is a [specific channel](https://chat.hyperledger.org/channel/composer-dev)
 # Getting started with building an application
 
 **Try the [online playground](https://composer-playground.mybluemix.net/) to get going quickly.**
-#composer
+
 Suggested reading list is:
 
 - [Introduction](https://hyperledger.github.io/composer/introduction/introduction.html)
