@@ -1,5 +1,5 @@
 # generator-composer
-This is a Yeoman module for a set of Yeoman generators. These are used to create pro-forma templates for using with the **/composer-runtime-hlf Composer.
+This is a Yeoman module for a set of Yeoman generators. These are used to create pro-forma templates for using with the Hyperledger Composer.
 There are two current generators that can be used from the point of creating a model through to creating command line applications
 
 The naming of this repository is following the Yeoman naming conventions.
