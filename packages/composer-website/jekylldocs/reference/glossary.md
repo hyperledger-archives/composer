@@ -23,13 +23,13 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 **Business Network Archive**: A business network archive (`.bna`) is a compressed business network definition which contains at least a business network model and transaction processor functions and may optionally contain an access control file. Business network archives can be deployed as an administrative action to the {{site.data.conrefs.composer_short}} system running on a Hyperledger fabric.
 
-**Business Network Definition**: *empty*
+**Business Network Definition**: A business network definition is made up of the business network model, which is a `.cto` file, and transaction processor functions written in JavaScript.
 
 **Business Network Model**: The business network model describes the business assets and the participants in the Business Network. This model is in effect the entity-relationship or static object structure of the overall business network.
 
 **Connection Profile**: Connection profiles are used by {{site.data.conrefs.composer_full}} to connect to an instance of {{site.data.conrefs.hyperledger_full}}*complete me*
 
-**{{site.data.conrefs.composer_short}} Playground**: *empty*
+**{{site.data.conrefs.composer_short}} Playground**: The {{site.data.conrefs.composer_full}} Playground is an open toolset allowing business networks to be rapidly modelled and tested. Sample business networks can be imported to learn more about {{site.data.conrefs.composer_full}} and business network archives can be exported for local editing or later use.
 
 **Fabric**: Fabric is a platform that user applications connect to in order to interact with a ledger. Examples of blockchain fabrics include Bitcoin, Ethereum, Open Blockchain and Hyperledger.
 
