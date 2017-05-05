@@ -150,6 +150,9 @@ export class <%= currentAsset.name %>Component implements OnInit {
       if(error == 'Server error'){
 				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
 			}
+			else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
+			}
 			else{
 				this.errorMessage = error;
 			}

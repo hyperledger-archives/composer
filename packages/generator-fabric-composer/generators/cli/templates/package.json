@@ -19,7 +19,7 @@
     "Solutions",
     "Framework",
     "getting-started",
-    "Fabric Composer"
+    "Hyperledger Composer"
   ],
   "author": "<%= authorName %>",
   "license": "Apache2",
