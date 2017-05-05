@@ -70,25 +70,13 @@ $ npm test
 
 ### Playground
 
-Currently, there are two versions of the Playground. The developer preview, and the beta for the final version.
+- **Composer-Playground** http://composer-playground-unstable.mybluemix.net/
 
- - **Composer-UI**  http://fabric-composer-unstable.mybluemix.net/
- - **Composer-Playground** http://fabric-composer-next-unstable.mybluemix.net/  _[URL might be changing soon]_
-
-(The stable versions of those are missing the unstable word - but these are already released).
-
-The developer preview is still being used for a number of lab workshops, so it still needs to be functional.
-
+(The stable version of Playground is missing the unstable word from the URL - but this is already released).
 
 *Minimum subset*
 
- - [ ] Connect to the playground
- - [ ] Review model, and submit transaction
- - [ ] Update model, redploy, and submit updated transaction on that model
-
-The Engagement teams lab @ https://ibm.ent.box.com/file/141636016965 is a good source of the process and information for the Composer-UI
-
- - [ ] Running the Car Auction scenario to validate the new Playground-UI
+ - [ ] Running the Car Auction scenario to validate the Playground
 
 ### Exploratory Testing
 
