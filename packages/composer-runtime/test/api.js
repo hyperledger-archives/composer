@@ -22,6 +22,7 @@ const realFactory = require('composer-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
+const EventService = require('../lib/eventservice');
 
 const chai = require('chai');
 chai.should();
@@ -35,13 +36,15 @@ describe('Api', () => {
     let mockFactory;
     let mockParticipant;
     let mockRegistryManager;
+    let mockEventService;
     let api;
 
     beforeEach(() => {
         mockFactory = sinon.createStubInstance(realFactory);
         mockParticipant = sinon.createStubInstance(Resource);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        api = new Api(mockFactory, mockParticipant, mockRegistryManager);
+        mockEventService = sinon.createStubInstance(EventService);
+        api = new Api(mockFactory, mockParticipant, mockRegistryManager, mockEventService);
     });
 
     describe('#constructor', () => {
@@ -104,6 +107,14 @@ describe('Api', () => {
             api.getCurrentParticipant().should.equal(mockParticipant);
         });
 
+    });
+
+    describe('#getCurrentParticipant', () => {
+        it('should call eventService.emit', () => {
+            api.emit({});
+            sinon.assert.calledOnce(mockEventService.emit);
+            sinon.assert.calledWith(mockEventService.emit, {});
+        });
     });
 
 });

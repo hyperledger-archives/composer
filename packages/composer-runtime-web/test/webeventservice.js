@@ -28,13 +28,16 @@ describe('WebEventService', () => {
 
     let eventService;
     let mockSerializer;
+    let mockEventEmitter;
     let sandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockSerializer = sinon.createStubInstance(Serializer);
+        mockEventEmitter = sinon.createStubInstance(EventEmitter);
         eventService = new WebEventService(mockSerializer);
-        sinon.stub(EventEmitter);
+        eventService.getEventEmitter = sinon.stub();
+        eventService.getEventEmitter.returns(mockEventEmitter);
     });
 
     afterEach(() => {
@@ -54,8 +57,21 @@ describe('WebEventService', () => {
             eventService.serializeBuffer.returns(['serialized JS']);
             eventService.commit();
             sinon.assert.calledOnce(eventService.serializeBuffer);
-            sinon.assert.calledOnce(EventEmitter.emit);
-            sinon.assert.calledWith(EventEmitter.emit, 'composer', ['serialized JS']);
+            sinon.assert.calledOnce(mockEventEmitter.emit);
+            sinon.assert.calledWith(mockEventEmitter.emit, 'composer', ['serialized JS']);
         });
+    });
+
+    describe('#getEventEmitter', () => {
+        it('should return an EventEmitter', () => {
+            eventService.getEventEmitter().should.be.instanceOf(EventEmitter);
+        });
+
+        it('should return emiiter if it is set', () => {
+            let eventService = new WebEventService(mockSerializer);
+            eventService.emitter = {};
+            eventService.getEventEmitter().should.deep.equal({});
+        });
+
     });
 });

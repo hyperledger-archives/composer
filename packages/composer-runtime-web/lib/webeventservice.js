@@ -34,10 +34,7 @@ class WebEventService extends EventService {
         super(serializer);
         const method = 'constructor';
 
-        this.emitter = new EventEmitter();
-        this.emitter.addListener('composer', (data) => {
-            console.log('triggered', data);
-        });
+        this.emitter = this.getEventEmitter();
 
         LOG.exit(method);
     }
@@ -46,7 +43,18 @@ class WebEventService extends EventService {
      * Emit the events stored in eventBuffer
      */
     commit() {
-        this.emitter.emit('composer', this.serializeBuffer());
+        this.getEventEmitter().emit('composer', this.serializeBuffer());
+    }
+
+    /**
+     * Gets an eventEmitter instance
+     * @return {EventEmitter} EventEmitter instance
+     */
+    getEventEmitter() {
+        if (!this.emitter) {
+            return new EventEmitter();
+        }
+        return this.emitter;
     }
 }
 
