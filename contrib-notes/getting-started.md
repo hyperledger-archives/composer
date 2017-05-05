@@ -8,7 +8,7 @@ Please note that this is the **Getting Started** for developing Hyperledger Comp
 
 The requirements for developing Hyperledger Composer are the same as developing an application using Hyperledger Composer. Follow these [instructions](https://hyperledger.github.io/composer/installing/prerequisites.html)  
 
-If you wish to install manually or review the indiviual tool's own documentation the details are below.
+If you wish to install manually or review the individual tool's own documentation the details are below.
 
 ## Tool Chain Reference Details
 This is a summary of the tools that will be required to work on Hyperledger Composer. Other tools are required but these will be installed automatically.  
@@ -16,16 +16,16 @@ This is a summary of the tools that will be required to work on Hyperledger Comp
 - **Git** This is probably already installed on most Linux machines. Setup is well documented on the [ibm.git website](https://help.github.com/enterprise/2.7/user/articles/set-up-git/) . Pay particular attention to[ setting up the SSL keys](https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux) that are required.
 
 - **Docker** Essential for the running of the tests and for running the HyperLedger Fabric.
-	- Ubuntu: Firstly the Docker Engine needs to be [installed](https://docs.docker.com/engine/installation/linux/ubuntulinux/), then the [docker-compose tool](https://docs.docker.com/compose/install/) is required with these instructions. Some initial notes on administering docker are [here](https://docs.docker.com/engine/admin/)
+    - Ubuntu: Firstly the Docker Engine needs to be [installed](https://docs.docker.com/engine/installation/linux/ubuntulinux/), then the [docker-compose tool](https://docs.docker.com/compose/install/) is required with these instructions. Some initial notes on administering docker are [here](https://docs.docker.com/engine/admin/)
 
 - **Node.js  v6** The main runtime of Hyperledger Composer and also has the NPM tool that is used for a lot of the package management.
-	- Ubuntu: Simply installed [follow these notes](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions).
+    - Ubuntu: Simply installed [follow these notes](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions).
 
 - **Chrome** Web test suites use **karma** to launch a browser, and consequently **Chrome** must be installed to prevent test failures without editing the karma configuration to use a supported browser that you already have installed.
 
 ## Forking and Cloning the Hyperledger Composer Repository
 
-Once those tools are installed you are ready to get going with the Hyperledger Composer repository. Let's show you how to create your own version of the Hyperledger Composer repository in GitHub, and clone it to your local machine to allow you to make your own changes, which you can subsequently contribute to the Hyperledger Composer project.
+Once those tools are installed you are ready to get going with the Hyperledger Composer repository. Let's show you how to create your own version of the Hyperledger Composer repository on GitHub, and clone it to your local machine to allow you to make your own changes, which you can subsequently contribute to the Hyperledger Composer project.
 
 - Navigate to the [Hyperledger Project](https://github.com/hyperledger) on GitHub to see the
 different Hyperledger Composer repositories.
@@ -44,7 +44,7 @@ cd ~/github
 
 _IMPORTANT_ Do NOT have any directory in the path to the git repository directory you just created, start with a _  (underscore). This is due to the way that the JavaScript documentation tool handles filtering path names. If you do this, then the tool reports there are no source files to produce documentation for.
 
-Final step is to issue the clone command. This format is assuming that you have setup the ssh keys for GitHub.
+The final step is to issue the clone command. This format is assuming that you have setup the ssh keys for GitHub.
 
 ```bash
 git clone git@github.ibm.com:<your-username>/hyperledger/composer.git
@@ -64,7 +64,7 @@ You can see where the Hyperledger source code is pulled from; it is saved in the
 
 ## Installing Hyperledger Composer Prerequisites
 
-Hyperledger Composer has a number of prerequisites - for its runtime, code hygiene, tests, API documentation, and more.  Before you can develop locally, you need to install these using [npm](https://www.npmjs.com/). These prerequisites are installed as development dependencies. The packages are installed locally rather than globally, so that their versions do not interfere with other projects you may be developing, or global installations of these packages on your local machine.  You can also install these prerequisites globally, though it is required to have some packages locally, e.g. the test framework.
+Hyperledger Composer has a number of prerequisites - for its runtime, code hygiene, tests, API documentation, and more.  Before you can develop locally, you need to install these using [npm](https://www.npmjs.com/). These prerequisites are installed as development dependencies. The packages are installed locally rather than globally so that their versions do not interfere with other projects you may be developing or global installations of these packages on your local machine.  You can also install these prerequisites globally, though it is required to have some packages locally, e.g. the test framework.
 
 ### Installing the npm Dependencies
 

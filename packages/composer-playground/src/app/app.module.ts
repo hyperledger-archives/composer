@@ -186,7 +186,7 @@ export class AppModule {
 
   hmrOnInit(store: StoreType) {
     if (!store || !store.state) return;
-    console.log('HMR store', JSON.stringify(store, null, 2));
+
     // set state
     this.appState._state = store.state;
     // set input values

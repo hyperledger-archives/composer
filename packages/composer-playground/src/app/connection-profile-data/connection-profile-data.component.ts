@@ -216,8 +216,6 @@ export class ConnectionProfileDataComponent {
     this.editing = true;
   }
 
-
-  /* Probably needs this all somewhere else */
   initOrderers(){
     let someList = [];
     if(this.connectionProfileData){
@@ -496,14 +494,11 @@ export class ConnectionProfileDataComponent {
       });
   }
 
-
   exportProfile(){
     let profileData = JSON.stringify(this.connectionProfileData.profile, null, 4);
-
     let file = new File([profileData], 'connection.json', {type: 'application/json'});
     saveAs(file);
   }
-
 
   openAddCertificateModal(index,type){
     if(type === 'orderers'){
