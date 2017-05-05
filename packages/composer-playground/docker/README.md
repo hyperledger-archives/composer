@@ -32,6 +32,6 @@ If you have any questions about using this image, Hyperledger Composer Playgroun
 
 If you find an issue with this image, please raise a GitHub issue, ensuring that you include all relevant information in order for the team to reproduce the problem, on the main GitHub repository: [https://github.com/hyperledger/composer](https://github.com/hyperledger/composer)
 
-You can speak to the Hyperledger Composer team on the Hyperledger RocketChat in the `#fabric-composer` channel: [http://chat.hyperledger.org](http://chat.hyperledger.org)
+You can speak to the Hyperledger Composer team on the Hyperledger RocketChat in the `#composer` channel: [http://chat.hyperledger.org](http://chat.hyperledger.org)
 
-You can also tweet the Hyperledger Composer team by using the `#FabricComposer` hashtag: [https://twitter.com/hashtag/FabricComposer?src=hash](https://twitter.com/hashtag/FabricComposer?src=hash)
+You can also tweet the Hyperledger Composer team by using the `#hyperledger #composer` hashtag: [https://twitter.com/hashtag/composer?src=hash](https://twitter.com/hashtag/composer?src=hash)
