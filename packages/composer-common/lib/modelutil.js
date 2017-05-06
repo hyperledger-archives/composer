@@ -94,6 +94,8 @@ class ModelUtil {
             return false;
         }
 
+        // console.log( 'Checking whether type ' + type + ' can be stored in a property of type ' + property.getFullyQualifiedTypeName() );
+
         // console.log( 'model file ns ' + modelFile.getNamespace() );
         // console.log( 'type ' + type );
         // console.log( 'property ' + property.getFullyQualifiedName() );
@@ -129,12 +131,14 @@ class ModelUtil {
 
         while(superType) {
             if(superType.getFullyQualifiedName() === property.getFullyQualifiedTypeName()) {
+                // console.log('Found superType ' + superType.getFullyQualifiedName() );
                 return true;
             }
-            // console.log('superType ' + superType.getFullyQualifiedName() );
             superTypeName = superType.getSuperType();
+
             if(superTypeName) {
-                superType = modelFile.getType(superTypeName);
+                superType = modelFile.getModelManager().getType(superTypeName);
+                // console.log('superType ' + superType.getFullyQualifiedName() );
             }
             else {
                 superType = null;
