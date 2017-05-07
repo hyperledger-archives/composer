@@ -1176,9 +1176,50 @@ describe('HLFConnection', () => {
 
     describe('#list', () => {
 
-        it('should throw an error as not implemented yet', () => {
+        it('should return an empty array if no instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.resolves({
+                chaincodes: []
+            });
             return connection.list(mockSecurityContext)
-                .should.be.rejectedWith(/unimplemented function called/);
+                .should.eventually.be.deep.equal([]);
+        });
+
+        it('should return an array of chaincode names for all instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.resolves({
+                chaincodes: [{
+                    name: 'org.acme.biznet1',
+                    version: '1.0.0',
+                    path: 'composer'
+                }, {
+                    name: 'org.acme.biznet2',
+                    version: '1.2.0',
+                    path: 'composer'
+                }]
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal(['org.acme.biznet1', 'org.acme.biznet2']);
+        });
+
+        it('should filter out any non-composer instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.resolves({
+                chaincodes: [{
+                    name: 'org.acme.biznet1',
+                    version: '1.0.0',
+                    path: 'composer'
+                }, {
+                    name: 'org.acme.biznet2',
+                    version: '1.2.0',
+                    path: 'dogecc'
+                }]
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal(['org.acme.biznet1']);
+        });
+
+        it('should handle any errors querying instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.rejects(new Error('such error'));
+            return connection.list(mockSecurityContext)
+                .should.be.rejectedWith(/such error/);
         });
 
     });
