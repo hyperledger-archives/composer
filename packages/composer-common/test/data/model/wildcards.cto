@@ -1,0 +1,18 @@
+namespace org.acme.wildcards
+
+import stdlib.base.*
+
+concept MyConcept {
+  o Gender gender
+}
+
+participant MyParticipant identified by participantId extends Person {
+  o String participantId
+}
+
+asset MyAsset identified by assetId {
+  o String assetId
+  o MyConcept concept
+  o MyParticipant participant
+  --> Person person
+}
