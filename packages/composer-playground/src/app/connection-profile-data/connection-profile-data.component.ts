@@ -103,9 +103,15 @@ export class ConnectionProfileDataComponent {
   useProfile() {
     let modalRef = this.modalService.open(SwitchIdentityComponent);
     modalRef.componentInstance.connectionProfileName = this.connectionProfileData.name;
-    modalRef.result.then((result) => {
-      this.alertService.successStatus$.next('Successfully connected with profile ' + this.connectionProfileData.name);
-      this.profileUpdated.emit({updated : true});
+    modalRef.result.then(() => {
+      let connectionName;
+      if(this.connectionProfileData.name === '$default') {
+        connectionName = 'Web Browser'
+      } else {
+        connectionName = this.connectionProfileData.name;
+      }
+      this.alertService.successStatus$.next('Successfully connected with profile ' + connectionName);
+      this.profileUpdated.emit({updated: true});
 
     }, (reason) => {
       if (reason && reason !== 1) { //someone hasn't pressed escape
@@ -468,7 +474,7 @@ export class ConnectionProfileDataComponent {
           });
         }).then(() => {
           this.connectionProfileData = profileToSet;
-          this.profileUpdated.emit({updated : true,  connectionProfile : this.connectionProfileData});
+          this.profileUpdated.emit({updated: true, connectionProfile: this.connectionProfileData});
         });
 
       });
@@ -478,15 +484,30 @@ export class ConnectionProfileDataComponent {
   stopEditing() {
     this.editing = false;
 
-    // Let parent know to change back to previous connection profile
-    this.profileUpdated.emit({updated : false});
+    let stopEditingPromise;
+    let updated: boolean = false;
+
+    if (this.connectionProfileData.name === 'New Connection Profile') {
+      //we have cancelled when creating a new profile so we need to go back to previosuly selected profile
+      stopEditingPromise = this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
+    } else {
+      //we've cancelled updating a profile but we still want to see this profile
+      updated = true;
+      stopEditingPromise = Promise.resolve();
+    }
+
+    stopEditingPromise.then(() => {
+      this.profileUpdated.emit({updated: updated});
+    });
+
+    return stopEditingPromise;
   }
 
   deleteProfile() {
     let modalRef = this.modalService.open(DeleteConnectionProfileComponent);
     modalRef.componentInstance.profileName = this.connectionProfileData.name;
     modalRef.result.then(() => {
-      this.profileUpdated.emit({updated : false});
+      this.profileUpdated.emit({updated: false});
     }, (reason) => {
       if (reason && reason !== 1) { //not pressed escape
         this.alertService.errorStatus$.next(reason);
