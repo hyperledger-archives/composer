@@ -42,9 +42,9 @@ describe('DeleteConnectionProfileComponent', () => {
   });
 
   it('should call the service to delete the profile and close the active modal', () => {
-        component.deleteProfile('name');
-        stubConProfSvc.getCurrentlySelectedProfileName.should.have.been.called;
-        stubConProfSvc.deleteProfile.should.have.been.called;
+        component['profileName'] = 'bob';
+        component.deleteProfile();
+        stubConProfSvc.deleteProfile.should.have.been.calledWith('bob');
         stubActiveModal.close.should.have.been.called;
   });
 });

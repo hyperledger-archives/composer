@@ -131,7 +131,7 @@ describe('ConnectionProfileDataComponent', () => {
       component['connectionProfileData'] = {'name': 'testprofile'};
 
       component['profileUpdated'].subscribe((data) => {
-        data.should.equal(true);
+        data.should.deep.equal({updated: true});
       });
 
       let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
@@ -153,7 +153,7 @@ describe('ConnectionProfileDataComponent', () => {
       tick();
 
       mockAlertService.successStatus$.next.should.have.been.calledWith('Successfully connected with profile testprofile');
-      component['profileUpdated'].emit.should.have.been.calledWith(true);
+      component['profileUpdated'].emit.should.have.been.calledWith({updated: true});
     }));
 
     it('should handle error', fakeAsync(() => {
@@ -267,7 +267,7 @@ describe('ConnectionProfileDataComponent', () => {
       result.length.should.equal(1);
       groupSpy.firstCall.should.have.been.calledWith(
         {
-          'url': ['grpcs://localhost:7050', Validators.required],
+          'url': ['grpc://localhost:7050', Validators.required],
           'cert': [''],
           'hostnameOverride': [''],
         }
@@ -360,8 +360,8 @@ describe('ConnectionProfileDataComponent', () => {
       result.length.should.equal(1);
       groupSpy.firstCall.should.have.been.calledWith(
         {
-          'requestURL': ['grpcs://localhost:7051', Validators.required],
-          'eventURL': ['grpcs://localhost:7053', Validators.required],
+          'requestURL': ['grpc://localhost:7051', Validators.required],
+          'eventURL': ['grpc://localhost:7053', Validators.required],
           'cert': [''],
           'hostnameOverride': [''],
         }
@@ -453,19 +453,19 @@ describe('ConnectionProfileDataComponent', () => {
       component['v1Form'] = component['fb'].group({
         'name': ['v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
         'peers': component['fb'].array([component['fb'].group({
-          'requestURL': ['grpcs://localhost:7051', Validators.required],
+          'requestURL': ['grpc://localhost:7051', Validators.required],
           'eventURL': ['', Validators.required],
           'cert': [''],
           'hostnameOverride': ['']
         })]),
         'orderers': component['fb'].array([component['fb'].group({
-          'url': ['grpcs://localhost:7050', Validators.required],
+          'url': ['grpc://localhost:7050', Validators.required],
           'cert': [''],
           'hostnameOverride': ['']
         })]),
         'channel': ['mychannel', [Validators.required]],
         'mspID': ['Org1MSP', [Validators.required]],
-        'ca': ['grpc://localhost:7054', [Validators.required]],
+        'ca': ['http://localhost:7054', [Validators.required]],
         'eventHubURL': ['grpc://localhost:7053', [Validators.required]],
         'keyValStore': ['/tmp/keyValStore', [Validators.required]],
         'deployWaitTime': [300, [Validators.pattern('[0-9]+')]],
@@ -530,16 +530,16 @@ describe('ConnectionProfileDataComponent', () => {
         "description": "A description for a V1 Profile",
         "type": "hlfv1",
         "orderers": [{
-          "url": "grpcs://localhost:7050",
+          "url": "grpc://localhost:7050",
           "cert": "",
           "hostnameOverride": ""
         }],
         "channel": "mychannel",
         "mspID": "Org1MSP",
-        "ca": "grpc://localhost:7054",
+        "ca": "http://localhost:7054",
         "peers": [{
-          "requestURL": "grpcs://localhost:7051",
-          "eventURL": "grpcs://localhost:7053",
+          "requestURL": "grpc://localhost:7051",
+          "eventURL": "grpc://localhost:7053",
           "cert": "",
           "hostnameOverride": ""
         }],
@@ -553,16 +553,16 @@ describe('ConnectionProfileDataComponent', () => {
         "description": "A description for a V1 Profile",
         "type": "hlfv1",
         "orderers": [{
-          "url": "grpcs://localhost:7050",
+          "url": "grpc://localhost:7050",
           "cert": "",
           "hostnameOverride": ""
         }],
         "channel": "mychannel",
         "mspID": "Org1MSP",
-        "ca": "grpc://localhost:7054",
+        "ca": "http://localhost:7054",
         "peers": [{
-          "requestURL": "grpcs://localhost:7051",
-          "eventURL": "grpcs://localhost:7053",
+          "requestURL": "grpc://localhost:7051",
+          "eventURL": "grpc://localhost:7053",
           "cert": "",
           "hostnameOverride": ""
         }],
@@ -580,19 +580,19 @@ describe('ConnectionProfileDataComponent', () => {
         'name': ['new v1 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
         'description': ["A description for a V1 Profile"],
         'peers': component['fb'].array([component['fb'].group({
-          'requestURL': ['grpcs://localhost:7051', Validators.required],
-          'eventURL': ['grpcs://localhost:7053', Validators.required],
+          'requestURL': ['grpc://localhost:7051', Validators.required],
+          'eventURL': ['grpc://localhost:7053', Validators.required],
           'cert': [''],
           'hostnameOverride': ['']
         })]),
         'orderers': component['fb'].array([component['fb'].group({
-          'url': ['grpcs://localhost:7050', Validators.required],
+          'url': ['grpc://localhost:7050', Validators.required],
           'cert': [''],
           'hostnameOverride': ['']
         })]),
         'channel': ['mychannel', [Validators.required]],
         'mspID': ['Org1MSP', [Validators.required]],
-        'ca': ['grpc://localhost:7054', [Validators.required]],
+        'ca': ['http://localhost:7054', [Validators.required]],
         'keyValStore': ['/tmp/keyValStore', [Validators.required]],
         'deployWaitTime': [300, [Validators.pattern('[0-9]+')]],
         'invokeWaitTime': [30, [Validators.pattern('[0-9]+')]]
@@ -640,35 +640,68 @@ describe('ConnectionProfileDataComponent', () => {
 
   describe('stopEditing', () => {
     it('should emit profileUpdated event', () => {
+      component['profileUpdated'].subscribe((data) => {
+        data.should.deep.equal({updated: false});
+      });
+
       let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
       component.stopEditing();
       component['editing'].should.equal(false);
-      profileUpdatedSpy.should.be.calledWith(false);
+      profileUpdatedSpy.should.be.calledWith({updated: false});
     });
   });
 
-  //This'll change once the deleteProfile changes are in
   describe('deleteProfile', () => {
     it('should delete profile', fakeAsync(() => {
+      component['profileUpdated'].subscribe((data) => {
+        data.should.deep.equal({updated: false});
+      });
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
       component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
-      mockNgbModal.open.returns({'result': Promise.resolve({})});
+      mockNgbModal.open.returns({'result': Promise.resolve({}), componentInstance: {profileName: 'bob'}});
       component.deleteProfile();
       tick();
+
+      profileUpdatedSpy.should.have.been.calledWith({updated: false});
     }));
-    it('should delete profile', fakeAsync(() => {
+
+    it('should handle error', fakeAsync(() => {
+      mockAlertService.errorStatus$ = {
+        next: sinon.stub()
+      };
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
       component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
-      mockNgbModal.open.returns({'result': Promise.resolve()});
+      mockNgbModal.open.returns({result: Promise.reject('some error'), componentInstance: {profileName: 'bob'}});
       component.deleteProfile();
       tick();
+
+      profileUpdatedSpy.should.not.have.been.called;
+      mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+    }));
+
+    it('should handle pressing escape', fakeAsync(() => {
+      mockAlertService.errorStatus$ = {
+        next: sinon.stub()
+      };
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
+      component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
+      mockNgbModal.open.returns({result: Promise.reject(1), componentInstance: {profileName: 'bob'}});
+      component.deleteProfile();
+      tick();
+
+      profileUpdatedSpy.should.not.have.been.called;
+      mockAlertService.errorStatus$.next.should.not.have.been.called;
     }));
   });
 
   describe('exportProfile', () => {
-
     afterAll(() => {
       fileSaver.saveAs.restore();
       (window as any).File.restore();
-    })
+    });
 
     it('should export profile matching name and type', () => {
       component['connectionProfileData'] = {'name':'v1 Profile','profile':{'type':'hlfv1'}};

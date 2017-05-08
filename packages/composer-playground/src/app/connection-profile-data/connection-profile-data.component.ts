@@ -55,19 +55,19 @@ export class ConnectionProfileDataComponent {
 
   expandSection(sectionToExpand) {
 
-    if (this.connectionProfileData.profile.type === 'hlf'){
-      if (sectionToExpand === 'All'){
-        if (this.expandedSection.length === 3){
+    if (this.connectionProfileData.profile.type === 'hlf') {
+      if (sectionToExpand === 'All') {
+        if (this.expandedSection.length === 3) {
           this.expandedSection = [];
         }
-        else{
+        else {
           this.expandedSection = ['Basic Configuration', 'Security Settings', 'Advanced'];
         }
       }
-      else{
+      else {
         let index = this.expandedSection.indexOf(sectionToExpand);
         if (index > -1) {
-          this.expandedSection = this.expandedSection.filter(function(item){
+          this.expandedSection = this.expandedSection.filter(function (item) {
             return item !== sectionToExpand;
           });
         } else {
@@ -75,19 +75,19 @@ export class ConnectionProfileDataComponent {
         }
       }
     }
-    else if (this.connectionProfileData.profile.type === 'hlfv1'){
-      if (sectionToExpand === 'All'){
-        if (this.expandedSection.length === 2){
+    else if (this.connectionProfileData.profile.type === 'hlfv1') {
+      if (sectionToExpand === 'All') {
+        if (this.expandedSection.length === 2) {
           this.expandedSection = [];
         }
-        else{
+        else {
           this.expandedSection = ['Basic Configuration', 'Advanced'];
         }
       }
-      else{
+      else {
         let index = this.expandedSection.indexOf(sectionToExpand);
         if (index > -1) {
-          this.expandedSection = this.expandedSection.filter(function(item){
+          this.expandedSection = this.expandedSection.filter(function (item) {
             return item !== sectionToExpand;
           });
         } else {
@@ -95,7 +95,7 @@ export class ConnectionProfileDataComponent {
         }
       }
     }
-    else{
+    else {
       throw new Error('Invalid connection profile type')
     }
   }
@@ -105,17 +105,17 @@ export class ConnectionProfileDataComponent {
     modalRef.componentInstance.connectionProfileName = this.connectionProfileData.name;
     modalRef.result.then((result) => {
       this.alertService.successStatus$.next('Successfully connected with profile ' + this.connectionProfileData.name);
-      this.profileUpdated.emit(true);
+      this.profileUpdated.emit({updated : true});
 
     }, (reason) => {
-      if (reason) {
+      if (reason && reason !== 1) { //someone hasn't pressed escape
         this.alertService.errorStatus$.next(reason);
       }
     });
   }
 
   startEditing() {
-    if (this.connectionProfileData.profile.type === 'hlf'){
+    if (this.connectionProfileData.profile.type === 'hlf') {
       this.v06Form = this.fb.group({
 
         'name': [
@@ -159,7 +159,7 @@ export class ConnectionProfileDataComponent {
       this.onValueChanged(); // (re)set validation messages now
 
     }
-    else if (this.connectionProfileData.profile.type === 'hlfv1'){
+    else if (this.connectionProfileData.profile.type === 'hlfv1') {
 
       this.v1Form = this.fb.group({
 
@@ -181,7 +181,7 @@ export class ConnectionProfileDataComponent {
           [Validators.required]
         ],
         'ca': [
-          this.connectionProfileData ? this.connectionProfileData.profile.ca : 'grpc://localhost:7054',
+          this.connectionProfileData ? this.connectionProfileData.profile.ca : 'http://localhost:7054',
           [Validators.required]
         ],
         'peers': this.fb.array(
@@ -208,7 +208,7 @@ export class ConnectionProfileDataComponent {
       this.onValueChanged(); // (re)set validation messages now
 
     }
-    else{
+    else {
       throw new Error('Unknown connection profile type');
     }
 
@@ -216,10 +216,10 @@ export class ConnectionProfileDataComponent {
     this.editing = true;
   }
 
-  initOrderers(){
+  initOrderers() {
     let someList = [];
-    if(this.connectionProfileData){
-      for(let orderer in this.connectionProfileData.profile.orderers){
+    if (this.connectionProfileData) {
+      for (let orderer in this.connectionProfileData.profile.orderers) {
         let ordererFormGroup = this.fb.group({
           'url': [this.connectionProfileData.profile.orderers[orderer].url, Validators.required],
           'cert': [this.connectionProfileData.profile.orderers[orderer].cert],
@@ -229,9 +229,9 @@ export class ConnectionProfileDataComponent {
       }
       return someList;
     }
-    else{
+    else {
       someList.push(this.fb.group({
-        'url': ['grpcs://localhost:7050', Validators.required],
+        'url': ['grpc://localhost:7050', Validators.required],
         'cert': [''],
         'hostnameOverride': ['']
       }));
@@ -243,7 +243,7 @@ export class ConnectionProfileDataComponent {
     // add orderer to the list
     const control = <FormArray>this.v1Form.controls['orderers'];
     control.push(this.fb.group({
-        'url': ['grpcs://localhost:7050', Validators.required],
+        'url': ['grpc://localhost:7050', Validators.required],
         'cert': [''],
         'hostnameOverride': ['']
       }));
@@ -255,10 +255,10 @@ export class ConnectionProfileDataComponent {
     controls.removeAt(i);
   }
 
-  initPeers(){
+  initPeers() {
     let someList = [];
-    if(this.connectionProfileData){
-      for(let peer in this.connectionProfileData.profile.peers){
+    if (this.connectionProfileData) {
+      for (let peer in this.connectionProfileData.profile.peers) {
         someList.push(this.fb.group({
           'requestURL': [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
           'eventURL': [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
@@ -268,10 +268,10 @@ export class ConnectionProfileDataComponent {
       }
       return someList;
     }
-    else{
+    else {
       someList.push(this.fb.group({
-        'requestURL': ['grpcs://localhost:7051', Validators.required],
-        'eventURL': ['grpcs://localhost:7053', Validators.required],
+        'requestURL': ['grpc://localhost:7051', Validators.required],
+        'eventURL': ['grpc://localhost:7053', Validators.required],
         'cert': [''],
         'hostnameOverride': ['']
       }));
@@ -282,8 +282,8 @@ export class ConnectionProfileDataComponent {
   addPeer() {
     const control = <FormArray>this.v1Form.controls['peers'];
     control.push(this.fb.group({
-        'requestURL': ['grpcs://localhost:7051', Validators.required],
-        'eventURL': ['grpcs://localhost:7053', Validators.required],
+        'requestURL': ['grpc://localhost:7051', Validators.required],
+        'eventURL': ['grpc://localhost:7053', Validators.required],
         'cert': [''],
         'hostnameOverride': ['']
       }));
@@ -299,20 +299,20 @@ export class ConnectionProfileDataComponent {
     let form;
     let formErrors;
     let validationMessages;
-    if(!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')){
+    if (!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')) {
       throw new Error('Invalid connection profile type')
     }
-    else{
-      if (this.connectionProfileData.profile.type === 'hlf'){
-        if (!this.v06Form){
+    else {
+      if (this.connectionProfileData.profile.type === 'hlf') {
+        if (!this.v06Form) {
           return;
         }
         form = this.v06Form;
         formErrors = this.v06FormErrors;
         validationMessages = this.v06ValidationMessages;
       }
-      else{
-        if (!this.v1Form){
+      else {
+        if (!this.v1Form) {
           return;
         }
         form = this.v1Form;
@@ -326,15 +326,15 @@ export class ConnectionProfileDataComponent {
         const control = form.get(field);
         if (!control.valid) {
           const messages = validationMessages[field];
-          if(control.constructor.name === 'FormArray'){
+          if (control.constructor.name === 'FormArray') {
             formErrors[field] = {};
-            for(let attribute in control.controls[0].controls){
-              for(const key in control.controls[0].controls[attribute].errors){
+            for (let attribute in control.controls[0].controls) {
+              for (const key in control.controls[0].controls[attribute].errors) {
                 formErrors[field][attribute] = messages[attribute][key];
               }
             }
           }
-          else{
+          else {
             for (const key in control.errors) {
               formErrors[field] += messages[key] + ' ';
             }
@@ -436,11 +436,11 @@ export class ConnectionProfileDataComponent {
 
   onSubmit() {
     let connectionProfile;
-    if(!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')){
+    if (!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')) {
       throw new Error('Unknown profile type');
     }
-    else{
-      if (this.connectionProfileData.profile.type === 'hlf'){
+    else {
+      if (this.connectionProfileData.profile.type === 'hlf') {
         connectionProfile = this.v06Form.value;
       }
       else {
@@ -462,85 +462,84 @@ export class ConnectionProfileDataComponent {
           let profiles = Object.keys(connectionProfiles).sort();
           profiles.forEach((profile) => {
             let connectionProfile = connectionProfiles[profile];
-            if(profileToSet.name !== connectionProfile.name && connectionProfile.name === this.connectionProfileData.name){
+            if (profileToSet.name !== connectionProfile.name && connectionProfile.name === this.connectionProfileData.name) {
               return this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
             }
           });
         }).then(() => {
           this.connectionProfileData = profileToSet;
-          this.profileUpdated.emit(true);
+          this.profileUpdated.emit({updated : true,  connectionProfile : this.connectionProfileData});
         });
 
       });
     }
   }
 
-  stopEditing(){
+  stopEditing() {
     this.editing = false;
 
     // Let parent know to change back to previous connection profile
-    this.profileUpdated.emit(false);
+    this.profileUpdated.emit({updated : false});
   }
 
-  deleteProfile(){
-    this.modalService.open(DeleteConnectionProfileComponent).result
-    .then((result) => {
-      if (result){
-        this.connectionProfileService.deleteProfile(this.connectionProfileData.name);
-        this.profileUpdated.emit(true);
+  deleteProfile() {
+    let modalRef = this.modalService.open(DeleteConnectionProfileComponent);
+    modalRef.componentInstance.profileName = this.connectionProfileData.name;
+    modalRef.result.then(() => {
+      this.profileUpdated.emit({updated : false});
+    }, (reason) => {
+      if (reason && reason !== 1) { //not pressed escape
+        this.alertService.errorStatus$.next(reason);
       }
     })
-      .catch((closed) => {
-      });
   }
 
-  exportProfile(){
+  exportProfile() {
     let profileData = JSON.stringify(this.connectionProfileData.profile, null, 4);
     let file = new File([profileData], 'connection.json', {type: 'application/json'});
     saveAs(file);
   }
 
-  openAddCertificateModal(index,type){
-    if(type === 'orderers'){
+
+  openAddCertificateModal(index, type) {
+    if (type === 'orderers') {
       this.connectionProfileService.setCertificate(this.v1Form.controls['orderers']['controls'][index]['value']['cert']);
       this.connectionProfileService.setHostname(this.v1Form.controls['orderers']['controls'][index]['value']['hostnameOverride']);
     }
-    else if(type === 'peers'){
+    else if (type === 'peers') {
       this.connectionProfileService.setCertificate(this.v1Form.controls['peers']['controls'][index]['value']['cert']);
       this.connectionProfileService.setHostname(this.v1Form.controls['peers']['controls'][index]['value']['hostnameOverride']);
     }
 
     return this.modalService.open(AddCertificateComponent).result
-    .then((result) => {
-      if(type === 'orderers'){
-        if(result.hostnameOverride === ''){
-          result.hostnameOverride = 'orderer'+index;
-        }
+      .then((result) => {
+        if (type === 'orderers') {
+          if (result.hostnameOverride === '') {
+            result.hostnameOverride = 'orderer' + index;
+          }
           this.v1Form.controls['orderers']['controls'][index].patchValue({
             'cert': result.cert,
             'hostnameOverride': result.hostnameOverride
           })
-      }
-      else if(type === 'peers'){
-        if(result.hostnameOverride === ''){
-          result.hostnameOverride = 'peer'+index;
         }
+        else if (type === 'peers') {
+          if (result.hostnameOverride === '') {
+            result.hostnameOverride = 'peer' + index;
+          }
           this.v1Form.controls['peers']['controls'][index].patchValue({
             'cert': result.cert,
             'hostnameOverride': result.hostnameOverride
           })
-      }
-      else{
-        throw new Error('Unrecognized type ' + type)
-      }
-    })
+        }
+        else {
+          throw new Error('Unrecognized type ' + type)
+        }
+      })
       .catch((closed) => {
       });
-
   }
 
-
-  showCertificate(cert:string,hostname:string){
+  showCertificate(cert: string, hostname: string) {
     this.connectionProfileService.setCertificate(cert);
     this.connectionProfileService.setHostname(hostname);
     this.modalService.open(ViewCertificateComponent).result
@@ -549,7 +548,5 @@ export class ConnectionProfileDataComponent {
       .catch(() => {
       });
   }
-
-
 }
 
