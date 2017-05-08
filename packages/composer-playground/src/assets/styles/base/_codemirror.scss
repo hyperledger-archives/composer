@@ -24,20 +24,20 @@
 }
 
 .cm-s-default.CodeMirror {
-  background: #424747;
+  background: #262A35;
   color: #FFFFFF;
   border: none;
   border-radius: 4px;
   box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
 }
 
-.cm-s-default div.CodeMirror-selected { background: #303030; }
+.cm-s-default div.CodeMirror-selected { background: #393F4F; }
 .cm-s-default .CodeMirror-line::selection, .cm-s-default .CodeMirror-line > span::selection, .cm-s-default .CodeMirror-line > span > span::selection { background: rgba(48, 48, 48, .99); }
 .cm-s-default .CodeMirror-line::-moz-selection,
 .cm-s-default .CodeMirror-line > span::-moz-selection,
 .cm-s-default .CodeMirror-line > span > span::-moz-selection { background: rgba(48, 48, 48, .99); }
 .cm-s-default .CodeMirror-gutters {
-  background: #424747;
+  background: #262A35;
   border-right: 0px;
 }
 .cm-s-default .CodeMirror-guttermarker { color: #ffffff; }

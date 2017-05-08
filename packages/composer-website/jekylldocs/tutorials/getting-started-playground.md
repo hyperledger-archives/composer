@@ -16,6 +16,13 @@ The {{site.data.conrefs.composer_full}} Playground is a web development experien
 
 This tutorial will show you how to start a Hyperledger Fabric instance for use with {{site.data.conrefs.composer_full}} Playground by using Docker Compose. If you already have a running instance of Hyperledger Fabric, or you only want to work in "browser only" mode, then skip to [alternative installation options](#installationoptions).
 
+**NOTE:** If you've previously used {{site.data.conrefs.composer_full}} Playground or Hyperledger Fabric, but wish to clear everything out and start again, the following commands will delete any running containers and delete all downloaded images (be careful if you're using other Docker images on your machine):
+
+```
+docker ps -aq | xargs docker rm -f
+docker images -aq | xargs docker rmi -f
+```
+
 # Prerequisites
 
 In order to install {{site.data.conrefs.composer_full}} Playground, you need the following software installed:
@@ -25,14 +32,14 @@ In order to install {{site.data.conrefs.composer_full}} Playground, you need the
     Test that Docker Engine is installed by running the following command in your terminal or command prompt:
 
     ```
-    docker -v
+      docker -v
     ```
 
     You should see the following output in your terminal or command prompt:
 
     ```
-    $ docker -v
-    Docker version 1.13.0, build 49bf474
+      $ docker -v
+      Docker version 1.13.0, build 49bf474
     ```
 
     Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
@@ -42,14 +49,14 @@ In order to install {{site.data.conrefs.composer_full}} Playground, you need the
     Test that Docker Compose is installed by running the following command in your terminal or command prompt:
 
     ```
-    docker-compose -v
+      docker-compose -v
     ```
 
     You should see the following output in your terminal or command prompt:
 
     ```
-    $ docker-compose -v
-    docker-compose version 1.10.0, build 4bd6f1a
+      $ docker-compose -v
+      docker-compose version 1.10.0, build 4bd6f1a
     ```
 
     Verify that no errors occurred, and the version is greater than or equal to 1.8. If not, then follow the official instructions for installing Docker Compose: [Install Docker Compose](https://docs.docker.com/compose/install/)
@@ -109,7 +116,21 @@ Verify that no errors occurred. If you see an error similar to the following err
 
 If you see this error, ensure that all of these ports are free before you run any commands.
 
-If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://docker-machine-ip:8080" target="_blank">http://<span></span>docker-machine-ip:8080</a>
+If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+
+# Connecting to Hyperledger Fabric
+
+The Basic Sample Network is loaded into the UI by default - it's the "Hello World" of {{site.data.conrefs.composer_full}} samples.  The Web Browser Connection Profile is in use to start with, so any data you create by testing your model will be stored in browser memory.
+
+The docker-compose command you ran also started a Hyperledger Fabric instance that you can activate to have {{site.data.conrefs.composer_full}} Playground connected to a blockchain instance.  To do so, head to the Connection Profiles panel of the UI (click the globe icon in the top-right) and activate the "hlfabric" Connection Profile.
+
+---
+
+>This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+
+---
+
+
 
 # <a name="installationoptions"></a>Alternative installation options
 
@@ -135,14 +156,14 @@ In order to install {{site.data.conrefs.composer_full}} Playground with npm, you
     Test that Node.js is installed by running the following command in your terminal or command prompt:
 
     ```
-    node -v
+      node -v
     ```
 
     You should see the following output in your terminal or command prompt:
 
     ```
-    $ node -v
-    v4.6.2
+      $ node -v
+     v4.6.2
     ```
 
     Verify that no errors occurred, and the version is greater than or equal to v4.6.2 or v6.x. If not, follow the official instructions for installing Node.js v6.x: [Node.js] (https://nodejs.org)
@@ -152,20 +173,20 @@ In order to install {{site.data.conrefs.composer_full}} Playground with npm, you
     Test that npm is installed by running the following command in your terminal or command prompt:
 
     ```
-    npm -v
+      npm -v
     ```
 
     You should see the following output in your terminal or command prompt:
 
     ```
-    $ npm -v
-    3.10.10
+      $ npm -v
+     3.10.10
     ```
 
     Verify that no errors occurred, and the version is greater than or equal to v3.x. If not, upgrade npm to the latest version by running the following command in your terminal or command prompt:
 
     ```
-    sudo npm -g upgrade npm
+      sudo npm -g upgrade npm
     ```
 
 ### Installation
@@ -197,7 +218,11 @@ You can then start {{site.data.conrefs.composer_full}} Playground by running the
 
 A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
-This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+---
+
+>This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+
+---
 
 ## <a name="installdocker"></a>Installing with Docker
 
@@ -210,14 +235,14 @@ In order to install {{site.data.conrefs.composer_full}} Playground with Docker, 
     Test that Docker Engine is installed by running the following command in your terminal or command prompt:
 
     ```
-    docker -v
+      docker -v
     ```
 
     You should see the following output in your terminal or command prompt:
 
     ```
-    $ docker -v
-    Docker version 1.13.0, build 49bf474
+      $ docker -v
+      Docker version 1.13.0, build 49bf474
     ```
 
     Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
@@ -241,4 +266,8 @@ Verify that no errors occurred.
 
 You can then start {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
 
-This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+---
+
+>This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
+
+---

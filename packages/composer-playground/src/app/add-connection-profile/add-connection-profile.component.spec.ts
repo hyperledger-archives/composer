@@ -169,7 +169,7 @@ describe('AddConnectionProfileComponent', () => {
     });
 
     describe('#fileAccepted', () => {
-       
+
         it('should call this.createProfile', fakeAsync(() => {
             let b = new Blob(['/**Connection Profile*/'], {type: 'json'});
             let file = new File([b], 'New Profile.json');
@@ -241,7 +241,7 @@ describe('AddConnectionProfileComponent', () => {
                 result: content,
                 onload: () => {
                 },
-                onerror: () => {    
+                onerror: () => {
                 }
             };
 
@@ -277,7 +277,7 @@ describe('AddConnectionProfileComponent', () => {
 
     describe('#createProfile', () => {
         let v06_INPUT = {
-                            description : DESC, 
+                            description : DESC,
                             type : 'hlf',
                             membershipServicesURL: MS_URL,
                             peerURL: PEER_URL,
@@ -288,9 +288,9 @@ describe('AddConnectionProfileComponent', () => {
                             certificate: CERT,
                             certificatePath: CERT_PATH
                         };
-       
+
        let v1_INPUT =  {
-                            description : DESC, 
+                            description : DESC,
                             type : 'hlfv1',
                             orderers: ORDERERS,
                             ca: CA,
@@ -305,7 +305,7 @@ describe('AddConnectionProfileComponent', () => {
         let BAD_INPUT =  'This is not valid input';
 
         let INVALID_VERSION =  {
-                                    description : 'test', 
+                                    description : 'test',
                                     type : 'hlfv100',
                                 };
 
@@ -326,7 +326,7 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfileDeployWaitTime'].should.equal(DEPLOY_TIME);
             component['addConnectionProfileInvokeWaitTime'].should.equal(WAIT_TIME);
             component['addConnectionProfileCertificate'].should.equal(CERT);
-            component['addConnectionProfileCertificatePath'].should.equal(CERT_PATH); 
+            component['addConnectionProfileCertificatePath'].should.equal(CERT_PATH);
             addMock.should.have.been.called;
         }));
 
@@ -367,7 +367,7 @@ describe('AddConnectionProfileComponent', () => {
                 e.message.should.contain('Invalid type in profile');
             }
         }));
-        
+
     });
 
     describe('#changeCurrentFileType', () => {
@@ -453,39 +453,40 @@ describe('AddConnectionProfileComponent', () => {
         }
     });
 
-    describe('#setV1Defaults', () => {
+   describe('#setV1Defaults', () => {
 
         it('should create a new profile and set defaults for a v1 fabric', fakeAsync(() => {
             let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
             component['connectionProfiles'] = [];
-            component.setV1Defaults().then(() => {
-                component['addConnectionProfileName'].should.equal('New Connection Profile');
-                verifyUnchangeableDefaults();
-            });
+            component.setV1Defaults();
+            tick();
+
+            component['addConnectionProfileName'].should.equal('New Connection Profile');
+            verifyUnchangeableDefaults();
         }));
 
         it('should create a new profile and set defaults for a v1 fabric', fakeAsync(() => {
             let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
             component['connectionProfiles'] = [{name: 'New Connection Profile'}];
-            component.setV1Defaults().then(() => {
-                component['addConnectionProfileName'].should.equal('New Connection Profile 2');
-                verifyUnchangeableDefaults();
-            });
+            component.setV1Defaults();
+            tick();
+            component['addConnectionProfileName'].should.equal('New Connection Profile 2');
+            verifyUnchangeableDefaults();
         }));
 
         function verifyUnchangeableDefaults() {
             component['addConnectionProfileDescription'].should.equal('A description for a V1 Profile');
             component['addConnectionProfileType'].should.equal('hlfv1');
             component['addConnectionProfileOrderers'].should.deep.equal([{
-                                                                            url: 'grpcs://localhost:7050',
+                                                                            url: 'grpc://localhost:7050',
                                                                             cert: '',
                                                                             hostnameOverride: ''
                                                                         }]);
 
-            component['addConnectionProfileCertificateAuthority'].should.equal('grpc://localhost:7054');
+            component['addConnectionProfileCertificateAuthority'].should.equal('http://localhost:7054');
             component['addConnectionProfilePeers'].should.deep.equal([{
-                                                                        requestURL: 'grpcs://localhost:7051',
-                                                                        eventURL: 'grpcs://localhost:7053',
+                                                                        requestURL: 'grpc://localhost:7051',
+                                                                        eventURL: 'grpc://localhost:7053',
                                                                         cert: '',
                                                                         hostnameOverride: ''
                                                                     }]);
@@ -503,8 +504,8 @@ describe('AddConnectionProfileComponent', () => {
         it('should update/refresh the list of connection profiles', fakeAsync(() => {
             component.updateConnectionProfiles().then(() => {
                 component['connectionProfiles'].should.deep.equal([
-                                                                    {name: 'profile0', profile: 'a', default: false}, 
-                                                                    {name: 'profile1', profile: 'b', default: false}, 
+                                                                    {name: 'profile0', profile: 'a', default: false},
+                                                                    {name: 'profile1', profile: 'b', default: false},
                                                                     {name: 'profile2', profile: 'c', default: false}
                                                                   ]);
             });
