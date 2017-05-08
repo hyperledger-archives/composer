@@ -10,7 +10,7 @@
   <section class="modal-body">
     <div class="views">
       <button role="button" type="button" class="action" (click)="showWallet(true)" [class.active]="showWalletView">Wallet</button>
-      <button role="button" type="button" class="action" (click)="showWallet(false)" [class.active]="!showWalletView">New identity</button>
+      <button role="button" type="button" class="action" (click)="showWallet(false)" [class.active]="!showWalletView">Add identity</button>
     </div>
     <form #switchIdentityForm="ngForm" id="switch-identity-form" (ngSubmit)="switchIdentity()" [ngClass]="{'wallet-view' : showWalletView}">
     <div *ngIf="showWalletView">
