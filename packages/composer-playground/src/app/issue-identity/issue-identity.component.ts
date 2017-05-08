@@ -7,6 +7,8 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 
+import { Resource } from 'composer-common';
+
 import { AlertService } from '../services/alert.service';
 import { AdminService } from '../services/admin.service';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
@@ -23,6 +25,7 @@ export class IssueIdentityComponent implements OnInit {
   private userID: string = null;
   private participantFQI: string = null;
   private participantFQIs: string[] = [];
+  private participants: Map<string, Resource> = new Map<string, Resource>();
   private issuer: boolean = false;
   private wallet: boolean = true;
 
@@ -50,16 +53,19 @@ export class IssueIdentityComponent implements OnInit {
         }));
       })
       .then((participantArrays) => {
-        this.participantFQIs = participantArrays.reduce(
-          function(accumulator, currentValue) {
-            return accumulator.concat(currentValue.map(
-              (participant) => participant.getFullyQualifiedIdentifier())
-            );
-          },
-          []
-        );
-
-        this.participantFQIs.sort((a, b) => {
+        return Promise.all(
+          participantArrays.reduce(
+            ( accumulator, currentValue ) => accumulator.concat(currentValue),
+            []
+          ));
+      })
+      .then((allParticipants) => {
+        return Promise.all(allParticipants.map((registryParticipant) => {
+          return this.participants.set(registryParticipant.getFullyQualifiedIdentifier(), registryParticipant);
+        }));
+      })
+      .then(() => {
+        this.participantFQIs = Array.from(this.participants.keys()).sort((a, b) => {
           return a.localeCompare(b);
         });
       })
@@ -100,5 +106,9 @@ export class IssueIdentityComponent implements OnInit {
         this.issueInProgress = false;
         this.activeModal.dismiss(error);
       });
+  }
+
+  private getParticipant(fqi: string): any {
+    return this.participants.get(fqi);
   }
 }
