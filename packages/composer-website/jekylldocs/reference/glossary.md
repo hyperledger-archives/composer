@@ -50,4 +50,5 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 **Transaction**: Transactions are submitted by a participant to affect the assets held in the asset registries on the Hyperledger blockchain. Transactions with a business network are defined in the business network model, and their operations are defined in the transaction processor function file.
 
 **Transaction Processor Functions**: Transaction processor functions act on assets and participants to either create, update or delete properties on assets and participants. Transactions processor functions are written in JavaScript and contained in a script file as part of a business network definition.
+
 ---
