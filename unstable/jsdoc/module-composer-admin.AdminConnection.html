@@ -90,7 +90,7 @@
         AdminConnection
         </h2>
         
-            <div class="class-description"><p>This class creates an administration connection to a Fabric Composer runtime. The<br>connection can then be used to:</p>
+            <div class="class-description"><p>This class creates an administration connection to a Hyperledger Composer runtime. The<br>connection can then be used to:</p>
 <ul><br><li>Deploy BusinessNetworkDefinitions</li><br><li>Undeploy BusinessNetworkDefinitions</li><br><li>Update BusinessNetworkDefinitions</li><br><li>Send a ping message to the runtime to ensure it is running and<br>correctly configured.</li><br><li>Store a connection profile document in the connection profile store</li><br></ul></div>
         
     
@@ -972,7 +972,7 @@ return adminConnection.deleteProfile(&#x27;testprofile&#x27;)
 
     
     <div class="description">
-        <p>Deploys a new BusinessNetworkDefinition to the fabric. The connection must<br>be connected for this method to succeed.</p>
+        <p>Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must<br>be connected for this method to succeed.</p>
     </div>
     
 
@@ -1830,7 +1830,7 @@ return adminConnection.ping()
 
     
     <div class="description">
-        <p>Undeploys a BusinessNetworkDefinition from the fabric. The business network will no<br>longer be able to process transactions.</p>
+        <p>Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no<br>longer be able to process transactions.</p>
     </div>
     
 
@@ -2006,7 +2006,7 @@ return adminConnection.undeploy(&#x27;identifier&#x27;)
 
     
     <div class="description">
-        <p>Updates an existing BusinessNetworkDefinition on the fabric. The BusinessNetworkDefinition<br>must have been previously deployed.</p>
+        <p>Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition<br>must have been previously deployed.</p>
     </div>
     
 
