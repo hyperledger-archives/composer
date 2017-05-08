@@ -156,6 +156,35 @@ describe('ConnectionProfileDataComponent', () => {
       component['profileUpdated'].emit.should.have.been.calledWith({updated: true});
     }));
 
+    it('should use default profile', fakeAsync(() => {
+      component['connectionProfileData'] = {'name': '$default'};
+
+      component['profileUpdated'].subscribe((data) => {
+        data.should.deep.equal({updated: true});
+      });
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
+
+      mockAlertService.successStatus$ = {
+        next: sinon.stub()
+      };
+
+      let mockModalRef = {
+        componentInstance: {
+          connectionProfileName: ''
+        },
+        result: Promise.resolve()
+      };
+
+      mockNgbModal.open.returns(mockModalRef);
+      component.useProfile();
+
+      tick();
+
+      mockAlertService.successStatus$.next.should.have.been.calledWith('Successfully connected with profile Web Browser');
+      component['profileUpdated'].emit.should.have.been.calledWith({updated: true});
+    }));
+
     it('should handle error', fakeAsync(() => {
       component['connectionProfileData'] = {'name': 'testprofile'};
 
@@ -639,16 +668,41 @@ describe('ConnectionProfileDataComponent', () => {
   });
 
   describe('stopEditing', () => {
-    it('should emit profileUpdated event', () => {
+    beforeEach(() => {
+      mockConnectionProfileService.deleteProfile.reset();
+    });
+
+    it('should delete new profile if cancelled', fakeAsync(() => {
+      component['connectionProfileData'] = {name: 'New Connection Profile'};
+      mockConnectionProfileService.deleteProfile.returns(Promise.resolve());
+
       component['profileUpdated'].subscribe((data) => {
         data.should.deep.equal({updated: false});
       });
 
       let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
       component.stopEditing();
+
+      tick();
       component['editing'].should.equal(false);
       profileUpdatedSpy.should.be.calledWith({updated: false});
-    });
+      mockConnectionProfileService.deleteProfile.should.have.been.calledWith('New Connection Profile');
+    }));
+
+    it('should switch back to display view if cancel editing', fakeAsync(() => {
+      component['connectionProfileData'] = {name: 'bob'};
+      component['profileUpdated'].subscribe((data) => {
+        data.should.deep.equal({updated: true});
+      });
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
+      component.stopEditing();
+
+      tick();
+      component['editing'].should.equal(false);
+      profileUpdatedSpy.should.be.calledWith({updated: true});
+      mockConnectionProfileService.deleteProfile.should.not.have.been.called;
+    }));
   });
 
   describe('deleteProfile', () => {
@@ -704,7 +758,7 @@ describe('ConnectionProfileDataComponent', () => {
     });
 
     it('should export profile matching name and type', () => {
-      component['connectionProfileData'] = {'name':'v1 Profile','profile':{'type':'hlfv1'}};
+      component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
 
       let mockSave = sinon.stub(fileSaver, 'saveAs');
       let testFile = new File(['test'], 'connection.json', {type: 'application/json'});
@@ -719,7 +773,7 @@ describe('ConnectionProfileDataComponent', () => {
     })
 
     it('should export profile matching content', () => {
-      component['connectionProfileData'] = {'name':'v1 Profile','profile':{'type':'hlfv1'}};
+      component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
 
       let mockFile = sinon.stub(window, 'File');
       mockFile.returns(new File(['test'], 'connection.json', {type: 'application/json'}));
