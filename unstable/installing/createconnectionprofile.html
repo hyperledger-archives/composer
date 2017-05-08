@@ -129,55 +129,61 @@ ga('send', 'pageview');
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li>Navigate to the Connection Profile store:
-<code>
+<li><p>Navigate to the Connection Profile store:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```
 cd $HOME/.composer-connection-profiles
-</code></li>
-<li>Create a new profile folder.
-<code>
+```
+</code></pre></div></li>
+<li><p>Create a new profile folder.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```
 mkdir ./MyProfile
-</code></li>
-<li>Navigate into the new profile folder.
-<code>
+```
+</code></pre></div></li>
+<li><p>Navigate into the new profile folder.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```
 cd MyProfile
-</code></li>
-<li>Create a new file called <code>connection.json</code> that contains the following information for either Hyperledger Fabric v0.6 or v1.0. If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:
-<code>
+```
+</code></pre></div></li>
+<li><p>Create a new file called <code>connection.json</code> that contains the following information for either Hyperledger Fabric v0.6 or v1.0. If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```
 {
-  &quot;type&quot;: &lt;hlf|web&gt;,
-  &quot;keyValStore&quot;:&quot;/home/&lt;your-username&gt;/.composer-credentials&quot;,
-  &quot;membershipServicesURL&quot;: &lt;your-membership-services-url&gt;,
-  &quot;peerURL&quot;: &lt;your-peer-url&gt;,
-  &quot;eventHubURL&quot;: &lt;your-event-hub-url&gt;
+    "type": &lt;hlf|web&gt;,
+    "keyValStore":"/home/&lt;your-username&gt;/.composer-credentials",
+    "membershipServicesURL": &lt;your-membership-services-url&gt;,
+    "peerURL": &lt;your-peer-url&gt;,
+    "eventHubURL": &lt;your-event-hub-url&gt;
 }
-</code>
-If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:
-<code>
+```
+</code></pre></div>
+<p>If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```
 {
-&quot;type&quot;: &quot;hlfv1&quot;,
-&quot;orderers&quot;: [
-  &quot;grpc://localhost:7050&quot;
+"type": "hlfv1",
+"orderers": [
+    "grpc://localhost:7050"
 ],
-&quot;ca&quot;: &quot;http://localhost:7054&quot;,
-&quot;peers&quot;: [
-  {
-      &quot;requestURL&quot;: &quot;grpc://localhost:7051&quot;,
-      &quot;eventURL&quot;: &quot;grpc://localhost:7053&quot;
-  },
-  {
-      &quot;requestURL&quot;: &quot;grpc://localhost:7056&quot;,
-      &quot;eventURL&quot;: &quot;grpc://localhost:7058&quot;
-  }
+"ca": "http://localhost:7054",
+"peers": [
+    {
+        "requestURL": "grpc://localhost:7051",
+        "eventURL": "grpc://localhost:7053"
+    },
+    {
+        "requestURL": "grpc://localhost:7056",
+        "eventURL": "grpc://localhost:7058"
+    }
 ],
-&quot;keyValStore&quot;: &quot;/home/matthew/.hfc-key-store&quot;,
-&quot;channel&quot;: &quot;mychannel&quot;,
-&quot;mspID&quot;: &quot;Org1MSP&quot;,
-&quot;deployWaitTime&quot;: &quot;300&quot;,
-&quot;invokeWaitTime&quot;: &quot;100&quot;
+"keyValStore": "/home/matthew/.hfc-key-store",
+"channel": "mychannel",
+"mspID": "Org1MSP",
+"deployWaitTime": "300",
+"invokeWaitTime": "100"
 }
-</code>
----</li>
+```
+</code></pre></div></li>
 </ol>
+
+<hr>
 
 <h2 id="what-next">What next?</h2>
 
