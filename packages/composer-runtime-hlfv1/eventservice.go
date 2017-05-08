@@ -74,12 +74,19 @@ func (eventService *EventService) commit(vm *duktape.Context) (result int) {
 	vm.Dup(-2)                              // [ theEventService, serializeBuffer, theEventService ]
 	vm.PcallMethod(0)                       // [ theEventService, returnValue ]
 	vm.RequireObjectCoercible(-1)           // [ theEventService, returnValue ]
-	vm.JsonEncode(-1)
-	value := vm.RequireString(-1)
+	vm.JsonEncode(-1)                       // [ theEventService, returnValue ]
+	value := vm.RequireString(-1)           // [ theEventService, returnValue ]
 
 	if len(value) > 0 {
+		logger.Debug("setting event", value)
 		eventService.Stub.SetEvent("composer", []byte(value))
 	}
 
+	// Call the callback.
+	vm.Dup(0)
+	vm.PushNull()
+	if vm.Pcall(1) == duktape.ExecError {
+		panic(vm.ToString(-1))
+	}
 	return 0
 }

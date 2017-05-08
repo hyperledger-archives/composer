@@ -83,6 +83,20 @@ class HLFConnection extends Connection {
         this.client = client;
         this.chain = chain;
         this.eventHubs = eventHubs;
+
+        if (businessNetworkIdentifier) {
+            eventHubs.forEach((eventHub) => {
+                LOG.entry('registerChaincodeEvent', businessNetworkIdentifier, 'composer');
+                eventHub.registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
+                    this.emit('event', event.payload.buffer.toString('utf8'));
+                });
+                this.on('event', (event) => {
+                    console.log('hlf-event', event);
+                    console.log('end');
+                });
+            });
+        }
+
         this.caClient = caClient;
 
         // We create promisified versions of these APIs.

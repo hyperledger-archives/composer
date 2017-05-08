@@ -96,7 +96,7 @@ class EngineTransactions {
             })
             .then(() => {
                 // Commit all transactions
-                context.getEventService().commit();
+                return context.getEventService().commit();
             });
 
     }

@@ -284,6 +284,13 @@ class BusinessNetworkConnection extends EventEmitter {
     connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
         return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
             .then((connection) => {
+                connection.on('event', (events) => {
+                    let serializer = this.getBusinessNetwork().getSerializer();
+                    events.forEach((event) => {
+                        event = serializer.fromJSON(event);
+                        this.emit('event', event);
+                    });
+                });
                 this.connection = connection;
                 return connection.login(enrollmentID, enrollmentSecret);
             })

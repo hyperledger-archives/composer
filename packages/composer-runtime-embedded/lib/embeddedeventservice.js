@@ -16,7 +16,6 @@
 
 const EventService = require('composer-runtime').EventService;
 const Logger = require('composer-common').Logger;
-const EventEmitter = require('events').EventEmitter;
 
 const LOG = Logger.getLog('WebDataService');
 
@@ -29,12 +28,13 @@ class EmbeddedEventService extends EventService {
     /**
      * Constructor.
      * @param {Serializer} serializer Serializer instance.
+     * @param {EventEmitter} eventSink the event emitter
      */
-    constructor(serializer) {
+    constructor(serializer, eventSink) {
         super(serializer);
         const method = 'constructor';
 
-        this.emitter = this.getEventEmitter();
+        this.emitter = eventSink;
 
         LOG.exit(method);
     }
@@ -43,18 +43,7 @@ class EmbeddedEventService extends EventService {
      * Emit the events stored in eventBuffer
      */
     commit() {
-        this.getEventEmitter().emit('composer', this.serializeBuffer());
-    }
-
-    /**
-     * Gets an eventEmitter instance
-     * @return {EventEmitter} EventEmitter instance
-     */
-    getEventEmitter() {
-        if (!this.emitter) {
-            return new EventEmitter();
-        }
-        return this.emitter;
+        this.emitter.emit('composer', this.serializeBuffer());
     }
 }
 

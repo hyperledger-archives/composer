@@ -72,10 +72,13 @@ class EventService {
      * @return {Object[]} - An array of serialized events
      */
     serializeBuffer() {
+        console.log('serializeBuffer ENTER', this.eventBuffer);
         let eb = [];
         this.eventBuffer.forEach((event) => {
+            console.log('Event', event);
             eb.push(this.serializer.toJSON(event));
         });
+        console.log('serializeBuffer EXIT', eb);
         return eb;
     }
 
