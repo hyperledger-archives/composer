@@ -131,7 +131,7 @@ describe('ConnectionProfileDataComponent', () => {
       component['connectionProfileData'] = {'name': 'testprofile'};
 
       component['profileUpdated'].subscribe((data) => {
-        data.should.equal(true);
+        data.should.deep.equal({updated: true});
       });
 
       let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
@@ -153,7 +153,7 @@ describe('ConnectionProfileDataComponent', () => {
       tick();
 
       mockAlertService.successStatus$.next.should.have.been.calledWith('Successfully connected with profile testprofile');
-      component['profileUpdated'].emit.should.have.been.calledWith(true);
+      component['profileUpdated'].emit.should.have.been.calledWith({updated: true});
     }));
 
     it('should handle error', fakeAsync(() => {
@@ -640,35 +640,68 @@ describe('ConnectionProfileDataComponent', () => {
 
   describe('stopEditing', () => {
     it('should emit profileUpdated event', () => {
+      component['profileUpdated'].subscribe((data) => {
+        data.should.deep.equal({updated: false});
+      });
+
       let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
       component.stopEditing();
       component['editing'].should.equal(false);
-      profileUpdatedSpy.should.be.calledWith(false);
+      profileUpdatedSpy.should.be.calledWith({updated: false});
     });
   });
 
-  //This'll change once the deleteProfile changes are in
   describe('deleteProfile', () => {
     it('should delete profile', fakeAsync(() => {
+      component['profileUpdated'].subscribe((data) => {
+        data.should.deep.equal({updated: false});
+      });
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
       component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
-      mockNgbModal.open.returns({'result': Promise.resolve({})});
+      mockNgbModal.open.returns({'result': Promise.resolve({}), componentInstance: {profileName: 'bob'}});
       component.deleteProfile();
       tick();
+
+      profileUpdatedSpy.should.have.been.calledWith({updated: false});
     }));
-    it('should delete profile', fakeAsync(() => {
+
+    it('should handle error', fakeAsync(() => {
+      mockAlertService.errorStatus$ = {
+        next: sinon.stub()
+      };
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
       component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
-      mockNgbModal.open.returns({'result': Promise.resolve()});
+      mockNgbModal.open.returns({result: Promise.reject('some error'), componentInstance: {profileName: 'bob'}});
       component.deleteProfile();
       tick();
+
+      profileUpdatedSpy.should.not.have.been.called;
+      mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+    }));
+
+    it('should handle pressing escape', fakeAsync(() => {
+      mockAlertService.errorStatus$ = {
+        next: sinon.stub()
+      };
+
+      let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
+      component['connectionProfileData'] = {'name': 'v1 Profile', 'profile': {'type': 'hlfv1'}};
+      mockNgbModal.open.returns({result: Promise.reject(1), componentInstance: {profileName: 'bob'}});
+      component.deleteProfile();
+      tick();
+
+      profileUpdatedSpy.should.not.have.been.called;
+      mockAlertService.errorStatus$.next.should.not.have.been.called;
     }));
   });
 
   describe('exportProfile', () => {
-
     afterAll(() => {
       fileSaver.saveAs.restore();
       (window as any).File.restore();
-    })
+    });
 
     it('should export profile matching name and type', () => {
       component['connectionProfileData'] = {'name':'v1 Profile','profile':{'type':'hlfv1'}};

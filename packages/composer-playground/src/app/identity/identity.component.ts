@@ -50,8 +50,10 @@ export class IdentityComponent implements OnInit {
   addId() {
     this.modalService.open(AddIdentityComponent).result.then((result) => {
       return this.loadIdentities();
-    }, (reason) => {
-      this.alertService.errorStatus$.next(reason);
+    }, (reason) => { //not pressed escape
+      if (reason && reason !== 1) { //someone hasn't pressed escape
+        this.alertService.errorStatus$.next(reason);
+      }
     });
   }
 
@@ -65,7 +67,9 @@ export class IdentityComponent implements OnInit {
         return modalRef.result;
       }
     }, (reason) => {
-      this.alertService.errorStatus$.next(reason);
+      if (reason && reason !== 1) { //someone hasn't pressed escape
+        this.alertService.errorStatus$.next(reason);
+      }
     })
     .then(() => {
       return this.loadIdentities();
@@ -75,7 +79,7 @@ export class IdentityComponent implements OnInit {
   }
 
   setCurrentIdentity(newIdentity: string) {
-    this.identityService.setCurrentIdentity(newIdentity)
+    this.identityService.setCurrentIdentity(newIdentity);
     this.currentIdentity = newIdentity;
   }
 
