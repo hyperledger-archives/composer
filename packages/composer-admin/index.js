@@ -24,10 +24,10 @@ require('composer-common').ConnectionProfileManager.registerConnectionManagerLoa
 
 /**
  * <p>
- * The composer-admin module. Defines the administration API for Fabric Composer.
+ * The composer-admin module. Defines the administration API for Hyperledger Composer.
  * </p>
  * <p>
- * Fabric Composer is a framework for creating blockchain backed digital networks and
+ * Hyperledger Composer is a framework for creating blockchain backed digital networks and
  * exchanging assets between participants via processing transactions.
  * </p>
  * @module composer-admin
