@@ -280,7 +280,7 @@ DecimalLiteral
   / DecimalIntegerLiteral ExponentPart? {
       return { type: "Literal", value: parseFloat(text()) };
     }
-    
+
 SignedRealLiteral= [+-]? DecimalIntegerLiteral "." DecimalDigit* ExponentPart? {
       return { type: "Literal", value: parseFloat(text()) };
     }
@@ -1298,7 +1298,7 @@ BooleanType       = "Boolean"     !IdentifierPart {
 
 NumberType
    = IntegerType / DoubleType / LongType
-   
+
 RealNumberType
    = DoubleType
 
@@ -1426,7 +1426,7 @@ BooleanDefault
    = "default" __ "=" __ def:$BooleanLiteral {
       return def;
     }
-    
+
 IntegerDefault
    = "default" __ "=" __ def:$SignedInteger {
      return def;
@@ -1454,7 +1454,7 @@ ClassDeclarationBody
         location: location()
       };
     }
-   
+
 ObjectFieldDeclaration
     = "o" __ propertyType:ObjectType __ array:"[]"? __ id:Identifier __ d:StringDefault? __ optional:Optional? __ {
     	return {
@@ -1520,7 +1520,7 @@ RealDomainValidator
       upper: upper
     }
   }
-  
+
 IntegerDomainValidator
    = "range" __ "=" __ "[" __ lower:SignedInteger? __ "," __ upper:SignedInteger? __ "]" {
    	return {
@@ -1542,7 +1542,7 @@ RealFieldDeclaration
             location: location()
     	}
     }
-    
+
 IntegerFieldDeclaration
     = "o" __ propertyType:WholeNumberType __ array:"[]"? __ id:Identifier __  d:IntegerDefault? __ range:IntegerDomainValidator? __ optional:Optional? __ {
     	return {
@@ -1610,7 +1610,7 @@ Namespace
   }
 
 Import
-    = ImportToken __ ns: QualifiedName __ {
+    = ImportToken __ ns:$(QualifiedName '.*'?) __ {
     	return ns;
   }
 

@@ -93,6 +93,35 @@
     padding: $space-medium;
     display: flex;
     flex-direction: column;
+
+    // TODO belongs in a common _forms.scss file?
+    form {
+      padding-right: 20%;
+
+      div {
+        margin-bottom: 1rem;
+
+        &.justified-input {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          label {
+            flex: 1;
+
+            &.required {
+              // TODO should have some weight variables?
+              font-weight: 700;
+            }
+          }
+
+          input, select {
+            flex: 5;
+            margin: 0;
+          }
+        }
+      }
+    }
   }
 
   // Footer (for actions)

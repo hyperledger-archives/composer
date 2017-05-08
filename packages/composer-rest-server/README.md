@@ -1,4 +1,4 @@
-# Fabric Composer REST Server
+# Hyperledger Composer REST Server
 
 Set up the Composer REST Server with this command
 
@@ -12,10 +12,7 @@ sudo npm install composer-rest-server -g
 ```
 
 ## Overview
-This is a simple application that prompts the user for details of a connection profile, Business Network Identifier, 
-participant id and participant password.  The application then starts a loopback application which uses the Fabric Composer
-LoopBack Connector to connect to the Business Network, extract the models and then present a page containing the REST APIs
-that have been generated for the model.   
+This is a simple application that prompts the user for details of a connection profile, Business Network Identifier, participant id and participant password.  The application then starts a loopback application which uses the Hyperledger Composer LoopBack Connector to connect to the Business Network, extract the models and then present a page containing the REST APIs that have been generated for the model.   
 
 Executing those APIs will then have a real effect on the business network to which the application is connected.
 
@@ -26,7 +23,7 @@ composer-rest-server
 ```
 
 ## Hints and Tips
-For a connection profile, Fabric Composer looks for a `connection.json` file in the user's `<HOME>/.composer-connection-profiles`
+For a connection profile, Hyperledger Composer looks for a `connection.json` file in the user's `<HOME>/.composer-connection-profiles`
 directory.  
 
 e.g. If your connection profile is specified in `<HOME DIR>/.composer-connection-profiles/auction-app/connection.json` then you

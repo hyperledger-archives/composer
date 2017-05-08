@@ -198,6 +198,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     })
                     .then((res) => {
                         res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.transactionId.should.be.a('string');
                         return assetRegistry.get('ISIN_1');
                     })
                     .then((asset) => {
@@ -230,6 +232,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     })
                     .then((res) => {
                         res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.transactionId.should.be.a('string');
                         return assetRegistry.get('ISIN_2');
                     })
                     .then((asset) => {
@@ -250,6 +254,8 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     })
                     .then((res) => {
                         res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.transactionId.should.be.a('string');
                         return assetRegistry.get('ISIN_3');
                     })
                     .then((asset) => {
@@ -270,6 +276,9 @@ const bfs_fs = BrowserFS.BFSRequire('fs');
                     }])
                     .then((res) => {
                         res.should.have.status(200);
+                        res.should.be.json;
+                        res.body[0].transactionId.should.be.a('string');
+                        res.body[1].transactionId.should.be.a('string');
                         return assetRegistry.get('ISIN_1');
                     })
                     .then((asset) => {

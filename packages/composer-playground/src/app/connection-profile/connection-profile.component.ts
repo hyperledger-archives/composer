@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { AddConnectionProfileComponent } from '../add-connection-profile/add-connection-profile.component.ts';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
+import {AddConnectionProfileComponent} from '../add-connection-profile/add-connection-profile.component.ts';
+import {ConnectionProfileService} from '../services/connectionprofile.service';
 
 @Component({
   selector: 'connection-profile',
@@ -24,13 +24,13 @@ export class ConnectionProfileComponent implements OnInit {
   constructor(private connectionProfileService: ConnectionProfileService,
               private modalService: NgbModal) {
 
-              }
+  }
 
   ngOnInit(): any {
     this.activeProfile = this.connectionProfileService.getCurrentConnectionProfile();
     return this.updateConnectionProfiles().then(() => {
-      for(let profile in this.connectionProfiles){
-        if(this.connectionProfiles[profile].name === this.activeProfile){
+      for (let profile in this.connectionProfiles) {
+        if (this.connectionProfiles[profile].name === this.activeProfile) {
           this.setCurrentProfile(this.connectionProfiles[profile]);
           break;
         }
@@ -45,16 +45,17 @@ export class ConnectionProfileComponent implements OnInit {
   }
 
 
-  hideWarning(){
+  hideWarning() {
     this.warningVisible = false;
   }
 
   openAddProfileModal() {
     this.modalService.open(AddConnectionProfileComponent).result
-    .then((result) => {
-      this.setCurrentProfile(result);
-    })
-    .catch((closed) => {});
+      .then((result) => {
+        this.setCurrentProfile(result);
+      })
+      .catch((closed) => {
+      });
   }
 
   updateConnectionProfiles(): Promise<any> {
@@ -71,18 +72,22 @@ export class ConnectionProfileComponent implements OnInit {
           });
         });
         this.connectionProfiles = newConnectionProfiles;
-        if(this.currentConnectionProfile === null){
+        if (this.currentConnectionProfile === null) {
           this.currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         }
+
+        this.activeProfile = this.connectionProfileService.getCurrentConnectionProfile();
       });
   }
 
-  profileUpdated(event){
+  profileUpdated(event) {
     // If form is cancelled, we want to switch to the previous file selected
-    if(!event){
-      console.log('previous', this.previousConnectionProfile);
+    if (!event || (event && !event.updated)) {
       this.currentConnectionProfile = this.previousConnectionProfile;
-      console.log('current', this.currentConnectionProfile);
+    }
+
+    if (event && event.connectionProfile) {
+      return this.setCurrentProfile(event.connectionProfile);
     }
 
     return this.updateConnectionProfiles();

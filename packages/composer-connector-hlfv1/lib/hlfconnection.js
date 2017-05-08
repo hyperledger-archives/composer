@@ -714,9 +714,28 @@ class HLFConnection extends Connection {
      * business network identifiers, or rejected with an error.
      */
     list(securityContext) {
+        const method = 'list';
+        LOG.entry(method, securityContext);
 
-        // We do not want to persist the list of business networks client side if possible.
-        return Promise.reject(new Error('unimplemented function called'));
+        // Check that a valid security context has been specified.
+        HLFUtil.securityCheck(securityContext);
+
+        // Query all instantiated chaincodes.
+        return this.chain.queryInstantiatedChaincodes()
+            .then((queryResults) => {
+                LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
+                const result = queryResults.chaincodes.filter((chaincode) => {
+                    return chaincode.path === 'composer';
+                }).map((chaincode) => {
+                    return chaincode.name;
+                });
+                LOG.exit(method, result);
+                return result;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
 
     }
 

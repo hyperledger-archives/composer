@@ -3,7 +3,7 @@ import {LocalStorageService} from 'angular-2-local-storage';
 
 import {AdminConnection} from 'composer-admin';
 
-import {WalletService} from '../wallet.service';
+import {WalletService} from './wallet.service';
 
 
 @Injectable()
@@ -77,8 +77,8 @@ export class ConnectionProfileService {
   getHostname(): string{
     return this.currentHostname;
   }
+
   setHostname(hostname:string){
     this.currentHostname = hostname;
   }
-
 }

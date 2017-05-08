@@ -88,7 +88,12 @@ class AdminConnection {
             })
             .then((securityContext) => {
                 this.securityContext = securityContext;
-                return Promise.resolve('connected');
+                if (businessNetworkIdentifier) {
+                    return this.connection.ping(this.securityContext);
+                }
+            })
+            .then(() => {
+
             });
     }
 

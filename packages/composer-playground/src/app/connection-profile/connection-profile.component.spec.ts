@@ -140,6 +140,7 @@ describe('ConnectionProfileComponent', () => {
   describe('updateConnectionProfiles', () => {
     it('should update connection profiles', fakeAsync(() => {
       mockConnectionProfileService.getAllProfiles.returns(Promise.resolve({bob: {type: 'web'}}));
+      mockConnectionProfileService.getCurrentConnectionProfile.returns('bob');
 
       component.updateConnectionProfiles();
 
@@ -148,6 +149,7 @@ describe('ConnectionProfileComponent', () => {
       component['connectionProfiles'].length.should.equal(1);
       component['connectionProfiles'].should.deep.equal([{default: false, name: 'bob', profile: {type: 'web'}}])
 
+      component['activeProfile'].should.equal('bob');
     }));
 
     it('should update connection profiles and set current profile', fakeAsync(() => {
@@ -163,15 +165,27 @@ describe('ConnectionProfileComponent', () => {
       component['connectionProfiles'].should.deep.equal([{default: false, name: 'bob', profile: {type: 'web'}}]);
 
       component['currentConnectionProfile'].should.equal('bob');
+      component['activeProfile'].should.equal('bob');
     }));
   });
 
   describe('profileUpdated', () => {
+    it('should set connection profiles', () => {
+      let mockUpdateConnectionProfiles = sinon.stub(component, 'updateConnectionProfiles');
+      let mockSetCurrentProfile = sinon.stub(component, 'setCurrentProfile');
+      component.profileUpdated({updated: true, connectionProfile: 'bob'});
+
+      mockUpdateConnectionProfiles.should.not.have.been.called;
+      mockSetCurrentProfile.should.have.been.calledWith('bob');
+    });
+
     it('should update connection profiles', () => {
       let mockUpdateConnectionProfiles = sinon.stub(component, 'updateConnectionProfiles');
-      component.profileUpdated({event: 'myEvent'});
+      let mockSetCurrentProfile = sinon.stub(component, 'setCurrentProfile');
+      component.profileUpdated({updated: true});
 
       mockUpdateConnectionProfiles.should.have.been.called;
+      mockSetCurrentProfile.should.not.have.been.called;
     });
 
     it('should switch to the previous connection profile', () => {

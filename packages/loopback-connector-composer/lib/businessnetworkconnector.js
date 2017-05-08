@@ -559,7 +559,13 @@ class BusinessNetworkConnector extends Connector {
                 if (classDeclaration instanceof TransactionDeclaration) {
 
                     // For transactions, we submit the transaction for execution.
-                    return businessNetworkConnection.submitTransaction(resource);
+                    return businessNetworkConnection.submitTransaction(resource)
+                        .then(() => {
+
+                            // We also want to return the generated transaction identifier.
+                            return resource.getIdentifier();
+
+                        });
 
                 }
 
@@ -570,8 +576,8 @@ class BusinessNetworkConnector extends Connector {
                     });
 
             })
-            .then(() => {
-                callback();
+            .then((identifier) => {
+                callback(null, identifier);
             })
             .catch((error) => {
                 debug('create', 'error thrown doing create', error);

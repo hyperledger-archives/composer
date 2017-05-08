@@ -393,7 +393,7 @@ describe('ImportComponent', () => {
   });
 
   describe('orderGitHubNetworks', () => {
-    
+
     const BASIC_SAMPLE = 'basic-sample-network';
     const CAR_AUCTION = 'carauction-network';
     const FOO = 'foo';
