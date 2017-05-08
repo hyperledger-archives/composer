@@ -40,7 +40,7 @@ describe('WelcomeComponent', () => {
   });
 
   it('should have correct title', () => {
-    element.textContent.should.contain('Welcome to Fabric Composer Playground!');
+    element.textContent.should.contain('Welcome to Hyperledger Composer Playground!');
   });
 
 });

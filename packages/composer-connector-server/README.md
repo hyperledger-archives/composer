@@ -1,2 +1,2 @@
 # Composer-Connector-Server
-The remote connector server for Fabric Composer
+The remote connector server for Hyperledger Composer

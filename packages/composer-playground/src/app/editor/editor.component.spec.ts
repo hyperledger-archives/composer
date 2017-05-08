@@ -11,7 +11,7 @@ import {EditorComponent} from './editor.component';
 import {AdminService} from '../services/admin.service';
 import {ClientService} from '../services/client.service';
 import {EditorService} from '../services/editor.service';
-import {InitializationService} from '../initialization.service';
+import {InitializationService} from '../services/initialization.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SampleBusinessNetworkService} from '../services/samplebusinessnetwork.service';
 import {AlertService} from '../services/alert.service';
@@ -19,6 +19,8 @@ import {ModelFile, Script} from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+
+import * as fileSaver from 'file-saver';
 
 let should = chai.should();
 
@@ -459,12 +461,22 @@ describe('EditorComponent', () => {
   });
 
   describe('exportBNA', () => {
-    it('should export file', (done) => {
+
+    afterAll(() => {
+      fileSaver.saveAs.restore();
+      (window as any).File.restore();
+    })
+
+    it('should export file with correct name and type', (done) => {
+
+      let mockSave = sinon.stub(fileSaver, 'saveAs');
+      let testFile = new File(['test'], 'my_business_name.bna', {type: 'application/octet-stream'});
+
       mockClientService.getBusinessNetwork.returns({
-        toArchive: sinon.stub().returns(Promise.resolve('my data'))
+        toArchive: sinon.stub().returns(Promise.resolve('my_data'))
       });
 
-      mockClientService.getBusinessNetworkName.returns('my name');
+      mockClientService.getBusinessNetworkName.returns('my_business_name');
 
       mockAlertService.successStatus$ = {
         next: sinon.stub()
@@ -473,9 +485,36 @@ describe('EditorComponent', () => {
       component.exportBNA();
 
       fixture.whenStable().then(() => {
+        mockSave.should.have.been.called;
+
+        let passedFile = mockSave.getCall(0).args[0];
+        passedFile.name.should.equal(testFile.name);
+        passedFile.type.should.equal(testFile.type);
+
         mockAlertService.successStatus$.next.should.have.been.called;
+
         done();
       });
+    });
+
+    it('should export file with correct data', () => {
+
+      let mockFile = sinon.stub(window, 'File');
+      mockFile.returns(new File(['test'], 'my_business_name.json', {type: 'application/octet-stream'}));
+
+      mockClientService.getBusinessNetwork.returns({
+        toArchive: sinon.stub().returns(Promise.resolve('my_data'))
+      });
+
+      mockClientService.getBusinessNetworkName.returns('my_business_name');
+
+      component.exportBNA();
+
+      mockFile.should.have.been.calledWithNew;
+      let actualData = mockFile.getCall(0).args[0];
+      let expectedData = ['test'];
+      actualData.should.deep.equal(expectedData);
+
     });
   });
 
@@ -623,6 +662,11 @@ describe('EditorComponent', () => {
   });
 
   describe('toggleEditActive', () => {
+
+    beforeEach(() => {
+      sinon.stub(component, 'ngOnInit');
+    });
+
     it('should toggle editing', () => {
       component['editActive'] = false;
 

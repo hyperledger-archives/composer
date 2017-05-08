@@ -43,7 +43,7 @@ class ModelFile {
      * ModelFile
      * @param {string} definitions - The DSL model as a string.
      * @param {string} fileName - The optional filename for this modelfile
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(modelManager, definitions, fileName) {
         this.modelManager = modelManager;
@@ -146,10 +146,35 @@ class ModelFile {
      * @private
      */
     validate() {
+
+        // Validate all of the imports to check that they reference
+        // namespaces or types that actually exist.
+        this.imports.forEach((importName) => {
+            const importNamespace = ModelUtil.getNamespace(importName);
+            const modelFile = this.getModelManager().getModelFile(importNamespace);
+            if (!modelFile) {
+                let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
+                throw new Error(formatter({
+                    type: importName
+                }));
+            }
+            if (ModelUtil.isWildcardName(importName)) {
+                // This is a wildcard import, org.acme.*
+                // Doesn't matter if 0 or 100 types in the namespace.
+                return;
+            }
+            const importShortName = ModelUtil.getShortName(importName);
+            if (!modelFile.isLocalType(importShortName)) {
+                throw new Error('No type ' + importShortName + ' in namespace ' + importNamespace);
+            }
+        });
+
+        // Validate all of the types in this model file.
         for(let n=0; n < this.declarations.length; n++) {
             let classDeclaration = this.declarations[n];
             classDeclaration.validate();
         }
+
     }
 
     /**
@@ -204,6 +229,12 @@ class ModelFile {
             let importName = this.imports[n];
             if( ModelUtil.getShortName(importName) === type ) {
                 return true;
+            } else if (ModelUtil.isWildcardName(importName)) {
+                const wildcardNamespace = ModelUtil.getNamespace(importName);
+                const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
+                if (modelFile) {
+                    return modelFile.isLocalType(type);
+                }
             }
         }
         return false;
@@ -223,6 +254,12 @@ class ModelFile {
             let importName = this.imports[n];
             if( ModelUtil.getShortName(importName) === type ) {
                 return importName;
+            } else if (ModelUtil.isWildcardName(importName)) {
+                const wildcardNamespace = ModelUtil.getNamespace(importName);
+                const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
+                if (modelFile && modelFile.isLocalType(type)) {
+                    return wildcardNamespace + '.' + type;
+                }
             }
         }
         let formatter = Globalize('en').messageFormatter('modelfile-resolveimport-failfindimp');

@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {ConnectionProfileService} from '../services/connectionprofile.service';
@@ -10,10 +10,15 @@ import {ConnectionProfileService} from '../services/connectionprofile.service';
 })
 export class DeleteConnectionProfileComponent {
 
-  constructor(public activeModal: NgbActiveModal) {
+  @Input()
+  profileName;
+
+  constructor(public activeModal: NgbActiveModal,
+              private connectionProfileService: ConnectionProfileService) {
   }
 
-  deleteProfile(){
+  deleteProfile() {
+    this.connectionProfileService.deleteProfile(this.profileName);
     this.activeModal.close(true);
   }
 }

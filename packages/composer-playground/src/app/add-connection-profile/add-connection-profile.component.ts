@@ -81,7 +81,7 @@ export class AddConnectionProfileComponent {
       .then((data) => {
         if (type === 'json') {
           this.expandInput = true;
-          this.createProfile(file, data);
+          this.createProfile(data);
         }
         else {
           throw new Error('Unexpected File Type');
@@ -100,21 +100,23 @@ export class AddConnectionProfileComponent {
         let dataBuffer = Buffer.from(fileReader.result);
         resolve(dataBuffer);
       };
-
       fileReader.onerror = (err) => {
         reject(err);
       };
     });
   }
 
-  createProfile(file: File, profileBuffer) {
+  createProfile(profileBuffer) {
 
+    let profileData;
     // Converts buffer to string
-    let profileData = JSON.parse(profileBuffer.toString());
+    try {
+       profileData = JSON.parse(profileBuffer.toString());
+    } catch (e) {
+      throw new Error('Parse error: '+e.message);
+    }
 
     // Set defaults
-
-    console.log('Profile data read in is',profileData);
     if(profileData.type === 'hlf'){
       return this.setV06Defaults().then(() => {
         this.addConnectionProfileDescription = profileData.description;
@@ -147,9 +149,8 @@ export class AddConnectionProfileComponent {
       })
     }
     else{
-      console.log('Couldnt read profile with type:',profileData.type);
+      throw new Error('Invalid type in profile: '+profileData.type);
     }
-
   }
 
 
@@ -161,7 +162,6 @@ export class AddConnectionProfileComponent {
     this.currentFile = null;
 
     if (this.version === 'v06' || this.addConnectionProfileType === 'hlf') {
-
       return this.setV06Defaults().then(() => {
         this.newConnectionProfile = {
           description: this.addConnectionProfileDescription,
@@ -179,31 +179,28 @@ export class AddConnectionProfileComponent {
 
     }
     else if (this.version === 'v1') {
-      console.log('Add v1 file');
 
       return this.setV1Defaults().then(() => {
         this.newConnectionProfile = {
           description: this.addConnectionProfileDescription,
           type: 'hlfv1',
-          membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
-          peerURL: this.addConnectionProfilePeerURL,
-          eventHubURL: this.addConnectionProfileEventHubURL,
+          orderers: this.addConnectionProfileOrderers,
+          ca: this.addConnectionProfileCertificateAuthority,
+          peers: this.addConnectionProfilePeers,
           keyValStore: this.addConnectionProfileKeyValStore,
+          channel: this.addConnectionProfileChannel,
+          mspID: this.addConnectionProfileMspId,
           deployWaitTime: this.addConnectionProfileDeployWaitTime,
-          invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
-          certificate: this.addConnectionProfileCertificate,
-          certificatePath: this.addConnectionProfileCertificatePath
+          invokeWaitTime: this.addConnectionProfileInvokeWaitTime
         };
       })
-
-
     }
     else {
       throw new Error('Unsupported version');
     }
   }
 
-  private addConnectionProfile(): void {
+  addConnectionProfile(): void {
     let connectionProfile;
 
     if(this.version === 'v06' || this.addConnectionProfileType === 'hlf'){
@@ -245,7 +242,7 @@ export class AddConnectionProfileComponent {
       };
     }
     else{
-      console.log('Unknown connection profile version selected');
+      throw new Error('Unknown connection profile version selected');
     }
 
 
@@ -254,13 +251,12 @@ export class AddConnectionProfileComponent {
       profile: connectionProfile,
       default: this.addConnectionProfileName === '$default'
     };
-    console.log('Closing add modal, returning profile',completeConnectionProfile);
     this.activeModal.close(completeConnectionProfile);
 
   }
 
 
-  private setV06Defaults(): Promise<any> {
+  setV06Defaults(): Promise<any> {
     return this.updateConnectionProfiles().then(() => {
       let connectionProfileBase = 'New Connection Profile';
       let connectionProfileName = connectionProfileBase;
@@ -270,7 +266,7 @@ export class AddConnectionProfileComponent {
         return cp.name === connectionProfileName;
       })) {
         counter++;
-        connectionProfileName = connectionProfileBase + counter;
+        connectionProfileName = connectionProfileBase + ' ' + counter;
       }
 
       this.addConnectionProfileName = connectionProfileName;
@@ -288,10 +284,7 @@ export class AddConnectionProfileComponent {
 
   }
 
-
-
-  private setV1Defaults(): Promise<any> {
-    console.log('Ran setV1Defaults()')
+  setV1Defaults(): Promise<any> {
     return this.updateConnectionProfiles().then(() => {
       let connectionProfileBase = 'New Connection Profile';
       let connectionProfileName = connectionProfileBase;
@@ -301,22 +294,22 @@ export class AddConnectionProfileComponent {
         return cp.name === connectionProfileName;
       })) {
         counter++;
-        connectionProfileName = connectionProfileBase + counter;
+        connectionProfileName = connectionProfileBase + ' ' + counter;
       }
 
       this.addConnectionProfileName = connectionProfileName;
       this.addConnectionProfileDescription = "A description for a V1 Profile"
       this.addConnectionProfileType = 'hlfv1',
       this.addConnectionProfileOrderers = [{
-        url: 'grpcs://localhost:7050',
+        url: 'grpc://localhost:7050',
         cert: '',
         hostnameOverride: ''
       }];
 
-      this.addConnectionProfileCertificateAuthority = "grpc://localhost:7054"
+      this.addConnectionProfileCertificateAuthority = "http://localhost:7054"
       this.addConnectionProfilePeers = [{
-        requestURL: 'grpcs://localhost:7051',
-        eventURL: 'grpcs://localhost:7053',
+        requestURL: 'grpc://localhost:7051',
+        eventURL: 'grpc://localhost:7053',
         cert: '',
         hostnameOverride: ''
       }]
@@ -329,11 +322,7 @@ export class AddConnectionProfileComponent {
 
   }
 
-
-
-
-
-  private updateConnectionProfiles(): Promise<any> {
+  updateConnectionProfiles(): Promise<any> {
     let newConnectionProfiles = [];
     return this.connectionProfileService.getAllProfiles()
       .then((connectionProfiles) => {
