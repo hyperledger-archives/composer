@@ -17,7 +17,7 @@
 const Deploy = require ('./lib/deploy.js');
 
 module.exports.command = 'deploy [options]';
-module.exports.describe = 'Deploys a business network from the fabric';
+module.exports.describe = 'Deploys a business network to the Hyperledger Fabric';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
     connectionProfileName: {alias: 'p', optional: true, describe: 'The connection profile name', type: 'string' },
