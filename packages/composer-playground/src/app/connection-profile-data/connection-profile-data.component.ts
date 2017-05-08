@@ -181,7 +181,7 @@ export class ConnectionProfileDataComponent {
           [Validators.required]
         ],
         'ca': [
-          this.connectionProfileData ? this.connectionProfileData.profile.ca : 'grpc://localhost:7054',
+          this.connectionProfileData ? this.connectionProfileData.profile.ca : 'http://localhost:7054',
           [Validators.required]
         ],
         'peers': this.fb.array(
@@ -231,7 +231,7 @@ export class ConnectionProfileDataComponent {
     }
     else {
       someList.push(this.fb.group({
-        'url': ['grpcs://localhost:7050', Validators.required],
+        'url': ['grpc://localhost:7050', Validators.required],
         'cert': [''],
         'hostnameOverride': ['']
       }));
@@ -243,10 +243,10 @@ export class ConnectionProfileDataComponent {
     // add orderer to the list
     const control = <FormArray>this.v1Form.controls['orderers'];
     control.push(this.fb.group({
-      'url': ['grpcs://localhost:7050', Validators.required],
-      'cert': [''],
-      'hostnameOverride': ['']
-    }));
+        'url': ['grpc://localhost:7050', Validators.required],
+        'cert': [''],
+        'hostnameOverride': ['']
+      }));
   }
 
   removeOrderer(i: number) {
@@ -270,8 +270,8 @@ export class ConnectionProfileDataComponent {
     }
     else {
       someList.push(this.fb.group({
-        'requestURL': ['grpcs://localhost:7051', Validators.required],
-        'eventURL': ['grpcs://localhost:7053', Validators.required],
+        'requestURL': ['grpc://localhost:7051', Validators.required],
+        'eventURL': ['grpc://localhost:7053', Validators.required],
         'cert': [''],
         'hostnameOverride': ['']
       }));
@@ -282,11 +282,11 @@ export class ConnectionProfileDataComponent {
   addPeer() {
     const control = <FormArray>this.v1Form.controls['peers'];
     control.push(this.fb.group({
-      'requestURL': ['grpcs://localhost:7051', Validators.required],
-      'eventURL': ['grpcs://localhost:7053', Validators.required],
-      'cert': [''],
-      'hostnameOverride': ['']
-    }));
+        'requestURL': ['grpc://localhost:7051', Validators.required],
+        'eventURL': ['grpc://localhost:7053', Validators.required],
+        'cert': [''],
+        'hostnameOverride': ['']
+      }));
   }
 
   removePeer(i: number) {

@@ -184,14 +184,14 @@ export class AddConnectionProfileComponent {
         this.newConnectionProfile = {
           description: this.addConnectionProfileDescription,
           type: 'hlfv1',
-          membershipServicesURL: this.addConnectionProfileMembershipServicesURL,
-          peerURL: this.addConnectionProfilePeerURL,
-          eventHubURL: this.addConnectionProfileEventHubURL,
+          orderers: this.addConnectionProfileOrderers,
+          ca: this.addConnectionProfileCertificateAuthority,
+          peers: this.addConnectionProfilePeers,
           keyValStore: this.addConnectionProfileKeyValStore,
+          channel: this.addConnectionProfileChannel,
+          mspID: this.addConnectionProfileMspId,
           deployWaitTime: this.addConnectionProfileDeployWaitTime,
-          invokeWaitTime: this.addConnectionProfileInvokeWaitTime,
-          certificate: this.addConnectionProfileCertificate,
-          certificatePath: this.addConnectionProfileCertificatePath
+          invokeWaitTime: this.addConnectionProfileInvokeWaitTime
         };
       })
     }
@@ -301,15 +301,15 @@ export class AddConnectionProfileComponent {
       this.addConnectionProfileDescription = "A description for a V1 Profile"
       this.addConnectionProfileType = 'hlfv1',
       this.addConnectionProfileOrderers = [{
-        url: 'grpcs://localhost:7050',
+        url: 'grpc://localhost:7050',
         cert: '',
         hostnameOverride: ''
       }];
 
-      this.addConnectionProfileCertificateAuthority = "grpc://localhost:7054"
+      this.addConnectionProfileCertificateAuthority = "http://localhost:7054"
       this.addConnectionProfilePeers = [{
-        requestURL: 'grpcs://localhost:7051',
-        eventURL: 'grpcs://localhost:7053',
+        requestURL: 'grpc://localhost:7051',
+        eventURL: 'grpc://localhost:7053',
         cert: '',
         hostnameOverride: ''
       }]
