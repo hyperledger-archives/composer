@@ -27,7 +27,7 @@ module.exports = generators.Base.extend({
    * @returns {Object} List of questins to ask
    */
     prompting: function() {
-        console.log('Welcome to the Fabric Composer Skeleton Application Generator');
+        console.log('Welcome to the Hyperledger Composer Skeleton Application Generator');
         const questions = [{
             type: 'list',
             name: 'generatorType',
