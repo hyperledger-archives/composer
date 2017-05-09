@@ -10,6 +10,10 @@
   <section class="modal-body">
     <p>Issue a new ID to a participant in your business network</p>
 
+    <template #participantTypeaheadResult let-r="result" let-t="term">
+      <span class="participant-id">{{getParticipant(r).getIdentifier()}}</span> <span class="participant-type">{{getParticipant(r).getType()}}</span>
+    </template>
+
     <form #issueIdentityForm="ngForm" id="issue-identity-form" (ngSubmit)="issueIdentity()">
 
       <div class="justified-input">
@@ -19,7 +23,7 @@
 
       <div class="justified-input">
         <label class="required" for="participantFQI">Participant<abbr title="required">*</abbr></label>
-        <input required type="text" [(ngModel)]="participantFQI" id="participantFQI" name="participantFQI" [ngbTypeahead]="search" autocomplete="off">
+        <input required type="text" [(ngModel)]="participantFQI" id="participantFQI" name="participantFQI" [ngbTypeahead]="search" [resultTemplate]="participantTypeaheadResult" autocomplete="off">
       </div>
 
       <div>

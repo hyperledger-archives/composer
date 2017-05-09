@@ -1,11 +1,13 @@
+/* tslint:disable:no-unused-variable */
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, async, fakeAsync, tick, inject } from '@angular/core/testing';
-import { Component, Input, Output, Directive, EventEmitter } from '@angular/core';
+import { Input, Output, Directive, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { AddConnectionProfileComponent } from './add-connection-profile.component';
-import { FileImporterComponent } from './../file-importer';
-import { FileDragDropDirective } from './../directives/file-drag-drop';
 
 import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
 import { AlertService } from '../services/alert.service';
@@ -17,84 +19,81 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 
 class MockAdminService {
-  constructor() {
-  }
+    getAdminConnection(): AdminConnection {
+        return new AdminConnection();
+    }
 
-  getAdminConnection(): AdminConnection {
-    return new AdminConnection();
-  }
+    ensureConnection(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            resolve(true);
+        });
+    }
 
-  ensureConnection(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve(true);
-    });
-  }
+    deploy(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+        });
+    }
 
-  deploy(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
-    });
-  }
+    update(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+        });
+    }
 
-  update(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
-    });
-  }
+    generateDefaultBusinessNetwork(): BusinessNetworkDefinition {
+        return new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
+    }
 
-  generateDefaultBusinessNetwork(): BusinessNetworkDefinition {
-    return new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
-  }
-
-  isInitialDeploy(): boolean {
-    return true;
-  }
+    isInitialDeploy(): boolean {
+        return true;
+    }
 }
 
 class MockAlertService {
-  public errorStatus$: Subject<string> = new BehaviorSubject<string>(null);
-  public busyStatus$: Subject<string> = new BehaviorSubject<string>(null);
+    public errorStatus$: Subject<string> = new BehaviorSubject<string>(null);
+    public busyStatus$: Subject<string> = new BehaviorSubject<string>(null);
 }
 
 class MockConnectionProfileService {
     getAllProfiles(): Promise<any> {
         return new Promise((resolve, reject) => {
-            resolve({ profile0: 'a', profile2: 'c', profile1: 'b' });
+            resolve({profile0: 'a', profile2: 'c', profile1: 'b'});
         });
     }
 }
 
 @Directive({
-  selector: '[fileDragDrop]'
+    selector: '[fileDragDrop]'
 })
 class MockDragDropDirective {
-  @Output()
-  public fileDragDropFileAccepted: EventEmitter<File> = new EventEmitter<File>();
-  @Output()
-  public fileDragDropFileRejected: EventEmitter<string> = new EventEmitter<string>();
-  @Output()
-  public fileDragDropDragOver: EventEmitter<string> = new EventEmitter<string>();
-  @Output()
-  public fileDragDropDragLeave: EventEmitter<string> = new EventEmitter<string>();
+    @Output()
+    public fileDragDropFileAccepted: EventEmitter<File> = new EventEmitter<File>();
+    @Output()
+    public fileDragDropFileRejected: EventEmitter<string> = new EventEmitter<string>();
+    @Output()
+    public fileDragDropDragOver: EventEmitter<string> = new EventEmitter<string>();
+    @Output()
+    public fileDragDropDragLeave: EventEmitter<string> = new EventEmitter<string>();
 
-  @Input()
-  public supportedFileTypes: string[] = [];
-  @Input()
-  maxFileSize: number = 0;
+    @Input()
+    public supportedFileTypes: string[] = [];
+    @Input()
+    maxFileSize: number = 0;
 }
 
 @Directive({
-  selector: 'file-importer'
+    selector: 'file-importer'
 })
 class MockFileImporterDirective {
-  @Output()
-  public dragFileAccepted: EventEmitter<File> = new EventEmitter<File>();
+    @Output()
+    public dragFileAccepted: EventEmitter<File> = new EventEmitter<File>();
 
-  @Input()
-  public expandInput: boolean = false;
+    @Input()
+    public expandInput: boolean = false;
 
-  @Input()
-  public svgName: string = '#icon-BNA_Upload';
+    @Input()
+    public svgName: string = '#icon-BNA_Upload';
 }
 
 describe('AddConnectionProfileComponent', () => {
@@ -102,11 +101,11 @@ describe('AddConnectionProfileComponent', () => {
     let component: AddConnectionProfileComponent;
     let fixture: ComponentFixture<AddConnectionProfileComponent>;
 
-    const NAME = 'New Profile'
+    const NAME = 'New Profile';
     const DESC = 'Test Description';
     const MS_URL = 'msurl';
-    const PEER_URL = 'peerurl'
-    const EH_URL = 'ehurl'
+    const PEER_URL = 'peerurl';
+    const EH_URL = 'ehurl';
     const KEY_VAL_STORE = 'kvs';
     const DEPLOY_TIME = 100;
     const WAIT_TIME = 999;
@@ -114,25 +113,24 @@ describe('AddConnectionProfileComponent', () => {
     const CERT_PATH = 'certpath';
     const PEERS = ['peers'];
     const ORDERERS = ['orderers'];
-    const CA = 'ca'
-    const CHANNEL = 'channel'
+    const CA = 'ca';
+    const CHANNEL = 'channel';
     const MSPID = 'mspID';
-
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-        declarations: [
-            AddConnectionProfileComponent, MockDragDropDirective, MockFileImporterDirective
-        ],
-        imports: [
-            FormsModule
-        ],
-        providers: [
-            { provide: AlertService, useClass: MockAlertService },
-            NgbActiveModal,
-            { provide: AdminService, useClass: MockAdminService },
-            { provide: ConnectionProfileService, useClass: MockConnectionProfileService }
-        ]
+            declarations: [
+                AddConnectionProfileComponent, MockDragDropDirective, MockFileImporterDirective
+            ],
+            imports: [
+                FormsModule
+            ],
+            providers: [
+                {provide: AlertService, useClass: MockAlertService},
+                NgbActiveModal,
+                {provide: AdminService, useClass: MockAdminService},
+                {provide: ConnectionProfileService, useClass: MockConnectionProfileService}
+            ]
         });
 
         sandbox = sinon.sandbox.create();
@@ -176,13 +174,12 @@ describe('AddConnectionProfileComponent', () => {
 
             let createMock = sandbox.stub(component, 'createProfile');
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-                                        .returns(Promise.resolve('some data'));
+            .returns(Promise.resolve('some data'));
 
             component.fileAccepted(file);
             tick();
             createMock.called;
         }));
-
 
         it('should call this.fileRejected when there is an error reading the file', fakeAsync(() => {
             let b = new Blob(['/**CTO File*/'], {type: 'text/plain'});
@@ -190,7 +187,7 @@ describe('AddConnectionProfileComponent', () => {
 
             let createMock = sandbox.stub(component, 'fileRejected');
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-                                        .returns(Promise.reject('some data'));
+            .returns(Promise.reject('some data'));
 
             component.fileAccepted(file);
             tick();
@@ -204,7 +201,7 @@ describe('AddConnectionProfileComponent', () => {
 
             let createMock = sandbox.stub(component, 'fileRejected');
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
-                                        .returns(Promise.resolve('some data'));
+            .returns(Promise.resolve('some data'));
 
             component.fileAccepted(file);
             tick();
@@ -217,7 +214,7 @@ describe('AddConnectionProfileComponent', () => {
             component.fileRejected('long reason to reject file');
 
             component['alertService'].errorStatus$.subscribe(
-                message => {
+                (message) => {
                     expect(message).to.be.equal('long reason to reject file');
                 }
             );
@@ -239,10 +236,8 @@ describe('AddConnectionProfileComponent', () => {
             mockFileReadObj = {
                 readAsArrayBuffer: sandbox.stub(),
                 result: content,
-                onload: () => {
-                },
-                onerror: () => {
-                }
+                onload: sinon.stub(),
+                onerror: sinon.stub()
             };
 
             mockFileRead = sinon.stub(window, 'FileReader');
@@ -257,7 +252,7 @@ describe('AddConnectionProfileComponent', () => {
             let promise = component.getDataBuffer(file);
             mockFileReadObj.onload();
             return promise
-            .then(data => {
+            .then((data) => {
                 data.toString().should.equal(content);
             });
         });
@@ -266,54 +261,53 @@ describe('AddConnectionProfileComponent', () => {
             let promise = component.getDataBuffer(file);
             mockFileReadObj.onerror('error');
             return promise
-            .then(data => {
+            .then((data) => {
                 data.should.be.null;
             })
-            .catch(err => {
+            .catch((err) => {
                 err.should.equal('error');
             });
         });
     });
 
     describe('#createProfile', () => {
-        let v06_INPUT = {
-                            description : DESC,
-                            type : 'hlf',
-                            membershipServicesURL: MS_URL,
-                            peerURL: PEER_URL,
-                            eventHubURL: EH_URL,
-                            keyValStore: KEY_VAL_STORE,
-                            deployWaitTime: DEPLOY_TIME,
-                            invokeWaitTime: WAIT_TIME,
-                            certificate: CERT,
-                            certificatePath: CERT_PATH
-                        };
+        let V06_INPUT = {
+            description: DESC,
+            type: 'hlf',
+            membershipServicesURL: MS_URL,
+            peerURL: PEER_URL,
+            eventHubURL: EH_URL,
+            keyValStore: KEY_VAL_STORE,
+            deployWaitTime: DEPLOY_TIME,
+            invokeWaitTime: WAIT_TIME,
+            certificate: CERT,
+            certificatePath: CERT_PATH
+        };
 
-       let v1_INPUT =  {
-                            description : DESC,
-                            type : 'hlfv1',
-                            orderers: ORDERERS,
-                            ca: CA,
-                            peers: PEERS,
-                            keyValStore: KEY_VAL_STORE,
-                            deployWaitTime: DEPLOY_TIME,
-                            invokeWaitTime: WAIT_TIME,
-                            channel: CHANNEL,
-                            mspID: MSPID,
-                        };
+        let V1_INPUT = {
+            description: DESC,
+            type: 'hlfv1',
+            orderers: ORDERERS,
+            ca: CA,
+            peers: PEERS,
+            keyValStore: KEY_VAL_STORE,
+            deployWaitTime: DEPLOY_TIME,
+            invokeWaitTime: WAIT_TIME,
+            channel: CHANNEL,
+            mspID: MSPID,
+        };
 
-        let BAD_INPUT =  'This is not valid input';
+        let BAD_INPUT = 'This is not valid input';
 
-        let INVALID_VERSION =  {
-                                    description : 'test',
-                                    type : 'hlfv100',
-                                };
-
+        let INVALID_VERSION = {
+            description: 'test',
+            type: 'hlfv100',
+        };
 
         it('should process json data for v0.6 hlf', fakeAsync(() => {
             let createMock = sandbox.stub(component, 'setV06Defaults').returns(Promise.resolve('some data'));
             let addMock = sandbox.stub(component, 'addConnectionProfile');
-            let data = JSON.stringify(v06_INPUT);
+            let data = JSON.stringify(V06_INPUT);
             component.createProfile(data);
             tick();
             createMock.should.have.been.called;
@@ -333,7 +327,7 @@ describe('AddConnectionProfileComponent', () => {
         it('should process json data for v1 hlf', fakeAsync(() => {
             let createMock = sandbox.stub(component, 'setV1Defaults').returns(Promise.resolve('some data'));
             let addMock = sandbox.stub(component, 'addConnectionProfile');
-            let data = JSON.stringify(v1_INPUT);
+            let data = JSON.stringify(V1_INPUT);
             component.createProfile(data);
             tick();
             createMock.should.have.been.called;
@@ -351,9 +345,8 @@ describe('AddConnectionProfileComponent', () => {
         }));
 
         it('should throw an error for bad input', fakeAsync(() => {
-            let data = BAD_INPUT;
             try {
-                component.createProfile(data);
+                component.createProfile(BAD_INPUT);
             } catch (e) {
                 e.message.should.contain('Parse error');
             }
@@ -371,7 +364,6 @@ describe('AddConnectionProfileComponent', () => {
     });
 
     describe('#changeCurrentFileType', () => {
-
         let TEST_DESC = 'Test Description';
         beforeEach(() => {
             component['addConnectionProfileDescription'] = TEST_DESC;
@@ -453,7 +445,7 @@ describe('AddConnectionProfileComponent', () => {
         }
     });
 
-   describe('#setV1Defaults', () => {
+    describe('#setV1Defaults', () => {
 
         it('should create a new profile and set defaults for a v1 fabric', fakeAsync(() => {
             let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
@@ -478,18 +470,18 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfileDescription'].should.equal('A description for a V1 Profile');
             component['addConnectionProfileType'].should.equal('hlfv1');
             component['addConnectionProfileOrderers'].should.deep.equal([{
-                                                                            url: 'grpc://localhost:7050',
-                                                                            cert: '',
-                                                                            hostnameOverride: ''
-                                                                        }]);
+                url: 'grpc://localhost:7050',
+                cert: '',
+                hostnameOverride: ''
+            }]);
 
             component['addConnectionProfileCertificateAuthority'].should.equal('http://localhost:7054');
             component['addConnectionProfilePeers'].should.deep.equal([{
-                                                                        requestURL: 'grpc://localhost:7051',
-                                                                        eventURL: 'grpc://localhost:7053',
-                                                                        cert: '',
-                                                                        hostnameOverride: ''
-                                                                    }]);
+                requestURL: 'grpc://localhost:7051',
+                eventURL: 'grpc://localhost:7053',
+                cert: '',
+                hostnameOverride: ''
+            }]);
             component['addConnectionProfileKeyValStore'].should.equal('/tmp/keyValStore');
             component['addConnectionProfileChannel'].should.equal('mychannel');
             component['addConnectionProfileMspId'].should.equal('Org1MSP');
@@ -504,10 +496,10 @@ describe('AddConnectionProfileComponent', () => {
         it('should update/refresh the list of connection profiles', fakeAsync(() => {
             component.updateConnectionProfiles().then(() => {
                 component['connectionProfiles'].should.deep.equal([
-                                                                    {name: 'profile0', profile: 'a', default: false},
-                                                                    {name: 'profile1', profile: 'b', default: false},
-                                                                    {name: 'profile2', profile: 'c', default: false}
-                                                                  ]);
+                    {name: 'profile0', profile: 'a', default: false},
+                    {name: 'profile1', profile: 'b', default: false},
+                    {name: 'profile2', profile: 'c', default: false}
+                ]);
             });
         }));
     });
@@ -541,9 +533,9 @@ describe('AddConnectionProfileComponent', () => {
             let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
             let EXP = {
                 default: false,
-                name: "New Profile",
+                name: 'New Profile',
                 profile: {
-                    certificate: CERT+'\n',
+                    certificate: CERT + '\n',
                     certificatePath: CERT_PATH,
                     deployWaitTime: DEPLOY_TIME,
                     description: DESC,
@@ -552,7 +544,7 @@ describe('AddConnectionProfileComponent', () => {
                     keyValStore: KEY_VAL_STORE,
                     membershipServicesURL: MS_URL,
                     peerURL: PEER_URL,
-                    type: "hlf"
+                    type: 'hlf'
                 }
             };
 
@@ -565,7 +557,7 @@ describe('AddConnectionProfileComponent', () => {
             let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
             let EXP = {
                 default: false,
-                name: "New Profile",
+                name: 'New Profile',
                 profile: {
                     ca: CA,
                     channel: CHANNEL,
@@ -576,7 +568,7 @@ describe('AddConnectionProfileComponent', () => {
                     mspID: MSPID,
                     orderers: ORDERERS,
                     peers: PEERS,
-                    type: "hlfv1"
+                    type: 'hlfv1'
                 }
             };
 
@@ -594,5 +586,4 @@ describe('AddConnectionProfileComponent', () => {
             }
         }));
     });
-
 });
