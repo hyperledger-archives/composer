@@ -12,11 +12,9 @@ excerpt: Getting Started with coding a Business Network Definition
 
 This tutorial will take you through how to code and deploy a Business Network Definition. How to put together the files, code required artifacts, and what to do with them.
 
-The final form of the Business Network Archive (`.bna`) is mandatory for {{site.data.conrefs.composer_full}}. <!-- Move this down to a relevant section -->*This file is created using the `composer archive create` command, however, the creation and management of the input files is not mandatory.*
+The final form of the Business Network Archive (`.bna`) is mandatory for {{site.data.conrefs.composer_full}}. However, the creation and management of the input files is not mandatory.
 
-<!-- what we're gonna do -->*For this tutorial, a single NPM module will be created for both the model and transaction functions. An archive will be created locally  and deployed.
-
-In production this NPM module would be published to a NPM repository, in development/test context this is not required.*
+For this tutorial, a single NPM module will be created for both the model and transaction functions. An archive will be created locally  and deployed. The NPM module consists of your business network definition, and the `package.json` file.
 
 
 ## Before you begin
@@ -162,13 +160,15 @@ The transaction processor function file is a standard JavaScript file that defin
         }
         ```
 
-<!-- HOW?! What the NPM module requires is never specified.-->*That has completed the creation of the npm module for the Business Network, the next step is to form this into a Business Network Archive.*
+Now that the `package.json` file has been created in addition to the business network definition, the npm module for the business network has been created. The next step is to form this into a business network archive (`.bna`) file to be depoloyed to an instance of {{site.data.conrefs.hyperledger_fabric_full}}.
+
+---
 
 # Creating the business network archive and deploying to {{site.data.conrefs.hyperledger_fabric_full}}
 
 Now that the business network has been defined, a business network archive must be created. This requires all the files in the business network definition created above. The business network archive (`.bna`) file can then be deployed to {{site.data.conrefs.hyperledger_fabric_full}}.
 
-<!-- Is this relevant here?-->*There is a `composer archive` command that can be used to create and inspect these archives. The `composer network` command is then used to administer the business network archive on the Hyperledger Fabric.*
+There is a `composer archive` command that can be used to create and inspect these archives. The `composer network` command is then used to administer the business network archive on the Hyperledger Fabric.
 
 1. Use the `composer archive create` command to create the archive. The `--archiveFile` option is used to specify the name of the archive file to create. If no filename is specified, a default name will be created  based on the identifier of the business network (sanitized to be suitable as a filename). For example `digitalPropertyNetwork-0.1.2.bna`.
 
@@ -179,17 +179,15 @@ Now that the business network has been defined, a business network archive must 
 
   In the case of a directory being given, this directory must contain the appropriate `package.json` file.
 
-
-
         ```bash
         $ composer archive create --archiveFile digitalLandTitle.bna --sourceType dir --sourceName .
         ```
 
 2. To deploy an archive file Once you have this archive it can then be deployed to Hyperledger (which will assuming is all running for the moment)
 
-```bash
-$ composer network deploy --archiveFile  DigitalLandTitle.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-```
+        ```bash
+        $ composer network deploy --archiveFile  DigitalLandTitle.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+        ```
 
 # Next steps developing the model or transaction processor functions
 
