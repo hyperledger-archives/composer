@@ -38,6 +38,7 @@ If you need to update or install any of the prerequisites, please refer to [inst
         ```
         $ npm install -g composer-cli
         ```
+  *Please note: When using Ubuntu this command will fail when running in a root user shell.*
 
 2. Clone the Composer sample applications GitHub repository. Choose from either the v0.6 sample application or the v1.0 sample application, the former will stand up a Hyperledger Fabric v0.6 environment ; the latter will stand up a newer Hyperledger Fabric v1.0 environment using a docker command sequence. For Hyperledger v0.6 use the following command:
 

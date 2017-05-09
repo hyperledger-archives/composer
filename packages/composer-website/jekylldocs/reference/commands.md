@@ -17,6 +17,8 @@ The {{site.data.conrefs.composer_full}} command line application can be installe
 
 `npm install -g composer-cli`
 
+*Please note: When using Ubuntu this command will fail when running in a root user shell.*
+
 ## Business Network Archives
 
 `composer archive create`
