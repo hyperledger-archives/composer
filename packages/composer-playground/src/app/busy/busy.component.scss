@@ -1,9 +1,19 @@
 @import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
 
-.busy {
-  .modal-header {
-    svg {
-      fill: green
+busy {
+    .contents {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        span + span {
+            margin-left: $space-xsmall;
+        }
+
+        .busy-text {
+            font-size: 14px;
+        }
     }
-  }
+
 }

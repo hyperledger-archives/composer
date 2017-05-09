@@ -51,7 +51,7 @@ if (interactive) {
     clear();
     console.log(
         chalk.yellow(
-            figlet.textSync('Fabric-Composer', { horizontalLayout: 'full' })
+            figlet.textSync('Hyperledger-Composer', { horizontalLayout: 'full' })
         )
     );
     // Get details of the server that we want to run

@@ -109,6 +109,20 @@ describe('BusinessNetworkDefinition', () => {
             });
         });
 
+        it('should be able to detect model & logic files in folders with leading periods (.)', () => {
+
+            return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive-dotfolders').then(businessNetwork => {
+                businessNetwork.should.be.BusinessNetworkDefinition;
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
+
+                const intro = businessNetwork.getIntrospector();
+                intro.getClassDeclarations().length.should.equal(25);
+                const sm = businessNetwork.getScriptManager();
+                sm.getScripts().length.should.equal(2);
+            });
+        });
+
         it('should be able to correctly create a business network from a directory using npm dependencies', () => {
 
             // we force an 'npm install' on the package.json

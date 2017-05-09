@@ -70,7 +70,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'appDescription',
                         message: 'Description of the application:',
-                        default: 'Skeleton Fabric Composer Angular2 project',
+                        default: 'Skeleton Hyperledger Composer Angular2 project',
                         store: false,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input !== '') {
@@ -187,7 +187,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'appDescription',
                         message: 'Description of the application:',
-                        default: 'Skeleton Fabric Composer Angular2 project',
+                        default: 'Skeleton Hyperledger Composer Angular2 project',
                         store: false,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input !== '') {

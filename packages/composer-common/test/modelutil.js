@@ -56,6 +56,26 @@ describe('ModelUtil', function () {
 
     });
 
+    describe('#isWildcardName', () => {
+
+        it('should return false for a name without a wildcard', () => {
+            ModelUtil.isWildcardName('Foo').should.be.false;
+        });
+
+        it('should return true for a name with a wildcard', () => {
+            ModelUtil.isWildcardName('*').should.be.true;
+        });
+
+        it('should return false for a fully qualified name without a wildcard', () => {
+            ModelUtil.isWildcardName('org.acme.baz.Foo').should.be.false;
+        });
+
+        it('should return true for a fully qualified name with a wildcard', () => {
+            ModelUtil.isWildcardName('org.acme.baz.*').should.be.true;
+        });
+
+    });
+
     describe('#getNamespace', function() {
         it('check getNamespace', function() {
             ModelUtil.getNamespace('org.acme.baz.Foo').should.equal('org.acme.baz');

@@ -1,4 +1,7 @@
 /* tslint:disable:no-unused-variable */
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';

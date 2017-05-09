@@ -1,10 +1,12 @@
 /* tslint:disable:no-unused-variable */
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {DeleteConnectionProfileComponent} from './delete-connection-profile.component';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {ConnectionProfileService} from '../services/connectionprofile.service';
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DeleteConnectionProfileComponent } from './delete-connection-profile.component';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConnectionProfileService } from '../services/connectionprofile.service';
 import * as sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('DeleteConnectionProfileComponent', () => {
 
@@ -22,7 +24,7 @@ describe('DeleteConnectionProfileComponent', () => {
         TestBed.configureTestingModule({
             declarations: [DeleteConnectionProfileComponent],
             providers: [
-                {provide: ConnectionProfileService, useValue: stubConProfSvc },
+                {provide: ConnectionProfileService, useValue: stubConProfSvc},
                 {provide: NgbActiveModal, useValue: stubActiveModal}
             ]
         });
@@ -30,21 +32,20 @@ describe('DeleteConnectionProfileComponent', () => {
         fixture = TestBed.createComponent(DeleteConnectionProfileComponent);
         component = fixture.componentInstance;
 
-  });
+    });
 
+    afterEach(() => {
+        sandbox.restore();
+    });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
-
-  it('should create a DeleteConnectionProfileComponent', () => {
+    it('should create a DeleteConnectionProfileComponent', () => {
         component.should.be.ok;
-  });
+    });
 
-  it('should call the service to delete the profile and close the active modal', () => {
-        component.deleteProfile('name');
-        stubConProfSvc.getCurrentlySelectedProfileName.should.have.been.called;
-        stubConProfSvc.deleteProfile.should.have.been.called;
+    it('should call the service to delete the profile and close the active modal', () => {
+        component['profileName'] = 'bob';
+        component.deleteProfile();
+        stubConProfSvc.deleteProfile.should.have.been.calledWith('bob');
         stubActiveModal.close.should.have.been.called;
-  });
+    });
 });
