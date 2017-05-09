@@ -99,6 +99,9 @@ export class TestComponent implements OnInit {
             } else {
                 this.chosenRegistry = this.transactionRegistry;
             }
+
+            this.alertService.successStatus$.next({title: 'Submit Transaction Successful', text: 'A transaction was successfully submitted', icon: '#icon-transaction'});
+
         });
     }
 }
