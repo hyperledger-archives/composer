@@ -26,6 +26,9 @@ import { Resource } from 'composer-common';
 class MockTypeaheadDirective {
   @Input()
   public ngbTypeahead: any;
+
+  @Input()
+  public resultTemplate: any;
 }
 
 class MockBusinessNetworkConnection {
@@ -158,6 +161,30 @@ describe('IssueIdentityComponent', () => {
 
   describe('#search', () => {
 
+    it('should provide search ahead for blank text', fakeAsync(() => {
+
+      // add FQIs to test against
+      component['participantFQIs']=['goat','giraffe','elephant'];
+
+      // mock teXt
+      let text$ = new Observable(observer => {
+        //pushing values
+        observer.next('');
+        //complete stream
+        observer.complete();
+      });
+
+      // run method
+      let result = component['search'](text$);
+
+      // perform test inside promise
+      result.toPromise().then((output)=> {
+        // we should have goat, girrafe, but no elephant
+        let expected = [];
+        output.should.deep.equal(expected);
+      });
+    }));
+
     it('should provide search ahead for existing ids that match', fakeAsync(() => {
 
       // add FQIs to test against
@@ -241,5 +268,30 @@ describe('IssueIdentityComponent', () => {
 
     }));
 
+  });
+
+  describe('#getParticipant', () => {
+    it('should get the specified participant', () => {
+      let mockParticipant1 = sinon.createStubInstance(Resource);
+      mockParticipant1.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+      mockParticipant1.getIdentifier.returns('DOGE_1');
+      mockParticipant1.getType.returns('org.doge.Doge');
+      let mockParticipant2 = sinon.createStubInstance(Resource);
+      mockParticipant2.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_2');
+      mockParticipant2.getIdentifier.returns('DOGE_2');
+      mockParticipant2.getType.returns('org.doge.Doge');
+      let mockParticipant3 = sinon.createStubInstance(Resource);
+      mockParticipant3.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_3');
+      mockParticipant3.getIdentifier.returns('DOGE_3');
+      mockParticipant3.getType.returns('org.doge.Doge');
+
+      component['participants'].set('DOGE_1', mockParticipant1);
+      component['participants'].set('DOGE_2', mockParticipant2);
+
+      let participant = component['getParticipant']('DOGE_2');
+
+      participant.getIdentifier().should.equal('DOGE_2');
+      participant.getType().should.equal('org.doge.Doge');
+    });
   });
 });
