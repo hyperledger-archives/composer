@@ -398,7 +398,7 @@ describe('BusinessNetworkConnector', () => {
 
         it('should return the LoopBack model name if model registered but no connector specific settings', () => {
             const lbModelName = 'org_acme_base_BaseAsset';
-            sandbox.stub(testConnector, 'getConnectorSpecificSettings').withArgs(lbModelName).returns({});
+            sandbox.stub(testConnector, 'getConnectorSpecificSettings').withArgs(lbModelName).returns(undefined);
             testConnector.getComposerModelName(lbModelName).should.equal(lbModelName);
         });
 
@@ -1607,6 +1607,106 @@ describe('BusinessNetworkConnector', () => {
                 });
             })
             .catch((error) => {
+                error.statusCode.should.equal(404);
+                error.status.should.equal(404);
+                throw error;
+            })
+            .should.be.rejectedWith(/does not exist/);
+        });
+    });
+
+    describe('#destroy', () => {
+
+        let mockAssetRegistry;
+        let mockResourceToDelete;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.businessNetworkDefinition = mockBusinessNetworkDefinition;
+            testConnector.modelManager = modelManager;
+            testConnector.introspector = introspector;
+            testConnector.serializer = mockSerializer;
+            testConnector.connected = true;
+            mockAssetRegistry = sinon.createStubInstance(AssetRegistry);
+            mockBusinessNetworkConnection.getAssetRegistry.resolves(mockAssetRegistry);
+            mockResourceToDelete = sinon.createStubInstance(Resource);
+        });
+
+        it('should delete the object for the given id from the blockchain', () => {
+            mockAssetRegistry.get.resolves(mockResourceToDelete);
+            mockAssetRegistry.remove.resolves();
+            return new Promise((resolve, reject) => {
+                testConnector.destroy('org.acme.base.BaseAsset','foo' , { test: 'options' }, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .then(() => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                sinon.assert.calledOnce(mockAssetRegistry.get);
+                sinon.assert.calledOnce(mockAssetRegistry.remove);
+            });
+        });
+
+
+
+        it('should handle an error when calling composer get for the given id', () => {
+            mockAssetRegistry.get.rejects(new Error('get error'));
+            return new Promise((resolve, reject) => {
+                testConnector.destroy('org.acme.base.BaseAsset', 'foo' , { test: 'options' }, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .should.be.rejectedWith(/get error/)
+            .then(() => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                sinon.assert.calledOnce(mockAssetRegistry.get);
+            });
+        });
+
+        it('should handle an error when calling composer remove for the given id', () => {
+            mockAssetRegistry.get.resolves(mockResourceToDelete);
+            mockAssetRegistry.remove.rejects(new Error('removal error'));
+            return new Promise((resolve, reject) => {
+                testConnector.destroy('org.acme.base.BaseAsset','foo', { test: 'options' }, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .should.be.rejectedWith(/removal error/)
+            .then(() => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                sinon.assert.calledOnce(mockAssetRegistry.get);
+                sinon.assert.calledOnce(mockAssetRegistry.remove);
+            });
+        });
+
+        it('should handle an error when calling composer remove for an asset that does not exist', () => {
+            mockAssetRegistry.get.resolves(mockResourceToDelete);
+            mockAssetRegistry.remove.rejects(new Error('does not exist'));
+            return new Promise((resolve, reject) => {
+                testConnector.destroy('org.acme.base.BaseAsset', 'foo' , { test: 'options' }, (error) => {
+                    if(error) {
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            })
+            .catch((error) => {
+                sinon.assert.calledOnce(testConnector.ensureConnected);
+                sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                sinon.assert.calledOnce(mockAssetRegistry.get);
+                sinon.assert.calledOnce(mockAssetRegistry.remove);
                 error.statusCode.should.equal(404);
                 error.status.should.equal(404);
                 throw error;
