@@ -1,276 +1,276 @@
 /* tslint:disable:no-unused-variable */
-import {TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
-import {AdminService} from './admin.service';
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
+import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
+import { AdminService } from './admin.service';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 
 let should = chai.should();
 
-import {AlertService} from './alert.service';
-import {BusinessNetworkDefinition} from 'composer-common';
-import {ConnectionProfileService} from './connectionprofile.service';
-import {IdentityService} from './identity.service';
-import {AdminConnection} from 'composer-admin';
+import { AlertService } from './alert.service';
+import { BusinessNetworkDefinition } from 'composer-common';
+import { ConnectionProfileService } from './connectionprofile.service';
+import { IdentityService } from './identity.service';
+import { AdminConnection } from 'composer-admin';
 
 describe('AdminService', () => {
 
-  let alertMock = sinon.createStubInstance(AlertService);
-  let connectionProfileMock = sinon.createStubInstance(ConnectionProfileService);
-  let businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
-  let identityMock = sinon.createStubInstance(IdentityService);
+    let alertMock = sinon.createStubInstance(AlertService);
+    let connectionProfileMock = sinon.createStubInstance(ConnectionProfileService);
+    let businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
+    let identityMock = sinon.createStubInstance(IdentityService);
 
-  let adminConnectionMock = sinon.createStubInstance(AdminConnection);
+    let adminConnectionMock = sinon.createStubInstance(AdminConnection);
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [AdminService,
-        {provide: AlertService, useValue: alertMock},
-        {provide: ConnectionProfileService, useValue: connectionProfileMock},
-        {provide: IdentityService, useValue: identityMock}]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [AdminService,
+                {provide: AlertService, useValue: alertMock},
+                {provide: ConnectionProfileService, useValue: connectionProfileMock},
+                {provide: IdentityService, useValue: identityMock}]
+        });
     });
-  });
 
-  describe('getAdminConnection', () => {
-    it('should get the admin connection if it exists', inject([AdminService], (service: AdminService) => {
-      service['adminConnection'] = adminConnectionMock;
+    describe('getAdminConnection', () => {
+        it('should get the admin connection if it exists', inject([AdminService], (service: AdminService) => {
+            service['adminConnection'] = adminConnectionMock;
 
-      let result = service.getAdminConnection();
+            let result = service.getAdminConnection();
 
-      result.should.deep.equal(adminConnectionMock);
-    }))
-  });
+            result.should.deep.equal(adminConnectionMock);
+        }));
+    });
 
-  describe('ensureConnected', () => {
-    it('should return if connected', fakeAsync(inject([AdminService], (service: AdminService) => {
-      service['isConnected'] = true;
+    describe('ensureConnected', () => {
+        it('should return if connected', fakeAsync(inject([AdminService], (service: AdminService) => {
+            service['isConnected'] = true;
 
-      let connectSpy = sinon.spy(service, 'connect');
+            let connectSpy = sinon.spy(service, 'connect');
 
-      service.ensureConnected();
+            service.ensureConnected();
 
-      connectSpy.should.not.have.been.called;
-    })));
+            connectSpy.should.not.have.been.called;
+        })));
 
-    it('should return if connecting', inject([AdminService], (service: AdminService) => {
-      service['connectingPromise'] = Promise.resolve();
+        it('should return if connecting', inject([AdminService], (service: AdminService) => {
+            service['connectingPromise'] = Promise.resolve();
 
-      let connectSpy = sinon.spy(service, 'connect');
+            let connectSpy = sinon.spy(service, 'connect');
 
-      service.ensureConnected();
+            service.ensureConnected();
 
-      connectSpy.should.not.have.been.called;
-    }));
+            connectSpy.should.not.have.been.called;
+        }));
 
-    it('should connect if not connected', fakeAsync(inject([AdminService], (service: AdminService) => {
-      let connectMock = sinon.stub(service, 'connect').returns(Promise.resolve());
-      service.ensureConnected(false);
+        it('should connect if not connected', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let connectMock = sinon.stub(service, 'connect').returns(Promise.resolve());
+            service.ensureConnected(false);
 
-      tick();
+            tick();
 
-      connectMock.should.have.been.called;
+            connectMock.should.have.been.called;
 
-      service['isConnected'].should.equal(true);
-      should.not.exist(service['connectingPromise']);
-    })));
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
+        })));
 
-    it('should connect without id if not deployed', fakeAsync(inject([AdminService], (service: AdminService) => {
-      let connectMock = sinon.stub(service, 'connect').returns(Promise.reject('error'));
-      let connectWithoutMock = sinon.stub(service, 'connectWithOutID').returns(Promise.resolve());
-      service['madeItToConnect'] = true;
-      service.ensureConnected();
+        it('should connect without id if not deployed', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let connectMock = sinon.stub(service, 'connect').returns(Promise.reject('error'));
+            let connectWithoutMock = sinon.stub(service, 'connectWithOutID').returns(Promise.resolve());
+            service['madeItToConnect'] = true;
+            service.ensureConnected();
 
-      tick();
+            tick();
 
-      connectMock.should.have.been.called;
-      connectWithoutMock.should.have.been.called;
+            connectMock.should.have.been.called;
+            connectWithoutMock.should.have.been.called;
 
-      service['isConnected'].should.equal(true);
-      should.not.exist(service['connectingPromise']);
-    })));
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
+        })));
 
-    it('should connect without id if not deployed and handle error', fakeAsync(inject([AdminService], (service: AdminService) => {
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
+        it('should connect without id if not deployed and handle error', fakeAsync(inject([AdminService], (service: AdminService) => {
+            alertMock.busyStatus$ = {
+                next: sinon.stub()
+            };
 
-      let connectMock = sinon.stub(service, 'connect').returns(Promise.reject('error'));
-      let connectWithoutMock = sinon.stub(service, 'connectWithOutID').returns(Promise.reject('some error'));
-      service['madeItToConnect'] = true;
-      service.ensureConnected().then(() => {
-        throw new Error('should not get here');
-      })
-        .catch((error) => {
-          error.should.equal('some error');
-        });
+            let connectMock = sinon.stub(service, 'connect').returns(Promise.reject('error'));
+            let connectWithoutMock = sinon.stub(service, 'connectWithOutID').returns(Promise.reject('some error'));
+            service['madeItToConnect'] = true;
+            service.ensureConnected().then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                error.should.equal('some error');
+            });
 
-      tick();
+            tick();
 
-      alertMock.busyStatus$.next.should.have.been.called;
-      connectMock.should.have.been.called;
-      connectWithoutMock.should.have.been.called;
+            alertMock.busyStatus$.next.should.have.been.called;
+            connectMock.should.have.been.called;
+            connectWithoutMock.should.have.been.called;
 
-      service['isConnected'].should.equal(false);
-      should.not.exist(service['connectingPromise']);
-    })));
+            service['isConnected'].should.equal(false);
+            should.not.exist(service['connectingPromise']);
+        })));
 
+        it('should connect and catch error if not made it to connect', fakeAsync(inject([AdminService], (service: AdminService) => {
+            alertMock.busyStatus$ = {
+                next: sinon.stub()
+            };
 
-    it('should connect and catch error if not made it to connect', fakeAsync(inject([AdminService], (service: AdminService) => {
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
+            let connectMock = sinon.stub(service, 'connect').returns(Promise.reject('some error'));
+            service['madeItToConnect'] = false;
+            service.ensureConnected().then(() => {
+                throw new Error('should not have got here');
+            })
+            .catch((error) => {
+                error.should.equal('some error');
+            });
 
-      let connectMock = sinon.stub(service, 'connect').returns(Promise.reject('some error'));
-      service['madeItToConnect'] = false;
-      service.ensureConnected().then(() => {
-        throw new Error('should not have got here');
-      })
-        .catch((error) => {
-          error.should.equal('some error');
-        });
+            tick();
 
-      tick();
+            connectMock.should.have.been.called;
+            alertMock.busyStatus$.next.should.have.been.called;
+        })));
 
-      connectMock.should.have.been.called;
-      alertMock.busyStatus$.next.should.have.been.called;
-    })));
+        it('should connect even if connected if forced', fakeAsync(inject([AdminService], (service: AdminService) => {
+            service['isConnected'] = true;
+            let connectMock = sinon.stub(service, 'connect').returns(Promise.resolve());
+            service.ensureConnected(true);
 
-    it('should connect even if connected if forced', fakeAsync(inject([AdminService], (service: AdminService) => {
-      service['isConnected'] = true;
-      let connectMock = sinon.stub(service, 'connect').returns(Promise.resolve());
-      service.ensureConnected(true);
+            tick();
 
-      tick();
+            connectMock.should.have.been.called;
 
-      connectMock.should.have.been.called;
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
+        })));
+    });
 
-      service['isConnected'].should.equal(true);
-      should.not.exist(service['connectingPromise']);
-    })));
-  });
+    describe('connect', () => {
+        it('should connect', fakeAsync(inject([AdminService], (service: AdminService) => {
+            connectionProfileMock.getCurrentConnectionProfile.returns('my profile');
 
-  describe('connect', () => {
-    it('should connect', fakeAsync(inject([AdminService], (service: AdminService) => {
-      connectionProfileMock.getCurrentConnectionProfile.returns('my profile');
+            let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
-      let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+            identityMock.getUserID.returns(Promise.resolve('myId'));
+            identityMock.getUserSecret.returns(Promise.resolve('myPassword'));
 
-      identityMock.getUserID.returns(Promise.resolve('myId'));
-      identityMock.getUserSecret.returns(Promise.resolve('myPassword'));
+            service.connect();
 
-      service.connect();
+            tick();
 
-      tick();
+            service['userSecret'].should.equal('myPassword');
+            service['userID'].should.equal('myId');
+            service['madeItToConnect'].should.equal(true);
 
-      service['userSecret'].should.equal('myPassword');
-      service['userID'].should.equal('myId');
-      service['madeItToConnect'].should.equal(true);
+            adminConnectionMock.connect.should.have.been.calledWith('my profile', 'myId', 'myPassword', 'org.acme.biznet');
 
-      adminConnectionMock.connect.should.have.been.calledWith('my profile', 'myId', 'myPassword', 'org.acme.biznet');
+        })));
+    });
 
-    })));
-  });
+    describe('connectWithOutID', () => {
+        it('should connect without an id', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
-  describe('connectWithOutID', () => {
-    it('should connect without an id', fakeAsync(inject([AdminService], (service: AdminService) => {
-      let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+            adminConnectionMock.connect.returns(Promise.resolve());
+            adminConnectionMock.list.returns(Promise.resolve([]));
 
-      adminConnectionMock.connect.returns(Promise.resolve());
-      adminConnectionMock.list.returns(Promise.resolve([]));
+            alertMock.busyStatus$ = {
+                next: sinon.stub()
+            };
 
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
+            let mockGenerateBusinessNetwork = sinon.stub(service, 'generateDefaultBusinessNetwork').returns({name: 'myNetwork'});
 
-      let mockGenerateBusinessNetwork = sinon.stub(service, 'generateDefaultBusinessNetwork').returns({name: 'myNetwork'});
+            adminConnectionMock.deploy.returns(Promise.resolve());
 
-      adminConnectionMock.deploy.returns(Promise.resolve());
+            service['userID'] = 'myUser';
+            service['userSecret'] = 'mySecret';
+            service['connectionProfile'] = 'myProfile';
 
-      service['userID'] = 'myUser';
-      service['userSecret'] = 'mySecret';
-      service['connectionProfile'] = 'myProfile';
+            service.connectWithOutID();
 
-      service.connectWithOutID();
+            tick();
 
-      tick();
+            alertMock.busyStatus$.next.should.have.been.called;
+            mockGenerateBusinessNetwork.should.have.been.called;
+            adminConnectionMock.deploy.should.have.been.calledWith({name: 'myNetwork'});
+            service['initialDeploy'] = true;
 
-      alertMock.busyStatus$.next.should.have.been.called;
-      mockGenerateBusinessNetwork.should.have.been.called;
-      adminConnectionMock.deploy.should.have.been.calledWith({name: 'myNetwork'});
-      service['initialDeploy'] = true;
+            adminConnectionMock.disconnect.should.have.been.called;
+            adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org.acme.biznet');
+        })));
 
-      adminConnectionMock.disconnect.should.have.been.called;
-      adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org.acme.biznet');
-    })));
+        it('should connect without an id but not deploy as already deployed', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
-    it('should connect without an id but not deploy as already deployed', fakeAsync(inject([AdminService], (service: AdminService) => {
-      let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
+            adminConnectionMock.connect.returns(Promise.resolve());
+            adminConnectionMock.list.returns(Promise.resolve(['org.acme.biznet']));
 
-      adminConnectionMock.connect.returns(Promise.resolve());
-      adminConnectionMock.list.returns(Promise.resolve(['org.acme.biznet']));
+            alertMock.busyStatus$ = {
+                next: sinon.stub()
+            };
 
-      alertMock.busyStatus$ = {
-        next: sinon.stub()
-      };
+            let mockGenerateBusinessNetwork = sinon.stub(service, 'generateDefaultBusinessNetwork').returns({name: 'myNetwork'});
 
-      let mockGenerateBusinessNetwork = sinon.stub(service, 'generateDefaultBusinessNetwork').returns({name: 'myNetwork'});
+            adminConnectionMock.deploy.returns(Promise.resolve());
 
-      adminConnectionMock.deploy.returns(Promise.resolve());
+            service['userID'] = 'myUser';
+            service['userSecret'] = 'mySecret';
+            service['connectionProfile'] = 'myProfile';
 
-      service['userID'] = 'myUser';
-      service['userSecret'] = 'mySecret';
-      service['connectionProfile'] = 'myProfile';
+            service.connectWithOutID();
 
-      service.connectWithOutID();
+            tick();
 
-      tick();
+            alertMock.busyStatus$.next.should.not.have.been.called;
 
-      alertMock.busyStatus$.next.should.not.have.been.called;
+            adminConnectionMock.disconnect.should.have.been.called;
+            adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org.acme.biznet');
+        })));
+    });
 
-      adminConnectionMock.disconnect.should.have.been.called;
-      adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org.acme.biznet');
-    })));
-  });
+    describe('deploy', () => {
+        it('should deploy a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let connectedMock = sinon.stub(service, 'ensureConnected').returns(Promise.resolve());
 
-  describe('deploy', () => {
-    it('should deploy a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
-      let connectedMock = sinon.stub(service, 'ensureConnected').returns(Promise.resolve());
+            service['adminConnection'] = adminConnectionMock;
 
-      service['adminConnection'] = adminConnectionMock;
+            service.deploy(businessNetworkDefMock);
 
+            tick();
 
-      service.deploy(businessNetworkDefMock);
+            connectedMock.should.have.been.called;
+            adminConnectionMock.deploy.should.have.been.calledWith(businessNetworkDefMock);
+        })));
+    });
 
-      tick();
+    describe('update', () => {
+        it('should update a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
+            let connectedMock = sinon.stub(service, 'ensureConnected').returns(Promise.resolve());
 
-      connectedMock.should.have.been.called;
-      adminConnectionMock.deploy.should.have.been.calledWith(businessNetworkDefMock);
-    })));
-  });
+            service['adminConnection'] = adminConnectionMock;
 
-  describe('update', () => {
-    it('should update a business network', fakeAsync(inject([AdminService], (service: AdminService) => {
-      let connectedMock = sinon.stub(service, 'ensureConnected').returns(Promise.resolve());
+            service.update(businessNetworkDefMock);
 
-      service['adminConnection'] = adminConnectionMock;
+            tick();
 
-      service.update(businessNetworkDefMock);
+            connectedMock.should.have.been.called;
+            adminConnectionMock.update.should.have.been.calledWith(businessNetworkDefMock);
+        })));
+    });
 
-      tick();
+    describe('isInitialDeploy', () => {
+        it('should set initial deploy to false after call', inject([AdminService], (service: AdminService) => {
+            service['initialDeploy'] = true;
 
-      connectedMock.should.have.been.called;
-      adminConnectionMock.update.should.have.been.calledWith(businessNetworkDefMock);
-    })));
-  });
+            let result = service.isInitialDeploy();
 
-  describe('isInitialDeploy', () => {
-    it('should set initial deploy to false after call', inject([AdminService], (service: AdminService) => {
-      service['initialDeploy'] = true;
-
-      let result = service.isInitialDeploy();
-
-      service['initialDeploy'].should.equal(false);
-    }));
-  })
+            service['initialDeploy'].should.equal(false);
+        }));
+    });
 });
-

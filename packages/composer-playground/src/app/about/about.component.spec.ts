@@ -1,5 +1,4 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
@@ -8,10 +7,10 @@ import { AboutComponent } from './about.component';
 import { AboutService } from '../services/about.service';
 
 const MOCK_RETURN = {
-  'playground': {
-    name: 'playground',
-    version: '1'
-  }
+    playground: {
+        name: 'playground',
+        version: '1'
+    }
 };
 
 class MockAboutService {
@@ -28,9 +27,9 @@ describe('AboutComponent', () => {
     let el: HTMLElement;
 
     beforeEach(() => {
-      TestBed.configureTestingModule({
-            declarations: [ AboutComponent ],
-            providers: [{ provide: AboutService, useClass: MockAboutService }]
+        TestBed.configureTestingModule({
+            declarations: [AboutComponent],
+            providers: [{provide: AboutService, useClass: MockAboutService}]
         });
 
         fixture = TestBed.createComponent(AboutComponent);
@@ -41,7 +40,7 @@ describe('AboutComponent', () => {
         el = de.nativeElement;
     });
 
-    it ('Should display the correct title for the AboutComponent', fakeAsync(() => {
+    it('Should display the correct title for the AboutComponent', fakeAsync(() => {
         fixture.detectChanges();
 
         tick();
@@ -49,7 +48,7 @@ describe('AboutComponent', () => {
         el.textContent.should.equal('About');
     }));
 
-    it ('Should call getVersions when the component is created', fakeAsync(() => {
+    it('Should call getVersions when the component is created', fakeAsync(() => {
         fixture.detectChanges();
         tick();
         fixture.detectChanges();
