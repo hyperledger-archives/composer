@@ -47,11 +47,11 @@ export class InitializationService {
             return this.createInitialIdentities();
         })
         .then(() => {
-            this.alertService.busyStatus$.next('Establishing admin connection ...');
+            this.alertService.busyStatus$.next({title: 'Establishing admin connection', text: 'Using the connection profile ' + this.connectionProfileService.getCurrentConnectionProfile()});
             return this.adminService.ensureConnected();
         })
         .then(() => {
-            this.alertService.busyStatus$.next('Establishing client connection ...');
+            this.alertService.busyStatus$.next({title: 'Establishing client connection', text: 'Using the connection profile ' + this.connectionProfileService.getCurrentConnectionProfile()});
             return this.clientService.ensureConnected();
         })
         .then(() => {
