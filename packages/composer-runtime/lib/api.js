@@ -173,7 +173,7 @@ class Api {
         this.emit = function emit(event) {
             const method = 'emit';
             LOG.entry(method);
-            // event.setIdentifier(`${context.getIdentifier()}#${context.getEventNumber()}`);
+            event.setIdentifier(context.transaction.$identifier + '#' + context.getEventNumber());
             let serializedEvent = serializer.toJSON(event);
             context.incrementEventNumber();
             LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
