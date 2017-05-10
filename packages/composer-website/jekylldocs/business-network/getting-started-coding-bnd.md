@@ -189,7 +189,7 @@ There is a `composer archive` command that can be used to create and inspect the
         $ composer network deploy --archiveFile  DigitalLandTitle.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
         ```
 
-# Next steps developing the model or transaction processor functions
+# Next steps to develop the model or transaction processor functions
 
 The next step in the development process would be to update either the model or transaction functions or both. When you've done this, the steps are to recreate the archive and then redeploy the network.
 
