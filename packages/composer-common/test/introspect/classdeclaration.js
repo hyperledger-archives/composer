@@ -27,7 +27,7 @@ const fs = require('fs');
 const should = require('chai').should();
 const sinon = require('sinon');
 
-describe.only('ClassDeclaration', () => {
+describe('ClassDeclaration', () => {
 
     let mockModelManager;
     let mockModelFile;
