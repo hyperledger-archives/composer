@@ -120,7 +120,7 @@ export class EditorComponent implements OnInit {
             newModelFiles.push({
                 model: true,
                 id: modelFile.getNamespace(),
-                displayID: 'lib/' + modelFile.getNamespace() + '.cto',
+                displayID: 'model/' + modelFile.getNamespace() + '.cto',
             });
         });
         newModelFiles.sort((a, b) => {
