@@ -705,12 +705,18 @@ describe('HLFConnection', () => {
             }).should.throw(/businessNetworkIdentifier not specified/);
         });
 
+        it('should throw if businessNetworkIdentifier not same as the connection', () => {
+            (() => {
+                connection.undeploy(mockSecurityContext, 'FunnyNetwork');
+            }).should.throw(/businessNetworkIdentifier does not match the business network identifier for this connection/);
+        });
+
         it('should invoke the chaincode', () => {
             sandbox.stub(connection, 'invokeChainCode').resolves();
             return connection.undeploy(mockSecurityContext, 'org.acme.biznet')
                 .then(() => {
                     sinon.assert.calledOnce(connection.invokeChainCode);
-                    sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'undeploy', ['org.acme.biznet']);
+                    sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'undeployBusinessNetwork', []);
                 });
         });
 
