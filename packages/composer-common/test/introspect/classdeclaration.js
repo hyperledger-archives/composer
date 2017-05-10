@@ -40,7 +40,9 @@ describe('ClassDeclaration', () => {
 
     const loadModelFile = (modelFileName) => {
         const modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
-        return new ModelFile(mockModelManager, modelDefinitions);
+        const modelFile = new ModelFile(mockModelManager, modelDefinitions);
+        mockModelManager.getModelFiles.returns([modelFile]);
+        return modelFile;
     };
 
     const loadLastDeclaration = (modelFileName, type) => {
@@ -228,6 +230,25 @@ describe('ClassDeclaration', () => {
             should.exist(baseclass);
             const superclassName = baseclass.getSuperType();
             should.equal(superclassName, null);
+        });
+    });
+
+    describe('#getAllSubclasses', function() {
+        it('should return itself only if there are no subclasses', function() {
+            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
+            const baseclass = modelFile.getLocalType('Sub');
+            should.exist(baseclass);
+            const subclasses = baseclass.getAllSubclasses();
+            subclasses.should.have.same.members([baseclass]);
+        });
+
+        it('should return all subclass definitions', function() {
+            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
+            const baseclass = modelFile.getLocalType('Base');
+            should.exist(baseclass);
+            const subclasses = baseclass.getAllSubclasses();
+            const subclassNames = subclasses.map(classDef => classDef.getName());
+            subclassNames.should.have.same.members(['Base', 'Super', 'Sub', 'Sub2']);
         });
     });
 
