@@ -215,14 +215,13 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         if (!this.busyModalRef && busyStatus) {
-            console.log(busyStatus);
             this.busyModalRef = this.modalService.open(BusyComponent);
             this.busyModalRef.componentInstance.busy = busyStatus;
         } else if (this.busyModalRef && busyStatus) {
-            console.log(busyStatus);
             this.busyModalRef.componentInstance.busy = busyStatus;
         } else if (this.busyModalRef && !busyStatus) {
             this.busyModalRef.close();
+            this.busyModalRef = null;
         }
     }
 

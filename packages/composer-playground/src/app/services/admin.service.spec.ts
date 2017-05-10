@@ -93,7 +93,7 @@ describe('AdminService', () => {
         })));
 
         it('should connect without id if not deployed and handle error', fakeAsync(inject([AdminService], (service: AdminService) => {
-            alertMock.busyStatus$ = {
+            alertMock.errorStatus$ = {
                 next: sinon.stub()
             };
 
@@ -109,7 +109,7 @@ describe('AdminService', () => {
 
             tick();
 
-            alertMock.busyStatus$.next.should.have.been.called;
+            alertMock.errorStatus$.next.should.have.been.called;
             connectMock.should.have.been.called;
             connectWithoutMock.should.have.been.called;
 
@@ -118,7 +118,7 @@ describe('AdminService', () => {
         })));
 
         it('should connect and catch error if not made it to connect', fakeAsync(inject([AdminService], (service: AdminService) => {
-            alertMock.busyStatus$ = {
+            alertMock.errorStatus$ = {
                 next: sinon.stub()
             };
 
@@ -134,7 +134,7 @@ describe('AdminService', () => {
             tick();
 
             connectMock.should.have.been.called;
-            alertMock.busyStatus$.next.should.have.been.called;
+            alertMock.errorStatus$.next.should.have.been.called;
         })));
 
         it('should connect even if connected if forced', fakeAsync(inject([AdminService], (service: AdminService) => {
