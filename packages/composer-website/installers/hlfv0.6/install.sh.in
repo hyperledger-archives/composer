@@ -14,13 +14,13 @@ rm -rf "${WORKDIR}" && mkdir -p "${WORKDIR}"
 cd "${WORKDIR}"
 
 # Find the PAYLOAD: marker in this script.
-PAYLOAD_LINE=$(grep -n '^PAYLOAD:$' "${SOURCE}" | cut -d ':' -f 1)
+PAYLOAD_LINE=$(grep -a -n '^PAYLOAD:$' "${SOURCE}" | cut -d ':' -f 1)
 echo PAYLOAD_LINE=${PAYLOAD_LINE}
 
 # Find and extract the payload in this script.
 PAYLOAD_START=$((PAYLOAD_LINE + 1))
 echo PAYLOAD_START=${PAYLOAD_START}
-tail -n +${PAYLOAD_START} "${SOURCE}" | uudecode -p | tar -xzf -
+tail -n +${PAYLOAD_START} "${SOURCE}" | tar -xzf -
 
 # Pull the latest Docker images from Docker Hub.
 docker-compose pull
