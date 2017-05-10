@@ -233,12 +233,12 @@ describe('ClassDeclaration', () => {
         });
     });
 
-    describe('#getAllSubclasses', function() {
+    describe('#getAssignableClassDeclarations', function() {
         it('should return itself only if there are no subclasses', function() {
             const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
             const baseclass = modelFile.getLocalType('Sub');
             should.exist(baseclass);
-            const subclasses = baseclass.getAllSubclasses();
+            const subclasses = baseclass.getAssignableClassDeclarations();
             subclasses.should.have.same.members([baseclass]);
         });
 
@@ -246,7 +246,7 @@ describe('ClassDeclaration', () => {
             const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
             const baseclass = modelFile.getLocalType('Base');
             should.exist(baseclass);
-            const subclasses = baseclass.getAllSubclasses();
+            const subclasses = baseclass.getAssignableClassDeclarations();
             const subclassNames = subclasses.map(classDef => classDef.getName());
             subclassNames.should.have.same.members(['Base', 'Super', 'Sub', 'Sub2']);
         });

@@ -373,7 +373,7 @@ class ClassDeclaration {
      * Get the class declarations for all subclasses of this class, including this class.
      * @return {ClassDeclaration[]} subclass declarations.
      */
-    getAllSubclasses() {
+    getAssignableClassDeclarations() {
         const results = new Set();
         const modelManager = this.getModelFile().getModelManager();
         const introspector = new Introspector(modelManager);
@@ -390,6 +390,7 @@ class ClassDeclaration {
             }
         });
 
+        // Recursive function to collect all direct and indirect subclasses of a given (set) of base classes.
         const collectSubclasses = (superclasses) => {
             superclasses.forEach((declaration) => {
                 results.add(declaration);
