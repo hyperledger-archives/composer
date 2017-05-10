@@ -10,16 +10,23 @@ issue-identity-modal {
     ngb-typeahead-window {
       border: 1px solid rgba(0,0,0,.15);
       border-radius: .25rem;
+      width: 60%;
 
       button.dropdown-item {
         border: none;
         border-radius: 0;
         padding: $space-xsmall $space-smedium;
         color: $primary-text;
+        overflow-x: auto;
+
+        .participant-type {
+          font-style: italic;
+          color: $secondary-text;
+        }
 
         &.active {
-          color: $white;
-          background-color: $first-highlight;
+          color: $primary-text;
+          background-color: $fourth-highlight;
         }
       }
     }

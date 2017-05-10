@@ -1,7 +1,9 @@
 /* tslint:disable:no-unused-variable */
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement, Directive, Input } from '@angular/core';
+import { Directive, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as sinon from 'sinon';
 
@@ -20,226 +22,275 @@ import { BusinessNetworkConnection, ParticipantRegisty } from 'composer-client';
 import { Resource } from 'composer-common';
 
 @Directive({
-  selector: '[ngbTypeahead]'
+    selector: '[ngbTypeahead]'
 })
 
 class MockTypeaheadDirective {
-  @Input()
-  public ngbTypeahead: any;
+    @Input()
+    public ngbTypeahead: any;
+
+    @Input()
+    public resultTemplate: any;
 }
 
 class MockBusinessNetworkConnection {
 
-  constructor() {
-  }
+    // tslint:disable-next-line:no-empty
+    getAllParticipantRegistries() {
+    }
 
-  getAllParticipantRegistries(){
-  }
-
-  issueIdentity(participant, userID, options) {
-    return Promise.resolve({'participant':participant, 'userID': userID, 'options':options});
-  }
+    issueIdentity(participant, userID, options) {
+        return Promise.resolve({participant: participant, userID: userID, options: options});
+    }
 }
 
 describe('IssueIdentityComponent', () => {
-  let component: IssueIdentityComponent;
-  let fixture: ComponentFixture<IssueIdentityComponent>;
-  let element: HTMLElement;
-  let mockClientService;
-  let mockBusinessNetworkConnection;
-  let mockAlertService;
-  let mockAdminService
-  let mockActiveModal;
+    let component: IssueIdentityComponent;
+    let fixture: ComponentFixture<IssueIdentityComponent>;
+    let mockClientService;
+    let mockBusinessNetworkConnection;
+    let mockAlertService;
+    let mockAdminService;
+    let mockActiveModal;
 
-  beforeEach(() => {
-    mockActiveModal = sinon.createStubInstance(NgbActiveModal);
-    let mockBehaviourSubject = sinon.createStubInstance(BehaviorSubject);
-    mockBehaviourSubject.next = sinon.stub();
-    mockAlertService = sinon.createStubInstance(AlertService);
-    mockAlertService.errorStatus$ = mockBehaviourSubject;
-    mockAlertService.busyStatus$ = mockBehaviourSubject;
-    mockAlertService.successStatus$ = mockBehaviourSubject;
+    beforeEach(() => {
+        mockActiveModal = sinon.createStubInstance(NgbActiveModal);
+        let mockBehaviourSubject = sinon.createStubInstance(BehaviorSubject);
+        mockBehaviourSubject.next = sinon.stub();
+        mockAlertService = sinon.createStubInstance(AlertService);
+        mockAlertService.errorStatus$ = mockBehaviourSubject;
+        mockAlertService.busyStatus$ = mockBehaviourSubject;
+        mockAlertService.successStatus$ = mockBehaviourSubject;
 
-    mockAdminService = sinon.createStubInstance(AdminService);
-    mockClientService = sinon.createStubInstance(ClientService);
-    let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+        mockAdminService = sinon.createStubInstance(AdminService);
+        mockClientService = sinon.createStubInstance(ClientService);
+        let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
 
+        TestBed.configureTestingModule({
+            // TODO mock imports?
+            imports: [FormsModule],
+            declarations: [
+                IssueIdentityComponent,
+                MockTypeaheadDirective
+            ],
+            providers: [
+                {provide: NgbActiveModal, useValue: mockActiveModal},
+                {provide: AlertService, useValue: mockAlertService},
+                {provide: AdminService, useValue: mockAdminService},
+                {provide: ClientService, useValue: mockClientService},
+                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
+            ]
+        })
+        .compileComponents();
 
-    TestBed.configureTestingModule({
-      // TODO mock imports?
-      imports: [ FormsModule ],
-      declarations: [
-        IssueIdentityComponent,
-        MockTypeaheadDirective
-      ],
-      providers: [
-        { provide: NgbActiveModal, useValue: mockActiveModal },
-        { provide: AlertService, useValue: mockAlertService },
-        { provide: AdminService, useValue: mockAdminService },
-        { provide: ClientService, useValue: mockClientService },
-        { provide: ConnectionProfileService, useValue: mockConnectionProfileService },
-      ]
-    })
-    .compileComponents();
+        fixture = TestBed.createComponent(IssueIdentityComponent);
+        component = fixture.componentInstance;
+    });
 
-    fixture = TestBed.createComponent(IssueIdentityComponent);
-    component = fixture.componentInstance;
-  });
+    it('should be created', () => {
+        expect(component).should.be.ok;
+    });
 
-  it('should be created', () => {
-    expect(component).should.be.ok;
-  });
+    describe('#ngOnInit', () => {
 
-  describe('#ngOnInit', () => {
+        it('should loadParticpants on init', fakeAsync(() => {
 
-    it('should loadParticpants on init', fakeAsync( () => {
+            let mockLoadParticipants = sinon.stub(component, 'loadParticipants');
 
-      let mockLoadParticipants = sinon.stub(component, 'loadParticipants');
+            // Run method
+            component['ngOnInit']();
 
-      // Run method
-      component['ngOnInit']();
+            tick();
 
-      tick();
+            mockLoadParticipants.should.have.been.called;
 
-      mockLoadParticipants.should.have.been.called;
+        }));
 
-    }));
+    });
 
-  });
+    describe('#loadParticipants', () => {
 
+        it('should create a sorted list of participantFQIs', fakeAsync(() => {
 
-  describe('#loadParticipants', () => {
+            // Set up mocked/known items to test against
+            let mockParticpantRegistry = sinon.createStubInstance(ParticipantRegisty);
+            let mockParticipant1 = sinon.createStubInstance(Resource);
+            mockParticipant1.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            let mockParticipant2 = sinon.createStubInstance(Resource);
+            mockParticipant2.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_2');
+            mockParticpantRegistry.getAll.returns([mockParticipant2, mockParticipant1]);
+            mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
+            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([mockParticpantRegistry]));
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
-    it('should create a sorted list of participantFQIs', fakeAsync ( () => {
+            // Starts Empty
+            component['participantFQIs'].should.be.empty;
 
-      // Set up mocked/known items to test against
-      let mockParticpantRegistry = sinon.createStubInstance(ParticipantRegisty);
-      let mockParticipant1 = sinon.createStubInstance(Resource);
-      mockParticipant1.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
-      let mockParticipant2 = sinon.createStubInstance(Resource);
-      mockParticipant2.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_2');
-      mockParticpantRegistry.getAll.returns([mockParticipant2, mockParticipant1]);
-      mockBusinessNetworkConnection = sinon.createStubInstance(MockBusinessNetworkConnection);
-      mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.resolve([mockParticpantRegistry]));
-      mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            // Run method
+            component['loadParticipants']();
 
-      // Starts Empty
-      component['participantFQIs'].should.be.empty;
+            tick();
 
-      // Run method
-      component['loadParticipants']();
+            // Check we load the participants
+            let expected = ['org.doge.Doge#DOGE_1', 'org.doge.Doge#DOGE_2'];
+            component['participantFQIs'].should.deep.equal(expected);
 
-      tick();
+        }));
 
-      // Check we load the participants
-      let expected = ['org.doge.Doge#DOGE_1', 'org.doge.Doge#DOGE_2'];
-      component['participantFQIs'].should.deep.equal(expected);
+        it('should alert if there is an error', fakeAsync(() => {
 
-    }));
+            // Force error
+            mockBusinessNetworkConnection = sinon.createStubInstance(MockBusinessNetworkConnection);
+            mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.reject('some error'));
+            mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
-    it('should alert if there is an error', fakeAsync( () => {
+            // Run method
+            component['loadParticipants']();
 
-      // Force error
-      mockBusinessNetworkConnection = sinon.createStubInstance(MockBusinessNetworkConnection);
-      mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.reject('some error'));
-      mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
+            tick();
 
-      // Run method
-      component['loadParticipants']();
+            // Check we error
+            mockAlertService.errorStatus$.next.should.be.called;
+            mockAlertService.errorStatus$.next.should.be.calledWith('some error');
 
-      tick();
+        }));
+    });
 
-      // Check we error
-      mockAlertService.errorStatus$.next.should.be.called;
-      mockAlertService.errorStatus$.next.should.be.calledWith('some error');
+    describe('#search', () => {
 
-    }));
-  });
+        it('should provide search ahead for blank text', fakeAsync(() => {
 
-  describe('#search', () => {
+            // add FQIs to test against
+            component['participantFQIs'] = ['goat', 'giraffe', 'elephant'];
 
-    it('should provide search ahead for existing ids that match', fakeAsync(() => {
+            // mock teXt
+            let text$ = new Observable((observer) => {
+                // pushing values
+                observer.next('');
+                // complete stream
+                observer.complete();
+            });
 
-      // add FQIs to test against
-      component['participantFQIs']=['goat','giraffe','elephant'];
+            // run method
+            let result = component['search'](text$);
 
-      // mock teXt
-      let text$ = new Observable(observer => {
-        //pushing values
-        observer.next('g');
-        //complete stream
-        observer.complete();
-      });
+            // perform test inside promise
+            result.toPromise().then((output) => {
+                // we should have goat, girrafe, but no elephant
+                let expected = [];
+                output.should.deep.equal(expected);
+            });
+        }));
 
-      // run method
-      let result = component['search'](text$);
+        it('should provide search ahead for existing ids that match', fakeAsync(() => {
 
-      // perform test inside promise
-      result.toPromise().then((output)=> {
-        // we should have goat, girrafe, but no elephant
-        let expected = ['goat', 'giraffe'];
-        output.should.deep.equal(expected);
-      });
-    }));
+            // add FQIs to test against
+            component['participantFQIs'] = ['goat', 'giraffe', 'elephant'];
 
-  });
+            // mock teXt
+            let text$ = new Observable((observer) => {
+                // pushing values
+                observer.next('g');
+                // complete stream
+                observer.complete();
+            });
 
-  describe('#issueIdentity', () => {
+            // run method
+            let result = component['search'](text$);
 
-    it('should generate and return an identity using internally held state information', fakeAsync( () => {
+            // perform test inside promise
+            result.toPromise().then((output) => {
+                // we should have goat, girrafe, but no elephant
+                let expected = ['goat', 'giraffe'];
+                output.should.deep.equal(expected);
+            });
+        }));
 
-      let mockAdminConnection = sinon.createStubInstance(AdminConnection);
-      mockAdminConnection.getProfile.returns(Promise.resolve('bob'));
-      mockAdminService.getAdminConnection.returns(mockAdminConnection);
-      mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
+    });
 
-      component['participantFQI']='uniqueName';
-      component['userID']='userId';
+    describe('#issueIdentity', () => {
 
-      component['issueIdentity']();
+        it('should generate and return an identity using internally held state information', fakeAsync(() => {
 
-      tick();
+            let mockAdminConnection = sinon.createStubInstance(AdminConnection);
+            mockAdminConnection.getProfile.returns(Promise.resolve('bob'));
+            mockAdminService.getAdminConnection.returns(mockAdminConnection);
+            mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
 
-      let expected = {participant: 'uniqueName', userID: 'userId', options:{issuer: false, affiliation: undefined}};
-      mockActiveModal.close.should.be.calledWith(expected);
+            component['participantFQI'] = 'uniqueName';
+            component['userID'] = 'userId';
 
-    }));
+            component['issueIdentity']();
 
-    it('should generate and return an identity, detecting blockchain.ibm.com URLs', fakeAsync( () => {
+            tick();
 
-      let mockAdminConnection = sinon.createStubInstance(AdminConnection);
-      mockAdminConnection.getProfile.returns(Promise.resolve({membershipServicesURL:'memberURL\.blockchain\.ibm\.com',
-                                                              peerURL:'peerURL\.blockchain\.ibm\.com',
-                                                              eventHubURL:'eventURL\.blockchain\.ibm\.com'}));
-      mockAdminService.getAdminConnection.returns(mockAdminConnection);
-      mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
+            let expected = {participant: 'uniqueName', userID: 'userId', options: {issuer: false, affiliation: undefined}};
+            mockActiveModal.close.should.be.calledWith(expected);
 
-      component['participantFQI']='uniqueName';
-      component['userID']='userId';
+        }));
 
-      component['issueIdentity']();
+        it('should generate and return an identity, detecting blockchain.ibm.com URLs', fakeAsync(() => {
 
-      tick();
+            let mockAdminConnection = sinon.createStubInstance(AdminConnection);
+            mockAdminConnection.getProfile.returns(Promise.resolve({
+                membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
+                peerURL: 'peerURL\.blockchain\.ibm\.com',
+                eventHubURL: 'eventURL\.blockchain\.ibm\.com'
+            }));
+            mockAdminService.getAdminConnection.returns(mockAdminConnection);
+            mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
 
-      let expected = {participant: 'uniqueName', userID: 'userId', options:{issuer: false, affiliation: 'group1'}};
-      mockActiveModal.close.should.be.calledWith(expected);
+            component['participantFQI'] = 'uniqueName';
+            component['userID'] = 'userId';
 
-    }));
+            component['issueIdentity']();
 
-    it('should dismiss modal and pass error on failure', fakeAsync( () => {
+            tick();
 
-      let mockAdminConnection = sinon.createStubInstance(AdminConnection);
-      mockAdminConnection.getProfile.returns(Promise.reject('some error'));
-      mockAdminService.getAdminConnection.returns(mockAdminConnection);
-      mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
-      component['issueIdentity']();
+            let expected = {participant: 'uniqueName', userID: 'userId', options: {issuer: false, affiliation: 'group1'}};
+            mockActiveModal.close.should.be.calledWith(expected);
 
-      tick();
+        }));
 
-      // Check we error
-      mockActiveModal.dismiss.should.be.calledWith('some error');
+        it('should dismiss modal and pass error on failure', fakeAsync(() => {
 
-    }));
+            let mockAdminConnection = sinon.createStubInstance(AdminConnection);
+            mockAdminConnection.getProfile.returns(Promise.reject('some error'));
+            mockAdminService.getAdminConnection.returns(mockAdminConnection);
+            mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
+            component['issueIdentity']();
 
-  });
+            tick();
+
+            // Check we error
+            mockActiveModal.dismiss.should.be.calledWith('some error');
+
+        }));
+
+    });
+
+    describe('#getParticipant', () => {
+        it('should get the specified participant', () => {
+            let mockParticipant1 = sinon.createStubInstance(Resource);
+            mockParticipant1.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            mockParticipant1.getIdentifier.returns('DOGE_1');
+            mockParticipant1.getType.returns('org.doge.Doge');
+            let mockParticipant2 = sinon.createStubInstance(Resource);
+            mockParticipant2.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_2');
+            mockParticipant2.getIdentifier.returns('DOGE_2');
+            mockParticipant2.getType.returns('org.doge.Doge');
+            let mockParticipant3 = sinon.createStubInstance(Resource);
+            mockParticipant3.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_3');
+            mockParticipant3.getIdentifier.returns('DOGE_3');
+            mockParticipant3.getType.returns('org.doge.Doge');
+
+            component['participants'].set('DOGE_1', mockParticipant1);
+            component['participants'].set('DOGE_2', mockParticipant2);
+
+            let participant = component['getParticipant']('DOGE_2');
+
+            participant.getIdentifier().should.equal('DOGE_2');
+            participant.getType().should.equal('org.doge.Doge');
+        });
+    });
 });
