@@ -415,11 +415,12 @@ class HLFConnection extends Connection {
         if (!businessNetworkIdentifier) {
             throw new Error('businessNetworkIdentifier not specified');
         }
+        if (businessNetworkIdentifier !== this.businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier does not match the business network identifier for this connection');
+        }
 
         // Send an undeploy request which will disable the chaincode.
-        // TODO: replace this with a proper undeploy of the chaincode once the functionality
-        // is available, as that will shutdown and terminate the chaincode completely.
-        return this.invokeChainCode(securityContext, 'undeploy', [businessNetworkIdentifier])
+        return this.invokeChainCode(securityContext, 'undeployBusinessNetwork', [])
             .then(() => {
                 LOG.exit(method);
             })
