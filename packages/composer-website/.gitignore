@@ -46,3 +46,7 @@ out
 **/.DS_Store
 
 *.swp
+
+# Ignore built installers.
+installers/*/install.sh
+jekylldocs/install-*.sh
