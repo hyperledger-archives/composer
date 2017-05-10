@@ -35,14 +35,16 @@ class Api {
     /**
      * Constructor.
      * @param {Factory} factory The factory to use.
+     * @param {Serializer} serializer The serializer to use.
      * @param {Resource} participant The current participant.
      * @param {RegistryManager} registryManager The registry manager to use.
      * @param {EventService} eventService The event service to use.
+     * @param {Context} context The transaction context.
      * @private
      */
-    constructor(factory, participant, registryManager, eventService) {
+    constructor(factory, serializer, participant, registryManager, eventService, context) {
         const method = 'constructor';
-        LOG.entry(method, factory, participant, registryManager, eventService);
+        LOG.entry(method, factory, serializer, participant, registryManager, eventService, context);
 
         /**
          * Get the factory. The factory can be used to create new instances of
@@ -171,7 +173,11 @@ class Api {
         this.emit = function emit(event) {
             const method = 'emit';
             LOG.entry(method);
-            eventService.emit(event);
+            // event.setIdentifier(`${context.getIdentifier()}#${context.getEventNumber()}`);
+            let serializedEvent = serializer.toJSON(event);
+            context.incrementEventNumber();
+            LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
+            eventService.emit(serializedEvent);
             LOG.exit(method);
         };
 

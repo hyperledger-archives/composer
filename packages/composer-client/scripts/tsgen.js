@@ -41,22 +41,30 @@ function renderClass(key, clazz) {
             fileContents += `  static ${statick}(${insert}): any;\n`;
         }
     });
-    let members = Object.getOwnPropertyNames(clazz.prototype);
-    members.forEach((member) => {
-        let func = clazz.prototype[member];
-        if (typeof func === 'function') {
-            const args = new Array(func.length).fill('temp');
-            args.forEach((value, index, array) => {
-                args[index] = `arg${index}?: any`;
-            });
-            const insert = args.join(', ');
-            if (member === 'constructor') {
-                fileContents += `  ${member}(${insert});\n`;
-            } else {
-                fileContents += `  ${member}(${insert}): any;\n`;
+    let foundConstructor = false;
+    let prototype = clazz.prototype;
+    while(prototype) {
+        let members = Object.getOwnPropertyNames(prototype);
+        members.forEach((member) => {
+            let func = prototype[member];
+            if (typeof func === 'function') {
+                const args = new Array(func.length).fill('temp');
+                args.forEach((value, index, array) => {
+                    args[index] = `arg${index}?: any`;
+                });
+                const insert = args.join(', ');
+                if (member === 'constructor') {
+                    if (!foundConstructor) {
+                        foundConstructor = true;
+                        fileContents += `  ${member}(${insert});\n`;
+                    }
+                } else {
+                    fileContents += `  ${member}(${insert}): any;\n`;
+                }
             }
-        }
-    });
+        });
+        prototype = Object.getPrototypeOf(prototype);
+    }
     fileContents += '}\n';
 }
 

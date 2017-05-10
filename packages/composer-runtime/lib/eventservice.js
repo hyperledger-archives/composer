@@ -14,6 +14,9 @@
 
 'use strict';
 
+const Logger = require('composer-common').Logger;
+const LOG = Logger.getLog('EventService');
+
 /**
  * Base class representing the event service provided by a {@link Container}.
  * @protected
@@ -24,21 +27,22 @@ class EventService {
 
     /**
      * Constructor.
-     * @param {Serializer} serializer A serializer instance.
      */
-    constructor(serializer) {
-        this.serializer = serializer;
+    constructor() {
         this.eventBuffer = [];
     }
 
     /**
      * Add an event to the buffer
-     * @abstract
      * @param {Resource} event The event to be emitted
      * when complete, or rejected with an error.
      */
     emit(event) {
+        const method = 'emit';
+        LOG.entry(method, event);
         this.eventBuffer.push(event);
+        LOG.debug(method, this.eventBuffer);
+        LOG.exit(method);
     }
 
     /**
@@ -72,13 +76,13 @@ class EventService {
      * @return {Object[]} - An array of serialized events
      */
     serializeBuffer() {
-        console.log('serializeBuffer ENTER', this.eventBuffer);
+        const method = 'serializeBuffer';
+        LOG.entry(method);
         let eb = [];
         this.eventBuffer.forEach((event) => {
-            console.log('Event', event);
-            eb.push(this.serializer.toJSON(event));
+            eb.push(event);
         });
-        console.log('serializeBuffer EXIT', eb);
+        LOG.exit(method, eb);
         return eb;
     }
 

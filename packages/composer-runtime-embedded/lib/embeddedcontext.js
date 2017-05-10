@@ -60,7 +60,7 @@ class EmbeddedContext extends Context {
      */
     getEventService() {
         if (!this.eventService) {
-            this.eventService = new EmbeddedEventService(this.getSerializer(), this.eventSink);
+            this.eventService = new EmbeddedEventService(this.eventSink);
         }
         return this.eventService;
     }

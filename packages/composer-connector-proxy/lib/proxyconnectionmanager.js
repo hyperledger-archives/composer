@@ -88,6 +88,12 @@ class ProxyConnectionManager extends ConnectionManager {
                             return reject(ProxyUtil.inflaterr(error));
                         }
                         let connection = new ProxyConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
+                        // Only emit when client
+                        this.socket.on('events', (myConnectionID, events) => {
+                            if (myConnectionID === connectionID) {
+                                connection.emit('events', JSON.parse(events));
+                            }
+                        });
                         resolve(connection);
                     });
                 });

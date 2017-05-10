@@ -59,7 +59,7 @@ class WebContext extends Context {
      */
     getEventService() {
         if (!this.eventService) {
-            this.eventService = new WebEventService(this.getSerializer(), this.eventSink);
+            this.eventService = new WebEventService(this.eventSink);
         }
         return this.eventService;
     }

@@ -68,6 +68,7 @@ class Context {
         this.accessController = null;
         this.sysregistries = null;
         this.sysidentities = null;
+        this.eventNumber = 0;
     }
 
     /**
@@ -340,7 +341,7 @@ class Context {
      */
     getApi() {
         if (!this.api) {
-            this.api = new Api(this.getFactory(), this.getParticipant(), this.getRegistryManager(), this.getEventService());
+            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getEventService(), this);
         }
         return this.api;
     }
@@ -469,6 +470,22 @@ class Context {
             throw new Error('must call initialize before calling this function');
         }
         return this.sysidentities;
+    }
+
+    /**
+     * Get the next event number
+     * @return {integer} the event number.
+     */
+    getEventNumber() {
+        return this.eventNumber;
+    }
+
+    /**
+     * Incrememnt the event number by 1
+     * @return {integer} the event number.
+     */
+    incrementEventNumber() {
+        return this.eventNumber++;
     }
 
     /**

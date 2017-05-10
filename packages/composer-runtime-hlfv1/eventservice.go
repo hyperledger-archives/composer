@@ -54,7 +54,10 @@ func NewEventService(vm *duktape.Context, context *Context, stub shim.ChaincodeS
 
 	// Bind the methods into the JavaScript object.
 	vm.PushGoFunction(result.commit) // [ global composer theEventService commit ]
-	vm.PutPropString(-2, "_commit")  // [ global composer theEventService ]
+	vm.PushString("bind")            // [ global composer theEventService commit "bind" ]
+	vm.Dup(-3)                       // [ global composer theEventService commit "bind" theEventService ]
+	vm.PcallProp(-3, 1)              // [ global composer theEventService commit boundCommit ]
+	vm.PutPropString(-3, "_commit")  // [ global composer theEventService commit ]
 
 	// Return a new event service
 	return result
@@ -72,13 +75,13 @@ func (eventService *EventService) commit(vm *duktape.Context) (result int) {
 	vm.GetPropString(-1, "serializeBuffer") // [ theEventService, serializeBuffer ]
 	vm.RequireFunction(-1)                  // [ theEventService, serializeBuffer ]
 	vm.Dup(-2)                              // [ theEventService, serializeBuffer, theEventService ]
-	vm.PcallMethod(0)                       // [ theEventService, returnValue ]
+	vm.CallMethod(0)                        // [ theEventService, returnValue ]
 	vm.RequireObjectCoercible(-1)           // [ theEventService, returnValue ]
 	vm.JsonEncode(-1)                       // [ theEventService, returnValue ]
 	value := vm.RequireString(-1)           // [ theEventService, returnValue ]
 
 	if len(value) > 0 {
-		logger.Debug("setting event", value)
+		logger.Debug("Emitting event from EventService.commit", value)
 		eventService.Stub.SetEvent("composer", []byte(value))
 	}
 

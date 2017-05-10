@@ -27,11 +27,10 @@ class EmbeddedEventService extends EventService {
 
     /**
      * Constructor.
-     * @param {Serializer} serializer Serializer instance.
      * @param {EventEmitter} eventSink the event emitter
      */
-    constructor(serializer, eventSink) {
-        super(serializer);
+    constructor(eventSink) {
+        super();
         const method = 'constructor';
 
         this.emitter = eventSink;

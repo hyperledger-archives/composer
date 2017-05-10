@@ -322,7 +322,7 @@ class Factory {
         } else if (!type) {
             throw new Error('type not specified');
         }
-        const id = uuid.v4();
+        const id = 'valid';
         let event = this.newResource(ns, type, id, options);
         const classDeclaration = event.getClassDeclaration();
         if (!(classDeclaration instanceof EventDeclaration)) {

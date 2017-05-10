@@ -29,6 +29,9 @@ export class TestComponent implements OnInit {
   }
 
   ngOnInit(): Promise<any> {
+    this.clientService.getBusinessNetworkConnection().on('event', (event) => {
+      console.log(event);
+    });
     return this.initializationService.initialize()
       .then(() => {
         return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries()

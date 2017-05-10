@@ -27,11 +27,10 @@ class WebEventService extends EventService {
 
     /**
      * Constructor.
-     * @param {Serializer} serializer Serializer instance.
      * @param {EventEmitter} eventSink the event emitter
      */
-    constructor(serializer, eventSink) {
-        super(serializer);
+    constructor(eventSink) {
+        super();
         const method = 'constructor';
         this.eventSink = eventSink;
 
@@ -42,7 +41,7 @@ class WebEventService extends EventService {
      * Emit the events stored in eventBuffer
      */
     commit() {
-        this.eventSink.emit('event', this.serializeBuffer());
+        this.eventSink.emit('events', this.serializeBuffer());
     }
 }
 

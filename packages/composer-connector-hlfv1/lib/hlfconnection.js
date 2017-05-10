@@ -64,7 +64,6 @@ class HLFConnection extends Connection {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         const method = 'constructor';
         LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHubs, caClient);
-
         // Validate all the arguments.
         if (!connectOptions) {
             throw new Error('connectOptions not specified');
@@ -85,15 +84,9 @@ class HLFConnection extends Connection {
         this.eventHubs = eventHubs;
 
         if (businessNetworkIdentifier) {
-            eventHubs.forEach((eventHub) => {
-                LOG.entry('registerChaincodeEvent', businessNetworkIdentifier, 'composer');
-                eventHub.registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
-                    this.emit('event', event.payload.buffer.toString('utf8'));
-                });
-                this.on('event', (event) => {
-                    console.log('hlf-event', event);
-                    console.log('end');
-                });
+            LOG.entry('registerChaincodeEvent', businessNetworkIdentifier, 'composer');
+            eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
+                this.emit('events', event.payload.toString('utf8'));
             });
         }
 

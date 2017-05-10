@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Resource = require('composer-common').Resource;
 const Connection = require('composer-common').Connection;
 const Engine = require('composer-runtime').Engine;
 const uuid = require('uuid');

@@ -161,6 +161,11 @@ class ConnectorServer {
                 callback(null, securityContextID);
                 LOG.exit(method, securityContextID);
             })
+            .then(() => {
+                connection.on('events', (events) => {
+                    this.socket.emit('events', connectionID, events);
+                });
+            })
             .catch((error) => {
                 LOG.error(error);
                 callback(ConnectorServer.serializerr(error));

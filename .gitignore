@@ -52,3 +52,6 @@ packages/composer-website/jekylldocs/jsdoc/
 packages/composer-playground/src/assets/npmlist.json
 
 packages/composer-systests/systestv1/tls/ca/fabric-ca-server.db
+packages/composer-runtime-hlfv1/vendor/github.com/
+packages/composer-runtime-hlfv1/vendor/gopkg.in/sourcemap.v1/
+
