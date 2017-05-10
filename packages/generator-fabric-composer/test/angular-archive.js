@@ -3,7 +3,7 @@ let path = require('path');
 let assert = require('yeoman-assert');
 let helpers = require('yeoman-test');
 
-describe('fabric-composer:angular for digitalPropertyNetwork running against a business network archive file', function () {
+describe('hyperledger-composer:angular for digitalPropertyNetwork running against a business network archive file', function () {
 
     let tmpDir; // This is the directory which we will create our app into
     before(function() {
@@ -18,7 +18,10 @@ describe('fabric-composer:angular for digitalPropertyNetwork running against a b
             appDescription: 'A digitalPropertyNetwork application',
             authorName: 'TestUser',
             authorEmail: 'TestUser@TestApp.com',
-            fileName: __dirname+'/data/digitalPropertyNetwork.bna'
+            fileName: __dirname+'/data/digitalPropertyNetwork.bna',
+            apiIP: 'http://localhost',
+            apiPort: 3000,
+            apiNamespace: 'never'
         })
         .on('error', function (error) {
             console.log('Error found:', error);
@@ -36,22 +39,37 @@ describe('fabric-composer:angular for digitalPropertyNetwork running against a b
 
     it('creates typescript classes', function(){
         assert.file(tmpDir+'/digitalPropertyNetwork/src/app/net.biz.digitalPropertyNetwork.ts');
+        assert.fileContent(tmpDir+'/digitalPropertyNetwork/src/app/net.biz.digitalPropertyNetwork.ts',
+        `// export namespace net.biz.digitalPropertyNetwork{
+   export class LandTitle {
+      titleId: string;
+      owner: Person;
+      information: string;
+      forSale: boolean;
+   }
+   export class SalesAgreement {
+      salesId: string;
+      buyer: Person;
+      seller: Person;
+      title: LandTitle;
+   }
+   export class Person {
+      personId: string;
+      firstName: string;
+      lastName: string;
+   }
+   export class RegisterPropertyForSale {
+      transactionId: string;
+      seller: Person;
+      title: LandTitle;
+      timestamp: Date;
+   }
+// }`
+        );
     });
 
     it('creates LandTitle component typescript', function () {
         assert.file(tmpDir+'/digitalPropertyNetwork/src/app/LandTitle/LandTitle.component.ts');
-    });
-
-    it('creates LandTitle component test', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/LandTitle/LandTitle.component.spec.ts');
-    });
-
-    it('creates LandTitle service', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/LandTitle/LandTitle.service.ts');
-    });
-
-    it('creates LandTitle component html', function () {
-        assert.file(tmpDir+'/digitalPropertyNetwork/src/app/LandTitle/LandTitle.component.html');
     });
 
     it('creates LandTitle component css', function () {
@@ -81,7 +99,7 @@ describe('fabric-composer:angular for digitalPropertyNetwork running against a b
 });
 
 
-describe('fabric-composer:angular for CarAuction-Network running against a business network archive file', function () {
+describe('hyperledger-composer:angular for CarAuction-Network running against a business network archive file', function () {
 
     let tmpDir; // This is the directory which we will create our app into
 
@@ -113,6 +131,48 @@ describe('fabric-composer:angular for CarAuction-Network running against a busin
 
     it('creates typescript classes', function(){
         assert.file(tmpDir+'/CarAuction-Network/src/app/org.acme.vehicle.auction.ts');
+        assert.fileContent(tmpDir+'/CarAuction-Network/src/app/org.acme.vehicle.auction.ts',
+        `// export namespace org.acme.vehicle.auction{
+   export class Vehicle {
+      vin: string;
+      owner: Member;
+   }
+   export enum ListingState {
+      FOR_SALE,
+      RESERVE_NOT_MET,
+      SOLD,
+   }
+   export class VehicleListing {
+      listingId: string;
+      reservePrice: number;
+      description: string;
+      state: ListingState;
+      offers: Offer[];
+      vehicle: Vehicle;
+   }
+   export abstract class User {
+      email: string;
+      firstName: string;
+      lastName: string;
+   }
+   export class Member extends User {
+      balance: number;
+   }
+   export class Auctioneer extends User {
+   }
+   export class Offer {
+      transactionId: string;
+      bidPrice: number;
+      listing: VehicleListing;
+      member: Member;
+      timestamp: Date;
+   }
+   export class CloseBidding {
+      transactionId: string;
+      listing: VehicleListing;
+      timestamp: Date;
+   }
+// }`);
     });
 
     it('creates VehicleListing component typescript', function () {

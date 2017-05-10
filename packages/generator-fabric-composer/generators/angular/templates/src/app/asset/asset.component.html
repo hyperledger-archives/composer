@@ -117,6 +117,9 @@
 
 
 <div class="container">
+	<div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+		<strong>Error:</strong> {{errorMessage}}
+	</div>
   <h1 id='assetName'><%= currentAsset.name %></h1>
   <div class="row">
     <div class="col-md-12 text-right">
