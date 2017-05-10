@@ -308,8 +308,10 @@ class HLFConnection extends Connection {
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
 
-                // Validate the proposal results.
-                this._validateResponses(results[0]);
+                // Validate the proposal results, ignore chaincode exists messages
+                this._validateResponses(results[0], /chaincode .+ exists/);
+
+                LOG.debug(method, 'chaincode installed, or already installed');
                 // initialize the chain ready for instantiation
                 return this.chain.initialize();
             })
@@ -373,14 +375,19 @@ class HLFConnection extends Connection {
      * Check for proposal response errors.
      * @private
      * @param {any} proposalResponses the proposal responses
+     * @param {regexp} pattern regular expression for message which isn't an error
+     * @throws if not valid
      */
-    _validateResponses(proposalResponses) {
+    _validateResponses(proposalResponses, pattern) {
         if (!proposalResponses.length) {
             throw new Error('No results were returned from the request');
         }
 
         proposalResponses.forEach((proposalResponse) => {
             if (proposalResponse instanceof Error) {
+                if (pattern && pattern.test(proposalResponse.message)) {
+                    return true;
+                }
                 throw proposalResponse;
             } else if (proposalResponse.response.status === 200) {
                 return true;

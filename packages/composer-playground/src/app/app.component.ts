@@ -50,6 +50,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private composerRuntimeVersion = '<none>';
     private participantFQI = '<none>';
 
+    private busyModalRef = null;
+
     constructor(public appState: AppState,
                 private route: ActivatedRoute,
                 private router: Router,
@@ -211,9 +213,16 @@ export class AppComponent implements OnInit, OnDestroy {
             // Don't show the modal for the web runtime, as it's too fast to care.
             return;
         }
-        if (busyStatus) {
-            const modalRef = this.modalService.open(BusyComponent);
-            modalRef.componentInstance.busy = busyStatus;
+
+        if (!this.busyModalRef && busyStatus) {
+            console.log(busyStatus);
+            this.busyModalRef = this.modalService.open(BusyComponent);
+            this.busyModalRef.componentInstance.busy = busyStatus;
+        } else if (this.busyModalRef && busyStatus) {
+            console.log(busyStatus);
+            this.busyModalRef.componentInstance.busy = busyStatus;
+        } else if (this.busyModalRef && !busyStatus) {
+            this.busyModalRef.close();
         }
     }
 
