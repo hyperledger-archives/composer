@@ -154,20 +154,11 @@ export class ClientService {
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         console.log('Connecting to connection profile', connectionProfile);
         let userID;
-        this.connectingPromise = this.adminService.ensureConnected()
+        this.connectingPromise = this.adminService.ensureConnected(force)
         .then(() => {
-            return this.identityService.getUserID();
-        })
-        .then((userId) => {
-            userID = userId;
-            return this.identityService.getUserSecret();
-        })
-        .then((userSecret) => {
-            return this.getBusinessNetworkConnection().connect(connectionProfile, 'org.acme.biznet', userID, userSecret);
+            return this.refresh();
         })
         .then(() => {
-            // this.busyStatus$.next(null);
-            console.log('Connected');
             this.isConnected = true;
             this.connectingPromise = null;
         })
