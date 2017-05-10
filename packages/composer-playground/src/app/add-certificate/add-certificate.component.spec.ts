@@ -233,7 +233,7 @@ describe('AddCertificateComponent', () => {
             component['addedHostname'] = 'suchHost';
 
             let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate';
+            additionalData['cert'] = 'MuchCertificate'.replace(/[\\n\\r]/g, '');
             additionalData['hostnameOverride'] = 'suchHost';
 
             // call the method
@@ -248,7 +248,7 @@ describe('AddCertificateComponent', () => {
             component['addedHostname'] = 'suchHost';
 
             let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate';
+            additionalData['cert'] = 'MuchCertificate'.replace(/[\\n\\r]/g, '');
             additionalData['hostnameOverride'] = 'suchHost';
 
             // call the method

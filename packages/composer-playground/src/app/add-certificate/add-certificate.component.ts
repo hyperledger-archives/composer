@@ -77,9 +77,9 @@ export class AddCertificateComponent {
     }
 
     addCertificate(): void {
-        let additionalData = {};
-        additionalData['cert'] = this.addedCertificate;
-        additionalData['hostnameOverride'] = this.addedHostname;
-        this.activeModal.close(additionalData);
+      let additionalData = {};
+      additionalData['hostnameOverride'] = this.addedHostname;
+      additionalData['cert'] = this.addedCertificate.replace(/[\\n\\r]/g, '');
+      this.activeModal.close(additionalData);
     }
 }
