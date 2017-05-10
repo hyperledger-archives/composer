@@ -2,37 +2,61 @@
 let path = require('path');
 let assert = require('yeoman-assert');
 let helpers = require('yeoman-test');
+const fs = require('fs');
+const AdminConnection = require('composer-admin').AdminConnection;
+const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const BrowserFS = require('browserfs/dist/node/index');
+const bfs_fs = BrowserFS.BFSRequire('fs');
 
-describe('fabric-composer:angular for digitalPropertyNetwork running against a deployed business network', function () {
+describe('hyperledger-composer:angular for digitalPropertyNetwork running against a deployed business network', function () {
 
     let tmpDir; // This is the directory which we will create our app into
     before(function() {
-        return helpers.run(path.join(__dirname, '../generators/angular'))
-        .inTmpDir(function (dir) {
-            tmpDir = dir;
+        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
+        const adminConnection = new AdminConnection({ fs: bfs_fs });
+        return adminConnection.createProfile('generatorProfile',{type : 'embedded'})
+        .then(() => {
+            return adminConnection.connect('generatorProfile', 'admin', 'Xurw3yU9zI0l');
         })
-        .withOptions({ skipInstall: true })
-        .withPrompts({
-            liveNetwork: true,
-            appName: 'digitalPropertyNetwork',
-            appDescription: 'A digitalPropertyNetwork application',
-            authorName: 'TestUser',
-            authorEmail: 'TestUser@TestApp.com',
-            networkIdentifier: 'digitalproperty-network',
-            connectionProfileName: 'defaultProfile',
-            enrollmentId: 'WebAppAdmin',
-            enrollmentSecret: 'DJY27pEnl16d'
+        .then(() => {
+            const banana = fs.readFileSync(path.resolve(__dirname+'/data/', 'digitalPropertyNetwork.bna'));
+            return BusinessNetworkDefinition.fromArchive(banana);
         })
-        .on('error', function (error) {
-            console.log('Error found:', error);
+        .then((businessNetworkDefinition) => {
+            return adminConnection.deploy(businessNetworkDefinition);
         })
-        .on('ready', function (generator) {
-            console.log('About to start generating files..');
-            console.log('Creating temporary directory:',tmpDir);
+        .then(() => {
+            return helpers.run(path.join(__dirname, '../generators/angular'))
+            .inTmpDir(function (dir) {
+                tmpDir = dir;
+            })
+            .withOptions({ skipInstall: true, embeddedRuntime: adminConnection })
+            .withPrompts({
+                liveNetwork: true,
+                appName: 'digitalPropertyNetwork',
+                appDescription: 'A digitalPropertyNetwork application',
+                authorName: 'TestUser',
+                authorEmail: 'TestUser@TestApp.com',
+                networkIdentifier: 'digitalproperty-network',
+                connectionProfileName: 'generatorProfile',
+                enrollmentId: 'admin',
+                enrollmentSecret: 'Xurw3yU9zI0l',
+                apiServer: 'generate',
+                apiPort: 3000,
+                apiNamespace: 'always'
+            })
+            .on('error', function (error) {
+                console.log('Error found:', error);
+            })
+            .on('ready', function (generator) {
+                console.log('About to start generating files..');
+                console.log('Creating temporary directory:',tmpDir);
 
-        })
-        .on('end', function(){
-            console.log('Finished generating files');
+            })
+            .on('end', function(){
+                console.log('Finished generating files');
+                return adminConnection.disconnect();
+            });
         });
 
     });

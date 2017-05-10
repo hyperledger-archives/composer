@@ -1,9 +1,0 @@
-{
-
-  "<%= appName %>" : {
-    "connectionProfileName":"<%= connectionProfileName %>",
-    "networkIdentifier":"<%= networkIdentifier %>",
-    "enrollmentId":"<%= enrollmentId %>",
-    "enrollmentSecret":"<%= enrollmentSecret %>"
-  }
-}
