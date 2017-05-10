@@ -247,12 +247,38 @@ describe('HLFConnection', () => {
 
     });
 
+    describe('#_install', () => {
+        const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
+        //const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
+        //const versionFilePath = path.resolve(targetDirectoryPath, 'version.go');
+        it('should rethrow error if unable to create temp dir', () => {
+            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').rejects(new Error('some error 1'));
+            connection._install(mockSecurityContext, mockBusinessNetwork)
+                .should.be.rejectedWith(/some error 1/);
+        });
+
+        it('should rethrow error if unable to copy chaincode source', () => {
+            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
+            sandbox.stub(connection.fs, 'copy').rejects(new Error('some error 2'));
+            connection._install(mockSecurityContext, mockBusinessNetwork)
+                .should.be.rejectedWith(/some error/);
+        });
+
+        it('should rethrow error if unable to copy chaincode source', () => {
+            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
+            sandbox.stub(connection.fs, 'copy').resolves();
+            sandbox.stub(connection.fs, 'outputFile').rejects(new Error('some error 3'));
+            connection._install(mockSecurityContext, mockBusinessNetwork)
+                .should.be.rejectedWith(/some error 3/);
+        });
+
+    });
+
     describe('#deploy', () => {
 
         const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
         const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
         const versionFilePath = path.resolve(targetDirectoryPath, 'version.go');
-        const certificateFilePath = path.resolve(targetDirectoryPath, 'certificate.pem');
 
         beforeEach(() => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
@@ -355,6 +381,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(mockChain.sendInstallProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -363,6 +390,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -419,6 +447,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(mockChain.sendInstallProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -427,6 +456,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -470,45 +500,12 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(mockChain.sendInstallProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
                         nonce: '11111111-1111-1111-1111-111111111111',
                     });
-                });
-        });
-
-
-        it('should add the certificate into the deployment package', () => {
-            // Add the certificate into the connect options.
-            connection.connectOptions = { type: 'hlfv1', certificate: 'such cert' };
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
-            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .then(() => {
-                    sinon.assert.calledTwice(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, certificateFilePath, sinon.match(/such cert/));
                 });
         });
 
@@ -881,6 +878,7 @@ describe('HLFConnection', () => {
                 .then((result) => {
                     sinon.assert.calledOnce(mockChain.queryByChaincode);
                     sinon.assert.calledWith(mockChain.queryByChaincode, {
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: 'testchainid',
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -971,6 +969,7 @@ describe('HLFConnection', () => {
                 .then((result) => {
                     sinon.assert.calledOnce(mockChain.sendTransactionProposal);
                     sinon.assert.calledWith(mockChain.sendTransactionProposal, {
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: 'testchainid',
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -1212,8 +1211,8 @@ describe('HLFConnection', () => {
                         enrollmentID: 'auser',
                         affiliation: 'org1',
                         attrs: [
-                            {name: 'hf.RegisterRoles', value: 'client'},
-                            {name: 'hf.RegisterDelegateRoles', value: 'client'},
+                            {name: 'hf.Registrar.Roles', value: 'client'}//,
+//                            {name: 'hf.Registrar.DelegateRoles', value: 'client'},
                         ],
                         maxEnrollments: 0,
                         role: 'client'
