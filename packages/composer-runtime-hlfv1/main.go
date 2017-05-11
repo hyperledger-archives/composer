@@ -26,8 +26,6 @@ var logger = shim.NewLogger("Composer")
 // main starts the shim, which establishes the connection to the Hyperledger
 // Fabric and registers the chaincode for deploys, queries, and invokes.
 func main() {
-	//TODO: Need to control this via env var and/or api call.
-	logger.SetLevel(shim.LogDebug)
 	logger.Debug("Entering main")
 	defer func() { logger.Debug("Exiting main") }()
 	chaincode := NewChaincode()

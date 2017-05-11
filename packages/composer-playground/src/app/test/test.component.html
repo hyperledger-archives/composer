@@ -4,7 +4,7 @@
     <section class="side-bar-nav">
       <ul class="registry">
         <li *ngFor="let participantRegistry of participantRegistries"
-            [class.active]="chosenRegistry.id === participantRegistry.id"
+            [class.active]="chosenRegistry && chosenRegistry.id === participantRegistry.id"
             (click)="setChosenRegistry(participantRegistry)">
           <h3>{{participantRegistry.displayName}}</h3>
         </li>
@@ -15,7 +15,7 @@
     <section class="side-bar-nav">
       <ul class="registry">
         <li *ngFor="let assetRegistry of assetRegistries"
-            [class.active]="chosenRegistry.id === assetRegistry.id"
+            [class.active]="chosenRegistry && chosenRegistry.id === assetRegistry.id"
             (click)="setChosenRegistry(assetRegistry)">
           <h3>{{assetRegistry.displayName}}</h3>
         </li>
@@ -26,7 +26,7 @@
     <section class="side-bar-nav">
       <ul class="registry">
         <li
-            [class.active]="chosenRegistry === transactionRegistry"
+            [class.active]="chosenRegistry && chosenRegistry === transactionRegistry"
             (click)="setChosenRegistry(transactionRegistry)">
           <h3>All Transactions</h3>
         </li>
