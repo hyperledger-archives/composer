@@ -379,7 +379,6 @@ module.exports = yeoman.Base.extend({
                         apiPort = answers.apiPort;
                         apiNamespace = answers.apiNamespace;
                     });
-
                 }
                 else{
                     fileName = answers.fileName;
