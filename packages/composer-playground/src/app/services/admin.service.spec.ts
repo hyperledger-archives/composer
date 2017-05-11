@@ -137,7 +137,7 @@ describe('AdminService', () => {
             alertMock.errorStatus$.next.should.have.been.called;
         })));
 
-        it('should connect even if connected if forced', fakeAsync(inject([AdminService], (service: AdminService) => {
+        it('should always connect when forced', fakeAsync(inject([AdminService], (service: AdminService) => {
             service['isConnected'] = true;
             let connectMock = sinon.stub(service, 'connect').returns(Promise.resolve());
             service.ensureConnected(true);
