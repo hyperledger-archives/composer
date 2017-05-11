@@ -188,7 +188,7 @@ export class ConnectionProfileDataComponent {
             } else {
                 connectionName = this.connectionProfileData.name;
             }
-            this.alertService.successStatus$.next('Successfully connected with profile ' + connectionName);
+            this.alertService.successStatus$.next({title: 'Connection Successful', text : 'Successfully connected with profile ' + connectionName, icon : '#icon-world_24'});
             this.profileUpdated.emit({updated: true});
 
         }, (reason) => {

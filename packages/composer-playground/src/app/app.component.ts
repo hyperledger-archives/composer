@@ -76,9 +76,6 @@ export class AppComponent implements OnInit, OnDestroy {
             this.alertService.errorStatus$.subscribe((errorStatus) => {
                 this.onErrorStatus(errorStatus);
             }),
-            this.alertService.successStatus$.subscribe((successStatus) => {
-                this.onSuccessStatus(successStatus);
-            }),
             this.adminService.connectionProfileChanged$.subscribe(() => {
                 this.updateConnectionData();
             }),
@@ -229,13 +226,6 @@ export class AppComponent implements OnInit, OnDestroy {
         if (errorStatus) {
             const modalRef = this.modalService.open(ErrorComponent);
             modalRef.componentInstance.error = errorStatus;
-        }
-    }
-
-    private onSuccessStatus(successStatus) {
-        if (successStatus) {
-            const modalRef = this.modalService.open(SuccessComponent);
-            modalRef.componentInstance.success = successStatus;
         }
     }
 
