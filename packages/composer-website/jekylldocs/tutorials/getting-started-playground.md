@@ -252,13 +252,13 @@ In order to install {{site.data.conrefs.composer_full}} Playground with Docker, 
 You can install {{site.data.conrefs.composer_full}} Playground by running the following Docker command in your terminal or command prompt:
 
   ```
-  docker run -d -p 8080:8080 fabriccomposer/composer-playground
+  docker run -d -p 8080:8080 hyperledger/composer-playground
   ```
 
 You should see the following output in your terminal or command prompt:
 
   ```
-  $ docker run -d -p 8080:8080 fabriccomposer/composer-playground
+  $ docker run -d -p 8080:8080 hyperledger/composer-playground
   afd1baff0487de5c69626b8baea69c702744f92813043e3d2b0ef786c7f77517
   ```
 

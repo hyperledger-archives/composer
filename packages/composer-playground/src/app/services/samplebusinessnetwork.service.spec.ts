@@ -29,16 +29,22 @@ describe('SampleBusinessNetworkService', () => {
     let adminMock = sinon.createStubInstance(AdminService);
     let clientMock = sinon.createStubInstance(ClientService);
     let aclFileMock = sinon.createStubInstance(AclFile);
+    let alertMock = sinon.createStubInstance(AlertService);
+    let businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
+    let businessNetworkFromArchiveMock = sinon.stub(BusinessNetworkDefinition, 'fromArchive');
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpModule],
-            providers: [SampleBusinessNetworkService, AlertService,
+            providers: [SampleBusinessNetworkService,
+                {provide: AlertService, useValue: alertMock},
                 {provide: AdminService, useValue: adminMock},
                 {provide: ClientService, useValue: clientMock},
                 {provide: AclFile, useValue: aclFileMock},
                 {provide: XHRBackend, useClass: MockBackend}]
         });
+
+        businessNetworkFromArchiveMock.reset();
     });
 
     describe('isOAuthEnabled', () => {
@@ -840,12 +846,11 @@ describe('SampleBusinessNetworkService', () => {
         it('should get a business network from an archive', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             let buffer = Buffer.from('a buffer');
 
-            let bm = sinon.stub(BusinessNetworkDefinition, 'fromArchive');
             service.getBusinessNetworkFromArchive(buffer);
 
             tick();
 
-            bm.should.have.been.calledWith(buffer);
+            businessNetworkFromArchiveMock.should.have.been.calledWith(buffer);
         })));
     });
 
@@ -860,7 +865,7 @@ describe('SampleBusinessNetworkService', () => {
 
             createAclMock.returns({});
 
-            let businessNetworkMock = sinon.stub(service, 'createBusinessNetworkInstance');
+            let createBusinessNetworkMock = sinon.stub(service, 'createBusinessNetworkInstance');
 
             mockBusinessNetwork = {
                 getModelManager: sinon.stub(),
@@ -872,11 +877,12 @@ describe('SampleBusinessNetworkService', () => {
             mockBusinessNetwork.getScriptManager.returns({addScript: sinon.stub(), createScript: sinon.stub()});
             mockBusinessNetwork.getAclManager.returns({setAclFile: sinon.stub()});
 
-            businessNetworkMock.returns(mockBusinessNetwork);
+            createBusinessNetworkMock.returns(mockBusinessNetwork);
         }));
 
         it('should deploy a sample', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             let chosenNetwork = {
+                name: 'bob',
                 composerPath: 'packages/'
             };
 
@@ -895,7 +901,11 @@ describe('SampleBusinessNetworkService', () => {
             let readmeMock = sinon.stub(service, 'getReadme').returns(Promise.resolve({}));
             let sampleInfoMock = sinon.stub(service, 'getSampleNetworkInfo').returns(Promise.resolve({}));
 
+            alertMock.busyStatus$ = {next: sinon.stub()};
+
             service.deploySample(owner, repo, chosenNetwork);
+
+            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying bob'});
 
             tick();
 
@@ -914,6 +924,7 @@ describe('SampleBusinessNetworkService', () => {
 
         it('should deploy a sample with dependency', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             let chosenNetwork = {
+                name: 'bob',
                 composerPath: 'packages/',
                 dependencies: 'myModel'
             };
@@ -933,7 +944,11 @@ describe('SampleBusinessNetworkService', () => {
             let readmeMock = sinon.stub(service, 'getReadme').returns(Promise.resolve({}));
             let sampleInfoMock = sinon.stub(service, 'getSampleNetworkInfo').returns(Promise.resolve({}));
 
+            alertMock.busyStatus$ = {next: sinon.stub()};
+
             service.deploySample(owner, repo, chosenNetwork);
+
+            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying bob'});
 
             tick();
 
@@ -952,6 +967,7 @@ describe('SampleBusinessNetworkService', () => {
 
         it('should deploy a sample with no acl', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             let chosenNetwork = {
+                name: 'bob',
                 composerPath: 'packages/'
             };
 
@@ -968,7 +984,11 @@ describe('SampleBusinessNetworkService', () => {
             let readmeMock = sinon.stub(service, 'getReadme').returns(Promise.resolve({}));
             let sampleInfoMock = sinon.stub(service, 'getSampleNetworkInfo').returns(Promise.resolve({}));
 
+            alertMock.busyStatus$ = {next: sinon.stub()};
+
             service.deploySample(owner, repo, chosenNetwork);
+
+            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying bob'});
 
             tick();
 
@@ -991,7 +1011,7 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.update.returns(Promise.resolve());
             clientMock.refresh.returns(Promise.resolve());
 
-            let businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
+            alertMock.busyStatus$ = {next: sinon.stub()};
 
             service.deployBusinessNetwork(businessNetworkMock);
 
@@ -1000,21 +1020,43 @@ describe('SampleBusinessNetworkService', () => {
             adminMock.update.should.have.been.called;
             clientMock.refresh.should.have.been.called;
             clientMock.reset.should.have.been.called;
+            alertMock.busyStatus$.next.should.have.been.calledWith(null);
         })));
 
         it('should handle error', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             adminMock.update.returns(Promise.reject('some error'));
 
-            let businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
+            alertMock.busyStatus$ = {next: sinon.stub()};
 
             service.deployBusinessNetwork(businessNetworkMock).then(() => {
                 throw('should not get here');
             })
             .catch((error) => {
+                alertMock.busyStatus$.next.should.have.been.calledWith(null);
                 error.should.equal('some error');
             });
 
             tick();
+        })));
+    });
+
+    describe('it should deployInitial sample', () => {
+        it('should deploy the initial sample', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
+            alertMock.busyStatus$ = {next: sinon.stub()};
+
+            let deployBusinessNetworkMock = sinon.stub(service, 'deployBusinessNetwork');
+
+            businessNetworkFromArchiveMock.returns(Promise.resolve({name: 'bob'}));
+
+            service.deployInitialSample();
+
+            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying sample business network'});
+
+            tick();
+
+            businessNetworkFromArchiveMock.should.have.been.called;
+
+            deployBusinessNetworkMock.should.have.been.calledWith({name: 'bob'});
         })));
     });
 });

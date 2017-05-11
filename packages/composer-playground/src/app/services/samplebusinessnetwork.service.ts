@@ -314,7 +314,7 @@ export class SampleBusinessNetworkService {
     }
 
     public deployInitialSample(): Promise<any> {
-        this.alertService.busyStatus$.next('Deploying sample business network ...');
+        this.alertService.busyStatus$.next({title: 'Deploying business network', text: 'deploying sample business network'});
         return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
         .then((businessNetworkDefinition) => {
             return this.deployBusinessNetwork(businessNetworkDefinition);
@@ -326,8 +326,7 @@ export class SampleBusinessNetworkService {
     }
 
     public deploySample(owner: string, repository: string, chosenNetwork: any): Promise<any> {
-        this.alertService.busyStatus$.next('Deploying sample business network ...');
-
+        this.alertService.busyStatus$.next({title: 'Deploying business network', text: 'deploying ' + chosenNetwork.name});
         let sampleNetworkPromises: Promise<any>[] = [];
         let path = chosenNetwork.composerPath;
 
@@ -379,7 +378,11 @@ export class SampleBusinessNetworkService {
         .then(() => {
             return this.clientService.reset();
         })
+        .then(() => {
+            this.alertService.busyStatus$.next(null);
+        })
         .catch((error) => {
+            this.alertService.busyStatus$.next(null);
             throw error;
         });
     }
