@@ -23,7 +23,7 @@ npm install -g yo
 ```
 
 
-If you wish to use the Angular2 Application Generator, then you will need a few other globally installed
+If you wish to use the Angular 2 Application Generator, then you will need a few other globally installed packages
 
 ```bash
 npm install -g typings
@@ -38,37 +38,41 @@ Then install the generator for it
 
 
 ```bash
-npm install -g generator-fabric-composer
+npm install -g generator-hyperledger-composer
 ```
 
 
 ## Running the generator
 
 ```bash
-yo fabric-composer
+yo hyperledger-composer
 ```
 
 ```
 Welcome to the Hyperledger Composer Skeleton Application Generator
 ? Please select the type of Application: (Use arrow keys)
 ❯ CLI Application
-  Angular2 Application
+  Angular 2 Application
+  Skeleton Business Network
 ```
 
-### What are the generator options?
+---
 
-### CLI Application
+# What are the generator options?
 
-This generator can be ran using ```yo fabric-composer:cli```
 
-#### What questions does this ask?
+# 1. Generating a CLI Application
+
+This generator can be ran using ```yo hyperledger-composer:cli```
+
+### What questions does this ask?
 
 ```
 Welcome to the CLI skeleton app generator
 ? Your NPM library name: composer-sample-app
 ? Short description: Test Composer project
 ? Author name: Sophie Black
-? Author email: sophie@ampretia.com
+? Author email: sophie@email.com
 ? NPM Module name of the Business Network to connect to: digitalproperty-network
 
 
@@ -88,7 +92,7 @@ configuring: composer-sample-app
    create .gitignore
 ```
 
-#### What does this do?
+### What does this do?
 Firstly it creates a standard npm module with the usual attributes of name, author, description.
 Secondly it asks a set of {{site.data.conrefs.composer_full}} questions to help create the sample structure.
 
@@ -96,12 +100,14 @@ Secondly it asks a set of {{site.data.conrefs.composer_full}} questions to help 
 - Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric
 - The EnrollmentId/Secret: Are needed to create a connection to the fabric
 
-#### Testing this has worked
+### Testing this has worked
 The `index.js` file is a very simple application that lists the asset registries that have been defined.
 
 ---
 
-### Angular2 Application
+# 2. Generating an Angular 2 Application
+
+This generator can be ran using ```yo hyperledger-composer:angular```.
 
 The user has the ability to generate an application in two different ways:
 
@@ -109,57 +115,28 @@ The user has the ability to generate an application in two different ways:
 
 2. Generating the application with a business network archive file
 
-This generator can also be ran using ```yo fabric-composer:angular```
 
-#### What questions does this ask?
-
-
-**1. Generating the application by connecting to a running business network**
+## Generating the application by connecting to a running business network
 
 ```
-Welcome to the Angular2 skeleton app generator
+Welcome to the Hyperledger Composer Angular 2 skeleton application generator
 
 ? Do you want to connect to a running Business Network? Yes
-
 ? What is the name of the application you wish to generate?: angular-app
 ? Description of the application: Skeleton Hyperledger Composer Angular2 project
 ? Author name: Sophie Black
-? Author email: sophie@ampretia.com
-? What is the Business Network Identifier?: org.acme.biznet
-? What is the Connection Profile to use? newProfile
+? Author email: sophie@email.com
+? What is the Business Network Identifier?: digitalproperty-network
+? What is the Connection Profile to use? defaultProfile
 ? Enrollment id: WebAppAdmin
 ? Enrollment Secret: DJY27pEnl16d
-Configuring: angular-app
+? Do you want to generate a new REST API or connect to an existing REST API?: Generate a new REST API
+? What port number should the generated REST server run on?: 3000
+? Should namespaces be used in the generated REST API:  Always use namespaces
 About to connect to a running business network
 
 ...
 ```
-
-
-**2. Generating the application with a business network archive file**
-
-```
-Welcome to the Angular2 skeleton app generator
-
-? Do you want to connect to a running Business Network? No
-
-? What is the name of the application you wish to generate?: angular-app
-? Description of the application: Skeleton Hyperledger Composer Angular2 project
-? Author name: Sophie Black
-? Author email: sophie@ampretia.com
-? What is the name of the business network archive file? (Path from the current working direc
-tory): org.acme.biznet@0.0.2.bna
-Configuring: angular-app
-About to read a business network archive file
-Reading file: org.acme.biznet@0.0.2.bna
-
-...
-```
-
-
-#### What does this do?
-
-**1. Generating the application by connecting to a running business network**
 
 Firstly the generator will also a series of basic regarding the application name, author, description, etc.
 Then it will ask the user to enter the details required to connect a running business network.
@@ -167,8 +144,52 @@ After the generator has stopped prompting the user to answer questions, it will 
 If it successfully connects to the business network, the generator will then examine the assets, transactions and participants.
 The generator will then create Angular components based upon the different modelled types.
 
+- Business Network Identifier:  This is the name of the business network you want to connect to - and is this the same as the modules NPM registry name
+- Business Network Archive File: This is a business network definition archived using the Composer-CLI
+- Connection Profile:  This is the connection profile used to locate IP/ports etc of the running fabric
+- The EnrollmentId/Secret: Are needed to create a connection to the fabric
 
-**2. Generating the application with a business network archive file**
+
+### REST API Options
+
+If generating an application with a business network archive file, it is only possible to connect to an existing REST API server which is running.
+
+When generating an application it is possible to either:
+
+1. Generate and bundle the application with a REST API server
+2. Connect to an existing REST API server
+
+This REST API server configuration can be edited in ``APP_DIR/src/app/configuration.ts``.
+
+
+### Using the Application
+
+The application can be started using ``npm start``.
+
+The application can be tested using ``npm test``.
+
+
+## Generating the application with a business network archive file
+
+```
+Welcome to the Angular2 skeleton app generator
+
+? Do you want to connect to a running Business Network? No
+? What is the name of the application you wish to generate?: angular-app
+? Description of the application: Skeleton Hyperledger Composer Angular2 project
+? Author name: Sophie Black
+? Author email: sophie@email.com
+? What is the name of the business network archive file? (Path from the current working directory): digitalPropertyNetwork.bna
+? What is the address of the running REST server?: http://localhost
+? What port number is the REST server running on?: 3000
+? Are namespaces used in the generated REST API:  Namespaces are used
+
+
+About to read a business network archive file
+Reading file: digitalPropertyNetwork.bna    
+
+...
+```
 
 Firstly the generator will also a series of basic regarding the application name, author, description, etc.
 Then it will ask the user to enter the relative path to a business network archive file.
@@ -177,28 +198,15 @@ If it successfully reads the file, the generator will then examine the assets, t
 The generator will then create Angular components based upon the different modelled types.
 
 
-- Business Network Identifier:  This is the name of the business network you want to connect to - and is this the same as the modules NPM registry name
-- Business Network Archive File: This is a business network definition archived using the Composer-CLI
-- Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric
-- The EnrollmentId/Secret: Are needed to create a connection to the fabric
+### REST API Options
+
+If generating an application with a business network archive file, it is only possible to connect to an existing REST API server which is running.
+
+This REST API server configuration can be edited in ``APP_DIR/src/app/configuration.ts``.
 
 
-#### Testing this has worked
+### Using the Application
 
-**1. Generating the application by connecting to a running business network**
+The application can be started using ``npm start``.
 
-After the application has been generated, the application can be started using ``npm start`` inside of the application directory.
-
-**2. Generating the applicaiton with a business network archive file**
-
-After the application has been generated, a business network needs to be deployed to a live fabric.
-Once this has been done, you will then need to change into applications ``config`` directory.
-Inside ``default.json``, the connection profile, business network identifier, enrollment id and secret to connect to the business network need to be set.
-The application can be then be started using ``npm start``.
-
-
-The generated application can then be tested using ``npm test`` and ``npm run e2e``.
-
-# Generating Tests
-
-Note that after the application is generated you may choose to add skeletal tests to your application using the `composer generator tests` command.
+The application can be tested using ``npm test``.
