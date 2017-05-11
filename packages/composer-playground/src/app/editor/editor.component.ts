@@ -268,7 +268,7 @@ export class EditorComponent implements OnInit {
 
     deploy(): Promise<any> {
         // Gets the definition for the currently deployed business network
-        this.alertService.busyStatus$.next('Deploying updated business network ...');
+        this.alertService.busyStatus$.next({title: 'Deploying updated business network', text : 'deploying ' + this.clientService.getBusinessNetworkName()});
         return Promise.resolve()
         .then(() => {
             if (this.deploying) {
@@ -296,6 +296,7 @@ export class EditorComponent implements OnInit {
             // if failed on deploy should go back to what had before deployed
             this.updatePackageInfo();
             this.updateFiles();
+            this.alertService.busyStatus$.next(null);
             this.alertService.errorStatus$.next(error);
         });
     }
