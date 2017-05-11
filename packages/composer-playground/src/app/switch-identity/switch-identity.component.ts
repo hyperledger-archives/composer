@@ -4,7 +4,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { WalletService } from '../services/wallet.service';
 import { IdentityService } from '../services/identity.service';
-import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 
 @Component({
@@ -29,7 +28,6 @@ export class SwitchIdentityComponent implements OnInit {
                 private walletService: WalletService,
                 private activeModal: NgbActiveModal,
                 private identityService: IdentityService,
-                private adminService: AdminService,
                 private clientService: ClientService) {
 
     }
@@ -75,13 +73,7 @@ export class SwitchIdentityComponent implements OnInit {
             this.connectionProfileService.setCurrentConnectionProfile(this.connectionProfileName);
             this.identityService.setCurrentIdentity(chosenUser);
 
-            return this.adminService.ensureConnected(true);
-        })
-        .then(() => {
             return this.clientService.ensureConnected(true);
-        })
-        .then(() => {
-            return this.clientService.refresh();
         })
         .then(() => {
             this.switchInProgress = false;

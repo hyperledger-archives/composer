@@ -6,7 +6,6 @@ import { TestBed, async, inject, fakeAsync, tick } from '@angular/core/testing';
 import { IdentityService } from './identity.service';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { ConnectionProfileService } from './connectionprofile.service';
-import { ClientService } from './client.service';
 import { WalletService } from './wallet.service';
 import * as sinon from 'sinon';
 import { FileWallet } from 'composer-common';

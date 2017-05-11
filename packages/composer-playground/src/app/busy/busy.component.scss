@@ -6,14 +6,18 @@ busy {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding: $space-medium;
 
         span + span {
             margin-left: $space-xsmall;
+        }
+
+        .ibm-spinner-indeterminate {
+            padding: 0;
         }
 
         .busy-text {
             font-size: 14px;
         }
     }
-
 }

@@ -7,6 +7,7 @@ import { IssueIdentityComponent } from '../issue-identity';
 import { IdentityIssuedComponent } from '../identity-issued';
 import { AlertService } from '../services/alert.service';
 import { IdentityService } from '../services/identity.service';
+import { ClientService } from '../services/client.service';
 
 @Component({
     selector: 'identity',
@@ -22,7 +23,8 @@ export class IdentityComponent implements OnInit {
 
     constructor(private modalService: NgbModal,
                 private alertService: AlertService,
-                private identityService: IdentityService) {
+                private identityService: IdentityService,
+                private clientService: ClientService) {
 
     }
 
@@ -77,8 +79,22 @@ export class IdentityComponent implements OnInit {
     }
 
     setCurrentIdentity(newIdentity: string) {
+        if (this.currentIdentity === newIdentity) {
+            return Promise.resolve();
+        }
+
         this.identityService.setCurrentIdentity(newIdentity);
         this.currentIdentity = newIdentity;
+
+        this.alertService.busyStatus$.next({title: 'Reconnecting...', text: 'Using identity ' + this.currentIdentity});
+        return this.clientService.ensureConnected(true)
+            .then(() => {
+                this.alertService.busyStatus$.next(null);
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(error);
+            });
     }
 
 }

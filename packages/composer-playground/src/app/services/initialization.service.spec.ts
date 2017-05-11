@@ -134,6 +134,22 @@ describe('InitializationService', () => {
             mockAdminService.isInitialDeploy.should.be.called;
 
         })));
+
+        it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+
+            let loadConfigStub = sinon.stub(service, 'loadConfig').throws();
+
+            mockAlertService.busyStatus$ = {next: sinon.stub()};
+            mockAlertService.errorStatus$ = {next: sinon.stub()};
+
+            service.initialize();
+            tick();
+
+            mockAlertService.errorStatus$.next.should.be.called;
+            service['initialized'].should.be.false;
+
+            sinon.restore(service.loadConfig);
+        })));
     });
 
     describe('loadConfig', () => {

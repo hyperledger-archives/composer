@@ -78,7 +78,7 @@ export class AdminService {
             this.connectingPromise = null;
         })
         .catch((error) => {
-            this.alertService.busyStatus$.next(`Failed to connect: ${error}`);
+            this.alertService.errorStatus$.next(`Failed to connect: ${error}`);
             this.isConnected = false;
             this.connectingPromise = null;
             throw error;
@@ -113,7 +113,7 @@ export class AdminService {
                 return businessNetwork === 'org.acme.biznet';
             });
             if (!this.deployed) {
-                this.alertService.busyStatus$.next('Deploying sample business network ...');
+                this.alertService.busyStatus$.next({title: 'Deploying business network', text : 'deploying sample'});
                 console.log('Deploying sample business network');
                 let businessNetworkDefinition = this.generateDefaultBusinessNetwork();
                 return this.getAdminConnection().deploy(businessNetworkDefinition)
