@@ -47,6 +47,5 @@ out
 
 *.swp
 
-# Ignore built installers.
+# Ignore temporary built installers.
 installers/*/install.sh
-jekylldocs/install-*.sh
