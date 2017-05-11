@@ -7,7 +7,14 @@ import 'rxjs/Rx';
 // Can be injected into a constructor
 @Injectable()
 export class <%= assetName %>Service {
-    private NAMESPACE: string = '<%= namespace %>.<%= assetName %>';
+
+	<% if(apiNamespace == 'always'){ %>
+		private NAMESPACE: string = '<%= namespace %>.<%= assetName %>';
+	<% }else{ %>
+		private NAMESPACE: string = '<%= assetName %>';
+	<% } %>
+
+
 
     constructor(private dataService: DataService<<%= assetName %>>) {
     };

@@ -15,6 +15,7 @@ export class <%= currentAsset.name %>Component implements OnInit {
   private allAssets;
   private asset;
   private currentId;
+	private errorMessage;
 
   <% for(var x=0;x<currentAsset.properties.length;x++){ %>
       <%= currentAsset.properties[x].name %> = new FormControl("", Validators.required);
@@ -42,10 +43,22 @@ export class <%= currentAsset.name %>Component implements OnInit {
     return this.service<%= currentAsset.name %>.getAll()
     .toPromise()
     .then((result) => {
+			this.errorMessage = null;
       result.forEach(asset => {
         tempList.push(asset);
       });
       this.allAssets = tempList;
+    })
+    .catch((error) => {
+        if(error == 'Server error'){
+            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+        }
+        else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
+        }
+        else{
+            this.errorMessage = error;
+        }
     });
   }
 
@@ -75,6 +88,7 @@ export class <%= currentAsset.name %>Component implements OnInit {
     return this.service<%= currentAsset.name %>.addAsset(this.asset)
     .toPromise()
     .then(() => {
+			this.errorMessage = null;
       this.myForm.setValue({
       <% for(var x=0;x<currentAsset.properties.length;x++){ %>
         <% if(x == currentAsset.properties.length-1){ %>
@@ -84,6 +98,14 @@ export class <%= currentAsset.name %>Component implements OnInit {
         <% } %>
       <% }%>
       });
+    })
+    .catch((error) => {
+        if(error == 'Server error'){
+            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+        }
+        else{
+            this.errorMessage = error;
+        }
     });
   }
 
@@ -104,13 +126,43 @@ export class <%= currentAsset.name %>Component implements OnInit {
     <% }%>
     };
 
-    return this.service<%= currentAsset.name %>.updateAsset(form.get("<%=assetIdentifier%>").value,this.asset).toPromise();
+    return this.service<%= currentAsset.name %>.updateAsset(form.get("<%=assetIdentifier%>").value,this.asset)
+		.toPromise()
+		.then(() => {
+			this.errorMessage = null;
+		})
+		.catch((error) => {
+            if(error == 'Server error'){
+				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+			}
+            else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
+			}
+			else{
+				this.errorMessage = error;
+			}
+    });
   }
 
 
   deleteAsset(): Promise<any> {
 
-    return this.service<%= currentAsset.name %>.deleteAsset(this.currentId).toPromise();
+    return this.service<%= currentAsset.name %>.deleteAsset(this.currentId)
+		.toPromise()
+		.then(() => {
+			this.errorMessage = null;
+		})
+		.catch((error) => {
+            if(error == 'Server error'){
+				this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+			}
+			else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
+			}
+			else{
+				this.errorMessage = error;
+			}
+    });
   }
 
   setId(id: any): void{
@@ -122,7 +174,7 @@ export class <%= currentAsset.name %>Component implements OnInit {
     return this.service<%= currentAsset.name %>.getAsset(id)
     .toPromise()
     .then((result) => {
-
+			this.errorMessage = null;
       let formObject = {
         <% for(var x=0;x<currentAsset.properties.length;x++){ %>
           <% if(x == currentAsset.properties.length-1){ %>
@@ -145,6 +197,17 @@ export class <%= currentAsset.name %>Component implements OnInit {
 
       this.myForm.setValue(formObject);
 
+    })
+    .catch((error) => {
+        if(error == 'Server error'){
+            this.errorMessage = "Could not connect to REST server. Please check your configuration details";
+        }
+        else if(error == '404 - Not Found'){
+				this.errorMessage = "404 - Could not find API route. Please check your available APIs."
+        }
+        else{
+            this.errorMessage = error;
+        }
     });
 
   }
