@@ -104,7 +104,7 @@ services:
 
   composer:
     container_name: composer
-    image: fabriccomposer/composer-playground
+    image: hyperledger/composer-playground
     ports:
       - '8080:8080'
     links:
