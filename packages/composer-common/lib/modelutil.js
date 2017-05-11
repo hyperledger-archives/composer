@@ -44,6 +44,16 @@ class ModelUtil {
     }
 
     /**
+     * Returns true if the specified name is a wildcard.
+     * @param {string} fqn - the source string
+     * @return {boolean} true if the specified name is a wildcard.
+     * @private
+     */
+    static isWildcardName(fqn) {
+        return ModelUtil.getShortName(fqn) === '*';
+    }
+
+    /**
      * Returns the namespace for a the fully qualified name of a type
      * @param {string} fqn - the fully qualified identifier of a type
      * @return {string} - namespace of the type (everything before the last dot)
@@ -94,6 +104,8 @@ class ModelUtil {
             return false;
         }
 
+        // console.log( 'Checking whether type ' + type + ' can be stored in a property of type ' + property.getFullyQualifiedTypeName() );
+
         // console.log( 'model file ns ' + modelFile.getNamespace() );
         // console.log( 'type ' + type );
         // console.log( 'property ' + property.getFullyQualifiedName() );
@@ -129,12 +141,14 @@ class ModelUtil {
 
         while(superType) {
             if(superType.getFullyQualifiedName() === property.getFullyQualifiedTypeName()) {
+                // console.log('Found superType ' + superType.getFullyQualifiedName() );
                 return true;
             }
-            // console.log('superType ' + superType.getFullyQualifiedName() );
             superTypeName = superType.getSuperType();
+
             if(superTypeName) {
-                superType = modelFile.getType(superTypeName);
+                superType = modelFile.getModelManager().getType(superTypeName);
+                // console.log('superType ' + superType.getFullyQualifiedName() );
             }
             else {
                 superType = null;

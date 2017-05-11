@@ -91,6 +91,7 @@ describe('composer generator create unit tests', function () {
         sandbox.stub(fs,'readFileSync' );
         sandbox.stub(process, 'exit');
 
+
     });
 
     afterEach(() => {
@@ -161,7 +162,21 @@ describe('composer generator create unit tests', function () {
                 sinon.assert.calledWith(mockBusinessNetworkDefinition.accept,mockJSONSchema,parameters);
             });
         });
+        it('Invalid generator specified', function () {
 
+            let argv = {archiveFile: 'testArchiveFile.zip'
+                        ,format: 'I-do-not-exist'
+                       ,outputDir: '/home'};
+
+            return Create.handler(argv)
+            .then ((result) => {
+
+            }).catch((error) => {
+                error.should.not.to.be.undefined;
+            }
+
+          );
+        });
 
     });
 
