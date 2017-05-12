@@ -55,7 +55,7 @@ module.exports = yeoman.Base.extend({
     },
 
     prompting: function () {
-        console.log('Welcome to the Hyperledger Composer Angular2 skeleton app generator');
+        console.log('Welcome to the Hyperledger Composer Angular 2 skeleton application generator');
 
         return this.prompt([
             {
