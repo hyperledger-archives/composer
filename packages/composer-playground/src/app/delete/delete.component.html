@@ -1,0 +1,27 @@
+<div class="delete" tabindex="-1">
+  <div class="modal-header">
+    <svg class="ibm-icon" aria-hidden="true">
+      <use xlink:href="#icon-warn_32"></use>
+    </svg>
+    <h1 [innerHTML]="headerMessage"></h1>
+    <button class="icon modal-exit" (click)="activeModal.close(false)">
+      <svg class="ibm-icon" aria-hidden="true">
+        <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
+  </div>
+  <section class="modal-body">
+    <section class="information">
+        <p><b>You are about to delete:</b></p>
+        <section class="items">
+            <div class="item"><b>{{fileType}}</b></div>
+            <div class="item"><i>{{displayID}}</i></div>
+        </section>
+        <p [innerHTML]="deleteMessage"></p>
+    </section>
+  </section>
+  <footer>
+    <button type="button" class="secondary" (click)="activeModal.close(false)">Cancel</button>
+    <button type="button" class="delete" (click)="activeModal.close(true)">Delete File</button>
+  </footer>
+</div>
