@@ -1,6 +1,7 @@
 import {Routes} from '@angular/router';
 import {EditorComponent} from './editor';
 import {TestComponent} from './test';
+import {UmlComponent} from './uml';
 import {SettingsComponent} from './settings';
 import {NoContentComponent} from './no-content';
 import {GithubComponent} from './github';
@@ -10,6 +11,7 @@ import {IdentityComponent} from './identity';
 export const ROUTES: Routes = [
   {path: 'editor', component: EditorComponent},
   {path: 'test', component: TestComponent},
+  {path: 'uml', component: UmlComponent},
   {path: 'identity', component: IdentityComponent},
   {path: 'profile', component: ConnectionProfileComponent},
   {path: 'github', component: GithubComponent},

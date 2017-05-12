@@ -1,30 +1,52 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Subject} from 'rxjs/Rx';
+import {
+  Injectable
+} from '@angular/core';
+import {
+  BehaviorSubject,
+  Subject
+} from 'rxjs/Rx';
 
-import {AdminService} from './admin.service';
-import {ConnectionProfileService} from './connectionprofile.service';
-import {IdentityService} from './identity.service';
-import {AlertService} from './alert.service'
+import {
+  AdminService
+} from './admin.service';
+import {
+  ConnectionProfileService
+} from './connectionprofile.service';
+import {
+  IdentityService
+} from './identity.service';
+import {
+  AlertService
+} from './alert.service'
 
-import {BusinessNetworkConnection} from 'composer-client';
-import {BusinessNetworkDefinition, Util, ModelFile, Script, AclFile} from 'composer-common';
+import {
+  BusinessNetworkConnection
+} from 'composer-client';
+import {
+  BusinessNetworkDefinition,
+  Util,
+  ModelFile,
+  Script,
+  AclFile,
+  NomNomlVisitor,
+  Writer
+} from 'composer-common';
 
 @Injectable()
 export class ClientService {
 
   private businessNetworkConnection: BusinessNetworkConnection = null;
   private isConnected: boolean = false;
-  private connectingPromise: Promise<any> = null;
+  private connectingPromise: Promise < any > = null;
 
-  public businessNetworkChanged$: Subject<boolean> = new BehaviorSubject<boolean>(null);
+  public businessNetworkChanged$: Subject < boolean > = new BehaviorSubject < boolean > (null);
 
   private currentBusinessNetwork: BusinessNetworkDefinition = null;
 
   constructor(private adminService: AdminService,
-              private connectionProfileService: ConnectionProfileService,
-              private identityService: IdentityService,
-              private alertService: AlertService) {
-  }
+    private connectionProfileService: ConnectionProfileService,
+    private identityService: IdentityService,
+    private alertService: AlertService) {}
 
   //horrible hack for testing
   createModelFile(modelManager, content) {
@@ -125,6 +147,19 @@ export class ClientService {
     return this.getBusinessNetwork().getMetadata().getName();
   }
 
+  getNomNomlText() {
+    let businessNetwork = this.getBusinessNetwork();
+
+    if (businessNetwork) {
+      let nomnomlVisitor = new NomNomlVisitor();
+      let parameters = { writer : new Writer() };
+      nomnomlVisitor.visit(businessNetwork, parameters);
+      return parameters.writer.getBuffer();
+    } else {
+      return null;
+    }
+  }
+
   setBusinessNetworkVersion(version: string) {
     let name = this.getBusinessNetwork().getMetadata().getName();
     let description = this.getBusinessNetwork().getMetadata().getDescription();
@@ -152,7 +187,7 @@ export class ClientService {
     let oldBusinessNetwork = this.getBusinessNetwork();
 
     this.currentBusinessNetwork = this.createBusinessNetwork(name + '@' + version, description, packageJson, readme);
-  this.currentBusinessNetwork.getModelManager().addModelFiles(oldBusinessNetwork.getModelManager().getModelFiles());
+    this.currentBusinessNetwork.getModelManager().addModelFiles(oldBusinessNetwork.getModelManager().getModelFiles());
 
     oldBusinessNetwork.getScriptManager().getScripts().forEach((script) => {
       this.currentBusinessNetwork.getScriptManager().addScript(script);
@@ -166,7 +201,7 @@ export class ClientService {
 
   }
 
-  ensureConnected(force : boolean = true): Promise<any> {
+  ensureConnected(force: boolean = true): Promise < any > {
     if (this.isConnected && !force) {
       return Promise.resolve();
     } else if (this.connectingPromise) {
@@ -176,40 +211,40 @@ export class ClientService {
     console.log('Connecting to connection profile', connectionProfile);
     let userID;
     this.connectingPromise = this.adminService.ensureConnected()
-      .then(() => {
-        return this.identityService.getUserID();
-      })
-      .then((userID_) => {
-        userID = userID_;
-        return this.identityService.getUserSecret();
-      })
-      .then((userSecret) => {
-        return this.getBusinessNetworkConnection().connect(connectionProfile, 'org.acme.biznet', userID, userSecret)
-      })
-      .then(() => {
-        // this.busyStatus$.next(null);
-        console.log('Connected');
-        this.isConnected = true;
-        this.connectingPromise = null;
-      })
-      .catch((error) => {
-        this.alertService.busyStatus$.next(`Failed to connect: ${error}`);
-        this.isConnected = false;
-        this.connectingPromise = null;
-        throw error;
-      });
+    .then(() => {
+      return this.identityService.getUserID();
+    })
+    .then((userID_) => {
+      userID = userID_;
+      return this.identityService.getUserSecret();
+    })
+    .then((userSecret) => {
+      return this.getBusinessNetworkConnection().connect(connectionProfile, 'org.acme.biznet', userID, userSecret)
+    })
+    .then(() => {
+      // this.busyStatus$.next(null);
+      console.log('Connected');
+      this.isConnected = true;
+      this.connectingPromise = null;
+    })
+    .catch((error) => {
+      this.alertService.busyStatus$.next(`Failed to connect: ${error}`);
+      this.isConnected = false;
+      this.connectingPromise = null;
+      throw error;
+    });
     return this.connectingPromise;
   }
 
-  reset(): Promise<any> {
+  reset(): Promise < any > {
     return this.ensureConnected()
       .then(() => {
         // TODO: hack hack hack, this should be in the admin API.
-        return Util.invokeChainCode((<any>(this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
+        return Util.invokeChainCode(( < any > (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
       });
   }
 
-  refresh(): Promise<any> {
+  refresh(): Promise < any > {
     this.currentBusinessNetwork = null;
     let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
     let userID;

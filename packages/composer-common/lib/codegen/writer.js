@@ -24,7 +24,7 @@
 class Writer {
 
     /**
-     * Create a FileWriter.
+     * Create a Writer.
      *
      */
     constructor() {

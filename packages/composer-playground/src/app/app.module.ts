@@ -20,6 +20,7 @@ import { AppComponent } from './app.component';
 import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { EditorComponent } from './editor';
+import { UmlComponent } from './uml';
 import {EditorFileComponent} from './editor-file';
 import {TestComponent} from './test';
 import {RegistryComponent} from './registry';
@@ -117,6 +118,7 @@ type StoreType = {
     AppComponent,
     FileImporterComponent,
     EditorComponent,
+    UmlComponent,
     EditorFileComponent,
     TestComponent,
     RegistryComponent,
