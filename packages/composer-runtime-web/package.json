@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-web",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "The web runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -61,8 +61,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.7.2",
-    "composer-runtime": "^0.7.2",
+    "composer-common": "^0.7.3",
+    "composer-runtime": "^0.7.3",
     "dexie": "^1.5.1",
     "uuid": "^3.0.1"
   }

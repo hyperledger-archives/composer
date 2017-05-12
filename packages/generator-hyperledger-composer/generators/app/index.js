@@ -36,7 +36,7 @@ module.exports = generators.Base.extend({
                 name: 'CLI Application',
                 value: 'CLI'
             },{
-                name: 'Angular2 Application',
+                name: 'Angular 2 Application',
                 value: 'Angular2'
             }, {
                 name: 'Skeleton Business Network',

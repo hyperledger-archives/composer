@@ -7,7 +7,6 @@
 	"license": "MIT",
   "scripts": {
     "ng": "ng",
-		"prestart":"echo 'app will start on localhost:4200' && sleep 2",
 <% if(apiServer == 'generate'){ %>
     "app": "composer-rest-server -n <%= networkIdentifier %> -p <%= connectionProfileName %> -i <%= enrollmentId %> -s <%= enrollmentSecret %> -N <%= apiNamespace %> -P <%= apiPort %>",
     "start": "concurrently \"ng serve --host 0.0.0.0\" \"npm run app\"",
