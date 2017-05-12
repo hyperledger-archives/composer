@@ -13,7 +13,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { AlertService } from '../services/alert.service';
 import { EditorService } from '../services/editor.service';
 
-import { ModelFile } from 'composer-common';
+import { ModelFile, ScriptManager, ModelManager } from 'composer-common';
 
 import { saveAs } from 'file-saver';
 
@@ -344,7 +344,6 @@ export class EditorComponent implements OnInit {
     * User selects to delete the current editor file
     */
     openDeleteFileModal() {
-        console.log('the file', this.currentFile);
         const confirmModalRef = this.modalService.open(DeleteComponent);
         confirmModalRef.componentInstance.headerMessage = 'Delete File';
         confirmModalRef.componentInstance.fileType = this.fileType(this.currentFile);
@@ -352,9 +351,41 @@ export class EditorComponent implements OnInit {
         confirmModalRef.componentInstance.deleteMessage = 'This file will be removed from your business network definition, which may stop your business netork from working and may limit access to data that is already stored in the business network.';
         confirmModalRef.result.then((result) => {
             if (result) {
-
-                console.log('such delete, much destroy');
-
+                this.alertService.busyStatus$.next({title: 'Deleting file within business network', text : 'deleting ' + this.clientService.getBusinessNetworkName()});
+                return Promise.resolve()
+                .then(() => {
+                    if (this.currentFile.script) {
+                        let scriptManager: ScriptManager = this.clientService.getBusinessNetwork().getScriptManager();
+                        scriptManager.deleteScript(this.currentFile.id);
+                    } else if (this.currentFile.model) {
+                        let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
+                        modelManager.deleteModelFile(this.currentFile.id);
+                    } else {
+                        throw new Error('Delete attempted on unsupported file type');
+                    }
+                    return this.adminService.update(this.clientService.getBusinessNetwork());
+                })
+                .then(() => {
+                    this.dirty = true;
+                    return this.clientService.refresh();
+                })
+                .then(() => {
+                    this.updatePackageInfo();
+                    this.updateFiles();
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.successStatus$.next({title : 'Delete Successful', text : 'Business Network Updated Successfully', icon : '#icon-trash_32'});
+                    if ((<any> window).usabilla_live) {
+                        (<any> window).usabilla_live('trigger', 'manual trigger');
+                    }
+                })
+                .catch((error) => {
+                    this.dirty = false;
+                    // if failed on delete should go back to what had before deletion
+                    this.updatePackageInfo();
+                    this.updateFiles();
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.errorStatus$.next(error);
+                });
             } else {
                 // TODO: we should always get called with a code for this usage of the
                 // modal but will that always be true
