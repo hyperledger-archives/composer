@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from '../add-file/add-file.component';
-import { DeleteComponent } from '../delete/delete.component';
+import { DeleteComponent } from '../delete-confirm/delete-confirm.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';

@@ -40,7 +40,7 @@ import { TransactionComponent } from './transaction';
 import { IdentityComponent } from './identity';
 import { WelcomeComponent } from './welcome';
 import { ConfirmComponent } from './confirm';
-import { DeleteComponent } from './delete';
+import { DeleteComponent } from './delete-confirm';
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
