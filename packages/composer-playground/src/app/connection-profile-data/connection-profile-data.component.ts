@@ -192,6 +192,7 @@ export class ConnectionProfileDataComponent {
             this.profileUpdated.emit({updated: true});
 
         }, (reason) => {
+            console.log(reason);
             if (reason && reason !== 1) { // someone hasn't pressed escape
                 this.alertService.errorStatus$.next(reason);
             }

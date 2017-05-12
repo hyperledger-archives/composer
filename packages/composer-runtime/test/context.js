@@ -46,12 +46,14 @@ require('sinon-as-promised');
 
 describe('Context', () => {
 
+    let mockBusinessNetworkDefinition;
     let mockEngine;
     let context;
     let sandbox;
 
     beforeEach(() => {
         mockEngine = sinon.createStubInstance(Engine);
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         context = new Context(mockEngine);
         sandbox = sinon.sandbox.create();
     });
@@ -432,6 +434,7 @@ describe('Context', () => {
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             let mockEventService = sinon.createStubInstance(EventService);
             sinon.stub(context, 'getEventService').returns(mockEventService);
+            context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });
 

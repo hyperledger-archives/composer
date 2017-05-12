@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
@@ -28,6 +29,12 @@ export class TestComponent implements OnInit {
     }
 
     ngOnInit(): Promise<any> {
+        if (this.clientService.getBusinessNetworkConnection().listenerCount('event') === 0) {
+            this.clientService.getBusinessNetworkConnection().on('event' , (event) => {
+                console.log('event', event);
+            });
+        }
+
         return this.initializationService.initialize()
         .then(() => {
             return this.clientService.getBusinessNetworkConnection().getAllAssetRegistries()

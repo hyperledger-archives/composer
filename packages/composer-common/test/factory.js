@@ -242,7 +242,7 @@ describe('Factory', () => {
 
         it('should create a new instance with a generated ID', () => {
             let resource = factory.newEvent('org.acme.test', 'MyEvent');
-            resource.eventId.should.equal('5604bdfe-7b96-45d0-9883-9c05c18fe638');
+            resource.eventId.should.equal('valid');
             resource.timestamp.should.be.an.instanceOf(Date);
         });
 
@@ -250,7 +250,7 @@ describe('Factory', () => {
             let spy = sandbox.spy(factory, 'newResource');
             factory.newEvent('org.acme.test', 'MyEvent', { hello: 'world' });
             sinon.assert.calledOnce(spy);
-            sinon.assert.calledWith(spy, 'org.acme.test', 'MyEvent', '5604bdfe-7b96-45d0-9883-9c05c18fe638', { hello: 'world' });
+            sinon.assert.calledWith(spy, 'org.acme.test', 'MyEvent', 'valid', { hello: 'world' });
         });
     });
 
