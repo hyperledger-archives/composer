@@ -60,6 +60,13 @@
           </svg>
         </button>
       </div>
+      <div *ngIf="deletableFile" style="flex-shrink:1;align-self:center; margin-left: auto">
+        <button id="deleteFileButton" type="button" class="action" style="padding-top:4px;" (click)="openDeleteFileModal()">
+          <svg class="ibm-icon vertical-top" aria-hidden="true">
+            <use xlink:href="#icon-trash_32"></use>
+          </svg>
+        </button>
+      </div>
     </div>
     <div *ngIf="editActive" class="business-network-details">
       <label class="edit-label margin-right" for="editName">Name</label>

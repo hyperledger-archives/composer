@@ -1,0 +1,27 @@
+@import '../../assets/styles/base/_colors.scss';
+
+.delete {
+
+
+  .modal-header {
+    svg {
+      fill: $error-colour-1
+    }
+  }
+
+  .information {
+      display: flex;
+      flex-direction: column;
+      align-content: flex-start;
+      margin-left: 2rem;
+  }
+
+  .items {
+     border-left: solid $first-highlight;
+
+     .item{
+        margin-left: 1rem;
+     }
+  }
+
+}

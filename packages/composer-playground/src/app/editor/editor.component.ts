@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from '../add-file/add-file.component';
+import { DeleteComponent } from '../delete/delete.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -28,6 +29,7 @@ export class EditorComponent implements OnInit {
 
     private files: any = [];
     private currentFile: any = null;
+    private deletableFile: boolean = false;
 
     private addModelNamespace: string = 'org.acme.model';
     private addScriptFileName: string = 'lib/script.js';
@@ -102,6 +104,11 @@ export class EditorComponent implements OnInit {
         if (this.editingPackage) {
             this.updatePackageInfo();
             this.editingPackage = false;
+        }
+        if (file.script || file.model) {
+            this.deletableFile = true;
+        } else {
+            this.deletableFile = false;
         }
         // Reset editActive
         this.editActive = false;
@@ -331,5 +338,35 @@ export class EditorComponent implements OnInit {
     hideEdit() {
         this.editActive = false;
         this.editingPackage = true;
+    }
+
+    /*
+    * User selects to delete the current editor file
+    */
+    openDeleteFileModal() {
+        console.log('the file', this.currentFile);
+        const confirmModalRef = this.modalService.open(DeleteComponent);
+        confirmModalRef.componentInstance.headerMessage = 'Delete File';
+        confirmModalRef.componentInstance.fileType = this.fileType(this.currentFile);
+        confirmModalRef.componentInstance.displayID = this.currentFile.displayID;
+        confirmModalRef.componentInstance.deleteMessage = 'This file will be removed from your business network definition, which may stop your business netork from working and may limit access to data that is already stored in the business network.';
+        confirmModalRef.result.then((result) => {
+            if (result) {
+
+                console.log('such delete, much destroy');
+
+            } else {
+                // TODO: we should always get called with a code for this usage of the
+                // modal but will that always be true
+            }
+        });
+    }
+
+    fileType(resource: any): string {
+        if (resource.model) {
+            return 'Model File';
+        } else if (resource.script) {
+            return 'Script File';
+        }
     }
 }
