@@ -580,7 +580,7 @@ module.exports = function (app, callback) {
 
             // Apply any required updates to the specified model schema.
             modelSchema = updateModelSchema(modelSchema);
-            console.log(modelSchema);
+
             // This call creates the model class from the model schema.
             let model = app.loopback.createModel(modelSchema);
 
