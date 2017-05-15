@@ -8,12 +8,11 @@ excerpt: Subscribing to events
 
 # Subscribing to events
 
-Applications can subscribe to events from a business network by using the `composer-client.BusinessNetworkConnect.on` API call. Events are defined in the business network model file and are emitted by specified transactions in the transaction processor function file. For more information on publishing events, see [publishing events](../business-network/publishing-events.html).
+Applications can subscribe to events from a business network by using the `composer-client.BusinessNetworkConnection.on` API call. Events are defined in the business network model file and are emitted by specified transactions in the transaction processor function file. For more information on publishing events, see [publishing events](../business-network/publishing-events.html).
 
 ## Before you begin
 
-Before an application can subscribe to events, you must have defined some events and the transactions which will emit them. The business network must also be deployed and you must have connected to it. Follow steps in connecting to hyperledger composer runtime. --> https://hyperledger.github.io/composer/applications/getting-started-nodejs-app.html
-
+Before an application can subscribe to events, you must have defined some events and the transactions which will emit them. The business network must also be deployed and you must have connected to it. Follow the steps for [connecting to the {{site.data.conrefs.composer_full}} runtime](../applications/getting-started-nodejs-app.html).
 
 ## Procedure
 
