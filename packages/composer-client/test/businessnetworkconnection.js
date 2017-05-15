@@ -155,6 +155,27 @@ describe('BusinessNetworkConnection', () => {
             });
         });
 
+        it('should create a connection, listen for events, and emit the events it detects individually', () => {
+            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+            mockConnection.login.resolves(mockSecurityContext);
+            mockConnection.ping.resolves();
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            // sandbox.spy(businessNetworkConnection, 'emit');
+            const cb = sinon.stub();
+            businessNetworkConnection.on('event', cb);
+            mockConnection.on.withArgs('events', sinon.match.func).yields(['event1', 'event2']);
+
+            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
+            .then((result) => {
+                sinon.assert.calledTwice(cb); // two events
+                sinon.assert.calledWith(cb, 'event1');
+                sinon.assert.calledWith(cb, 'event2');
+            });
+        });
     });
 
     describe('#disconnect', () => {
