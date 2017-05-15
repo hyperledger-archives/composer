@@ -286,7 +286,7 @@ class Logger {
     /**
      * @description Get the configuration for the logging.
      * This uses the config module to look for a configuration block under the
-     * fabric-composer.debug property.
+     * composer.debug property.
      *
      * The 'logger' property is required to specify the core logger to use. By
      * default this is the 'winstonInjector' that creates and returns a Winston backed
@@ -305,8 +305,8 @@ class Logger {
             const mod = 'config';
             const req = require;
             const config = req(mod);
-            if (config.has('fabric-composer.debug')){
-                return config.get('fabric-composer.debug');
+            if (config.has('composer.debug')){
+                return config.get('composer.debug');
             }
         } catch (e) {
             // We don't care if we can't find the config module, it won't be

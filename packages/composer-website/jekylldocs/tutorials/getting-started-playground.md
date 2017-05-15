@@ -63,7 +63,13 @@ In order to install {{site.data.conrefs.composer_full}} Playground, you need the
 
 # Installation
 
-Download the example Docker Compose file by right clicking this link and clicking on "Save Link As": <a href="./docker-compose.yml" download>docker-compose.yml</a>
+Download the example Docker Compose file:
+
+  ```
+  curl -O https://hyperledger.github.io/composer/tutorials/docker-compose.yml
+  ```
+
+(Alternatively, you can do this by right clicking this link and clicking on "Save Link As": <a href="./docker-compose.yml" download>docker-compose.yml</a>)
 
 The Docker Compose file describes a multi-container application that is made up of three Docker containers:
 
@@ -252,13 +258,13 @@ In order to install {{site.data.conrefs.composer_full}} Playground with Docker, 
 You can install {{site.data.conrefs.composer_full}} Playground by running the following Docker command in your terminal or command prompt:
 
   ```
-  docker run -d -p 8080:8080 fabriccomposer/composer-playground
+  docker run -d -p 8080:8080 hyperledger/composer-playground
   ```
 
 You should see the following output in your terminal or command prompt:
 
   ```
-  $ docker run -d -p 8080:8080 fabriccomposer/composer-playground
+  $ docker run -d -p 8080:8080 hyperledger/composer-playground
   afd1baff0487de5c69626b8baea69c702744f92813043e3d2b0ef786c7f77517
   ```
 

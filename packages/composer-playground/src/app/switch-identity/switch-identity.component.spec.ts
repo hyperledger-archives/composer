@@ -1,8 +1,9 @@
 /* tslint:disable:no-unused-variable */
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {DebugElement} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-var-requires */
+/* tslint:disable:max-classes-per-file */
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 
 import * as sinon from 'sinon';
 
@@ -10,214 +11,206 @@ import * as chai from 'chai';
 
 let should = chai.should();
 
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-
-import {SwitchIdentityComponent} from './switch-identity.component';
-import {ConnectionProfileService} from '../services/connectionprofile.service';
-import {WalletService} from '../services/wallet.service';
-import {ClientService} from '../services/client.service';
-import {AdminService} from '../services/admin.service';
-import {IdentityService} from '../services/identity.service';
+import { SwitchIdentityComponent } from './switch-identity.component';
+import { ConnectionProfileService } from '../services/connectionprofile.service';
+import { WalletService } from '../services/wallet.service';
+import { ClientService } from '../services/client.service';
+import { IdentityService } from '../services/identity.service';
 
 describe('SwitchIdentityComponent', () => {
-  let component: SwitchIdentityComponent;
-  let fixture: ComponentFixture<SwitchIdentityComponent>;
+    let component: SwitchIdentityComponent;
+    let fixture: ComponentFixture<SwitchIdentityComponent>;
 
-  let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
-  let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-  let mockWalletService = sinon.createStubInstance(WalletService);
-  let mockAdminService = sinon.createStubInstance(AdminService);
-  let mockClientService = sinon.createStubInstance(ClientService);
-  let mockIdentityService = sinon.createStubInstance(IdentityService);
+    let mockActiveModal;
+    let mockConnectionProfileService;
+    let mockWalletService;
+    let mockClientService;
+    let mockIdentityService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [SwitchIdentityComponent],
-      providers: [
-        {provide: NgbActiveModal, useValue: mockActiveModal},
-        {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
-        {provide: WalletService, useValue: mockWalletService},
-        {provide: AdminService, useValue: mockAdminService},
-        {provide: ClientService, useValue: mockClientService},
-        {provide: IdentityService, useValue: mockIdentityService}
-      ]
+    beforeEach(() => {
+        mockActiveModal = sinon.createStubInstance(NgbActiveModal);
+        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+        mockWalletService = sinon.createStubInstance(WalletService);
+        mockClientService = sinon.createStubInstance(ClientService);
+        mockIdentityService = sinon.createStubInstance(IdentityService);
+
+        TestBed.configureTestingModule({
+            imports: [FormsModule],
+            declarations: [SwitchIdentityComponent],
+            providers: [
+                {provide: NgbActiveModal, useValue: mockActiveModal},
+                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
+                {provide: WalletService, useValue: mockWalletService},
+                {provide: ClientService, useValue: mockClientService},
+                {provide: IdentityService, useValue: mockIdentityService}
+            ]
+        });
+
+        fixture = TestBed.createComponent(SwitchIdentityComponent);
+        component = fixture.componentInstance;
     });
 
-    fixture = TestBed.createComponent(SwitchIdentityComponent);
-    component = fixture.componentInstance;
-  });
+    describe('ngOnInit', () => {
+        it('should be created', () => {
+            expect(component).should.be.ok;
+        });
 
-  describe('ngOnInit', () => {
-    it('should be created', () => {
-      expect(component).should.be.ok;
+        it('should load the identities for the connection profile being changed to', fakeAsync(() => {
+            mockIdentityService.getIdentities.returns(Promise.resolve(['bob', 'fred']));
+
+            component.ngOnInit();
+
+            tick();
+
+            component['identities'].length.should.equal(2);
+            component['identities'].should.deep.equal(['bob', 'fred']);
+
+            component['chosenIdentity'].should.equal('bob');
+        }));
+
+        it('should handle error', fakeAsync(() => {
+            mockIdentityService.getIdentities.returns(Promise.reject('some error'));
+
+            component.ngOnInit();
+
+            tick();
+
+            mockActiveModal.dismiss.should.have.been.called;
+        }));
+
+        it('should not set the chosen identity if no identities', fakeAsync(() => {
+            mockIdentityService.getIdentities.returns(Promise.resolve());
+
+            component.ngOnInit();
+
+            tick();
+
+            should.not.exist(component['identities']);
+            should.not.exist(component['chosenIdentity']);
+        }));
     });
 
-    it('should load the identities for the connection profile being changed to', fakeAsync(() => {
-      mockIdentityService.getIdentities.returns(Promise.resolve(['bob', 'fred']));
+    describe('switch identities', () => {
+        it('should switch to the chosen profile with the chosen identity when in wallet view', fakeAsync(() => {
+            component['showWalletView'] = true;
+            component['connectionProfileName'] = 'myProfile';
+            component['chosenIdentity'] = 'bob';
 
-      component.ngOnInit();
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
-      tick();
+            component.switchIdentity();
 
-      component['identities'].length.should.equal(2);
-      component['identities'].should.deep.equal(['bob', 'fred']);
+            component['switchInProgress'].should.equal(true);
 
-      component['chosenIdentity'].should.equal('bob');
-    }));
+            tick();
 
-    it('should handle error', fakeAsync(() => {
-      mockIdentityService.getIdentities.returns(Promise.reject('some error'));
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
-      component.ngOnInit();
+            component['switchInProgress'].should.equal(false);
+            mockActiveModal.close.should.have.been.called;
+        }));
 
-      tick();
+        it('should switch to the chosen profile with the chosen identity when not in wallet view wallet contains id', fakeAsync(() => {
+            component['showWalletView'] = false;
+            component['connectionProfileName'] = 'myProfile';
+            component['userID'] = 'bob';
+            component['userSecret'] = 'mySecret';
 
-      mockActiveModal.dismiss.should.have.been.called;
-    }));
+            let mockWallet = {
+                contains: sinon.stub().returns(Promise.resolve(true)),
+                update: sinon.stub().returns(Promise.resolve())
+            };
 
-    it('should not set the chosen identity if no identities', fakeAsync(() => {
-      mockIdentityService.getIdentities.returns(Promise.resolve());
+            mockWalletService.getWallet.returns(mockWallet);
 
-      component.ngOnInit();
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
-      tick();
+            component.switchIdentity();
 
-      should.not.exist(component['identities']);
-      should.not.exist(component['chosenIdentity']);
-    }));
-  });
+            component['switchInProgress'].should.equal(true);
 
-  describe('switch identities', () => {
-    it('should switch to the chosen profile with the chosen identity when in wallet view', fakeAsync(() => {
-      component['showWalletView'] = true;
-      component['connectionProfileName'] = 'myProfile';
-      component['chosenIdentity'] = 'bob';
+            tick();
 
-      mockAdminService.ensureConnected.returns(Promise.resolve());
-      mockClientService.ensureConnected.returns(Promise.resolve());
-      mockClientService.refresh.returns(Promise.resolve());
+            mockWalletService.getWallet.should.have.been.calledWith('myProfile');
+            mockWallet.contains.should.have.been.calledWith('bob');
+            mockWallet.update.should.have.been.calledWith('bob', 'mySecret');
 
-      component.switchIdentity();
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
-      component['switchInProgress'].should.equal(true);
+            component['switchInProgress'].should.equal(false);
+            mockActiveModal.close.should.have.been.called;
+        }));
 
-      tick();
+        it('should switch to the chosen profile with the chosen identity when not in wallet view wallet doesn\'tcontains id', fakeAsync(() => {
+            component['showWalletView'] = false;
+            component['connectionProfileName'] = 'myProfile';
+            component['userID'] = 'bob';
+            component['userSecret'] = 'mySecret';
 
-      mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
-      mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-      mockAdminService.ensureConnected.should.have.been.calledWith(true);
-      mockClientService.ensureConnected.should.have.been.calledWith(true);
-      mockClientService.refresh.should.have.been.called;
+            let mockWallet = {
+                contains: sinon.stub().returns(Promise.resolve(false)),
+                add: sinon.stub().returns(Promise.resolve())
+            };
 
-      component['switchInProgress'].should.equal(false);
-      mockActiveModal.close.should.have.been.called;
-    }));
+            mockWalletService.getWallet.returns(mockWallet);
 
-    it('should switch to the chosen profile with the chosen identity when not in wallet view wallet contains id', fakeAsync(() => {
-      component['showWalletView'] = false;
-      component['connectionProfileName'] = 'myProfile';
-      component['userID'] = 'bob';
-      component['userSecret'] = 'mySecret';
+            mockClientService.ensureConnected.returns(Promise.resolve());
 
-      let mockWallet = {
-        contains: sinon.stub().returns(Promise.resolve(true)),
-        update: sinon.stub().returns(Promise.resolve())
-      };
+            component.switchIdentity();
 
-      mockWalletService.getWallet.returns(mockWallet);
+            component['switchInProgress'].should.equal(true);
 
-      mockAdminService.ensureConnected.returns(Promise.resolve());
-      mockClientService.ensureConnected.returns(Promise.resolve());
-      mockClientService.refresh.returns(Promise.resolve());
+            tick();
 
-      component.switchIdentity();
+            mockWalletService.getWallet.should.have.been.calledWith('myProfile');
+            mockWallet.contains.should.have.been.calledWith('bob');
+            mockWallet.add.should.have.been.calledWith('bob', 'mySecret');
 
-      component['switchInProgress'].should.equal(true);
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
-      tick();
+            component['switchInProgress'].should.equal(false);
+            mockActiveModal.close.should.have.been.called;
+        }));
 
-      mockWalletService.getWallet.should.have.been.calledWith('myProfile');
-      mockWallet.contains.should.have.been.calledWith('bob');
-      mockWallet.update.should.have.been.calledWith('bob', 'mySecret');
+        it('should handle error', fakeAsync(() => {
+            component['showWalletView'] = true;
+            component['connectionProfileName'] = 'myProfile';
+            component['chosenUser'] = 'bob';
 
-      mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
-      mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-      mockAdminService.ensureConnected.should.have.been.calledWith(true);
-      mockClientService.ensureConnected.should.have.been.calledWith(true);
-      mockClientService.refresh.should.have.been.called;
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
 
-      component['switchInProgress'].should.equal(false);
-      mockActiveModal.close.should.have.been.called;
-    }));
+            component.switchIdentity();
 
-    it('should switch to the chosen profile with the chosen identity when not in wallet view wallet doesn\'tcontains id', fakeAsync(() => {
-      component['showWalletView'] = false;
-      component['connectionProfileName'] = 'myProfile';
-      component['userID'] = 'bob';
-      component['userSecret'] = 'mySecret';
+            component['switchInProgress'].should.equal(true);
 
-      let mockWallet = {
-        contains: sinon.stub().returns(Promise.resolve(false)),
-        add: sinon.stub().returns(Promise.resolve())
-      };
+            tick();
 
-      mockWalletService.getWallet.returns(mockWallet);
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
-      mockAdminService.ensureConnected.returns(Promise.resolve());
-      mockClientService.ensureConnected.returns(Promise.resolve());
-      mockClientService.refresh.returns(Promise.resolve());
-
-      component.switchIdentity();
-
-      component['switchInProgress'].should.equal(true);
-
-      tick();
-
-      mockWalletService.getWallet.should.have.been.calledWith('myProfile');
-      mockWallet.contains.should.have.been.calledWith('bob');
-      mockWallet.add.should.have.been.calledWith('bob', 'mySecret');
-
-      mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
-      mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-      mockAdminService.ensureConnected.should.have.been.calledWith(true);
-      mockClientService.ensureConnected.should.have.been.calledWith(true);
-      mockClientService.refresh.should.have.been.called;
-
-      component['switchInProgress'].should.equal(false);
-      mockActiveModal.close.should.have.been.called;
-    }));
-
-    it('should handle error', fakeAsync(() => {
-      component['showWalletView'] = true;
-      component['connectionProfileName'] = 'myProfile';
-      component['chosenUser'] = 'bob';
-
-      mockAdminService.ensureConnected.returns(Promise.reject('some error'));
-
-      component.switchIdentity();
-
-      component['switchInProgress'].should.equal(true);
-
-      tick();
-
-      component['switchInProgress'].should.equal(false);
-      mockActiveModal.dismiss.should.have.been.called;
-    }));
-  });
-
-  describe('showWallet', () => {
-    it('should show the wallet', () => {
-      component.showWallet(true);
-
-      component['showWalletView'].should.equal(true);
+            component['switchInProgress'].should.equal(false);
+            mockActiveModal.dismiss.should.have.been.called;
+        }));
     });
 
-    it('shouldn\'t show the wallet', () => {
-      component.showWallet(false);
+    describe('showWallet', () => {
+        it('should show the wallet', () => {
+            component.showWallet(true);
 
-      component['showWalletView'].should.equal(false);
+            component['showWalletView'].should.equal(true);
+        });
+
+        it('shouldn\'t show the wallet', () => {
+            component.showWallet(false);
+
+            component['showWalletView'].should.equal(false);
+        });
     });
-  })
 });

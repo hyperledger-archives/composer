@@ -15,7 +15,7 @@
 'use strict';
 
 /**
- * Fabric-Composer module. Fabric-Composer is a framework for creating
+ * Hyperledger-Composer module. Hyperledger-Composer is a framework for creating
  * blockchain backed digital networks and exchanging assets between participants
  * via processing transactions.
  * @module composer-common

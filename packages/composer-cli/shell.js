@@ -40,7 +40,7 @@ function getYargsInstance(){
     .demand(1)
     .wrap(null)
     .strict()
-    .epilogue('For more information on Fabric Composer: https://fabric-composer.github.io/')
+    .epilogue('For more information on Hyperledger Composer: https://hyperledger.github.io/composer/')
     .alias('v', 'version')
     .version(function() {
         return getInfo('composer-cli')+'\n'+
@@ -153,14 +153,14 @@ function init(){
     // clear the screen
     process.stdout.write('\u001B[2J\u001B[0;0f');
 
-    let banner = figlet.textSync('Fabric Composer', {
+    let banner = figlet.textSync('Hyperledger Composer', {
         font: 'Small',
         horizontalLayout: 'default',
         verticalLayout: 'default'
     });
 
 
-    let meta = ['fabric-composer.org',' | Version: ',   require('./package.json').version, '\n'].join('');
+    let meta = ['hyperledger.github.io/composer',' | Version: ',   require('./package.json').version, '\n'].join('');
 
     console.log(chalk.red(banner));
     console.log(chalk.gray(meta));
