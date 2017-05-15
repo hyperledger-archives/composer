@@ -8,7 +8,7 @@ ARG VERSION=latest
 
 # Need to install extra dependencies for native modules.
 RUN apk add --no-cache make gcc g++ python git libc6-compat && \
-    npm install --production -g pm2 composer-playground@${VERSION} && \
+    npm install --production -g composer-cli@${VERSION} && \
     npm cache clean && \
     apk del make gcc g++ python git
 
@@ -21,8 +21,5 @@ USER composer
 # Run in the composer users home directory.
 WORKDIR /home/composer
 
-# Run supervisor to start the application.
-CMD [ "pm2-docker", "composer-playground" ]
-
-# Expose port 8080.
-EXPOSE 8080
+# Run the composer CLI.
+CMD ["composer"]
