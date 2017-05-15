@@ -29,6 +29,7 @@ const ParticipantRegistry = require('composer-client/lib/participantregistry');
 const Resource = require('composer-common/lib/model/resource');
 const Serializer = require('composer-common').Serializer;
 const TransactionDeclaration = require('composer-common/lib/introspect/transactiondeclaration');
+const TransactionRegistry = require('composer-client/lib/transactionregistry');
 
 const chai = require('chai');
 chai.should();
@@ -1910,6 +1911,133 @@ describe('BusinessNetworkConnector', () => {
                     sinon.assert.calledWith(mockBusinessNetworkConnection.revokeIdentity, userID);
                     const error = cb.args[0][0]; // First call, first argument (error)
                     error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#getAllTransactions', () => {
+
+        let mockTransactionRegistry;
+        let mockTransaction1, mockTransaction2;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            mockTransactionRegistry = sinon.createStubInstance(TransactionRegistry);
+            mockBusinessNetworkConnection.getTransactionRegistry.resolves(mockTransactionRegistry);
+            mockTransaction1 = sinon.createStubInstance(Resource);
+            mockTransaction1.transactionId = 'tx1';
+            mockTransaction2 = sinon.createStubInstance(Resource);
+            mockTransaction2.transactionId = 'tx2';
+            testConnector.serializer = mockSerializer;
+        });
+
+        it('should get all of the transactions in the transaction registry', () => {
+            mockBusinessNetworkConnection.getTransactionRegistry.resolves(mockTransactionRegistry);
+            mockTransactionRegistry.getAll.resolves([mockTransaction1, mockTransaction2]);
+            mockSerializer.toJSON.withArgs(mockTransaction1).returns({ transactionId: 'tx1', $class: 'sometx' });
+            mockSerializer.toJSON.withArgs(mockTransaction2).returns({ transactionId: 'tx2', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getAllTransactions({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockTransactionRegistry.getAll);
+                    sinon.assert.calledWith(mockTransactionRegistry.getAll);
+                    const result = cb.args[0][1]; // First call, second argument (error, transactions)
+                    result.should.deep.equal([{
+                        transactionId: 'tx1',
+                        $class: 'sometx'
+                    }, {
+                        transactionId: 'tx2',
+                        $class: 'sometx'
+                    }]);
+                });
+        });
+
+        it('should handle an error getting all of the transactions in the transaction registry', () => {
+            mockBusinessNetworkConnection.getTransactionRegistry.resolves(mockTransactionRegistry);
+            mockTransactionRegistry.getAll.rejects(new Error('such error'));
+            const cb = sinon.stub();
+            return testConnector.getAllTransactions({ test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockTransactionRegistry.getAll);
+                    sinon.assert.calledWith(mockTransactionRegistry.getAll);
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
+    });
+
+    describe('#getTransactionByID', () => {
+
+        let mockTransactionRegistry;
+        let mockTransaction1;
+
+        beforeEach(() => {
+            sinon.stub(testConnector, 'ensureConnected').resolves(mockBusinessNetworkConnection);
+            testConnector.connected = true;
+            mockTransactionRegistry = sinon.createStubInstance(TransactionRegistry);
+            mockBusinessNetworkConnection.getTransactionRegistry.resolves(mockTransactionRegistry);
+            mockTransaction1 = sinon.createStubInstance(Resource);
+            mockTransaction1.transactionId = 'tx1';
+            testConnector.serializer = mockSerializer;
+        });
+
+        it('should get the specified transaction in the transaction registry', () => {
+            mockBusinessNetworkConnection.getTransactionRegistry.resolves(mockTransactionRegistry);
+            mockTransactionRegistry.get.withArgs('tx1').resolves(mockTransaction1);
+            mockSerializer.toJSON.withArgs(mockTransaction1).returns({ transactionId: 'tx1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getTransactionByID('tx1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockTransactionRegistry.get);
+                    sinon.assert.calledWith(mockTransactionRegistry.get, 'tx1');
+                    const result = cb.args[0][1]; // First call, second argument (error, transactions)
+                    result.should.deep.equal({
+                        transactionId: 'tx1',
+                        $class: 'sometx'
+                    });
+                });
+        });
+
+        it('should handle an error getting the specified transaction in the transaction registry', () => {
+            mockBusinessNetworkConnection.getTransactionRegistry.resolves(mockTransactionRegistry);
+            mockTransactionRegistry.get.withArgs('tx1').rejects(new Error('such error'));
+            mockSerializer.toJSON.withArgs(mockTransaction1).returns({ transactionId: 'tx1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getTransactionByID('tx1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockTransactionRegistry.get);
+                    sinon.assert.calledWith(mockTransactionRegistry.get, 'tx1');
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/such error/);
+                });
+        });
+
+        it('should return a 404 error getting the specified transaction in the transaction registry', () => {
+            mockBusinessNetworkConnection.getTransactionRegistry.resolves(mockTransactionRegistry);
+            mockTransactionRegistry.get.withArgs('tx1').rejects(new Error('the thing does not exist'));
+            mockSerializer.toJSON.withArgs(mockTransaction1).returns({ transactionId: 'tx1', $class: 'sometx' });
+            const cb = sinon.stub();
+            return testConnector.getTransactionByID('tx1', { test: 'options' }, cb)
+                .then(() => {
+                    sinon.assert.calledOnce(testConnector.ensureConnected);
+                    sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
+                    sinon.assert.calledOnce(mockTransactionRegistry.get);
+                    sinon.assert.calledWith(mockTransactionRegistry.get, 'tx1');
+                    const error = cb.args[0][0]; // First call, first argument (error)
+                    error.should.match(/does not exist/);
+                    error.statusCode.should.equal(404);
+                    error.status.should.equal(404);
                 });
         });
 
