@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-
+import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -7,9 +6,25 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     templateUrl: './delete-confirm.component.html',
     styleUrls: ['./delete-confirm.component.scss'.toString()]
 })
-export class DeleteComponent {
-    @Input() delete;
+
+export class DeleteComponent implements OnInit {
+    @Input() deleteFile: any;
+
+    public fileType: string = null;
+    public fileName: string = null;
 
     constructor(public activeModal: NgbActiveModal) {
+    }
+
+    ngOnInit() {
+        this.fileName = this.deleteFile.displayID;
+
+        if (this.deleteFile.model) {
+            this.fileType = 'Model File';
+        } else if (this.deleteFile.script) {
+            this.fileType = 'Script File';
+        } else {
+            this.fileType = 'File';
+        }
     }
 }
