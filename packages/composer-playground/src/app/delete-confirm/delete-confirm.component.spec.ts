@@ -2,7 +2,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { DeleteComponent } from './delete-confirm.component';
@@ -23,5 +23,41 @@ describe('DeleteComponent', () => {
 
     it('should create', () => {
         component.should.be.ok;
+    });
+
+    describe('ngOnInit', () => {
+
+        it('should initialise model file parameters', fakeAsync( () => {
+            let testItem = { model: true, displayID: 'test_name' };
+            component['deleteFile'] = testItem;
+            component.ngOnInit();
+
+            tick();
+
+            component['fileName'].should.equal('test_name');
+            component['fileType'].should.equal('Model File');
+        }));
+
+        it('should initialise script file parameters', fakeAsync( () => {
+            let testItem = { script: true, displayID: 'test_name' };
+            component['deleteFile'] = testItem;
+            component.ngOnInit();
+
+            tick();
+
+            component['fileName'].should.equal('test_name');
+            component['fileType'].should.equal('Script File');
+        }));
+
+        it('should initialise unknown file parameters', fakeAsync( () => {
+            let testItem = { displayID: 'test_name' };
+            component['deleteFile'] = testItem;
+            component.ngOnInit();
+
+            tick();
+
+            component['fileName'].should.equal('test_name');
+            component['fileType'].should.equal('File');
+        }));
     });
 });

@@ -366,7 +366,7 @@ export class EditorComponent implements OnInit {
                     let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
                     modelManager.deleteModelFile(deleteFile.id);
                 } else {
-                    throw new Error('Delete attempted on unsupported file type');
+                    throw new Error('Unable to process delete on selected file type');
                 }
 
                 // remove file from list view
@@ -376,7 +376,7 @@ export class EditorComponent implements OnInit {
                 // Make sure we set a file to remove the deleted file from the view
                 this.setInitialFile();
 
-                // validate the remaining (model, script, files and conditionally enable deploy
+                // validate the remaining (acl/cto files and conditionally enable deploy
                 if (this.editorFilesValidate()) {
                     this.clientService.businessNetworkChanged$.next(true);
                 } else {
@@ -386,14 +386,14 @@ export class EditorComponent implements OnInit {
                 // Send alert
                 this.alertService.busyStatus$.next(null);
                 this.alertService.successStatus$.next({title : 'Delete Successful', text : this.fileType(deleteFile) + ' ' + deleteFile.displayID + ' was deleted.', icon : '#icon-trash_32'});
-                if ((<any> window).usabilla_live) {
-                    (<any> window).usabilla_live('trigger', 'manual trigger');
-                }
             }
         }, (reason) => {
             if (reason && reason !== 1) {
                 this.alertService.errorStatus$.next(reason);
             }
+        })
+        .catch((error) => {
+            this.alertService.errorStatus$.next(error);
         });
     }
 
