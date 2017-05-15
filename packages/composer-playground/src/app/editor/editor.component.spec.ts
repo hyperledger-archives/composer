@@ -735,6 +735,7 @@ describe('EditorComponent', () => {
             component['deploying'].should.equal(false);
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
+            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
             mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
         }));
     });

@@ -228,7 +228,7 @@ export class EditorComponent implements OnInit {
                     currentFile = this.files[0];
                 }
                 this.setCurrentFile(currentFile);
-                this.alertService.successStatus$.next('Business Network successfully imported and deployed');
+                this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business network imported deployed successfully', icon : '#icon-deploy_24'});
             }
         }, (reason) => {
             if (reason && reason !== 1) {
@@ -268,7 +268,7 @@ export class EditorComponent implements OnInit {
 
     deploy(): Promise<any> {
         // Gets the definition for the currently deployed business network
-        this.alertService.busyStatus$.next('Deploying updated business network ...');
+        this.alertService.busyStatus$.next({title: 'Deploying updated business network', text : 'deploying ' + this.clientService.getBusinessNetworkName()});
         return Promise.resolve()
         .then(() => {
             if (this.deploying) {
@@ -286,7 +286,7 @@ export class EditorComponent implements OnInit {
             this.updatePackageInfo();
             this.updateFiles();
             this.alertService.busyStatus$.next(null);
-            this.alertService.successStatus$.next('Business Network Deployed Successfully');
+            this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business Network Deployed Successfully', icon : '#icon-deploy_24'});
             if ((<any> window).usabilla_live) {
                 (<any> window).usabilla_live('trigger', 'manual trigger');
             }
@@ -296,6 +296,7 @@ export class EditorComponent implements OnInit {
             // if failed on deploy should go back to what had before deployed
             this.updatePackageInfo();
             this.updateFiles();
+            this.alertService.busyStatus$.next(null);
             this.alertService.errorStatus$.next(error);
         });
     }

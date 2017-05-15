@@ -16,6 +16,7 @@ package main
 
 import (
 	"bytes"
+	"strings"
 	"crypto/x509"
 	"encoding/pem"
 
@@ -107,7 +108,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 
 	// TODO: temporary for V1 admin user returns null to give them
 	// full authority
-	if ucert.Subject.CommonName == "admin" {
+	if strings.Contains(strings.ToLower(ucert.Subject.CommonName), "admin") {
 		vm.PushNull()
 		return 1
 	}

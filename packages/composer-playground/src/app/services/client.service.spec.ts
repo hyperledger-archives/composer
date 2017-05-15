@@ -19,17 +19,28 @@ import { IdentityService } from './identity.service';
 
 describe('ClientService', () => {
 
-    let adminMock = sinon.createStubInstance(AdminService);
-    let alertMock = sinon.createStubInstance(AlertService);
-    let connectionProfileMock = sinon.createStubInstance(ConnectionProfileService);
-    let businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
-    let identityMock = sinon.createStubInstance(IdentityService);
-    let businessNetworkConMock = sinon.createStubInstance(BusinessNetworkConnection);
-    let modelFileMock = sinon.createStubInstance(ModelFile);
-    let scriptFileMock = sinon.createStubInstance(Script);
-    let aclFileMock = sinon.createStubInstance(AclFile);
+    let adminMock;
+    let alertMock;
+    let connectionProfileMock;
+    let businessNetworkDefMock;
+    let identityMock;
+    let businessNetworkConMock;
+    let modelFileMock;
+    let scriptFileMock;
+    let aclFileMock;
 
     beforeEach(() => {
+
+        adminMock = sinon.createStubInstance(AdminService);
+        alertMock = sinon.createStubInstance(AlertService);
+        connectionProfileMock = sinon.createStubInstance(ConnectionProfileService);
+        businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
+        identityMock = sinon.createStubInstance(IdentityService);
+        businessNetworkConMock = sinon.createStubInstance(BusinessNetworkConnection);
+        modelFileMock = sinon.createStubInstance(ModelFile);
+        scriptFileMock = sinon.createStubInstance(Script);
+        aclFileMock = sinon.createStubInstance(AclFile);
+
         TestBed.configureTestingModule({
             providers: [ClientService,
                 {provide: AdminService, useValue: adminMock},
@@ -319,5 +330,54 @@ describe('ClientService', () => {
 
             result.should.equal('my name');
         }));
+    });
+
+    describe('ensureConnected', () => {
+        it('should return if connected when not forced', fakeAsync(inject([ClientService], (service: ClientService) => {
+            service['isConnected'] = true;
+
+            service.ensureConnected(false);
+
+            connectionProfileMock.getCurrentConnectionProfile.should.not.have.been.called;
+        })));
+
+        it('should return if connecting', fakeAsync(inject([ClientService], (service: ClientService) => {
+            service['connectingPromise'] = Promise.resolve();
+
+            service.ensureConnected();
+
+            connectionProfileMock.getCurrentConnectionProfile.should.not.have.been.called;
+        })));
+
+        it('should connect if not connected', fakeAsync(inject([ClientService], (service: ClientService) => {
+            adminMock.ensureConnected.returns(Promise.resolve());
+            let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+
+            service.ensureConnected(false);
+
+            tick();
+
+            adminMock.ensureConnected.should.have.been.calledWith(false);
+            refreshMock.should.have.been.called;
+
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
+        })));
+    });
+
+    describe('refresh', () => {
+        it('should diconnect and reconnect the business network connection', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            businessNetworkConMock.disconnect.returns(Promise.resolve());
+            identityMock.getUserID.returns(Promise.resolve());
+            identityMock.getUserSecret.returns(Promise.resolve());
+
+            service.refresh();
+
+            tick();
+
+            businessNetworkConMock.disconnect.should.have.been.calledOnce;
+            businessNetworkConMock.connect.should.have.been.calledOnce;
+        })));
     });
 });
