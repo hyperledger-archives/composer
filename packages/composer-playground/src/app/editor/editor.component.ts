@@ -79,15 +79,7 @@ export class EditorComponent implements OnInit {
             if (this.editorService.getCurrentFile() !== null) {
                 this.currentFile = this.editorService.getCurrentFile();
             } else {
-                if (this.files.length) {
-                    let initialFile = this.files.find((file) => {
-                        return file.readme;
-                    });
-                    if (!initialFile) {
-                        initialFile = this.files[0];
-                    }
-                    this.setCurrentFile(initialFile);
-                }
+                this.setInitialFile();
             }
         });
     }
@@ -98,6 +90,18 @@ export class EditorComponent implements OnInit {
         this.deployedPackageDescription = this.clientService.getMetaData().getDescription(); // Set Description
         this.inputPackageName = this.clientService.getMetaData().getName();
         this.inputPackageVersion = this.clientService.getMetaData().getVersion();
+    }
+
+    setInitialFile() {
+        if (this.files.length) {
+            let initialFile = this.files.find((file) => {
+                return file.readme;
+            });
+            if (!initialFile) {
+                initialFile = this.files[0];
+            }
+            this.setCurrentFile(initialFile);
+        }
     }
 
     setCurrentFile(file) {
@@ -345,50 +349,50 @@ export class EditorComponent implements OnInit {
     */
     openDeleteFileModal() {
         const confirmModalRef = this.modalService.open(DeleteComponent);
+        const deleteFile = this.currentFile;
         confirmModalRef.componentInstance.headerMessage = 'Delete File';
-        confirmModalRef.componentInstance.fileType = this.fileType(this.currentFile);
-        confirmModalRef.componentInstance.displayID = this.currentFile.displayID;
+        confirmModalRef.componentInstance.deleteFile = deleteFile;
         confirmModalRef.componentInstance.deleteMessage = 'This file will be removed from your business network definition, which may stop your business netork from working and may limit access to data that is already stored in the business network.';
-        confirmModalRef.result.then((result) => {
-            if (result) {
+
+        confirmModalRef.result
+        .then((result) => {
+            if (result !== 0) {
                 this.alertService.busyStatus$.next({title: 'Deleting file within business network', text : 'deleting ' + this.clientService.getBusinessNetworkName()});
-                return Promise.resolve()
-                .then(() => {
-                    if (this.currentFile.script) {
-                        let scriptManager: ScriptManager = this.clientService.getBusinessNetwork().getScriptManager();
-                        scriptManager.deleteScript(this.currentFile.id);
-                    } else if (this.currentFile.model) {
-                        let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
-                        modelManager.deleteModelFile(this.currentFile.id);
-                    } else {
-                        throw new Error('Delete attempted on unsupported file type');
-                    }
-                    return this.adminService.update(this.clientService.getBusinessNetwork());
-                })
-                .then(() => {
-                    this.dirty = true;
-                    return this.clientService.refresh();
-                })
-                .then(() => {
-                    this.updatePackageInfo();
-                    this.updateFiles();
-                    this.alertService.busyStatus$.next(null);
-                    this.alertService.successStatus$.next({title : 'Delete Successful', text : 'Business Network Updated Successfully', icon : '#icon-trash_32'});
-                    if ((<any> window).usabilla_live) {
-                        (<any> window).usabilla_live('trigger', 'manual trigger');
-                    }
-                })
-                .catch((error) => {
-                    this.dirty = false;
-                    // if failed on delete should go back to what had before deletion
-                    this.updatePackageInfo();
-                    this.updateFiles();
-                    this.alertService.busyStatus$.next(null);
-                    this.alertService.errorStatus$.next(error);
-                });
-            } else {
-                // TODO: we should always get called with a code for this usage of the
-                // modal but will that always be true
+
+                if (deleteFile.script) {
+                    let scriptManager: ScriptManager = this.clientService.getBusinessNetwork().getScriptManager();
+                    scriptManager.deleteScript(deleteFile.id);
+                } else if (deleteFile.model) {
+                    let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
+                    modelManager.deleteModelFile(deleteFile.id);
+                } else {
+                    throw new Error('Delete attempted on unsupported file type');
+                }
+
+                // remove file from list view
+                let index = this.files.findIndex((x) => { return x.displayID === deleteFile.displayID; });
+                this.files.splice(index, 1);
+
+                // Make sure we set a file to remove the deleted file from the view
+                this.setInitialFile();
+
+                // validate the remaining (model, script, files and conditionally enable deploy
+                if (this.editorFilesValidate()) {
+                    this.clientService.businessNetworkChanged$.next(true);
+                } else {
+                    this.clientService.businessNetworkChanged$.next(false);
+                }
+
+                // Send alert
+                this.alertService.busyStatus$.next(null);
+                this.alertService.successStatus$.next({title : 'Delete Successful', text : this.fileType(deleteFile) + ' ' + deleteFile.displayID + ' was deleted.', icon : '#icon-trash_32'});
+                if ((<any> window).usabilla_live) {
+                    (<any> window).usabilla_live('trigger', 'manual trigger');
+                }
+            }
+        }, (reason) => {
+            if (reason && reason !== 1) {
+                this.alertService.errorStatus$.next(reason);
             }
         });
     }
@@ -398,6 +402,27 @@ export class EditorComponent implements OnInit {
             return 'Model File';
         } else if (resource.script) {
             return 'Script File';
+        } else {
+            return 'File';
         }
+    }
+
+    editorFilesValidate(): boolean {
+        let allValid: boolean = true;
+        this.files.forEach((file) => {
+            try {
+                if (file.model) {
+                    let modelFile = this.clientService.getModelFile(file.id);
+                    modelFile.validate();
+                } else if (file.acl) {
+                    let aclFile = this.clientService.getAclFile();
+                    aclFile.validate();
+                }
+            } catch (error) {
+                allValid = false;
+            }
+        });
+
+        return allValid;
     }
 }
