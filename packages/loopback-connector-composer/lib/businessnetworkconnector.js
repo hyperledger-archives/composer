@@ -793,6 +793,63 @@ class BusinessNetworkConnector extends Connector {
     }
 
     /**
+     * Get all of the transactions from the transaction registry.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getAllTransactions(options, callback) {
+        debug('getAllTransactions', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getTransactionRegistry();
+            })
+            .then((transactionRegistry) => {
+                return transactionRegistry.getAll();
+            })
+            .then((transactions) => {
+                const result = transactions.map((transaction) => {
+                    return this.serializer.toJSON(transaction);
+                });
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getAllTransactions', 'error thrown doing getAllTransactions', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Get the transaction with the specified ID from the transaction registry.
+     * @param {string} id The ID for the transaction.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getTransactionByID(id, options, callback) {
+        debug('getTransactionByID', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getTransactionRegistry();
+            })
+            .then((transactionRegistry) => {
+                return transactionRegistry.get(id);
+            })
+            .then((transaction) => {
+                const result = this.serializer.toJSON(transaction);
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getTransactionByID', 'error thrown doing getTransactionByID', error);
+                if (error.message.match(/does not exist/)) {
+                    error.statusCode = error.status = 404;
+                }
+                callback(error);
+            });
+
+    }
+
+    /**
      * Retrieve the list of all available model names, or the model names in a
      * specified namespace.
      * @param {Object} options the options provided by Loopback.
