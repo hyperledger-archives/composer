@@ -18,6 +18,9 @@ const ConnectionManager = require('composer-common').ConnectionManager;
 const ProxyConnection = require('./proxyconnection');
 const ProxyUtil = require('./proxyutil');
 const socketIOClient = require('socket.io-client');
+const Logger = require('composer-common').Logger;
+
+const LOG = Logger.getLog('ProxyConnectionManager');
 
 let connectorServerURL = 'http://localhost:15699';
 
@@ -80,6 +83,8 @@ class ProxyConnectionManager extends ConnectionManager {
      * object once the connection is established, or rejected with a connection error.
      */
     connect(connectionProfile, businessNetworkIdentifier, connectionOptions) {
+        const method = 'connect';
+        LOG.entry(method, connectionProfile, businessNetworkIdentifier, connectionOptions);
         return this.ensureConnected()
             .then(() => {
                 return new Promise((resolve, reject) => {
@@ -89,11 +94,14 @@ class ProxyConnectionManager extends ConnectionManager {
                         }
                         let connection = new ProxyConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
                         // Only emit when client
+                        LOG.debug('@14gracel', 'socket on events');
                         this.socket.on('events', (myConnectionID, events) => {
                             if (myConnectionID === connectionID) {
+                                LOG.debug('@14gracel', 'connection emit events');
                                 connection.emit('events', JSON.parse(events));
                             }
                         });
+                        LOG.exit(method);
                         resolve(connection);
                     });
                 });

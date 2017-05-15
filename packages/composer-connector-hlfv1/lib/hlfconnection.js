@@ -99,11 +99,15 @@ class HLFConnection extends Connection {
         this.connectOptions = connectOptions;
         this.client = client;
         this.chain = chain;
+        this.businessNetworkIdentifier = businessNetworkIdentifier;
+
         this.eventHubs = eventHubs;
 
         if (businessNetworkIdentifier) {
-            LOG.entry('registerChaincodeEvent', businessNetworkIdentifier, 'composer');
+            LOG.entry('@14gracel', 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
             eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
+
+                LOG.entry('@14gracel', 'emit events connection');
                 this.emit('events', event.payload.toString('utf8'));
             });
         }
@@ -141,6 +145,8 @@ class HLFConnection extends Connection {
                     if (eventHub.isconnected()) {
                         eventHub.disconnect();
                     }
+                    LOG.debug('@14gracel', 'Unregister from the chaincode events');
+                    this.eventHubs[0].unregisterChaincodeEvent(this.businessNetworkIdentifier);
                 });
                 LOG.exit(method);
             })

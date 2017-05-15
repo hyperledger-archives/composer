@@ -91,9 +91,6 @@ class AdminConnection {
                 if (businessNetworkIdentifier) {
                     return this.connection.ping(this.securityContext);
                 }
-            })
-            .then(() => {
-
             });
     }
 

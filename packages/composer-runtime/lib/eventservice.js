@@ -78,12 +78,8 @@ class EventService {
     serializeBuffer() {
         const method = 'serializeBuffer';
         LOG.entry(method);
-        let eb = [];
-        this.eventBuffer.forEach((event) => {
-            eb.push(event);
-        });
-        LOG.exit(method, eb);
-        return eb;
+        LOG.exit(method, this.eventBuffer);
+        return this.eventBuffer;
     }
 
     /**

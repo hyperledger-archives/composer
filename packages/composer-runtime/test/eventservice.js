@@ -14,7 +14,6 @@
 
 'use strict';
 const EventService = require('../lib/eventservice');
-const Resource = require('composer-common').Resource;
 const Serializer = require('composer-common').Serializer;
 
 const should = require('chai').should();
@@ -32,10 +31,6 @@ describe('EventService', () => {
     });
 
     describe('#constructor', () => {
-        it('should have a serializer property', () => {
-            should.exist(eventService.serializer);
-        });
-
         it('should have a property for buffering events', () => {
             should.exist(eventService.eventBuffer);
         });
@@ -84,10 +79,9 @@ describe('EventService', () => {
     });
 
     describe('#serializeBuffer', () => {
-        it('should serialize an array of events into json', () => {
-            let mockResource = sinon.createStubInstance(Resource);
-            mockSerializer.toJSON.returns({'$class': 'much.wow'});
-            eventService.eventBuffer = [ mockResource ];
+        it('should return the list of events that are to be comitted', () => {
+            let event = {'$class': 'much.wow'};
+            eventService.eventBuffer = [ event ];
 
             eventService.serializeBuffer().should.deep.equal([{'$class': 'much.wow'}]);
         });
