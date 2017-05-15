@@ -3,8 +3,6 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import * as sinon from 'sinon';
@@ -19,21 +17,25 @@ import { SwitchIdentityComponent } from './switch-identity.component';
 import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { WalletService } from '../services/wallet.service';
 import { ClientService } from '../services/client.service';
-import { AdminService } from '../services/admin.service';
 import { IdentityService } from '../services/identity.service';
 
 describe('SwitchIdentityComponent', () => {
     let component: SwitchIdentityComponent;
     let fixture: ComponentFixture<SwitchIdentityComponent>;
 
-    let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
-    let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-    let mockWalletService = sinon.createStubInstance(WalletService);
-    let mockAdminService = sinon.createStubInstance(AdminService);
-    let mockClientService = sinon.createStubInstance(ClientService);
-    let mockIdentityService = sinon.createStubInstance(IdentityService);
+    let mockActiveModal;
+    let mockConnectionProfileService;
+    let mockWalletService;
+    let mockClientService;
+    let mockIdentityService;
 
     beforeEach(() => {
+        mockActiveModal = sinon.createStubInstance(NgbActiveModal);
+        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+        mockWalletService = sinon.createStubInstance(WalletService);
+        mockClientService = sinon.createStubInstance(ClientService);
+        mockIdentityService = sinon.createStubInstance(IdentityService);
+
         TestBed.configureTestingModule({
             imports: [FormsModule],
             declarations: [SwitchIdentityComponent],
@@ -41,7 +43,6 @@ describe('SwitchIdentityComponent', () => {
                 {provide: NgbActiveModal, useValue: mockActiveModal},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: WalletService, useValue: mockWalletService},
-                {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
                 {provide: IdentityService, useValue: mockIdentityService}
             ]
@@ -97,9 +98,7 @@ describe('SwitchIdentityComponent', () => {
             component['connectionProfileName'] = 'myProfile';
             component['chosenIdentity'] = 'bob';
 
-            mockAdminService.ensureConnected.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.refresh.returns(Promise.resolve());
 
             component.switchIdentity();
 
@@ -109,9 +108,7 @@ describe('SwitchIdentityComponent', () => {
 
             mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockAdminService.ensureConnected.should.have.been.calledWith(true);
             mockClientService.ensureConnected.should.have.been.calledWith(true);
-            mockClientService.refresh.should.have.been.called;
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -130,9 +127,7 @@ describe('SwitchIdentityComponent', () => {
 
             mockWalletService.getWallet.returns(mockWallet);
 
-            mockAdminService.ensureConnected.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.refresh.returns(Promise.resolve());
 
             component.switchIdentity();
 
@@ -146,9 +141,7 @@ describe('SwitchIdentityComponent', () => {
 
             mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockAdminService.ensureConnected.should.have.been.calledWith(true);
             mockClientService.ensureConnected.should.have.been.calledWith(true);
-            mockClientService.refresh.should.have.been.called;
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -167,9 +160,7 @@ describe('SwitchIdentityComponent', () => {
 
             mockWalletService.getWallet.returns(mockWallet);
 
-            mockAdminService.ensureConnected.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockClientService.refresh.returns(Promise.resolve());
 
             component.switchIdentity();
 
@@ -183,9 +174,7 @@ describe('SwitchIdentityComponent', () => {
 
             mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockAdminService.ensureConnected.should.have.been.calledWith(true);
             mockClientService.ensureConnected.should.have.been.calledWith(true);
-            mockClientService.refresh.should.have.been.called;
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -196,13 +185,15 @@ describe('SwitchIdentityComponent', () => {
             component['connectionProfileName'] = 'myProfile';
             component['chosenUser'] = 'bob';
 
-            mockAdminService.ensureConnected.returns(Promise.reject('some error'));
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
 
             component.switchIdentity();
 
             component['switchInProgress'].should.equal(true);
 
             tick();
+
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.dismiss.should.have.been.called;

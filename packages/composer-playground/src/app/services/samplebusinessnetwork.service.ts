@@ -104,7 +104,7 @@ export class SampleBusinessNetworkService {
             return this.getModelsInfoMonoRepo(owner, repository, result);
         })
         .catch((error) => {
-            if (error.status === '404') {
+            if (error.status === 404) {
                 return this.getSampleNetworkInfo(owner, repository, '')
                 .then((info) => {
                     let infoArray = [];
@@ -153,7 +153,7 @@ export class SampleBusinessNetworkService {
         })
         .catch((error) => {
             // we don't have a mono-repo so just get the model
-            if (error.status === '404') {
+            if (error.status === 404) {
                 return this.getModel(owner, repository, '');
             } else {
                 throw error;
@@ -256,7 +256,7 @@ export class SampleBusinessNetworkService {
         })
         .catch((error) => {
             // don't need scripts files to be valid
-            if (error.status === '404') {
+            if (error.status === 404) {
                 return Promise.resolve();
             }
             throw error;
@@ -281,7 +281,7 @@ export class SampleBusinessNetworkService {
         })
         .catch((error) => {
             // don't need to have a permissions file to be valid
-            if (error.status === '404') {
+            if (error.status === 404) {
                 return Promise.resolve();
             }
             throw error;
@@ -306,7 +306,7 @@ export class SampleBusinessNetworkService {
         })
         .catch((error) => {
             // don't need to have a readme file to be valid
-            if (error.status === '404') {
+            if (error.status === 404) {
                 return Promise.resolve();
             }
             throw error;
@@ -314,7 +314,7 @@ export class SampleBusinessNetworkService {
     }
 
     public deployInitialSample(): Promise<any> {
-        this.alertService.busyStatus$.next('Deploying sample business network ...');
+        this.alertService.busyStatus$.next({title: 'Deploying business network', text: 'deploying sample business network'});
         return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
         .then((businessNetworkDefinition) => {
             return this.deployBusinessNetwork(businessNetworkDefinition);
@@ -326,8 +326,7 @@ export class SampleBusinessNetworkService {
     }
 
     public deploySample(owner: string, repository: string, chosenNetwork: any): Promise<any> {
-        this.alertService.busyStatus$.next('Deploying sample business network ...');
-
+        this.alertService.busyStatus$.next({title: 'Deploying business network', text: 'deploying ' + chosenNetwork.name});
         let sampleNetworkPromises: Promise<any>[] = [];
         let path = chosenNetwork.composerPath;
 
@@ -379,7 +378,11 @@ export class SampleBusinessNetworkService {
         .then(() => {
             return this.clientService.reset();
         })
+        .then(() => {
+            this.alertService.busyStatus$.next(null);
+        })
         .catch((error) => {
+            this.alertService.busyStatus$.next(null);
             throw error;
         });
     }

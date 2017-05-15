@@ -10,6 +10,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { IdentityComponent } from './identity.component';
 import { AlertService } from '../services/alert.service';
 import { IdentityService } from '../services/identity.service';
+import { ClientService } from '../services/client.service';
 
 import * as chai from 'chai';
 
@@ -22,11 +23,17 @@ describe(`IdentityComponent`, () => {
     let component: IdentityComponent;
     let fixture: ComponentFixture<IdentityComponent>;
 
-    let mockModal = sinon.createStubInstance(NgbModal);
-    let mockAlertService = sinon.createStubInstance(AlertService);
-    let mockIdentityService = sinon.createStubInstance(IdentityService);
+    let mockModal;
+    let mockAlertService;
+    let mockIdentityService;
+    let mockClientService;
 
     beforeEach(() => {
+
+        mockModal = sinon.createStubInstance(NgbModal);
+        mockAlertService = sinon.createStubInstance(AlertService);
+        mockIdentityService = sinon.createStubInstance(IdentityService);
+        mockClientService = sinon.createStubInstance(ClientService);
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
@@ -36,7 +43,8 @@ describe(`IdentityComponent`, () => {
             providers: [
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: IdentityService, useValue: mockIdentityService}
+                {provide: IdentityService, useValue: mockIdentityService},
+                {provide: ClientService, useValue: mockClientService}
             ]
         });
 
@@ -262,11 +270,47 @@ describe(`IdentityComponent`, () => {
     });
 
     describe('setCurrentIdentity', () => {
-        it('should set the current identity', () => {
+        it('should set the current identity', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockAlertService.busyStatus$ = {next: sinon.stub()};
+
             component.setCurrentIdentity('bob');
 
-            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+            tick();
+
             component['currentIdentity'].should.equal('bob');
-        });
+            mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
+            mockAlertService.busyStatus$.next.should.have.been.calledTwice;
+        }));
+
+        it('should do nothing if the new identity matches the current identity', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.resolve());
+            mockAlertService.busyStatus$ = {next: sinon.stub()};
+            component['currentIdentity'] = 'bob';
+
+            component.setCurrentIdentity('bob');
+
+            tick();
+
+            component['currentIdentity'].should.equal('bob');
+            mockIdentityService.setCurrentIdentity.should.not.have.been.called;
+            mockClientService.ensureConnected.should.not.have.been.called;
+            mockAlertService.busyStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should handle errors', fakeAsync(() => {
+            mockClientService.ensureConnected.returns(Promise.reject('Testing'));
+            mockAlertService.busyStatus$ = {next: sinon.stub()};
+            mockAlertService.errorStatus$ = {next: sinon.stub()};
+
+            component.setCurrentIdentity('bob');
+
+            tick();
+
+            mockAlertService.busyStatus$.next.should.have.been.calledTwice;
+            mockAlertService.busyStatus$.next.should.have.been.calledWith(null);
+            mockAlertService.errorStatus$.next.should.have.been.called;
+        }));
     });
 });
