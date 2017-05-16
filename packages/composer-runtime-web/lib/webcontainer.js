@@ -19,6 +19,7 @@ const uuidv4 = require('uuid');
 const version = require('../package.json').version;
 const WebDataService = require('./webdataservice');
 const WebLoggingService = require('./webloggingservice');
+const WebHTTPService = require('./webhttpservice');
 
 /**
  * A class representing the chaincode container hosting the JavaScript engine.
@@ -35,6 +36,7 @@ class WebContainer extends Container {
         this.uuid = uuid || uuidv4.v4();
         this.dataService = new WebDataService(this.uuid);
         this.loggingService = new WebLoggingService();
+        this.httpService = new WebHTTPService();
     }
 
     /**
@@ -51,6 +53,14 @@ class WebContainer extends Container {
      */
     getDataService() {
         return this.dataService;
+    }
+
+    /**
+     * Get the heep service provided by the chaincode container.
+     * @return {HTTPService} The http service provided by the chaincode container.
+     */
+    getHTTPService() {
+        return this.httpService;
     }
 
     /**

@@ -17,6 +17,7 @@
 const Api = require('../lib/api');
 const AssetRegistry = require('../lib/api/assetregistry');
 const Factory = require('../lib/api/factory');
+const Serializer = require('composer-common').Serializer;
 const ParticipantRegistry = require('../lib/api/participantregistry');
 const realFactory = require('composer-common').Factory;
 const Registry = require('../lib/registry');
@@ -41,7 +42,7 @@ describe('Api', () => {
         mockFactory = sinon.createStubInstance(realFactory);
         mockParticipant = sinon.createStubInstance(Resource);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        api = new Api(mockFactory, mockParticipant, mockRegistryManager);
+        api = new Api(mockFactory, 'mock serializer', mockParticipant, mockRegistryManager); // TODO DCS
     });
 
     describe('#constructor', () => {
@@ -60,6 +61,14 @@ describe('Api', () => {
 
         it('should return the factory', () => {
             api.getFactory().should.be.an.instanceOf(Factory);
+        });
+
+    });
+
+    describe('#getSerializer', () => {
+
+        it('should return the serialzier', () => {
+            api.getSerializer().should.be.an.instanceOf(Serializer);
         });
 
     });

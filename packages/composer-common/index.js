@@ -86,7 +86,6 @@ module.exports.SecurityException = require('./lib/securityexception');
 module.exports.Serializer = require('./lib/serializer');
 module.exports.TransactionDeclaration = require('./lib/introspect/transactiondeclaration');
 module.exports.TypescriptVisitor = require('./lib/codegen/fromcto/typescript/typescriptvisitor');
-module.exports.NomNomlVisitor = require('./lib/codegen/fromcto/nomnoml/nomnomlvisitor');
 module.exports.Util = require('./lib/util');
 module.exports.Wallet = require('./lib/wallet');
 module.exports.CodeGen = require('./lib/codegen/codegen.js');

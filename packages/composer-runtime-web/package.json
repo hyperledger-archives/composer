@@ -64,6 +64,7 @@
     "composer-common": "^0.7.3",
     "composer-runtime": "^0.7.3",
     "dexie": "^1.5.1",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "xhr": "^2.4.0"
   }
 }

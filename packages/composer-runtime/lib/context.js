@@ -238,6 +238,15 @@ class Context {
     }
 
     /**
+     * Get the http service provided by the chaincode container.
+     * @abstract
+     * @return {HTTPService} The http service provided by the chaincode container.
+     */
+    getHTTPService() {
+        throw new Error('abstract function called');
+    }
+
+    /**
      * Get the model manager.
      * @return {ModelManager} The model manager.
      */
@@ -331,7 +340,7 @@ class Context {
      */
     getApi() {
         if (!this.api) {
-            this.api = new Api(this.getFactory(), this.getParticipant(), this.getRegistryManager());
+            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getHTTPService(), this);
         }
         return this.api;
     }

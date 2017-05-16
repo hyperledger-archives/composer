@@ -59,7 +59,7 @@ describe('JSTransactionExecutor', () => {
         participant = factory.newResource('org.acme', 'TestParticipant', '1');
         scriptManager = new ScriptManager(modelManager);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        api = new Api(factory, participant, mockRegistryManager);
+        api = new Api(factory, ',serializer', participant, mockRegistryManager); // TODO DCS
     });
 
     afterEach(() => {
