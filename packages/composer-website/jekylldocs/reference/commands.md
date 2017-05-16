@@ -37,7 +37,7 @@ Deploy a Business Network Definition: [composer network deploy](./composer.netwo
 
 `composer network undeploy`
 
-Undeploy a Business Network Definition: [composer network undeploy](./composer.network.undeploy.md)
+Permanently disable a business network definition: [composer network undeploy](./composer.network.undeploy.md)
 
 `composer network list`
 
