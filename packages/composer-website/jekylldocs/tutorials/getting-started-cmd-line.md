@@ -71,7 +71,7 @@ First clone the repository that contains the Business Network Definition (note t
 
 ```bash
 $ git clone https://github.com/hyperledger/composer-sample-networks.git
-$ cd sample-networks/packages/DigitalProperty-Network
+$ cd composer-sample-networks/packages/DigitalProperty-Network
 $ npm install
 ```
 
@@ -102,7 +102,7 @@ function onRegisterPropertyForSale(propertyForSale) {
 ```
 
 ### Update the Business Network Definition
-In a real-life scenario at this point you would edit `package.json` to increment the version number in the `DigitalProperty-Network` directory and publish this to npm. Please do npt publish to the DigitalProperty-Network in npm.
+In a real-life scenario at this point you would edit `package.json` to increment the version number in the `DigitalProperty-Network` directory and publish this to npm. Please do not publish to the DigitalProperty-Network in npm.
 
 What we'll do therefore is adopt a different approach to create the Business Network Archive. From within the DigitalProperty-Network directory.
 

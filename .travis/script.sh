@@ -27,7 +27,14 @@ fi
 
 # are we building the docs?
 if [ "${DOCS}" != "" ]; then
+
+    # Change into the docs directory.
     cd "${DIR}/packages/composer-website"
+
+    # Build the installers.
+    ./build-installers.sh
+
+    # Build the documentation.
     npm install
     if [ -n "${TRAVIS_TAG}" ]; then
        export JEKYLL_ENV=production
@@ -35,6 +42,7 @@ if [ "${DOCS}" != "" ]; then
     else
        npm run full:unstable
     fi
+
 # Are we running system tests?
 elif [ "${SYSTEST}" != "" ]; then
 

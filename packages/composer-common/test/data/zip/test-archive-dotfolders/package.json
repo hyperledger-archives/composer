@@ -1,0 +1,6 @@
+{
+  "name": "test-archive",
+  "version": "0.0.1",
+  "description": "A test business network.",
+  "customKey": "custom value"
+}

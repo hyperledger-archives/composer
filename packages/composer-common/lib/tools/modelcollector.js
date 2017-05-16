@@ -85,7 +85,7 @@ class ModelCollector {
         // grab all the model files that are beneath the current directory
         ModelCollector.processDirectory(path, {
             accepts: function (file) {
-                return minimatch(file, options.modelFileGlob);
+                return minimatch(file, options.modelFileGlob, { dot: true });
             },
             acceptsDir: function (dir) {
                 return true;
@@ -105,7 +105,7 @@ class ModelCollector {
         // we then process each of the dependencies
         if (jsonObject.dependencies) {
             LOG.debug(method, 'All dependencies', Object.keys(jsonObject.dependencies).toString());
-            const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob));
+            const dependencies = Object.keys(jsonObject.dependencies).filter(minimatch.filter(options.dependencyGlob, { dot: true }));
             LOG.debug(method, 'Matched dependencies', dependencies);
 
             for (let dep of dependencies) {
