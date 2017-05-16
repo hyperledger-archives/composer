@@ -14,17 +14,40 @@
 
 'use strict';
 
-// const FileWriter = require('../../lib/codegen/filewriter');
-// const fs = require('fs');
-// const ModelManager = require('../../lib/modelmanager');
-// const path = require('path');
-
-const chai = require('chai');
-const expect = chai.expect;
-
 const JavascriptParser = require('./../../lib/codegen/javascriptparser');
 
+require('chai').should();
+
 describe('JavascriptParser', () => {
+
+    describe('#constructor', () => {
+        it('should use a default ECMAScript version of 7', () => {
+            const contents = `
+                class cls {
+
+                }
+                const theCls = new cls();
+                let theCls = new cls();
+            `;
+
+            const parser = new JavascriptParser(contents);
+            parser.getClasses().should.deep.equal([{ name: 'cls', methods: [] }]);
+        });
+
+        it('should accept a non-default ECMAScript version of 5', () => {
+            const contents = `
+                class cls {
+
+                }
+                const theCls = new cls();
+                let theCls = new cls();
+            `;
+
+            (() => {
+                new JavascriptParser(contents, false, 5);
+            }).should.throw(/The keyword.*is reserved/);
+        });
+    });
 
     describe('#getClasses', () => {
         it('should return the classes', () => {
@@ -179,9 +202,9 @@ describe('JavascriptParser', () => {
             */
            `;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getReturnType(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
 
         it('should throw if there is more than one return/returns tag', () => {
@@ -196,9 +219,9 @@ describe('JavascriptParser', () => {
             */
            `;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getReturnType(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
 
         it('should throw if there no return type', () => {
@@ -212,9 +235,9 @@ describe('JavascriptParser', () => {
             */
            `;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getReturnType(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
 
         it('should throw if there no return type name', () => {
@@ -228,9 +251,9 @@ describe('JavascriptParser', () => {
             */
            `;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getReturnType(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
     });
 
@@ -261,9 +284,9 @@ describe('JavascriptParser', () => {
              * @exception {Error} - Description
             */
            `;
-            expect(() => {
+            (() => {
                 JavascriptParser.getThrows(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
 
         it('should throw if a type isn\'t included', () => {
@@ -276,9 +299,9 @@ describe('JavascriptParser', () => {
              * @throws - Description
             */
            `;
-            expect(() => {
+            (() => {
                 JavascriptParser.getThrows(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
 
         it('should throw if there is no type name', () => {
@@ -291,9 +314,9 @@ describe('JavascriptParser', () => {
              * @throws {} - Description
             */`;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getThrows(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
     });
 
@@ -340,9 +363,9 @@ describe('JavascriptParser', () => {
                 */
             `;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getMethodArguments(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
 
         it('throws an error if there is no closing curly brace', () => {
@@ -355,9 +378,9 @@ describe('JavascriptParser', () => {
                 */
             `;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getMethodArguments(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
 
         it ('doesn\'t throw an error if no description is given', () => {
@@ -370,9 +393,7 @@ describe('JavascriptParser', () => {
                 */
             `;
 
-            expect(() => {
-                JavascriptParser.getMethodArguments(comment);
-            }).not.to.throw();
+            JavascriptParser.getMethodArguments(comment);
         });
     });
 
@@ -408,9 +429,9 @@ describe('JavascriptParser', () => {
             */
            `;
 
-            expect(() => {
+            (() => {
                 JavascriptParser.getExample(comment);
-            }).to.throw(Error);
+            }).should.throw(Error);
         });
     });
 
