@@ -1355,16 +1355,17 @@ Program
       rules: rules
     };
   }
-  
+
 AclRule
  = SimpleRule / ConditionalRule
-  
+
 SimpleRule
  = "rule" __ ruleId:RuleId __ "{" __
   	"description:" __ "\"" description:StringSequence "\"" __
     "participant:" __ "\"" participant:Participant "\"" __
     "operation:" __ verb:Verb __
     "resource:" __ "\"" noun:Noun "\"" __
+    transaction:SimpleTransactionSpecification?
     "action:" __ action:Action __
  "}" __
  {
@@ -1374,6 +1375,7 @@ SimpleRule
         noun: noun,
         verb: verb,
         participant: participant,
+        transaction: transaction,
         action: action,
         description: description,
         location: location()
@@ -1385,13 +1387,14 @@ VariableBinding
 {
   return id;
 }
- 
+
  ConditionalRule
  = "rule" __ ruleId:RuleId __ "{" __
   	"description:" __ "\"" description:StringSequence "\"" __
     "participant" __ participantVariable:VariableBinding? __ ":" __ "\"" participant:Participant "\"" __
     "operation:" __ verb:Verb __
     "resource" __ nounVariable:VariableBinding? __ ":" __ "\"" noun:Noun "\"" __
+    transaction:ConditionalTransactionSpecification?
     "condition:" __ predicate:Predicate __
     "action:" __ action:Action __
  "}" __
@@ -1404,6 +1407,7 @@ VariableBinding
         verb: verb,
         participant: participant,
         participantVariable: participantVariable,
+        transaction: transaction,
         predicate: predicate,
         action: action,
         description: description,
@@ -1431,8 +1435,21 @@ Binding
   };
 }
 
+BindingNoInstance
+  = qualifiedName:QualifiedName
+{
+  return {
+    type: "BindingNoInstance",
+    qualifiedName: qualifiedName,
+    location: location()
+  };
+}
+
 Noun
  = Binding
+
+NounNoInstance
+ = BindingNoInstance
 
 Verb
  = 'CREATE' / 'READ' / 'UPDATE' / 'ALL' / 'DELETE'
@@ -1454,3 +1471,20 @@ StringSequence "string"
     = chars:DoubleStringCharacter* {
         return chars.join("");
       }
+
+SimpleTransactionSpecification
+ = "transaction:" __ "\"" binding:BindingNoInstance "\"" __
+{
+    return {
+        binding: binding
+    };
+}
+
+ConditionalTransactionSpecification
+ = "transaction" __ variableBinding:VariableBinding? __ ":" __ "\"" binding:BindingNoInstance "\"" __
+{
+    return {
+        variableBinding: variableBinding,
+        binding: binding
+    }
+}

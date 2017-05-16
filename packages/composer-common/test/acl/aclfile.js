@@ -95,7 +95,7 @@ describe('AclFile', () => {
 
         it('should parse correctly and preserve order', () => {
             const aclFile = new AclFile('test.acl', modelManager, testAcl);
-            aclFile.getAclRules().length.should.equal(5);
+            aclFile.getAclRules().length.should.equal(7);
             aclFile.getDefinitions().should.equal(testAcl);
 
             const r1 = aclFile.getAclRules()[0];
@@ -103,6 +103,8 @@ describe('AclFile', () => {
             const r3 = aclFile.getAclRules()[2];
             const r4 = aclFile.getAclRules()[3];
             const r5 = aclFile.getAclRules()[4];
+            const r6 = aclFile.getAclRules()[5];
+            const r7 = aclFile.getAclRules()[6];
 
             // check names
             r1.getName().should.equal('R1');
@@ -110,6 +112,8 @@ describe('AclFile', () => {
             r3.getName().should.equal('R3');
             r4.getName().should.equal('R4');
             r5.getName().should.equal('R5');
+            r6.getName().should.equal('R6');
+            r7.getName().should.equal('R7');
 
             // check nouns
             console.log('**** ' + JSON.stringify(r1));
@@ -119,6 +123,8 @@ describe('AclFile', () => {
             r3.getNoun().getFullyQualifiedName().should.equal('org.acme.Car.owner');
             r4.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
             r5.getNoun().getFullyQualifiedName().should.equal('org.acme');
+            r6.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r7.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
 
             // check verbs
             r1.getVerb().should.equal('DELETE');
@@ -126,6 +132,8 @@ describe('AclFile', () => {
             r3.getVerb().should.equal('UPDATE');
             r4.getVerb().should.equal('ALL');
             r5.getVerb().should.equal('READ');
+            r6.getVerb().should.equal('ALL');
+            r7.getVerb().should.equal('ALL');
 
             // check participants
             r1.getParticipant().getFullyQualifiedName().should.equal('org.acme.Driver');
@@ -139,6 +147,19 @@ describe('AclFile', () => {
             (r4.getParticipant().getInstanceIdentifier() === null).should.be.true;
             (r4.getParticipant().getVariableName() === null).should.be.true;
             (r5.getParticipant() === null).should.be.true;
+            (r6.getParticipant() === null).should.be.true;
+            (r7.getParticipant() === null).should.be.true;
+
+            // check transactions
+            (r1.getTransaction() === null).should.be.true;
+            (r2.getTransaction() === null).should.be.true;
+            (r3.getTransaction() === null).should.be.true;
+            (r4.getTransaction() === null).should.be.true;
+            (r5.getTransaction() === null).should.be.true;
+            r6.getTransaction().getFullyQualifiedName().should.equal('org.acme.Transaction');
+            (r6.getTransaction().getVariableName() === null).should.be.true;
+            r7.getTransaction().getFullyQualifiedName().should.equal('org.acme.Transaction');
+            r7.getTransaction().getVariableName().should.equal('tx');
 
             // check predicates
             r1.getPredicate().getExpression().should.equal('true');
@@ -146,6 +167,8 @@ describe('AclFile', () => {
             r3.getPredicate().getExpression().should.equal('o == d');
             r4.getPredicate().getExpression().should.equal('true');
             r5.getPredicate().getExpression().should.equal('true');
+            r6.getPredicate().getExpression().should.equal('true');
+            r7.getPredicate().getExpression().should.equal('tx.asset.colour === \'blue\'');
 
             // check action
             r1.getAction().should.equal('ALLOW');
@@ -153,6 +176,8 @@ describe('AclFile', () => {
             r3.getAction().should.equal('ALLOW');
             r4.getAction().should.equal('ALLOW');
             r5.getAction().should.equal('ALLOW');
+            r6.getAction().should.equal('ALLOW');
+            r7.getAction().should.equal('ALLOW');
 
             // check the description
             r1.getDescription().should.equal('Fred can DELETE the car ABC123');
@@ -160,6 +185,8 @@ describe('AclFile', () => {
             r3.getDescription().should.equal('Driver can change the ownership of a car that they own');
             r4.getDescription().should.equal('regulators can perform all operations on Cars');
             r5.getDescription().should.equal('Everyone can read all resources in the org.acme namespace');
+            r6.getDescription().should.equal('Drivers can do something in a org.acme.Transaction transaction');
+            r7.getDescription().should.equal('Regulators can do something in a org.acme.Transaction transaction');
         });
     });
 
