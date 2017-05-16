@@ -39,3 +39,22 @@ rule R5 {
     resource: "org.acme"
     action: ALLOW
 }
+
+rule R6 {
+    description: "Drivers can do something in a org.acme.Transaction transaction"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.Car"
+    transaction: "org.acme.Transaction"
+    action: ALLOW
+}
+
+rule R7 {
+    description: "Regulators can do something in a org.acme.Transaction transaction"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.Car"
+    transaction(tx): "org.acme.Transaction"
+    condition: (tx.asset.colour === 'blue')
+    action: ALLOW
+}
