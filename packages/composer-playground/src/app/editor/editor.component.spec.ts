@@ -188,7 +188,6 @@ describe('EditorComponent', () => {
             tick();
 
             let setFile = component['currentFile'];
-            console.log('current file', setFile);
             component['currentFile'].should.deep.equal(file);
         }));
     });
