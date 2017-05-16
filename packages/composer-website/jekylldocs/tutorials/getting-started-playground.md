@@ -160,10 +160,6 @@ A web browser will be automatically opened once the playground has started, but 
 
 ---
 
->This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
-
----
-
 ## <a name="installdocker"></a>Installing with Docker
 
 ### Prerequisites
@@ -171,21 +167,6 @@ A web browser will be automatically opened once the playground has started, but 
 In order to install {{site.data.conrefs.composer_full}} Playground with Docker, you need the following software installed:
 
 *   Docker Engine 1.12.3 or greater
-
-    Test that Docker Engine is installed by running the following command in your terminal or command prompt:
-
-    ```
-      docker -v
-    ```
-
-    You should see the following output in your terminal or command prompt:
-
-    ```
-      $ docker -v
-      Docker version 1.13.0, build 49bf474
-    ```
-
-    Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
 
 ### Installation
 
@@ -205,9 +186,5 @@ You should see the following output in your terminal or command prompt:
 Verify that no errors occurred.
 
 You can then start {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
-
----
-
->This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
 
 ---
