@@ -1,88 +1,85 @@
-import {Component, OnInit, Input} from '@angular/core';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {ConnectionProfileService} from '../services/connectionprofile.service';
-import {AlertService} from '../services/alert.service';
+import { Component, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConnectionProfileService } from '../services/connectionprofile.service';
+import { AlertService } from '../services/alert.service';
 
 @Component({
-  selector: 'add-certificate',
-  templateUrl: './add-certificate.component.html',
-  styleUrls: ['./add-certificate.component.scss'.toString()]
+    selector: 'add-certificate',
+    templateUrl: './add-certificate.component.html',
+    styleUrls: ['./add-certificate.component.scss'.toString()]
 })
 
 export class AddCertificateComponent {
+    fileType = '';
+    expandInput: boolean = false;
+    maxFileSize: number = 5242880;
+    supportedFileTypes: string[] = ['.pem'];
+    addedCertificate: string = '';
+    addedHostname: string = '';
 
-  @Input() initialData: any = {};
+    constructor(private alertService: AlertService,
+                public activeModal: NgbActiveModal,
+                private connectionProfileService: ConnectionProfileService) {
 
-  fileType = '';
-  expandInput: boolean = false;
-  maxFileSize: number = 5242880;
-  supportedFileTypes: string[] = ['.pem'];
-  addedCertificate: string = '';
-  addedHostname: string = '';
+        this.addedCertificate = this.connectionProfileService.getCertificate();
+        this.addedHostname = this.connectionProfileService.getHostname();
+    }
 
-  constructor(private alertService: AlertService,
-              public activeModal: NgbActiveModal,
-              private connectionProfileService: ConnectionProfileService) {
+    fileDetected() {
+        this.expandInput = true;
+    }
 
-              this.addedCertificate = this.connectionProfileService.getCertificate();
-              this.addedHostname = this.connectionProfileService.getHostname();
-  }
+    fileLeft() {
+        this.expandInput = false;
+    }
 
-  fileDetected() {
-    this.expandInput = true;
-  }
+    fileAccepted(file: File) {
+        let type = file.name.substring(file.name.lastIndexOf('.'));
 
-  fileLeft() {
-    this.expandInput = false;
-  }
+        this.getDataBuffer(file)
+        .then((data) => {
+            if (this.supportedFileTypes.indexOf(type) > -1) {
+                // Is supported
+                this.expandInput = true;
+                this.createCertificate(type, data);
+            } else {
+                // Not supported
+                throw new Error('Unsupported File Type');
+            }
+        })
+        .catch((err) => {
+            this.fileRejected(err);
+        });
+    }
 
-  fileAccepted(file: File) {
-    let type = file.name.substring(file.name.lastIndexOf('.'));
+    getDataBuffer(file: File) {
+        return new Promise((resolve, reject) => {
+            let fileReader = new FileReader();
+            fileReader.readAsArrayBuffer(file);
+            fileReader.onload = () => {
+                let dataBuffer = Buffer.from(fileReader.result);
+                resolve(dataBuffer);
+            };
 
-    this.getDataBuffer(file)
-      .then((data) => {
-        if (this.supportedFileTypes.indexOf(type) > -1) {
-          // Is supported
-          this.expandInput = true;
-          this.createCertificate(type, data);
-        } else {
-          // Not supported
-          throw new Error('Unsupported File Type');
-        }
-      })
-      .catch((err) => {
-        this.fileRejected(err);
-      });
-  }
+            fileReader.onerror = (err) => {
+                reject(err);
+            };
+        });
+    }
 
-  getDataBuffer(file: File) {
-    return new Promise((resolve, reject) => {
-      let fileReader = new FileReader();
-      fileReader.readAsArrayBuffer(file);
-      fileReader.onload = () => {
-        let dataBuffer = Buffer.from(fileReader.result);
-        resolve(dataBuffer);
-      };
+    createCertificate(type: string, dataBuffer) {
+        this.fileType = type;
+        this.addedCertificate = dataBuffer.toString();
+    }
 
-      fileReader.onerror = (err) => {
-        reject(err);
-      };
-    });
-  }
+    fileRejected(reason: string) {
+        this.alertService.errorStatus$.next(reason);
+    }
 
-  createCertificate(type: string, dataBuffer) {
-    this.fileType = type;
-    this.addedCertificate = dataBuffer.toString();
-  }
-
-  fileRejected(reason: string) {
-    this.alertService.errorStatus$.next(reason);
-  }
-
-  addCertificate(): void {
-    let additionalData = {};
-    additionalData['cert'] = this.addedCertificate;
-    additionalData['hostnameOverride'] = this.addedHostname;
-    this.activeModal.close(additionalData);
-  }
+    addCertificate(): void {
+      let additionalData = {};
+      additionalData['hostnameOverride'] = this.addedHostname;
+      additionalData['cert'] = this.addedCertificate.replace(/[\\n\\r]/g, '');
+      this.activeModal.close(additionalData);
+    }
 }

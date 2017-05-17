@@ -37,6 +37,7 @@ class AccessController {
         LOG.entry(method, aclManager);
         this.aclManager = aclManager;
         this.participant = null;
+        this.transaction = null;
         LOG.exit(method);
     }
 
@@ -54,6 +55,22 @@ class AccessController {
      */
     setParticipant(participant) {
         this.participant = participant;
+    }
+
+    /**
+     * Get the current transaction.
+     * @return {Resource} The current transaction.
+     */
+    getTransaction() {
+        return this.transaction;
+    }
+
+    /**
+     * Set the current transaction.
+     * @param {Resource} transaction The current transaction.
+     */
+    setTransaction(transaction) {
+        this.transaction = transaction;
     }
 
     /**
@@ -80,6 +97,9 @@ class AccessController {
                 return;
             }
 
+            // Grab the transaction. Does not matter if this is null.
+            let transaction = this.transaction;
+
             // Check to see if an ACL file was supplied. If not, then ACL
             // enforcement is not enabled.
             if (!this.aclManager.getAclFile()) {
@@ -93,7 +113,7 @@ class AccessController {
             let aclRules = this.aclManager.getAclRules();
             let result = aclRules.some((aclRule) => {
                 LOG.debug(method, 'Processing rule', aclRule);
-                let value = this.checkRule(resource, access, participant, aclRule);
+                let value = this.checkRule(resource, access, participant, transaction, aclRule);
                 LOG.debug(method, 'Processed rule', value);
                 return value;
             });
@@ -105,7 +125,7 @@ class AccessController {
             }
 
             // Otherwise no ACL rule permitted the action.
-            throw new AccessException(resource, access, participant);
+            throw new AccessException(resource, access, participant, transaction);
 
         } catch (e) {
             LOG.error(method, e);
@@ -119,13 +139,14 @@ class AccessController {
      * @param {Resource} resource The resource.
      * @param {string} access The level of access.
      * @param {Resource} participant The participant.
+     * @param {Resource} transaction The transaction.
      * @param {AclRule} aclRule The ACL rule.
      * @returns {boolean} True if the specified ACL rule permits
      * the specified level of access to the specified resource.
      */
-    checkRule(resource, access, participant, aclRule) {
+    checkRule(resource, access, participant, transaction, aclRule) {
         const method = 'checkRule';
-        LOG.entry(method, participant.getFullyQualifiedIdentifier(), resource, access, participant, aclRule);
+        LOG.entry(method, resource, access, participant, transaction, aclRule);
 
         // Is the ACL rule relevant to the specified noun?
         if (!this.matchNoun(resource, aclRule)) {
@@ -148,8 +169,15 @@ class AccessController {
             return false;
         }
 
+        // Is the ACL rule relevant to the specified transaction?
+        if (!this.matchTransaction(transaction, aclRule)) {
+            LOG.debug(method, 'Transaction does not match');
+            LOG.exit(method, false);
+            return false;
+        }
+
         // Is the predicate met?
-        if (!this.matchPredicate(resource, access, participant, aclRule)) {
+        if (!this.matchPredicate(resource, access, participant, transaction, aclRule)) {
             LOG.debug(method, 'Predicate does not match');
             LOG.exit(method, false);
             return false;
@@ -162,7 +190,7 @@ class AccessController {
         }
 
         // This must be an explicit deny rule, so throw.
-        let e = new AccessException(resource, access, participant);
+        let e = new AccessException(resource, access, participant, transaction);
         LOG.error(method, e);
         throw e;
 
@@ -262,15 +290,13 @@ class AccessController {
             return true;
         }
 
-        // Determine the input fully qualified name and ID.
+        // Check to see if the participant is an instance of the
+        // required participant type, or is in the required
+        // namespace.
         let ns = participant.getNamespace();
-        let fqn = participant.getFullyQualifiedType();
-        let id = participant.getIdentifier();
-
-        // Check to see if the fully qualified name matches.
         let reqFQN = reqParticipant.getFullyQualifiedName();
-        if (fqn === reqFQN) {
-            // Participant is matching fully qualified type.
+        if (participant.instanceOf(reqFQN)) {
+            // Participant is matching type or subtype.
         } else if (ns === reqFQN) {
             // Participant is matching namespace.
         } else {
@@ -280,6 +306,7 @@ class AccessController {
         }
 
         // Check to see if the identifier matches (if specified).
+        let id = participant.getIdentifier();
         let reqID = reqParticipant.getInstanceIdentifier();
         if (reqID) {
             if (id === reqID) {
@@ -298,18 +325,64 @@ class AccessController {
     }
 
     /**
+     * Check that the specified transaction has the specified
+     * level of access to the specified resource.
+     * @param {Resource} transaction The transaction.
+     * @param {AclRule} aclRule The ACL rule.
+     * @returns {boolean} True if the specified ACL rule permits
+     * the specified level of access to the specified resource.
+     */
+    matchTransaction(transaction, aclRule) {
+        const method = 'matchTransaction';
+        LOG.entry(method, transaction ? transaction.getFullyQualifiedIdentifier() : transaction, aclRule);
+
+        // Is a transaction specified in the ACL rule?
+        let reqTransaction = aclRule.getTransaction();
+        if (!reqTransaction) {
+            LOG.exit(method, true);
+            return true;
+        }
+
+        // OK, a transaction is specified in the ACL rule, but
+        // are we executing in the scope of a transaction?
+        if (!transaction) {
+            LOG.exit(method, false);
+            return false;
+        }
+
+        // Check to see if the participant is an instance of the
+        // required participant type, or is in the required
+        // namespace.
+        let ns = transaction.getNamespace();
+        let reqFQN = reqTransaction.getFullyQualifiedName();
+        if (transaction.instanceOf(reqFQN)) {
+            // Transaction is matching type or subtype.
+        } else if (ns === reqFQN) {
+            // Transaction is matching namespace.
+        } else {
+            // Participant does not match.
+            LOG.exit(method, false);
+            return false;
+        }
+
+        LOG.exit(method, true);
+        return true;
+    }
+
+    /**
      * Check that the specified participant has the specified
      * level of access to the specified resource.
      * @param {Resource} resource The resource.
      * @param {string} access The level of access.
      * @param {Resource} participant The participant.
+     * @param {Resource} transaction The transaction.
      * @param {AclRule} aclRule The ACL rule.
      * @returns {boolean} True if the specified ACL rule permits
      * the specified level of access to the specified resource.
      */
-    matchPredicate(resource, access, participant, aclRule) {
+    matchPredicate(resource, access, participant, transaction, aclRule) {
         const method = 'matchPredicate';
-        LOG.entry(method, resource.getFullyQualifiedIdentifier(), access, participant.getFullyQualifiedIdentifier(), aclRule);
+        LOG.entry(method, resource, access, participant, transaction, aclRule);
 
         // Get the predicate from the rule.
         let predicate = aclRule.getPredicate().getExpression();
@@ -345,6 +418,16 @@ class AccessController {
             }
         }
 
+        // Check to see if the transaction needs to be bound.
+        let reqTransaction = aclRule.getTransaction();
+        if (reqTransaction) {
+            let transactionVar = aclRule.getTransaction().getVariableName();
+            if (transactionVar) {
+                argNames.push(transactionVar);
+                argValues.push(transaction);
+            }
+        }
+
         // Compile and execute the function.
         let result;
         try {
@@ -353,7 +436,7 @@ class AccessController {
             result = func.apply(null, argValues);
         } catch (e) {
             LOG.error(method, e);
-            throw new AccessException(resource, access, participant);
+            throw new AccessException(resource, access, participant, transaction);
         }
 
         // Convert the result into a boolean before returning it.

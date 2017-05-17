@@ -23,7 +23,7 @@ const Util = require('composer-common').Util;
 const fs = require('fs');
 
 /**
- * This class creates an administration connection to a Fabric Composer runtime. The
+ * This class creates an administration connection to a Hyperledger Composer runtime. The
  * connection can then be used to:
  * <ul>
  * <li>Deploy BusinessNetworkDefinitions</li>
@@ -88,7 +88,12 @@ class AdminConnection {
             })
             .then((securityContext) => {
                 this.securityContext = securityContext;
-                return Promise.resolve('connected');
+                if (businessNetworkIdentifier) {
+                    return this.connection.ping(this.securityContext);
+                }
+            })
+            .then(() => {
+
             });
     }
 
@@ -204,7 +209,7 @@ class AdminConnection {
     }
 
     /**
-     * Deploys a new BusinessNetworkDefinition to the fabric. The connection must
+     * Deploys a new BusinessNetworkDefinition to the Hyperledger Fabric. The connection must
      * be connected for this method to succeed.
      * @example
      * // Deploy a Business Network Definition
@@ -227,7 +232,7 @@ class AdminConnection {
     }
 
     /**
-     * Undeploys a BusinessNetworkDefinition from the fabric. The business network will no
+     * Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric. The business network will no
      * longer be able to process transactions.
      * @example
      * // Undeploy a Business Network Definition
@@ -249,7 +254,7 @@ class AdminConnection {
     }
 
     /**
-     * Updates an existing BusinessNetworkDefinition on the fabric. The BusinessNetworkDefinition
+     * Updates an existing BusinessNetworkDefinition on the Hyperledger Fabric. The BusinessNetworkDefinition
      * must have been previously deployed.
      * @example
      * // Updates a Business Network Definition

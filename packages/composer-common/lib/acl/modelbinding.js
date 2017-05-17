@@ -50,6 +50,8 @@ class ModelBinding {
         else {
             this.variableAst = null;
         }
+        this.classDeclaration = null;
+
         this.process();
     }
 
@@ -76,7 +78,7 @@ class ModelBinding {
     /**
      * Process the AST and build the model
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {
@@ -157,7 +159,7 @@ class ModelBinding {
      * --- If instanceId and variableName are null
      * --- Try to resolve ns
      * </pre>
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate() {
@@ -172,11 +174,13 @@ class ModelBinding {
 
         if(modelFile) {
             const classDeclaration = modelFile.getLocalType(className);
-            if(classDeclaration) {
-                const property = classDeclaration.getProperty(propertyName);
-                if(!property) {
-                    throw new Error('Failed to find property ' + this.qualifiedName);
-                }
+            if(!classDeclaration) {
+                throw new Error('Failed to find class ' + nsDotClass);
+            }
+            this.classDeclaration = classDeclaration;
+            const property = classDeclaration.getProperty(propertyName);
+            if(!property) {
+                throw new Error('Failed to find property ' + this.qualifiedName);
             }
         }
         else {
@@ -190,6 +194,7 @@ class ModelBinding {
                 if(!classDeclaration) {
                     throw new Error('Failed to find class ' + this.qualifiedName);
                 }
+                this.classDeclaration = classDeclaration;
             }
             else if(this.instanceId === null && this.variableName === null) {
                 // assume namespace
@@ -202,6 +207,15 @@ class ModelBinding {
                 throw new Error('Failed to resolve ' + this.qualifiedName);
             }
         }
+    }
+
+    /**
+     * Get the class declaration for the class that this instance is bound to.
+     * @return {ClassDeclaration} The class declaration for the class that
+     * this instance is bound to, or null if this instance is bound to a namespace.
+     */
+    getClassDeclaration() {
+        return this.classDeclaration;
     }
 
     /**

@@ -18,7 +18,7 @@
     </div>
     <div>
       <button type="button" class="primary" (click)="deploy()" [disabled]="!dirty || !noError">
-        Update
+        Deploy
       </button>
     </div>
   </div>
@@ -50,13 +50,19 @@
       <div style="flex-shrink:1;align-self: center">
         <h1 class="margin-right">{{deployedPackageName}}</h1>
       </div>
-
       <div style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}
       </div>
-      <div style="flex-shrink:1;align-self:center">
-        <button id="editFileButton" type="button" class="action" style="padding-top:4px;" (click)="toggleEditActive()">
+      <div class="edit_icon">
+        <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
           <svg class="ibm-icon vertical-top" aria-hidden="true">
             <use xlink:href="#icon-edit_24"></use>
+          </svg>
+        </button>
+      </div>
+      <div *ngIf="deletableFile" class="delete_icon">
+        <button id="deleteFileButton" type="button" class="action" (click)="openDeleteFileModal()">
+          <svg class="ibm-icon vertical-top" aria-hidden="true">
+            <use xlink:href="#icon-trash_32"></use>
           </svg>
         </button>
       </div>

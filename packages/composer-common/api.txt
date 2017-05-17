@@ -87,6 +87,7 @@ class Typed {
    + string getNamespace() 
    + void setPropertyValue(string,string) 
    + void addArrayValue(string,string) 
+   + boolean instanceOf(String) 
 }
 class ValidatedConcept extends Concept {
    + void setPropertyValue(string,string) throws Error

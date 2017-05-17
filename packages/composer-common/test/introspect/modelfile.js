@@ -143,6 +143,92 @@ describe('ModelFile', () => {
 
     });
 
+    describe('#validate', () => {
+
+        it('should throw if an import exists for an invalid namespace', () => {
+            const model = `
+            namespace org.acme
+            import org.acme.ext.MyAsset2
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            (() => {
+                modelFile.validate();
+            }).should.throw(/No registered namespace for type org.acme.ext.MyAsset2/);
+        });
+
+        it('should throw if a wildcard import exists for an invalid namespace', () => {
+            const model = `
+            namespace org.acme
+            import org.acme.ext.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            (() => {
+                modelFile.validate();
+            }).should.throw(/No registered namespace for type org.acme.ext.\*/);
+        });
+
+        it('should throw if an import exists for a type that does not exist in a valid namespace', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.ext.MyAsset3
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            (() => {
+                modelFile2.validate();
+            }).should.throw(/No type MyAsset3 in namespace org.acme.ext/);
+        });
+
+        it('should not throw if an import exists for a type that exists in a valid namespace', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.ext.MyAsset2
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            modelFile2.validate();
+        });
+
+        it('should not throw if a wildcard import exists for a valid namespace', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.ext.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            modelFile2.validate();
+        });
+
+    });
+
     describe('#getDefinitions', () => {
 
         it('should return the definitions for the model', () => {
@@ -161,29 +247,170 @@ describe('ModelFile', () => {
 
     });
 
+    describe('#isImportedType', () => {
+
+        it('should return false for a non-existent type', () => {
+            const model = `
+            namespace org.acme
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.isImportedType('Fred').should.be.false;
+        });
+
+        it('should return false for a local type', () => {
+            const model = `
+            namespace org.acme
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.isImportedType('MyAsset').should.be.false;
+        });
+
+        it('should return true for an explicitly imported type', () => {
+            const model = `
+            namespace org.acme
+            import org.acme.ext.MyAsset2
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.isImportedType('MyAsset2').should.be.true;
+        });
+
+        it('should return true for a type that exists in a namespace imported by wildcard', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.ext.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            modelFile2.isImportedType('MyAsset2').should.be.true;
+        });
+
+        it('should return false for a type that does not exist in a namespace imported by wildcard', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.ext.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            modelFile2.isImportedType('MyAsset3').should.be.false;
+        });
+
+        it('should return false for a type that does not exist in an invalid namespace imported by wildcard', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.another.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            modelFile2.isImportedType('MyAsset3').should.be.false;
+        });
+
+    });
+
     describe('#resolveImport', () => {
 
         it('should find the fully qualified name of the import', () => {
-            const ast = {
-                namespace: 'org.acme',
-                imports: [ 'org.doge.Coin' ],
-                body: [ ]
-            };
-            sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new ModelFile(mockModelManager, 'fake definitions');
-            mf.resolveImport('Coin').should.equal('org.doge.Coin');
+            const model = `
+            namespace org.acme
+            import org.doge.Coin`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.resolveImport('Coin').should.equal('org.doge.Coin');
         });
 
-        it('should throw if it cannot find the fully qualified name of the import', () => {
-            const ast = {
-                namespace: 'org.acme',
-                imports: [ 'org.doge.Wow' ],
-                body: [ ]
-            };
-            sandbox.stub(parser, 'parse').returns(ast);
-            let mf = new ModelFile(mockModelManager, 'fake definitions');
+        it('should find the fully qualified name of a type using a wildcard import', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.ext.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            modelFile2.resolveImport('MyAsset2').should.equal('org.acme.ext.MyAsset2');
+        });
+
+        it('should throw if it cannot resolve a type that is not imported', () => {
+            const model = `
+            namespace org.acme
+            import org.doge.Wow`;
+            let modelFile = new ModelFile(mockModelManager, model);
             (() => {
-                mf.resolveImport('Coin');
+                modelFile.resolveImport('Coin');
+            }).should.throw(/Coin/);
+        });
+
+        it('should throw if it cannot resolve a type that does not exist in a wildcard import', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.ext.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            (() => {
+                modelFile2.resolveImport('Coin');
+            }).should.throw(/Coin/);
+        });
+
+        it('should throw if it cannot resolve a type that does not exist in a wildcard import of an invalid namespace', () => {
+            const model1 = `
+            namespace org.acme.ext
+            asset MyAsset2 identified by assetId {
+                o String assetId
+            }`;
+            const model2 = `
+            namespace org.acme
+            import org.acme.another.*
+            asset MyAsset identified by assetId {
+                o String assetId
+            }`;
+            let modelFile1 = new ModelFile(mockModelManager, model1);
+            mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            (() => {
+                modelFile2.resolveImport('Coin');
             }).should.throw(/Coin/);
         });
 
@@ -284,6 +511,7 @@ describe('ModelFile', () => {
             let events = modelFile.getEventDeclarations();
             events.length.should.equal(1);
         });
+
     });
 
 });

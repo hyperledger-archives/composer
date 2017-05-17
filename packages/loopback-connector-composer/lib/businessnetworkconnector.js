@@ -204,7 +204,11 @@ class BusinessNetworkConnector extends Connector {
         debug('getComposerModelName', lbModelName);
         if (this.getModelDefinition(lbModelName)) {
             let settings = this.getConnectorSpecificSettings(lbModelName);
-            return settings.fqn || lbModelName;
+            if (settings){
+                return settings.fqn;
+            } else {
+                return lbModelName;
+            }
         } else {
             return lbModelName;
         }
@@ -559,7 +563,13 @@ class BusinessNetworkConnector extends Connector {
                 if (classDeclaration instanceof TransactionDeclaration) {
 
                     // For transactions, we submit the transaction for execution.
-                    return businessNetworkConnection.submitTransaction(resource);
+                    return businessNetworkConnection.submitTransaction(resource)
+                        .then(() => {
+
+                            // We also want to return the generated transaction identifier.
+                            return resource.getIdentifier();
+
+                        });
 
                 }
 
@@ -570,11 +580,48 @@ class BusinessNetworkConnector extends Connector {
                     });
 
             })
+            .then((identifier) => {
+                callback(null, identifier);
+            })
+            .catch((error) => {
+                debug('create', 'error thrown doing create', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Destroy instances of the specified objects in the Business Network.
+     * @param {string} lbModelName The fully qualified model name.
+     * @param {string} objectId The filter to identify the asset or participant to be removed.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    destroy(lbModelName, objectId, options, callback){
+        debug('destroy', lbModelName, objectId, options);
+
+        let composerModelName = this.getComposerModelName(lbModelName);
+
+        let  registry;
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return this.getRegistryForModel(businessNetworkConnection, composerModelName);
+            })
+            .then((registry_) => {
+                registry = registry_;
+                return registry.get(objectId);
+            })
+            .then((resourceToRemove) => {
+                return registry.remove(resourceToRemove);
+            })
             .then(() => {
                 callback();
             })
             .catch((error) => {
-                debug('create', 'error thrown doing create', error);
+                debug('destroy', 'error thrown doing remove', error);
+                if (error.message.match(/does not exist/)) {
+                    error.statusCode = error.status = 404;
+                }
                 callback(error);
             });
     }
@@ -743,6 +790,63 @@ class BusinessNetworkConnector extends Connector {
                 debug('revokeIdentity', 'error thrown doing revokeIdentity', error);
                 callback(error);
             });
+    }
+
+    /**
+     * Get all of the transactions from the transaction registry.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getAllTransactions(options, callback) {
+        debug('getAllTransactions', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getTransactionRegistry();
+            })
+            .then((transactionRegistry) => {
+                return transactionRegistry.getAll();
+            })
+            .then((transactions) => {
+                const result = transactions.map((transaction) => {
+                    return this.serializer.toJSON(transaction);
+                });
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getAllTransactions', 'error thrown doing getAllTransactions', error);
+                callback(error);
+            });
+    }
+
+    /**
+     * Get the transaction with the specified ID from the transaction registry.
+     * @param {string} id The ID for the transaction.
+     * @param {Object} options The LoopBack options.
+     * @param {function} callback The callback to call when complete.
+     * @returns {Promise} A promise that is resolved when complete.
+     */
+    getTransactionByID(id, options, callback) {
+        debug('getTransactionByID', options);
+        return this.ensureConnected(options)
+            .then((businessNetworkConnection) => {
+                return businessNetworkConnection.getTransactionRegistry();
+            })
+            .then((transactionRegistry) => {
+                return transactionRegistry.get(id);
+            })
+            .then((transaction) => {
+                const result = this.serializer.toJSON(transaction);
+                callback(null, result);
+            })
+            .catch((error) => {
+                debug('getTransactionByID', 'error thrown doing getTransactionByID', error);
+                if (error.message.match(/does not exist/)) {
+                    error.statusCode = error.status = 404;
+                }
+                callback(error);
+            });
+
     }
 
     /**

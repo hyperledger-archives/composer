@@ -29,7 +29,7 @@ class TransactionDeclaration extends ClassDeclaration {
      * Create an TransactionDeclaration.
      * @param {ModelFile} modelFile the ModelFile for this class
      * @param {Object} ast - The AST created by the parser
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(modelFile, ast) {
         super(modelFile, ast);
@@ -38,7 +38,7 @@ class TransactionDeclaration extends ClassDeclaration {
     /**
      * Process the AST and build the model
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {

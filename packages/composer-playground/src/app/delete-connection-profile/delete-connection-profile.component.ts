@@ -1,19 +1,24 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import { Component, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import {ConnectionProfileService} from '../services/connectionprofile.service';
+import { ConnectionProfileService } from '../services/connectionprofile.service';
 
 @Component({
-  selector: 'delete-connection-profile',
-  templateUrl: './delete-connection-profile.component.html',
-  styleUrls: ['./delete-connection-profile.component.scss'.toString()]
+    selector: 'delete-connection-profile',
+    templateUrl: './delete-connection-profile.component.html',
+    styleUrls: ['./delete-connection-profile.component.scss'.toString()]
 })
 export class DeleteConnectionProfileComponent {
 
-  constructor(public activeModal: NgbActiveModal) {
-  }
+    @Input()
+    profileName;
 
-  deleteProfile(){
-    this.activeModal.close(true);
-  }
+    constructor(public activeModal: NgbActiveModal,
+                private connectionProfileService: ConnectionProfileService) {
+    }
+
+    deleteProfile() {
+        this.connectionProfileService.deleteProfile(this.profileName);
+        this.activeModal.close(true);
+    }
 }

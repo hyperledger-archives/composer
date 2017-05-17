@@ -35,6 +35,7 @@ app-editor {
     .business-network-details {
       display: flex;
       height:50px;
+      margin-bottom: 0.5rem;
 
       .business-network-version {
         margin-right: $space-smedium;
@@ -57,6 +58,19 @@ app-editor {
       min-height: 63vh;
       max-height: 63vh;
       overflow-y: auto;
+    }
+
+    .edit_icon {
+        flex-shrink: 1;
+        align-self: center;
+        padding-top:4px;
+    }
+
+    .delete_icon {
+        flex-shrink: 1;
+        align-self: center;
+        margin-left: auto;
+        padding-top:4px;
     }
   }
 

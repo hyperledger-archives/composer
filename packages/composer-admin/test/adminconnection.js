@@ -113,11 +113,23 @@ describe('AdminConnection', () => {
 
     describe('#connect', () => {
 
-        it('should return connected connection', () => {
-            return adminConnection.connect('testprofile', 'testnetwork', 'WebAppAdmin', 'DJY27pEnl16d')
-            .then((res) => {
-                res.should.equal('connected');
-            });
+        it('should connect, login and ping if business network specified', () => {
+            return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d', 'testnetwork')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.login);
+                    sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
+                    sinon.assert.calledOnce(mockConnection.ping);
+                    sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+                });
+        });
+
+        it('should connect and login if business network not specified', () => {
+            return adminConnection.connect('testprofile', 'WebAppAdmin', 'DJY27pEnl16d')
+                .then(() => {
+                    sinon.assert.calledOnce(mockConnection.login);
+                    sinon.assert.calledWith(mockConnection.login, 'WebAppAdmin', 'DJY27pEnl16d');
+                    sinon.assert.notCalled(mockConnection.ping);
+                });
         });
 
     });

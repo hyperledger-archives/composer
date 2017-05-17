@@ -17,7 +17,7 @@
 const Download = require ('./lib/download.js');
 
 module.exports.command = 'download [options]';
-module.exports.describe = 'Downloads a business network from the fabric, does not undeploy';
+module.exports.describe = 'Downloads a business network from the Hyperledger Fabric, does not undeploy';
 module.exports.builder = {
     archiveFile: {alias: 'a', required: true, describe: 'The business network archive file name', type: 'string' },
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },

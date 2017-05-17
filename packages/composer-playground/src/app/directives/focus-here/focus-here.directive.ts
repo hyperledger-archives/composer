@@ -1,17 +1,16 @@
-import {Directive, ElementRef} from '@angular/core';
+import { Directive, ElementRef } from '@angular/core';
 
 @Directive({
-  selector: '[focusHere]',
+    selector: '[focusHere]',
 })
 
 export class FocusHereDirective {
 
-  constructor(private el: ElementRef) {
-    let element = this.el;
-    setTimeout(() => {
-      element.nativeElement.focus();
+    constructor(private el: ElementRef) {
+        let element = this.el;
+        setTimeout(() => {
+            element.nativeElement.focus();
 
-    }, 0);
-  }
+        }, 0);
+    }
 }
-

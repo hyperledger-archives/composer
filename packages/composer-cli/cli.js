@@ -32,7 +32,7 @@ let results = yargs
     .demand(1)
     .wrap(null)
     .strict()
-    .epilogue('For more information on Fabric Composer: https://fabric-composer.github.io/')
+    .epilogue('For more information on Hyperledger Composer: https://hyperledger.github.io/composer/')
     .alias('v', 'version')
     .version(function() {
         return getInfo('composer-cli')+

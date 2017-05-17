@@ -31,6 +31,7 @@ app-test {
     .side-button {
       flex : 1;
       margin: 0 auto;
+      margin-left: $space-large;
 
       .button-item {
         padding-top: 5rem;

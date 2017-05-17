@@ -17,11 +17,9 @@
 const AclRule = require('../../lib/acl/aclrule');
 const AclFile = require('../../lib/acl/aclfile');
 const ModelManager = require('../../lib/modelmanager');
-const ModelFile = require('../../lib/introspect/modelfile');
 const ModelBinding = require('../../lib/acl/modelbinding');
-const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 
-require('chai').should();
+const should = require('chai').should();
 const sinon = require('sinon');
 
 describe('ModelBinding', () => {
@@ -29,26 +27,31 @@ describe('ModelBinding', () => {
     let modelBinding;
     let aclRule;
     let aclFile;
-    let mockModelManager;
-    let mockModelFile;
-    let mockClassDeclaration;
+    let modelManager;
     let sandbox;
-    const ast = {'type':'Binding','qualifiedName':'org.acme.Car','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
+
+    const namespaceAst = {'type':'Binding','qualifiedName':'org.acme'};
+    const classAst = {'type':'Binding','qualifiedName':'org.acme.Car'};
+    const classWithIdentifierAst = {'type':'Binding','qualifiedName':'org.acme.Car','instanceId':'ABC123'};
+    const propertyAst = {'type':'Binding','qualifiedName':'org.acme.Car.assetId'};
+    const propertyWithIdentifierAst = {'type':'Binding','qualifiedName':'org.acme.Car.assetId','instanceId':'ABC123'};
     const variableAst = {'type':'Identifier','name':'dan'};
-    const missingClass = {'type':'Binding','qualifiedName':'org.acme.Missing','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
+
+    const missingClass = {'type':'Binding','qualifiedName':'org.acme.Missing','instanceId':'ABC123'};
     const missingNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing'};
-    const missingProperty = {'type':'Binding','qualifiedName':'org.acme.Car.missing','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
-    const missing = {'type':'Binding','qualifiedName':'org.missing.Missing','instanceId':'ABC123','variableName':{'type':'Identifier','name':'dan'}};
+    const missingClassWithProperty = {'type':'Binding','qualifiedName':'org.acme.Missing.missing','instanceId':'ABC123'};
+    const missingProperty = {'type':'Binding','qualifiedName':'org.acme.Car.missing','instanceId':'ABC123'};
+    const missing = {'type':'Binding','qualifiedName':'org.missing.Missing','instanceId':'ABC123'};
 
     beforeEach(() => {
-        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
         aclFile = sinon.createStubInstance(AclFile);
-        mockModelManager = sinon.createStubInstance(ModelManager);
-        aclFile.getModelManager.returns(mockModelManager);
-        mockModelFile = sinon.createStubInstance(ModelFile);
-        mockModelManager.getModelFile.withArgs('org.acme').returns(mockModelFile);
-        mockModelFile.getLocalType.withArgs('Car').returns(mockClassDeclaration);
-        mockModelFile.getLocalType.withArgs('Driver').returns(mockClassDeclaration);
+        modelManager = new ModelManager();
+        modelManager.addModelFile(`
+        namespace org.acme
+        asset Car identified by assetId {
+            o String assetId
+        }`);
+        aclFile.getModelManager.returns(modelManager);
         aclRule = sinon.createStubInstance(AclRule);
         aclRule.getAclFile.returns(aclFile);
         sandbox = sinon.sandbox.create();
@@ -61,7 +64,7 @@ describe('ModelBinding', () => {
     describe('#toJSON', () => {
 
         it('should generate a JSON representation', () => {
-            modelBinding = new ModelBinding( aclFile, ast );
+            modelBinding = new ModelBinding( aclFile, classAst );
             const json = modelBinding.toJSON();
             json.should.not.be.null;
         });
@@ -85,10 +88,58 @@ describe('ModelBinding', () => {
 
     describe('#validate', () => {
 
-        it('should validate correct contents', () => {
-            modelBinding = new ModelBinding( aclRule, ast, variableAst );
+        it('should validate correct contents for a namespace reference', () => {
+            modelBinding = new ModelBinding( aclRule, namespaceAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme');
+        });
+
+        it('should validate correct contents for a class reference', () => {
+            modelBinding = new ModelBinding( aclRule, classAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme.Car');
+        });
+
+        it('should validate correct contents for a class reference with an identifier', () => {
+            modelBinding = new ModelBinding( aclRule, classWithIdentifierAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme.Car#ABC123');
+        });
+
+        it('should validate correct contents for a property reference', () => {
+            modelBinding = new ModelBinding( aclRule, propertyAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId');
+        });
+
+        it('should validate correct contents for a property reference with an identifier', () => {
+            modelBinding = new ModelBinding( aclRule, propertyWithIdentifierAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId#ABC123');
+        });
+
+        it('should validate correct contents for a class reference with a variable binding', () => {
+            modelBinding = new ModelBinding( aclRule, classAst, variableAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme.Car:dan');
+        });
+
+        it('should validate correct contents for a class reference with an identifier and with a variable binding', () => {
+            modelBinding = new ModelBinding( aclRule, classWithIdentifierAst, variableAst );
             modelBinding.validate();
             modelBinding.toString().should.equal('ModelBinding org.acme.Car#ABC123:dan');
+        });
+
+        it('should validate correct contents for a property reference with a variable binding', () => {
+            modelBinding = new ModelBinding( aclRule, propertyAst, variableAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId:dan');
+        });
+
+        it('should validate correct contents for a property reference with an identifier and with a variable binding', () => {
+            modelBinding = new ModelBinding( aclRule, propertyWithIdentifierAst, variableAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId#ABC123:dan');
         });
 
         it('should detect reference to missing class', () => {
@@ -118,12 +169,19 @@ describe('ModelBinding', () => {
                 modelBinding.validate();
             }).should.throw(/Failed to find property org.acme.Car.missing/);
         });
+
+        it('should detect reference to missing class with property', () => {
+            (() => {
+                modelBinding = new ModelBinding( aclRule, missingClassWithProperty );
+                modelBinding.validate();
+            }).should.throw(/Failed to find class org.acme.Missing/);
+        });
     });
 
     describe('#accept', () => {
 
         it('should call the visitor', () => {
-            modelBinding = new ModelBinding( aclRule, ast );
+            modelBinding = new ModelBinding( aclRule, classAst );
             let visitor = {
                 visit: sinon.stub()
             };
@@ -133,4 +191,27 @@ describe('ModelBinding', () => {
         });
 
     });
+
+    describe('#getClassDeclaration', () => {
+
+        it('should return null for a namespace binding', () => {
+            modelBinding = new ModelBinding( aclRule, namespaceAst );
+            modelBinding.validate();
+            should.equal(modelBinding.getClassDeclaration(), null);
+        });
+
+        it('should return the class declaration for a class binding', () => {
+            modelBinding = new ModelBinding( aclRule, classAst );
+            modelBinding.validate();
+            modelBinding.getClassDeclaration().getFullyQualifiedName().should.equal('org.acme.Car');
+        });
+
+        it('should return the class declaration for a property binding', () => {
+            modelBinding = new ModelBinding( aclRule, propertyAst );
+            modelBinding.validate();
+            modelBinding.getClassDeclaration().getFullyQualifiedName().should.equal('org.acme.Car');
+        });
+
+    });
+
 });

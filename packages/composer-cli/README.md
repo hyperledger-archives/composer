@@ -1,4 +1,4 @@
-# Fabric Composer CLI
+# Hyperledger Composer CLI
 
 Set up the Composer command with
 
@@ -7,7 +7,7 @@ npm install composer-cli
 ```
 
 ## Overview
-Contains the Fabric composer CLIs for administering business networks.
+Contains the Hyperledger composer CLIs for administering business networks.
 
 Type `composer --help` to list the available commands.
 

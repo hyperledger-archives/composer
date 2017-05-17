@@ -1,0 +1,59 @@
+<section class="issue-identity">
+  <header class="modal-header">
+    <h1>Issue New Identity</h1>
+    <button class="icon modal-exit" (click)="activeModal.close()">
+      <svg class="ibm-icon" aria-hidden="true">
+       <use xlink:href="#icon-close_new"></use>
+      </svg>
+    </button>
+  </header>
+  <section class="modal-body">
+    <p>Issue a new ID to a participant in your business network</p>
+
+    <template #participantTypeaheadResult let-r="result" let-t="term">
+      <span class="participant-id">{{getParticipant(r).getIdentifier()}}</span> <span class="participant-type">{{getParticipant(r).getType()}}</span>
+    </template>
+
+    <form #issueIdentityForm="ngForm" id="issue-identity-form" (ngSubmit)="issueIdentity()">
+
+      <div class="justified-input">
+        <label class="required" for="userID">ID Name<abbr title="required">*</abbr></label>
+        <input required type="text" [(ngModel)]="userID" id="userID" name="userID" autocomplete="off">
+      </div>
+
+      <div class="justified-input">
+        <label class="required" for="participantFQI">Participant<abbr title="required">*</abbr></label>
+        <input required type="text" [(ngModel)]="participantFQI" id="participantFQI" name="participantFQI" [ngbTypeahead]="search" [resultTemplate]="participantTypeaheadResult" autocomplete="off">
+      </div>
+
+      <div>
+        <input type="checkbox" [(ngModel)]="issuer" id="issuer" name="issuer">
+        <label for="issuer">Allow this ID to issue new IDs (
+          <svg class="standard-icon" aria-hidden="true">
+            <use xlink:href="#icon-relationship_16"></use>
+          </svg>
+          )
+        </label>
+      </div>
+    </form>
+    
+    <p>Issuing an identity generates a one-time secret. You can choose to send this to somebody or use it yourself when it has been issued.</p>
+  </section>
+  <footer>
+    <button type="button" class="secondary" (click)="activeModal.close();">
+      <span>Cancel</span>
+    </button>
+    <button type="submit" form="issue-identity-form" class="primary" [disabled]="!issueIdentityForm.form.valid || issueInProgress">
+      <div *ngIf="!issueInProgress">
+        <span>Create New</span>
+      </div>
+      <div *ngIf="issueInProgress" class="ibm-spinner-indeterminate small loop">
+        <div class="loader">
+          <svg class="circular" viewBox="25 25 50 50">
+            <circle class="circle-path" cx="50" cy="50" r="20"/>
+          </svg>
+        </div>
+      </div>
+    </button>
+  </footer>
+</section>

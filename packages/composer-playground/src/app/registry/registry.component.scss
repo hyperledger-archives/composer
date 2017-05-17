@@ -36,11 +36,13 @@ registry {
     margin: $space-large 0;
 
     .id {
-      width: 25%
+      width: 25%;
+      padding-bottom: 0.5rem;
     }
 
     .data {
-      width: 75%
+      width: 75%;
+      padding-bottom: 0.5rem;
     }
 
     .title {
@@ -58,6 +60,7 @@ registry {
       padding: $space-medium;
       position: relative;
       box-shadow: 0 2px 5px -1px $fifth-highlight;
+      border-radius: 4px;
 
       .resource-content {
         display: flex;

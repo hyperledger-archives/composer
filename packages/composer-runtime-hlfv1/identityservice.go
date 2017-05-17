@@ -16,6 +16,7 @@ package main
 
 import (
 	"bytes"
+	"strings"
 	"crypto/x509"
 	"encoding/pem"
 
@@ -72,7 +73,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 	creator, err := identityService.Stub.GetCreator()
 	if err != nil {
 		logger.Debug("Error received on GetCreator", err)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		vm.Throw()
 		return 0
 	}
@@ -81,7 +82,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 	certStart := bytes.IndexAny(creator, "----BEGIN CERTIFICATE-----")
 	if certStart == -1 {
 		logger.Debug("No certificate found")
-		vm.PushErrorObject(duktape.ErrError, "%s", "No certificate found")
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", "No certificate found")
 		vm.Throw()
 		return 0
 	}
@@ -89,7 +90,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 	block, _ := pem.Decode(certText)
 	if block == nil {
 		logger.Debug("Error received on pem.Decode of certificate", certText)
-		vm.PushErrorObject(duktape.ErrError, "Error received on pem.Decode of certificate: %s", certText)
+		vm.PushErrorObjectVa(duktape.ErrError, "Error received on pem.Decode of certificate: %s", certText)
 		vm.Throw()
 		return 0
 	}
@@ -98,7 +99,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 
 	if err != nil {
 		logger.Debug("Error received on ParseCertificate", err)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		vm.Throw()
 		return 0
 	}
@@ -107,7 +108,7 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 
 	// TODO: temporary for V1 admin user returns null to give them
 	// full authority
-	if ucert.Subject.CommonName == "admin" {
+	if strings.Contains(strings.ToLower(ucert.Subject.CommonName), "admin") {
 		vm.PushNull()
 		return 1
 	}

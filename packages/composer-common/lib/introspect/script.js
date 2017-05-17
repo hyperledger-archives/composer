@@ -45,7 +45,7 @@ class Script {
             throw new Error('Empty script contents');
         }
 
-        const parser = new JavaScriptParser(this.contents);
+        const parser = new JavaScriptParser(this.contents, false, 5);
 
         const functions = parser.getFunctions();
 

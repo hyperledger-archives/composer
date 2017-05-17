@@ -31,6 +31,10 @@ const connectorPackageJSON = require('../package.json');
 const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlfv1'));
 const runtimePackageJSON = require('composer-runtime-hlfv1/package.json');
 
+// The chaincode path is the portion of the GOPATH after 'src'.
+const chaincodePath = 'composer';
+
+
 /**
  * Class representing a connection to a business network running on Hyperledger
  * Fabric, using the hfc module.
@@ -46,6 +50,20 @@ class HLFConnection extends Connection {
      */
     static createUser(enrollmentID, client) {
         return new User(enrollmentID, client);
+    }
+
+    /**
+     * generate a valid Ccid
+     *
+     * @static
+     * @param {string} input the name used to define the CCid
+     * @returns {string} a valid ccid
+     *
+     * @memberOf HLFConnection
+     */
+    static generateCcid(input) {
+        //return input.replace(/\./g, '-').replace(/[|&;$%@"<>()+,]/g, ''); New Required for alpha2
+        return input;
     }
 
     /**
@@ -225,16 +243,18 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * Deploy all business network artifacts.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
+     * internal method to perform chaincode install
+     *
+     * @param {any} securityContext the security context
+     * @param {any} businessNetwork the business network
+     * @private
+     * @returns {Promise} a promise for install completion
+     *
+     * @memberOf HLFConnection
      */
-    deploy(securityContext, force, businessNetwork) {
-        const method = 'deploy';
-        LOG.entry(method, securityContext, force, businessNetwork);
+    _install(securityContext, businessNetwork) {
+        const method = '_install';
+        LOG.entry(method, securityContext, businessNetwork);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
@@ -244,18 +264,13 @@ class HLFConnection extends Connection {
             throw new Error('businessNetwork not specified');
         }
 
-        // The chaincode path is the portion of the GOPATH after 'src'.
-        const chaincodePath = 'composer';
 
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
         // must copy the chaincode to a temporary directory. We need to do this
         // to handle the case where Composer is installed into the global directory
         // (npm install -g) and is therefore owned by the root user.
         let tempDirectoryPath;
-        let finalTxId;
         let nonce = utils.getNonce();
-        let businessNetworkArchive;
-
         return this.temp.mkdir('composer')
             .then((tempDirectoryPath_) => {
 
@@ -267,7 +282,6 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-
                 // Update the chaincode source to have the runtime version in it.
                 let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'version.go');
                 let targetFileContents = `
@@ -279,37 +293,55 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-
-                // If the connection options specify a certificate, write that to the file
-                // system for the chaincode to use to communicate with the peer.
-                if (this.connectOptions.certificate) {
-                    let targetFilePath = path.resolve(tempDirectoryPath, 'src', chaincodePath, 'certificate.pem');
-                    return this.fs.outputFile(targetFilePath, this.connectOptions.certificate);
-                }
-
-            })
-            .then(() => {
+                //let txId = Hfc.buildTransactionID(nonce, this._getLoggedInUser()); New version coming
                 let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
 
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
 
-                // Submit the install proposal to the endorsers.
+                // Submit the install request to the peer
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: connectorPackageJSON.version,
-                    chaincodeId: businessNetwork.getName(),
-                    chainId: this.connectOptions.channel,
+                    chaincodeId: HLFConnection.generateCcid(businessNetwork.getName()),
+                    chainId: this.connectOptions.channel,  // alpha2 will remove this line
                     txId: txId,
-                    nonce: nonce,
+                    nonce: nonce//,
+                    //targets: this.chain.getPeers() alpha2 will add this line
                 };
                 return this.chain.sendInstallProposal(request);
+                //return this.client.installChaincode(request); New version coming
             })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
+    }
+
+    //TODO: Do we want to separate out instantiate ?
+
+    /**
+     * Deploy all business network artifacts.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {boolean} [force] Force the deployment of the business network artifacts. Not used by this connector.
+     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been deployed, or rejected with an error.
+     */
+    deploy(securityContext, force, businessNetwork) {
+        const method = 'deploy';
+        LOG.entry(method, securityContext, force, businessNetwork);
+        let businessNetworkArchive;
+        let nonce;
+        let finalTxId;
+        return this._install(securityContext, businessNetwork)
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
 
-                // Validate the proposal results.
-                this._validateResponses(results[0]);
+                // Validate the proposal results, ignore chaincode exists messages
+                this._validateResponses(results[0], /chaincode .+ exists/);
+
+                LOG.debug(method, 'chaincode installed, or already installed');
                 // initialize the chain ready for instantiation
                 return this.chain.initialize();
             })
@@ -325,7 +357,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: connectorPackageJSON.version,
-                    chaincodeId: businessNetwork.getName(),
+                    chaincodeId: HLFConnection.generateCcid(businessNetwork.getName()),
                     chainId: this.connectOptions.channel,
                     txId: finalTxId,
                     nonce: nonce,
@@ -373,14 +405,19 @@ class HLFConnection extends Connection {
      * Check for proposal response errors.
      * @private
      * @param {any} proposalResponses the proposal responses
+     * @param {regexp} pattern regular expression for message which isn't an error
+     * @throws if not valid
      */
-    _validateResponses(proposalResponses) {
+    _validateResponses(proposalResponses, pattern) {
         if (!proposalResponses.length) {
             throw new Error('No results were returned from the request');
         }
 
         proposalResponses.forEach((proposalResponse) => {
             if (proposalResponse instanceof Error) {
+                if (pattern && pattern.test(proposalResponse.message)) {
+                    return true;
+                }
                 throw proposalResponse;
             } else if (proposalResponse.response.status === 200) {
                 return true;
@@ -408,11 +445,12 @@ class HLFConnection extends Connection {
         if (!businessNetworkIdentifier) {
             throw new Error('businessNetworkIdentifier not specified');
         }
+        if (businessNetworkIdentifier !== this.businessNetworkIdentifier) {
+            throw new Error('businessNetworkIdentifier does not match the business network identifier for this connection');
+        }
 
         // Send an undeploy request which will disable the chaincode.
-        // TODO: replace this with a proper undeploy of the chaincode once the functionality
-        // is available, as that will shutdown and terminate the chaincode completely.
-        return this.invokeChainCode(securityContext, 'undeploy', [businessNetworkIdentifier])
+        return this.invokeChainCode(securityContext, 'undeployBusinessNetwork', [])
             .then(() => {
                 LOG.exit(method);
             })
@@ -534,7 +572,7 @@ class HLFConnection extends Connection {
 
         // Submit the query request.
         const request = {
-            chaincodeId: this.businessNetworkIdentifier,
+            chaincodeId: HLFConnection.generateCcid(this.businessNetworkIdentifier),
             chainId: this.connectOptions.channel,
             txId: txId,
             nonce: nonce,
@@ -594,7 +632,7 @@ class HLFConnection extends Connection {
         let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
         // Submit the transaction to the endorsers.
         const request = {
-            chaincodeId: this.businessNetworkIdentifier,
+            chaincodeId: HLFConnection.generateCcid(this.businessNetworkIdentifier),
             chainId: this.connectOptions.channel,
             txId: txId,
             nonce: nonce,
@@ -670,18 +708,18 @@ class HLFConnection extends Connection {
                 role: options.role || 'client'
             };
 
-            // TODO: Not sure delegateRoles is used anymore
             if (options.issuer) {
                 // Everyone we create can register clients.
                 registerRequest.attrs.push({
-                    name: 'hf.RegisterRoles',
+                    name: 'hf.Registrar.Roles',
                     value: 'client'
                 });
                 // Everyone we create can register clients that can register clients.
-                registerRequest.attrs.push({
-                    name: 'hf.RegisterDelegateRoles',
-                    value: 'client'
-                });
+                // Don't think this is needed anymore
+                //registerRequest.attrs.push({
+                //    name: 'hf.Registrar.DelegateRoles',
+                //    value: 'client'
+                //});
             }
             for (let attribute in options.attributes) {
                 LOG.debug(method, 'Adding attribute to request', attribute);
@@ -714,9 +752,28 @@ class HLFConnection extends Connection {
      * business network identifiers, or rejected with an error.
      */
     list(securityContext) {
+        const method = 'list';
+        LOG.entry(method, securityContext);
 
-        // We do not want to persist the list of business networks client side if possible.
-        return Promise.reject(new Error('unimplemented function called'));
+        // Check that a valid security context has been specified.
+        HLFUtil.securityCheck(securityContext);
+
+        // Query all instantiated chaincodes.
+        return this.chain.queryInstantiatedChaincodes()
+            .then((queryResults) => {
+                LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
+                const result = queryResults.chaincodes.filter((chaincode) => {
+                    return chaincode.path === 'composer';
+                }).map((chaincode) => {
+                    return chaincode.name;
+                });
+                LOG.exit(method, result);
+                return result;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
 
     }
 

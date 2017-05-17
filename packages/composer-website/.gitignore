@@ -46,3 +46,6 @@ out
 **/.DS_Store
 
 *.swp
+
+# Ignore temporary built installers.
+installers/*/install.sh

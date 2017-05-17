@@ -32,7 +32,7 @@ class AclFile {
      * @param {ModelManager} modelManager - the ModelManager that manages this
      * ModelFile and that will be used to validate the rules in the AclFile
      * @param {string} definitions - The ACL rules as a string.
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(id, modelManager, definitions) {
         this.modelManager = modelManager;

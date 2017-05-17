@@ -40,7 +40,7 @@ Welcome to the Hyperledger Composer Skeleton Application Generator
 ? Please select the type of Application: Skeleton Business Network
 You can run this generator using: 'yo fabric-composer:businessnetwork'
 Welcome to the business network skeleton generator
-? What is the business network's name? sample-network
+? What is the business network's name? basic-sample-network
 ? What is the business network's namespace? org.acme.biznet
 ? Describe the business network Sample Business Network
 ? Who is the author? Joe Bloggs

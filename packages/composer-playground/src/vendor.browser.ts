@@ -42,10 +42,9 @@ const lsfs = new BrowserFS.FileSystem.LocalStorage();
 BrowserFS.initialize(lsfs);
 
 if ('production' === ENV) {
-  // Production
-
+    // Production
 
 } else {
-  // Development
+    // Development
 
 }

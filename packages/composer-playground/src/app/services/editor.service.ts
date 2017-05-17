@@ -1,4 +1,4 @@
-import {Injectable}      from '@angular/core'
+import { Injectable }      from '@angular/core';
 
 @Injectable()
 export class EditorService {
@@ -8,6 +8,7 @@ export class EditorService {
     getCurrentFile(): any {
         return this.currentFile;
     }
+
     setCurrentFile(cf: any) {
         this.currentFile = cf;
     }

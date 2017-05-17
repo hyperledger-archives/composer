@@ -1,7 +1,7 @@
 
-# Validation of the the quality of Fabric Composer
+# Validation of the quality of Hyperledger Composer
 
-Fabric Composer is a open source technology that is developed in the open. Therefore every Pull Request that is merged is a *public* release of code, api and documentation.
+Hyperledger Composer is an open source technology that is developed in the open. Therefore every Pull Request that is merged is a *public* release of code, api, and documentation.
 
 First impressions and the overall first experience do count. Even if something isn't perfect for whatever reason, then we can still retain this new relationship _if_ the solution is easily found.
 
@@ -9,18 +9,18 @@ First impressions and the overall first experience do count. Even if something i
 To run over a weekly set of testing that ensures we meet a Minimal Standard for Release.
 
 ## Objectives
-There are prescriptive things to check (see [Standard Verification](#standard-verification) - but a degree of explortory testing is good to find out the edge cases etc.
+There are prescriptive things to check (see [Standard Verification](#standard-verification) - but a degree of exploratory testing is good to find out the edge cases etc.
 
 * Is the website instructions still up-to-date?
 * Do the pre-reqs still make sense - and can the setup scripts still work?
 * Do the tutorials still work?
 * Can I get started writing an application without having to make massive leaps?
 
-In addition an objective is to find and close gaps that have been found within the testing.
+In addition, an objective is to find and close gaps that have been found within the testing.
 
 ## Playbooks
 
-*Note links to some of the information have not been provided - if you can't find it on fabric-composer.org then raise a docs issue - as it should be finadable!*
+*Note links to some of the information have not been provided - if you can't find it on hyperledger-composer then raise a docs issue - as it should be findable!*
 
 ### Pre-requisties
 
@@ -48,18 +48,18 @@ composer-common                v0.5.2-20170313111819
 composer-runtime-hlf           v0.5.2-20170313111819
 composer-connector-hlf         v0.5.2-20170313111819
 
-$ git clone https://github.com/fabric-composer/sample-applications.git
+$ git clone https://github.com/hyperledger/composer-sample-applications.git
 <output redacted>
-$ cd sample-applications/packages/getting-started
-$ sed -i .ORIG 's/\("composer-.*".*\):.*"/\1:"unstable"/g' package.json
+$ cd composer-sample-applications/packages/getting-started
+$ sed -i.ORIG 's/\("composer-.*".*\):.*"/\1:"unstable"/g' package.json
 $ npm install --tag=unstable
 $ npm test
 
 ```
 
-- [ ] Running the pre-req scripts on clean platform images (within a virtualized environment, install from ISO image of Ubuntu. Follow the preqrequistie tool chain as documented on the website.)
+- [ ] Running the pre-req scripts on clean platform images (within a virtualized environment, install from ISO image of Ubuntu. Follow the prerequisite tool chain as documented on the website.)
 - [ ] Run the QuickStart and follow on tutorials to ensure they are correct [_note currently this means following the instructions on the website, however there is a plan to automate this_]
-- [ ] Yo Generator (Angular + CLI) - generates and the code runs succesfully
+- [ ] Yo Generator (Angular + CLI) - generates and the code runs successfully
 - [ ] Expose as REST API tutorial
 
 *Documentation*
@@ -70,25 +70,13 @@ $ npm test
 
 ### Playground
 
-Currently there are the two version of the Playground. The developer preview, and the beta for the final version.
+- **Composer-Playground** http://composer-playground-unstable.mybluemix.net/
 
- - **Composer-UI**  http://fabric-composer-unstable.mybluemix.net/
- - **Composer-Playground** http://fabric-composer-next-unstable.mybluemix.net/  _[URL might be changing soon]_
-
-(The stable versions of those are missing the unstable word - but these are already released).
-
-The developer preview is still being used for a number of lab workshops, so it still needs to be functional.
-
+(The stable version of Playground is missing the unstable word from the URL - but this is already released).
 
 *Minimum subset*
 
- - [ ] Connect to the playground
- - [ ] Review model, and submit transaction
- - [ ] Update model, redploy, and submit updated transaction on that model
-
-The Engagement teams lab @ https://ibm.ent.box.com/file/141636016965 is a good source of the process and information for the Composuer-UI
-
- - [ ] Running the Car Auction scenario to validate the the new Playground-UI
+ - [ ] Running the Car Auction scenario to validate the Playground
 
 ### Exploratory Testing
 
@@ -106,7 +94,7 @@ We need to validate on a number of platforms.
 
  - Ubuntu 14:04 & Ubuntu 16:04
  - MacOS 10
- - _windows 10 is not yet ready_
+ - _Windows 10 is not yet ready_
 
 ### For the playgrounds
 

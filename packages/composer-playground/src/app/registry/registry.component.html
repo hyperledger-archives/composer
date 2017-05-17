@@ -18,9 +18,7 @@
       <div class="id">{{resource.getIdentifier()}}</div>
       <pre checkOverFlow [changed]="resource.getIdentifier()" (hasOverFlow)=hasOverFlow($event)
            [ngClass]="{'gradient' : resource.getIdentifier() !== expandedResource && showExpand, 'tiny-gradient' : resource.getIdentifier() === expandedResource || !showExpand}"
-           class="data">
-    {{serialize(resource)}}
-          </pre>
+           class="data">{{serialize(resource)}}</pre>
       <div *ngIf="!isTransactionRegistry()" class="resource-icon">
         <button type="button" class="icon" (click)="editResource(resource)">
           <svg class="ibm-icon" aria-hidden="true">

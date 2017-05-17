@@ -247,12 +247,38 @@ describe('HLFConnection', () => {
 
     });
 
+    describe('#_install', () => {
+        const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
+        //const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
+        //const versionFilePath = path.resolve(targetDirectoryPath, 'version.go');
+        it('should rethrow error if unable to create temp dir', () => {
+            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').rejects(new Error('some error 1'));
+            connection._install(mockSecurityContext, mockBusinessNetwork)
+                .should.be.rejectedWith(/some error 1/);
+        });
+
+        it('should rethrow error if unable to copy chaincode source', () => {
+            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
+            sandbox.stub(connection.fs, 'copy').rejects(new Error('some error 2'));
+            connection._install(mockSecurityContext, mockBusinessNetwork)
+                .should.be.rejectedWith(/some error/);
+        });
+
+        it('should rethrow error if unable to copy chaincode source', () => {
+            sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
+            sandbox.stub(connection.fs, 'copy').resolves();
+            sandbox.stub(connection.fs, 'outputFile').rejects(new Error('some error 3'));
+            connection._install(mockSecurityContext, mockBusinessNetwork)
+                .should.be.rejectedWith(/some error 3/);
+        });
+
+    });
+
     describe('#deploy', () => {
 
         const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
         const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
         const versionFilePath = path.resolve(targetDirectoryPath, 'version.go');
-        const certificateFilePath = path.resolve(targetDirectoryPath, 'certificate.pem');
 
         beforeEach(() => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
@@ -355,6 +381,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(mockChain.sendInstallProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -363,6 +390,7 @@ describe('HLFConnection', () => {
                     sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: connectOptions.channel,
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -375,43 +403,137 @@ describe('HLFConnection', () => {
                 });
         });
 
-        it('should add the certificate into the deployment package', () => {
-            // Add the certificate into the connect options.
-            connection.connectOptions = { type: 'hlfv1', certificate: 'such cert' };
+        it('should instantiate the business network if it responds already installed', () => {
+            sandbox.stub(global, 'setTimeout');
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
+            const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
+            const installResponses = [errorResp];
+            const instantiateResponses = [{
                 response: {
                     status: 200
                 }
             }];
+
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
             mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChain.sendTransaction.withArgs({ proposalResponses: instantiateResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .then(() => {
-                    sinon.assert.calledTwice(connection.fs.outputFile);
-                    sinon.assert.calledWith(connection.fs.outputFile, certificateFilePath, sinon.match(/such cert/));
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
+                    // Check the filter ignores any relevant node modules files.
+                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
+                    sinon.assert.calledOnce(connection.fs.outputFile);
+                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledOnce(mockChain.sendInstallProposal);
+                    sinon.assert.calledOnce(mockChain.initialize);
+                    sinon.assert.calledOnce(mockChain.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockChain.sendInstallProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
+                        chaincodeId: 'org.acme.biznet',
+                        chainId: connectOptions.channel,
+                        txId: '00000000-0000-0000-0000-000000000000',
+                        nonce: '11111111-1111-1111-1111-111111111111',
+                    });
+                    sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
+                        chaincodeId: 'org.acme.biznet',
+                        chainId: connectOptions.channel,
+                        txId: '00000000-0000-0000-0000-000000000000',
+                        nonce: '11111111-1111-1111-1111-111111111111',
+                        fcn: 'init',
+                        args: ['aGVsbG8gd29ybGQ=']
+                    });
+
+                    sinon.assert.calledOnce(mockChain.sendTransaction);
                 });
         });
 
-        it('should throw if no endorsement responses are returned', () => {
+        it('should throw if install fails for unexpected reason', () => {
+            sandbox.stub(global, 'setTimeout');
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
+            const errorResp = new Error('Error something went completely wrong');
+            const installResponses = [errorResp];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
+            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
+                .catch((error) => {
+                    error.message.should.equal(errorResp.message);
+                    sinon.assert.calledOnce(connection.fs.copy);
+                    sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
+                    // Check the filter ignores any relevant node modules files.
+                    connection.fs.copy.firstCall.args[2].filter('some/path/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('some/node_modules/here').should.be.true;
+                    connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
+                    sinon.assert.calledOnce(connection.fs.outputFile);
+                    sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
+                    sinon.assert.calledOnce(mockChain.sendInstallProposal);
+                    sinon.assert.notCalled(mockChain.initialize);
+                    sinon.assert.notCalled(mockChain.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockChain.sendInstallProposal, {
+                        chaincodePath: 'composer',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
+                        chaincodeId: 'org.acme.biznet',
+                        chainId: connectOptions.channel,
+                        txId: '00000000-0000-0000-0000-000000000000',
+                        nonce: '11111111-1111-1111-1111-111111111111',
+                    });
+                });
+        });
+
+        it('should throw if no install responses are returned', () => {
+            // This is the generated nonce.
+            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the deployment proposal and response (from the peers).
+            const installResponses = [];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            // This is the generated transaction
+            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
+            // mock out getUserContext version in case we need to return to using this one
+            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
+            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
+                .should.be.rejectedWith(/No results were returned/);
+        });
+
+        it('should throw if no instantiate responses are returned', () => {
+            // This is the generated nonce.
+            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            // This is the deployment proposal and response (from the peers).
+            const installResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
             const proposalResponses = [];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
@@ -419,7 +541,7 @@ describe('HLFConnection', () => {
             mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
             mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
@@ -432,24 +554,24 @@ describe('HLFConnection', () => {
                 .should.be.rejectedWith(/No results were returned/);
         });
 
-        it('should throw any endorsement responses that are errors', () => {
+
+        it('should throw any instantiate responses that are errors', () => {
             // This is the generated nonce.
             sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [ new Error('such error') ];
+            const installResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const instantiateResponses = [ new Error('such error') ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
             // This is the generated transaction
             mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
             // mock out getUserContext version in case we need to return to using this one
             mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
+            mockChain.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
@@ -580,12 +702,18 @@ describe('HLFConnection', () => {
             }).should.throw(/businessNetworkIdentifier not specified/);
         });
 
+        it('should throw if businessNetworkIdentifier not same as the connection', () => {
+            (() => {
+                connection.undeploy(mockSecurityContext, 'FunnyNetwork');
+            }).should.throw(/businessNetworkIdentifier does not match the business network identifier for this connection/);
+        });
+
         it('should invoke the chaincode', () => {
             sandbox.stub(connection, 'invokeChainCode').resolves();
             return connection.undeploy(mockSecurityContext, 'org.acme.biznet')
                 .then(() => {
                     sinon.assert.calledOnce(connection.invokeChainCode);
-                    sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'undeploy', ['org.acme.biznet']);
+                    sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'undeployBusinessNetwork', []);
                 });
         });
 
@@ -750,6 +878,7 @@ describe('HLFConnection', () => {
                 .then((result) => {
                     sinon.assert.calledOnce(mockChain.queryByChaincode);
                     sinon.assert.calledWith(mockChain.queryByChaincode, {
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: 'testchainid',
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -840,6 +969,7 @@ describe('HLFConnection', () => {
                 .then((result) => {
                     sinon.assert.calledOnce(mockChain.sendTransactionProposal);
                     sinon.assert.calledWith(mockChain.sendTransactionProposal, {
+                        //chaincodeId: 'org-acme-biznet', required for alpha2
                         chaincodeId: 'org.acme.biznet',
                         chainId: 'testchainid',
                         txId: '00000000-0000-0000-0000-000000000000',
@@ -1081,8 +1211,8 @@ describe('HLFConnection', () => {
                         enrollmentID: 'auser',
                         affiliation: 'org1',
                         attrs: [
-                            {name: 'hf.RegisterRoles', value: 'client'},
-                            {name: 'hf.RegisterDelegateRoles', value: 'client'},
+                            {name: 'hf.Registrar.Roles', value: 'client'}//,
+//                            {name: 'hf.Registrar.DelegateRoles', value: 'client'},
                         ],
                         maxEnrollments: 0,
                         role: 'client'
@@ -1176,9 +1306,50 @@ describe('HLFConnection', () => {
 
     describe('#list', () => {
 
-        it('should throw an error as not implemented yet', () => {
+        it('should return an empty array if no instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.resolves({
+                chaincodes: []
+            });
             return connection.list(mockSecurityContext)
-                .should.be.rejectedWith(/unimplemented function called/);
+                .should.eventually.be.deep.equal([]);
+        });
+
+        it('should return an array of chaincode names for all instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.resolves({
+                chaincodes: [{
+                    name: 'org.acme.biznet1',
+                    version: '1.0.0',
+                    path: 'composer'
+                }, {
+                    name: 'org.acme.biznet2',
+                    version: '1.2.0',
+                    path: 'composer'
+                }]
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal(['org.acme.biznet1', 'org.acme.biznet2']);
+        });
+
+        it('should filter out any non-composer instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.resolves({
+                chaincodes: [{
+                    name: 'org.acme.biznet1',
+                    version: '1.0.0',
+                    path: 'composer'
+                }, {
+                    name: 'org.acme.biznet2',
+                    version: '1.2.0',
+                    path: 'dogecc'
+                }]
+            });
+            return connection.list(mockSecurityContext)
+                .should.eventually.be.deep.equal(['org.acme.biznet1']);
+        });
+
+        it('should handle any errors querying instantiated chaincodes', () => {
+            mockChain.queryInstantiatedChaincodes.rejects(new Error('such error'));
+            return connection.list(mockSecurityContext)
+                .should.be.rejectedWith(/such error/);
         });
 
     });

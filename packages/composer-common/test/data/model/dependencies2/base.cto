@@ -1,0 +1,10 @@
+namespace org.acme.base
+
+import org.acme.core.BaseMember
+
+participant ClientMember extends BaseMember {
+    o String firstName optional
+    o String lastName optional
+}
+
+participant ClientAdminMember extends ClientMember {}

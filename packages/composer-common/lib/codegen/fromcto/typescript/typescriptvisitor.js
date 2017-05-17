@@ -23,6 +23,7 @@ const RelationshipDeclaration = require('../../../introspect/relationshipdeclara
 const EnumDeclaration = require('../../../introspect/enumdeclaration');
 const EnumValueDeclaration = require('../../../introspect/enumvaluedeclaration');
 const FunctionDeclaration = require('../../../introspect/functiondeclaration');
+const util = require('util');
 
 /**
  * Convert the contents of a ModelManager to Go Lang code.
@@ -60,7 +61,7 @@ class TypescriptVisitor {
         } else if (thing instanceof FunctionDeclaration) {
             // return this.visitEnum(thing, parameters);
         } else {
-            throw new Error('Unrecognised ' + JSON.stringify(thing) );
+            throw new Error('Unrecognised type: ' + typeof thing + ', value: ' + util.inspect(thing, { showHidden: true, depth: 2 }));
         }
     }
 

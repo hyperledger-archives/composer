@@ -24,7 +24,7 @@ const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const fs = require('fs');
 
-require('chai').should();
+const should = require('chai').should();
 const sinon = require('sinon');
 
 describe('ClassDeclaration', () => {
@@ -38,11 +38,17 @@ describe('ClassDeclaration', () => {
         mockModelFile.getModelManager.returns(mockModelManager);
     });
 
-    let loadLastDeclaration = (modelFileName, type) => {
-        let modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
-        let modelFile = new ModelFile(mockModelManager, modelDefinitions);
-        let assets = modelFile.getDeclarations(type);
-        return assets[assets.length - 1];
+    const loadModelFile = (modelFileName) => {
+        const modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
+        const modelFile = new ModelFile(mockModelManager, modelDefinitions);
+        mockModelManager.getModelFiles.returns([modelFile]);
+        return modelFile;
+    };
+
+    const loadLastDeclaration = (modelFileName, type) => {
+        const modelFile = loadModelFile(modelFileName);
+        const declarations = modelFile.getDeclarations(type);
+        return declarations[declarations.length - 1];
     };
 
     describe('#constructor', () => {
@@ -207,6 +213,43 @@ describe('ClassDeclaration', () => {
             clz.toJSON().should.deep.equal({});
         });
 
+    });
+
+    describe('#getSuperType', function() {
+        it('should return superclass when one exists', function() {
+            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
+            const subclass = modelFile.getLocalType('Sub');
+            should.exist(subclass);
+            const superclassName = subclass.getSuperType();
+            superclassName.should.equal('com.testing.Super');
+        });
+
+        it('should return null when none exists', function() {
+            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
+            const baseclass = modelFile.getLocalType('Base');
+            should.exist(baseclass);
+            const superclassName = baseclass.getSuperType();
+            should.equal(superclassName, null);
+        });
+    });
+
+    describe('#getAssignableClassDeclarations', function() {
+        it('should return itself only if there are no subclasses', function() {
+            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
+            const baseclass = modelFile.getLocalType('Sub');
+            should.exist(baseclass);
+            const subclasses = baseclass.getAssignableClassDeclarations();
+            subclasses.should.have.same.members([baseclass]);
+        });
+
+        it('should return all subclass definitions', function() {
+            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
+            const baseclass = modelFile.getLocalType('Base');
+            should.exist(baseclass);
+            const subclasses = baseclass.getAssignableClassDeclarations();
+            const subclassNames = subclasses.map(classDef => classDef.getName());
+            subclassNames.should.have.same.members(['Base', 'Super', 'Sub', 'Sub2']);
+        });
     });
 
 });

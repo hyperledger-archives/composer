@@ -1,20 +1,19 @@
-<div class="busy" tabindex="-1">
-  <div class="modal-header">
-    <svg class="ibm-icon" aria-hidden="true">
-      <use xlink:href="#icon-warn"></use>
-    </svg>
-    <h1>Please wait....</h1>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">
-      <svg class="ibm-icon" aria-hidden="true">
-        <use xlink:href="#icon-close_new"></use>
-      </svg>
-    </button>
-  </div>
-  <section class="modal-body">
-    <div [innerHTML]="busy"></div>
-  </section>
-  <footer>
-    <button type="button" class="primary" (click)="activeModal.close()">OK</button>
-  </footer>
+<div tabindex="-1">
+    <section class="modal-body">
+        <div class="contents">
+            <div>
+                <span>Please Wait: </span>
+                <span [innerHTML]="busy.title"></span>
+                <div class="busy-text" [innerHTML]="busy.text"></div>
+            </div>
+            <div class="ibm-spinner-indeterminate small loop">
+                <div class="loader">
+                    <svg class="circular" viewBox="25 25 50 50">
+                        <circle class="circle-path" cx="50" cy="50" r="20"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 

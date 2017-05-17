@@ -4,6 +4,12 @@ body.composer {
   font-family: $font-stack;
   color: $primary-text;
   background-color: $white;
+
+  .initial-loading-elements {
+    margin-top: 40vh;
+    color: $primary-text;
+    text-align: center;
+  }
 }
 
 .composer * {

@@ -29,7 +29,7 @@ class Property {
      * Create a Property.
      * @param {ClassDeclaration} parent - the owner of this property
      * @param {Object} ast - The AST created by the parser
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(parent, ast) {
         this.ast = ast;
@@ -58,7 +58,7 @@ class Property {
 
      /**
      * Process the AST and build the model
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {
@@ -91,7 +91,7 @@ class Property {
     /**
      * Validate the property
      * @param {ClassDeclaration} classDecl the class declaration of the property
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate(classDecl) {

@@ -76,7 +76,7 @@ class Predicate {
     /**
      * Process the AST and build the model
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {
@@ -85,7 +85,7 @@ class Predicate {
     /**
      * Semantic validation of the structure of this ModelBinding.
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate() {

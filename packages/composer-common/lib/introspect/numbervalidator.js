@@ -29,7 +29,7 @@ class NumberValidator extends Validator{
      * @param {Field} field - the field this validator is attached to
      * @param {Object} ast - The ast for the range defined as [lower,upper] (inclusive).
      *
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(field, ast) {
         super(field, ast);
@@ -53,7 +53,7 @@ class NumberValidator extends Validator{
      * Validate the property
      * @param {string} identifier the identifier of the instance being validated
      * @param {Object} value the value to validate
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     validate(identifier, value) {

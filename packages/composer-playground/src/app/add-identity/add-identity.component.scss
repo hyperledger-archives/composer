@@ -1,0 +1,18 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+add-identity-modal {
+  .add-identity {
+    p {
+      color: $secondary-text;
+    }
+
+    footer {
+      .circle-path {
+        stroke: $white;
+      }
+
+      width: 100%;
+    }
+  }
+}

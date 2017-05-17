@@ -30,7 +30,7 @@ class EnumDeclaration extends ClassDeclaration {
      * Create an AssetDeclaration.
      * @param {ModelFile} modelFile the ModelFile for this class
      * @param {Object} ast - The AST created by the parser
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(modelFile, ast) {
         super(modelFile, ast);

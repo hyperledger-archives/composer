@@ -71,7 +71,7 @@ class ModelManager {
      * used to add a set of files irrespective of dependencies.
      * @param {string} modelFile - The Composer file as a string
      * @param {string} fileName - an optional file name to associate with the model file
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @return {Object} The newly added model file (internal).
      */
     addModelFile(modelFile, fileName) {
@@ -94,7 +94,7 @@ class ModelManager {
      * will be replaced.
      * @param {string} modelFile - The Composer file as a string
      * @param {string} fileName - an optional file name to associate with the model file
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @returns {Object} The newly added model file (internal).
      */
     updateModelFile(modelFile, fileName) {

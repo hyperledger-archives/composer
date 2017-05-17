@@ -17,7 +17,7 @@
 const Undeploy = require ('./lib/undeploy.js');
 
 module.exports.command = 'undeploy [options]';
-module.exports.describe = 'Undeploys a BusinessNetworkDefinition from the fabric.';
+module.exports.describe = 'Undeploys a BusinessNetworkDefinition from the Hyperledger Fabric.';
 module.exports.builder = {
     businessNetworkName: {alias: 'n', required: true, describe: 'The business network name', type: 'string' },
     connectionProfileName: {alias: 'p', optional: true, describe: 'The connection profile name', type: 'string' },

@@ -1,161 +1,219 @@
 // Buttons
 .composer {
-  button {
-    position: relative;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    -ms-touch-action: manipulation;
-    touch-action: manipulation;
-    user-select: none;
-    background-image: none;
-    border: 1px solid transparent;
-    border-radius: 5px;
-    margin: 0;
-    box-shadow: none;
-    line-height: 40px;
-    cursor: pointer;
-    background-color: $white;
-    flex-basis: auto;
-    width: auto;
-    padding-right: 30px;
-    padding-left: 30px;
-    font-family: $font-stack;
-    font-size: 0.9rem;
-    font-weight: 400;
-    transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
-    min-width: 140px;
+    button {
+        position: relative;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        margin: 0;
+        box-shadow: none;
+        line-height: 40px;
+        cursor: pointer;
+        background-color: $white;
+        flex-basis: auto;
+        width: auto;
+        padding-right: 30px;
+        padding-left: 30px;
+        font-family: $font-stack;
+        font-size: 0.9rem;
+        font-weight: 400;
+        transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
+        min-width: 140px;
 
-    &:focus {
-      outline: none;
-    }
-
-    & + button {
-      margin-left: 0.8em;
-    }
-
-    h1 {
-      display: inline;
-      margin-right: .5em;
-    }
-
-    &[disabled],
-    &[disabled]:hover {
-      opacity: .65;
-      cursor: not-allowed;
-    }
-
-    &.primary {
-      background-color: $first-highlight;
-      border-color: $first-highlight;
-      color: $white;
-
-      &:hover {
-        background-color: $sixth-highlight;
-      }
-
-      &[disabled], &[disabled]:hover {
-        background-color: $fifth-highlight;
-        border-color: $fifth-highlight;
-      }
-    }
-
-    &.secondary {
-      background-color: $white;
-      color: $first-highlight;
-      border-color: $keyline-highlight;
-
-      &:hover {
-        background-color: $second-highlight;
-        border-color: $second-highlight;
-        color: $white;
-
-      }
-
-      &.active, &:active, &:focus {
-        background-color: $second-highlight;
-        border-color: $second-highlight;
-        color: $white;
-      }
-
-      &[disabled], &[disabled]:hover {
-        border-color: $fifth-highlight;
-        color: $fifth-highlight;
-        background-color:$white;
-      }
-
-    }
-
-    &.expand {
-      background-color: $white;
-      border: 1px solid $fourth-highlight;
-      border-radius: 25px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      padding: 0;
-      font-size: 0.75em;
-      line-height: 25px;
-      color: $secondary-text;
-    }
-
-    &.action {
-      border-bottom: 2px solid transparent;
-      background-color: transparent;
-      color: $primary-text;
-      min-width: 0;
-      padding: 0;
-      border-radius: 0px;
-
-      &:hover {
-        color: $first-highlight;
-        background-color: transparent;
-        border-bottom: 2px solid $first-highlight;
-
-        svg.ibm-icon {
-          fill: $first-highlight;
+        &:focus {
+            outline: none;
         }
-      }
 
-      &:focus,
-      &.active,
-      &:active {
-        color: $first-highlight;
-        background-color: transparent;
-        border-bottom: 2px solid $first-highlight;
-
-        svg.ibm-icon {
-          fill: $first-highlight;
+        & + button {
+            margin-left: 0.8em;
         }
-      }
 
-      &[disabled], &[disabled]:hover {
-        background-color: transparent;
-        color: $fourth-highlight;
-        border-bottom: 2px solid $fourth-highlight;
-
-        svg.ibm-icon {
-          fill: $fourth-highlight;
+        .ibm-spinner-indeterminate {
+            padding: 12%;
         }
-      }
-    }
 
-    &.icon {
-      background-color: transparent;
-      min-width: 0;
-      padding: 0;
-      &:hover {
-        color: $first-highlight;
-        background-color: transparent;
-
-        svg.ibm-icon {
-          fill: $first-highlight;
+        h1 {
+            display: inline;
+            margin-right: .5em;
         }
-      }
-    }
 
-    &.basic {
-      background-color: #FDFDFD;
-      border: 1px solid $fourth-highlight;
-      border-radius: 0.25em;
+        &[disabled],
+        &[disabled]:hover {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+        &.primary {
+            background-color: $first-highlight;
+            border-color: $first-highlight;
+            color: $white;
+
+            &:hover {
+                background-color: $sixth-highlight;
+            }
+
+            &[disabled], &[disabled]:hover {
+                background-color: $fifth-highlight;
+                border-color: $fifth-highlight;
+            }
+        }
+
+        &.secondary {
+            background-color: $white;
+            color: $first-highlight;
+            border-color: $keyline-highlight;
+
+            &:hover {
+                background-color: $second-highlight;
+                border-color: $second-highlight;
+                color: $white;
+
+            }
+
+            &.active, &:active, &:focus {
+                background-color: $second-highlight;
+                border-color: $second-highlight;
+                color: $white;
+            }
+
+            &[disabled], &[disabled]:hover {
+                border-color: $fifth-highlight;
+                color: $fifth-highlight;
+                background-color: $white;
+            }
+        }
+
+        &.delete {
+            background-color: $first-warning;
+            color: $white;
+            border-color: $first-warning;
+
+            &:hover {
+                background-color: $second-warning;
+                border-color: $second-warning;
+                color: $white;
+
+            }
+
+            &.active, &:active, &:focus {
+                background-color: $first-warning;
+                border-color: $first-warning;
+                color: $white;
+            }
+
+            &[disabled], &[disabled]:hover {
+                border-color: $first-warning;
+                color: $first-warning;
+                background-color: $white;
+            }
+        }
+
+
+        &.expand {
+            background-color: $white;
+            border: 1px solid $fourth-highlight;
+            border-radius: 25px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            font-size: 0.75em;
+            line-height: 25px;
+            color: $secondary-text;
+        }
+
+        &.action {
+            border-bottom: 2px solid transparent;
+            background-color: transparent;
+            color: $primary-text;
+            min-width: 0;
+            padding: 0;
+            border-radius: 0px;
+
+            &:hover {
+                color: $first-highlight;
+                background-color: transparent;
+                border-bottom: 2px solid $first-highlight;
+
+                svg.ibm-icon {
+                    fill: $first-highlight;
+                }
+            }
+
+            &:focus,
+            &.active,
+            &:active {
+                color: $first-highlight;
+                background-color: transparent;
+                border-bottom: 2px solid $first-highlight;
+
+                svg.ibm-icon {
+                    fill: $first-highlight;
+                }
+            }
+
+            &[disabled], &[disabled]:hover {
+                background-color: transparent;
+                color: $fourth-highlight;
+                border-bottom: 2px solid $fourth-highlight;
+
+                svg.ibm-icon {
+                    fill: $fourth-highlight;
+                }
+            }
+        }
+
+        &.icon {
+            background-color: transparent;
+            min-width: 0;
+            padding: 0;
+            &:hover {
+                color: $first-highlight;
+                background-color: transparent;
+
+                svg.ibm-icon {
+                    fill: $first-highlight;
+                }
+            }
+        }
+
+        &.basic {
+            background-color: #FDFDFD;
+            border: 1px solid $fourth-highlight;
+            border-radius: 0.25em;
+        }
+
+        &.link {
+            color: $first-highlight;
+            background: none;
+            border: none;
+            display: inline;
+            font: inherit;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            outline-offset: 0;
+            cursor: pointer;
+            text-decoration: underline;
+            border-bottom: 2px solid $first-highlight;
+
+            &:hover {
+                border-bottom: 2px solid $second-highlight;
+                text-decoration: none;
+                color: $second-highlight;
+            }
+
+            &:active,
+            &:focus {
+                outline: none;
+                border-bottom: 2px solid $first-highlight;
+                text-decoration: none;
+                color: $first-highlight;
+            }
+        }
     }
-  }
 }

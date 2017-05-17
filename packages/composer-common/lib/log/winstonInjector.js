@@ -18,7 +18,7 @@ const winston = require('winston');
 const sprintf = require('sprintf-js').sprintf;
 
 /**
- * This the defautl core logger that is used for Fabric-Composer. This function
+ * This the default core logger that is used for Hyperledger-Composer. This function
  * setups up the Winston logging for both file and console output.
  *
  * @param {Object} config JSON structure with specific configuration information
@@ -86,8 +86,8 @@ exports.getLogger = function (config,configElements){
     };
 
     // add to the winnston system and return
-    winston.loggers.add('Fabric-Composer',newWinstonLogger);
-    return winston.loggers.get('Fabric-Composer');
+    winston.loggers.add('Hyperledger-Composer',newWinstonLogger);
+    return winston.loggers.get('Hyperledger-Composer');
 
 
 };

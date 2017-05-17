@@ -1,84 +1,84 @@
-import {Injectable} from '@angular/core';
-import {LocalStorageService} from 'angular-2-local-storage';
+import { Injectable } from '@angular/core';
+import { LocalStorageService } from 'angular-2-local-storage';
 
-import {AdminConnection} from 'composer-admin';
+import { AdminConnection } from 'composer-admin';
 
-import {WalletService} from '../wallet.service';
-
+import { WalletService } from './wallet.service';
 
 @Injectable()
 export class ConnectionProfileService {
 
-  private adminConnection: AdminConnection;
-  private currentCertificate: string;
-  private currentHostname: string;
+    private adminConnection: AdminConnection;
+    private currentCertificate: string;
+    private currentHostname: string;
 
-  constructor(private localStorageService: LocalStorageService,
-              private walletService: WalletService) {
-  }
-
-  private getAdminConnection() {
-    if (!this.adminConnection) {
-      this.adminConnection = new AdminConnection();
+    constructor(private localStorageService: LocalStorageService,
+                private walletService: WalletService) {
     }
 
-    return this.adminConnection;
-  }
-
-  getCurrentConnectionProfile(): string {
-    let result = this.localStorageService.get<string>('currentConnectionProfile');
-    if (result === null) {
-      result = '$default';
+    getCurrentConnectionProfile(): string {
+        let result = this.localStorageService.get<string>('currentConnectionProfile');
+        if (result === null) {
+            result = '$default';
+        }
+        return result;
     }
-    return result;
-  }
 
-  setCurrentConnectionProfile(connectionProfile: string) {
-    this.localStorageService.set('currentConnectionProfile', connectionProfile);
-  }
+    setCurrentConnectionProfile(connectionProfile: string) {
+        this.localStorageService.set('currentConnectionProfile', connectionProfile);
+    }
 
-  createProfile(name, connectionProfile): Promise<any> {
-    return this.getAdminConnection().createProfile(name, connectionProfile);
-  }
+    createProfile(name, connectionProfile): Promise<any> {
+        return this.getAdminConnection().createProfile(name, connectionProfile);
+    }
 
-  getProfile(name): Promise<any> {
-    return this.getAdminConnection().getProfile(name);
-  }
+    getProfile(name): Promise<any> {
+        return this.getAdminConnection().getProfile(name);
+    }
 
-  deleteProfile(name): Promise<any> {
-    return this.getAdminConnection().deleteProfile(name);
-  }
+    deleteProfile(name): Promise<any> {
+        return this.getAdminConnection().deleteProfile(name);
+    }
 
-  createDefaultProfile(): Promise<any> {
-    // Check to see if the default connection profile exists.
-    console.log('Checking for $default connection profile');
-    return this.getAdminConnection().getProfile('$default')
-      .catch((error) => {
-        // It doesn't exist, so create it.
-        console.log('$default connection profile does not exist, creating');
-        return this.getAdminConnection().createProfile('$default', {type: 'web'})
-          .then(() => {
-            return this.walletService.getWallet('$default').add('admin', 'adminpw');
-          });
-      });
-  };
+    createDefaultProfile(): Promise<any> {
+        // Check to see if the default connection profile exists.
+        console.log('Checking for $default connection profile');
+        return this.getAdminConnection().getProfile('$default')
+        .catch((error) => {
+            // It doesn't exist, so create it.
+            console.log('$default connection profile does not exist, creating');
+            return this.getAdminConnection().createProfile('$default', {type: 'web'})
+            .then(() => {
+                return this.walletService.getWallet('$default').add('admin', 'adminpw');
+            });
+        });
+    };
 
-  getAllProfiles(): Promise<any> {
-    return this.getAdminConnection().getAllProfiles();
-  }
+    getAllProfiles(): Promise<any> {
+        return this.getAdminConnection().getAllProfiles();
+    }
 
-  getCertificate(): string{
-    return this.currentCertificate;
-  }
-  setCertificate(cert:string){
-    this.currentCertificate = cert;
-  }
+    getCertificate(): string {
+        return this.currentCertificate;
+    }
 
-  getHostname(): string{
-    return this.currentHostname;
-  }
-  setHostname(hostname:string){
-    this.currentHostname = hostname;
-  }
+    setCertificate(cert: string) {
+        this.currentCertificate = cert;
+    }
 
+    getHostname(): string {
+        return this.currentHostname;
+    }
+
+    setHostname(hostname: string) {
+        this.currentHostname = hostname;
+    }
+
+    private getAdminConnection() {
+        if (!this.adminConnection) {
+            this.adminConnection = new AdminConnection();
+        }
+
+        return this.adminConnection;
+    }
 }

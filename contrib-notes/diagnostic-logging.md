@@ -1,8 +1,8 @@
 # Diagnostic logging
-Fabric-composer has a functional logger that can be used for both informational and diagnostic log messages. It also permits customization for different logging 'back-ends'.
+Hyperledger Composer has a functional logger that can be used for both informational and diagnostic log messages. It also permits customization for different logging 'back-ends'.
 
 ## Log points
-Log points are added throughout the codebase, and should be very similar to other logging systems. The following APIs match to the standard log levels of *debug, verbose, info, warn, error*  Note that *silly* isnt' being used.
+Log points are added throughout the codebase, and should be very similar to other logging systems. The following APIs match to the standard log levels of *debug, verbose, info, warn, error*  Note that *silly* isn't being used.
 
 ```javascript
 debug(method, msg, data);
@@ -12,7 +12,7 @@ warn(method, msg, data);
 error(method, msg, data);
 ```
 
-In addition there are `entry` and `exit` APIs for use to indicate the entry and exit of functions - these are logged at the *debug* level.
+In addition, there are `entry` and `exit` APIs for use to indicate the entry and exit of functions - these are logged at the *debug* level.
 
 ```javascript
 entry(method, data);
@@ -49,25 +49,25 @@ All the log APIs can take a variable number of data arguments for logging. Any *
 
 ## Enabling the logging
 
-In commong with other node.js applications the `DEBUG` environment variable is used. This takes a comma separated list of the modules that need to be logged.
+In commong with other node.js applications, the `DEBUG` environment variable is used. This takes a comma separated list of the modules that need to be logged.
 
 Examples
 
- - `DEBUG=*`          Logs everything from everything (not just Fabric-Composer)
- - `DEBUG=composer:*` Logs everything from just Fabric-Composer
- - `DEBUG=*,!composer:*` Logs everything from everything with the exception of Fabric-Composer
- - `DEBUG=composer:common` Logs everything from the Fabric-Composer common module (the composer-common npm module)
- - `DEBUG=composer:client,composer:common` Logs everything from the Fabric-Composer common module (the composer-common npm module), and the client module
+ - `DEBUG=*`          Logs everything from everything (not just Hyperledger-Composer)
+ - `DEBUG=composer:*` Logs everything from just Hyperledger-Composer
+ - `DEBUG=*,!composer:*` Logs everything from everything with the exception of Hyperledger-Composer
+ - `DEBUG=composer:common` Logs everything from the Hyperledger-Composer common module (the composer-common npm module)
+ - `DEBUG=composer:client,composer:common` Logs everything from the Hyperledger-Composer common module (the composer-common npm module), and the client module
  - `DEBUG=composer:common:businessnetworkdefinition` Logs the businessnetworkdefinition ONLY
 
-## Controling the level and output
+## Controlling the level and output
 
-The structure of the Fabric-Composer log code is that it delegates the actually logging to a back-end service. This service can swapped by using configuration (see below) but by default uses the Winston library.
+The structure of the Hyperledger-Composer log code is that it delegates the actually logging to a back-end service. This service can swapped by using configuration (see below) but by default uses the Winston library.
 
 ### Default configuration
-There are two streams setup in the default configuration - one to write log events to a file, the other to the console.  
+There are two streams setups in the default configuration - one to write log events to a file, the other to the console.  
 
-If log is not enabled for Fabric-Composer no events are sent to the Console but info events are sent to the file
+If log is not enabled for Hyperledger-Composer no events are sent to the Console but info events are sent to the file
 If the log is enabled then info events are sent to the console and all level of events are sent to the file.
 
 The file by default is written to a directory off the current working directory called `logs` with the name `trace_<processid>.log`
@@ -83,7 +83,7 @@ $ cat ./config/default.json
 
 
 
-  "fabric-composer": {
+  "hyperledger-composer": {
 	   "debug": {
        "logger": "./winstonInjector.js",
        "config": {
@@ -104,7 +104,7 @@ $ cat ./config/default.json
 
 }
 ```
-### Modyifing the Winston logger
+### Modifying the Winston logger
 Here are two examples of how to change the back-end logger simply using Winston's changeable transport feature.
 
 Two cloud hosted application log sites are *Loggly.com* and *Papertrailapp.com*
@@ -176,8 +176,8 @@ exports.getLogger = function (config,configElements){
         ]
     };
 
-    winston.loggers.add('Fabric-Composer',newWinstonLogger);
-    return winston.loggers.get('Fabric-Composer');
+    winston.loggers.add('Hyperledger-Composer',newWinstonLogger);
+    return winston.loggers.get('Hyperledger-Composer');
 
 
 };
@@ -188,7 +188,7 @@ and in a configuration file - where the logger is a reference to the code above.
 
 ```
 {
-  "fabric-composer": {
+  "hyperledger-composer": {
      "debug": {
        "logger": "/home/matthew/github/waste-notes/winstonPapertrailInjector.js",
        "config": {

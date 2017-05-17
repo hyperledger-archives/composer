@@ -87,7 +87,7 @@ func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
 	iterator, err := dataCollection.Stub.GetStateByPartialCompositeKey(dataCollection.CollectionID, []string{})
 	if err != nil {
 		vm.Dup(0)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -107,7 +107,7 @@ func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
 		// kv, err := iterator.Next()
 		if err != nil {
 			vm.Dup(0)
-			vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+			vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
@@ -145,7 +145,7 @@ func (dataCollection *DataCollection) get(vm *duktape.Context) (result int) {
 	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -156,14 +156,14 @@ func (dataCollection *DataCollection) get(vm *duktape.Context) (result int) {
 	value, err := dataCollection.Stub.GetState(key)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
 		return 0
 	} else if value == nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "Object with ID '%s' in collection with ID '%s' does not exist", []interface{}{id, dataCollection.CollectionID})
+		vm.PushErrorObjectVa(duktape.ErrError, "Object with ID '%s' in collection with ID '%s' does not exist", id, dataCollection.CollectionID)
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -198,7 +198,7 @@ func (dataCollection *DataCollection) exists(vm *duktape.Context) (result int) {
 	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -209,7 +209,7 @@ func (dataCollection *DataCollection) exists(vm *duktape.Context) (result int) {
 	value, err := dataCollection.Stub.GetState(key)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -247,7 +247,7 @@ func (dataCollection *DataCollection) add(vm *duktape.Context) (result int) {
 	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
 		vm.Dup(3)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -259,14 +259,14 @@ func (dataCollection *DataCollection) add(vm *duktape.Context) (result int) {
 		existingValue, err := dataCollection.Stub.GetState(key)
 		if err != nil {
 			vm.Dup(3)
-			vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+			vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
 			return 0
 		} else if existingValue != nil {
 			vm.Dup(3)
-			vm.PushErrorObject(duktape.ErrError, "Failed to add object with ID '%s' as the object already exists", id)
+			vm.PushErrorObjectVa(duktape.ErrError, "Failed to add object with ID '%s' as the object already exists", id)
 			if vm.Pcall(1) == duktape.ExecError {
 				panic(err)
 			}
@@ -278,7 +278,7 @@ func (dataCollection *DataCollection) add(vm *duktape.Context) (result int) {
 	err = dataCollection.Stub.PutState(key, []byte(value))
 	if err != nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -314,7 +314,7 @@ func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
 	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -325,14 +325,14 @@ func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
 	existingValue, err := dataCollection.Stub.GetState(key)
 	if err != nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
 		return 0
 	} else if existingValue == nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "Failed to update object with ID '%s' as the object does not exist", id)
+		vm.PushErrorObjectVa(duktape.ErrError, "Failed to update object with ID '%s' as the object does not exist", id)
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -343,7 +343,7 @@ func (dataCollection *DataCollection) update(vm *duktape.Context) (result int) {
 	err = dataCollection.Stub.PutState(key, []byte(value))
 	if err != nil {
 		vm.Dup(2)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -373,7 +373,7 @@ func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
 	key, err := dataCollection.Stub.CreateCompositeKey(dataCollection.CollectionID, []string{id})
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -384,14 +384,14 @@ func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
 	existingValue, err := dataCollection.Stub.GetState(key)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
 		return 0
 	} else if existingValue == nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "Failed to delete object with ID '%s' as the object does not exist", id)
+		vm.PushErrorObjectVa(duktape.ErrError, "Failed to delete object with ID '%s' as the object does not exist", id)
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}
@@ -402,7 +402,7 @@ func (dataCollection *DataCollection) remove(vm *duktape.Context) (result int) {
 	err = dataCollection.Stub.DelState(key)
 	if err != nil {
 		vm.Dup(1)
-		vm.PushErrorObject(duktape.ErrError, "%s", err.Error())
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
 		if vm.Pcall(1) == duktape.ExecError {
 			panic(err)
 		}

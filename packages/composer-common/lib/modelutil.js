@@ -44,6 +44,16 @@ class ModelUtil {
     }
 
     /**
+     * Returns true if the specified name is a wildcard.
+     * @param {string} fqn - the source string
+     * @return {boolean} true if the specified name is a wildcard.
+     * @private
+     */
+    static isWildcardName(fqn) {
+        return ModelUtil.getShortName(fqn) === '*';
+    }
+
+    /**
      * Returns the namespace for a the fully qualified name of a type
      * @param {string} fqn - the fully qualified identifier of a type
      * @return {string} - namespace of the type (everything before the last dot)
@@ -86,21 +96,14 @@ class ModelUtil {
      * @private
      */
     static isAssignableTo(modelFile, type, property) {
-        if(ModelUtil.isPrimitiveType(type)) {
-            throw new Error('This method only works with complex types.');
-        }
+        const propertyType = property.getFullyQualifiedTypeName();
 
-        if(ModelUtil.isPrimitiveType(property.getName())) {
-            return false;
+        if (ModelUtil.isPrimitiveType(type) || ModelUtil.isPrimitiveType(propertyType)) {
+            return type === propertyType;
         }
-
-        // console.log( 'model file ns ' + modelFile.getNamespace() );
-        // console.log( 'type ' + type );
-        // console.log( 'property ' + property.getFullyQualifiedName() );
-        // console.log( 'property type ' + property.getFullyQualifiedTypeName() );
 
         // simple case
-        if(type === property.getFullyQualifiedTypeName()) {
+        if (type === propertyType) {
             return true;
         }
 
@@ -129,12 +132,14 @@ class ModelUtil {
 
         while(superType) {
             if(superType.getFullyQualifiedName() === property.getFullyQualifiedTypeName()) {
+                // console.log('Found superType ' + superType.getFullyQualifiedName() );
                 return true;
             }
-            // console.log('superType ' + superType.getFullyQualifiedName() );
             superTypeName = superType.getSuperType();
+
             if(superTypeName) {
-                superType = modelFile.getType(superTypeName);
+                superType = modelFile.getModelManager().getType(superTypeName);
+                // console.log('superType ' + superType.getFullyQualifiedName() );
             }
             else {
                 superType = null;

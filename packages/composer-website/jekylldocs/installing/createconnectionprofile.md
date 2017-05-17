@@ -15,52 +15,58 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 ## Procedure
 
 1. Navigate to the Connection Profile store:
-  ```
-  cd $HOME/.composer-connection-profiles
-  ```
+
+        ```
+        cd $HOME/.composer-connection-profiles
+        ```
 2. Create a new profile folder.
-  ```
-  mkdir ./MyProfile
-  ```
+
+        ```
+        mkdir ./MyProfile
+        ```
 3. Navigate into the new profile folder.
-  ```
-  cd MyProfile
-  ```
+
+        ```
+        cd MyProfile
+        ```
 4. Create a new file called `connection.json` that contains the following information for either Hyperledger Fabric v0.6 or v1.0. If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:
-  ```
-  {
-      "type": <hlf|web>,
-      "keyValStore":"/home/<your-username>/.composer-credentials",
-      "membershipServicesURL": <your-membership-services-url>,
-      "peerURL": <your-peer-url>,
-      "eventHubURL": <your-event-hub-url>
-  }
-  ```
+
+        ```
+        {
+            "type": <hlf|web>,
+            "keyValStore":"/home/<your-username>/.composer-credentials",
+            "membershipServicesURL": <your-membership-services-url>,
+            "peerURL": <your-peer-url>,
+            "eventHubURL": <your-event-hub-url>
+        }
+        ```
   If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:
-  ```
-  {
-  "type": "hlfv1",
-  "orderers": [
-      "grpc://localhost:7050"
-  ],
-  "ca": "http://localhost:7054",
-  "peers": [
-      {
-          "requestURL": "grpc://localhost:7051",
-          "eventURL": "grpc://localhost:7053"
-      },
-      {
-          "requestURL": "grpc://localhost:7056",
-          "eventURL": "grpc://localhost:7058"
-      }
-  ],
-  "keyValStore": "/home/matthew/.hfc-key-store",
-  "channel": "mychannel",
-  "mspID": "Org1MSP",
-  "deployWaitTime": "300",
-  "invokeWaitTime": "100"
-  }
-  ```
+
+        ```
+        {
+        "type": "hlfv1",
+        "orderers": [
+            "grpc://localhost:7050"
+        ],
+        "ca": "http://localhost:7054",
+        "peers": [
+            {
+                "requestURL": "grpc://localhost:7051",
+                "eventURL": "grpc://localhost:7053"
+            },
+            {
+                "requestURL": "grpc://localhost:7056",
+                "eventURL": "grpc://localhost:7058"
+            }
+        ],
+        "keyValStore": "/home/matthew/.hfc-key-store",
+        "channel": "mychannel",
+        "mspID": "Org1MSP",
+        "deployWaitTime": "300",
+        "invokeWaitTime": "100"
+        }
+        ```
+
 ---
 
 ## What next?

@@ -34,7 +34,7 @@ class Field extends Property {
      * Create an Field.
      * @param {ClassDeclaration} parent - The owner of this property
      * @param {Object} ast - The AST created by the parser
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      */
     constructor(parent, ast) {
         super(parent, ast);
@@ -42,7 +42,7 @@ class Field extends Property {
 
     /**
      * Process the AST and build the model
-     * @throws {InvalidModelException}
+     * @throws {IllegalModelException}
      * @private
      */
     process() {
