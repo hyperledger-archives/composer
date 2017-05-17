@@ -531,17 +531,23 @@ describe('Context', () => {
         it('should set the current transaction and create a transaction logger', () => {
             let mockTransaction = sinon.createStubInstance(Resource);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             let mockSerializer = sinon.createStubInstance(Serializer);
             sinon.stub(context, 'getSerializer').returns(mockSerializer);
             context.setTransaction(mockTransaction);
             context.transaction.should.equal(mockTransaction);
             context.transactionLogger.should.be.an.instanceOf(TransactionLogger);
+            sinon.assert.calledOnce(mockAccessController.setTransaction);
+            sinon.assert.calledWith(mockAccessController.setTransaction, mockTransaction);
         });
 
         it('should throw if a transaction has already been set', () => {
             let mockTransaction = sinon.createStubInstance(Resource);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
+            let mockAccessController = sinon.createStubInstance(AccessController);
+            context.accessController = mockAccessController;
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             let mockSerializer = sinon.createStubInstance(Serializer);
             sinon.stub(context, 'getSerializer').returns(mockSerializer);

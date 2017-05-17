@@ -406,6 +406,7 @@ class Context {
         }
         this.transaction = transaction;
         this.transactionLogger = new TransactionLogger(this.transaction, this.getRegistryManager(), this.getSerializer());
+        this.getAccessController().setTransaction(transaction);
     }
 
     /**
