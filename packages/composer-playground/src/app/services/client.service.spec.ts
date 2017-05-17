@@ -399,11 +399,14 @@ describe('ClientService', () => {
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.reject('forced error'));
             alertMock.errorStatus$ = { next: sinon.stub() };
 
-            service.ensureConnected(false);
-            tick();
-
-            alertMock.errorStatus$.next.should.have.been.called;
-
+            service.ensureConnected(false)
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                error.should.equal('forced error');
+                alertMock.errorStatus$.next.should.have.been.called;
+            });
         })));
 
         it('should set connection variables if error thrown', fakeAsync(inject([ClientService], (service: ClientService) => {
@@ -411,11 +414,15 @@ describe('ClientService', () => {
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.reject('forced error'));
             alertMock.errorStatus$ = { next: sinon.stub() };
 
-            service.ensureConnected(false);
-            tick();
-
-            service['isConnected'].should.be.false;
-            expect(service['connectingPromise']).to.be.null;
+            service.ensureConnected(false)
+            .then(() => {
+                throw new Error('should not get here');
+            })
+            .catch((error) => {
+                error.should.equal('forced error');
+                service['isConnected'].should.be.false;
+                expect(service['connectingPromise']).to.be.null;
+            });
         })));
 
     });

@@ -62,13 +62,15 @@ app-editor {
 
     .edit_icon {
         flex-shrink: 1;
-        align-self: center
+        align-self: center;
+        padding-top:4px;
     }
 
     .delete_icon {
         flex-shrink: 1;
         align-self: center;
-        margin-left: auto
+        margin-left: auto;
+        padding-top:4px;
     }
   }
 
