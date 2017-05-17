@@ -3,7 +3,7 @@
     <svg class="ibm-icon" aria-hidden="true">
       <use xlink:href="#icon-warn_32"></use>
     </svg>
-    <h1 [innerHTML]="headerMessage"></h1>
+    <h1>{{headerMessage}}</h1>
     <button class="icon modal-exit" (click)="activeModal.close(false)">
       <svg class="ibm-icon" aria-hidden="true">
         <use xlink:href="#icon-close_new"></use>
@@ -17,11 +17,11 @@
             <div class="item"><b>{{fileType}}</b></div>
             <div class="item"><i>{{fileName}}</i></div>
         </section>
-        <p [innerHTML]="deleteMessage"></p>
+        <p>{{deleteMessage}}</p>
     </section>
   </section>
   <footer>
-    <button type="button" class="secondary" (click)="activeModal.close(false)">Cancel</button>
+    <button type="button" class="secondary" (click)="activeModal.dismiss()">Cancel</button>
     <button type="button" class="delete" (click)="activeModal.close(true)">Delete File</button>
   </footer>
 </div>

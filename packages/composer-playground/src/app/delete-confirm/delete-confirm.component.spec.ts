@@ -8,14 +8,21 @@ import { DebugElement } from '@angular/core';
 import { DeleteComponent } from './delete-confirm.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
+import * as sinon from 'sinon';
+import * as chai from 'chai';
+
+let should = chai.should();
+
 describe('DeleteComponent', () => {
     let component: DeleteComponent;
     let fixture: ComponentFixture<DeleteComponent>;
 
+    let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [DeleteComponent],
-            providers: [NgbActiveModal]
+            providers: [ {provide: NgbActiveModal, useValue: mockActiveModal} ]
         });
         fixture = TestBed.createComponent(DeleteComponent);
         component = fixture.componentInstance;
