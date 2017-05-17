@@ -220,7 +220,7 @@ describe('SampleBusinessNetworkService', () => {
                 repos: sinon.stub().returns({
                     contents: sinon.stub().returns({
                         fetch: sinon.stub().returns(Promise.reject({
-                            status: '404'
+                            status: 404
                         }))
                     })
                 })
@@ -389,7 +389,7 @@ describe('SampleBusinessNetworkService', () => {
             let octoMock = {
                 repos: sinon.stub().returns({
                     contents: sinon.stub().returns({
-                        fetch: sinon.stub().returns(Promise.reject({status: '404'}))
+                        fetch: sinon.stub().returns(Promise.reject({status: 404}))
                     })
                 })
             };
@@ -618,7 +618,7 @@ describe('SampleBusinessNetworkService', () => {
             };
 
             repoMock.contents.withArgs('packages/lib').returns({
-                fetch: sinon.stub().returns(Promise.reject({status: '404'}))
+                fetch: sinon.stub().returns(Promise.reject({status: 404}))
             });
 
             let octoMock = {
@@ -709,7 +709,7 @@ describe('SampleBusinessNetworkService', () => {
             };
 
             repoMock.contents.returns({
-                fetch: sinon.stub().returns(Promise.reject({status: '404'}))
+                fetch: sinon.stub().returns(Promise.reject({status: 404}))
             });
 
             let octoMock = {
@@ -800,7 +800,7 @@ describe('SampleBusinessNetworkService', () => {
             };
 
             repoMock.contents.returns({
-                fetch: sinon.stub().returns(Promise.reject({status: '404'}))
+                fetch: sinon.stub().returns(Promise.reject({status: 404}))
             });
 
             let octoMock = {

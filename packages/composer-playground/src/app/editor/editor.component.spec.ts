@@ -251,13 +251,13 @@ describe('EditorComponent', () => {
             component['files'][1].should.deep.equal({
                 model: true,
                 id: 'model 1',
-                displayID: 'lib/model 1.cto',
+                displayID: 'model/model 1.cto',
             });
 
             component['files'][2].should.deep.equal({
                 model: true,
                 id: 'model 2',
-                displayID: 'lib/model 2.cto',
+                displayID: 'model/model 2.cto',
             });
 
             component['files'][3].should.deep.equal({
@@ -516,10 +516,6 @@ describe('EditorComponent', () => {
 
             mockClientService.getBusinessNetworkName.returns('my_business_name');
 
-            mockAlertService.successStatus$ = {
-                next: sinon.stub()
-            };
-
             component.exportBNA();
 
             fixture.whenStable().then(() => {
@@ -528,9 +524,6 @@ describe('EditorComponent', () => {
                 let passedFile = mockSave.getCall(0).args[0];
                 passedFile.name.should.equal(testFile.name);
                 passedFile.type.should.equal(testFile.type);
-
-                mockAlertService.successStatus$.next.should.have.been.called;
-
                 done();
             });
         });

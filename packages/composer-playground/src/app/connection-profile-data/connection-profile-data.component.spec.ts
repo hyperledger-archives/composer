@@ -151,7 +151,12 @@ describe('ConnectionProfileDataComponent', () => {
 
             tick();
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith('Successfully connected with profile testprofile');
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                icon: '#icon-world_24',
+                text: 'Successfully connected with profile testprofile',
+                title: 'Connection Successful'
+            });
+
             component['profileUpdated'].emit.should.have.been.calledWith({updated: true});
         }));
 
@@ -180,7 +185,11 @@ describe('ConnectionProfileDataComponent', () => {
 
             tick();
 
-            mockAlertService.successStatus$.next.should.have.been.calledWith('Successfully connected with profile Web Browser');
+            mockAlertService.successStatus$.next.should.have.been.calledWith({
+                icon: '#icon-world_24',
+                text: 'Successfully connected with profile Web Browser',
+                title: 'Connection Successful'
+            });
             component['profileUpdated'].emit.should.have.been.calledWith({updated: true});
         }));
 

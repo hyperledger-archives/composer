@@ -16,3 +16,7 @@ participant Regulator identified by email {
   o String firstName
   o String lastName
 }
+
+transaction Transaction identified by transactionId {
+  o String transactionId
+}

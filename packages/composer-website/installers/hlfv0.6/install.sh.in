@@ -41,10 +41,23 @@ docker-compose -p composer up -d
 sleep 10
 
 # Open the playground in a web browser.
-if [ "$(uname)" = "Darwin" ]
-then
-  open http://localhost:8080
-fi
+case "$(uname)" in 
+"Darwin")   open http://localhost:8080
+            ;;
+"Linux")    if [ -n "$BROWSER" ] ; then
+	       	        $BROWSER http://localhost:8080
+	        elif    which xdg-open > /dev/null ; then
+	                 xdg-open http://localhost:8080
+	        elif  	which gnome-open > /dev/null ; then
+	                gnome-open http://localhost:8080
+                       #elif other types bla bla
+	        else   
+		            echo "Could not detect web browser to use - please launch Composer Playground URL using your chosen browser ie: <browser executable name> http://localhost:8080 or set your BROWSER variable to the browser launcher in your PATH"
+	        fi
+            ;;
+*)          echo "Playground not launched - this OS is currently not supported "
+            ;;
+esac
 
 # Exit; this is required as the payload immediately follows.
 exit 0

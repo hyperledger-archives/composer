@@ -63,7 +63,13 @@ In order to install {{site.data.conrefs.composer_full}} Playground, you need the
 
 # Installation
 
-Download the example Docker Compose file by right clicking this link and clicking on "Save Link As": <a href="./docker-compose.yml" download>docker-compose.yml</a>
+Download the example Docker Compose file:
+
+  ```
+  curl -O https://hyperledger.github.io/composer/tutorials/docker-compose.yml
+  ```
+
+(Alternatively, you can do this by right clicking this link and clicking on "Save Link As": <a href="./docker-compose.yml" download>docker-compose.yml</a>)
 
 The Docker Compose file describes a multi-container application that is made up of three Docker containers:
 

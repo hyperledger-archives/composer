@@ -120,7 +120,7 @@ export class EditorComponent implements OnInit {
             newModelFiles.push({
                 model: true,
                 id: modelFile.getNamespace(),
-                displayID: 'lib/' + modelFile.getNamespace() + '.cto',
+                displayID: 'model/' + modelFile.getNamespace() + '.cto',
             });
         });
         newModelFiles.sort((a, b) => {
@@ -228,7 +228,7 @@ export class EditorComponent implements OnInit {
                     currentFile = this.files[0];
                 }
                 this.setCurrentFile(currentFile);
-                this.alertService.successStatus$.next('Business Network successfully imported and deployed');
+                this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business network imported deployed successfully', icon : '#icon-deploy_24'});
             }
         }, (reason) => {
             if (reason && reason !== 1) {
@@ -243,7 +243,6 @@ export class EditorComponent implements OnInit {
                 this.clientService.getBusinessNetworkName() + '.bna',
                 {type: 'application/octet-stream'});
             saveAs(file);
-            this.alertService.successStatus$.next(this.clientService.getBusinessNetworkName() + '.bna was exported');
         });
     }
 
@@ -286,7 +285,7 @@ export class EditorComponent implements OnInit {
             this.updatePackageInfo();
             this.updateFiles();
             this.alertService.busyStatus$.next(null);
-            this.alertService.successStatus$.next('Business Network Deployed Successfully');
+            this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business Network Deployed Successfully', icon : '#icon-deploy_24'});
             if ((<any> window).usabilla_live) {
                 (<any> window).usabilla_live('trigger', 'manual trigger');
             }
