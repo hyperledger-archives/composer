@@ -68,9 +68,13 @@ export class EditorComponent implements OnInit {
 
         return this.initializationService.initialize()
         .then(() => {
-            this.clientService.businessNetworkChanged$.subscribe((error) => {
-                this.noError = error;
-                this.dirty = true;
+            this.clientService.businessNetworkChanged$.subscribe((noError) => {
+                if (this.editorFilesValidate() && noError) {
+                    this.noError = noError;
+                    this.dirty = true;
+                } else {
+                    this.noError = false;
+                }
             });
 
             this.updatePackageInfo();
@@ -105,20 +109,26 @@ export class EditorComponent implements OnInit {
     }
 
     setCurrentFile(file) {
-        if (this.editingPackage) {
-            this.updatePackageInfo();
-            this.editingPackage = false;
+        if (this.currentFile === null || this.currentFile.displayID !== file.displayID) {
+            if (this.editingPackage) {
+                this.updatePackageInfo();
+                this.editingPackage = false;
+            }
+            if (file.script || file.model) {
+                this.deletableFile = true;
+            } else {
+                this.deletableFile = false;
+            }
+            // Reset editActive
+            this.editActive = false;
+            // Set selected file
+            this.editorService.setCurrentFile(file);
+            this.currentFile = file;
+            // re-validate, since we do not persist bad files- they revert when navigated away
+            if (this.editorFilesValidate()) {
+                this.noError = true;
+            }
         }
-        if (file.script || file.model) {
-            this.deletableFile = true;
-        } else {
-            this.deletableFile = false;
-        }
-        // Reset editActive
-        this.editActive = false;
-        // Set selected file
-        this.editorService.setCurrentFile(file);
-        this.currentFile = file;
     }
 
     updateFiles() {
@@ -268,6 +278,7 @@ export class EditorComponent implements OnInit {
                 } else {
                     this.addScriptFile(result);
                 }
+                this.clientService.businessNetworkChanged$.next(true);
             }
         }, (reason) => {
             if (reason && reason !== 1) {
@@ -352,11 +363,11 @@ export class EditorComponent implements OnInit {
         const deleteFile = this.currentFile;
         confirmModalRef.componentInstance.headerMessage = 'Delete File';
         confirmModalRef.componentInstance.deleteFile = deleteFile;
-        confirmModalRef.componentInstance.deleteMessage = 'This file will be removed from your business network definition, which may stop your business netork from working and may limit access to data that is already stored in the business network.';
+        confirmModalRef.componentInstance.deleteMessage = 'This file will be removed from your business network definition, which may stop your business network from working and may limit access to data that is already stored in the business network.';
 
         confirmModalRef.result
         .then((result) => {
-            if (result !== 0) {
+            if (result) {
                 this.alertService.busyStatus$.next({title: 'Deleting file within business network', text : 'deleting ' + this.clientService.getBusinessNetworkName()});
 
                 if (deleteFile.script) {
@@ -409,20 +420,28 @@ export class EditorComponent implements OnInit {
 
     editorFilesValidate(): boolean {
         let allValid: boolean = true;
-        this.files.forEach((file) => {
-            try {
-                if (file.model) {
-                    let modelFile = this.clientService.getModelFile(file.id);
-                    modelFile.validate();
-                } else if (file.acl) {
-                    let aclFile = this.clientService.getAclFile();
-                    aclFile.validate();
-                }
-            } catch (error) {
-                allValid = false;
-            }
-        });
 
+        for (let file of this.files) {
+            if (file.model && allValid) {
+                let modelFile = this.clientService.getModelFile(file.id);
+                if (this.clientService.validateFile(file.id, modelFile.getDefinitions(), 'model') !== null) {
+                    allValid = false;
+                    break;
+                }
+            } else if (file.acl && allValid) {
+                let aclFile = this.clientService.getAclFile();
+                if (this.clientService.validateFile(file.id, aclFile.getDefinitions(), 'acl') !== null) {
+                    allValid = false;
+                    break;
+                }
+            } else if (file.script && allValid) {
+                let script = this.clientService.getScriptFile(file.id);
+                if (this.clientService.validateFile(file.id, script.getContents(), 'script') !== null) {
+                    allValid = false;
+                    break;
+                }
+            }
+        }
         return allValid;
     }
 }
