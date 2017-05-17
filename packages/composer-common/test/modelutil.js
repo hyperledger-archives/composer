@@ -104,32 +104,45 @@ describe('ModelUtil', function () {
     });
 
     describe('#isAssignableTo', function() {
+        let mockModelFile;
+        let mockProperty;
 
-        it('throws error for primitive types', function() {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            let mockProperty = sinon.createStubInstance(Property);
-            (() => {
-                ModelUtil.isAssignableTo(mockModelFile, 'String', mockProperty);
-            }).should.throw(/This method only works with complex types/);
+        beforeEach(function() {
+            mockModelFile = sinon.createStubInstance(ModelFile);
+            mockProperty = sinon.createStubInstance(Property);
         });
 
-        it('returns false if property name is primitive type', function() {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            let mockProperty = sinon.createStubInstance(Property);
-            mockProperty.getName.returns('String');
-            ModelUtil.isAssignableTo(mockModelFile, 'org.doge.Doge', mockProperty).should.equal(false);
+        it('returns true for matching primitive types', function() {
+            mockProperty.getFullyQualifiedTypeName.returns('String');
+            const result = ModelUtil.isAssignableTo(mockModelFile, 'String', mockProperty);
+            result.should.equal(true);
+        });
+
+        it('returns false for non-matching primitive types', function() {
+            mockProperty.getFullyQualifiedTypeName.returns('DateTime');
+            const result = ModelUtil.isAssignableTo(mockModelFile, 'Boolean', mockProperty);
+            result.should.equal(false);
+        });
+
+        it('returns false for assignment of primitive to non-primitive property', function() {
+            mockProperty.getFullyQualifiedTypeName.returns('org.doge.Doge');
+            const result = ModelUtil.isAssignableTo(mockModelFile, 'String', mockProperty);
+            result.should.equal(false);
+        });
+
+        it('returns false for assignment of non-primitive to primitive property', function() {
+            mockProperty.getFullyQualifiedTypeName.returns('String');
+            const result = ModelUtil.isAssignableTo(mockModelFile, 'org.doge.Doge', mockProperty);
+            result.should.equal(false);
         });
 
         it('returns true if property type and required type are identical', function() {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            let mockProperty = sinon.createStubInstance(Property);
             mockProperty.getFullyQualifiedTypeName.returns('org.doge.Doge');
-            ModelUtil.isAssignableTo(mockModelFile, 'org.doge.Doge', mockProperty).should.equal(true);
+            const result = ModelUtil.isAssignableTo(mockModelFile, 'org.doge.Doge', mockProperty);
+            result.should.equal(true);
         });
 
         it('throws error when type cannot be found', function() {
-            let mockModelFile = sinon.createStubInstance(ModelFile);
-            let mockProperty = sinon.createStubInstance(Property);
             mockProperty.getName.returns('theDoge');
             mockProperty.getFullyQualifiedTypeName.returns('org.doge.BaseDoge');
             mockModelFile.getType.returns(null);
