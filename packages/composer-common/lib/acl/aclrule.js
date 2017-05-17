@@ -79,12 +79,16 @@ class AclRule {
         this.verb = this.ast.verb;
 
         this.participant = null;
-
         if(this.ast.participant && this.ast.participant !== 'ANY') {
             this.participant = new ModelBinding(this, this.ast.participant, this.ast.participantVariable);
         }
-        this.predicate = null;
 
+        this.transaction = null;
+        if(this.ast.transaction) {
+            this.transaction = new ModelBinding(this, this.ast.transaction.binding, this.ast.transaction.variableBinding);
+        }
+
+        this.predicate = null;
         if(this.ast.predicate) {
             this.predicate = new Predicate(this, this.ast.predicate);
         }
@@ -104,8 +108,13 @@ class AclRule {
      */
     validate() {
         this.noun.validate();
+
         if(this.participant) {
             this.participant.validate();
+        }
+
+        if(this.transaction) {
+            this.transaction.validate();
         }
 
         if(this.predicate) {
@@ -148,6 +157,16 @@ class AclRule {
      */
     getParticipant() {
         return this.participant;
+    }
+
+    /**
+     * Returns the transaction for this ACL rule. Returns null if this rule
+     * does not filter based on transaction.
+     *
+     * @return {ModelBinding} the transaction ModelBinding or null
+     */
+    getTransaction() {
+        return this.transaction;
     }
 
     /**

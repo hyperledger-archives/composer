@@ -120,7 +120,7 @@ export class EditorComponent implements OnInit {
             newModelFiles.push({
                 model: true,
                 id: modelFile.getNamespace(),
-                displayID: 'lib/' + modelFile.getNamespace() + '.cto',
+                displayID: 'model/' + modelFile.getNamespace() + '.cto',
             });
         });
         newModelFiles.sort((a, b) => {
@@ -243,7 +243,6 @@ export class EditorComponent implements OnInit {
                 this.clientService.getBusinessNetworkName() + '.bna',
                 {type: 'application/octet-stream'});
             saveAs(file);
-            this.alertService.successStatus$.next(this.clientService.getBusinessNetworkName() + '.bna was exported');
         });
     }
 

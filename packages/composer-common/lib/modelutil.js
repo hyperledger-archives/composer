@@ -96,23 +96,14 @@ class ModelUtil {
      * @private
      */
     static isAssignableTo(modelFile, type, property) {
-        if(ModelUtil.isPrimitiveType(type)) {
-            throw new Error('This method only works with complex types.');
+        const propertyType = property.getFullyQualifiedTypeName();
+
+        if (ModelUtil.isPrimitiveType(type) || ModelUtil.isPrimitiveType(propertyType)) {
+            return type === propertyType;
         }
-
-        if(ModelUtil.isPrimitiveType(property.getName())) {
-            return false;
-        }
-
-        // console.log( 'Checking whether type ' + type + ' can be stored in a property of type ' + property.getFullyQualifiedTypeName() );
-
-        // console.log( 'model file ns ' + modelFile.getNamespace() );
-        // console.log( 'type ' + type );
-        // console.log( 'property ' + property.getFullyQualifiedName() );
-        // console.log( 'property type ' + property.getFullyQualifiedTypeName() );
 
         // simple case
-        if(type === property.getFullyQualifiedTypeName()) {
+        if (type === propertyType) {
             return true;
         }
 

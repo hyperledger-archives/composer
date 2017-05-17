@@ -71,7 +71,7 @@ First clone the repository that contains the Business Network Definition (note t
 
 ```bash
 $ git clone https://github.com/hyperledger/composer-sample-networks.git
-$ cd sample-networks/packages/DigitalProperty-Network
+$ cd composer-sample-networks/packages/DigitalProperty-Network
 $ npm install
 ```
 

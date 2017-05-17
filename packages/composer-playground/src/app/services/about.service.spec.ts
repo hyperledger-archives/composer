@@ -58,7 +58,7 @@ describe('AboutService', () => {
         });
     });
 
-    xit('it should make an http call to retrieve the json that shows the versions',
+    it('it should make an http call to retrieve the json that shows the versions',
         async(inject([AboutService, XHRBackend], (aboutService, mockBackend) => {
             // setup a mocked response
             mockBackend.connections.subscribe((connection) => {
@@ -81,7 +81,7 @@ describe('AboutService', () => {
             });
         })));
 
-    xit('should enter catch block',
+    it('should enter catch block',
         async(inject([AboutService, XHRBackend], (aboutService, mockBackend) => {
             mockBackend.connections.subscribe(
                 (connection) => {

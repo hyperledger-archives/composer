@@ -19,7 +19,7 @@ const AclFile = require('../../lib/acl/aclfile');
 const ModelManager = require('../../lib/modelmanager');
 const ModelFile = require('../../lib/introspect/modelfile');
 
-require('chai').should();
+const should = require('chai').should();
 const sinon = require('sinon');
 
 describe('AclRule', () => {
@@ -29,7 +29,36 @@ describe('AclRule', () => {
     let mockModelManager;
     let mockModelFile;
     let sandbox;
-    const ast = {'type':'AclRule','id':{'type':'Identifier','name':'R1'},'noun':{'type':'Binding','qualifiedName':'org.acme.Car','instanceId':{'type':'Identifier','name':'ABC123'},'variableName':null},'verb':'DELETE','participant':{'type':'Binding','qualifiedName':'org.acme.Driver','instanceId':{'type':'Identifier','name':'Fred'},'variableName':null},'predicate':'true','action':'ALLOW','description':'Fred can DELETE the car ABC123'};
+
+    const ast = {
+        type: 'AclRule',
+        id: {
+            type: 'Identifier',
+            name: 'R1'
+        },
+        noun: {
+            type: 'Binding',
+            qualifiedName: 'org.acme.Car',
+            instanceId: {
+                type: 'Identifier',
+                name: 'ABC123'
+            },
+            variableName: null
+        },
+        verb: 'DELETE',
+        participant: {
+            type: 'Binding',
+            qualifiedName: 'org.acme.Driver',
+            instanceId: {
+                type: 'Identifier',
+                name: 'Fred'
+            },
+            variableName: null
+        },
+        predicate: 'true',
+        action: 'ALLOW',
+        description: 'Fred can DELETE the car ABC123'
+    };
 
     beforeEach(() => {
         aclFile = sinon.createStubInstance(AclFile);
@@ -92,4 +121,94 @@ describe('AclRule', () => {
         });
 
     });
+
+    describe('#getTransaction', () => {
+
+        it('should return null for no transaction', () => {
+            const ast = {
+                type: 'AclRule',
+                id: {
+                    type: 'Identifier',
+                    name: 'R1'
+                },
+                noun: {
+                    type: 'Binding',
+                    qualifiedName: 'org.acme.Car',
+                    variableName: null
+                },
+                verb: 'ALL',
+                participant: 'ANY',
+                transaction: null,
+                predicate: 'true',
+                action: 'ALLOW',
+                description: 'ANY can ALL the cars'
+            };
+            aclRule = new AclRule( aclFile, ast );
+            should.equal(aclRule.getTransaction(), null);
+        });
+
+        it('should return a model binding for a transaction', () => {
+            const ast = {
+                type: 'AclRule',
+                id: {
+                    type: 'Identifier',
+                    name: 'R1'
+                },
+                noun: {
+                    type: 'Binding',
+                    qualifiedName: 'org.acme.Car',
+                    variableName: null
+                },
+                verb: 'ALL',
+                participant: 'ANY',
+                transaction: {
+                    binding: {
+                        type: 'BindingNoInstance',
+                        qualifiedName: 'org.acme'
+                    }
+                },
+                predicate: 'true',
+                action: 'ALLOW',
+                description: 'ANY can ALL the cars'
+            };
+            aclRule = new AclRule( aclFile, ast );
+            aclRule.getTransaction().getFullyQualifiedName().should.equal('org.acme');
+            should.equal(aclRule.getTransaction().getVariableName(), null);
+        });
+
+        it('should return a model binding for a transaction with a variable binding', () => {
+            const ast = {
+                type: 'AclRule',
+                id: {
+                    type: 'Identifier',
+                    name: 'R1'
+                },
+                noun: {
+                    type: 'Binding',
+                    qualifiedName: 'org.acme.Car',
+                    variableName: null
+                },
+                verb: 'ALL',
+                participant: 'ANY',
+                transaction: {
+                    variableBinding: {
+                        type: 'Identifier',
+                        name: 'tx'
+                    },
+                    binding: {
+                        type: 'BindingNoInstance',
+                        qualifiedName: 'org.acme'
+                    }
+                },
+                predicate: 'true',
+                action: 'ALLOW',
+                description: 'ANY can ALL the cars'
+            };
+            aclRule = new AclRule( aclFile, ast );
+            aclRule.getTransaction().getFullyQualifiedName().should.equal('org.acme');
+            aclRule.getTransaction().getVariableName().should.equal('tx');
+        });
+
+    });
+
 });
