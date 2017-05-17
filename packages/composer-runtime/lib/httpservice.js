@@ -35,42 +35,45 @@ class HTTPService {
      * HTTP POST of a typed instance to a URL. The instance is serialized to JSON
      * and the JSON text is in the body of the HTTP POST.
      * @param {string} url - the URL to post data to
-     * @param {Object} data - the data to POST
-     * @return {Promise} A promise that will be resolved with a {@link HttpResponse}
+     * @param {Object} data - the data to POST. Data must be an object capable of being converted to a JSON string.
+     * @return {Promise} A JS object that captures the statusCode and body of the HTTP POST response. An HTTP status code that is not 200 will cause the Promise to be rejected. The runtime will attempt to convert
+     * the body to a JS object using JSON.parse.
      */
     post(url,data) {
-        const method = 'post';
-        LOG.entry(method, data);
+        LOG.info('Posting data to URL ' + url, data);
 
         this.url = url;
         this.data = data;
 
         return new Promise((resolve, reject) => {
-            this._post((response) => {
-                if(response.statusCode !== 200) {
-                    return reject(response);
-                }
-                else {
-                    // TODO (DCS) hack, hack
-                    if(response.body && typeof response.body === 'string') {
-                        try {
-                            response.body = JSON.parse(response.body);
-                        }
-                        catch(err) {LOG.warning('Not JSON ' + err);}
+
+            // this may throw an Error, because this is inside a Promise the promise will get rejected
+            const response = JSON.parse(this._post());
+            LOG.info('Reponse from URL ' + url, response);
+
+            if(response.statusCode !== 200) {
+                LOG.error('Error statusCode ', response.statusCode);
+                return reject(JSON.stringify(response));
+            }
+            else {
+                if(response.body && typeof response.body === 'string') {
+                    try {
+                        response.body = JSON.parse(response.body);
                     }
-                    return resolve(response);
+                    catch(err) {LOG.warning('Body data could not be converted to JS object', response.body);}
                 }
-            });
-            LOG.exit(method);
+                return resolve(response);
+            }
         });
     }
 
     /**
      * Post data
      * @abstract
-     * @param {commitCallback} callback The callback function to call when complete.
+     * @return {object} A JS object that captures the status code, header and body of the HTTP POST
+     * @throws {Error} throws an error if there is an issue
      */
-    _post(callback) {
+    _post() {
         throw new Error('abstract function called');
     }
 

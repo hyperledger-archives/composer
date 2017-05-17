@@ -79,9 +79,6 @@ func (httpService *HTTPService) post(vm *duktape.Context) (result int) {
 	logger.Debug("Entering HTTPService.post", vm)
 	defer func() { logger.Debug("Exiting HTTPService.post", result) }()
 
-	//Validate the arguments from JavaScript.
-	vm.RequireFunction(0)
-
 	vm.PushThis()         // [ theHttpService ]
 	vm.PushString("data") // [ theHttpService data ]
 	vm.GetProp(-2)        // [ theHttpService theData ]
@@ -97,42 +94,36 @@ func (httpService *HTTPService) post(vm *duktape.Context) (result int) {
 
 	var jsonStr = []byte(data)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-	req.Header.Set("X-Composer-Version", "0.7.1")
+	req.Header.Set("X-Composer-Version", version)
 	req.Header.Set("Content-Type", "application/json")
+
+	var statusCode = 200
+	var responseBody = "OK"
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Error("error:", err)
-		panic(err)
+		logger.Error("Error POSTing data:", err)
+		statusCode = 500
+		responseBody = err.Error()
+	} else {
+		defer resp.Body.Close()
+		logger.Debug("HTTPService response Status:", resp.Status)
+		logger.Debug("HTTPService response Headers:", resp.Header)
+		body, _ := ioutil.ReadAll(resp.Body)
+		statusCode = resp.StatusCode
+		responseBody = string(body)
+		logger.Debug("HTTPService response Body:", responseBody)
 	}
-	defer resp.Body.Close()
-
-	logger.Debug("HTTPService response Status:", resp.Status)
-	logger.Debug("HTTPService response Headers:", resp.Header)
-	body, _ := ioutil.ReadAll(resp.Body)
-	logger.Debug("HTTPService response Body:", string(body))
 
 	var response HTTPResponse
-	response.StatusCode = resp.StatusCode
-	response.Body = string(body)
-
+	response.StatusCode = statusCode
+	response.Body = responseBody
 	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		logger.Error("error:", err)
-	}
-
-	vm.Dup(0) // [ theHttpService, callback ]
 
 	// push the JSON string
-	vm.PushString(string(jsonResponse)) // [ theHttpService, callback, jsonResponseString ]
+	vm.PushString(string(jsonResponse)) // [ theHttpService, jsonResponseString ]
 
-	// convert back to an object
-	vm.JsonDecode(-1) // [ theHttpService, callback, jsonResponseObject ]
-
-	// Call the callback, passing the jsonResponseObject.
-	if vm.Pcall(1) == duktape.ExecError {
-		panic(vm.ToString(-1))
-	}
-	return 0
+	// a return code of 1 signifies that the top of the stack should be returned to the caller
+	return 1
 }
