@@ -243,7 +243,6 @@ export class EditorComponent implements OnInit {
                 this.clientService.getBusinessNetworkName() + '.bna',
                 {type: 'application/octet-stream'});
             saveAs(file);
-            this.alertService.successStatus$.next(this.clientService.getBusinessNetworkName() + '.bna was exported');
         });
     }
 
