@@ -1,4 +1,5 @@
 @import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
 
 .delete {
 
@@ -13,14 +14,14 @@
       display: flex;
       flex-direction: column;
       align-content: flex-start;
-      margin-left: 2rem;
+      margin-left: $space-large;
   }
 
   .items {
      border-left: solid $first-highlight;
 
      .item{
-        margin-left: 1rem;
+        margin-left: $space-medium;
      }
   }
 
