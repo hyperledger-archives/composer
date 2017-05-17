@@ -342,8 +342,6 @@ class BusinessNetworkConnection extends EventEmitter {
                 this.connection.removeListener('events', () => {
                     LOG.debug('@14gracel', 'remove events connection');
                 });
-            })
-            .then(() => {
                 this.connection = null;
                 this.securityContext = null;
                 this.businessNetwork = null;

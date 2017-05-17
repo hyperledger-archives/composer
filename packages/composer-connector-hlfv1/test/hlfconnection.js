@@ -92,6 +92,19 @@ describe('HLFConnection', () => {
 
     describe('#constructor', () => {
 
+        it('should subscribe to the eventHub and emit events', () => {
+            const payload = {
+                toString: () => {
+                    return 'event';
+                }
+            };
+            connection.emit = sandbox.stub();
+            mockEventHub.registerChaincodeEvent.withArgs('org.acme.biznet', 'composer', sinon.match.func).yield({payload: payload});
+            sinon.assert.calledOnce(mockEventHub.registerChaincodeEvent);
+            sinon.assert.calledWith(mockEventHub.registerChaincodeEvent, 'org.acme.biznet', 'composer', sinon.match.func);
+            sinon.assert.calledOnce(connection.emit);
+        });
+
         it('should throw if connectOptions not specified', () => {
             (() => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', null, mockClient, mockChain, mockEventHub, mockCAClient);

@@ -658,6 +658,19 @@ describe('Context', () => {
 
     });
 
+    describe('#getEventNumber', () => {
+        it('should get the current event number', () => {
+            context.getEventNumber().should.equal(0);
+        });
+    });
+
+    describe('#incrementEventNumber', () => {
+        it('should get the incremenet current event number', () => {
+            context.incrementEventNumber();
+            context.getEventNumber().should.equal(1);
+        });
+    });
+
     describe('#toJSON', () => {
 
         it('should return an empty object', () => {

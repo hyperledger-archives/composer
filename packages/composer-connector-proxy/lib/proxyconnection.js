@@ -58,9 +58,8 @@ class ProxyConnection extends Connection {
             });
         })
         .then(() => {
-            this.socket.removeListener('events', () => {
-                LOG.debug('@14gracel', 'removed events');
-            });
+            LOG.debug('@14gracel', 'removed events');
+            this.socket.removeListener('events');
             LOG.exit(method);
         });
     }

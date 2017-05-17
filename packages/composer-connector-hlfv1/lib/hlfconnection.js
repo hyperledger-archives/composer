@@ -104,12 +104,13 @@ class HLFConnection extends Connection {
         this.eventHubs = eventHubs;
 
         if (businessNetworkIdentifier) {
-            LOG.entry('@14gracel', 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
-            eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
-
-                LOG.entry('@14gracel', 'emit events connection');
-                this.emit('events', event.payload.toString('utf8'));
-            });
+            if (eventHubs.length > 0) {
+                LOG.entry('@14gracel', 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
+                eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
+                    LOG.entry('@14gracel', 'emit events connection');
+                    this.emit('events', event.payload.toString('utf8'));
+                });
+            }
         }
 
         this.caClient = caClient;

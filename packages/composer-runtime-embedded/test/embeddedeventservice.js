@@ -16,7 +16,6 @@
 
 const EmbeddedEventService = require('..').EmbeddedEventService;
 const EventEmitter = require('events').EventEmitter;
-const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
 chai.should();
@@ -27,17 +26,13 @@ require('sinon-as-promised');
 describe('EmbeddedEventService', () => {
 
     let eventService;
-    let mockSerializer;
     let mockEventEmitter;
     let sandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockSerializer = sinon.createStubInstance(Serializer);
         mockEventEmitter = sinon.createStubInstance(EventEmitter);
-        eventService = new EmbeddedEventService(mockSerializer);
-        eventService.getEventEmitter = sinon.stub();
-        eventService.getEventEmitter.returns(mockEventEmitter);
+        eventService = new EmbeddedEventService(mockEventEmitter);
     });
 
     afterEach(() => {
@@ -46,8 +41,8 @@ describe('EmbeddedEventService', () => {
 
     describe('#constructor', () => {
         it('should assign a default event emitter', () => {
-            eventService = new EmbeddedEventService(mockSerializer);
-            (eventService.emitter instanceof EventEmitter).should.be.true;
+            eventService = new EmbeddedEventService(mockEventEmitter);
+            eventService.emitter.should.be.an.instanceOf(EventEmitter);
         });
     });
 
@@ -60,18 +55,5 @@ describe('EmbeddedEventService', () => {
             sinon.assert.calledOnce(mockEventEmitter.emit);
             sinon.assert.calledWith(mockEventEmitter.emit, 'composer', ['serialized JS']);
         });
-    });
-
-    describe('#getEventEmitter', () => {
-        it('should return an EventEmitter', () => {
-            eventService.getEventEmitter().should.be.instanceOf(EventEmitter);
-        });
-
-        it('should return emiiter if it is set', () => {
-            let eventService = new EmbeddedEventService(mockSerializer);
-            eventService.emitter = {};
-            eventService.getEventEmitter().should.deep.equal({});
-        });
-
     });
 });

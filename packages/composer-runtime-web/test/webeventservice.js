@@ -16,7 +16,6 @@
 
 const WebEventService = require('..').WebEventService;
 const EventEmitter = require('events').EventEmitter;
-const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
 chai.should();
@@ -27,15 +26,13 @@ require('sinon-as-promised');
 describe('WebEventService', () => {
 
     let eventService;
-    let mockSerializer;
     let mockEventEmitter;
     let sandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockSerializer = sinon.createStubInstance(Serializer);
         mockEventEmitter = sinon.createStubInstance(EventEmitter);
-        eventService = new WebEventService(mockSerializer);
+        eventService = new WebEventService(mockEventEmitter);
         eventService.getEventEmitter = sinon.stub();
         eventService.getEventEmitter.returns(mockEventEmitter);
     });
@@ -46,8 +43,8 @@ describe('WebEventService', () => {
 
     describe('#constructor', () => {
         it('should assign a default event emitter', () => {
-            eventService = new WebEventService(mockSerializer);
-            (eventService.emitter instanceof EventEmitter).should.be.true;
+            eventService = new WebEventService(mockEventEmitter);
+            (eventService.eventSink instanceof EventEmitter).should.be.true;
         });
     });
 
@@ -58,20 +55,7 @@ describe('WebEventService', () => {
             eventService.commit();
             sinon.assert.calledOnce(eventService.serializeBuffer);
             sinon.assert.calledOnce(mockEventEmitter.emit);
-            sinon.assert.calledWith(mockEventEmitter.emit, 'composer', ['serialized JS']);
+            sinon.assert.calledWith(mockEventEmitter.emit, 'events', ['serialized JS']);
         });
-    });
-
-    describe('#getEventEmitter', () => {
-        it('should return an EventEmitter', () => {
-            eventService.getEventEmitter().should.be.instanceOf(EventEmitter);
-        });
-
-        it('should return emiiter if it is set', () => {
-            let eventService = new WebEventService(mockSerializer);
-            eventService.emitter = {};
-            eventService.getEventEmitter().should.deep.equal({});
-        });
-
     });
 });

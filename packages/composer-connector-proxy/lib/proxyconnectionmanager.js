@@ -41,6 +41,20 @@ class ProxyConnectionManager extends ConnectionManager {
     }
 
     /**
+     * Create a connection for ease of unit testing
+     * @param {ProxyConnectionManager} _this The ConnectionManaget
+     * @param {String} connectionProfile The connection profile to use
+     * @param {String} businessNetworkIdentifier The network identifier to use
+     * @param {Socket.io} socket The socket to use
+     * @param {String} connectionID The connection ID to use
+     * @returns {ProxyConnection} The connection
+     */
+    static createConnection(_this, connectionProfile, businessNetworkIdentifier, socket, connectionID) {
+        return new ProxyConnection(_this, connectionProfile, businessNetworkIdentifier, socket, connectionID);
+
+    }
+
+    /**
      * Creates a new ProxyConnectionManager
      * @param {ConnectionProfileManager} connectionProfileManager
      * - the ConnectionProfileManager used to manage access connection profiles.
@@ -92,7 +106,7 @@ class ProxyConnectionManager extends ConnectionManager {
                         if (error) {
                             return reject(ProxyUtil.inflaterr(error));
                         }
-                        let connection = new ProxyConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
+                        let connection = ProxyConnectionManager.createConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
                         // Only emit when client
                         LOG.debug('@14gracel', 'socket on events');
                         this.socket.on('events', (myConnectionID, events) => {

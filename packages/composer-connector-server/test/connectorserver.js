@@ -63,7 +63,8 @@ describe('ConnectorServer', () => {
         mockConnectionProfileStore.load.throws(new Error('unexpected call'));
         mockConnectionProfileStore.save.throws(new Error('unexpected call'));
         mockSocket = {
-            on: sinon.stub()
+            on: sinon.stub(),
+            emit: sinon.stub()
         };
         mockConnection = sinon.createStubInstance(Connection);
         mockSecurityContext = sinon.createStubInstance(SecurityContext);
@@ -200,7 +201,9 @@ describe('ConnectorServer', () => {
             const cb = sinon.stub();
             return connectorServer.connectionDisconnect(connectionID, cb)
                 .then(() => {
+                    mockConnection.removeListener.withArgs('events', sinon.match.func).yield(['event1', 'event2']);
                     should.equal(connectorServer.connections[connectionID], undefined);
+                    sinon.assert.calledOnce(mockConnection.removeListener);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -249,6 +252,9 @@ describe('ConnectorServer', () => {
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                     connectorServer.securityContexts[securityContextID].should.equal(mockSecurityContext);
+                    mockConnection.on.withArgs('events', sinon.match.func).yield(['event1', 'event2']);
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, 'events', connectionID, ['event1', 'event2']);
                 });
         });
 
