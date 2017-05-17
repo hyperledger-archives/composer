@@ -31,9 +31,10 @@ class AccessException extends BaseException {
      * @param {Resource} resource The resource.
      * @param {string} access The level of access.
      * @param {Resource} participant The participant.
+     * @param {Resource} transaction The transaction.
      * @return {string} The exception message.
      */
-    static generateMessage(resource, access, participant) {
+    static generateMessage(resource, access, participant, transaction) {
         let resourceId = resource.getFullyQualifiedIdentifier();
         let participantId = participant.getFullyQualifiedIdentifier();
         return `Participant '${participantId}' does not have '${access}' access to resource '${resourceId}'`;
@@ -44,9 +45,10 @@ class AccessException extends BaseException {
      * @param {Resource} resource The resource.
      * @param {string} access The level of access.
      * @param {Resource} participant The participant.
+     * @param {Resource} transaction The transaction.
      */
-    constructor(resource, access, participant) {
-        super(AccessException.generateMessage(resource, access, participant));
+    constructor(resource, access, participant, transaction) {
+        super(AccessException.generateMessage(resource, access, participant, transaction));
     }
 
 }
