@@ -41,50 +41,6 @@ const LOG = Logger.getLog('QueryEngine');
  * target resource. When the "special" property is accessed by the query, a function
  * can be executed to resolve that relationship and replace it with the target
  * resource.
- *
- * Unfortunately, resolving a relationship is an asynchronous operation, because
- * we have to perform network I/O. JSONata (our expression runtime) does not, at
- * the time of writing, have any support for handling asynchronous values or
- * promises that will be resolved with values.
- *
- * The code below attempts to work around this by executing the following algorithm:
- *
- * 1)  An empty array of accessed relationships is created.
- *
- * 2)  The resource or resources being queried are modified so that all of their
- *     relationships are augmented with "special" properties. These properties
- *     execute a function when they are read. That function then adds the properties
- *     owning relationship to the array defined in 1).
- *
- * 3)  The JSONata expression is evaluated against the resource or resources. The
- *     evaluation will return a value.
- *
- * 4)  If the array defined in 1) is empty, no relationships were accessed, and
- *     we can safely return the result of 3) and stop processing.
- *
- * 5)  If the array defined in 1) is not empty, then we must iterate over that array.
- *     For each accessed relationship in the array:
- *
- * 5a) The relationship is resolved to its target resource.
- *
- * 5b) The resolved resource is modified as per 2) so that any relationships in the
- *     resolved resource are also augumented with "special" properties.
- *
- * 5c) The relationship is replaced with the resolved resource.
- *
- * 5d) The accessed relationship is removed from the array defined in 1).
- *
- * 6)  Now that all accessed relationships have been resolved, we repeat step 3).
- *     Note that new relationships may be accessed, so we may repeat steps 3) to
- *     6) multiple times until we can return in 4).
- *
- * This is inefficient as we may have to evaluate the JSONata expression multiple
- * times until all required relationships are resolved. Currently, the resolver
- * uses a cache of resources to save on expensive registry lookups. A future
- * improvement to this algorithm could be to keep a cache of queries and a list
- * of the relationships that had to be resolved in order to process each query.
- * Those relationships could then be eagerly resolved upfront for any subsequent
- * executions of the same query.
  */
 
 /**
