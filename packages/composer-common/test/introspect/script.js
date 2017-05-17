@@ -37,6 +37,17 @@ describe('Script', () => {
                 new Script(modelManager, 'SCRIPT_001', 'JS', null );
             }).should.throw(/Empty script contents/);
         });
+
+        it('should not throw when ES5 code is provided', () => {
+            new Script(modelManager, 'SCRIPT_001', 'JS', 'function TheFunc() { }' );
+        });
+
+        it('should throw when ES7 code is provided', () => {
+            (() => {
+                new Script(modelManager, 'SCRIPT_001', 'JS', 'class TheClass { }' );
+            }).should.throw(/The keyword.*is reserved/);
+        });
+
     });
 
     describe('#getIdentifier', () => {
