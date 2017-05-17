@@ -34,14 +34,11 @@ o DEER_OTHER
 }
 ```
 
-### Declarations of Assets, Participants, Transactions
+### Declarations of Assets, Events, Participants, Transactions
 
-Assets, Participants and Transactions are class definitions. The
-concepts of Asset, Participant and Transaction may be considered to be different
-stereotypes of the class type.
+Assets, Participants and Transactions are class definitions. The concepts of Asset, Participant and Transaction may be considered to be different stereotypes of the class type.
 
-A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition. Therefore an
-Asset (instance) has-an Asset Definition.
+A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition. Therefore an Asset (instance) has-an Asset Definition.
 
 A resource definition has the following properties:
 
@@ -78,6 +75,15 @@ but that may be referenced from the resource. Relationships are unidirectional.
         o String address2
         o String county
         o String postcode
+    }
+    ```
+
+    ```
+    /**
+     * An abstract event type
+     */
+    event BasicEvent identified by eventId {
+    o String eventId
     }
     ```
 
