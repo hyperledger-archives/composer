@@ -63,7 +63,7 @@ export class ClientService {
         return this.getBusinessNetwork().getModelManager().getModelFiles();
     }
 
-    updateFile(id: string, content: any, type: string): string {
+    validateFile(id: string, content: any, type: string): string {
         try {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
@@ -82,12 +82,20 @@ export class ClientService {
                 let aclFile = this.createAclFile(id, modelManager, content);
                 aclManager.setAclFile(aclFile);
             }
-
-            this.businessNetworkChanged$.next(true);
             return null;
         } catch (e) {
-            this.businessNetworkChanged$.next(false);
             return e.toString();
+        }
+    }
+
+    updateFile(id: string, content: any, type: string): string {
+        let msg = this.validateFile(id, content, type);
+        if (msg === null) {
+            this.businessNetworkChanged$.next(true);
+            return null;
+        } else {
+            this.businessNetworkChanged$.next(false);
+            return msg;
         }
     }
 
@@ -153,7 +161,6 @@ export class ClientService {
         }
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         console.log('Connecting to connection profile', connectionProfile);
-        let userID;
         this.connectingPromise = this.adminService.ensureConnected(force)
         .then(() => {
             return this.refresh();
@@ -166,7 +173,6 @@ export class ClientService {
             this.alertService.errorStatus$.next(`Failed to connect: ${error}`);
             this.isConnected = false;
             this.connectingPromise = null;
-            throw error;
         });
         return this.connectingPromise;
     }
