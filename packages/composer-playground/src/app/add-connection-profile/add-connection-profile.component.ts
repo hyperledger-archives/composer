@@ -212,10 +212,22 @@ export class AddConnectionProfileComponent {
                 certificatePath: this.addConnectionProfileCertificatePath
             };
         } else if (this.version === 'v1' || this.addConnectionProfileType === 'hlfv1') {
+
+            // If the orderers are a list of strings, we need to convert it to a list of objects.
+            // Doing this allows the rest of the code to work as usual
+            let newOrderersList = [];
+            for (let x = 0; x < this.addConnectionProfileOrderers.length; x++) {
+                if (typeof this.addConnectionProfileOrderers[x] === 'string') {
+                    newOrderersList.push({url: this.addConnectionProfileOrderers[x], cert: '', hostnameOverride: ''});
+                } else {
+                    newOrderersList.push(this.addConnectionProfileOrderers[x]);
+                }
+            }
+
             connectionProfile = {
                 description: this.addConnectionProfileDescription,
                 type: 'hlfv1',
-                orderers: this.addConnectionProfileOrderers,
+                orderers: newOrderersList,
                 ca: this.addConnectionProfileCertificateAuthority,
                 peers: this.addConnectionProfilePeers,
                 keyValStore: this.addConnectionProfileKeyValStore,
