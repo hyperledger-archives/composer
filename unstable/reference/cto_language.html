@@ -156,14 +156,11 @@ o PIG
 o DEER_OTHER
 }
 </code></pre></div>
-<h3 id="declarations-of-assets-participants-transactions">Declarations of Assets, Participants, Transactions</h3>
+<h3 id="declarations-of-assets-events-participants-transactions">Declarations of Assets, Events, Participants, Transactions</h3>
 
-<p>Assets, Participants and Transactions are class definitions. The
-concepts of Asset, Participant and Transaction may be considered to be different
-stereotypes of the class type.</p>
+<p>Assets, Participants and Transactions are class definitions. The concepts of Asset, Participant and Transaction may be considered to be different stereotypes of the class type.</p>
 
-<p>A class in Hyperledger Composer is referred to as a Resource Definition. Therefore an
-Asset (instance) has-an Asset Definition.</p>
+<p>A class in Hyperledger Composer is referred to as a Resource Definition. Therefore an Asset (instance) has-an Asset Definition.</p>
 
 <p>A resource definition has the following properties:</p>
 
@@ -196,6 +193,12 @@ participant Farmer identified by farmerId {
     o String address2
     o String county
     o String postcode
+}
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">/**
+ * An abstract event type
+ */
+event BasicEvent identified by eventId {
+o String eventId
 }
 </code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">/**
  * An abstract transaction type for animal movements

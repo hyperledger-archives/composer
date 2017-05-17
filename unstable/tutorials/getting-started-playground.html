@@ -138,26 +138,8 @@ docker images -aq | xargs docker rmi -f
 <p>In order to install Hyperledger Composer Playground, you need the following software installed:</p>
 
 <ul>
-<li><p>Docker Engine 1.12.3 or greater</p>
-
-<p>Test that Docker Engine is installed by running the following command in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  docker -v
-</code></pre></div>
-<p>You should see the following output in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  $ docker -v
-  Docker version 1.13.0, build 49bf474
-</code></pre></div>
-<p>Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: <a href="https://docs.docker.com/engine/installation/">Install Docker Engine</a></p></li>
-<li><p>Docker Compose 1.8 or greater</p>
-
-<p>Test that Docker Compose is installed by running the following command in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  docker-compose -v
-</code></pre></div>
-<p>You should see the following output in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  $ docker-compose -v
-  docker-compose version 1.10.0, build 4bd6f1a
-</code></pre></div>
-<p>Verify that no errors occurred, and the version is greater than or equal to 1.8. If not, then follow the official instructions for installing Docker Compose: <a href="https://docs.docker.com/compose/install/">Install Docker Compose</a></p></li>
+<li>  Docker Engine 1.12.3 or greater</li>
+<li>  Docker Compose 1.8 or greater</li>
 </ul>
 
 <h1 id="installation">Installation</h1>
@@ -209,7 +191,7 @@ docker images -aq | xargs docker rmi -f
 </code></pre></div>
 <p>If you see this error, ensure that all of these ports are free before you run any commands.</p>
 
-<p>If everything started OK, you should be able to access Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
+<p>If everything started OK, you should be able to access Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a></p>
 
 <h1 id="connecting-to-hyperledger-fabric">Connecting to Hyperledger Fabric</h1>
 
@@ -248,37 +230,17 @@ You can choose to install using npm (the Node.js package manager), or you can ch
 <p>In order to install Hyperledger Composer Playground with npm, you need the following software installed:</p>
 
 <ul>
-<li><p>Node.js v4.6.2 or greater, or Node.js v6.x (note that Node.js v7.x is unsupported)</p>
-
-<p>Test that Node.js is installed by running the following command in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  node -v
-</code></pre></div>
-<p>You should see the following output in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  $ node -v
- v4.6.2
-</code></pre></div>
-<p>Verify that no errors occurred, and the version is greater than or equal to v4.6.2 or v6.x. If not, follow the official instructions for installing Node.js v6.x: <a href="https://nodejs.org">Node.js</a></p></li>
-<li><p>npm v3.x or greater</p>
-
-<p>Test that npm is installed by running the following command in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  npm -v
-</code></pre></div>
-<p>You should see the following output in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  $ npm -v
- 3.10.10
-</code></pre></div>
-<p>Verify that no errors occurred, and the version is greater than or equal to v3.x. If not, upgrade npm to the latest version by running the following command in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  sudo npm -g upgrade npm
-</code></pre></div></li>
+<li>  Node.js v6.x (note that Node.js v7.x is unsupported)</li>
+<li>  npm v3.x or greater</li>
 </ul>
 
 <h3 id="installation">Installation</h3>
 
 <p>You can install Hyperledger Composer Playground by running the following command in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  sudo npm install -g composer-playground
+<div class="highlight"><pre><code class="language-" data-lang="">  npm install -g composer-playground
 </code></pre></div>
 <p>You should see the following output in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  $ sudo npm install -g composer-playground
+<div class="highlight"><pre><code class="language-" data-lang="">  npm install -g composer-playground
   ...
   /usr/local/bin/composer-playground -&gt; /usr/local/lib/node_modules/composer-playground/cli.js
   /usr/local/lib/node_modules
@@ -294,12 +256,6 @@ You can choose to install using npm (the Node.js package manager), or you can ch
 
 <hr>
 
-<blockquote>
-<p>This tutorial is now <strong>complete</strong>. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!</p>
-</blockquote>
-
-<hr>
-
 <h2 id="installing-with-docker"><a name="installdocker"></a>Installing with Docker</h2>
 
 <h3 id="prerequisites">Prerequisites</h3>
@@ -307,16 +263,7 @@ You can choose to install using npm (the Node.js package manager), or you can ch
 <p>In order to install Hyperledger Composer Playground with Docker, you need the following software installed:</p>
 
 <ul>
-<li><p>Docker Engine 1.12.3 or greater</p>
-
-<p>Test that Docker Engine is installed by running the following command in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  docker -v
-</code></pre></div>
-<p>You should see the following output in your terminal or command prompt:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">  $ docker -v
-  Docker version 1.13.0, build 49bf474
-</code></pre></div>
-<p>Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: <a href="https://docs.docker.com/engine/installation/">Install Docker Engine</a></p></li>
+<li>  Docker Engine 1.12.3 or greater</li>
 </ul>
 
 <h3 id="installation">Installation</h3>
@@ -331,12 +278,6 @@ You can choose to install using npm (the Node.js package manager), or you can ch
 <p>Verify that no errors occurred.</p>
 
 <p>You can then start Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a></p>
-
-<hr>
-
-<blockquote>
-<p>This tutorial is now <strong>complete</strong>. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!</p>
-</blockquote>
 
 <hr>
 

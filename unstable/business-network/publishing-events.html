@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Deploy a Business Network Definition | Hyperledger Composer</title>
+    <title>Publishing Events | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -125,45 +125,50 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="deploying-a-business-network">Deploying a Business Network</h1>
+              <h1 id="publishing-events">Publishing Events</h1>
 
-<hr>
+<p>Events can be published by Hyperledger Composer and subscribed to by applications. Events are defined in the model file of a business network definition, and are emitted by transaction JavaScript in the transaction processor functions file.</p>
 
-<p>A business network definition is deployed using the <code>composer network deploy</code> command.</p>
+<h2 id="before-you-begin">Before you begin</h2>
 
-<h1 id="before-you-begin">Before you begin</h1>
-
-<p>Before deploying a business network, a <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a> is needed as a <code>zip</code> file with the following structure:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">BusinessNetworkArchive.zip
-├── lib
-│   └── mozart.cto.js
-├── models
-│   └── mozart.cto
-└── package.json
-</code></pre></div>
-<!--
-You can use the `composer archive` command to create an archive with the correct format.
-
-**NOTE**: *Do not zip a a folder containing **lib**, **models**, and **package.json** to create an Business Network Archive, zip the contents themselves*
--->
+<p>Before you begin adding events to your business network, you should have a good understanding of the modelling language for business networks, and what makes up a full business network definition.</p>
 
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><p>Start <a href="runtime-start.html">Hyperledger Fabric Peer and Membership Service</a>.</p></li>
-<li><p><a href="../installing/createconnectionprofile.html">Create a Connection Profile</a> or do <em>not</em> use <code>-p</code> and allow Hyperledger Composer to create a <code>Default Connection Profile</code> for you.</p></li>
-<li><p>Enter the command on a single line. For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">`composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;`
-</code></pre></div></li>
-<li><p>Enter your Enrollment Secret when prompted.</p></li>
-<li><p>When you see</p>
+<li><p>Events are defined in the model file (<code>.cto</code>) of your business network definition, in the same way as assets and participants. Events use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">```
-Deploying business network definition. This may take a little time.
-Command completed successfully.
+event BasicEvent identified by eventId {
+o String eventId
+}
 ```
-</code></pre></div>
-<p>the business network definition has been successfully deployed.</p></li>
+</code></pre></div></li>
+<li><p>In order for the event to be published the transaction which creates the event must include three functions, the first is the <code>getFactory</code> function. The <code>getFactory</code> allows events to be created as part of a transaction. Next, an event must be created by using <code>factory.newEvent(&#39;org.namespace&#39;, &#39;BasicEvent&#39;)</code>. This creates a <code>BasicEvent</code> from the business network model file in the defined organisation namespace. Lastly, the event must be emitted by using <code>emit(BasicEvent)</code>. A simple transaction which calls this event would look like this:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```JavaScript
+/**
+ * @param {org.namespace.BasicEventTransaction} basicEventTransaction
+ * @transaction
+ */
+function basicEventTransaction(basicEventTransaction) {
+    var factory = getFactory();
+
+    var basicEvent = factory.newEvent('org.namespace', 'BasicEvent');
+    emit(basicEvent);
+}
+```
+</code></pre></div></li>
 </ol>
+
+<p>This transaction would create and publish an event of the <code>BasicEvent</code> type as defined in the business network&#39;s model file. For more information on the getFactory function, see the <a href="https://hyperledger.github.io/composer/jsdoc/module-composer-runtime.html#getFactory">Composer API documentation</a>.</p>
+
+<h2 id="what-next">What next?</h2>
+
+<ul>
+<li><a href="../applications/subscribing-to-events.html">Subscribing to events</a></li>
+<li><a href="../applications/genapp.html">Creating an application</a></li>
+</ul>
+
+<hr>
 
             
           </section>

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Deploy a Business Network Definition | Hyperledger Composer</title>
+    <title>Subscribing to events | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -103,16 +103,10 @@ ga('send', 'pageview');
 <strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
 <strong><a href="../installing/installingindex.html">Installing</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<a href="../business-network/businessnetwork.html">What is a business network?</a>
-<a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/getting-started-coding-bnd.html">Defining a business network</a>
-<a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
-<a href="../business-network/bnd-define.html">Create a business network definition</a>
-<a href="../business-network/bnd-publish.html">Publish a business network definition</a>
-<a href="../business-network/model-publish.html">Publish a business domain model</a>
-<a href="../business-network/runtime-update.html">Update a business network definition on Composer</a>
-<a href="../business-network/testing.html">Test a business network definition</a>
 <strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<a href="../applications/genapp.html">Generating a starter application</a>
+<a href="../applications/getting-started-nodejs-app.html">Writing a node.js application</a>
+<a href="../applications/rest-api-server.html">Generating a REST API</a>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
@@ -125,45 +119,34 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="deploying-a-business-network">Deploying a Business Network</h1>
+              <h1 id="subscribing-to-events">Subscribing to events</h1>
 
-<hr>
+<p>Applications can subscribe to events from a business network by using the <code>composer-client.BusinessNetworkConnection.on</code> API call. Events are defined in the business network model file and are emitted by specified transactions in the transaction processor function file. For more information on publishing events, see <a href="../business-network/publishing-events.html">publishing events</a>.</p>
 
-<p>A business network definition is deployed using the <code>composer network deploy</code> command.</p>
+<h2 id="before-you-begin">Before you begin</h2>
 
-<h1 id="before-you-begin">Before you begin</h1>
-
-<p>Before deploying a business network, a <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a> is needed as a <code>zip</code> file with the following structure:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">BusinessNetworkArchive.zip
-├── lib
-│   └── mozart.cto.js
-├── models
-│   └── mozart.cto
-└── package.json
-</code></pre></div>
-<!--
-You can use the `composer archive` command to create an archive with the correct format.
-
-**NOTE**: *Do not zip a a folder containing **lib**, **models**, and **package.json** to create an Business Network Archive, zip the contents themselves*
--->
+<p>Before an application can subscribe to events, you must have defined some events and the transactions which will emit them. The business network must also be deployed and you must have connected to it. Follow the steps for <a href="../applications/getting-started-nodejs-app.html">connecting to the Hyperledger Composer runtime</a>.</p>
 
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><p>Start <a href="runtime-start.html">Hyperledger Fabric Peer and Membership Service</a>.</p></li>
-<li><p><a href="../installing/createconnectionprofile.html">Create a Connection Profile</a> or do <em>not</em> use <code>-p</code> and allow Hyperledger Composer to create a <code>Default Connection Profile</code> for you.</p></li>
-<li><p>Enter the command on a single line. For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">`composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;`
-</code></pre></div></li>
-<li><p>Enter your Enrollment Secret when prompted.</p></li>
-<li><p>When you see</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-Deploying business network definition. This may take a little time.
-Command completed successfully.
+<li><p>An application must send a specific API call to subscribe to events emitted transactions in a business network. Currently, an application which subscribes to events will receive all events which are emitted. The API call should take the following format:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```Javascript
+businessNetworkConnection.on('event', (event) =&gt; {
+    // event: { "$class": "org.namespace.BasicEvent", "eventId": "0000-0000-0000-000000#0" }
+    console.log(event);
+});
 ```
-</code></pre></div>
-<p>the business network definition has been successfully deployed.</p></li>
+</code></pre></div></li>
 </ol>
+
+<p>This includes an event called <code>BasicEvent</code> which was created in the <a href="../business-network/publishing-events.html">publishing events</a> documentation. The <code>eventId</code> property is always the same as the <code>transactionId</code> of the transaction which emitted the event, with an appended number in the form <code>&quot;transactionId&quot;: &quot;&lt;transactionId&gt;#number&quot;</code>.</p>
+
+<h2 id="what-next">What next?</h2>
+
+<p>The application will now receive all of the events emitted by the business network, and it&#39;s up to the application to choose to what extent those events are integrated.</p>
+
+<hr>
 
             
           </section>
