@@ -516,10 +516,6 @@ describe('EditorComponent', () => {
 
             mockClientService.getBusinessNetworkName.returns('my_business_name');
 
-            mockAlertService.successStatus$ = {
-                next: sinon.stub()
-            };
-
             component.exportBNA();
 
             fixture.whenStable().then(() => {
@@ -528,9 +524,6 @@ describe('EditorComponent', () => {
                 let passedFile = mockSave.getCall(0).args[0];
                 passedFile.name.should.equal(testFile.name);
                 passedFile.type.should.equal(testFile.type);
-
-                mockAlertService.successStatus$.next.should.have.been.called;
-
                 done();
             });
         });
