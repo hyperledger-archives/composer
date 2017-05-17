@@ -19,7 +19,13 @@ success {
 
         .close {
             position: absolute;
-            right: $space-smedium;
+            right: $space-medium;
+            top: $space-small;
+            opacity: 0.5;
+
+            &:hover {
+              opacity: 1;
+            }
 
             svg {
                 fill :$secondary-text;
