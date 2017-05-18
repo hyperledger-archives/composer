@@ -91,4 +91,13 @@ describe('AssetRegistry', () => {
 
     });
 
+    describe('#newEvent', () => {
+
+        it('should proxy to the registry', () => {
+            mockFactory.newEvent.withArgs('org.acme', 'Doge').returns(mockResource);
+            factory.newEvent('org.acme', 'Doge').should.equal(mockResource);
+        });
+
+    });
+
 });
