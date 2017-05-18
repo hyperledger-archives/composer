@@ -347,11 +347,10 @@ class AccessController {
         // Check to see if the access matches the verb of the ACL rule.
         // Verb can be one of:
         //   'CREATE' / 'READ' / 'UPDATE' / 'ALL' / 'DELETE'
-        let result = false;
-        let verb = aclRule.getVerb();
-        if (verb === 'ALL' || access === verb) {
-            result = true;
-        }
+        let verbs = aclRule.getVerbs();
+        let result = verbs.some((verb) => {
+            return verb === 'ALL' || access === verb;
+        });
 
         LOG.exit(method, result);
         return result;
