@@ -173,6 +173,31 @@ class ParticipantRegistry extends Registry {
     }
 
     /**
+     * Determine whether a participant registry exists.
+     *
+     * @protected
+     * @param {SecurityContext} securityContext The user's security context.
+     * @param {string} id The unique identifier of the asset registry.
+     * @param {ModelManager} modelManager The ModelManager to use for this asset registry.
+     * @param {Factory} factory The factory to use for this asset registry.
+     * @param {Serializer} serializer The Serializer to use for this asset registry.
+     * @return {Promise} A promise that will be resolved with a boolean indicating whether the asset registry exists
+     */
+    static participantRegistryExists(securityContext, id, modelManager, factory, serializer) {
+        Util.securityCheck(securityContext);
+        if (!id) {
+            throw new Error('id not specified');
+        } else if (!modelManager) {
+            throw new Error('modelManager not specified');
+        } else if (!factory) {
+            throw new Error('factory not specified');
+        } else if (!serializer) {
+            throw new Error('serializer not specified');
+        }
+        return Registry.existsRegistry(securityContext, REGISTRY_TYPE, id);
+    }
+
+    /**
      * Add a new participant registry.
      *
      * @protected
