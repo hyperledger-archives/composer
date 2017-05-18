@@ -29,6 +29,7 @@ These getting started guides are intended for more technical users and may requi
 * [Quickstart](../installing/quickstart.html) installs and tests the prerequisites for the digital property network sample.
 * [Running a sample with the command line](../tutorials/getting-started-cmd-line.html).
 * [Installing and running the {{site.data.conrefs.composer_short}} Playground locally](../tutorials/getting-started-playground.html). To run the [business network tutorial](../tutorials/defining-a-business-network.html) locally, install the playground locally first.
+* [Writing your own business network using the command line](../business-network/getting-started-coding-bnd.html)
 
 <!--
 <ul>
