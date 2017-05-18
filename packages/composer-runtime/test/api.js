@@ -22,6 +22,9 @@ const realFactory = require('composer-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
+const EventService = require('../lib/eventservice');
+const Context = require('../lib/context');
+const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
 chai.should();
@@ -33,15 +36,21 @@ require('sinon-as-promised');
 describe('Api', () => {
 
     let mockFactory;
+    let mockSerializer;
     let mockParticipant;
     let mockRegistryManager;
+    let mockEventService;
+    let mockContext;
     let api;
 
     beforeEach(() => {
         mockFactory = sinon.createStubInstance(realFactory);
+        mockSerializer = sinon.createStubInstance(Serializer);
         mockParticipant = sinon.createStubInstance(Resource);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        api = new Api(mockFactory, mockParticipant, mockRegistryManager);
+        mockEventService = sinon.createStubInstance(EventService);
+        mockContext = sinon.createStubInstance(Context);
+        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockEventService, mockContext);
     });
 
     describe('#constructor', () => {
@@ -104,6 +113,25 @@ describe('Api', () => {
             api.getCurrentParticipant().should.equal(mockParticipant);
         });
 
+    });
+
+    describe('#emit', () => {
+        let mockTransaction;
+        let mockEvent;
+
+        beforeEach(() => {
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockEvent = sinon.createStubInstance(Resource);
+            mockTransaction.getIdentifier.returns('much.wow');
+            mockContext.getTransaction.returns(mockTransaction);
+            mockContext.getEventNumber.returns(0);
+        });
+
+        it('should call eventService.emit', () => {
+            api.emit(mockEvent);
+            sinon.assert.calledOnce(mockEventService.emit);
+            // sinon.assert.calledWith(mockEventService.emit, mockEvent);
+        });
     });
 
 });
