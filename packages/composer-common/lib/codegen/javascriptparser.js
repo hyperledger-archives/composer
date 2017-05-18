@@ -33,20 +33,27 @@ class JavaScriptParser {
    * Create a JavaScriptParser.
    *
    * @param {string} fileContents - the text of the JS file to parse
-   * @param {boolean} includePrivates - if true methods tagged as private are also returned
+   * @param {boolean} [includePrivates] - if true methods tagged as private are also returned
+   * @param {number} [ecmaVersion] - the ECMAScript version to use
    */
-    constructor(fileContents, includePrivates) {
+    constructor(fileContents, includePrivates, ecmaVersion) {
         let comments = [],
             tokens = [];
 
-        let ast = acorn.parse(fileContents, {
+        let options =  {
             // collect ranges for each node
             ranges: true,
             // collect comments in Esprima's format
             onComment: comments,
             // collect token ranges
             onToken: tokens
-        });
+        };
+
+        if (ecmaVersion) {
+            options.ecmaVersion = ecmaVersion;
+        }
+
+        let ast = acorn.parse(fileContents, options);
 
         this.includes = [];
         this.classes = [];

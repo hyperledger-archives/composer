@@ -566,7 +566,7 @@ describe('AddConnectionProfileComponent', () => {
                     invokeWaitTime: WAIT_TIME,
                     keyValStore: KEY_VAL_STORE,
                     mspID: MSPID,
-                    orderers: ORDERERS,
+                    orderers: [{url: 'orderers', cert: '', hostnameOverride: ''}],
                     peers: PEERS,
                     type: 'hlfv1'
                 }

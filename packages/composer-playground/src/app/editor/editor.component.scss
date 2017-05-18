@@ -59,6 +59,19 @@ app-editor {
       max-height: 63vh;
       overflow-y: auto;
     }
+
+    .edit_icon {
+        flex-shrink: 1;
+        align-self: center;
+        padding-top:4px;
+    }
+
+    .delete_icon {
+        flex-shrink: 1;
+        align-self: center;
+        margin-left: auto;
+        padding-top:4px;
+    }
   }
 
   .CodeMirror {
