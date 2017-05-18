@@ -147,13 +147,36 @@ class BusinessNetworkConnection extends EventEmitter {
      *     // logic here...
      *     //}
      * });
+     * @deprecated Use assetRegistryExists instead
      * @param {string} id - The unique identifier of the asset registry
      * @return {Promise} - A promise that will be resolved with a boolean indicating whether the asset
      * registry exists.
      */
     existsAssetRegistry(id) {
+        return this.assetRegistryExists(id);
+    }
+
+    /**
+     * Determine whether a asset registry exists.
+     * @example
+     * // Determine whether an asset registry exists
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetworkDefinition){
+     *     return businessNetworkDefinition.assetRegistryExists('businessNetworkIdentifier.registryId');
+     * })
+     * .then(function(exists){
+     *     // if (exists === true) {
+     *     // logic here...
+     *     //}
+     * });
+     * @param {string} id - The unique identifier of the asset registry
+     * @return {Promise} - A promise that will be resolved with a boolean indicating whether the asset
+     * registry exists.
+     */
+    assetRegistryExists(id) {
         Util.securityCheck(this.securityContext);
-        return AssetRegistry.existsAssetRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+        return AssetRegistry.assetRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
     }
 
     /**
@@ -215,6 +238,29 @@ class BusinessNetworkConnection extends EventEmitter {
     getParticipantRegistry(id) {
         Util.securityCheck(this.securityContext);
         return ParticipantRegistry.getParticipantRegistry(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
+    }
+
+     /**
+     * Determine whether a participant registry exists.
+     * @example
+     * // Determine whether an asset registry exists
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     * .then(function(businessNetworkDefinition){
+     *     return businessNetworkDefinition.participantRegistryExists('businessNetworkIdentifier.registryId');
+     * })
+     * .then(function(exists){
+     *     // if (exists === true) {
+     *     // logic here...
+     *     //}
+     * });
+     * @param {string} id - The unique identifier of the participant registry
+     * @return {Promise} - A promise that will be resolved with a boolean indicating whether the participant
+     * registry exists.
+     */
+    participantRegistryExists(id) {
+        Util.securityCheck(this.securityContext);
+        return ParticipantRegistry.participantRegistryExists(this.securityContext, id, this.getBusinessNetwork().getModelManager(), this.getBusinessNetwork().getFactory(), this.getBusinessNetwork().getSerializer());
     }
 
     /**
