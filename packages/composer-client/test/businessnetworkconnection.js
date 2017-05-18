@@ -155,6 +155,28 @@ describe('BusinessNetworkConnection', () => {
             });
         });
 
+        it('should create a connection, listen for events, and emit the events it detects individually', () => {
+            sandbox.stub(businessNetworkConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+            mockConnection.login.resolves(mockSecurityContext);
+            mockConnection.ping.resolves();
+            const buffer = Buffer.from(JSON.stringify({
+                data: 'aGVsbG8='
+            }));
+            sandbox.stub(Util, 'queryChainCode').withArgs(mockSecurityContext, 'getBusinessNetwork', []).resolves(buffer);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            const cb = sinon.stub();
+            businessNetworkConnection.on('event', cb);
+            mockConnection.on.withArgs('events', sinon.match.func).yields(['event1', 'event2']);
+            mockSerializer.fromJSON.onCall(0).returns('event1#serialized');
+            mockSerializer.fromJSON.onCall(1).returns('event2#serialized');
+
+            return businessNetworkConnection.connect('testprofile', 'testnetwork', 'enrollmentID', 'enrollmentSecret', { some: 'other', options: true })
+            .then((result) => {
+                sinon.assert.calledTwice(cb); // two events
+                sinon.assert.calledWith(cb, 'event1#serialized');
+                sinon.assert.calledWith(cb, 'event2#serialized');
+            });
+        });
     });
 
     describe('#disconnect', () => {
@@ -169,9 +191,11 @@ describe('BusinessNetworkConnection', () => {
             return businessNetworkConnection.disconnect()
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.disconnect);
+                    sinon.assert.calledOnce(mockConnection.removeListener);
                     return businessNetworkConnection.disconnect();
                 })
                 .then(() => {
+                    mockConnection.removeListener.withArgs('events', sinon.match.func).yield(['event1', 'event2']);
                     should.equal(businessNetworkConnection.connection, null);
                     sinon.assert.calledOnce(mockConnection.disconnect);
                 });

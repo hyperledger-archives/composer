@@ -123,6 +123,9 @@ class ConnectorServer {
             return Promise.resolve();
         }
         delete this.connections[connectionID];
+
+        connection.removeListener('events', () => {});
+
         return connection.disconnect()
             .then(() => {
                 callback(null);
@@ -160,6 +163,12 @@ class ConnectorServer {
                 this.securityContexts[securityContextID] = securityContext;
                 callback(null, securityContextID);
                 LOG.exit(method, securityContextID);
+            })
+            .then(() => {
+                connection.on('events', (events) => {
+                    LOG.debug(method, events);
+                    this.socket.emit('events', connectionID, events);
+                });
             })
             .catch((error) => {
                 LOG.error(error);

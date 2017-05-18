@@ -92,6 +92,21 @@ describe('HLFConnection', () => {
 
     describe('#constructor', () => {
 
+        it('should subscribe to the eventHub and emit events', () => {
+            const events = {
+                payload: {
+                    toString: () => {
+                        return '{"event":"event"}';
+                    }
+                }
+            };
+            connection.emit = sandbox.stub();
+            mockEventHub.registerChaincodeEvent.withArgs('org.acme.biznet', 'composer', sinon.match.func).yield(events);
+            sinon.assert.calledOnce(mockEventHub.registerChaincodeEvent);
+            sinon.assert.calledWith(mockEventHub.registerChaincodeEvent, 'org.acme.biznet', 'composer', sinon.match.func);
+            sinon.assert.calledOnce(connection.emit);
+        });
+
         it('should throw if connectOptions not specified', () => {
             (() => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', null, mockClient, mockChain, mockEventHub, mockCAClient);
@@ -128,7 +143,6 @@ describe('HLFConnection', () => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, [mockEventHub], null);
             }).should.throw(/caClient not specified/);
         });
-
     });
 
     describe('#getConnectionOptions', () => {
