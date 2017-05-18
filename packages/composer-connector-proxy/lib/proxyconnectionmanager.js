@@ -109,6 +109,7 @@ class ProxyConnectionManager extends ConnectionManager {
                         let connection = ProxyConnectionManager.createConnection(this, connectionProfile, businessNetworkIdentifier, this.socket, connectionID);
                         // Only emit when client
                         this.socket.on('events', (myConnectionID, events) => {
+                            LOG.debug(method, events);
                             if (myConnectionID === connectionID) {
                                 connection.emit('events', events);
                             }

@@ -166,7 +166,7 @@ class ConnectorServer {
             })
             .then(() => {
                 connection.on('events', (events) => {
-                    LOG.debug('@14gracel', events);
+                    LOG.debug(method, events);
                     this.socket.emit('events', connectionID, events);
                 });
             })
