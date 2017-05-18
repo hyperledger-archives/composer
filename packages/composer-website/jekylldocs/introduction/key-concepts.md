@@ -55,6 +55,12 @@ Transactions are the mechanism by which participants interact with assets. This 
 
 ---
 
+### Events
+
+Events are defined in the business network definition in the same way as assets or participants. Once events have been defined, they can be included in the transaction processor functions to be emitted as part of a transaction. Applications can subscribe to emitted events through the `composer-client` API.
+
+---
+
 ### APIs
 
 The `composer-admin`, `composer-client`, and `composer-common` components contain the APIs to interact with a {{site.data.conrefs.composer_full}} runtime. The `composer-rest-server` component generates a unique RESTful API for interacting with your deployed business network.
