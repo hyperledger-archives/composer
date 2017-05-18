@@ -179,29 +179,29 @@ describe('AssetRegistry', () => {
 
     });
 
-    describe('#existsAssetRegistry', () => {
+    describe('#assetRegistryExists', () => {
 
         it('should throw when id not specified', () => {
             (() => {
-                AssetRegistry.existsAssetRegistry(mockSecurityContext, null, modelManager, factory, serializer);
+                AssetRegistry.assetRegistryExists(mockSecurityContext, null, modelManager, factory, serializer);
             }).should.throw(/id not specified/);
         });
 
         it('should throw when modelManager not specified', () => {
             (() => {
-                AssetRegistry.existsAssetRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', null, factory, serializer);
+                AssetRegistry.assetRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', null, factory, serializer);
             }).should.throw(/modelManager not specified/);
         });
 
         it('should throw when factory not specified', () => {
             (() => {
-                AssetRegistry.existsAssetRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, null, serializer);
+                AssetRegistry.assetRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, null, serializer);
             }).should.throw(/factory not specified/);
         });
 
         it('should throw when serializer not specified', () => {
             (() => {
-                AssetRegistry.existsAssetRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, null);
+                AssetRegistry.assetRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, null);
             }).should.throw(/serializer not specified/);
         });
 
@@ -212,7 +212,7 @@ describe('AssetRegistry', () => {
 
             // Invoke the getAllAssetRegistries function.
             return AssetRegistry
-                .existsAssetRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, serializer)
+                .assetRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, serializer)
                 .then((exists) => {
 
                     // Check that the registry was requested correctly.
@@ -233,7 +233,7 @@ describe('AssetRegistry', () => {
 
             // Invoke the getAllAssetRegistries function.
             return AssetRegistry
-                .existsAssetRegistry(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, serializer)
+                .assetRegistryExists(mockSecurityContext, 'd2d210a3-5f11-433b-aa48-f74d25bb0f0d', modelManager, factory, serializer)
                 .should.be.rejectedWith(/such error/);
 
         });
