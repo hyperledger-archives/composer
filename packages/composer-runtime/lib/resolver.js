@@ -160,6 +160,39 @@ class Resolver {
     }
 
     /**
+     * Get the registry for the specified relationship.
+     * @private
+     * @param {Relationship} relationship The relationship to resolve.
+     * @return {Promise} A promise that is resolved with a {@link Registry} object,
+     * or rejected with an error.
+     */
+    getRegistryForRelationship(relationship) {
+        const method = 'getRegistryForRelationship';
+        LOG.entry(method, relationship.toString());
+        let registryId = relationship.getFullyQualifiedType();
+        let classDeclaration = this.introspector.getClassDeclaration(registryId);
+        LOG.debug(method, 'Got class declaration', classDeclaration);
+        let classType;
+        if (classDeclaration instanceof AssetDeclaration) {
+            classType = 'Asset';
+        } else if (classDeclaration instanceof ParticipantDeclaration) {
+            classType = 'Participant';
+        } else if (classDeclaration instanceof TransactionDeclaration) {
+            classType = 'Transaction';
+            // Special case for this one!
+            registryId = 'default';
+        } else {
+            throw new Error('Unsupported class declaration type ' + classDeclaration.toString());
+        }
+        LOG.debug(method, 'Getting registry', registryId);
+        return this.registryManager.get(classType, registryId)
+            .then((registry) => {
+                LOG.exit(method, registry);
+                return registry;
+            });
+    }
+
+    /**
      * Resolve the specified relationship.
      * @private
      * @param {Relationship} relationship The relationship to resolve.
@@ -179,23 +212,7 @@ class Resolver {
             LOG.exit(method, resource.toString());
             return Promise.resolve(resource);
         }
-        let registryId = relationship.getFullyQualifiedType();
-        let classDeclaration = this.introspector.getClassDeclaration(registryId);
-        LOG.debug(method, 'Got class declaration', classDeclaration);
-        let classType;
-        if (classDeclaration instanceof AssetDeclaration) {
-            classType = 'Asset';
-        } else if (classDeclaration instanceof ParticipantDeclaration) {
-            classType = 'Participant';
-        } else if (classDeclaration instanceof TransactionDeclaration) {
-            classType = 'Transaction';
-            // Special case for this one!
-            registryId = 'default';
-        } else {
-            throw new Error('Unsupported class declaration type ' + classDeclaration.toString());
-        }
-        LOG.debug(method, 'Getting registry', registryId);
-        return this.registryManager.get(classType, registryId)
+        return this.getRegistryForRelationship(relationship)
             .then((registry) => {
                 let resourceId = relationship.getIdentifier();
                 LOG.debug(method, 'Getting resource in registry', resourceId);
