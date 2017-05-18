@@ -366,7 +366,7 @@ class BusinessNetworkDefinition {
         let scriptFiles = scriptManager.getScripts();
         scriptFiles.forEach(function(file) {
             let fileIdentifier = file.identifier;
-            let fileName = fileIdentifier.substring(fileIdentifier.lastIndexOf('/') + 1);
+            let fileName = fsPath.parse(fileIdentifier).base;
             zip.folder('lib').file(fileName, file.contents);
         });
 
