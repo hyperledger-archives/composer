@@ -51,11 +51,11 @@ describe('WebEventService', () => {
     describe('#commit', () => {
         it ('should emit a list of events', () => {
             eventService.serializeBuffer = sinon.stub();
-            eventService.serializeBuffer.returns(['serialized JS']);
+            eventService.serializeBuffer.returns('[{"event": "event"}]');
             eventService.commit();
             sinon.assert.calledOnce(eventService.serializeBuffer);
             sinon.assert.calledOnce(mockEventEmitter.emit);
-            sinon.assert.calledWith(mockEventEmitter.emit, 'events', ['serialized JS']);
+            sinon.assert.calledWith(mockEventEmitter.emit, 'events', [{'event': 'event'}]);
         });
     });
 });

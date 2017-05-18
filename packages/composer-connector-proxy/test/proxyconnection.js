@@ -60,6 +60,7 @@ describe('ProxyConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
                     sinon.assert.calledWith(mockSocket.emit, '/api/connectionDisconnect', connectionID, sinon.match.func);
+                    mockSocket.removeListener.withArgs('events', sinon.match.func).yield();
                 });
         });
 

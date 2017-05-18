@@ -72,14 +72,14 @@ class EventService {
     }
 
     /**
-     *  Get an array of serialized events
-     * @return {Object[]} - An array of serialized events
+     *  Get an array of events as a string
+     * @return {String} - An array of serialized events
      */
     serializeBuffer() {
         const method = 'serializeBuffer';
         LOG.entry(method);
         LOG.exit(method, this.eventBuffer);
-        return this.eventBuffer;
+        return JSON.stringify(this.eventBuffer);
     }
 
     /**

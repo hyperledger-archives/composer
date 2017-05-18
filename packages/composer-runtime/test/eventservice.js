@@ -83,7 +83,7 @@ describe('EventService', () => {
             let event = {'$class': 'much.wow'};
             eventService.eventBuffer = [ event ];
 
-            eventService.serializeBuffer().should.deep.equal([{'$class': 'much.wow'}]);
+            eventService.serializeBuffer().should.equal('[{"$class":"much.wow"}]');
         });
     });
 

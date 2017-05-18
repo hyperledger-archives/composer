@@ -104,13 +104,10 @@ class HLFConnection extends Connection {
         this.eventHubs = eventHubs;
 
         if (businessNetworkIdentifier) {
-            if (eventHubs.length > 0) {
-                LOG.entry('@14gracel', 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
-                eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
-                    LOG.entry('@14gracel', 'emit events connection');
-                    this.emit('events', event.payload.toString('utf8'));
-                });
-            }
+            LOG.entry(method, 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
+            eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
+                this.emit('events', JSON.parse(event.payload.toString('utf8')));
+            });
         }
 
         this.caClient = caClient;
@@ -146,7 +143,6 @@ class HLFConnection extends Connection {
                     if (eventHub.isconnected()) {
                         eventHub.disconnect();
                     }
-                    LOG.debug('@14gracel', 'Unregister from the chaincode events');
                     this.eventHubs[0].unregisterChaincodeEvent(this.businessNetworkIdentifier);
                 });
                 LOG.exit(method);

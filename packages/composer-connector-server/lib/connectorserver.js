@@ -124,9 +124,7 @@ class ConnectorServer {
         }
         delete this.connections[connectionID];
 
-        connection.removeListener('events', () => {
-            LOG.debug('@14gracel', 'removed events');
-        });
+        connection.removeListener('events', () => {});
 
         return connection.disconnect()
             .then(() => {
@@ -167,9 +165,8 @@ class ConnectorServer {
                 LOG.exit(method, securityContextID);
             })
             .then(() => {
-                LOG.debug('@14gracel', 'on events connection');
                 connection.on('events', (events) => {
-                    LOG.debug('@14gracel', 'emit events socket');
+                    LOG.debug('@14gracel', events);
                     this.socket.emit('events', connectionID, events);
                 });
             })

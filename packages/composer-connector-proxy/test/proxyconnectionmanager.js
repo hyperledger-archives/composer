@@ -144,7 +144,7 @@ describe('ProxyConnectionManager', () => {
         it('should send a connect call to the connector server', () => {
             mockSocket.emit.withArgs('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, sinon.match.func).yields(null, connectionID);
             sinon.stub(ProxyConnectionManager, 'createConnection').returns(mockConnection);
-            mockSocket.on.withArgs('events', sinon.match.func).yields(connectionID, '[{"event": "event1"}, {"evnet": "event2"}]');
+            mockSocket.on.withArgs('events', sinon.match.func).yields(connectionID, [{'event': 'event1'}, {'evnet': 'event2'}]);
             return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(mockSocket.emit);

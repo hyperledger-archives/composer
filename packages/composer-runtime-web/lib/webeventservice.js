@@ -41,7 +41,8 @@ class WebEventService extends EventService {
      * Emit the events stored in eventBuffer
      */
     commit() {
-        this.eventSink.emit('events', this.serializeBuffer());
+        const jsonEvent = JSON.parse(this.serializeBuffer());
+        this.eventSink.emit('events', jsonEvent);
     }
 }
 

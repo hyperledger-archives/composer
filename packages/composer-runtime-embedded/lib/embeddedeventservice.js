@@ -33,7 +33,7 @@ class EmbeddedEventService extends EventService {
         super();
         const method = 'constructor';
 
-        this.emitter = eventSink;
+        this.eventSink = eventSink;
 
         LOG.exit(method);
     }
@@ -42,7 +42,8 @@ class EmbeddedEventService extends EventService {
      * Emit the events stored in eventBuffer
      */
     commit() {
-        this.emitter.emit('composer', this.serializeBuffer());
+        const jsonEvent = JSON.parse(this.serializeBuffer());
+        this.eventSink.emit('events', jsonEvent);
     }
 }
 

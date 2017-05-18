@@ -286,11 +286,9 @@ class BusinessNetworkConnection extends EventEmitter {
         LOG.entry(method, connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions);
         return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
             .then((connection) => {
-                LOG.debug('@14gracel', 'on events connection');
                 connection.on('events', (events) => {
                     events.forEach((event) => {
                         let serializedEvent = this.getBusinessNetwork().getSerializer().fromJSON(event);
-                        LOG.debug('@14gracel', 'emit event connection');
                         this.emit('event', serializedEvent);
                     });
                 });
@@ -340,7 +338,7 @@ class BusinessNetworkConnection extends EventEmitter {
         return this.connection.disconnect()
             .then(() => {
                 this.connection.removeListener('events', () => {
-                    LOG.debug('@14gracel', 'remove events connection');
+                    LOG.debug(method, 'removeLisener');
                 });
                 this.connection = null;
                 this.securityContext = null;
