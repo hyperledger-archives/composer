@@ -182,7 +182,7 @@ class EmbeddedConnection extends Connection {
         let engine = EmbeddedConnection.createEngine(container);
         EmbeddedConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeUUID);
         EmbeddedConnection.addChaincode(chaincodeUUID, container, engine);
-        let context = new EmbeddedContext(engine, userID);
+        let context = new EmbeddedContext(engine, userID, this);
         return businessNetwork.toArchive()
             .then((businessNetworkArchive) => {
                 return engine.init(context, 'init', [businessNetworkArchive.toString('base64')]);
@@ -246,7 +246,7 @@ class EmbeddedConnection extends Connection {
         let userID = securityContext.getUserID();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, userID);
+        let context = new EmbeddedContext(chaincode.engine, userID, this);
         return chaincode.engine.query(context, functionName, args)
             .then((data) => {
                 return Buffer.from(JSON.stringify(data));
@@ -265,7 +265,7 @@ class EmbeddedConnection extends Connection {
         let userID = securityContext.getUserID();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, userID);
+        let context = new EmbeddedContext(chaincode.engine, userID, this);
         return chaincode.engine.invoke(context, functionName, args)
             .then((data) => {
                 return undefined;

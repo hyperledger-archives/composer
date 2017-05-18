@@ -282,8 +282,16 @@ class BusinessNetworkConnection extends EventEmitter {
      * @return {Promise} A promise to a BusinessNetworkDefinition that indicates the connection is complete
      */
     connect(connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions) {
+        const method = 'connect';
+        LOG.entry(method, connectionProfile, businessNetwork, enrollmentID, enrollmentSecret, additionalConnectOptions);
         return this.connectionProfileManager.connect(connectionProfile, businessNetwork, additionalConnectOptions)
             .then((connection) => {
+                connection.on('events', (events) => {
+                    events.forEach((event) => {
+                        let serializedEvent = this.getBusinessNetwork().getSerializer().fromJSON(event);
+                        this.emit('event', serializedEvent);
+                    });
+                });
                 this.connection = connection;
                 return connection.login(enrollmentID, enrollmentSecret);
             })
@@ -301,6 +309,7 @@ class BusinessNetworkConnection extends EventEmitter {
             })
             .then((businessNetwork) => {
                 this.businessNetwork = businessNetwork;
+                LOG.exit(method);
                 return this.businessNetwork;
             });
     }
@@ -321,14 +330,20 @@ class BusinessNetworkConnection extends EventEmitter {
      * terminated.
      */
     disconnect() {
+        const method = 'disconnect';
+        LOG.entry(method);
         if (!this.connection) {
             return Promise.resolve();
         }
         return this.connection.disconnect()
             .then(() => {
+                this.connection.removeListener('events', () => {
+                    LOG.debug(method, 'removeLisener');
+                });
                 this.connection = null;
                 this.securityContext = null;
                 this.businessNetwork = null;
+                LOG.exit(method);
             });
     }
 

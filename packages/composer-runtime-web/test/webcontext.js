@@ -14,10 +14,12 @@
 
 'use strict';
 
+const Serializer = require('composer-common').Serializer;
 const Context = require('composer-runtime').Context;
 const DataService = require('composer-runtime').DataService;
 const Engine = require('composer-runtime').Engine;
 const IdentityService = require('composer-runtime').IdentityService;
+const EventService = require('composer-runtime').EventService;
 const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
 
@@ -28,6 +30,7 @@ describe('WebContext', () => {
 
     let mockWebContainer;
     let mockDataService;
+    let mockSerializer;
     let mockEngine;
 
     beforeEach(() => {
@@ -36,6 +39,7 @@ describe('WebContext', () => {
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockWebContainer);
         mockWebContainer.getDataService.returns(mockDataService);
+        mockSerializer = sinon.createStubInstance(Serializer);
     });
 
     describe('#constructor', () => {
@@ -64,6 +68,21 @@ describe('WebContext', () => {
             context.getIdentityService().getCurrentUserID().should.equal('bob1');
         });
 
+    });
+
+    describe('#getEventService', () => {
+
+        it('should return the container event service', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.getSerializer = sinon.stub().returns(mockSerializer);
+            context.getEventService().should.be.an.instanceOf(EventService);
+        });
+
+        it('should return this.eventService if it is set', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.eventService = {};
+            context.getEventService().should.deep.equal({});
+        });
     });
 
 });
