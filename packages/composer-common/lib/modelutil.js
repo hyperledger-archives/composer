@@ -108,15 +108,9 @@ class ModelUtil {
             throw new Error('Cannot find type ' + typeName);
         }
 
-        for (let superTypeDeclaration = typeDeclaration.getSuperTypeDeclaration();
-                superTypeDeclaration;
-                superTypeDeclaration = superTypeDeclaration.getSuperTypeDeclaration()) {
-            if (superTypeDeclaration.getFullyQualifiedName() === propertyTypeName) {
-                return true;
-            }
-        }
-
-        return false;
+        return typeDeclaration.getAllSuperTypeDeclarations().
+            map(type => type.getFullyQualifiedName()).
+            includes(propertyTypeName);
     }
 
     /**
@@ -140,6 +134,7 @@ class ModelUtil {
         const typeDeclaration = modelFile.getType(field.getType());
         return (typeDeclaration !== null && typeDeclaration.isEnum());
     }
+
 }
 
 module.exports = ModelUtil;

@@ -420,6 +420,19 @@ class ClassDeclaration {
     }
 
     /**
+     * Get all the super-type declarations for this type.
+     * @return {ClassDeclaration[]} super-type declarations.
+     */
+    getAllSuperTypeDeclarations() {
+        const results = [];
+        for (let type = this; (type = type.getSuperTypeDeclaration()); ) {
+            results.push(type);
+        }
+
+        return results;
+    }
+
+    /**
      * Returns the property with a given name or null if it does not exist.
      * Fields defined in super-types are also introspected.
      *
