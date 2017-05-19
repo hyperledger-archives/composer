@@ -58,3 +58,20 @@ rule R7 {
     condition: (tx.asset.colour === 'blue')
     action: ALLOW
 }
+
+rule R8 {
+    description: "Fred can CREATE, READ, and UPDATE the car ABC123"
+    participant: "org.acme.Driver#Fred"
+    operation: CREATE, READ, UPDATE
+    resource: "org.acme.Car#ABC123"
+    action: ALLOW
+}
+
+rule R9 {
+    description: "regulator with ID Bill can not update or delete a Car if they own it"
+    participant(r): "org.acme.Regulator#Bill"
+    operation: UPDATE, DELETE
+    resource(c): "org.acme.Car"
+    condition: (c.owner == r)
+    action: DENY
+}

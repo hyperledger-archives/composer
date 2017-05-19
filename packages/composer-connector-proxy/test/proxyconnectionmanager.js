@@ -38,6 +38,9 @@ describe('ProxyConnectionManager', () => {
     let mockConnectionProfileManager;
     let ProxyConnectionManager;
 
+    let connectionManager;
+    let mockConnection;
+
     beforeEach(() => {
         mockConnectionProfileManager = sinon.createStubInstance(ConnectionProfileManager);
         mockSocket = {
@@ -45,9 +48,9 @@ describe('ProxyConnectionManager', () => {
             once: sinon.stub(),
             on: sinon.stub()
         };
-        mockSocket.emit.throws(new Error('unexpected call'));
-        mockSocket.once.throws(new Error('unexpected call'));
-        mockSocket.on.throws(new Error('unexpected call'));
+        // mockSocket.emit.throws(new Error('unexpected call'));
+        // mockSocket.once.throws(new Error('unexpected call'));
+        // mockSocket.on.throws(new Error('unexpected call'));
         mockSocketFactory = sinon.stub().returns(mockSocket);
         ProxyConnectionManager = proxyquire('../lib/proxyconnectionmanager', {
             'socket.io-client': mockSocketFactory
@@ -128,9 +131,10 @@ describe('ProxyConnectionManager', () => {
 
     describe('#connect', () => {
 
-        let connectionManager;
-
         beforeEach(() => {
+            mockConnection = sinon.createStubInstance(ProxyConnection);
+            mockConnection.connectionID = connectionID;
+            mockConnection.socket = mockSocket;
             mockSocket.on.withArgs('connect').returns();
             mockSocket.on.withArgs('disconnect').returns();
             connectionManager = new ProxyConnectionManager(mockConnectionProfileManager);
@@ -139,6 +143,8 @@ describe('ProxyConnectionManager', () => {
 
         it('should send a connect call to the connector server', () => {
             mockSocket.emit.withArgs('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, sinon.match.func).yields(null, connectionID);
+            sinon.stub(ProxyConnectionManager, 'createConnection').returns(mockConnection);
+            mockSocket.on.withArgs('events', sinon.match.func).yields(connectionID, [{'event': 'event1'}, {'evnet': 'event2'}]);
             return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(mockSocket.emit);
@@ -146,6 +152,26 @@ describe('ProxyConnectionManager', () => {
                     connection.should.be.an.instanceOf(ProxyConnection);
                     connection.socket.should.equal(mockSocket);
                     connection.connectionID.should.equal(connectionID);
+                    sinon.assert.calledThrice(mockSocket.on);
+                    sinon.assert.calledWith(mockSocket.on, 'events', sinon.match.func);
+                    sinon.assert.calledWith(mockConnection.emit, 'events', [{'event': 'event1'}, {'evnet': 'event2'}]);
+                });
+        });
+
+        it('should not emit events if connectionID and myConnectionID dont match', () => {
+            mockSocket.emit.withArgs('/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, sinon.match.func).yields(null, connectionID);
+            sinon.stub(ProxyConnectionManager, 'createConnection').returns(mockConnection);
+            mockSocket.on.withArgs('events', sinon.match.func).yields('myConnectionID', '[{"event": "event1"}, {"evnet": "event2"}]');
+            return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectionOptions)
+                .then((connection) => {
+                    sinon.assert.calledOnce(mockSocket.emit);
+                    sinon.assert.calledWith(mockSocket.emit, '/api/connectionManagerConnect', connectionProfile, businessNetworkIdentifier, connectionOptions, sinon.match.func);
+                    connection.should.be.an.instanceOf(ProxyConnection);
+                    connection.socket.should.equal(mockSocket);
+                    connection.connectionID.should.equal(connectionID);
+                    sinon.assert.calledThrice(mockSocket.on);
+                    sinon.assert.calledWith(mockSocket.on, 'events', sinon.match.func);
+                    sinon.assert.notCalled(connection.emit);
                 });
         });
 
@@ -155,6 +181,13 @@ describe('ProxyConnectionManager', () => {
                 .should.be.rejectedWith(TypeError, /such type error/);
         });
 
+    });
+
+    describe('#createConnection', () => {
+        it('should create an instance of ProxyConnection', () => {
+            let cm = ProxyConnectionManager.createConnection(connectionManager, 'profile', 'businessNetworkIdentifier', mockSocket, connectionID);
+            cm.should.be.an.instanceOf(ProxyConnection);
+        });
     });
 
 });

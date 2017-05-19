@@ -372,6 +372,12 @@ describe('AccessController', () => {
                     .should.be.false;
             });
 
+            it(`should return true for ${verb} if the ACL rule specifies a list of verbs`, () => {
+                setAclFile('rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE, READ, UPDATE, DELETE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}');
+                controller.matchVerb(verb, aclManager.getAclRules()[0])
+                    .should.be.true;
+            });
+
         });
 
     });
