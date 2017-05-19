@@ -35,7 +35,7 @@ class MockEditorFileDirective {
     public editorFile;
 }
 
-fdescribe('EditorComponent', () => {
+describe('EditorComponent', () => {
     let component: EditorComponent;
     let fixture: ComponentFixture<EditorComponent>;
 
@@ -411,11 +411,26 @@ fdescribe('EditorComponent', () => {
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
 
+            let mockModelFile0 = sinon.createStubInstance(ModelFile);
+            mockModelFile0.getNamespace.returns('namespace0');
+            mockModelFile0.id = 'namespace0';
+
+            let mockModelFile1 = sinon.createStubInstance(ModelFile);
+            mockModelFile1.getNamespace.returns('namespace1');
+            mockModelFile1.id = 'namespace1';
+
+            let mockModelFile2 = sinon.createStubInstance(ModelFile);
+            mockModelFile2.getNamespace.returns('namespace2');
+            mockModelFile2.id = 'namespace2';
+
             component['addModelNamespace'] = 'namespace';
-            component['files'] = [{id: 'random'}, {id: 'namespace0'}];
+            component['files'] = [mockModelFile, mockModelFile0, mockModelFile1, mockModelFile2];
+
+            mockModelFile.getNamespace.returns('namespace');
+            mockModelFile.id = 'namespace';
 
             let modelManagerMock = {
-                addModelFile: sinon.stub().returns({fileName: 'new-file'});
+                addModelFile: sinon.stub().returns(mockModelFile)
             };
 
             mockClientService.getBusinessNetwork.returns({
@@ -428,10 +443,10 @@ fdescribe('EditorComponent', () => {
   * New model file
   */
 
-  namespace namespace`);
+  namespace namespace3`);
             mockUpdateFiles.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({id: 'namespace'});
             component['dirty'].should.equal(true);
         });
 
@@ -440,10 +455,11 @@ fdescribe('EditorComponent', () => {
             let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
 
             component['addModelNamespace'] = 'namespace';
-            component['files'] = [{id: 'random'}, {id: 'namespace'}];
+            component['files'] = [{id: 'random'}, {id: 'namespace0'}];
 
+            mockModelFile.getNamespace.returns('namespace0');
             let modelManagerMock = {
-                addModelFile: sinon.stub().returns({fileName: 'new-file'});
+                addModelFile: sinon.stub().returns(mockModelFile)
             };
 
             mockClientService.getBusinessNetwork.returns({
@@ -455,7 +471,7 @@ fdescribe('EditorComponent', () => {
             modelManagerMock.addModelFile.should.have.been.calledWith('my code');
             mockUpdateFiles.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({id: 'namespace0'});
             component['dirty'].should.equal(true);
         });
     });
@@ -465,12 +481,27 @@ fdescribe('EditorComponent', () => {
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
 
+            let mockScript0 = sinon.createStubInstance(Script);
+            mockScript0.getIdentifier.returns('script');
+            mockScript0.id = 'script';
+
+            let mockScript1 = sinon.createStubInstance(Script);
+            mockScript1.getIdentifier.returns('script0');
+            mockScript1.id = 'script0';
+
+            let mockScript2 = sinon.createStubInstance(Script);
+            mockScript2.getIdentifier.returns('script2');
+            mockScript2.id = 'script2';
+
             component['addScriptFileName'] = 'script';
-            component['files'] = [{id: 'random'}, {id: 'script'}];
+            component['files'] = [mockScript0, mockScript1, mockScript2];
+
+            mockScriptFile.getIdentifier.returns('script');
 
             let scriptManagerMock = {
-                createScript: sinon.stub(),
-                addScript: sinon.stub()
+                createScript: sinon.stub().returns(mockScriptFile),
+                addScript: sinon.stub(),
+                getScripts: sinon.stub().returns([mockScript0, mockScript1, mockScript2]),
             };
 
             mockClientService.getBusinessNetwork.returns({
@@ -479,7 +510,7 @@ fdescribe('EditorComponent', () => {
 
             component.addScriptFile();
 
-            scriptManagerMock.createScript.should.have.been.calledWith('script', 'JS', `/**
+            scriptManagerMock.createScript.should.have.been.calledWith('script1', 'JS', `/**
   * New script file
   */`);
 
@@ -497,16 +528,19 @@ fdescribe('EditorComponent', () => {
             component['addScriptFileName'] = 'script';
             component['files'] = [{id: 'random'}, {id: 'script'}];
 
+            mockScriptFile.getIdentifier.returns('script');
+
             let scriptManagerMock = {
-                createScript: sinon.stub(),
-                addScript: sinon.stub()
+                createScript: sinon.stub().returns(mockScriptFile),
+                addScript: sinon.stub(),
+                getScripts: sinon.stub().returns([]),
             };
 
             mockClientService.getBusinessNetwork.returns({
                 getScriptManager: sinon.stub().returns(scriptManagerMock)
             });
 
-            component.addScriptFile('my script');
+            component.addScriptFile(mockScriptFile);
 
             scriptManagerMock.createScript.should.not.have.been.called;
 

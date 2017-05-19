@@ -154,7 +154,7 @@ export class EditorComponent implements OnInit {
             });
         });
         newModelFiles.sort((a, b) => {
-            return a.displayID.localeCompare(b.displayID);
+        return a.displayID.localeCompare(b.displayID);
         });
         newFiles.push.apply(newFiles, newModelFiles);
 
@@ -200,15 +200,15 @@ export class EditorComponent implements OnInit {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let modelManager = businessNetworkDefinition.getModelManager();
         let code;
-        let newModelNamespace = this.addModelNamespace;
-        let increment = 1;
-
-        while ( this.files.findIndex((file) => file.id === newModelNamespace) !== -1) {
-            newModelNamespace = this.addModelNamespace + increment;
-            increment++;
-        }
 
         if (!contents) {
+            let newModelNamespace = this.addModelNamespace;
+            let increment = 0;
+            while ( this.files.findIndex((file) => file.id === newModelNamespace) !== -1) {
+                newModelNamespace = this.addModelNamespace + increment;
+                increment++;
+            }
+
             code =
                 `/**
   * New model file
@@ -221,8 +221,7 @@ export class EditorComponent implements OnInit {
 
         let newFile = modelManager.addModelFile(code);
         this.updateFiles();
-        let index = this.files.findIndex((file) => file.id === newFile.fileName);
-        console.log('setting via:', this.files[index]);
+        let index = this.files.findIndex((file) => file.id === newFile.getNamespace());
         this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
@@ -230,25 +229,31 @@ export class EditorComponent implements OnInit {
     addScriptFile(scriptFile = null) {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let scriptManager = businessNetworkDefinition.getScriptManager();
+        let existingScripts = scriptManager.getScripts();
         let code;
         let script;
+
         if (!scriptFile) {
+            let increment = 0;
+            let scriptName = this.addScriptFileName;
+            while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
+                scriptName = this.addScriptFileName + increment;
+                increment++;
+            }
+
             code =
                 `/**
   * New script file
   */`;
-            script = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+            script = scriptManager.createScript(scriptName, 'JS', code);
         } else {
             script = scriptFile;
         }
 
         scriptManager.addScript(script);
         this.updateFiles();
-        this.files.forEach((file) => {
-            if (file.id === this.addScriptFileName) {
-                this.setCurrentFile(file);
-            }
-        });
+        let index = this.files.findIndex((file) => file.id === script.getIdentifier());
+        this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
 
@@ -398,8 +403,6 @@ export class EditorComponent implements OnInit {
                 // remove file from list view
                 let index = this.files.findIndex((x) => { return x.displayID === deleteFile.displayID; });
                 this.files.splice(index, 1);
-
-                this.updateFiles();
 
                 // Make sure we set a file to remove the deleted file from the view
                 this.setInitialFile();
