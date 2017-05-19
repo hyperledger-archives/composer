@@ -76,7 +76,7 @@ class AclRule {
     process() {
         this.name = this.ast.id.name;
         this.noun = new ModelBinding(this, this.ast.noun, this.ast.nounVariable);
-        this.verb = this.ast.verb;
+        this.verbs = this.ast.verbs;
 
         this.participant = null;
         if(this.ast.participant && this.ast.participant !== 'ANY') {
@@ -108,6 +108,14 @@ class AclRule {
      */
     validate() {
         this.noun.validate();
+
+        const foundVerbs = {};
+        this.verbs.forEach((verb) => {
+            if (foundVerbs[verb]) {
+                throw new Error(`The verb '${verb}' has been specified more than once in the ACL rule '${this.name}'`);
+            }
+            foundVerbs[verb] = true;
+        });
 
         if(this.participant) {
             this.participant.validate();
@@ -145,8 +153,8 @@ class AclRule {
      *
      * @return {string} the verb
      */
-    getVerb() {
-        return this.verb;
+    getVerbs() {
+        return this.verbs;
     }
 
     /**
