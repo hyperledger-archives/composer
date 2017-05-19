@@ -35,7 +35,7 @@ class MockEditorFileDirective {
     public editorFile;
 }
 
-describe('EditorComponent', () => {
+fdescribe('EditorComponent', () => {
     let component: EditorComponent;
     let fixture: ComponentFixture<EditorComponent>;
 
@@ -108,6 +108,11 @@ describe('EditorComponent', () => {
                     callback(noError);
                 }
             };
+            mockClientService.fileNameChanged$ = {
+                subscribe: (callback) => {
+                    callback('new-name');
+                }
+            };
             mockEditorFilesValidate = sinon.stub(component, 'editorFilesValidate').returns(true);
         });
 
@@ -144,7 +149,7 @@ describe('EditorComponent', () => {
             mockUpdateFiles.should.have.been.called;
         }));
 
-        it('subscriber should set noError to false', fakeAsync(() => {
+        it('should set noError to false when notified', fakeAsync(() => {
             mockClientService.businessNetworkChanged$ = {
                 subscribe: (callback) => {
                     let noError = false;
@@ -165,7 +170,7 @@ describe('EditorComponent', () => {
             mockUpdateFiles.should.have.been.called;
         }));
 
-        it('subscriber should set noError and dirty to be true', fakeAsync(() => {
+        it('should set noError and dirty to be true when notified', fakeAsync(() => {
             mockClientService.businessNetworkChanged$ = {
                 subscribe: (callback) => {
                     let noError = true;
@@ -230,6 +235,36 @@ describe('EditorComponent', () => {
 
             let setFile = component['currentFile'];
             component['currentFile'].should.deep.equal(file);
+        }));
+
+        it('should not do anything through the newFileName callback if no files loaded', fakeAsync(() => {
+            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockCurrentFile = sinon.stub(component, 'setCurrentFile');
+
+            let fileSpy = sinon.spy(component['files'], 'findIndex');
+            component['files'] = [];
+
+            component.ngOnInit();
+            tick();
+
+            fileSpy.should.not.have.been.called;
+        }));
+
+        it('should set a new file based on the passed file name through the newFileName callback if files loaded', fakeAsync(() => {
+            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockCurrentFile = sinon.stub(component, 'setCurrentFile');
+
+            component['files'] = [{id: 'random'}, {id: 'new-name'}, {id: 'namespace'}];
+            component['currentFile'] = component['files'][0];
+
+            let fileSpy = sinon.spy(component['files'], 'findIndex');
+
+            component.ngOnInit();
+            tick();
+
+            fileSpy.should.have.been.called;
         }));
     });
 
@@ -377,10 +412,10 @@ describe('EditorComponent', () => {
             let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
 
             component['addModelNamespace'] = 'namespace';
-            component['files'] = [{id: 'random'}, {id: 'namespace'}];
+            component['files'] = [{id: 'random'}, {id: 'namespace0'}];
 
             let modelManagerMock = {
-                addModelFile: sinon.stub()
+                addModelFile: sinon.stub().returns({fileName: 'new-file'});
             };
 
             mockClientService.getBusinessNetwork.returns({
@@ -396,7 +431,7 @@ describe('EditorComponent', () => {
   namespace namespace`);
             mockUpdateFiles.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith({id: 'namespace'});
+            mockSetCurrentFile.should.have.been.called;
             component['dirty'].should.equal(true);
         });
 
@@ -408,7 +443,7 @@ describe('EditorComponent', () => {
             component['files'] = [{id: 'random'}, {id: 'namespace'}];
 
             let modelManagerMock = {
-                addModelFile: sinon.stub()
+                addModelFile: sinon.stub().returns({fileName: 'new-file'});
             };
 
             mockClientService.getBusinessNetwork.returns({
@@ -420,7 +455,7 @@ describe('EditorComponent', () => {
             modelManagerMock.addModelFile.should.have.been.calledWith('my code');
             mockUpdateFiles.should.have.been.called;
 
-            mockSetCurrentFile.should.have.been.calledWith({id: 'namespace'});
+            mockSetCurrentFile.should.have.been.called;
             component['dirty'].should.equal(true);
         });
     });

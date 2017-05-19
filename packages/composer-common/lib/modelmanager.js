@@ -62,6 +62,26 @@ class ModelManager {
     }
 
     /**
+     * Validates a Composer file (as a string) to the ModelManager.
+     * Composer files have a single namespace.
+     *
+     * Note that if there are dependencies between multiple files the files
+     * must be added in dependency order, or the addModelFiles method can be
+     * used to add a set of files irrespective of dependencies.
+     * @param {string} modelFile - The Composer file as a string
+     * @param {string} fileName - an optional file name to associate with the model file
+     * @throws {IllegalModelException}
+     */
+    validateModelFile(modelFile, fileName) {
+        if (typeof modelFile === 'string') {
+            let m = new ModelFile(this, modelFile, fileName);
+            m.validate();
+        } else {
+            modelFile.validate();
+        }
+    }
+
+    /**
      * Adds a Composer file (as a string) to the ModelManager.
      * Composer files have a single namespace. If a Composer file with the
      * same namespace has already been added to the ModelManager then it
