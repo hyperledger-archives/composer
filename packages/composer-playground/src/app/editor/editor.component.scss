@@ -6,6 +6,12 @@ app-editor {
   width: 100%;
 
   .side-bar {
+    display: flex;
+
+    .error_dot {
+        align-self: center;
+    }
+
     .files {
       & > * {
         padding: $space-medium $space-large;
@@ -18,6 +24,10 @@ app-editor {
 
       .side-bar-nav {
         padding: 0;
+
+        .error {
+            color: $first-warning;
+        }
       }
     }
 

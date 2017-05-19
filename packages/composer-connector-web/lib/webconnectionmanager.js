@@ -43,7 +43,8 @@ class WebConnectionManager extends ConnectionManager {
      * object once the connection is established, or rejected with a connection error.
      */
     connect(connectionProfile, businessNetworkIdentifier, connectionOptions) {
-        return Promise.resolve(new WebConnection(this, connectionProfile, businessNetworkIdentifier));
+        let connection = new WebConnection(this, connectionProfile, businessNetworkIdentifier);
+        return Promise.resolve(connection);
     }
 
 }

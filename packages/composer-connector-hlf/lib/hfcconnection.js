@@ -50,6 +50,8 @@ class HFCConnection extends Connection {
         LOG.info('constructor', 'Creating connection', this.getIdentifier());
         this.chain = chain;
         this.connectOptions = connectOptions;
+
+        this.composerEventId = null;
     }
 
     /**
@@ -66,6 +68,7 @@ class HFCConnection extends Connection {
      * terminated, or rejected with an error.
      */
     disconnect() {
+        // this.chain.getEventHub().unregisterChaincodeEvent(this.composerEventId);
         this.chain.eventHubDisconnect();
         this.businessNetworkIdentifier = null;
         this.connectionProfile = null;
@@ -99,6 +102,7 @@ class HFCConnection extends Connection {
                 result.setUser(enrollmentID);
                 result.setEnrolledMember(enrolledMember);
                 result.setEventHub(self.chain.getEventHub());
+
                 LOG.info('login', 'Successful login', self.getIdentifier());
                 resolve(result);
             });
@@ -126,6 +130,7 @@ class HFCConnection extends Connection {
                         }
                     })
                     .then(() => {
+                        this.subscribeToEvents(securityContext.getChaincodeID());
                         return securityContext;
                     });
             });
@@ -334,6 +339,20 @@ class HFCConnection extends Connection {
                 profile.networks = profile.networks || {};
                 return Object.keys(profile.networks).sort();
             });
+    }
+
+    /**
+     * Subscribe to events emitted by transactions
+     * @param {String} chaincodeID The chaincode ID
+     */
+    subscribeToEvents(chaincodeID) {
+        if (this.chain.getEventHub() && chaincodeID) {
+            LOG.entry('registerChaincodeEvent', chaincodeID, 'composer');
+            this.composerEventId = this.chain.getEventHub().registerChaincodeEvent(chaincodeID, 'composer', (event) => {
+                const jsonEvent = JSON.parse(event.payload.toString('utf8'));
+                this.emit('events', jsonEvent);
+            });
+        }
     }
 
 }

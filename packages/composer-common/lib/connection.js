@@ -15,6 +15,7 @@
 'use strict';
 
 const ConnectionManager = require('./connectionmanager');
+const EventEmitter = require('events');
 
 /**
  * Base class representing a connection to a business network.
@@ -23,7 +24,7 @@ const ConnectionManager = require('./connectionmanager');
  * @class
  * @memberof module:composer-common
  */
-class Connection {
+class Connection extends EventEmitter {
 
     /**
      * Constructor.
@@ -32,6 +33,7 @@ class Connection {
      * @param {string} businessNetworkIdentifier The identifier of the business network for this connection, or null if an admin connection
      */
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
+        super();
         if (!(connectionManager instanceof ConnectionManager)) {
             throw new Error('connectionManager not specified');
         } else if (!connectionProfile) {
