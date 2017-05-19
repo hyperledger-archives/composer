@@ -32,6 +32,7 @@ describe('ModelManager', () => {
     let modelBase = fs.readFileSync('./test/data/model/model-base.cto', 'utf8');
     let farm2fork = fs.readFileSync('./test/data/model/farm2fork.cto', 'utf8');
     let concertoModel = fs.readFileSync('./test/data/model/concerto.cto', 'utf8');
+    let invalidModel = fs.readFileSync('./test/data/model/invalid.cto', 'utf8');
     let modelManager;
 
     beforeEach(() => {
@@ -49,6 +50,26 @@ describe('ModelManager', () => {
             sinon.assert.calledWith(visitor.visit, modelManager, ['some', 'args']);
         });
 
+    });
+
+    describe('#validateModelFile', () => {
+
+        it('should validate model files from strings', () => {
+            modelBase.should.not.be.null;
+            modelManager.validateModelFile(modelBase);
+        });
+
+        it('should validate model files from objects', () => {
+            modelBase.should.not.be.null;
+            modelManager.validateModelFile(modelBase, 'model-base.cto');
+        });
+
+        it('should fail validation of invalid model files from objects', () => {
+            invalidModel.should.not.be.null;
+            (() => {
+                modelManager.validateModelFile(invalidModel);
+            }).should.throw();
+        });
     });
 
     describe('#addModelFile', () => {

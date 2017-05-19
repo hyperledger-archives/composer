@@ -49,6 +49,14 @@ describe('EditorFileComponent', () => {
     });
 
     describe('set editorFile', () => {
+
+        beforeEach(() => {
+            mockClientService.validateFile.returns(null);
+            mockClientService.getModelFile.returns({getDefinitions: sinon.stub().returns({})});
+            mockClientService.getScriptFile.returns({getContents: sinon.stub().returns({})});
+            mockClientService.getAclFile.returns({getDefinitions: sinon.stub().returns({})});
+        });
+
         it('should set editor file', () => {
             let mockLoadFile = sinon.stub(component, 'loadFile');
             component.editorFile = {editorFile: 'my file'};
@@ -62,6 +70,21 @@ describe('EditorFileComponent', () => {
             component.editorFile = null;
 
             mockLoadFile.should.not.have.been.called;
+        });
+
+        it('should validate model file content once set', () => {
+            component.editorFile = {model: true};
+            mockClientService.validateFile.should.have.been.called;
+        });
+
+        it('should validate script file content once set', () => {
+            component.editorFile = {script: true};
+            mockClientService.validateFile.should.have.been.called;
+        });
+
+        it('should validate acl file content once set', () => {
+            component.editorFile = {acl: true};
+            mockClientService.validateFile.should.have.been.called;
         });
     });
 

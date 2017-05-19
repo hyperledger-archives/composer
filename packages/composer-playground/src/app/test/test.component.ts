@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ClientService } from '../services/client.service';
@@ -42,9 +43,6 @@ export class TestComponent implements OnInit {
                     return a.id.localeCompare(b.id);
                 });
 
-                if (this.assetRegistries.length > 0) {
-                    this.chosenRegistry = this.assetRegistries[0];
-                }
                 return this.clientService.getBusinessNetworkConnection().getAllParticipantRegistries();
             })
             .then((participantRegistries) => {
@@ -58,17 +56,10 @@ export class TestComponent implements OnInit {
                     return a.id.localeCompare(b.id);
                 });
 
-                if (this.assetRegistries.length === 0) {
-                    this.chosenRegistry = this.participantRegistries[0];
-                }
-
                 return this.clientService.getBusinessNetworkConnection().getTransactionRegistry();
             })
             .then((transactionRegistry) => {
                 this.transactionRegistry = transactionRegistry;
-                if (this.transactionRegistry) {
-                    this.chosenRegistry = this.transactionRegistry;
-                }
 
                 // set the default registry selection
                 if (this.participantRegistries.length !== 0) {
@@ -99,6 +90,9 @@ export class TestComponent implements OnInit {
             } else {
                 this.chosenRegistry = this.transactionRegistry;
             }
+
+            this.alertService.successStatus$.next({title: 'Submit Transaction Successful', text: 'A transaction was successfully submitted', icon: '#icon-transaction'});
+
         });
     }
 }

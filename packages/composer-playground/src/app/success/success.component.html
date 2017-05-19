@@ -1,19 +1,18 @@
-<div class="success" tabindex="-1">
-  <div class="modal-header">
-    <svg class="ibm-icon" aria-hidden="true">
-      <use xlink:href="#icon-confirm_32"></use>
-    </svg>
-    <h1>Success</h1>
-    <button class="icon modal-exit" (click)="activeModal.dismiss()">
-      <svg class="ibm-icon" aria-hidden="true">
-        <use xlink:href="#icon-close_new"></use>
-      </svg>
+<section class="container" *ngFor="let message of messages; let messagesIndex = index" @fadeInOut>
+    <button class="icon close" (click)="close(messagesIndex)">
+        <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-close_new"></use>
+        </svg>
     </button>
-  </div>
-  <section class="modal-body">
-    <div [innerHTML]="success"></div>
-  </section>
-  <footer>
-    <button type="button" class="primary" (click)="activeModal.close()">OK</button>
-  </footer>
-</div>
+    <div class="message">
+        <div>
+            <svg class="ibm-icon" aria-hidden="true">
+                <use [attr.xlink:href]="message.icon"></use>
+            </svg>
+        </div>
+        <div>
+            <div class="notification-title">{{message.title}}</div>
+            <p class="notification-text" [innerHTML]="message.text"></p>
+        </div>
+    </div>
+</section>

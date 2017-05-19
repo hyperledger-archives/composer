@@ -1,0 +1,17 @@
+namespace com.testing
+
+abstract participant Base identified by id {
+  o String id
+}
+
+abstract participant Super identified by id extends Base {
+  o String id
+}
+
+participant Sub identified by id extends Super {
+  o String id
+}
+
+participant Sub2 identified by id extends Super {
+  o String id
+}

@@ -188,10 +188,11 @@ export class ConnectionProfileDataComponent {
             } else {
                 connectionName = this.connectionProfileData.name;
             }
-            this.alertService.successStatus$.next('Successfully connected with profile ' + connectionName);
+            this.alertService.successStatus$.next({title: 'Connection Successful', text : 'Successfully connected with profile ' + connectionName, icon : '#icon-world_24'});
             this.profileUpdated.emit({updated: true});
 
         }, (reason) => {
+            console.log(reason);
             if (reason && reason !== 1) { // someone hasn't pressed escape
                 this.alertService.errorStatus$.next(reason);
             }

@@ -16,7 +16,6 @@
 
 const ClassDeclaration = require('../introspect/classdeclaration');
 const EnumDeclaration = require('../introspect/enumdeclaration');
-const Introspector = require('../introspect/introspector');
 const Field = require('../introspect/field');
 const leftPad = require('left-pad');
 const ModelUtil = require('../modelutil');
@@ -124,12 +123,11 @@ class InstanceGenerator {
             let enumValues = classDeclaration.getOwnProperties();
             return valueGenerator.getEnum(enumValues).getName();
         }
-        else if (classDeclaration.isAbstract) {
-            let newClassDecl = this.findExtendingLeafType(classDeclaration);
-            if(newClassDecl !== null) {
-                classDeclaration = newClassDecl;
-                type = newClassDecl.getName();
-            }
+
+        if (classDeclaration.isAbstract()) {
+            const newClassDecl = this.findConcreteSubclass(classDeclaration);
+            classDeclaration = newClassDecl;
+            type = newClassDecl.getName();
         }
 
         if (classDeclaration.isConcept()) {
@@ -152,38 +150,24 @@ class InstanceGenerator {
      * TODO: work out whether this has to be a leaf node or whether the closest type can be used
      * It depends really since the closest type will satisfy the model but whether it satisfies
      * any transaction code which attempts to use the generated resource is another matter.
-     * @param {any} inputType the class declaration.
-     * @return {any} the closest extending concrete class definition - null if none are found.
+     * @param {ClassDeclaration} declaration the class declaration.
+     * @return {ClassDeclaration} the closest extending concrete class definition - null if none are found.
+     * @throws {Error} if no concrete subclasses exist.
      */
-    findExtendingLeafType(inputType) {
-        let modelManager = inputType.getModelFile().getModelManager();
-        let returnType = null;
-        if(inputType.isAbstract()) {
-            let introspector = new Introspector(modelManager);
-            let allClassDeclarations = introspector.getClassDeclarations();
-            let contenders = [];
-            allClassDeclarations.forEach((classDecl) => {
-                let superType = classDecl.getSuperType();
-                if(!classDecl.isAbstract() && (superType !== null)) {
-                    if(superType === inputType.getFullyQualifiedName()) {
-                        contenders.push(classDecl);
-                    }
-                }
-            });
-
-            if(contenders.length > 0) {
-                returnType = contenders[0];
-            } else {
-                let formatter = Globalize.messageFormatter('instancegenerator-newinstance-noconcreteclass');
-                throw new Error(formatter({
-                    type: inputType.getFullyQualifiedName()
-                }));
-            }
-        } else {
-            // we haven't been given an abstract type so just return what we were given.
-            returnType = inputType;
+    findConcreteSubclass(declaration) {
+        if (!declaration.isAbstract()) {
+            return declaration;
         }
-        return returnType;
+
+        const concreteSubclasses = declaration.getAssignableClassDeclarations()
+            .filter(subclass => !subclass.isAbstract());
+
+        if (concreteSubclasses.length === 0) {
+            const formatter = Globalize.messageFormatter('instancegenerator-newinstance-noconcreteclass');
+            throw new Error(formatter({ type: declaration.getFullyQualifiedName() }));
+        }
+
+        return concreteSubclasses[0];
     }
 
 

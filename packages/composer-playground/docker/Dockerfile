@@ -3,15 +3,14 @@ FROM node:6-alpine
 # Reset npm logging to default level.
 ENV NPM_CONFIG_LOGLEVEL warn
 
-# Need to install extra dependencies for native modules.
-RUN apk add --no-cache make gcc g++ python git libc6-compat
-
 # Install the latest version by default.
 ARG VERSION=latest
 
-# Install Composer UI.
-RUN npm install --production -g pm2 composer-playground@${VERSION} && \
-    npm cache clean
+# Need to install extra dependencies for native modules.
+RUN apk add --no-cache make gcc g++ python git libc6-compat && \
+    npm install --production -g pm2 composer-playground@${VERSION} && \
+    npm cache clean && \
+    apk del make gcc g++ python git
 
 # Create the composer user ID.
 RUN adduser -S composer

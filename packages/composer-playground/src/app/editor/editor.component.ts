@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from '../add-file/add-file.component';
+import { DeleteComponent } from '../delete-confirm/delete-confirm.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -12,7 +13,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { AlertService } from '../services/alert.service';
 import { EditorService } from '../services/editor.service';
 
-import { ModelFile } from 'composer-common';
+import { ModelFile, ScriptManager, ModelManager } from 'composer-common';
 
 import { saveAs } from 'file-saver';
 
@@ -28,9 +29,11 @@ export class EditorComponent implements OnInit {
 
     private files: any = [];
     private currentFile: any = null;
+    private deletableFile: boolean = false;
 
     private addModelNamespace: string = 'org.acme.model';
     private addScriptFileName: string = 'lib/script.js';
+
     private noError: boolean = true;
     private dirty: boolean = false;
     private deploying: boolean = false;
@@ -66,9 +69,21 @@ export class EditorComponent implements OnInit {
 
         return this.initializationService.initialize()
         .then(() => {
-            this.clientService.businessNetworkChanged$.subscribe((error) => {
-                this.noError = error;
-                this.dirty = true;
+            this.clientService.businessNetworkChanged$.subscribe((noError) => {
+                if (this.editorFilesValidate() && noError) {
+                    this.noError = noError;
+                    this.dirty = true;
+                } else {
+                    this.noError = false;
+                }
+            });
+
+            this.clientService.fileNameChanged$.subscribe((newName) => {
+                if (this.currentFile !== null) {
+                    this.updateFiles();
+                    let index = this.files.findIndex((file) => file.id === newName);
+                    this.setCurrentFile(this.files[index]);
+                }
             });
 
             this.updatePackageInfo();
@@ -77,15 +92,7 @@ export class EditorComponent implements OnInit {
             if (this.editorService.getCurrentFile() !== null) {
                 this.currentFile = this.editorService.getCurrentFile();
             } else {
-                if (this.files.length) {
-                    let initialFile = this.files.find((file) => {
-                        return file.readme;
-                    });
-                    if (!initialFile) {
-                        initialFile = this.files[0];
-                    }
-                    this.setCurrentFile(initialFile);
-                }
+                this.setInitialFile();
             }
         });
     }
@@ -98,16 +105,39 @@ export class EditorComponent implements OnInit {
         this.inputPackageVersion = this.clientService.getMetaData().getVersion();
     }
 
-    setCurrentFile(file) {
-        if (this.editingPackage) {
-            this.updatePackageInfo();
-            this.editingPackage = false;
+    setInitialFile() {
+        if (this.files.length) {
+            let initialFile = this.files.find((file) => {
+                return file.readme;
+            });
+            if (!initialFile) {
+                initialFile = this.files[0];
+            }
+            this.setCurrentFile(initialFile);
         }
-        // Reset editActive
-        this.editActive = false;
-        // Set selected file
-        this.editorService.setCurrentFile(file);
-        this.currentFile = file;
+    }
+
+    setCurrentFile(file) {
+        if (this.currentFile === null || this.currentFile.displayID !== file.displayID) {
+            if (this.editingPackage) {
+                this.updatePackageInfo();
+                this.editingPackage = false;
+            }
+            if (file.script || file.model) {
+                this.deletableFile = true;
+            } else {
+                this.deletableFile = false;
+            }
+            // Reset editActive
+            this.editActive = false;
+            // Set selected file
+            this.editorService.setCurrentFile(file);
+            this.currentFile = file;
+            // re-validate, since we do not persist bad files- they revert when navigated away
+            if (this.editorFilesValidate()) {
+                this.noError = true;
+            }
+        }
     }
 
     updateFiles() {
@@ -120,11 +150,11 @@ export class EditorComponent implements OnInit {
             newModelFiles.push({
                 model: true,
                 id: modelFile.getNamespace(),
-                displayID: 'lib/' + modelFile.getNamespace() + '.cto',
+                displayID: 'model/' + modelFile.getNamespace() + '.cto',
             });
         });
         newModelFiles.sort((a, b) => {
-            return a.displayID.localeCompare(b.displayID);
+        return a.displayID.localeCompare(b.displayID);
         });
         newFiles.push.apply(newFiles, newModelFiles);
 
@@ -170,49 +200,60 @@ export class EditorComponent implements OnInit {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let modelManager = businessNetworkDefinition.getModelManager();
         let code;
+
         if (!contents) {
+            let newModelNamespace = this.addModelNamespace;
+            let increment = 0;
+            while ( this.files.findIndex((file) => file.id === newModelNamespace) !== -1) {
+                newModelNamespace = this.addModelNamespace + increment;
+                increment++;
+            }
+
             code =
                 `/**
   * New model file
   */
 
-  namespace ${this.addModelNamespace}`;
+  namespace ${newModelNamespace}`;
         } else {
             code = contents;
         }
 
-        modelManager.addModelFile(code);
+        let newFile = modelManager.addModelFile(code);
         this.updateFiles();
-        this.files.forEach((file) => {
-            if (file.id === this.addModelNamespace) {
-                this.setCurrentFile(file);
-            }
-        });
+        let index = this.files.findIndex((file) => file.id === newFile.getNamespace());
+        this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
 
     addScriptFile(scriptFile = null) {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let scriptManager = businessNetworkDefinition.getScriptManager();
+        let existingScripts = scriptManager.getScripts();
         let code;
         let script;
+
         if (!scriptFile) {
+            let increment = 0;
+            let scriptName = this.addScriptFileName;
+            while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
+                scriptName = this.addScriptFileName + increment;
+                increment++;
+            }
+
             code =
                 `/**
   * New script file
   */`;
-            script = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+            script = scriptManager.createScript(scriptName, 'JS', code);
         } else {
             script = scriptFile;
         }
 
         scriptManager.addScript(script);
         this.updateFiles();
-        this.files.forEach((file) => {
-            if (file.id === this.addScriptFileName) {
-                this.setCurrentFile(file);
-            }
-        });
+        let index = this.files.findIndex((file) => file.id === script.getIdentifier());
+        this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
 
@@ -228,7 +269,7 @@ export class EditorComponent implements OnInit {
                     currentFile = this.files[0];
                 }
                 this.setCurrentFile(currentFile);
-                this.alertService.successStatus$.next('Business Network successfully imported and deployed');
+                this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business network imported deployed successfully', icon : '#icon-deploy_24'});
             }
         }, (reason) => {
             if (reason && reason !== 1) {
@@ -243,7 +284,6 @@ export class EditorComponent implements OnInit {
                 this.clientService.getBusinessNetworkName() + '.bna',
                 {type: 'application/octet-stream'});
             saveAs(file);
-            this.alertService.successStatus$.next(this.clientService.getBusinessNetworkName() + '.bna was exported');
         });
     }
 
@@ -258,6 +298,7 @@ export class EditorComponent implements OnInit {
                 } else {
                     this.addScriptFile(result);
                 }
+                this.clientService.businessNetworkChanged$.next(true);
             }
         }, (reason) => {
             if (reason && reason !== 1) {
@@ -286,7 +327,7 @@ export class EditorComponent implements OnInit {
             this.updatePackageInfo();
             this.updateFiles();
             this.alertService.busyStatus$.next(null);
-            this.alertService.successStatus$.next('Business Network Deployed Successfully');
+            this.alertService.successStatus$.next({title : 'Deploy Successful', text : 'Business Network Deployed Successfully', icon : '#icon-deploy_24'});
             if ((<any> window).usabilla_live) {
                 (<any> window).usabilla_live('trigger', 'manual trigger');
             }
@@ -332,5 +373,103 @@ export class EditorComponent implements OnInit {
     hideEdit() {
         this.editActive = false;
         this.editingPackage = true;
+    }
+
+    /*
+    * User selects to delete the current editor file
+    */
+    openDeleteFileModal() {
+        const confirmModalRef = this.modalService.open(DeleteComponent);
+        const deleteFile = this.currentFile;
+        confirmModalRef.componentInstance.headerMessage = 'Delete File';
+        confirmModalRef.componentInstance.deleteFile = deleteFile;
+        confirmModalRef.componentInstance.deleteMessage = 'This file will be removed from your business network definition, which may stop your business network from working and may limit access to data that is already stored in the business network.';
+
+        confirmModalRef.result
+        .then((result) => {
+            if (result) {
+                this.alertService.busyStatus$.next({title: 'Deleting file within business network', text : 'deleting ' + this.clientService.getBusinessNetworkName()});
+
+                if (deleteFile.script) {
+                    let scriptManager: ScriptManager = this.clientService.getBusinessNetwork().getScriptManager();
+                    scriptManager.deleteScript(deleteFile.id);
+                } else if (deleteFile.model) {
+                    let modelManager: ModelManager = this.clientService.getBusinessNetwork().getModelManager();
+                    modelManager.deleteModelFile(deleteFile.id);
+                } else {
+                    throw new Error('Unable to process delete on selected file type');
+                }
+
+                // remove file from list view
+                let index = this.files.findIndex((x) => { return x.displayID === deleteFile.displayID; });
+                this.files.splice(index, 1);
+
+                // Make sure we set a file to remove the deleted file from the view
+                this.setInitialFile();
+
+                // validate the remaining (acl/cto files and conditionally enable deploy
+                if (this.editorFilesValidate()) {
+                    this.clientService.businessNetworkChanged$.next(true);
+                } else {
+                    this.clientService.businessNetworkChanged$.next(false);
+                }
+
+                // Send alert
+                this.alertService.busyStatus$.next(null);
+                this.alertService.successStatus$.next({title : 'Delete Successful', text : this.fileType(deleteFile) + ' ' + deleteFile.displayID + ' was deleted.', icon : '#icon-trash_32'});
+            }
+        }, (reason) => {
+            if (reason && reason !== 1) {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(reason);
+            }
+        })
+        .catch((error) => {
+            this.alertService.busyStatus$.next(null);
+            this.alertService.errorStatus$.next(error);
+        });
+    }
+
+    fileType(resource: any): string {
+        if (resource.model) {
+            return 'Model File';
+        } else if (resource.script) {
+            return 'Script File';
+        } else {
+            return 'File';
+        }
+    }
+
+    editorFilesValidate(): boolean {
+        let allValid: boolean = true;
+
+        for (let file of this.files) {
+            if (file.model && allValid) {
+                let modelFile = this.clientService.getModelFile(file.id);
+                if (this.clientService.validateFile(file.id, modelFile.getDefinitions(), 'model') !== null) {
+                    allValid = false;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
+                }
+            } else if (file.acl && allValid) {
+                let aclFile = this.clientService.getAclFile();
+                if (this.clientService.validateFile(file.id, aclFile.getDefinitions(), 'acl') !== null) {
+                    allValid = false;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
+                }
+            } else if (file.script && allValid) {
+                let script = this.clientService.getScriptFile(file.id);
+                if (this.clientService.validateFile(file.id, script.getContents(), 'script') !== null) {
+                    allValid = false;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
+                }
+            }
+        }
+        return allValid;
     }
 }

@@ -3,8 +3,6 @@
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import * as sinon from 'sinon';
@@ -25,13 +23,19 @@ describe('SwitchIdentityComponent', () => {
     let component: SwitchIdentityComponent;
     let fixture: ComponentFixture<SwitchIdentityComponent>;
 
-    let mockActiveModal = sinon.createStubInstance(NgbActiveModal);
-    let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-    let mockWalletService = sinon.createStubInstance(WalletService);
-    let mockClientService = sinon.createStubInstance(ClientService);
-    let mockIdentityService = sinon.createStubInstance(IdentityService);
+    let mockActiveModal;
+    let mockConnectionProfileService;
+    let mockWalletService;
+    let mockClientService;
+    let mockIdentityService;
 
     beforeEach(() => {
+        mockActiveModal = sinon.createStubInstance(NgbActiveModal);
+        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+        mockWalletService = sinon.createStubInstance(WalletService);
+        mockClientService = sinon.createStubInstance(ClientService);
+        mockIdentityService = sinon.createStubInstance(IdentityService);
+
         TestBed.configureTestingModule({
             imports: [FormsModule],
             declarations: [SwitchIdentityComponent],
@@ -181,11 +185,15 @@ describe('SwitchIdentityComponent', () => {
             component['connectionProfileName'] = 'myProfile';
             component['chosenUser'] = 'bob';
 
+            mockClientService.ensureConnected.returns(Promise.reject('some error'));
+
             component.switchIdentity();
 
             component['switchInProgress'].should.equal(true);
 
             tick();
+
+            mockClientService.ensureConnected.should.have.been.calledWith(true);
 
             component['switchInProgress'].should.equal(false);
             mockActiveModal.dismiss.should.have.been.called;

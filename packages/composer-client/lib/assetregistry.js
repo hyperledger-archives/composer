@@ -97,7 +97,7 @@ class AssetRegistry extends Registry {
      * @param {Serializer} serializer The Serializer to use for this asset registry.
      * @return {Promise} A promise that will be resolved with a boolean indicating whether the asset registry exists
      */
-    static existsAssetRegistry(securityContext, id, modelManager, factory, serializer) {
+    static assetRegistryExists(securityContext, id, modelManager, factory, serializer) {
         Util.securityCheck(securityContext);
         if (!id) {
             throw new Error('id not specified');
@@ -110,6 +110,7 @@ class AssetRegistry extends Registry {
         }
         return Registry.existsRegistry(securityContext, REGISTRY_TYPE, id);
     }
+
 
     /**
      * Add a new asset registry.

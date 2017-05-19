@@ -1,15 +1,32 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from 'angular-2-local-storage';
+import { BehaviorSubject, Observable } from 'rxjs/Rx';
 
+import { Logger } from 'composer-common';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 
 @Injectable()
 export class IdentityService {
 
+    private _currentIdentity: BehaviorSubject<string> = new BehaviorSubject(null);
+
+    // tslint:disable-next-line:member-ordering
+    public readonly currentIdentity: Observable<string> = this._currentIdentity.asObservable();
+
     constructor(private localStorageService: LocalStorageService,
                 private connectionProfileService: ConnectionProfileService,
                 private walletService: WalletService) {
+
+        Logger.setFunctionalLogger({
+            // tslint:disable-next-line:no-empty
+            log: () => {
+            }
+        });
+
+        this.getCurrentIdentity().then((identity) => {
+            this._currentIdentity.next(identity);
+        });
     }
 
     getCurrentIdentities(): Promise<string[]> {
@@ -27,7 +44,11 @@ export class IdentityService {
 
     getCurrentIdentity(): Promise<string> {
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        return this.getIdentity(connectionProfile);
+        return this.getIdentity(connectionProfile)
+        .then((identity) => {
+            this._currentIdentity.next(identity);
+            return this._currentIdentity.getValue();
+        });
     }
 
     getIdentity(connectionProfile: string): Promise<string> {
@@ -48,6 +69,8 @@ export class IdentityService {
     }
 
     setCurrentIdentity(identity: string) {
+        this._currentIdentity.next(identity);
+
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         return this.setIdentity(connectionProfile, identity);
     }

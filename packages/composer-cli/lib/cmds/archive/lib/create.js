@@ -18,6 +18,10 @@ const Admin = require('composer-admin');
 const BusinessNetworkDefinition = Admin.BusinessNetworkDefinition;
 const fs = require('fs');
 const sanitize = require('sanitize-filename');
+
+// const ora = require('ora');
+const chalk = require('chalk');
+
 /**
  * Composer Create Archive command
  *
@@ -37,23 +41,24 @@ class Create {
 
         let inputDir = '';
 
-        console.log('Creating Business Network Archive\n');
+        console.log(chalk.blue.bold('Creating Business Network Archive\n'));
         if (argv.sourceType === 'module'){
             // using a npm module name
             //
             let moduleName = argv.sourceName;
             const path = require('path');
-            console.log('Node module search path : \n'+process.env.NODE_PATH+' \n');
+
             let moduleIndexjs;
             try {
                 moduleIndexjs=require.resolve(moduleName);
             } catch (err){
                 if (err.code==='MODULE_NOT_FOUND'){
                     let localName = process.cwd()+'/node_modules/'+moduleName;
-                    console.log('Not found in main node_module search path, trying current directory :'+localName);
+                    console.log(chalk.bold.yellow('Not found in main node_module search path, trying current directory'));
+                    console.log(chalk.yellow('\tCurrent Directory: ')+localName);
                     moduleIndexjs=require.resolve(localName);
                 }else {
-                    console.log('Unable to locate the npm module specified');
+                    console.log(chalk.blue.red('Unable to locate the npm module specified'));
                     return Promise.reject(err);
                 }
 
@@ -69,12 +74,14 @@ class Create {
                 inputDir = argv.sourceName;
             }
         }
-        console.log('Looking for package.json of Business Network Definition in '+inputDir);
+        console.log(chalk.blue.bold('\nLooking for package.json of Business Network Definition'));
+        console.log(chalk.blue('\tInput directory: ')+inputDir);
 
         return BusinessNetworkDefinition.fromDirectory(inputDir).then( (result)=> {
-            console.log('\nFound:\nDescription:'+result.getDescription());
-            console.log('Name:'+result.getName());
-            console.log('Identifier:'+result.getIdentifier());
+            console.log(chalk.blue.bold('\nFound:'));
+            console.log(chalk.blue('\tDescription: ')+result.getDescription());
+            console.log(chalk.blue('\tName: ')+result.getName());
+            console.log(chalk.blue('\tIdentifier: ')+result.getIdentifier());
 
 
             if (!argv.archiveFile){
@@ -85,7 +92,8 @@ class Create {
               (result) => {
                 //write the buffer to a file
                   fs.writeFileSync(argv.archiveFile,result);
-                  console.log('\nWritten Business Network Definition Archive file to '+argv.archiveFile);
+                  console.log(chalk.blue.bold('\nWritten Business Network Definition Archive file to '));
+                  console.log(chalk.blue('\tOutput file: ')+argv.archiveFile);
                   return;
               }
 

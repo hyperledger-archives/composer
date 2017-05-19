@@ -28,42 +28,17 @@ docker images -aq | xargs docker rmi -f
 In order to install {{site.data.conrefs.composer_full}} Playground, you need the following software installed:
 
 *   Docker Engine 1.12.3 or greater
-
-    Test that Docker Engine is installed by running the following command in your terminal or command prompt:
-
-    ```
-      docker -v
-    ```
-
-    You should see the following output in your terminal or command prompt:
-
-    ```
-      $ docker -v
-      Docker version 1.13.0, build 49bf474
-    ```
-
-    Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
-
 *   Docker Compose 1.8 or greater
-
-    Test that Docker Compose is installed by running the following command in your terminal or command prompt:
-
-    ```
-      docker-compose -v
-    ```
-
-    You should see the following output in your terminal or command prompt:
-
-    ```
-      $ docker-compose -v
-      docker-compose version 1.10.0, build 4bd6f1a
-    ```
-
-    Verify that no errors occurred, and the version is greater than or equal to 1.8. If not, then follow the official instructions for installing Docker Compose: [Install Docker Compose](https://docs.docker.com/compose/install/)
 
 # Installation
 
-Download the example Docker Compose file by right clicking this link and clicking on "Save Link As": <a href="./docker-compose.yml" download>docker-compose.yml</a>
+Download the example Docker Compose file:
+
+  ```
+  curl -O https://hyperledger.github.io/composer/tutorials/docker-compose.yml
+  ```
+
+(Alternatively, you can do this by right clicking this link and clicking on "Save Link As": <a href="./docker-compose.yml" download>docker-compose.yml</a>)
 
 The Docker Compose file describes a multi-container application that is made up of three Docker containers:
 
@@ -116,7 +91,7 @@ Verify that no errors occurred. If you see an error similar to the following err
 
 If you see this error, ensure that all of these ports are free before you run any commands.
 
-If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+If everything started OK, you should be able to access {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>
 
 # Connecting to Hyperledger Fabric
 
@@ -151,56 +126,21 @@ Note that the same set of features is available regardless of the installation m
 
 In order to install {{site.data.conrefs.composer_full}} Playground with npm, you need the following software installed:
 
-*   Node.js v4.6.2 or greater, or Node.js v6.x (note that Node.js v7.x is unsupported)
-
-    Test that Node.js is installed by running the following command in your terminal or command prompt:
-
-    ```
-      node -v
-    ```
-
-    You should see the following output in your terminal or command prompt:
-
-    ```
-      $ node -v
-     v4.6.2
-    ```
-
-    Verify that no errors occurred, and the version is greater than or equal to v4.6.2 or v6.x. If not, follow the official instructions for installing Node.js v6.x: [Node.js] (https://nodejs.org)
-
+*   Node.js v6.x (note that Node.js v7.x is unsupported)
 *   npm v3.x or greater
-
-    Test that npm is installed by running the following command in your terminal or command prompt:
-
-    ```
-      npm -v
-    ```
-
-    You should see the following output in your terminal or command prompt:
-
-    ```
-      $ npm -v
-     3.10.10
-    ```
-
-    Verify that no errors occurred, and the version is greater than or equal to v3.x. If not, upgrade npm to the latest version by running the following command in your terminal or command prompt:
-
-    ```
-      sudo npm -g upgrade npm
-    ```
 
 ### Installation
 
 You can install {{site.data.conrefs.composer_full}} Playground by running the following command in your terminal or command prompt:
 
   ```
-  sudo npm install -g composer-playground
+  npm install -g composer-playground
   ```
 
 You should see the following output in your terminal or command prompt:
 
   ```
-  $ sudo npm install -g composer-playground
+  npm install -g composer-playground
   ...
   /usr/local/bin/composer-playground -> /usr/local/lib/node_modules/composer-playground/cli.js
   /usr/local/lib/node_modules
@@ -220,10 +160,6 @@ A web browser will be automatically opened once the playground has started, but 
 
 ---
 
->This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
-
----
-
 ## <a name="installdocker"></a>Installing with Docker
 
 ### Prerequisites
@@ -231,21 +167,6 @@ A web browser will be automatically opened once the playground has started, but 
 In order to install {{site.data.conrefs.composer_full}} Playground with Docker, you need the following software installed:
 
 *   Docker Engine 1.12.3 or greater
-
-    Test that Docker Engine is installed by running the following command in your terminal or command prompt:
-
-    ```
-      docker -v
-    ```
-
-    You should see the following output in your terminal or command prompt:
-
-    ```
-      $ docker -v
-      Docker version 1.13.0, build 49bf474
-    ```
-
-    Verify that no errors occurred, and the version is greater than or equal to 1.12.3. If not, then follow the official instructions for installing Docker Engine: [Install Docker Engine] (https://docs.docker.com/engine/installation/)
 
 ### Installation
 
@@ -265,9 +186,5 @@ You should see the following output in your terminal or command prompt:
 Verify that no errors occurred.
 
 You can then start {{site.data.conrefs.composer_full}} Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
-
----
-
->This tutorial is now **complete**. We plan on extending this tutorial with a guided tour of the playground and its features, so stay tuned!
 
 ---

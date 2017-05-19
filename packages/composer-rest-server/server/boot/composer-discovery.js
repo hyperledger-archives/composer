@@ -125,7 +125,9 @@ function registerSystemMethods(app, dataSource) {
     const registerMethods = [
         registerPingMethod,
         registerIssueIdentityMethod,
-        registerRevokeIdentityMethod
+        registerRevokeIdentityMethod,
+        registerGetAllTransactionsMethod,
+        registerGetTransactionByIDMethod
     ];
     registerMethods.forEach((registerMethod) => {
         registerMethod(app, dataSource, System, connector);
@@ -325,6 +327,81 @@ function registerRevokeIdentityMethod(app, dataSource, System, connector) {
             http: {
                 verb: 'post',
                 path: '/revokeIdentity'
+            }
+        }
+    );
+
+}
+
+/**
+ * Register the 'getAllTransactions' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetAllTransactionsMethod(app, dataSource, System, connector) {
+
+    // Define and register the method.
+    System.getAllTransactions = (options, callback) => {
+        connector.getAllTransactions(options, callback);
+    };
+    System.remoteMethod(
+        'getAllTransactions', {
+            description: 'Get all transactions from the transaction registry',
+            accepts: [{
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: [ 'object' ],
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/transactions'
+            }
+        }
+    );
+
+}
+
+/**
+ * Register the 'getTransactionByID' Composer system method.
+ * @param {Object} app The LoopBack application.
+ * @param {Object} dataSource The LoopBack data source.
+ * @param {Object} System The System model class.
+ * @param {Object} connector The LoopBack connector.
+ */
+function registerGetTransactionByIDMethod(app, dataSource, System, connector) {
+
+    // Define and register the method.
+    System.getTransactionByID = (id, options, callback) => {
+        connector.getTransactionByID(id, options, callback);
+    };
+    System.remoteMethod(
+        'getTransactionByID', {
+            description: 'Get the specified transaction from the transaction registry',
+            accepts: [{
+                arg: 'id',
+                type: 'string',
+                required: true,
+                http: {
+                    source: 'path'
+                }
+            }, {
+                arg: 'options',
+                type: 'object',
+                http: 'optionsFromRequest'
+            }],
+            returns: {
+                type: 'object',
+                root: true
+            },
+            http: {
+                verb: 'get',
+                path: '/transactions/:id'
             }
         }
     );

@@ -93,6 +93,10 @@ class EngineTransactions {
                 LOG.debug(method, 'Storing executed transaction in transaction registry');
                 return transactionRegistry.add(transaction);
 
+            })
+            .then(() => {
+                // Commit all transactions
+                return context.getEventService().commit();
             });
 
     }

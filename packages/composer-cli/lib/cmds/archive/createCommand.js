@@ -30,11 +30,10 @@ module.exports.handler = (argv) => {
 
     argv.thePromise = Create.handler(argv)
     .then(() => {
-        console.log ('Command completed successfully.');
+        return 0;
     })
     .catch((error) => {
-        console.log(error.stack);
-        console.log(error+ '\nCommand failed.');
+        throw error;
     });
 
     return argv.thePromise;

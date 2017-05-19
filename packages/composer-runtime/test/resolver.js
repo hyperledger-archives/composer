@@ -218,7 +218,7 @@ describe('Resolver', () => {
 
     });
 
-    describe('#resolveRelationship', () => {
+    describe('#getRegistryForRelationship', () => {
 
         it('should look for the resource in the default asset registry', () => {
             // Create the parent relationship.
@@ -230,21 +230,9 @@ describe('Resolver', () => {
             mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockAssetDeclaration);
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistryManager.get.withArgs('Asset', 'org.doge.Doge').resolves(mockRegistry);
-            // Create the resource it points to.
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.$identifier = 'DOGE_1';
-            mockRegistry.get.withArgs('DOGE_1').resolves(mockResource);
-            // Stub the resolveResource call.
-            sinon.stub(resolver, 'resolveResource').resolves(mockResource);
-            let resolveState = {
-                cachedResources: new Map()
-            };
-            return resolver.resolveRelationship(mockRelationship, resolveState)
-                .then((mockRelationship) => {
-                    mockRelationship.should.equal(mockResource);
-                    sinon.assert.calledOnce(resolver.resolveResource);
-                    sinon.assert.calledWith(resolver.resolveResource, mockResource);
-                    resolveState.cachedResources.get('org.doge.Doge#DOGE_1').should.equal(mockResource);
+            return resolver.getRegistryForRelationship(mockRelationship)
+                .then((registry) => {
+                    registry.should.equal(mockRegistry);
                 });
         });
 
@@ -258,21 +246,9 @@ describe('Resolver', () => {
             mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockParticipantDeclaration);
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').resolves(mockRegistry);
-            // Create the resource it points to.
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.$identifier = 'DOGE_1';
-            mockRegistry.get.withArgs('DOGE_1').resolves(mockResource);
-            // Stub the resolveResource call.
-            sinon.stub(resolver, 'resolveResource').resolves(mockResource);
-            let resolveState = {
-                cachedResources: new Map()
-            };
-            return resolver.resolveRelationship(mockRelationship, resolveState)
-                .then((mockRelationship) => {
-                    mockRelationship.should.equal(mockResource);
-                    sinon.assert.calledOnce(resolver.resolveResource);
-                    sinon.assert.calledWith(resolver.resolveResource, mockResource);
-                    resolveState.cachedResources.get('org.doge.Doge#DOGE_1').should.equal(mockResource);
+            return resolver.getRegistryForRelationship(mockRelationship)
+                .then((registry) => {
+                    registry.should.equal(mockRegistry);
                 });
         });
 
@@ -286,21 +262,10 @@ describe('Resolver', () => {
             mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockTransactionDeclaration);
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
-            // Create the resource it points to.
-            let mockResource = sinon.createStubInstance(Resource);
-            mockResource.$identifier = 'DOGE_1';
-            mockRegistry.get.withArgs('DOGE_1').resolves(mockResource);
-            // Stub the resolveResource call.
-            sinon.stub(resolver, 'resolveResource').resolves(mockResource);
-            let resolveState = {
-                cachedResources: new Map()
-            };
-            return resolver.resolveRelationship(mockRelationship, resolveState)
-                .then((mockRelationship) => {
-                    mockRelationship.should.equal(mockResource);
-                    sinon.assert.calledOnce(resolver.resolveResource);
-                    sinon.assert.calledWith(resolver.resolveResource, mockResource);
-                    resolveState.cachedResources.get('org.doge.Doge#DOGE_1').should.equal(mockResource);
+            mockRegistryManager.get.withArgs('Participant', 'org.doge.Doge').resolves(mockRegistry);
+            return resolver.getRegistryForRelationship(mockRelationship)
+                .then((registry) => {
+                    registry.should.equal(mockRegistry);
                 });
         });
 
@@ -314,13 +279,41 @@ describe('Resolver', () => {
             mockIntrospector.getClassDeclaration.withArgs('org.doge.Doge').returns(mockClassDeclaration);
             let mockRegistry = sinon.createStubInstance(Registry);
             mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
+            (() => {
+                resolver.getRegistryForRelationship(mockRelationship);
+            }).should.throw(/Unsupported class declaration type/);
+        });
+
+    });
+
+    describe('#resolveRelationship', () => {
+
+        it('should look for the resource in the correct registry', () => {
+            // Create the parent relationship.
+            let mockRelationship = sinon.createStubInstance(Relationship);
+            mockRelationship.getFullyQualifiedType.returns('org.doge.Doge');
+            mockRelationship.getIdentifier.returns('DOGE_1');
+            mockRelationship.getFullyQualifiedIdentifier.returns('org.doge.Doge#DOGE_1');
+            let mockRegistry = sinon.createStubInstance(Registry);
+            sinon.stub(resolver, 'getRegistryForRelationship').withArgs(mockRelationship).resolves(mockRegistry);
+            // Create the resource it points to.
+            let mockResource = sinon.createStubInstance(Resource);
+            mockResource.$identifier = 'DOGE_1';
+            mockRegistry.get.withArgs('DOGE_1').resolves(mockResource);
             // Stub the resolveResource call.
+            sinon.stub(resolver, 'resolveResource').resolves(mockResource);
             let resolveState = {
                 cachedResources: new Map()
             };
-            (() => {
-                resolver.resolveRelationship(mockRelationship, resolveState);
-            }).should.throw(/Unsupported class declaration type/);
+            return resolver.resolveRelationship(mockRelationship, resolveState)
+                .then((resource) => {
+                    sinon.assert.calledOnce(resolver.getRegistryForRelationship);
+                    sinon.assert.calledWith(resolver.getRegistryForRelationship, mockRelationship);
+                    resource.should.equal(mockResource);
+                    sinon.assert.calledOnce(resolver.resolveResource);
+                    sinon.assert.calledWith(resolver.resolveResource, mockResource);
+                    resolveState.cachedResources.get('org.doge.Doge#DOGE_1').should.equal(mockResource);
+                });
         });
 
         it('should not look for a cached resource', () => {

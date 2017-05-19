@@ -12,6 +12,11 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.7.3 {bf1e2d4bd784b49a7303565e284c881f} 2017-05-18
+- Deprecated existsAssetRegistry
+- Added assetRegistryExists
+- Added participantRegistryExists
+
 Version 0.5.6 {b33a9697716c4de4fa2cda2ebac97bfb} 2017-03-29
 - Added additional connection options
 

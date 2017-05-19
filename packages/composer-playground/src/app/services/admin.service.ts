@@ -10,9 +10,6 @@ import WebConnectionManager = require('composer-connector-web');
 
 @Injectable()
 export class AdminService {
-
-    public connectionProfileChanged$: Subject<string> = new BehaviorSubject<string>(null);
-
     private adminConnection: AdminConnection = null;
     private isConnected: boolean = false;
     private connectingPromise: Promise<any> = null;
