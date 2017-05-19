@@ -241,7 +241,14 @@ describe('ClassDeclaration', () => {
             modelManager.addModelFiles(modelFiles);
         });
 
-        it('should return superclass when one exists', function() {
+        it('should return superclass when one exists in the same model file', function() {
+            const subclass = modelManager.getType('com.testing.parent.Super');
+            should.exist(subclass);
+            const superclassName = subclass.getSuperType();
+            superclassName.should.equal('com.testing.parent.Base');
+        });
+
+        it('should return superclass when one exists in a different model file', function() {
             const subclass = modelManager.getType('com.testing.child.Sub');
             should.exist(subclass);
             const superclassName = subclass.getSuperType();

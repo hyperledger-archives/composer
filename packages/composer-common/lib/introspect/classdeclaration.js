@@ -356,18 +356,29 @@ class ClassDeclaration {
      * @return {string} the FQN name of the super type or null
      */
     getSuperType() {
-        if(this.superType) {
-            // TODO: Don't assume parent is in the same model file. Need a unit test to confirm this is an issue.
-            const type = this.getModelFile().getType(this.superType);
-            if(type === null) {
-                throw new Error('Could not find super type:' + this.superType );
-            }
-            else {
-                return type.getFullyQualifiedName();
-            }
+        const superTypeDeclaration = this.getSuperTypeDeclaration();
+        if (superTypeDeclaration) {
+            return superTypeDeclaration.getFullyQualifiedName();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the super type class declaration for this class.
+     * @return {ClassDeclaration} the super type declaration, or null if there is no super type.
+     */
+    getSuperTypeDeclaration() {
+        if (!this.superType) {
+            return null;
         }
 
-        return null;
+        const supertypeDeclaration = this.getModelFile().getType(this.superType);
+        if (!supertypeDeclaration) {
+            throw new Error('Could not find super type: ' + this.superType);
+        }
+
+        return supertypeDeclaration;
     }
 
     /**

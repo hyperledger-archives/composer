@@ -89,33 +89,29 @@ class ModelUtil {
      * Returns true if the type is assignable to the propertyType.
      *
      * @param {ModelFile} modelFile - the ModelFile that owns the Property
-     * @param {string} type - the FQN of the type we are trying to assign
+     * @param {string} typeName - the FQN of the type we are trying to assign
      * @param {Property} property - the property that we'd like to store the
      * type in.
      * @return {boolean} - true if the type can be assigned to the property
      * @private
      */
-    static isAssignableTo(modelFile, type, property) {
-        const propertyType = property.getFullyQualifiedTypeName();
+    static isAssignableTo(modelFile, typeName, property) {
+        const propertyTypeName = property.getFullyQualifiedTypeName();
 
-        if (ModelUtil.isPrimitiveType(type) || ModelUtil.isPrimitiveType(propertyType)) {
-            return type === propertyType;
+        const isDirectMatch = (typeName === propertyTypeName);
+        if (isDirectMatch || ModelUtil.isPrimitiveType(typeName) || ModelUtil.isPrimitiveType(propertyTypeName)) {
+            return isDirectMatch;
         }
 
-        const assignableTypeNames = function*(typeName) {
-            yield typeName;
-            const typeDeclaration = modelFile.getModelManager().getType(typeName);
-            if (!typeDeclaration) {
-                throw new Error('Cannot find type ' + type );
-            }
-            const superclassName = typeDeclaration.getSuperType();
-            if (superclassName) {
-                yield *assignableTypeNames(superclassName);
-            }
-        };
+        const typeDeclaration = modelFile.getType(typeName);
+        if (!typeDeclaration) {
+            throw new Error('Cannot find type ' + typeName);
+        }
 
-        for (let typeName of assignableTypeNames(type)) {
-            if (typeName === propertyType) {
+        for (let superTypeDeclaration = typeDeclaration.getSuperTypeDeclaration();
+                superTypeDeclaration;
+                superTypeDeclaration = superTypeDeclaration.getSuperTypeDeclaration()) {
+            if (superTypeDeclaration.getFullyQualifiedName() === propertyTypeName) {
                 return true;
             }
         }
