@@ -102,47 +102,21 @@ class ModelUtil {
             return type === propertyType;
         }
 
-        // simple case
-        if (type === propertyType) {
-            return true;
-        }
-
-        // type = SuperType
-        // property = BaseType
-        // return = true
-        const typeDeclaration = modelFile.getType(type);
-        if(!typeDeclaration) {
-            throw new Error('Cannot find type ' + type );
-        }
-
-        let superTypeName = typeDeclaration.getSuperType();
-        let superType = null;
-
-        if(superTypeName) {
-            // we cannot assume that the super type is in the same namespace as the derived type!
-            superType = modelFile.getModelManager().getType(superTypeName);
-
-            if(!superType) {
-                throw new Error('Cannot find type ' + superTypeName );
+        const assignableTypeNames = function*(typeName) {
+            yield typeName;
+            const typeDeclaration = modelFile.getModelManager().getType(typeName);
+            if (!typeDeclaration) {
+                throw new Error('Cannot find type ' + type );
             }
+            const superclassName = typeDeclaration.getSuperType();
+            if (superclassName) {
+                yield *assignableTypeNames(superclassName);
+            }
+        };
 
-            // console.log( 'superTypeName ' + superTypeName );
-            // console.log( 'superType ' + superType.getFullyQualifiedName() );
-        }
-
-        while(superType) {
-            if(superType.getFullyQualifiedName() === property.getFullyQualifiedTypeName()) {
-                // console.log('Found superType ' + superType.getFullyQualifiedName() );
+        for (let typeName of assignableTypeNames(type)) {
+            if (typeName === propertyType) {
                 return true;
-            }
-            superTypeName = superType.getSuperType();
-
-            if(superTypeName) {
-                superType = modelFile.getModelManager().getType(superTypeName);
-                // console.log('superType ' + superType.getFullyQualifiedName() );
-            }
-            else {
-                superType = null;
             }
         }
 

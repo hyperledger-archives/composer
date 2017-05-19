@@ -16,6 +16,7 @@
 
 const ModelFile = require('../lib/introspect/modelfile');
 const Property = require('../lib/introspect/property');
+const ModelManager = require('../lib/modelmanager');
 const ModelUtil = require('../lib/modelutil');
 
 require('chai').should();
@@ -145,7 +146,9 @@ describe('ModelUtil', function () {
         it('throws error when type cannot be found', function() {
             mockProperty.getName.returns('theDoge');
             mockProperty.getFullyQualifiedTypeName.returns('org.doge.BaseDoge');
-            mockModelFile.getType.returns(null);
+            const mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelManager.getType.returns(null);
+            mockModelFile.getModelManager.returns(mockModelManager);
             (() => {
                 ModelUtil.isAssignableTo(mockModelFile, 'org.doge.Doge', mockProperty);
             }).should.throw(/Cannot find type/);

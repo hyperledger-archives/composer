@@ -357,6 +357,7 @@ class ClassDeclaration {
      */
     getSuperType() {
         if(this.superType) {
+            // TODO: Don't assume parent is in the same model file. Need a unit test to confirm this is an issue.
             const type = this.getModelFile().getType(this.superType);
             if(type === null) {
                 throw new Error('Could not find super type:' + this.superType );
