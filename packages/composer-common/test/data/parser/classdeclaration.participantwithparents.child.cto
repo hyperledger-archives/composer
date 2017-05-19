@@ -1,0 +1,7 @@
+namespace com.testing.child
+
+import com.testing.parent.Super
+
+participant Sub extends Super { }
+
+participant Sub2 extends Super { }

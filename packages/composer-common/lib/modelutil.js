@@ -89,64 +89,28 @@ class ModelUtil {
      * Returns true if the type is assignable to the propertyType.
      *
      * @param {ModelFile} modelFile - the ModelFile that owns the Property
-     * @param {string} type - the FQN of the type we are trying to assign
+     * @param {string} typeName - the FQN of the type we are trying to assign
      * @param {Property} property - the property that we'd like to store the
      * type in.
      * @return {boolean} - true if the type can be assigned to the property
      * @private
      */
-    static isAssignableTo(modelFile, type, property) {
-        const propertyType = property.getFullyQualifiedTypeName();
+    static isAssignableTo(modelFile, typeName, property) {
+        const propertyTypeName = property.getFullyQualifiedTypeName();
 
-        if (ModelUtil.isPrimitiveType(type) || ModelUtil.isPrimitiveType(propertyType)) {
-            return type === propertyType;
+        const isDirectMatch = (typeName === propertyTypeName);
+        if (isDirectMatch || ModelUtil.isPrimitiveType(typeName) || ModelUtil.isPrimitiveType(propertyTypeName)) {
+            return isDirectMatch;
         }
 
-        // simple case
-        if (type === propertyType) {
-            return true;
+        const typeDeclaration = modelFile.getType(typeName);
+        if (!typeDeclaration) {
+            throw new Error('Cannot find type ' + typeName);
         }
 
-        // type = SuperType
-        // property = BaseType
-        // return = true
-        const typeDeclaration = modelFile.getType(type);
-        if(!typeDeclaration) {
-            throw new Error('Cannot find type ' + type );
-        }
-
-        let superTypeName = typeDeclaration.getSuperType();
-        let superType = null;
-
-        if(superTypeName) {
-            // we cannot assume that the super type is in the same namespace as the derived type!
-            superType = modelFile.getModelManager().getType(superTypeName);
-
-            if(!superType) {
-                throw new Error('Cannot find type ' + superTypeName );
-            }
-
-            // console.log( 'superTypeName ' + superTypeName );
-            // console.log( 'superType ' + superType.getFullyQualifiedName() );
-        }
-
-        while(superType) {
-            if(superType.getFullyQualifiedName() === property.getFullyQualifiedTypeName()) {
-                // console.log('Found superType ' + superType.getFullyQualifiedName() );
-                return true;
-            }
-            superTypeName = superType.getSuperType();
-
-            if(superTypeName) {
-                superType = modelFile.getModelManager().getType(superTypeName);
-                // console.log('superType ' + superType.getFullyQualifiedName() );
-            }
-            else {
-                superType = null;
-            }
-        }
-
-        return false;
+        return typeDeclaration.getAllSuperTypeDeclarations().
+            map(type => type.getFullyQualifiedName()).
+            includes(propertyTypeName);
     }
 
     /**
@@ -170,6 +134,7 @@ class ModelUtil {
         const typeDeclaration = modelFile.getType(field.getType());
         return (typeDeclaration !== null && typeDeclaration.isEnum());
     }
+
 }
 
 module.exports = ModelUtil;
