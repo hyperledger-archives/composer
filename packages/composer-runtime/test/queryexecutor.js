@@ -212,6 +212,23 @@ describe('QueryExecutor', () => {
                 .should.eventually.be.deep.equal([true, false, true]);
         });
 
+        it('should handle errors querying a property in a resolved relationship', () => {
+            let resource1 = factory.newResource('org.acme', 'SimpleAssetCircle', 'CIRCLE_1');
+            let relationship1 = factory.newRelationship('org.acme', 'SimpleAssetCircle', 'CIRCLE_2');
+            resource1.next = relationship1;
+            let resource2 = factory.newResource('org.acme', 'SimpleAssetCircle', 'CIRCLE_2');
+            let relationship2 = factory.newRelationship('org.acme', 'SimpleAssetCircle', 'CIRCLE_3');
+            resource2.next = relationship2;
+            let resource3 = factory.newResource('org.acme', 'SimpleAssetCircle', 'CIRCLE_3');
+            let relationship3 = factory.newRelationship('org.acme', 'SimpleAssetCircle', 'CIRCLE_1');
+            resource3.next = relationship3;
+            mockResolver.resolveRelationship.withArgs(matchRelationship('org.acme.SimpleAssetCircle#CIRCLE_2'), matchResolveState()).resolves(resource2);
+            mockResolver.resolveRelationship.withArgs(matchRelationship('org.acme.SimpleAssetCircle#CIRCLE_3'), matchResolveState()).resolves(resource3);
+            mockResolver.resolveRelationship.withArgs(matchRelationship('org.acme.SimpleAssetCircle#CIRCLE_1'), matchResolveState()).rejects(new Error('such error'));
+            return queryExecutor.queryAll('(next.assetId = \'CIRCLE_2\') or (next.assetId = \'CIRCLE_1\')', [resource1, resource2, resource3])
+                .should.be.rejectedWith(/such error/);
+        });
+
     });
 
     describe('#query', () => {
@@ -308,6 +325,15 @@ describe('QueryExecutor', () => {
             mockResolver.resolveRelationship.withArgs(matchRelationship('org.acme.SimpleAssetCircleArray#CIRCLE_1'), matchResolveState()).resolves(resource1);
             return queryExecutor.query('(next[0].next[1].next[2].next[0].next[1].next[2].assetId = \'CIRCLE_1\')', resource1)
                 .should.eventually.be.equal(true);
+        });
+
+        it('should handle errors querying a property in a resolved relationship', () => {
+            let resource1 = factory.newResource('org.acme', 'SimpleAssetCircle', 'CIRCLE_1');
+            let relationship1 = factory.newRelationship('org.acme', 'SimpleAssetCircle', 'CIRCLE_2');
+            resource1.next = relationship1;
+            mockResolver.resolveRelationship.withArgs(matchRelationship('org.acme.SimpleAssetCircle#CIRCLE_2'), matchResolveState()).rejects(new Error('such error'));
+            return queryExecutor.query('(next.assetId = \'CIRCLE_2\') or (next.assetId = \'CIRCLE_1\')', resource1)
+                .should.be.rejectedWith(/such error/);
         });
 
     });
