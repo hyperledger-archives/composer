@@ -292,4 +292,33 @@ describe('ClassDeclaration', () => {
         });
     });
 
+    describe('#getAllSuperTypeDeclarations', function() {
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.participantwithparents.parent.cto',
+            'test/data/parser/classdeclaration.participantwithparents.child.cto'
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+
+        it('should return empty array if there are no superclasses', function() {
+            const testClass = modelManager.getType('com.testing.parent.Base');
+            should.exist(testClass);
+            const superclasses = testClass.getAllSuperTypeDeclarations();
+            superclasses.should.be.empty;
+        });
+
+        it('should return all superclass definitions', function() {
+            const testClass = modelManager.getType('com.testing.child.Sub');
+            should.exist(testClass);
+            const superclasses = testClass.getAllSuperTypeDeclarations();
+            const superclassNames = superclasses.map(classDef => classDef.getName());
+            superclassNames.should.have.same.members(['Base', 'Super']);
+        });
+    });
+
 });
