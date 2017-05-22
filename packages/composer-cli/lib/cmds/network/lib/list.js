@@ -48,7 +48,6 @@ class List {
         let businessNetworkName = argv.businessNetworkName;
         let businessNetworkDefinition;
         let listOutput;
-
         let spinner;
 
         return (() => {
@@ -93,7 +92,18 @@ class List {
         })
         .then ((result) => {
             let serializer = businessNetworkDefinition.getSerializer();
-            let registrySet = result;
+            let registrySet = [];
+            if(result.constructor.name === 'Array'){
+                registrySet = result;
+            }
+            else{
+                result.assets.forEach((assetRegistry) => {
+                    registrySet.push(assetRegistry);
+                });
+                result.participants.forEach((participantRegistry) => {
+                    registrySet.push(participantRegistry);
+                });
+            }
 
             return registrySet.reduce((result, registry) => {
                 return result.then(() => {
@@ -112,7 +122,7 @@ class List {
                             listOutput.registries[registry.id].assets[assetSet[j].getIdentifier()] = outputJSON;
                         }
                         if (assetSet.length===0){
-                            delete   listOutput.registries[registry.id].assets;
+                            delete listOutput.registries[registry.id].assets;
                         }
                     });
 
@@ -163,7 +173,6 @@ class List {
       * @return {Promise} promise with array of registries matching the requested registry
       */
     static getMatchingRegistries(argv, businessNetworkConnection) {
-
         let getAllRegistries;
         if (argv.registry !== undefined && argv.registry !== '') {
             getAllRegistries = false;
@@ -172,9 +181,18 @@ class List {
         }
 
         if (getAllRegistries) {
-            return businessNetworkConnection.getAllAssetRegistries();
+            let registriesToReturn = {};
+            return businessNetworkConnection.getAllAssetRegistries()
+            .then((assetRegstries) => {
+                registriesToReturn.assets = assetRegstries;
+                return businessNetworkConnection.getAllParticipantRegistries();
+            })
+            .then((participantRegistries) => {
+                registriesToReturn.participants = participantRegistries;
+                return registriesToReturn;
+            });
         } else {
-            return businessNetworkConnection.existsAssetRegistry(argv.registry)
+            return businessNetworkConnection.assetRegistryExists(argv.registry)
             .then ((exists) => {
                 if (exists === true) {
                     return businessNetworkConnection.getAssetRegistry(argv.registry)
@@ -182,7 +200,18 @@ class List {
                         return [result];
                     });
                 } else {
-                    throw new Error('Registry '+argv.registry+' does not exist');
+                    return businessNetworkConnection.participantRegistryExists(argv.registry)
+                    .then((exists) => {
+                        if(exists === true){
+                            return businessNetworkConnection.getParticipantRegistry(argv.registry)
+                            .then((result) => {
+                                return [result];
+                            });
+                        }
+                        else{
+                            throw new Error('Registry '+argv.registry+' does not exist');
+                        }
+                    });
                 }
             });
         }
@@ -201,7 +230,7 @@ class List {
         } else {
             return registry.get(argv.asset)
             .then ((asset) => {
-                if (asset === true) {
+                if (asset) {
                     return [asset];
                 } else {
                     throw new Error('Asset '+registry.id+' does not exist');

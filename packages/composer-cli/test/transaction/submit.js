@@ -141,13 +141,43 @@ describe('composer transaction submit CLI unit tests', () => {
             };
 
             mockBusinessNetworkConnection.submitTransaction.rejects(new Error('some error'));
-
             return Submit.handler(argv)
                 .then((res) => {
                     // sinon.assert.calledWith(process.exit, 1);
                 }).catch((error) => {
-                    // console.log('hello' + error);
-                    // sinon.assert.called();
+                    error.toString().should.equal('Error: some error');
+                });
+        });
+
+        it('should error if data is not a string', () => {
+            let argv = {
+                connectionProfileName: DEFAULT_PROFILE_NAME,
+                businessNetworkName: BUSINESS_NETWORK_NAME,
+                enrollId: ENROLL_ID,
+                enrollSecret: ENROLL_SECRET,
+                data: {}
+            };
+
+            return Submit.handler(argv)
+                .then((res) => {
+                }).catch((error) => {
+                    error.toString().should.equal('Error: Data must be a string');
+                });
+        });
+
+        it('should error if data class is not supplied', () => {
+            let argv = {
+                connectionProfileName: DEFAULT_PROFILE_NAME,
+                businessNetworkName: BUSINESS_NETWORK_NAME,
+                enrollId: ENROLL_ID,
+                enrollSecret: ENROLL_SECRET,
+                data: '{"success": true}'
+            };
+
+            return Submit.handler(argv)
+                .then((res) => {
+                }).catch((error) => {
+                    error.toString().should.equal('Error: $class attribute not supplied');
                 });
         });
     });

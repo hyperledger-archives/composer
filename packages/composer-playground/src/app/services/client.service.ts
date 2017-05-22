@@ -12,6 +12,7 @@ import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile } from 'com
 @Injectable()
 export class ClientService {
     public businessNetworkChanged$: Subject<boolean> = new BehaviorSubject<boolean>(null);
+    public fileNameChanged$: Subject<string> = new BehaviorSubject<string>(null);
 
     private businessNetworkConnection: BusinessNetworkConnection = null;
     private isConnected: boolean = false;
@@ -63,15 +64,42 @@ export class ClientService {
         return this.getBusinessNetwork().getModelManager().getModelFiles();
     }
 
+    validateFile(id: string, content: any, type: string): string {
+        try {
+            if (type === 'model') {
+                let modelManager = this.getBusinessNetwork().getModelManager();
+                let modelFile = this.createModelFile(modelManager, content);
+                modelManager.validateModelFile(modelFile);
+            } else if (type === 'script') {
+                let scriptManager = this.getBusinessNetwork().getScriptManager();
+                scriptManager.createScript(id, 'JS', content);
+            } else if (type === 'acl') {
+                let modelManager = this.getBusinessNetwork().getModelManager();
+                let aclFile = this.createAclFile(id, modelManager, content);
+                aclFile.validate();
+            }
+            return null;
+        } catch (e) {
+            return e.toString();
+        }
+    }
+
     updateFile(id: string, content: any, type: string): string {
         try {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let modelFile = this.createModelFile(modelManager, content);
-                if (id !== modelFile.getNamespace()) {
-                    throw new Error(`The namespace cannot be changed and must be set to ${id}`);
+                if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
+                    throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }
-                modelManager.addModelFile(modelFile);
+                if (id !== modelFile.getNamespace()) {
+                    // Then we are changing namespace and must delete old file
+                    modelManager.addModelFile(modelFile);
+                    modelManager.deleteModelFile(id);
+                    this.fileNameChanged$.next(modelFile.getNamespace());
+                } else {
+                    modelManager.updateModelFile(modelFile);
+                }
             } else if (type === 'script') {
                 let scriptManager = this.getBusinessNetwork().getScriptManager();
                 let script = scriptManager.createScript(id, 'JS', content);
@@ -88,6 +116,15 @@ export class ClientService {
         } catch (e) {
             this.businessNetworkChanged$.next(false);
             return e.toString();
+        }
+    }
+
+    modelNamespaceCollides(newNamespace, previousNamespace): boolean {
+        let allModelFiles =  this.currentBusinessNetwork.getModelManager().getModelFiles();
+        if ( (newNamespace !== previousNamespace) && (allModelFiles.findIndex((model) => model.getNamespace() === newNamespace) !== -1) ) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -153,7 +190,6 @@ export class ClientService {
         }
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         console.log('Connecting to connection profile', connectionProfile);
-        let userID;
         this.connectingPromise = this.adminService.ensureConnected(force)
         .then(() => {
             return this.refresh();
