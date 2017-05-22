@@ -131,6 +131,10 @@ type StoreType = {
         ConfirmComponent,
         DeleteComponent,
         ReplaceComponent,
+<<<<<<< 4eb3fd391dd9f1b7edd24b5254c56ccc8bd713a1
+=======
+        ResetComponent,
+>>>>>>> add BND deploy warning modal and move basic-modals into sub folder
         ImportComponent,
         GithubComponent,
         NoContentComponent,
