@@ -310,6 +310,16 @@ describe('EditorComponent', () => {
             component['editingPackage'].should.equal(false);
         });
 
+        it('should always set current file, if same file selected and is readme file', () => {
+            component['currentFile'] = {displayID: 'readme', readme: true};
+            let serviceSpy = sinon.spy(editorService, 'setCurrentFile');
+            let file = {displayID: 'readme', readme: true};
+
+            component.setCurrentFile(file);
+
+            serviceSpy.should.have.been.called;
+        });
+
         it('should not set current file, if same file selected', () => {
             component['currentFile'] = {displayID: 'myFile'};
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');

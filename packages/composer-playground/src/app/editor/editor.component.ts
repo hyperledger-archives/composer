@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from '../add-file/add-file.component';
-import { DeleteComponent } from '../delete-confirm/delete-confirm.component';
+import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -118,7 +118,7 @@ export class EditorComponent implements OnInit {
     }
 
     setCurrentFile(file) {
-        if (this.currentFile === null || this.currentFile.displayID !== file.displayID) {
+        if (this.currentFile === null || this.currentFile.displayID !== file.displayID || file.readme) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
