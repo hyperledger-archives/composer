@@ -4,12 +4,21 @@
     <div class="side-bar-nav">
       <ul>
         <li *ngFor="let file of files" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
-          <h3 *ngIf="file.package">Package Details</h3>
-          <h3 *ngIf="file.model">Model File</h3>
-          <h3 *ngIf="file.script">Script File</h3>
-          <h3 *ngIf="file.acl">Access Control</h3>
-          <h3 *ngIf="file.readme">About</h3>
-          <div title="{{file.displayID}}">{{file.displayID}}</div>
+            <div class="flex-container">
+                <div class="flex">
+                    <h3 [class.error]="file.invalid" *ngIf="file.package">Package Details</h3>
+                    <h3 [class.error]="file.invalid" *ngIf="file.model">Model File</h3>
+                    <h3 [class.error]="file.invalid" *ngIf="file.script">Script File</h3>
+                    <h3 [class.error]="file.invalid" *ngIf="file.acl">Access Control</h3>
+                    <h3 [class.error]="file.invalid" *ngIf="file.readme">About</h3>
+                    <div [class.error]="file.invalid" title="{{file.displayID}}">{{file.displayID}}</div>
+                </div>
+                <div *ngIf="file.invalid" class="error_dot">
+                    <svg class="ibm-icon" aria-hidden="true">
+                        <use xlink:href="#icon-error_dot"></use>
+                    </svg>
+                </div>
+          </div>
         </li>
       </ul>
     </div>

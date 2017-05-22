@@ -33,6 +33,7 @@ export class EditorComponent implements OnInit {
 
     private addModelNamespace: string = 'org.acme.model';
     private addScriptFileName: string = 'lib/script.js';
+
     private noError: boolean = true;
     private dirty: boolean = false;
     private deploying: boolean = false;
@@ -74,6 +75,14 @@ export class EditorComponent implements OnInit {
                     this.dirty = true;
                 } else {
                     this.noError = false;
+                }
+            });
+
+            this.clientService.fileNameChanged$.subscribe((newName) => {
+                if (this.currentFile !== null) {
+                    this.updateFiles();
+                    let index = this.files.findIndex((file) => file.id === newName);
+                    this.setCurrentFile(this.files[index]);
                 }
             });
 
@@ -145,7 +154,7 @@ export class EditorComponent implements OnInit {
             });
         });
         newModelFiles.sort((a, b) => {
-            return a.displayID.localeCompare(b.displayID);
+        return a.displayID.localeCompare(b.displayID);
         });
         newFiles.push.apply(newFiles, newModelFiles);
 
@@ -191,49 +200,60 @@ export class EditorComponent implements OnInit {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let modelManager = businessNetworkDefinition.getModelManager();
         let code;
+
         if (!contents) {
+            let newModelNamespace = this.addModelNamespace;
+            let increment = 0;
+            while ( this.files.findIndex((file) => file.id === newModelNamespace) !== -1) {
+                newModelNamespace = this.addModelNamespace + increment;
+                increment++;
+            }
+
             code =
                 `/**
   * New model file
   */
 
-  namespace ${this.addModelNamespace}`;
+  namespace ${newModelNamespace}`;
         } else {
             code = contents;
         }
 
-        modelManager.addModelFile(code);
+        let newFile = modelManager.addModelFile(code);
         this.updateFiles();
-        this.files.forEach((file) => {
-            if (file.id === this.addModelNamespace) {
-                this.setCurrentFile(file);
-            }
-        });
+        let index = this.files.findIndex((file) => file.id === newFile.getNamespace());
+        this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
 
     addScriptFile(scriptFile = null) {
         let businessNetworkDefinition = this.clientService.getBusinessNetwork();
         let scriptManager = businessNetworkDefinition.getScriptManager();
+        let existingScripts = scriptManager.getScripts();
         let code;
         let script;
+
         if (!scriptFile) {
+            let increment = 0;
+            let scriptName = this.addScriptFileName;
+            while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
+                scriptName = this.addScriptFileName + increment;
+                increment++;
+            }
+
             code =
                 `/**
   * New script file
   */`;
-            script = scriptManager.createScript(this.addScriptFileName, 'JS', code);
+            script = scriptManager.createScript(scriptName, 'JS', code);
         } else {
             script = scriptFile;
         }
 
         scriptManager.addScript(script);
         this.updateFiles();
-        this.files.forEach((file) => {
-            if (file.id === this.addScriptFileName) {
-                this.setCurrentFile(file);
-            }
-        });
+        let index = this.files.findIndex((file) => file.id === script.getIdentifier());
+        this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
 
@@ -400,10 +420,12 @@ export class EditorComponent implements OnInit {
             }
         }, (reason) => {
             if (reason && reason !== 1) {
+                this.alertService.busyStatus$.next(null);
                 this.alertService.errorStatus$.next(reason);
             }
         })
         .catch((error) => {
+            this.alertService.busyStatus$.next(null);
             this.alertService.errorStatus$.next(error);
         });
     }
@@ -426,19 +448,25 @@ export class EditorComponent implements OnInit {
                 let modelFile = this.clientService.getModelFile(file.id);
                 if (this.clientService.validateFile(file.id, modelFile.getDefinitions(), 'model') !== null) {
                     allValid = false;
-                    break;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
                 }
             } else if (file.acl && allValid) {
                 let aclFile = this.clientService.getAclFile();
                 if (this.clientService.validateFile(file.id, aclFile.getDefinitions(), 'acl') !== null) {
                     allValid = false;
-                    break;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
                 }
             } else if (file.script && allValid) {
                 let script = this.clientService.getScriptFile(file.id);
                 if (this.clientService.validateFile(file.id, script.getContents(), 'script') !== null) {
                     allValid = false;
-                    break;
+                    file.invalid = true;
+                } else {
+                    file.invalid = false;
                 }
             }
         }

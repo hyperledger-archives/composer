@@ -44,7 +44,11 @@ export class IdentityService {
 
     getCurrentIdentity(): Promise<string> {
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
-        return this.getIdentity(connectionProfile);
+        return this.getIdentity(connectionProfile)
+        .then((identity) => {
+            this._currentIdentity.next(identity);
+            return this._currentIdentity.getValue();
+        });
     }
 
     getIdentity(connectionProfile: string): Promise<string> {
