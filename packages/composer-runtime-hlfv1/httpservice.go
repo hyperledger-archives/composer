@@ -74,7 +74,7 @@ func NewHTTPService(vm *duktape.Context, context *Context, stub shim.ChaincodeSt
 	return result
 }
 
-// HTTP POST to a URL and return the reponse to the caller
+// HTTP POST to a URL and return a Promise to the reponse to the caller
 func (httpService *HTTPService) post(vm *duktape.Context) (result int) {
 	logger.Debug("Entering HTTPService.post", vm)
 	defer func() { logger.Debug("Exiting HTTPService.post", result) }()
@@ -121,8 +121,9 @@ func (httpService *HTTPService) post(vm *duktape.Context) (result int) {
 	response.Body = responseBody
 	jsonResponse, err := json.Marshal(response)
 
-	// push the JSON string
-	vm.PushString(string(jsonResponse)) // [ theHttpService, jsonResponseString ]
+	// push a Promise that resolves to the JSON response as a string
+	vm.PushString("Promise.resolve(" + string(jsonResponse) + ")")
+	vm.Eval()
 
 	// a return code of 1 signifies that the top of the stack should be returned to the caller
 	return 1

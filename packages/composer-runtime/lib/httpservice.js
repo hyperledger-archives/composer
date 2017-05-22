@@ -40,37 +40,45 @@ class HTTPService {
      * the body to a JS object using JSON.parse.
      */
     post(url,data) {
-        LOG.info('Posting data to URL ' + url, data);
+        const method = 'post';
+        LOG.entry(method, url, data);
 
         this.url = url;
         this.data = data;
 
-        return new Promise((resolve, reject) => {
+        return this._post()
+            .then((responseText) => {
+                LOG.info('Reponse text from URL ' + url, responseText);
 
-            // this may throw an Error, because this is inside a Promise the promise will get rejected
-            const response = JSON.parse(this._post());
-            LOG.info('Reponse from URL ' + url, response);
+                const response = JSON.parse(responseText);
+                LOG.info('Reponse from URL ' + url, response);
 
-            if(response.statusCode !== 200) {
-                LOG.error('Error statusCode ', response.statusCode);
-                return reject(JSON.stringify(response));
-            }
-            else {
-                if(response.body && typeof response.body === 'string') {
-                    try {
-                        response.body = JSON.parse(response.body);
+                if(response.statusCode >= 200 && response.statusCode < 300) {
+                    if(response.body && typeof response.body === 'string') {
+                        try {
+                            response.body = JSON.parse(response.body);
+                        }
+                        catch(err) {
+                            LOG.warning('Body data could not be converted to JS object', response.body);
+                        }
                     }
-                    catch(err) {LOG.warning('Body data could not be converted to JS object', response.body);}
+                    return Promise.resolve(response);
                 }
-                return resolve(response);
-            }
-        });
+                else {
+                    LOG.error('Error statusCode ', response.statusCode);
+                    return Promise.reject(JSON.stringify(response));
+                }
+            })
+            .then((response) => {
+                LOG.exit(method);
+                return Promise.resolve(response);
+            });
     }
 
     /**
      * Post data
      * @abstract
-     * @return {object} A JS object that captures the status code, header and body of the HTTP POST
+     * @return {Promise} A Promise that return the JSON text for the HTTP POST. It captures the status code, header and body of the HTTP POST. The body must also be returned as embedded JSON text.
      * @throws {Error} throws an error if there is an issue
      */
     _post() {

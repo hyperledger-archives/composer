@@ -200,9 +200,12 @@ class Api {
             options.permitResourcesForRelationships = true;
             const data = serializer.toJSON(typed, options);
             LOG.debug(method, typed.getFullyQualifiedType(), data);
-            const result = httpService.post(url,data);
-            LOG.exit(method);
-            return result;
+
+            return httpService.post(url,data)
+                .then((response) => {
+                    LOG.exit(method);
+                    return Promise.resolve(response);
+                });
         };
 
         Object.freeze(this);

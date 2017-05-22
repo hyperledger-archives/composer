@@ -35,23 +35,29 @@ class WebHTTPService extends HTTPService {
         LOG.exit(method);
     }
 
-    /**
+   /**
      * Post data
      * @abstract
-     * @param {commitCallback} callback The callback function to call when complete.
+     * @return {Promise} A Promise that return the JSON text for the HTTP POST. It captures the status code, header and body of the HTTP POST. The body must also be returned as embedded JSON text.
+     * @throws {Error} throws an error if there is an issue
      */
-    _post(callback) {
-        xhr({
-            method: 'POST',
-            body: JSON.stringify(this.data),
-            uri: this.url,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }, function (err, resp, body) {
-            callback({
-                statusCode: resp.statusCode,
-                body: body
+    _post() {
+        const self = this;
+        LOG.debug('Posting to ' + this.url + ' with data ' + this.data );
+
+        return new Promise(function (resolve, reject) {
+            xhr({
+                method: 'POST',
+                body: JSON.stringify(self.data),
+                uri: self.url,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }, function (err, resp, body) {
+                resolve( JSON.stringify({
+                    statusCode: resp.statusCode,
+                    body: (err) ? err : body
+                }));
             });
         });
     }

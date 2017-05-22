@@ -35,22 +35,23 @@ class EmbeddedHTTPService extends HTTPService {
         LOG.exit(method);
     }
 
-    /**
+   /**
      * Post data
      * @abstract
-     * @param {commitCallback} callback The callback function to call when complete.
+     * @return {Promise} A Promise that return the JSON text for the HTTP POST. It captures the status code, header and body of the HTTP POST. The body must also be returned as embedded JSON text.
+     * @throws {Error} throws an error if there is an issue
      */
-    _post(callback) {
-        request.post( this.url, this.data,
-           function (error, response, body) {
-               if (!error) {
-                   callback( { statusCode : response.statusCode, body: body});
-               }
-               else {
-                   LOG.error('Error performing HTTP POST to ' + this.url, error);
-               }
-           }
-        );
+    _post() {
+        const self = this;
+        return new Promise(function (resolve, reject) {
+            request.post(self.url, self.data,
+                function (err, resp, body) {
+                    resolve( {
+                        statusCode: resp.statusCode,
+                        body: (err) ? err : body
+                    });
+                });
+        });
     }
 }
 
