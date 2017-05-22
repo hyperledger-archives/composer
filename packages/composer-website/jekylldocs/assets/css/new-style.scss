@@ -922,6 +922,14 @@ nav {
             border: 1px solid $keyline-highlight;
           }
 
+          code {
+            border-radius: 2px;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+          }
+
           ul {
             list-style: none;
             padding-left: 2em;
