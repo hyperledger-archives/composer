@@ -6,6 +6,12 @@ app-editor {
   width: 100%;
 
   .side-bar {
+    display: flex;
+
+    .error_dot {
+        align-self: center;
+    }
+
     .files {
       & > * {
         padding: $space-medium $space-large;
@@ -18,6 +24,10 @@ app-editor {
 
       .side-bar-nav {
         padding: 0;
+
+        .error {
+            color: $first-warning;
+        }
       }
     }
 
@@ -58,6 +68,19 @@ app-editor {
       min-height: 63vh;
       max-height: 63vh;
       overflow-y: auto;
+    }
+
+    .edit_icon {
+        flex-shrink: 1;
+        align-self: center;
+        padding-top:4px;
+    }
+
+    .delete_icon {
+        flex-shrink: 1;
+        align-self: center;
+        margin-left: auto;
+        padding-top:4px;
     }
   }
 

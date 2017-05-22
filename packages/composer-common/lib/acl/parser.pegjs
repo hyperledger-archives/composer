@@ -1355,16 +1355,17 @@ Program
       rules: rules
     };
   }
-  
+
 AclRule
  = SimpleRule / ConditionalRule
-  
+
 SimpleRule
  = "rule" __ ruleId:RuleId __ "{" __
   	"description:" __ "\"" description:StringSequence "\"" __
     "participant:" __ "\"" participant:Participant "\"" __
-    "operation:" __ verb:Verb __
+    "operation:" __ verbs:Verbs __
     "resource:" __ "\"" noun:Noun "\"" __
+    transaction:SimpleTransactionSpecification?
     "action:" __ action:Action __
  "}" __
  {
@@ -1372,8 +1373,9 @@ SimpleRule
         type: "SimpleRule",
         id: ruleId,
         noun: noun,
-        verb: verb,
+        verbs: verbs,
         participant: participant,
+        transaction: transaction,
         action: action,
         description: description,
         location: location()
@@ -1385,13 +1387,14 @@ VariableBinding
 {
   return id;
 }
- 
+
  ConditionalRule
  = "rule" __ ruleId:RuleId __ "{" __
   	"description:" __ "\"" description:StringSequence "\"" __
     "participant" __ participantVariable:VariableBinding? __ ":" __ "\"" participant:Participant "\"" __
-    "operation:" __ verb:Verb __
+    "operation:" __ verbs:Verbs __
     "resource" __ nounVariable:VariableBinding? __ ":" __ "\"" noun:Noun "\"" __
+    transaction:ConditionalTransactionSpecification?
     "condition:" __ predicate:Predicate __
     "action:" __ action:Action __
  "}" __
@@ -1401,9 +1404,10 @@ VariableBinding
         id: ruleId,
         noun: noun,
         nounVariable: nounVariable,
-        verb: verb,
+        verbs: verbs,
         participant: participant,
         participantVariable: participantVariable,
+        transaction: transaction,
         predicate: predicate,
         action: action,
         description: description,
@@ -1431,11 +1435,55 @@ Binding
   };
 }
 
+BindingNoInstance
+  = qualifiedName:QualifiedName
+{
+  return {
+    type: "BindingNoInstance",
+    qualifiedName: qualifiedName,
+    location: location()
+  };
+}
+
 Noun
  = Binding
 
-Verb
- = 'CREATE' / 'READ' / 'UPDATE' / 'ALL' / 'DELETE'
+NounNoInstance
+ = BindingNoInstance
+
+/**
+ * A single verb.
+ */
+BasicVerb = 'CREATE' / 'READ' / 'UPDATE' / 'DELETE'
+
+/**
+ * An additional verb when specified in a list.
+ */
+AdditionalBasicVerb = __ "," __ verb:BasicVerb
+{
+    return verb
+}
+
+/**
+ * A list of verbs.
+ */
+BasicVerbList = first:BasicVerb others:(AdditionalBasicVerb)*
+{
+    return [first].concat(others);
+}
+
+/**
+ * The special "all" verb.
+ */
+AllVerb = 'ALL'
+{
+    return ['ALL']
+}
+
+/**
+ * The special "all" verb, or a list of verbs.
+ */
+Verbs = AllVerb / BasicVerbList
 
 Participant
  = 'ANY' /
@@ -1454,3 +1502,20 @@ StringSequence "string"
     = chars:DoubleStringCharacter* {
         return chars.join("");
       }
+
+SimpleTransactionSpecification
+ = "transaction:" __ "\"" binding:BindingNoInstance "\"" __
+{
+    return {
+        binding: binding
+    };
+}
+
+ConditionalTransactionSpecification
+ = "transaction" __ variableBinding:VariableBinding? __ ":" __ "\"" binding:BindingNoInstance "\"" __
+{
+    return {
+        variableBinding: variableBinding,
+        binding: binding
+    }
+}

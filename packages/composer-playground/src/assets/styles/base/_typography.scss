@@ -178,3 +178,15 @@
     color: $first-highlight;
   }
 }
+
+//Notifications
+.composer {
+
+  .notification-title {
+    font-weight: 300;
+  }
+    .notification-text {
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+}

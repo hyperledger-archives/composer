@@ -115,33 +115,36 @@ export class AddFileComponent {
  */`;
             let scriptManager = this.businessNetwork.getScriptManager();
             let existingScripts = scriptManager.getScripts();
-            let filteredScripts = existingScripts.filter((script) => {
-                let pattern = new RegExp(this.addScriptFileName + '\\d*' + this.addScriptFileExtension);
-                return pattern.test(script.getIdentifier());
-            });
+            let increment = 0;
 
-            let numScripts;
-            numScripts = filteredScripts.length === 0 ? '' : filteredScripts.length;
-            this.currentFile = scriptManager.createScript(this.addScriptFileName + numScripts + this.addScriptFileExtension, 'JS', code);
+            let scriptName = this.addScriptFileName;
+
+            while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
+                scriptName = this.addScriptFileName + increment;
+                increment++;
+            }
+
+            this.currentFile = scriptManager.createScript(scriptName, 'JS', code);
             this.currentFileName = this.currentFile.getIdentifier();
         } else {
             let modelManager = this.businessNetwork.getModelManager();
             let existingModels = modelManager.getModelFiles();
-            let filteredModels = existingModels.filter((model) => {
-                let pattern = new RegExp(this.addModelFileName + '\\d*' + this.addModelFileExtension);
-                return pattern.test(model.getName());
-            });
+            let increment = 0;
 
-            let numModels = filteredModels.length === 0 ? '' : filteredModels.length;
+            let newModelNamespace = this.addModelNamespace;
+            while ( existingModels.findIndex((file) => file.getNamespace() === newModelNamespace) !== -1 ) {
+                newModelNamespace = this.addModelNamespace + increment;
+                increment++;
+            }
 
             let code =
                 `/**
  * New model file
  */
 
-namespace ${this.addModelNamespace + numModels}`;
+namespace ${newModelNamespace}`;
 
-            this.currentFile = new ModelFile(modelManager, code, this.addModelFileName + numModels + this.addModelFileExtension);
+            this.currentFile = new ModelFile(modelManager, code, newModelNamespace + this.addModelFileExtension);
             this.currentFileName = this.currentFile.getFileName();
         }
     }

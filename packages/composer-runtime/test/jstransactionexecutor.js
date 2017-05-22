@@ -20,6 +20,7 @@ const JSTransactionExecutor = require('../lib/jstransactionexecutor');
 const ModelManager = require('composer-common').ModelManager;
 const RegistryManager = require('../lib/registrymanager');
 const ScriptManager = require('composer-common').ScriptManager;
+const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
 chai.should();
@@ -37,6 +38,7 @@ describe('JSTransactionExecutor', () => {
     let participant;
     let scriptManager;
     let mockRegistryManager;
+    let mockSerializer;
     let api;
 
     beforeEach(() => {
@@ -59,7 +61,8 @@ describe('JSTransactionExecutor', () => {
         participant = factory.newResource('org.acme', 'TestParticipant', '1');
         scriptManager = new ScriptManager(modelManager);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        api = new Api(factory, ',serializer', participant, mockRegistryManager); // TODO DCS
+        mockSerializer = sinon.createStubInstance(Serializer);
+        api = new Api(factory, mockSerializer, participant, mockRegistryManager);
     });
 
     afterEach(() => {

@@ -39,12 +39,13 @@ class Api {
      * @param {Resource} participant The current participant.
      * @param {RegistryManager} registryManager The registry manager to use.
      * @param {HTTPService} httpService The http service to use.
+     * @param {EventService} eventService The event service to use.
      * @param {Context} context The transaction context.
      * @private
      */
-    constructor(factory, serializer, participant, registryManager, httpService, context) {
+    constructor(factory, serializer, participant, registryManager, httpService, eventService, context) {
         const method = 'constructor';
-        LOG.entry(method, factory, serializer, participant, registryManager, httpService, context);
+        LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, context);
 
         /**
          * Get the factory. The factory can be used to create new instances of
@@ -208,10 +209,26 @@ class Api {
                 });
         };
 
+        /**
+         * Emit an event defined in the transaction
+         * @method module:composer-runtime#emit
+         * @param {Resource} event The event to be emitted
+         * @public
+         */
+        this.emit = function emit(event) {
+            const method = 'emit';
+            LOG.entry(method);
+            event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
+            let serializedEvent = serializer.toJSON(event);
+            context.incrementEventNumber();
+            LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
+            eventService.emit(serializedEvent);
+            LOG.exit(method);
+        };
+
         Object.freeze(this);
         LOG.exit(method);
     }
-
 }
 
 module.exports = Api;

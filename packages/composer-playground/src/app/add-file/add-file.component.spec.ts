@@ -295,7 +295,7 @@ describe('AddFileComponent', () => {
 namespace org.acme.model`],
                 {type: 'text/plain'}
             );
-            let file = new File([b], 'lib/org.acme.model.cto');
+            let file = new File([b], 'org.acme.model.cto');
             let dataBuffer = new Buffer(`/**
  * New model file
  */
@@ -307,7 +307,7 @@ namespace org.acme.model`);
             component.businessNetwork = mockBusinessNetwork;
 
             component.changeCurrentFileType();
-            component.currentFileName.should.equal('lib/org.acme.model.cto');
+            component.currentFileName.should.equal('org.acme.model.cto');
             component.currentFile.should.deep.equal(mockModel);
 
         }));
@@ -322,7 +322,7 @@ namespace org.acme.model`);
 namespace org.acme.model`],
                 {type: 'text/plain'}
             );
-            let file = new File([b], 'lib/org.acme.model.cto');
+            let file = new File([b], 'org.acme.model.cto');
             let dataBuffer = new Buffer(`/**
  * New model file
  */
@@ -337,8 +337,45 @@ namespace org.acme.model`);
             component.businessNetwork = mockBusinessNetwork;
 
             component.changeCurrentFileType();
-            component.currentFileName.should.equal('lib/org.acme.model1.cto');
+            component.currentFileName.should.equal('org.acme.model0.cto');
         });
+
+        it('should fill in template model name indices for a cto file name', async(() => {
+            let mockFile = sinon.createStubInstance(ModelFile);
+            mockFile.getNamespace.returns('org.acme.model');
+            let mockFile0 = sinon.createStubInstance(ModelFile);
+            mockFile0.getNamespace.returns('org.acme.model0');
+            let mockFile1 = sinon.createStubInstance(ModelFile);
+            mockFile1.getNamespace.returns('org.acme.model1');
+            let mockFile3 = sinon.createStubInstance(ModelFile);
+            mockFile3.getNamespace.returns('org.acme.model3');
+            let mockFile4 = sinon.createStubInstance(ModelFile);
+            mockFile4.getNamespace.returns('org.acme.model4');
+            mockModelManager.getModelFiles.returns([mockFile, mockFile0, mockFile1, mockFile3, mockFile4]);
+
+            let b = new Blob(
+                [`/**
+ * New model file
+ */
+
+namespace org.acme.model`],
+                {type: 'text/plain'}
+            );
+            let file = new File([b], 'org.acme.model.cto');
+            let dataBuffer = new Buffer(`/**
+ * New model file
+ */
+
+namespace org.acme.model`);
+
+            let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
+
+            component.fileType = 'cto';
+            component.businessNetwork = mockBusinessNetwork;
+
+            component.changeCurrentFileType();
+            component.currentFileName.should.equal('org.acme.model2.cto');
+        }));
     });
 
     describe('#removeFile', () => {

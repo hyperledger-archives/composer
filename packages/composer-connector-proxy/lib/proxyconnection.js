@@ -17,7 +17,9 @@
 const Connection = require('composer-common').Connection;
 const ProxyUtil = require('./proxyutil');
 const ProxySecurityContext = require('./proxysecuritycontext');
+const Logger = require('composer-common').Logger;
 
+const LOG = Logger.getLog('ProxyConnection');
 /**
  * Base class representing a connection to a business network.
  * @protected
@@ -45,6 +47,8 @@ class ProxyConnection extends Connection {
      * terminated, or rejected with an error.
      */
     disconnect() {
+        const method = 'disconnect';
+        LOG.entry(method);
         return new Promise((resolve, reject) => {
             this.socket.emit('/api/connectionDisconnect', this.connectionID, (error) => {
                 if (error) {
@@ -52,6 +56,10 @@ class ProxyConnection extends Connection {
                 }
                 resolve();
             });
+        })
+        .then(() => {
+            this.socket.removeListener('events', () => {});
+            LOG.exit(method);
         });
     }
 

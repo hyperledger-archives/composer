@@ -44,7 +44,8 @@ describe('ProxyConnection', () => {
     beforeEach(() => {
         mockConnectionManager = sinon.createStubInstance(ConnectionManager);
         mockSocket = {
-            emit: sinon.stub()
+            emit: sinon.stub(),
+            removeListener: sinon.stub()
         };
         mockSocket.emit.throws(new Error('unexpected call'));
         connection = new ProxyConnection(mockConnectionManager, connectionProfile, businessNetworkIdentifier, mockSocket, connectionID);
@@ -59,6 +60,7 @@ describe('ProxyConnection', () => {
                 .then(() => {
                     sinon.assert.calledOnce(mockSocket.emit);
                     sinon.assert.calledWith(mockSocket.emit, '/api/connectionDisconnect', connectionID, sinon.match.func);
+                    mockSocket.removeListener.withArgs('events', sinon.match.func).yield();
                 });
         });
 

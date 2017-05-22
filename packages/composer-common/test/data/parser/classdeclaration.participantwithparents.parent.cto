@@ -1,0 +1,7 @@
+namespace com.testing.parent
+
+abstract participant Base identified by id {
+  o String id
+}
+
+abstract participant Super extends Base { }

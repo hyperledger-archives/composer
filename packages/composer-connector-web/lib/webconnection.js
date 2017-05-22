@@ -14,6 +14,7 @@
 
 'use strict';
 
+// const Resource = require('composer-common').Resource;
 const Connection = require('composer-common').Connection;
 const Engine = require('composer-runtime').Engine;
 const uuid = require('uuid');
@@ -192,7 +193,7 @@ class WebConnection extends Connection {
         let engine = WebConnection.createEngine(container);
         WebConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeID);
         WebConnection.addChaincode(chaincodeID, container, engine);
-        let context = new WebContext(engine, userID);
+        let context = new WebContext(engine, userID, this);
         return businessNetwork.toArchive()
             .then((businessNetworkArchive) => {
                 return engine.init(context, 'init', [businessNetworkArchive.toString('base64')]);
@@ -259,7 +260,7 @@ class WebConnection extends Connection {
         let userID = securityContext.getUserID();
         let chaincodeID = securityContext.getChaincodeID();
         let chaincode = WebConnection.getChaincode(chaincodeID);
-        let context = new WebContext(chaincode.engine, userID);
+        let context = new WebContext(chaincode.engine, userID, this);
         return chaincode.engine.query(context, functionName, args)
             .then((data) => {
                 return Buffer.from(JSON.stringify(data));
@@ -278,7 +279,7 @@ class WebConnection extends Connection {
         let userID = securityContext.getUserID();
         let chaincodeID = securityContext.getChaincodeID();
         let chaincode = WebConnection.getChaincode(chaincodeID);
-        let context = new WebContext(chaincode.engine, userID);
+        let context = new WebContext(chaincode.engine, userID, this);
         return chaincode.engine.invoke(context, functionName, args)
             .then((data) => {
                 return undefined;

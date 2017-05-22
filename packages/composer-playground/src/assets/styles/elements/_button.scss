@@ -87,8 +87,33 @@
                 color: $fifth-highlight;
                 background-color: $white;
             }
-
         }
+
+        &.delete {
+            background-color: $first-warning;
+            color: $white;
+            border-color: $first-warning;
+
+            &:hover {
+                background-color: $second-warning;
+                border-color: $second-warning;
+                color: $white;
+
+            }
+
+            &.active, &:active, &:focus {
+                background-color: $first-warning;
+                border-color: $first-warning;
+                color: $white;
+            }
+
+            &[disabled], &[disabled]:hover {
+                border-color: $first-warning;
+                color: $first-warning;
+                background-color: $white;
+            }
+        }
+
 
         &.expand {
             background-color: $white;

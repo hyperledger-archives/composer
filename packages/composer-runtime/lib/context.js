@@ -68,6 +68,7 @@ class Context {
         this.accessController = null;
         this.sysregistries = null;
         this.sysidentities = null;
+        this.eventNumber = 0;
     }
 
     /**
@@ -247,6 +248,15 @@ class Context {
     }
 
     /**
+     * Get the event service provided by the chaincode container.
+     * @abstract
+     * @return {EventService} The event service provided by the chaincode container.
+     */
+    getEventService() {
+        throw new Error('abstract function called');
+    }
+
+    /**
      * Get the model manager.
      * @return {ModelManager} The model manager.
      */
@@ -340,7 +350,7 @@ class Context {
      */
     getApi() {
         if (!this.api) {
-            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getHTTPService(), this);
+            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getHTTPService(), this.getEventService(), this);
         }
         return this.api;
     }
@@ -405,6 +415,7 @@ class Context {
         }
         this.transaction = transaction;
         this.transactionLogger = new TransactionLogger(this.transaction, this.getRegistryManager(), this.getSerializer());
+        this.getAccessController().setTransaction(transaction);
     }
 
     /**
@@ -469,6 +480,22 @@ class Context {
             throw new Error('must call initialize before calling this function');
         }
         return this.sysidentities;
+    }
+
+    /**
+     * Get the next event number
+     * @return {integer} the event number.
+     */
+    getEventNumber() {
+        return this.eventNumber;
+    }
+
+    /**
+     * Incrememnt the event number by 1
+     * @return {integer} the event number.
+     */
+    incrementEventNumber() {
+        return this.eventNumber++;
     }
 
     /**

@@ -20,6 +20,7 @@ const version = require('../package.json').version;
 const WebDataService = require('./webdataservice');
 const WebLoggingService = require('./webloggingservice');
 const WebHTTPService = require('./webhttpservice');
+const WebEventService = require('./webeventservice');
 
 /**
  * A class representing the chaincode container hosting the JavaScript engine.
@@ -37,6 +38,7 @@ class WebContainer extends Container {
         this.dataService = new WebDataService(this.uuid);
         this.loggingService = new WebLoggingService();
         this.httpService = new WebHTTPService();
+        this.eventService = new WebEventService();
     }
 
     /**
