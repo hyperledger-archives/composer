@@ -21,6 +21,7 @@ const BusinessNetworkConnection = require('composer-client').BusinessNetworkConn
 const fs = require('fs');
 // const Download = require('../../lib/cmds/network/lib/download.js');
 const List = require('../../lib/cmds/network/listCommand.js');
+const ListCmd = require('../../lib/cmds/network/lib/list.js');
 const CmdUtil = require('../../lib/cmds/utils/cmdutils.js');
 
 //require('../lib/deploy.js');
@@ -53,18 +54,22 @@ describe('composer network download CLI unit tests', function () {
         sandbox = sinon.sandbox.create();
 
         mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetworkDefinition.getIdentifier.returns(testBusinessNetworkId);
-        mockBusinessNetworkDefinition.getDescription.returns(testBusinessNetworkDescription);
+
+        mockBusinessNetworkDefinition.identifier = testBusinessNetworkId;
+        mockBusinessNetworkDefinition.description = testBusinessNetworkDescription;
+        mockBusinessNetworkDefinition.modelManager = {'modelFiles':[{'name':'testModel'}]};
+        mockBusinessNetworkDefinition.scriptManager = {'scripts':[{'name':'testScript'}]};
 
         mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
-        mockBusinessNetworkConnection.connect.resolves(mockBusinessNetworkDefinition);
+
+        mockBusinessNetworkConnection.connect.returns(Promise.resolve(mockBusinessNetworkDefinition));
 
         mockBusinessNetworkDefinition.toArchive.resolves('bytearray');
-        // sandbox.stub(Download.businessNetworkConnection,mockBusinessNetworkConnection);
         sandbox.stub(fs,'writeFileSync' );
-        // sandbox.stub(businessNetworkConnection, 'connect').returns(mockBusinessNetworkDefinition);
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
         sandbox.stub(process, 'exit');
+
+        sandbox.stub(ListCmd,'getMatchingRegistries').returns(Promise.resolve([{id:'reg1','name':'reg1','registryType':'Asset','assets':{}},{id:'reg2','name':'reg2','registryType':'Asset','assets':{}}]));
     });
 
     afterEach(() => {
@@ -73,8 +78,7 @@ describe('composer network download CLI unit tests', function () {
 
     describe('List handler() method tests', function () {
 
-        it('Good path, all parms correctly specified.', function () {
-
+        it('Good path, all parms correctly specified.', function (done) {
             let argv = {enrollId: 'WebAppAdmin'
                        ,enrollSecret: 'DJY27pEnl16d'
                        ,archiveFile: 'testArchiveFile.zip'
@@ -83,12 +87,14 @@ describe('composer network download CLI unit tests', function () {
 
 
 
-            return List.handler(argv)
+            List.handler(argv)
             .then ((result) => {
                 sinon.assert.calledOnce(mockBusinessNetworkConnection.connect);
-
             });
+
+            done();
         });
+
 
 
 

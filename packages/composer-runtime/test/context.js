@@ -22,6 +22,7 @@ const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
+const EventService = require('../lib/eventservice');
 const Factory = require('composer-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
@@ -45,12 +46,14 @@ require('sinon-as-promised');
 
 describe('Context', () => {
 
+    let mockBusinessNetworkDefinition;
     let mockEngine;
     let context;
     let sandbox;
 
     beforeEach(() => {
         mockEngine = sinon.createStubInstance(Engine);
+        mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
         context = new Context(mockEngine);
         sandbox = sinon.sandbox.create();
     });
@@ -266,6 +269,16 @@ describe('Context', () => {
 
     });
 
+    describe('#getEventService', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getEventService();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
     describe('#getModelManager', () => {
 
         it('should throw if not initialized', () => {
@@ -419,6 +432,9 @@ describe('Context', () => {
             sinon.stub(context, 'getParticipant').returns(mockParticipant);
             let mockRegistryManager = sinon.createStubInstance(RegistryManager);
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
+            let mockEventService = sinon.createStubInstance(EventService);
+            sinon.stub(context, 'getEventService').returns(mockEventService);
+            context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });
 
@@ -646,6 +662,19 @@ describe('Context', () => {
             context.getSystemIdentities().should.equal(mockSystemIdentities);
         });
 
+    });
+
+    describe('#getEventNumber', () => {
+        it('should get the current event number', () => {
+            context.getEventNumber().should.equal(0);
+        });
+    });
+
+    describe('#incrementEventNumber', () => {
+        it('should get the incremenet current event number', () => {
+            context.incrementEventNumber();
+            context.getEventNumber().should.equal(1);
+        });
     });
 
     describe('#toJSON', () => {

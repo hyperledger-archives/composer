@@ -18,6 +18,7 @@ const Api = require('../lib/api');
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const Engine = require('../lib/engine');
+const EventService = require('../lib/eventservice');
 const LoggingService = require('../lib/loggingservice');
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
@@ -38,6 +39,7 @@ describe('EngineTransactions', () => {
 
     let mockContainer;
     let mockLoggingService;
+    let mockEventService;
     let mockContext;
     let engine;
     let mockRegistryManager;
@@ -71,6 +73,8 @@ describe('EngineTransactions', () => {
         mockContext.getTransactionExecutors.returns([mockTransactionExecutor]);
         mockRegistry = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Transaction', 'default').resolves(mockRegistry);
+        mockEventService = sinon.createStubInstance(EventService);
+        mockContext.getEventService.returns(mockEventService);
     });
 
     describe('#submitTransaction', () => {
@@ -114,6 +118,7 @@ describe('EngineTransactions', () => {
                         should.equal(transaction.$resolved, undefined);
                         return true;
                     }));
+                    sinon.assert.calledOnce(mockEventService.commit);
                 });
         });
 
@@ -160,6 +165,7 @@ describe('EngineTransactions', () => {
                         should.equal(transaction.$resolved, undefined);
                         return true;
                     }));
+                    sinon.assert.calledOnce(mockEventService.commit);
                 });
         });
 

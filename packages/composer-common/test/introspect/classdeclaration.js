@@ -35,14 +35,27 @@ describe('ClassDeclaration', () => {
     beforeEach(() => {
         mockModelManager = sinon.createStubInstance(ModelManager);
         mockModelFile = sinon.createStubInstance(ModelFile);
-        mockModelFile.getModelManager.returns(mockModelManager);
     });
 
+    /**
+     * Load an arbitrary number of model files.
+     * @param {String[]} modelFileNames array of model file names.
+     * @param {ModelManager} modelManager the model manager to which the created model files will be registered.
+     * @return {ModelFile[]} array of loaded model files, matching the supplied arguments.
+     */
+    const loadModelFiles = (modelFileNames, modelManager) => {
+        const modelFiles = [];
+        for (let modelFileName of modelFileNames) {
+            const modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
+            const modelFile = new ModelFile(modelManager, modelDefinitions);
+            modelFiles.push(modelFile);
+        }
+        modelManager.addModelFiles(modelFiles, modelFileNames);
+        return modelFiles;
+    };
+
     const loadModelFile = (modelFileName) => {
-        const modelDefinitions = fs.readFileSync(modelFileName, 'utf8');
-        const modelFile = new ModelFile(mockModelManager, modelDefinitions);
-        mockModelManager.getModelFiles.returns([modelFile]);
-        return modelFile;
+        return loadModelFiles([modelFileName], mockModelManager)[0];
     };
 
     const loadLastDeclaration = (modelFileName, type) => {
@@ -216,17 +229,34 @@ describe('ClassDeclaration', () => {
     });
 
     describe('#getSuperType', function() {
-        it('should return superclass when one exists', function() {
-            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
-            const subclass = modelFile.getLocalType('Sub');
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.participantwithparents.parent.cto',
+            'test/data/parser/classdeclaration.participantwithparents.child.cto'
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+
+        it('should return superclass when one exists in the same model file', function() {
+            const subclass = modelManager.getType('com.testing.parent.Super');
             should.exist(subclass);
             const superclassName = subclass.getSuperType();
-            superclassName.should.equal('com.testing.Super');
+            superclassName.should.equal('com.testing.parent.Base');
+        });
+
+        it('should return superclass when one exists in a different model file', function() {
+            const subclass = modelManager.getType('com.testing.child.Sub');
+            should.exist(subclass);
+            const superclassName = subclass.getSuperType();
+            superclassName.should.equal('com.testing.parent.Super');
         });
 
         it('should return null when none exists', function() {
-            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
-            const baseclass = modelFile.getLocalType('Base');
+            const baseclass = modelManager.getType('com.testing.parent.Base');
             should.exist(baseclass);
             const superclassName = baseclass.getSuperType();
             should.equal(superclassName, null);
@@ -234,21 +264,60 @@ describe('ClassDeclaration', () => {
     });
 
     describe('#getAssignableClassDeclarations', function() {
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.participantwithparents.parent.cto',
+            'test/data/parser/classdeclaration.participantwithparents.child.cto'
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+
         it('should return itself only if there are no subclasses', function() {
-            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
-            const baseclass = modelFile.getLocalType('Sub');
+            const baseclass = modelManager.getType('com.testing.child.Sub');
             should.exist(baseclass);
             const subclasses = baseclass.getAssignableClassDeclarations();
             subclasses.should.have.same.members([baseclass]);
         });
 
         it('should return all subclass definitions', function() {
-            const modelFile = loadModelFile('test/data/parser/classdeclaration.participantwithparents.cto');
-            const baseclass = modelFile.getLocalType('Base');
+            const baseclass = modelManager.getType('com.testing.parent.Base');
             should.exist(baseclass);
             const subclasses = baseclass.getAssignableClassDeclarations();
             const subclassNames = subclasses.map(classDef => classDef.getName());
             subclassNames.should.have.same.members(['Base', 'Super', 'Sub', 'Sub2']);
+        });
+    });
+
+    describe('#getAllSuperTypeDeclarations', function() {
+        const modelFileNames = [
+            'test/data/parser/classdeclaration.participantwithparents.parent.cto',
+            'test/data/parser/classdeclaration.participantwithparents.child.cto'
+        ];
+        let modelManager;
+
+        beforeEach(() => {
+            modelManager = new ModelManager();
+            const modelFiles = loadModelFiles(modelFileNames, modelManager);
+            modelManager.addModelFiles(modelFiles);
+        });
+
+        it('should return empty array if there are no superclasses', function() {
+            const testClass = modelManager.getType('com.testing.parent.Base');
+            should.exist(testClass);
+            const superclasses = testClass.getAllSuperTypeDeclarations();
+            superclasses.should.be.empty;
+        });
+
+        it('should return all superclass definitions', function() {
+            const testClass = modelManager.getType('com.testing.child.Sub');
+            should.exist(testClass);
+            const superclasses = testClass.getAllSuperTypeDeclarations();
+            const superclassNames = superclasses.map(classDef => classDef.getName());
+            superclassNames.should.have.same.members(['Base', 'Super']);
         });
     });
 

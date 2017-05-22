@@ -16,6 +16,7 @@
 
 const Context = require('composer-runtime').Context;
 const EmbeddedIdentityService = require('./embeddedidentityservice');
+const EmbeddedEventService = require('./embeddedeventservice');
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -27,11 +28,13 @@ class EmbeddedContext extends Context {
      * Constructor.
      * @param {Engine} engine The owning engine.
      * @param {String} userID The current user ID.
+     * @param {EventEmitter} eventSink The event emitter
      */
-    constructor(engine, userID) {
+    constructor(engine, userID, eventSink) {
         super(engine);
         this.dataService = engine.getContainer().getDataService();
         this.identityService = new EmbeddedIdentityService(userID);
+        this.eventSink = eventSink;
     }
 
     /**
@@ -50,6 +53,17 @@ class EmbeddedContext extends Context {
         return this.identityService;
     }
 
+
+    /**
+     * Get the event service provided by the chaincode container.
+     * @return {EventService} The event service provided by the chaincode container.
+     */
+    getEventService() {
+        if (!this.eventService) {
+            this.eventService = new EmbeddedEventService(this.eventSink);
+        }
+        return this.eventService;
+    }
 }
 
 module.exports = EmbeddedContext;

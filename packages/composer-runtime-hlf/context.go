@@ -26,6 +26,7 @@ type Context struct {
 	This            *otto.Object
 	DataService     *DataService
 	IdentityService *IdentityService
+	EventService    *EventService
 }
 
 // NewContext creates a Go wrapper around a new instance of the Context JavaScript class.
@@ -52,10 +53,12 @@ func NewContext(vm *otto.Otto, engine *Engine, stub shim.ChaincodeStubInterface)
 	// Create the services.
 	result.DataService = NewDataService(vm, result, stub)
 	result.IdentityService = NewIdentityService(vm, result, stub)
+	result.EventService = NewEventService(vm, result, stub)
 
 	// Bind the methods into the JavaScript object.
 	result.This.Set("getDataService", result.getDataService)
 	result.This.Set("getIdentityService", result.getIdentityService)
+	result.This.Set("getEventService", result.getEventService)
 	return result
 
 }
@@ -74,4 +77,12 @@ func (context *Context) getIdentityService(call otto.FunctionCall) (result otto.
 	defer func() { logger.Debug("Exiting Context.getIdentityService", result) }()
 
 	return context.IdentityService.This.Value()
+}
+
+// getEventService ...
+func (context *Context) getEventService(call otto.FunctionCall) (result otto.Value) {
+	logger.Debug("Entering Context.getEventService", call)
+	defer func() { logger.Debug("Exiting Context.getEventService", result) }()
+
+	return context.EventService.This.Value()
 }

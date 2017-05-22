@@ -22,12 +22,46 @@
 
       .links {
         display: flex;
-        flex: 1;
-        margin-left: 2rem;
+
+        svg.nav-icon {
+          vertical-align: middle;
+        }
+
+        li {
+          display: flex;
+          height: 63px;
+          line-height: 63px;
+
+          &.withseparator::after {
+            content: '';
+            border-right: 2px solid $sixth-highlight;
+            margin: $space-medium 0;
+          }
+        }
+
+        a {
+          margin-left: 1rem;
+          margin-right: 1rem;
+          line-height: 63px;
+          vertical-align: middle;
+          color: $white;
+          text-decoration: none;
+          border: 1px solid transparent;
+          border-bottom: 3px solid transparent;
+
+          svg {
+            margin-right: $space-small;
+          }
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
 
         .action {
           margin-left: 1rem;
           margin-right: 1rem;
+          line-height: 63px;
           color: $white;
           transition: none;
           border-bottom: 3px solid transparent;
@@ -38,61 +72,19 @@
           }
 
           &.active {
-            border: none;
             border-bottom: 3px solid $white;
-            background-color: transparent;
-            color: $white;
-            min-width: 0;
-            padding: 0;
             border-radius: 0px;
           }
         }
-      }
-    }
 
-    .icon-links {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-right: 2rem;
-
-      a {
-        display: flex;
-        align-items: center;
-        height: 63px;
-        color: $white;
-        text-decoration: none;
-
-        svg {
-          margin-right: $space-small;
+        &.navleft {
+          flex: 1;
+          margin-left: 2rem;
         }
 
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-
-      .action {
-        display: flex;
-        margin-left: 1rem;
-        margin-right: 1rem;
-        fill: $white;
-        //should use 100% but safari doesn't listen
-        height: 63px;
-        border-bottom: 3px solid transparent;
-
-        &:hover {
-          border-radius: 0px;
-          border-bottom: 3px solid $white;
-          transition: none;
-        }
-        &.active {
-          border-bottom: 3px solid white;
-          border-radius: 0px;
-        }
-        svg.ibm-icon {
-          align-self: center;
-          fill: $white;
+        &.navright {
+          justify-content: flex-end;
+          margin-right: 2rem;
         }
       }
     }
