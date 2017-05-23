@@ -1,5 +1,5 @@
 **[Introduction](../introduction/introduction.html)**
-[Components and Concepts](../introduction/key-concepts.html)
+**[Getting Started with Hyperledger Composer](../tutorials/getting-started.html)**
 **[Tutorials](../tutorials/tutorialindex.html)**
 **[Installing](../installing/installingindex.html)**
 **[Defining Business Networks](../business-network/businessnetwork.html)**

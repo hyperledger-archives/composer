@@ -1,5 +1,5 @@
 **[Introduction](../introduction/introduction.html)**
-**[Tutorials](../tutorials/tutorialindex.html)**
+**[Getting Started with Hyperledger Composer](../tutorials/getting-started.html)**
 **[Installing](../installing/installingindex.html)**
 [Prerequisites](../installing/prerequisites.html)
 [Quickstart](../installing/quickstart.html)
