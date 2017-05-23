@@ -1129,6 +1129,22 @@ describe('EditorComponent', () => {
             result.should.equal(false);
         });
 
+        it('should fail validation for multiple invalid files', () => {
+            let fileArray = [];
+            fileArray.push({script: true, displayID: 'test_name'});
+            fileArray.push({acl: true, displayID: 'test_name'});
+            component['files'] = fileArray;
+
+            mockClientService.validateFile.returns('error');
+
+            let result = component['editorFilesValidate']();
+            result.should.equal(false);
+
+            component['files'][0].invalid.should.be.equal(true);
+            component['files'][1].invalid.should.be.equal(true);
+
+        });
+
     });
 
     describe('openDeleteFileModal', () => {
