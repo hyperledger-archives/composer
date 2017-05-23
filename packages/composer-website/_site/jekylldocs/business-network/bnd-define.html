@@ -1,0 +1,82 @@
+<h1 id="create-a-business-network-definition">Create a Business Network Definition</h1>
+
+<hr />
+
+<p>A business network definition is composed of three major items:</p>
+
+<ul>
+  <li>basic metadata for the business network definition (name, version and description)</li>
+  <li>a set of domain models that define the structure of the participants, assets and transactions within the network</li>
+  <li>a set of scripts that define business logic</li>
+</ul>
+
+<h2 id="generating-skeleton-business-network">Generating Skeleton Business Network</h2>
+
+<h3 id="installing-yeoman-generator">Installing Yeoman Generator</h3>
+<p>Instructions on installing <code class="highlighter-rouge">yo</code> and ‘s Yeoman generator are found <a href="../applications/genapp.md">here</a></p>
+
+<h3 id="generation">Generation</h3>
+<ol>
+  <li><code class="highlighter-rouge">yo fabric-composer</code></li>
+</ol>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Welcome to the Hyperledger Composer Skeleton Application Generator?
+Please select the type of Application:
+  CLI Application
+  Angular2 Application
+❯ Skeleton Business Network
+</code></pre>
+</div>
+<p>And select <code class="highlighter-rouge">Skeleton Business Netork</code></p>
+
+<ol>
+  <li>Answer all of the questions</li>
+</ol>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Welcome to the Hyperledger Composer Skeleton Application Generator
+? Please select the type of Application: Skeleton Business Network
+You can run this generator using: 'yo fabric-composer:businessnetwork'
+Welcome to the business network skeleton generator
+? What is the business network's name? basic-sample-network
+? What is the business network's namespace? org.acme.biznet
+? Describe the business network Sample Business Network
+? Who is the author? Joe Bloggs
+? Which license do you want to use? Apache-2
+   create index.js
+   create lib/logic.js
+   create package.json
+   create README.md
+   create test/logic.js
+   create .eslintrc.yml
+   create models/org.acme.biznet.cto
+</code></pre>
+</div>
+
+<p>This generates a skeleton business network with an <code class="highlighter-rouge">asset</code>, <code class="highlighter-rouge">participant</code> and <code class="highlighter-rouge">transaction</code> defined, as well as a <code class="highlighter-rouge">mocha</code> unit test.</p>
+
+<p>Also included, is a ‘best practices’ eslint config file</p>
+
+<h2 id="metadata">Metadata</h2>
+
+<p>A Business Network Definition has a name (limited to basic ASCII alphanumeric characters and <code class="highlighter-rouge">-</code>), a human-readable description and a version number. The version number for the network should take the form Major.Minor.Micro and
+<a href="semver.org">Semantic Versioning</a> principles should be used when incrementing the version number.</p>
+
+<p>The identifier of the network is formed from its name, the <code class="highlighter-rouge">-</code> character and its version number. A valid identifier is therefore <code class="highlighter-rouge">mybusinessnetwork-0.6.3</code>.</p>
+
+<p>The metadata for a business network definition is read from <code class="highlighter-rouge">package.json</code>, meaning that business network definitions may also be valid <code class="highlighter-rouge">npm</code> packages.</p>
+
+<h2 id="domain-models">Domain Models</h2>
+
+<p>The set of domain models for a business network definition define the types that are valid within the network and outside the network when it is integrated with external systems (for example systems that submit transactions to the network).</p>
+
+<p>A domain model may either be packaged within the business network definition (typically stored under the <code class="highlighter-rouge">models</code> directory), or may be declared in <code class="highlighter-rouge">package.json</code> as an external dependency. You would refer to models via a dependency if you wanted to share them across business network definitions, for example.</p>
+
+<h2 id="scripts">Scripts</h2>
+
+<p>The scripts for a business network definition are typically stored under the <code class="highlighter-rouge">lib</code> directory and are packaged within the business network definition. The scripts are written in ES 5 JavaScript and refer to the types that are defined in the domain models for the business network.</p>
+
+<h1 id="business-network-archive">Business Network Archive</h1>
+
+<p>Prior to deploying or updating a business network definition it must be archived using the ZIP standard. A typical ZIP will contain a <code class="highlighter-rouge">package.json</code> a <code class="highlighter-rouge">lib</code> folder containing one or more <code class="highlighter-rouge">.js</code> files and a <code class="highlighter-rouge">models</code> folder containing one or more <code class="highlighter-rouge">.cto</code> files.</p>
+
+<p>The <code class="highlighter-rouge">composer</code> CLI contains commands for creating an archive, deploying business network archives and the <code class="highlighter-rouge">BusinessNetworkDefinition.fromArchive, toArchive and fromDirectory</code> APIs can be used to programmatically create business network definitions.</p>

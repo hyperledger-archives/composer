@@ -1,0 +1,87 @@
+<h1 id="how-generate-a-rest-api-server-for-a-business-network">How Generate a REST API Server for a Business Network</h1>
+
+<hr />
+<p>The easiest way to setup a REST API Server that works with a published Business Network is to use the composer-rest-server package.
+Once installed this can be run from the command line in an interactive mode or a non-interactive mode.</p>
+
+<hr />
+
+<h1 id="prerequesites">Prerequesites</h1>
+
+<hr />
+<p>Along with the details of the business network and the connection profile that you will use to connect to it, you will also need to have the following
+prerequesite software installed on your system.</p>
+
+<p><em>node.js</em>: v6.9.5</p>
+
+<p>Node comes with the <em>npm</em> package manager preinstalled and so once you have node installed you can install the composer-rest-server package using</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>npm install -g composer-rest-server
+</code></pre>
+</div>
+
+<p>You may need to use <em>sudo</em> with the command above to gain permission to install.</p>
+
+<hr />
+
+<h1 id="running-the-server">Running the Server</h1>
+
+<hr />
+
+<h2 id="interactive-mode">Interactive Mode</h2>
+
+<p>Once installed, you can start the composer-rest-server using:</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>composer-rest-server
+</code></pre>
+</div>
+
+<p>You will then be asked to enter a few simple details about your business network.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>  _____           _              _                   ____                                                         
+ |  ___|   __ _  | |__    _ __  <span class="o">(</span>_<span class="o">)</span>   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __
+ | |_     / _<span class="sb">`</span> | | <span class="s1">'_ \  | '</span>__| | |  / __|  _____  | |      / _ <span class="se">\ </span> | <span class="s1">'_ ` _ \  | '</span>_ <span class="se">\ </span>  / _ <span class="se">\ </span> / __|  / _ <span class="se">\ </span>| <span class="s1">'__|
+ |  _|   | (_| | | |_) | | |    | | | (__  |_____| | |___  | (_) | | | | | | | | |_) | | (_) | \__ \ |  __/ | |   
+ |_|      \__,_| |_.__/  |_|    |_|  \___|          \____|  \___/  |_| |_| |_| | .__/   \___/  |___/  \___| |_|   
+                                                                               |_|                                
+? Enter your Fabric Connection Profile Name: defaultProfile
+? Enter your Business Network Identifier : digitalproperty-network
+? Enter your Fabric username : WebAppAdmin
+? Enter your secret: DJY27pEnl16d
+WARNING: No configurations found in configuration directory:/Users/samsmith/Projects/BlockChain/Composer/fabric-composer/packages/composer-rest-server/config
+WARNING: To disable this warning set SUPPRESS_NO_CONFIG_WARNING in the environment.
+Loopback Connector for Hyperledger Composer
+Models Loaded Now
+Browse your REST API at http://0.0.0.0:3000/explorer
+</span></code></pre>
+</div>
+
+<h2 id="non-interactive-mode">Non-Interactive Mode</h2>
+
+<p>Alternatively you can run the server specifying all the parameters on the command line</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>composer-rest-server -c car-sample -b org.acme.biznet -i WebAppAdmin -p DJY27pEnl16d
+Loopback Connector <span class="k">for </span>Hyperledger Composer
+Models Loaded Now
+Browse your REST API at http://0.0.0.0:3000/explorer
+</code></pre>
+</div>
+
+<h2 id="looking-at-the-generated-apis">Looking at the generated APIs</h2>
+
+<p>Launch your browser and go to the URL given (http://0.0.0.0:3000/explorer)</p>
+
+<p>You will be able to inspect and execute the APIs that are generated from the Business Network.</p>
+
+<h2 id="debug">Debug</h2>
+
+<p>If you should encounter any issues when using the composer-rest-server then you can use the following environment variable to enable extra trace information.</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">export </span><span class="nv">DEBUG</span><span class="o">=</span>loopback:connector:businessnetworkconnector<span class="k">*</span>
+</code></pre>
+</div>
+
+<h2 id="changing-the-port-of-the-server">Changing the port of the server</h2>
+<p>You can change the port of the server hosting the API by editing the file:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>&lt;GLOBAL NPM MODULE PATH/composer-rest-server/server/config.json
+</code></pre>
+</div>

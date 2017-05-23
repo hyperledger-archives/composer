@@ -1,0 +1,86 @@
+<h1 id="creating-a-new-connection-profile">Creating a new Connection Profile</h1>
+
+<hr />
+
+<p>A Connection Profile is used by  to connect to a running Hyperledger Fabric instance. More information about Connection Profiles can be found <a href="../reference/connectionprofile.html">here</a></p>
+
+<h2 id="procedure">Procedure</h2>
+
+<ol>
+  <li>
+    <p>Navigate to the Connection Profile store:</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> ```
+ cd $HOME/.composer-connection-profiles
+ ```
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Create a new profile folder.</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> ```
+ mkdir ./MyProfile
+ ```
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Navigate into the new profile folder.</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> ```
+ cd MyProfile
+ ```
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Create a new file called <code class="highlighter-rouge">connection.json</code> that contains the following information for either Hyperledger Fabric v0.6 or v1.0. If you are creating a connection profile for Hyperledger Fabric v0.6, use the following format:</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> ```
+ {
+     "type": &lt;hlf|web&gt;,
+     "keyValStore":"/home/&lt;your-username&gt;/.composer-credentials",
+     "membershipServicesURL": &lt;your-membership-services-url&gt;,
+     "peerURL": &lt;your-peer-url&gt;,
+     "eventHubURL": &lt;your-event-hub-url&gt;
+ }
+ ```   If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:
+
+ ```
+ {
+ "type": "hlfv1",
+ "orderers": [
+     "grpc://localhost:7050"
+ ],
+ "ca": "http://localhost:7054",
+ "peers": [
+     {
+         "requestURL": "grpc://localhost:7051",
+         "eventURL": "grpc://localhost:7053"
+     },
+     {
+         "requestURL": "grpc://localhost:7056",
+         "eventURL": "grpc://localhost:7058"
+     }
+ ],
+ "keyValStore": "/home/matthew/.hfc-key-store",
+ "channel": "mychannel",
+ "mspID": "Org1MSP",
+ "deployWaitTime": "300",
+ "invokeWaitTime": "100"
+ }
+ ```
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+<hr />
+
+<h2 id="what-next">What next?</h2>
+
+<ul>
+  <li>Learn more about <a href="../business-network/businessnetwork.html">defining business networks</a></li>
+  <li>Writing <a href="../applications/genapp.html">applications for your solution</a></li>
+</ul>

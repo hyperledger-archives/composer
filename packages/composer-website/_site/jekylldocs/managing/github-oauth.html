@@ -1,0 +1,28 @@
+<h1 id="enable-oauth-with-github">Enable OAuth with GitHub</h1>
+
+<p>To enable importing of samples without receiving an error when the rate limit is hit follow these steps.</p>
+
+<ol>
+  <li>Go to <a href="https://github.com/settings/developers">GitHub OAuth Applications</a>.</li>
+  <li>Register a new application.
+    <ul>
+      <li>The <code class="highlighter-rouge">Authorization callback URL</code> should be set to <code class="highlighter-rouge">localhost:&lt;port&gt;/github</code>.</li>
+    </ul>
+  </li>
+  <li>
+    <p>On the command line navigate to the <code class="highlighter-rouge">composer-playground-api</code> config directory.</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> cd composer/packages/composer-playground-api/config
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Copy the file.</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> cp .env.sample .env
+</code></pre>
+    </div>
+  </li>
+  <li>Open the <code class="highlighter-rouge">.env</code> file and set the <code class="highlighter-rouge">CLIENT_ID</code> and <code class="highlighter-rouge">CLIENT_SECRET</code> to the values that were given when you registered the application.</li>
+  <li>(optional) The <code class="highlighter-rouge">port</code> which the <code class="highlighter-rouge">composer-playground-api</code> can also be set by setting the <code class="highlighter-rouge">PORT</code> value in the <code class="highlighter-rouge">.env</code> file.</li>
+</ol>

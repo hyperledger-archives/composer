@@ -1,0 +1,115 @@
+<h1 id="access-control-language">Access Control Language</h1>
+
+<hr />
+
+<p>includes an access control language (ACL) that provides declarative access control over the elements of the domain model. By defining ACL rules you can determine which users/roles are permitted to create, read, update or delete elements in a business network’s domain model.</p>
+
+<h3 id="evaluation-of-access-control-rules">Evaluation of Access Control Rules</h3>
+
+<p>Access control for a business network is defined by an ordered set of ACL rules. The rules are evaluated in order, and the first rule whose condition matches determines whether access is granted or denied. If no rule match then access is <strong>denied</strong>.</p>
+
+<p>ACL rules are defined in a file called <code class="highlighter-rouge">permissions.acl</code> in the root of the business network. If this file is missing from the business network then all access is <strong>permitted</strong>.</p>
+
+<h3 id="access-control-rule-grammer">Access Control Rule Grammer</h3>
+
+<p>There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.</p>
+
+<p>For example, the rule below states that any instance of the <code class="highlighter-rouge">org.acme.SampleParticipant</code> type can perform ALL operations on all instances of <code class="highlighter-rouge">org.acme.SampeAsset</code>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>rule SimpleRule {
+    description: "Description of the ACL rule"
+    participant: "org.acme.SampleParticipant"
+    operation: ALL
+    resource: "org.acme.SampeAsset"
+    action: ALLOW
+}
+</code></pre>
+</div>
+
+<p>Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean JavaScript expression, which, when true, can either ALLOW or DENY access to the resource by the participant.</p>
+
+<p>For example, the rule below states that any instance of the <code class="highlighter-rouge">org.acme.SampleParticipant</code> type can perform ALL operations on all instances of <code class="highlighter-rouge">org.acme.SampeAsset</code> IF the participant is the owner of the asset.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>rule SampleConditionalRule {
+    description: "Description of the ACL rule"
+    participant(m): "org.acme.SampleParticipant"
+    operation: ALL
+    resource(v): "org.acme.SampeAsset"
+    condition: (v.owner.getIdentifier() == m.getIdentifier())
+    action: ALLOW
+}
+</code></pre>
+</div>
+
+<p>Multiple ACL rules may be defined that conceptually define a decision table. The actions of the decision tree define access control decisions (ALLOW or DENY). If the decision table fails to match then by default access is denied.</p>
+
+<p><strong>Resource</strong> defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class, or a property on an instance of a class.</p>
+
+<p>Resource Examples:</p>
+<ul>
+  <li>Namespace: org.acme</li>
+  <li>Class in namespace: org.acme.Car</li>
+  <li>Property on class: org.acme.Car.owner</li>
+  <li>Instance of a class: org.acme.Car#ABC123</li>
+  <li>Property on an instance of a class: org.acme.Car.owner#ABC123</li>
+</ul>
+
+<p><strong>Operation</strong> identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.</p>
+
+<p><strong>Participant</strong> defines the person or entity that has submitted a transaction for processing. If a Participant is specified they must exist in the Participant Registry. The PARTICIPANT may optionally be bound to a variable for use in a PREDICATE. The special value ‘ANY’ may be used to denote that participant type checking is not enforced for a rule.</p>
+
+<p><strong>Condition</strong> is a Boolean JavaScript expression over bound variables. Any JavaScript expression that is legal with the an <code class="highlighter-rouge">if(...)</code> expression may be used here.</p>
+
+<p><strong>Action</strong> identifies the action of the rule. It must be one of: ALLOW, DENY.</p>
+
+<h3 id="examples">Examples</h3>
+
+<p>Example ACL rules (in evaluation order):</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>rule R1 {
+    description: "Fred can DELETE the car ABC123"
+    participant: "org.acme.Driver#Fred"
+    operation: DELETE
+    resource: "org.acme.Car#ABC123"
+    action: ALLOW
+}
+
+rule R2 {
+    description: "regulator with ID Bill can not update a Car if they own it"
+    participant(r): "org.acme.Regulator#Bill"
+    operation: UPDATE
+    resource(c): "org.acme.Car"
+    condition: (c.owner == r)
+    action: DENY
+}
+
+rule R3 {
+    description: "Driver can change the ownership of a car that they own"
+    participant(d): "org.acme.Driver"
+    operation: UPDATE
+    resource(o): "org.acme.Car.owner"
+    condition: (o == d)
+    action: ALLOW
+}
+
+rule R4 {
+    description: "regulators can perform all operations on Cars"
+    participant: "org.acme.Regulator"
+    operation: ALL
+    resource: "org.acme.Car"
+    action: ALLOW
+}
+
+rule R5 {
+    description: "Everyone can read all resources in the org.acme namespace"
+    participant: "ANY"
+    operation: READ
+    resource: "org.acme"
+    action: ALLOW
+}
+</code></pre>
+</div>
+
+<p>Rules are evaluated from top (most specific) to bottom (least specific). As soon as the Participant, Operation and Resource match for a rule then subsequent rules are not evaluated.</p>
+
+<p>This ordering makes the decision table faster to scan for both humans and computers. If no ACL rule fires then the access control decision is DENY.</p>

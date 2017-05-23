@@ -1,0 +1,64 @@
+<h1 id="composer-transaction-submit">composer transaction submit</h1>
+
+<hr />
+
+<p>The <code class="highlighter-rouge">composer transaction submit</code> command submits a transaction to a business network.
+<!-- There will be a link to a conceptual topic about transactions here when it's written. --></p>
+
+<hr />
+
+<h2 id="syntax">Syntax</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ composer transaction submit
+composer transaction submit [options]
+
+Options:
+  --help                       Show help  [boolean]
+  -v, --version                Show version number  [boolean]
+  --connectionProfileName, -p  The connection profile name  [string]
+  --businessNetworkName, -n    The business network name  [string] [required]
+  --enrollId, -i               The enrollment ID of the user  [string] [required]
+  --enrollSecret, -s           The enrollment secret of the user  [string]
+  --data, -d                   Transactions JSON object as a string  [string] [required]
+</code></pre>
+</div>
+<hr />
+<h2 id="options">Options</h2>
+
+<p><code class="highlighter-rouge">--connectionProfileName, -p</code></p>
+
+<p>The connection profile name.<br />
+Example: <code class="highlighter-rouge">defaultProfile</code></p>
+
+<p><code class="highlighter-rouge">--businessNetworkName, -n</code></p>
+
+<p>The name of the deployed Business Network to connect to.<br />
+Example:
+<code class="highlighter-rouge">digitalproperty-network</code></p>
+
+<p><code class="highlighter-rouge">--enrollId, -i</code></p>
+
+<p>The enrollment ID of the identity that should be used to connect to the deployed
+Business Network.
+Example: <code class="highlighter-rouge">maeid1</code></p>
+
+<p><code class="highlighter-rouge">--enrollSecret, -s</code></p>
+
+<p>The enrollment secret of the identity that should be used to connect to deployed
+Business Network.<br />
+Example: <code class="highlighter-rouge">Xurw3yU9zI0l</code></p>
+
+<p><code class="highlighter-rouge">--data, -d</code></p>
+
+<p>The serialized JSON representation of the transaction to send to the business network. The data must be valid according to the model of the transaction.<br />
+Example: <code class="highlighter-rouge"><span class="p">{</span><span class="nt">"$class"</span><span class="p">:</span><span class="s2">"net.biz.digitalPropertyNetwork.RegisterPropertyForSale"</span><span class="p">,</span><span class="nt">"transactionId"</span><span class="p">:</span><span class="s2">"TRANSACTION_001"</span><span class="p">,</span><span class="nt">"seller"</span><span class="p">:</span><span class="s2">"mae@biznet.org"</span><span class="p">,</span><span class="nt">"title"</span><span class="p">:</span><span class="s2">"TITLE_001"</span><span class="p">}</span></code></p>
+
+<h2 id="example-command">Example command</h2>
+
+<p>This command submits a transaction on the connection profile <code class="highlighter-rouge">defaultProfile</code> to the business network <code class="highlighter-rouge">digitalproperty-network</code> with the user identity <code class="highlighter-rouge">maeid1</code>, the user secret <code class="highlighter-rouge">Xurw3yU9zI0l</code>. The transaction submitted is <code class="highlighter-rouge">'{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'</code>.</p>
+
+<p>Here is the entire command:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>composer transaction submit -p defaultProfile -n digitalproperty-network -i maeid1 -s Xurw3yU9zI0l -d '{"$class":"net.biz.digitalPropertyNetwork.RegisterPropertyForSale","transactionId":"TRANSACTION_001","seller":"mae@biznet.org","title":"TITLE_001"}'
+</code></pre>
+</div>

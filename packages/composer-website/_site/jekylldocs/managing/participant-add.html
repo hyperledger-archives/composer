@@ -1,0 +1,60 @@
+<h1 id="add-a-participant">Add a participant</h1>
+
+<hr />
+
+<p>A participant can be added to a participant registry using either the API or the
+command line.</p>
+
+<h2 id="before-you-start">Before you start</h2>
+
+<p>Before you follow these steps, you must have modelled a participant in a Business
+Network Definition and deployed it as a Business Network.</p>
+
+<p>The procedure below shows an example using the following model of a participant
+from the Getting Started walkthrough.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>namespace net.biz.digitalPropertyNetwork
+
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+</code></pre>
+</div>
+
+<h2 id="procedure">Procedure</h2>
+
+<ol>
+  <li>Add the participant to a participant registry
+    <ul>
+      <li>JavaScript API</li>
+    </ul>
+
+    <div class="language-javascript highlighter-rouge"><pre class="highlight"><code> <span class="kd">let</span> <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="cm">/* TODO: get a business network connection */</span>
+ <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">)</span>
+     <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+         <span class="kd">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
+         <span class="kd">let</span> <span class="nx">participant</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">,</span> <span class="s1">'Person'</span><span class="p">,</span> <span class="s1">'mae@biznet.org'</span><span class="p">);</span>
+         <span class="nx">participant</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Mae'</span><span class="p">;</span>
+         <span class="nx">participant</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Smith'</span><span class="p">;</span>
+         <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">participant</span><span class="p">);</span>
+     <span class="p">})</span>
+     <span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+         <span class="c1">// TODO: handle errors.</span>
+     <span class="p">});</span>
+
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+<ul>
+  <li>
+    <p>Command line</p>
+
+    <div class="language-bash highlighter-rouge"><pre class="highlight"><code>composer participant add -n <span class="s1">'@ibm/digitalproperty-network'</span> -i admin -s Xurw3yU9zI0l -d <span class="s1">'{"$class":"net.biz.digitalPropertyNetwork.Person","personId":"mae@biznet.org","firstName":"Mae","lastName":"Smith"}'</span>
+</code></pre>
+    </div>
+  </li>
+</ul>

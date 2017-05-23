@@ -1,0 +1,54 @@
+<h1 id="deploying-a-business-network">Deploying a Business Network</h1>
+
+<hr />
+
+<p>A business network definition is deployed using the <code class="highlighter-rouge">composer network deploy</code> command.</p>
+
+<h1 id="before-you-begin">Before you begin</h1>
+
+<p>Before deploying a business network, a <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a> is needed as a <code class="highlighter-rouge">zip</code> file with the following structure:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>BusinessNetworkArchive.zip
+├── lib
+│   └── mozart.cto.js
+├── models
+│   └── mozart.cto
+└── package.json
+</code></pre>
+</div>
+<!--
+You can use the `composer archive` command to create an archive with the correct format.
+
+**NOTE**: *Do not zip a a folder containing **lib**, **models**, and **package.json** to create an Business Network Archive, zip the contents themselves*
+-->
+
+<h2 id="procedure">Procedure</h2>
+
+<ol>
+  <li>
+    <p>Start <a href="runtime-start.md">Hyperledger Fabric Peer and Membership Service</a>.</p>
+  </li>
+  <li>
+    <p><a href="../installing/createconnectionprofile.html">Create a Connection Profile</a> or do <em>not</em> use <code class="highlighter-rouge">-p</code> and allow  to create a <code class="highlighter-rouge">Default Connection Profile</code> for you.</p>
+  </li>
+  <li>
+    <p>Enter the command on a single line. For example:</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> `composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;`
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>Enter your Enrollment Secret when prompted.</p>
+  </li>
+  <li>
+    <p>When you see</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> ```
+ Deploying business network definition. This may take a little time.
+ Command completed successfully.
+ ```   the business network definition has been successfully deployed.
+</code></pre>
+    </div>
+  </li>
+</ol>

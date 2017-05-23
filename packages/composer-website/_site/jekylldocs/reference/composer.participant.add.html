@@ -1,0 +1,53 @@
+<h1 id="composer-participant-add">Composer participant add</h1>
+
+<hr />
+
+<p>The <code class="highlighter-rouge">composer participant add</code> command adds a new instance of a participant to a
+participant registry. See the task <a href="../managing/participant-add.html">Add a Participant</a>
+for a walkthrough of using this command or the API.</p>
+
+<h2 id="syntax">Syntax</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ composer participant add
+composer participant add [options]
+
+Options:
+  --help                       Show help  [boolean]
+  --connectionProfileName, -p  The connection profile name  [string]
+  --businessNetworkName, -n    The business network name  [string] [required]
+  --enrollId, -i               The enrollment ID of the user  [string] [required]
+  --enrollSecret, -s           The enrollment secret of the user  [string]
+  --data, -d                   Serialized participant JSON object as a string  [string] [required]
+</code></pre>
+</div>
+
+<h2 id="options">Options</h2>
+
+<p><code class="highlighter-rouge">--connectionProfileName, -p</code></p>
+
+<p>The connection profile name.<br />
+Example: <code class="highlighter-rouge">defaultProfile</code></p>
+
+<p><code class="highlighter-rouge">--businessNetworkName, -n</code></p>
+
+<p>The name of the deployed Business Network to connect to.<br />
+Example:
+<code class="highlighter-rouge">digitalproperty-network</code></p>
+
+<p><code class="highlighter-rouge">--enrollId, -i</code></p>
+
+<p>The enrollment ID of the identity that should be used to connect to the deployed
+Business Network.
+Example: <code class="highlighter-rouge">maeid1</code></p>
+
+<p><code class="highlighter-rouge">--enrollSecret, -s</code></p>
+
+<p>The enrollment secret of the identity that should be used to connect to deployed
+Business Network.<br />
+Example: <code class="highlighter-rouge">Xurw3yU9zI0l</code></p>
+
+<p><code class="highlighter-rouge">--data, -d</code></p>
+
+<p>The serialized JSON representation of the participant to add to the participant
+registry. The data must be valid according to the model of the participant.<br />
+Example: <code class="highlighter-rouge"><span class="p">{</span><span class="nt">"$class"</span><span class="p">:</span><span class="s2">"net.biz.digitalPropertyNetwork.Person"</span><span class="p">,</span><span class="nt">"personId"</span><span class="p">:</span><span class="s2">"mae@biznet.org"</span><span class="p">,</span><span class="nt">"firstName"</span><span class="p">:</span><span class="s2">"Mae"</span><span class="p">,</span><span class="nt">"lastName"</span><span class="p">:</span><span class="s2">"Smith"</span><span class="p">}</span></code></p>

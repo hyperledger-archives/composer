@@ -1,0 +1,100 @@
+<h1 id="features-and-concepts-in">Features and Concepts in</h1>
+
+<hr />
+
+<p>is a programming model containing a modeling language, and a set of APIs to quickly define and deploy business networks and applications that allow <strong>participants</strong> to send <strong>transactions</strong> that exchange <strong>assets</strong>.</p>
+
+<hr />
+
+<h2 id="framework-features">Framework Features</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Component</th>
+      <th style="text-align: center">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">composer-admin, composer-client, composer-common</td>
+      <td style="text-align: center">Composer-admin, composer-client, and composer-common contain the APIs to interact with a  runtime. Composer-admin contains APIs for deploying and updating a business network, composer-client contains APIs for manipulating resources within registries via transactions.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">composer-cli</td>
+      <td style="text-align: center">Composer-cli contains</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">composer-runtime</td>
+      <td style="text-align: center">There are several versions of the composer-runtime designed for different environments. The embedded runtime runs within local storage, the hlf and hlfv1 runtimes run on  versions 0.6 and 1.0.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">composer-connector</td>
+      <td style="text-align: center">The composer-connector components connect your  to a  instance.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">composer-rest-server</td>
+      <td style="text-align: center">The composer-rest-server component creates and connects you to a REST API interface containing APIs for interacting with your business network.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">generator-fabric-composer</td>
+      <td style="text-align: center">The generator-fabric-composer component contains a Yeoman module for generating applications using data from your business network.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">loopback-connector-composer</td>
+      <td style="text-align: center">The loopback-connector-composer component allows you to connect loopback-compatible systems to your  business network.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="key-concepts-in">Key Concepts in</h2>
+
+<h3 id="blockchain-state-storage">Blockchain State Storage</h3>
+
+<p>The current state of assets and participants are stored on the blockchain, administered by .  runs consensus checks to ensure the validity of all blocks in the blockchain. For more information on  consensus, see the <a href="https://hyperledger-fabric.readthedocs.io/en/latest/fabric_model.html#consensus"> documentation</a>.</p>
+
+<hr />
+
+<h3 id="assets">Assets</h3>
+
+<p>Assets are tangible or intangible goods, services, or property, and are stored in registries. Assets can represent almost anything in a business network, for example, a house for sale, the sale listing, the land registry certificate for that house, and the insurance documents for that house may all be assets in one or more business networks.</p>
+
+<p>Assets must have a unique identifier, but other than that, they can contain whatever properties you define.</p>
+
+<hr />
+
+<h3 id="participants">Participants</h3>
+
+<p>Participants are members of a business network. Participant types can be defined and limited by an access control document which makes up part of the business network definition.</p>
+
+<hr />
+
+<h3 id="transactions">Transactions</h3>
+
+<p>Transactions are the mechanism by which participants interact with assets. This could be as simple as a participant placing a bid on a asset in an auction, or an auctioneer marking an auction closed, automatically transferring ownership of the asset to the highest bidder.</p>
+
+<hr />
+
+<h3 id="events">Events</h3>
+
+<p>Events are defined in the business network definition in the same way as assets or participants. Once events have been defined, they can be included in the transaction processor functions to be emitted as part of a transaction. Applications can subscribe to emitted events through the <code class="highlighter-rouge">composer-client</code> API.</p>
+
+<hr />
+
+<h3 id="apis">APIs</h3>
+
+<p>The <code class="highlighter-rouge">composer-admin</code>, <code class="highlighter-rouge">composer-client</code>, and <code class="highlighter-rouge">composer-common</code> components contain the APIs to interact with a  runtime. The <code class="highlighter-rouge">composer-rest-server</code> component generates a unique RESTful API for interacting with your deployed business network.</p>
+
+<hr />
+
+<h3 id="hyperledger-fabric-10-support">Hyperledger Fabric 1.0 Support</h3>
+
+<p>supports the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.</p>
+
+<p>Hyperledger Fabric v1.0 adds support for channels, orderers, and certificate authorities. For more information on Hyperledger Fabric v1.0, see the <a href="https://hyperledger.org">Hyperledger Fabric documentation</a>.</p>
+
+<p>Hyperledger Fabric versions 0.6 and 1.0 are supported.</p>
+
+<hr />
