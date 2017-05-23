@@ -38,6 +38,16 @@ services:
 #        - ./tls/orderer:/etc/hyperledger/tls/orderer
 #        - ./tls/peers:/etc/hyperledger/tls/peers
 
+ couchdb0:
+      container_name: couchdb0
+      image: hyperledger/fabric-couchdb:x86_64-1.0.0-alpha
+      ports:
+        - 5984:5984
+      # environment:
+      #   COUCHDB_USER: admin
+      #   COUCHDB_PASSWORD: passw0rd
+      #   DB_URL: http://localhost:5984/member_db 
+  
   peer0:
     container_name: peer0
     image: hyperledger/fabric-peer:x86_64-1.0.0-alpha
@@ -58,6 +68,9 @@ services:
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/tls/cert.pem
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/tls/ca-cert.pem
       - CORE_CHAINCODE_LOGLEVEL=DEBUG
+      # enable couchdb
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
@@ -73,6 +86,13 @@ services:
 #        - ./tls/peers/peer0:/etc/hyperledger/tls
     depends_on:
       - orderer0
+      - couchdb0
+
+  couchdb1:
+      container_name: couchdb1
+      image: hyperledger/fabric-couchdb:x86_64-1.0.0-alpha
+      ports:
+        - 6984:5984
 
   peer1:
     container_name: peer1
@@ -92,7 +112,14 @@ services:
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/tls/key.pem
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/tls/cert.pem
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/tls/ca-cert.pem
+<<<<<<< HEAD
       - CORE_CHAINCODE_LOGLEVEL=DEBUG
+=======
+      # enable couchdb
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+
+>>>>>>> enable couchdb in systemtest
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
@@ -109,5 +136,6 @@ services:
     depends_on:
       - orderer0
       - peer0
+      - couchdb1
 
 

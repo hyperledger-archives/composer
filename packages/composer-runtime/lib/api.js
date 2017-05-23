@@ -46,7 +46,6 @@ class Api {
     constructor(factory, serializer, participant, registryManager, httpService, eventService, context) {
         const method = 'constructor';
         LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, context);
-
         /**
          * Get the factory. The factory can be used to create new instances of
          * assets, participants, and transactions for storing in registries. The
@@ -225,6 +224,20 @@ class Api {
             eventService.emit(serializedEvent);
             LOG.exit(method);
         };
+         /**
+         * Post a query string to a URL
+
+         * @method module:composer-runtime#query
+         * @public
+         * @return {Promise} A promise. The promise is resolved with the result of the query.
+         */
+        this.query = function query(queryString) {
+             const method = 'query';
+             LOG.entry(method);
+             const result = queryService.query(queryString);
+             LOG.exit(method);
+
+         };
 
         Object.freeze(this);
         LOG.exit(method);
