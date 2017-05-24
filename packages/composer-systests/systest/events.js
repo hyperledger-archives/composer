@@ -26,7 +26,7 @@ chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
-describe.only('Event system tests', function () {
+describe('Event system tests', function () {
     let businessNetworkDefinition;
     let admin;
     let client;

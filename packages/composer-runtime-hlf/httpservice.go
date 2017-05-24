@@ -15,11 +15,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/robertkrimen/otto"
@@ -82,17 +82,32 @@ func (httpService *HTTPService) post(call otto.FunctionCall) (result otto.Value)
 
 	dataValue, err := call.This.Object().Get("data")
 
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// data, err := dataValue.ToString()
+
 	if err != nil {
 		panic(err)
 	}
 
-	data, err := dataValue.ToString()
+	dataJSONValue, err := call.Otto.Call("JSON.stringify", nil, dataValue)
 
-	logger.Debug("HTTPService.post data", data)
+	if err != nil {
+		panic(err)
+	}
+
+	dataJSON, err := dataJSONValue.ToString()
+
+	if err != nil {
+		panic(err)
+	}
+
+	logger.Debug("HTTPService.post data", dataJSON)
 	logger.Debug("HTTPService.post url", url)
 
-	var jsonStr = []byte(data)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", url, strings.NewReader(dataJSON))
 	req.Header.Set("X-Composer-Version", version)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -122,11 +137,11 @@ func (httpService *HTTPService) post(call otto.FunctionCall) (result otto.Value)
 
 	logger.Info("JSON response " + string(jsonResponse))
 
-	returnValue, err := otto.ToValue(string(jsonResponse))
+	promise, err := call.Otto.Call("Promise.resolve", nil, string(jsonResponse))
 
 	if err != nil {
 		panic(err)
 	}
 
-	return returnValue
+	return promise
 }
