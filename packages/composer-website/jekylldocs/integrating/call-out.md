@@ -2,7 +2,7 @@
 layout: default
 title: Calling REST APIs
 category: start
-sidebar: sidebars/call-out.md
+sidebar: sidebars/integrating.md
 excerpt: How to call a REST API from a transaction processor function
 ---
 
