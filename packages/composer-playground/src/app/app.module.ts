@@ -31,7 +31,6 @@ import { AboutComponent } from './about';
 import { BusyComponent } from './basic-modals/busy';
 import { ErrorComponent } from './basic-modals/error';
 import { SuccessComponent } from './basic-modals/success';
-import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ResourceComponent } from './resource';
@@ -112,7 +111,6 @@ type StoreType = {
         IdentityIssuedComponent,
         WelcomeComponent,
         VersionCheckComponent,
-        ResetComponent,
         BusyComponent,
         SwitchIdentityComponent
     ],
@@ -133,7 +131,6 @@ type StoreType = {
         ConfirmComponent,
         DeleteComponent,
         ReplaceComponent,
-        ResetComponent,
         ImportComponent,
         GithubComponent,
         NoContentComponent,
