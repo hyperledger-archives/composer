@@ -1,6 +1,6 @@
 import { Component, OnInit, trigger, style, transition, animate } from '@angular/core';
 import 'rxjs/add/operator/debounceTime';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
     selector: 'success',
