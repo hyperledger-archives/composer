@@ -124,14 +124,14 @@ describe('ClientService', () => {
         let mockBusinessNetwork;
         let businessNetworkChangedSpy;
         let modelManagerMock;
-        let fileNameChangedSpy;
+        let namespaceChangedSpy;
         let mockNamespaceCollide;
 
         beforeEach(inject([ClientService], (service: ClientService) => {
             mockBusinessNetwork = sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
             mockNamespaceCollide = sinon.stub(service, 'modelNamespaceCollides').returns(false);
             businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-            fileNameChangedSpy = sinon.spy(service.fileNameChanged$, 'next');
+            namespaceChangedSpy = sinon.spy(service.namespaceChanged$, 'next');
 
             modelManagerMock = {
                 addModelFile: sinon.stub(),
@@ -175,7 +175,7 @@ describe('ClientService', () => {
 
             service.updateFile('model', 'my-model', 'model');
 
-            fileNameChangedSpy.should.have.been.calledWith('new-model');
+            namespaceChangedSpy.should.have.been.calledWith('new-model');
         }));
 
         it('should update a script file', inject([ClientService], (service: ClientService) => {

@@ -52,6 +52,9 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
 
+    private inputFileName; // This is the input 'FileName' before the currentFile is updated
+
+
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
@@ -84,11 +87,12 @@ export class EditorComponent implements OnInit, OnDestroy {
                 }
             });
 
-            this.clientService.fileNameChanged$.takeWhile(() => this.alive)
+            this.clientService.namespaceChanged$.takeWhile(() => this.alive)
             .subscribe((newName) => {
                 if (this.currentFile !== null) {
                     this.updateFiles();
                     let index = this.files.findIndex((file) => file.id === newName);
+                    console.log('settign file: ', this.files[index]);
                     this.setCurrentFile(this.files[index]);
                 }
             });
@@ -129,7 +133,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     setCurrentFile(file) {
-        if (this.currentFile === null || this.currentFile.displayID !== file.displayID || file.readme) {
+        if (this.currentFile === null || this.currentFile.id !== file.id || file.readme) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
@@ -144,6 +148,10 @@ export class EditorComponent implements OnInit, OnDestroy {
             // Set selected file
             this.editorService.setCurrentFile(file);
             this.currentFile = file;
+
+            // Update inputFileName
+            this.inputFileName = file.displayID;
+
             // re-validate, since we do not persist bad files- they revert when navigated away
             if (this.editorFilesValidate()) {
                 this.noError = true;
@@ -153,7 +161,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     updateFiles() {
         let newFiles = [];
-
         // deal with model files
         let modelFiles = this.clientService.getModelFiles();
         let newModelFiles = [];
@@ -161,11 +168,11 @@ export class EditorComponent implements OnInit, OnDestroy {
             newModelFiles.push({
                 model: true,
                 id: modelFile.getNamespace(),
-                displayID: 'models/' + modelFile.getNamespace() + '.cto',
+                displayID: modelFile.getFileName(),
             });
         });
         newModelFiles.sort((a, b) => {
-        return a.displayID.localeCompare(b.displayID);
+            return a.displayID.localeCompare(b.displayID);
         });
         newFiles.push.apply(newFiles, newModelFiles);
 
@@ -371,6 +378,37 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     /*
+     * When user edits the file name (in the input box), the underlying file needs to be updated, and the BND needs to be updated
+     */
+    editFileName() {
+        let regEx = new RegExp(/^((\/)?([a-z_\-0-9\.]|[A-Z_\-0-9\.])+)+\.(js|cto)$/);
+        let result = regEx.test(this.inputFileName);
+        console.log('result is:', result);
+        if (result === true) {
+            if (this.currentFile.script) {
+                // Replace Script
+                let contents = this.clientService.getScriptFile(this.currentFile.id).getContents();
+                this.clientService.replaceFile(this.currentFile.id, this.inputFileName, contents, 'script');
+                this.updateFiles();
+                let index = this.files.findIndex((file) => file.id === this.inputFileName);
+                this.setCurrentFile(this.files[index]);
+            } else if (this.currentFile.model) {
+                // Update Model filename
+                let modelFile: ModelFile = this.clientService.getModelFile(this.currentFile.id);
+                let contents = modelFile.getDefinitions();
+                this.clientService.replaceFile(this.currentFile.id, this.inputFileName, contents, 'model');
+                this.updateFiles();
+                let index = this.files.findIndex((file) => file.displayID === this.inputFileName);
+                this.setCurrentFile(this.files[index]);
+            } else {
+                throw new Error('Unable to process rename on current file type');
+            }
+        } else {
+            throw new Error('Bad file name');
+        }
+    }
+
+    /*
      * When user edits the package version (in the input box), the package.json needs to be updated, and the BND needs to be updated
      */
     editPackageVersion() {
@@ -427,7 +465,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
                 // Send alert
                 this.alertService.busyStatus$.next(null);
-                this.alertService.successStatus$.next({title : 'Delete Successful', text : this.fileType(deleteFile) + ' ' + deleteFile.displayID + ' was deleted.', icon : '#icon-trash_32'});
+                this.alertService.successStatus$.next({title : 'Delete Successful', text : this.fileType(deleteFile) + ' File ' + deleteFile.displayID + ' was deleted.', icon : '#icon-trash_32'});
             }
         }, (reason) => {
             if (reason && reason !== 1) {
@@ -443,11 +481,13 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     fileType(resource: any): string {
         if (resource.model) {
-            return 'Model File';
+            return 'Model';
         } else if (resource.script) {
-            return 'Script File';
+            return 'Script';
+        } else if (resource.acl) {
+            return 'ACL';
         } else {
-            return 'File';
+            return 'Readme';
         }
     }
 
