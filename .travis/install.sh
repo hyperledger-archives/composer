@@ -23,4 +23,4 @@ fi
 
 
 cd ${DIR}
-yarn install 2>&1 | tee
+yarn install --no-progress --frozen-lockfile
