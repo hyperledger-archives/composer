@@ -15,9 +15,7 @@
 'use strict';
 
 
-const restserver = require('../../lib/cmds/dev/restserver.js');
 
-// const rest = require('../../lib/cmds/dev/lib/rest.js');
 
 //require('../lib/deploy.js');
 require('chai').should();
@@ -30,30 +28,29 @@ chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 
 
-describe('composer dev restserver unit tests', function () {
+
+describe('composer main cli fn', function () {
 
     let sandbox;
 
-
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        // sandbox.stub(restserver, 'startRestServer');
-        // sandbox.stub(rest, 'restserver');
+
+        sandbox.stub(process, 'exit');
+
     });
 
     afterEach(() => {
         sandbox.restore();
     });
 
-    it('no option specified', function () {
-        let argv = {};
-        restserver.handler(argv);
-      //  sinon.assert.calledOnce(restserver.restserver.startRestServer);
-            // return restserver.handler(argv)
-            // .then ((result) => {
-            //     sinon.assert.calledOnce(composerrestserver.startRestServer);
-            //
-            // });
+    describe('Main test', function () {
+
+        it('Good path', function () {
+            let version = require('../index.js').version;
+            version.should.not.be.null;
+
+        });
     });
 
 });
