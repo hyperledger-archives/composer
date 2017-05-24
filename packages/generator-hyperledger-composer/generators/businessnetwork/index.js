@@ -26,10 +26,10 @@ module.exports = yeoman.Base.extend({
                 message: 'What is the business network\'s name?',
                 store: true,
                 validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '' && input.indexOf(' ') === -1) {
+                    if(input !== null && input !== undefined && input !== '' && input.indexOf(' ') === -1 && input === input.toLowerCase()) {
                         return true;
                     } else {
-                        return 'Name cannot be null, empty or contain a space.';
+                        return 'Name cannot be null, empty or contain a space or uppercase character.';
                     }
                 }
             },
