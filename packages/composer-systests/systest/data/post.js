@@ -35,7 +35,7 @@ function onSampleTransaction(sampleTransaction) {
 }
 
 /**
- * Handle a POST transaction, calling OpenWhisk
+ * Handle a POST transaction, calling Node-RED running on Bluemix
  * @param {org.acme.sample.PostTransaction} postTransaction - the transaction to be processed
  * @transaction
  * @return {Promise} a promise that resolves when transaction processing is complete
