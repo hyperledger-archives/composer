@@ -106,8 +106,13 @@ class HLFConnection extends Connection {
         if (businessNetworkIdentifier) {
             LOG.entry(method, 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
             eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
-                // Parsed twice as sdk returns a string inside of a string
-                this.emit('events', JSON.parse(JSON.parse(event.payload.toString('utf8'))));
+
+                // Remove the first set of "" around the event so it can be parsed first time
+                let evt = event.payload.toString('utf8');
+                evt = evt.replace(/^"(.*)"$/, '$1'); // Remove end quotes
+                evt = evt.replace(/\\/g, '');
+                evt = JSON.parse(evt);
+                this.emit('events', evt);
             });
         }
 
@@ -807,7 +812,7 @@ class HLFConnection extends Connection {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
                     if (code !== 'VALID') {
-                        reject(new Error(`Peer has rejected transaction '${txId}'`));
+                        reject(new Error(`Peer has rejected transaction '${txId}' with cdoe ${code}`));
                     } else {
                         resolve();
                     }

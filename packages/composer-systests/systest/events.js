@@ -26,7 +26,7 @@ chai.should();
 chai.use(require('chai-as-promised'));
 chai.use(require('chai-subset'));
 
-describe('Event system tests', function () {
+describe.only('Event system tests', function () {
     let businessNetworkDefinition;
     let admin;
     let client;
@@ -86,9 +86,15 @@ describe('Event system tests', function () {
 
     afterEach(() => {
         client.removeAllListeners('event');
+        return;
+    });
+
+    after(() => {
+        client.removeAllListeners('event');
     });
 
     it('should emit a valid SimpleEvent', (done) => {
+        this.timeout(1000);
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.events', 'EmitSimpleEvent');
@@ -104,21 +110,24 @@ describe('Event system tests', function () {
     });
 
     it('should emit a valid ComplexEvent', (done) => {
+        this.timeout(1000); // Delay to prevent transaction failing
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.events', 'EmitComplexEvent');
 
-                // Listen for the event
+        // Listen for the event
         client.on('event', (ev) => {
             validateEvent(ev, emitted);
             emitted++;
             emitted.should.equal(1);
+
             done();
         });
         client.submitTransaction(transaction);
     });
 
     it('should emit two valid SimpleEvents', (done) => {
+        this.timeout(1000); // Delay to prevent transaction failing
         let counts = [1, 2];
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
@@ -129,25 +138,6 @@ describe('Event system tests', function () {
             validateEvent(ev, emitted);
             emitted++;
             emitted.should.equal(counts[emitted - 1]);
-            if (emitted === 2) {
-                done();
-            }
-        });
-        client.submitTransaction(transaction);
-    });
-
-    it('should emit two different valid events', (done) => {
-        this.timeout(1000); // Delay to prevent transaction failing
-        let types = ['SimpleEvent', 'ComplexEvent'];
-        let emitted = 0;
-        let factory = client.getBusinessNetwork().getFactory();
-        let transaction = factory.newTransaction('systest.events', 'EmitMultipleDifferentEvents');
-
-        // Listen for the event
-        client.on('event', (ev) => {
-            validateEvent(ev, emitted);
-            emitted++;
-            ev.$type.should.have.string(types[emitted - 1]);
             if (emitted === 2) {
                 done();
             }
