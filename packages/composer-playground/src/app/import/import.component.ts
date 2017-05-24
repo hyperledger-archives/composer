@@ -5,9 +5,10 @@ import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../services/alert.service';
+import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { BusinessNetworkDefinition } from 'composer-common';
-import { ErrorComponent } from '../error';
+import { ErrorComponent } from '../basic-modals/error';
 
 const fabricComposerOwner = 'hyperledger';
 const fabricComposerRepository = 'composer-sample-networks';
@@ -135,32 +136,40 @@ export class ImportComponent implements OnInit {
     }
 
     deploy() {
-        this.deployInProgress = true;
-        let deployPromise;
+        this.modalService.open(ReplaceComponent).result.then((result) => {
+            if (result === true) {
+                this.deployInProgress = true;
+                let deployPromise;
+                if (this.currentBusinessNetwork) {
+                    deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
+                } else {
+                    deployPromise = this.deployFromGitHub();
+                }
 
-        if (this.currentBusinessNetwork) {
-            deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
-        } else {
-            deployPromise = this.deployFromGitHub();
-        }
+                deployPromise.then(() => {
+                    this.deployInProgress = false;
+                    this.activeModal.close();
+                })
+                .catch((error) => {
+                    if (error.message.includes('API rate limit exceeded')) {
+                        error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
+                    }
 
-        deployPromise.then(() => {
-            this.deployInProgress = false;
-            this.activeModal.close();
+                    this.deployInProgress = false;
+                    let modalRef = this.modalService.open(ErrorComponent);
+                    modalRef.componentInstance.error = error;
+                });
+
+                return deployPromise;
+            }
         })
         .catch((error) => {
-            console.log(error);
-            if (error.message.includes('API rate limit exceeded')) {
-                error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
-            }
-
             this.deployInProgress = false;
-
-            let modalRef = this.modalService.open(ErrorComponent);
-            modalRef.componentInstance.error = error;
+            if (error && error !== 1) {
+                let modalRef = this.modalService.open(ErrorComponent);
+                modalRef.componentInstance.error = error;
+            }
         });
-
-        return deployPromise;
     }
 
     deployFromGitHub(): Promise<any> {
