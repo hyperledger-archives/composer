@@ -19,6 +19,7 @@ const uuidv4 = require('uuid');
 const version = require('../package.json').version;
 const WebDataService = require('./webdataservice');
 const WebLoggingService = require('./webloggingservice');
+const WebHTTPService = require('./webhttpservice');
 const WebEventService = require('./webeventservice');
 
 /**
@@ -36,6 +37,7 @@ class WebContainer extends Container {
         this.uuid = uuid || uuidv4.v4();
         this.dataService = new WebDataService(this.uuid);
         this.loggingService = new WebLoggingService();
+        this.httpService = new WebHTTPService();
         this.eventService = new WebEventService();
     }
 
