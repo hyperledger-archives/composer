@@ -28,7 +28,7 @@ func EnableLogging(stub shim.ChaincodeStubInterface) {
 		var isSet bool
 		levelStr, isSet = os.LookupEnv("CORE_CHAINCODE_LOGLEVEL")
 		if !isSet {
-			levelStr = "DEBUG"
+			levelStr = "INFO"
 		}
 	} else {
 		levelStr = string(levelBytes)
