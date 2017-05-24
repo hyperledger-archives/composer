@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from '../add-file/add-file.component';
-import { DeleteComponent } from '../delete-confirm/delete-confirm.component';
+import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -118,7 +118,7 @@ export class EditorComponent implements OnInit {
     }
 
     setCurrentFile(file) {
-        if (this.currentFile === null || this.currentFile.displayID !== file.displayID) {
+        if (this.currentFile === null || this.currentFile.displayID !== file.displayID || file.readme) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
@@ -444,7 +444,7 @@ export class EditorComponent implements OnInit {
         let allValid: boolean = true;
 
         for (let file of this.files) {
-            if (file.model && allValid) {
+            if (file.model) {
                 let modelFile = this.clientService.getModelFile(file.id);
                 if (this.clientService.validateFile(file.id, modelFile.getDefinitions(), 'model') !== null) {
                     allValid = false;
@@ -452,7 +452,7 @@ export class EditorComponent implements OnInit {
                 } else {
                     file.invalid = false;
                 }
-            } else if (file.acl && allValid) {
+            } else if (file.acl) {
                 let aclFile = this.clientService.getAclFile();
                 if (this.clientService.validateFile(file.id, aclFile.getDefinitions(), 'acl') !== null) {
                     allValid = false;
@@ -460,7 +460,7 @@ export class EditorComponent implements OnInit {
                 } else {
                     file.invalid = false;
                 }
-            } else if (file.script && allValid) {
+            } else if (file.script) {
                 let script = this.clientService.getScriptFile(file.id);
                 if (this.clientService.validateFile(file.id, script.getContents(), 'script') !== null) {
                     allValid = false;
