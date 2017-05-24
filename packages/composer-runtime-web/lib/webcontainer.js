@@ -58,14 +58,6 @@ class WebContainer extends Container {
     }
 
     /**
-     * Get the heep service provided by the chaincode container.
-     * @return {HTTPService} The http service provided by the chaincode container.
-     */
-    getHTTPService() {
-        return this.httpService;
-    }
-
-    /**
      * Get the logging service provided by the chaincode container.
      * @return {LoggingService} The logging service provided by the chaincode container.
      */

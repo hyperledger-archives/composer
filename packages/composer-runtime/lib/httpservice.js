@@ -47,11 +47,17 @@ class HTTPService {
         this.data = data;
 
         return this._post()
-            .then((responseText) => {
-                LOG.info('Reponse text from URL ' + url, responseText);
+            .then((responseThing) => {
 
-                const response = JSON.parse(responseText);
-                LOG.info('Reponse from URL ' + url, response);
+                let response = null;
+
+                if(typeof responseThing === 'string' ) {
+                    response = JSON.parse(responseThing);
+                }
+                else {
+                    response = responseThing;
+                }
+                LOG.info('Reponse from URL ' + url, JSON.stringify(response));
 
                 if(response.statusCode >= 200 && response.statusCode < 300) {
                     if(response.body && typeof response.body === 'string') {
@@ -59,7 +65,7 @@ class HTTPService {
                             response.body = JSON.parse(response.body);
                         }
                         catch(err) {
-                            LOG.warning('Body data could not be converted to JS object', response.body);
+                            LOG.warn('Body data could not be converted to JS object', response.body);
                         }
                     }
                     return Promise.resolve(response);

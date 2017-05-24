@@ -1,11 +1,11 @@
-import {Routes} from '@angular/router';
-import {EditorComponent} from './editor';
-import {TestComponent} from './test';
-import {SettingsComponent} from './settings';
-import {NoContentComponent} from './no-content';
-import {GithubComponent} from './github';
-import {ConnectionProfileComponent} from './connection-profile/connection-profile.component.ts';
-import {IdentityComponent} from './identity';
+import { Routes } from '@angular/router';
+import { EditorComponent } from './editor';
+import { TestComponent } from './test';
+import { SettingsComponent } from './settings';
+import { NoContentComponent } from './no-content';
+import { GithubComponent } from './github';
+import { ConnectionProfileComponent } from './connection-profile/connection-profile.component.ts';
+import { IdentityComponent } from './identity';
 
 export const ROUTES: Routes = [
   {path: 'editor', component: EditorComponent},

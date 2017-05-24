@@ -121,6 +121,8 @@ func (httpService *HTTPService) post(vm *duktape.Context) (result int) {
 	response.Body = responseBody
 	jsonResponse, err := json.Marshal(response)
 
+	logger.Info("JSON response " + string(jsonResponse))
+
 	// push a Promise that resolves to the JSON response as a string
 	vm.PushString("Promise.resolve(" + string(jsonResponse) + ")")
 	vm.Eval()

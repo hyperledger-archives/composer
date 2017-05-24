@@ -19,5 +19,6 @@ module.exports.EmbeddedContext = require('./lib/embeddedcontext');
 module.exports.EmbeddedDataCollection = require('./lib/embeddeddatacollection');
 module.exports.EmbeddedDataService = require('./lib/embeddeddataservice');
 module.exports.EmbeddedHTTPService = require('./lib/embeddedhttpservice');
+module.exports.EmbeddedEventService = require('./lib/embeddedeventservice');
 module.exports.EmbeddedIdentityService = require('./lib/embeddedidentityservice');
 module.exports.EmbeddedLoggingService = require('./lib/embeddedloggingservice');

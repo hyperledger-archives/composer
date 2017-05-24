@@ -36,8 +36,8 @@ class WebContext extends Context {
         super(engine);
         this.dataService = engine.getContainer().getDataService();
         this.identityService = new WebIdentityService(userID);
-        this.httpService = new WebHTTPService();
-        this.eventSink = eventSink;    }
+        this.eventSink = eventSink;
+    }
 
     /**
      * Get the data service provided by the chaincode container.
@@ -58,22 +58,20 @@ class WebContext extends Context {
     /**
      * Get the http service provided by the chaincode container.
      * @return {HTTPService} The http service provided by the chaincode container.
-     * Get the event service provided by the chaincode container.
-     * @return {EventService} The event service provided by the chaincode container.
      */
     getHTTPService() {
+        if (!this.httpService) {
+            this.httpService = new WebHTTPService();
+        }
         return this.httpService;
     }
 
     /**
      * Get the event service provided by the chaincode container.
-     * @return {HTTPService} The http service provided by the chaincode container.
-     * Get the event service provided by the chaincode container.
      * @return {EventService} The event service provided by the chaincode container.
      */
     getEventService() {
         if (!this.eventService) {
-        
             this.eventService = new WebEventService(this.eventSink);
         }
         return this.eventService;

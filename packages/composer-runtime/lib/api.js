@@ -185,10 +185,10 @@ class Api {
         };
 
         /**
-         * Post a typed instance to a URL
+         * Post a typed instance to a HTTP URL
          * @method module:composer-runtime#post
          * @param {string} url The URL to post the data to
-         * @param {Typed} typed The typed instance to be posted
+         * @param {Typed} typed The typed instance to be posted. The instance will be serialized to JSON.
          * @return {Promise} A promise. The promise is resolved with a HttpResponse
          * that represents the result of the HTTP POST.
          * @public

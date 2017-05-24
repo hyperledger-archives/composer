@@ -33,6 +33,7 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 require('sinon-as-promised');
+const expect = chai.expect;
 
 describe('Api', () => {
 
@@ -53,7 +54,7 @@ describe('Api', () => {
         mockEventService = sinon.createStubInstance(EventService);
         mockHTTPService = sinon.createStubInstance(HTTPService);
         mockContext = sinon.createStubInstance(Context);
-        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockEventService, mockHTTPService, mockContext);
+        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockHTTPService, mockEventService, mockContext);
     });
 
     describe('#constructor', () => {
@@ -145,4 +146,17 @@ describe('Api', () => {
         });
     });
 
+    describe('#post', () => {
+        let mockTransaction;
+
+        beforeEach(() => {
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.getFullyQualifiedType.returns('much.wow');
+            mockHTTPService.post.returns(Promise.resolve({foo : 'bar'}));
+        });
+
+        it('should call httpService.post', () => {
+            return expect(api.post('url', mockTransaction)).to.eventually.have.property('foo');
+        });
+    });
 });

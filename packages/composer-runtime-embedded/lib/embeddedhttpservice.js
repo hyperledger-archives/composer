@@ -44,12 +44,32 @@ class EmbeddedHTTPService extends HTTPService {
     _post() {
         const self = this;
         return new Promise(function (resolve, reject) {
-            request.post(self.url, self.data,
+
+            const options = {
+                url : self.url,
+                method: 'POST',
+                body: self.data,
+                json: true
+            };
+
+            request.post(options,
                 function (err, resp, body) {
-                    resolve( {
-                        statusCode: resp.statusCode,
-                        body: (err) ? err : body
-                    });
+                    LOG.info('error:', err);
+                    LOG.info('statusCode:', resp && resp.statusCode);
+                    LOG.info('body:', body);
+
+                    if(resp) {
+                        resolve( JSON.stringify({
+                            statusCode: resp.statusCode,
+                            body: (err) ? err : body
+                        }));
+                    }
+                    else {
+                        reject( JSON.stringify({
+                            statusCode: 500,
+                            body: (err) ? err : body
+                        }));
+                    }
                 });
         });
     }
