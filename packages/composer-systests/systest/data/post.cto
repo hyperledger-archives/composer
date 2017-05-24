@@ -1,0 +1,27 @@
+/**
+ * Sample business network definition.
+ */
+namespace org.acme.sample
+
+asset SampleAsset identified by assetId {
+  o String assetId
+  o String value
+}
+
+transaction SampleTransaction identified by transactionId {
+  o String transactionId
+  --> SampleAsset asset
+  o String newValue
+}
+
+transaction PostTransaction identified by transactionId {
+  o String transactionId
+  o Integer a
+  o Integer b
+  --> SampleAsset asset
+}
+
+transaction CreateAsset identified by transactionId {
+  o String transactionId
+  o String assetId
+}

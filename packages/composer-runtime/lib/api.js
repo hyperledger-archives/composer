@@ -38,13 +38,14 @@ class Api {
      * @param {Serializer} serializer The serializer to use.
      * @param {Resource} participant The current participant.
      * @param {RegistryManager} registryManager The registry manager to use.
+     * @param {HTTPService} httpService The http service to use.
      * @param {EventService} eventService The event service to use.
      * @param {Context} context The transaction context.
      * @private
      */
-    constructor(factory, serializer, participant, registryManager, eventService, context) {
+    constructor(factory, serializer, participant, registryManager, httpService, eventService, context) {
         const method = 'constructor';
-        LOG.entry(method, factory, serializer, participant, registryManager, eventService, context);
+        LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, context);
 
         /**
          * Get the factory. The factory can be used to create new instances of
@@ -62,6 +63,25 @@ class Api {
             const method = 'getFactory';
             LOG.entry(method);
             let result = new Factory(factory);
+            LOG.exit(method, result);
+            return result;
+        };
+
+        /**
+         * Get the serializer. The serializer can be used to create new instances of
+         * assets, participants, and transactions from a JS object, or to create a JS object
+         * suitable for long-lived persistence.
+         * @example
+         * // Get the factory.
+         * var ser = getSerializer();
+         * @method module:composer-runtime#getSerializer
+         * @public
+         * @return {module:composer-common.Serializer} The serializer.
+         */
+        this.getSerializer = function getSerializer() {
+            const method = 'getSerializer';
+            LOG.entry(method);
+            let result = serializer;
             LOG.exit(method, result);
             return result;
         };
@@ -165,6 +185,31 @@ class Api {
         };
 
         /**
+         * Post a typed instance to a HTTP URL
+         * @method module:composer-runtime#post
+         * @param {string} url The URL to post the data to
+         * @param {Typed} typed The typed instance to be posted. The instance will be serialized to JSON.
+         * @return {Promise} A promise. The promise is resolved with a HttpResponse
+         * that represents the result of the HTTP POST.
+         * @public
+         */
+        this.post = function post(url,typed) {
+            const method = 'post';
+            LOG.entry(method);
+            const options = {};
+            options.convertResourcesToRelationships = true;
+            options.permitResourcesForRelationships = true;
+            const data = serializer.toJSON(typed, options);
+            LOG.debug(method, typed.getFullyQualifiedType(), data);
+
+            return httpService.post(url,data)
+                .then((response) => {
+                    LOG.exit(method);
+                    return Promise.resolve(response);
+                });
+        };
+
+        /**
          * Emit an event defined in the transaction
          * @method module:composer-runtime#emit
          * @param {Resource} event The event to be emitted
@@ -184,7 +229,6 @@ class Api {
         Object.freeze(this);
         LOG.exit(method);
     }
-
 }
 
 module.exports = Api;
