@@ -151,27 +151,19 @@ $ npm install -g composer-cli
 ```
 </code></pre></div>
 <p><em>Please note: When using Ubuntu this command will fail when running in a root user shell.</em></p></li>
-<li><p>Clone the Composer sample applications GitHub repository. Choose from either the v0.6 sample application or the v1.0 sample application, the former will stand up a Hyperledger Fabric v0.6 environment ; the latter will stand up a newer Hyperledger Fabric v1.0 environment using a docker command sequence. For Hyperledger v0.6 use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-$ git clone https://github.com/hyperledger/composer-sample-applications.git
-```
+<li><p>Clone the Composer sample applications GitHub repository. Choose from either the v0.6 sample application or the v1.0 sample application, the former will stand up a Hyperledger Fabric v0.6 environment ; the latter will stand up a newer Hyperledger Fabric v1.0 environment using a docker command sequence. For Hyperledger Fabric v0.6 use the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">$ git clone https://github.com/hyperledger/composer-sample-applications.git
 </code></pre></div>
-<p>For Hyperledger v1.0 use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-$ git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
-```
+<p>For Hyperledger Fabric v1.0 use the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">$ git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
 </code></pre></div></li>
-<li><p>Install the getting started application using one of the following commands. If you are using Hyperledger v0.6 use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-$ cd composer-sample-applications/packages/getting-started
+<li><p>Install the getting started application using one of the following commands. If you are using Hyperledger Fabric v0.6 use the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">$ cd composer-sample-applications/packages/getting-started
 $ npm install
-```
 </code></pre></div>
-<p>If you are using Hyperledger v1.0, use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-$ cd composer-sample-applications-hlfv1/packages/getting-started
+<p>If you are using Hyperledger Fabric v1.0, use the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">$ cd composer-sample-applications-hlfv1/packages/getting-started
 $ npm install
-```
 </code></pre></div>
 <p>Amongst the steps (described below), the command returns information about the deployed digital property network such as name, models, registries etc.<br><br><code>npm install</code> runs several scripts that are packaged into the getting-started directory and uses the docker-compose <code>.yml</code> file mentioned below to pull/download the relevant Hyperledger Fabric docker images.<br><br>There is <a href="https://hyperledger.github.io/composer/reference/commands.html">reference material</a> for Composer CLI.</p></li>
 <li><p>Run the <code>npm test</code> command. You should see output similar to that shown below (output below is for a v0.6 sample application)</p></li>
