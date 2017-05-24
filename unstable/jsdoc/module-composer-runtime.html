@@ -288,7 +288,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-167">line 167</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-212">line 212</a>
 			</li>
 		</ul>
 	</dd>
@@ -426,7 +426,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-69">line 69</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-89">line 89</a>
 			</li>
 		</ul>
 	</dd>
@@ -551,7 +551,7 @@ return getAssetRegistry(&#x27;org.acme.Vehicle&#x27;)
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-137">line 137</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-157">line 157</a>
 			</li>
 		</ul>
 	</dd>
@@ -680,7 +680,7 @@ if (currentParticipant.getFullyQualifiedIdentifier() !== &#x27;org.acme.Driver#D
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-49">line 49</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-50">line 50</a>
 			</li>
 		</ul>
 	</dd>
@@ -849,7 +849,7 @@ var factory = getFactory();</pre>
 		<ul class="dummy">
 			<li>
 				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-103">line 103</a>
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-123">line 123</a>
 			</li>
 		</ul>
 	</dd>
@@ -911,6 +911,311 @@ return getParticipantRegistry(&#x27;org.acme.Driver&#x27;)
     // Add optional error handling here.
   });</pre>
 
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getSerializer"><span class="type-signature"></span>getSerializer()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the serializer. The serializer can be used to create new instances of<br>assets, participants, and transactions from a JS object, or to create a JS object<br>suitable for long-lived persistence.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-70">line 70</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The serializer.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-composer-common.Serializer.html">module:composer-common.Serializer</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Get the factory.
+var ser = getSerializer();</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="post"><span class="type-signature"></span>post(url, typed)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Post a typed instance to a HTTP URL</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The URL to post the data to</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>typed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Typed</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The typed instance to be posted. The instance will be serialized to JSON.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-187">line 187</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise. The promise is resolved with a HttpResponse<br>that represents the result of the HTTP POST.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
