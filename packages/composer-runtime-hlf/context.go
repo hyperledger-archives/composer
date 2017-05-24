@@ -55,6 +55,7 @@ func NewContext(vm *otto.Otto, engine *Engine, stub shim.ChaincodeStubInterface)
 	result.DataService = NewDataService(vm, result, stub)
 	result.IdentityService = NewIdentityService(vm, result, stub)
 	result.EventService = NewEventService(vm, result, stub)
+	result.HTTPService = NewHTTPService(vm, result, stub)
 
 	// Bind the methods into the JavaScript object.
 	result.This.Set("getDataService", result.getDataService)
