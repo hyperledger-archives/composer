@@ -78,7 +78,6 @@ describe('WebHTTPService', () => {
             const data = {foo : 'bar'};
             return httpService.post('good', data)
                 .then( (response) => {
-                    console.log('**** response: ' + JSON.stringify(response));
                     response.statusCode.should.equal(200);
                     response.body.sum.should.equal(3);
                 });
