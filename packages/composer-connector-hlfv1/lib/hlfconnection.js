@@ -106,7 +106,8 @@ class HLFConnection extends Connection {
         if (businessNetworkIdentifier) {
             LOG.entry(method, 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
             eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
-                this.emit('events', JSON.parse(event.payload.toString('utf8')));
+                // Parsed twice as sdk returns a string inside of a string
+                this.emit('events', JSON.parse(JSON.parse(event.payload.toString('utf8'))));
             });
         }
 

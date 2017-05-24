@@ -149,6 +149,7 @@ export class ImportComponent implements OnInit {
             this.activeModal.close();
         })
         .catch((error) => {
+            console.log(error);
             if (error.message.includes('API rate limit exceeded')) {
                 error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
             }

@@ -1,8 +1,7 @@
 /*eslint no-var: 0*/
 'use strict';
 
-function createSimpleEvent() {
-    var factory = getFactory();
+function createSimpleEvent(factory) {
     var event = factory.newEvent('systest.events', 'SimpleEvent');
     event.stringValue = 'hello world';
     event.stringValues = [ 'hello', 'world' ];
@@ -21,8 +20,7 @@ function createSimpleEvent() {
     return event;
 }
 
-function createComplexEvent() {
-    var factory = getFactory();
+function createComplexEvent(factory) {
     var event = factory.newEvent('systest.events', 'ComplexEvent');
     var asset1 = factory.newRelationship('systest.events', 'SimpleAsset', 'ASSET_1');
     var asset2 = factory.newRelationship('systest.events', 'SimpleAsset', 'ASSET_2');
@@ -33,12 +31,23 @@ function createComplexEvent() {
 
 }
 
+/**
+ *
+ * @param {systest.events.EmitSimpleEvent} transaction
+ * @transaction
+ */
 function onEmitSimpleEvent(transaction) {
-    var event = createSimpleEvent();
+    var factory = getFactory();
+    var event = createSimpleEvent(factory);
 
     emit(event);
 }
 
+/**
+ *
+ * @param {systest.events.EmitComplexEvent} transaction
+ * @transaction
+ */
 function onEmitComplexEvent(transaction) {
     var factory = getFactory();
     var event = factory.newEvent('systest.events', 'ComplexEvent');
@@ -51,16 +60,28 @@ function onEmitComplexEvent(transaction) {
     emit(event);
 }
 
+/**
+ *
+ * @param {systest.events.EmitMultipleEvents} transaction
+ * @transaction
+ */
 function onEmitMultipleEvents(transaction) {
-    var event = createSimpleEvent();
+    var factory = getFactory();
+    var event = createSimpleEvent(factory);
 
     emit(event);
     emit(event);
 }
 
+/**
+ *
+ * @param {systest.events.EmitMultipleDifferentEvents} transaction
+ * @transaction
+ */
 function onEmitMultipleDifferentEvents(transaction) {
-    var event1 = createSimpleEvent();
-    var event2 = createComplexEvent();
+    var factory = getFactory();
+    var event1 = createSimpleEvent(factory);
+    var event2 = createComplexEvent(factory);
 
     emit(event1);
     emit(event2);

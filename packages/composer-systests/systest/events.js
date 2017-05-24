@@ -57,39 +57,6 @@ describe('Event system tests', function () {
             });
     });
 
-    // let createAsset = (assetId) => {
-    //     let factory = client.getBusinessNetwork().getFactory();
-    //     let asset = factory.newInstance('systest.events', 'SimpleAsset', assetId);
-    //     return asset;
-    // };
-
-    // let createEvent = (type) => {
-    //     let factory = client.getBusinessNetwork().getFactory();
-    //     let event = factory.newEvent('systest.events', type);
-    //     if (type === 'SimpleEvent') {
-    //         event.stringValue = 'hello world';
-    //         event.stringValues = [ 'hello', 'world' ];
-    //         event.doubleValue = 3.142;
-    //         event.doubleValues = [ 4.567, 8.901 ];
-    //         event.integerValue = 1024;
-    //         event.integerValues = [ 32768, -4096 ];
-    //         event.longValue = 131072;
-    //         event.longValues = [ 999999999, -1234567890 ];
-    //         event.dateTimeValue = new Date('1994-11-05T08:15:30-05:00');
-    //         event.dateTimeValues = [ new Date('2016-11-05T13:15:30Z'), new Date('2063-11-05T13:15:30Z') ];
-    //         event.booleanValue = true;
-    //         event.booleanValues = [ false, true ];
-    //         event.enumValue = 'WOW';
-    //         event.enumValues = [ 'SUCH', 'MANY', 'MUCH' ];
-    //     } else {
-    //         const asset1 = factory.newRelationship('systest.events', 'SimpleAsset', 'ASSET_1');
-    //         const asset2 = factory.newRelationship('systest.events', 'SimpleAsset', 'ASSET_2');
-    //         event.simpleAsset = asset1;
-    //         event.simpleAssets = [ asset1, asset2 ];
-    //     }
-    //     return event;
-    // };
-
     let validateEvent = (event, index) => {
         event.getIdentifier().should.have.string(`#${index}`);
         if (event.$type.match(/SimpleEvent/)) {
@@ -133,7 +100,6 @@ describe('Event system tests', function () {
             emitted.should.equal(1);
             done();
         });
-
         client.submitTransaction(transaction);
     });
 
@@ -142,14 +108,13 @@ describe('Event system tests', function () {
         let factory = client.getBusinessNetwork().getFactory();
         let transaction = factory.newTransaction('systest.events', 'EmitComplexEvent');
 
-        // Listen for the event
+                // Listen for the event
         client.on('event', (ev) => {
             validateEvent(ev, emitted);
             emitted++;
             emitted.should.equal(1);
             done();
         });
-
         client.submitTransaction(transaction);
     });
 
@@ -168,11 +133,11 @@ describe('Event system tests', function () {
                 done();
             }
         });
-
         client.submitTransaction(transaction);
     });
 
     it('should emit two different valid events', (done) => {
+        this.timeout(1000); // Delay to prevent transaction failing
         let types = ['SimpleEvent', 'ComplexEvent'];
         let emitted = 0;
         let factory = client.getBusinessNetwork().getFactory();
@@ -187,7 +152,6 @@ describe('Event system tests', function () {
                 done();
             }
         });
-
         client.submitTransaction(transaction);
     });
 });
