@@ -4,5 +4,6 @@
     "packages/*"
   ],
   "version": "0.7.3",
-  "hoist": true
+  "hoist": true,
+  "npmClient": "yarn"
 }
