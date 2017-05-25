@@ -38,7 +38,6 @@ class Util {
         } else if (!(securityContext instanceof SecurityContext)) {
             throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
         }
-        console.log("FILA");
     }
 
     /**
