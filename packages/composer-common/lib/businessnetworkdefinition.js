@@ -14,7 +14,7 @@
 
 'use strict';
 
-// const Logger = require('./log/logger');
+const Logger = require('./log/logger');
 const ModelManager = require('./modelmanager');
 const Introspector = require('./introspect/introspector');
 const AclManager = require('./aclmanager');
@@ -30,13 +30,7 @@ const fsPath = require('path');
 const minimatch = require('minimatch');
 
 const ENCODING = 'utf8';
-const LOG = {
-    debug : function(){ console.log(arguments);},
-    entry : function(){ console.log(arguments);},
-    exit : function(){ console.log(arguments);},
-    info : function(){ console.log(arguments);}
-
-};// Logger.getLog('BusinessNetworkDefinition');
+const LOG = Logger.getLog('BusinessNetworkDefinition');
 
 /**
  * <p>
