@@ -513,7 +513,7 @@
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-173">line 173</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-196">line 196</a>
 			</li>
 		</ul>
 	</dd>
@@ -712,7 +712,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-234">line 234</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-280">line 280</a>
 			</li>
 		</ul>
 	</dd>
@@ -772,6 +772,186 @@ var businessNetwork = new BusinessNetworkConnection();
 return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
 .then(function(businessNetworkDefinition){
     return businessNetworkDefinition.addParticipantRegistry(&#x27;registryId&#x27;,&#x27;registryName&#x27;);
+});</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="assetRegistryExists"><span class="type-signature"></span>assetRegistryExists(id)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Determine whether a asset registry exists.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The unique identifier of the asset registry</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-177">line 177</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <ul>
+<li>A promise that will be resolved with a boolean indicating whether the asset<br>registry exists.</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Determine whether an asset registry exists
+var businessNetwork = new BusinessNetworkConnection();
+return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
+.then(function(businessNetworkDefinition){
+    return businessNetworkDefinition.assetRegistryExists(&#x27;businessNetworkIdentifier.registryId&#x27;);
+})
+.then(function(exists){
+    // if (exists === true) {
+    // logic here...
+    //}
 });</pre>
 
 
@@ -1027,7 +1207,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-284">line 284</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-330">line 330</a>
 			</li>
 		</ul>
 	</dd>
@@ -1150,7 +1330,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-323">line 323</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-378">line 378</a>
 			</li>
 		</ul>
 	</dd>
@@ -1309,6 +1489,15 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
     
 
 	
+	<dt class="important tag-deprecated method-doc-label method-doc-details-label">Deprecated:</dt>
+	
+    <dd>
+        <ul class="dummy">
+            <li>Use assetRegistryExists instead</li>
+        </ul>
+    </dd>
+    
+    
 
 	
 
@@ -1326,7 +1515,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-154">line 154</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-155">line 155</a>
 			</li>
 		</ul>
 	</dd>
@@ -1684,7 +1873,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-194">line 194</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-217">line 217</a>
 			</li>
 		</ul>
 	</dd>
@@ -2166,7 +2355,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-215">line 215</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-238">line 238</a>
 			</li>
 		</ul>
 	</dd>
@@ -2294,7 +2483,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-253">line 253</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-299">line 299</a>
 			</li>
 		</ul>
 	</dd>
@@ -2613,7 +2802,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-415">line 415</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-476">line 476</a>
 			</li>
 		</ul>
 	</dd>
@@ -2662,6 +2851,186 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 
 
         
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="participantRegistryExists"><span class="type-signature"></span>participantRegistryExists(id)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Determine whether a participant registry exists.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The unique identifier of the participant registry</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-261">line 261</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <ul>
+<li>A promise that will be resolved with a boolean indicating whether the participant<br>registry exists.</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Determine whether an asset registry exists
+var businessNetwork = new BusinessNetworkConnection();
+return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIdentifier&#x27;, &#x27;WebAppAdmin&#x27;, &#x27;DJY27pEnl16d&#x27;)
+.then(function(businessNetworkDefinition){
+    return businessNetworkDefinition.participantRegistryExists(&#x27;businessNetworkIdentifier.registryId&#x27;);
+})
+.then(function(exists){
+    // if (exists === true) {
+    // logic here...
+    //}
+});</pre>
+
 
     
 </dd>
@@ -2725,7 +3094,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-396">line 396</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-457">line 457</a>
 			</li>
 		</ul>
 	</dd>
@@ -2901,7 +3270,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-448">line 448</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-509">line 509</a>
 			</li>
 		</ul>
 	</dd>
@@ -3063,7 +3432,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 		<ul class="dummy">
 			<li>
 				<a href="composer-client_lib_businessnetworkconnection.js.html">composer-client/lib/businessnetworkconnection.js</a>,
-				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-354">line 354</a>
+				 <a href="composer-client_lib_businessnetworkconnection.js.html#sunlight-1-line-415">line 415</a>
 			</li>
 		</ul>
 	</dd>
@@ -3188,7 +3557,7 @@ return businessNetwork.connect(&#x27;testprofile&#x27;, &#x27;businessNetworkIde
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Fri May 12th 2017
+		on Thu May 25th 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

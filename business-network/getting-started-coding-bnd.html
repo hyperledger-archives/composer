@@ -67,7 +67,7 @@ ga('send', 'pageview');
                     <a href="services.html">Composer</a>
                 </li> -->
                 <li>
-                    <a href="http://composer-playground.mybluemix.net/">Playground</a>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
                     <a href="../tutorials/tutorialindex.html">Tutorials</a>
@@ -108,6 +108,7 @@ ga('send', 'pageview');
 <a href="../business-network/getting-started-coding-bnd.html">Defining a business network</a>
 <a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
 <a href="../business-network/bnd-define.html">Create a business network definition</a>
+<a href="../business-network/publishing-events.html">Publishing events</a>
 <a href="../business-network/bnd-publish.html">Publish a business network definition</a>
 <a href="../business-network/model-publish.html">Publish a business domain model</a>
 <a href="../business-network/runtime-update.html">Update a business network definition on Composer</a>
@@ -125,80 +126,93 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="coding-a-business-network-definition">Coding a Business Network Definition</h1>
+              <h1 id="coding-and-deploying-a-business-network-definition">Coding and deploying a business network definition</h1>
 
 <hr>
 
-<p>This tutorial will take you through how to code and deploy a Business Network Definition. How to put together the files, and code artifacts needed and what to do with them.
-This is after the important step of modeling the actual business network and the entities within it.  For this tutorial we are going to continue to use the Digital Property Network but from the position of having only the model file and the transction function file.</p>
+<p>This tutorial will take you through how to code and deploy a Business Network Definition. How to put together the files, code required artifacts, and what to do with them.</p>
 
-<h1 id="style-of-creation">Style of creation</h1>
+<p>The final form of the Business Network Archive (<code>.bna</code>) is mandatory for Hyperledger Composer. However, the creation and management of the input files is not mandatory.</p>
 
-<p>The final form of the Business Network Archive is mandatory for Hyperledger Composer. This file is created using the <code>composer archive create</code> command; however how the files that are taken as input to that command are created and managed is not mandatory. In all the documents and websites we are showing a selection of approaches we consider to be good practice.</p>
+<p>For this tutorial, a single NPM module will be created for both the model and transaction functions. An archive will be created locally  and deployed. The NPM module consists of your business network definition, and the <code>package.json</code> file.</p>
 
-<p>For this tutorial, a single NPM module will be created for both the model and transaction functions. An archive will be created from this locally and deployed.
-In production this NPM module would be published to a NPM repository, in development/test context this is not required.</p>
+<h2 id="before-you-begin">Before you begin</h2>
 
-<p>Also the command line set of tools will be used.</p>
+<p>Typically, a business network would be deployed after fully modelling and testing a business network definition. For this tutorial we are going to continue to use the Digital Property Network sample business network, using only the model file and the transction function file.</p>
 
-<h1 id="creating-the-npm-module">Creating the npm Module.</h1>
-
-<h2 id="basic-infrastrure">Basic Infrastrure</h2>
-
-<p>We will need to have the command line Hyperledger Composer tools installed. If you&#39;ve not done this yet</p>
+<p>You will need the Composer command line tools. To install the tools run the following command:</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>npm install -g composer-cli
 </code></pre></div>
-<p>Ensure that you have a new clean working directory</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>mkdir property-network <span class="o">&amp;&amp;</span> <span class="nb">cd </span>property-network <span class="o">&amp;&amp;</span> <span class="nb">pwd</span>
+<p><em>Please note: When using Ubuntu this command will fail when running in a root user shell.</em></p>
+
+<p>You will also require a running Hyperledger Fabric. For more information on setting up an instance of Hyperledger Fabric, see the <a href="">Fabric documentation</a><em>fill this in</em></p>
+
+<h1 id="creating-the-npm-module">Creating the npm module.</h1>
+
+<h2 id="creating-the-basic-infrastrure">Creating the basic infrastrure</h2>
+
+<ol>
+<li><p>Ensure that you have a new clean working directory by using the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```bash
+$ mkdir property-network &amp;&amp; cd property-network &amp;&amp; pwd
 /home/matthew/property-network
-</code></pre></div>
-<p>Now we need to setup the NPM module as follows. It&#39;s ok to accept the default values, but you are welcome to change any that you wish.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>npm init
+```
+</code></pre></div></li>
+<li><p>Now we need to setup the NPM module. The default values can be accepted, but you are welcome to change any that you wish.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```bash
+$ npm init
 This utility will walk you through creating a package.json file.
 It only covers the most common items, and tries to guess sensible defaults.
 
-See <span class="sb">`</span>npm <span class="nb">help </span>json<span class="sb">`</span> <span class="k">for </span>definitive documentation on these fields
-and exactly what they <span class="k">do</span>.
+See `npm help json` for definitive documentation on these fields
+and exactly what they do.
 
-Use <span class="sb">`</span>npm install &lt;pkg&gt; --save<span class="sb">`</span> afterwards to install a package and
-save it as a dependency <span class="k">in </span>the package.json file.
+Use `npm install &lt;pkg&gt; --save` afterwards to install a package and save it as a dependency in the package.json file.
 
-Press ^C at any <span class="nb">time </span>to quit.
-name: <span class="o">(</span>property-network<span class="o">)</span>
-version: <span class="o">(</span>1.0.0<span class="o">)</span>
+Press ^C at any time to quit.
+name: (property-network)
+version: (1.0.0)
 description:
-entry point: <span class="o">(</span>index.js<span class="o">)</span>
-<span class="nb">test command</span>:
+entry point: (index.js)
+test command:
 git repository:
 keywords:
 author:
-license: <span class="o">(</span>ISC<span class="o">)</span>
+license: (ISC)
 About to write to /home/matthew/property-network/package.json:
 
-<span class="o">{</span>
-  <span class="s2">"name"</span>: <span class="s2">"property-network"</span>,
-  <span class="s2">"version"</span>: <span class="s2">"1.0.0"</span>,
-  <span class="s2">"description"</span>: <span class="s2">""</span>,
-  <span class="s2">"main"</span>: <span class="s2">"index.js"</span>,
-  <span class="s2">"scripts"</span>: <span class="o">{</span>
-    <span class="s2">"test"</span>: <span class="s2">"echo </span><span class="se">\"</span><span class="s2">Error: no test specified</span><span class="se">\"</span><span class="s2"> &amp;&amp; exit 1"</span>
-  <span class="o">}</span>,
-  <span class="s2">"author"</span>: <span class="s2">""</span>,
-  <span class="s2">"license"</span>: <span class="s2">"ISC"</span>
-<span class="o">}</span>
+{
+  "name": "property-network",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
 
+Is this ok? (yes) yes
+```
+</code></pre></div></li>
+</ol>
 
-Is this ok? <span class="o">(</span>yes<span class="o">)</span> yes
-</code></pre></div>
 <p>The infrastructure is now in place, the model and transaction functions can now be added.</p>
 
-<h2 id="model-file">Model file</h2>
+<h2 id="creating-your-model-file">Creating your model file</h2>
 
-<p>The files are simple text files following a defined syntax, create a new blank file.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>touch models/DigitalLandTitle.cto
-</code></pre></div>
-<p>Load that file up in any editor and then add your own model, or copy in the code below that is the DigitalLandTitle Getting Started Example</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**  A 'Getting Started Tutorial' to work with Hyperledger Composer
+<p>The model file defines the assets, participants, and transactions in your business network. It is a simple text file that follows a defined syntax.</p>
+
+<ol>
+<li><p>Create the model (<code>.cto</code>) file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```bash
+$ touch models/DigitalLandTitle.cto
+```
+</code></pre></div></li>
+<li><p>Open the model file in an editor of your choice and add your own model, or copy in the code below. The following code is the DigitalLandTitle getting started example.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```
+/**  A 'Getting Started Tutorial' to work with Hyperledger Composer
 */
 
 namespace net.biz.digitalPropertyNetwork
@@ -228,56 +242,77 @@ transaction RegisterPropertyForSale identified by transactionId{
   --&gt; Person seller
   --&gt; LandTitle title
 }
-</code></pre></div>
-<h2 id="transaction-functions">Transaction functions</h2>
+```
+</code></pre></div></li>
+</ol>
 
-<p>The transaction function files are stadard JavaScript files. Create a blank file for this.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>touch lib/DigitalLandTitle.js
-</code></pre></div>
-<p>In this example the following is the implementation of the <code>registeryPropertyForSale</code> transaction. Copy this in to the <code>lib/DigitalLandTitle.js</code> file.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="s1">'use strict'</span><span class="p">;</span>
+<h2 id="creating-transaction-processor-functions">Creating transaction processor functions</h2>
 
-<span class="cm">/**
+<p>The transaction processor function file is a standard JavaScript file that defines the operation of your transactions.</p>
+
+<ol>
+<li><p>Create a blank JavaScript file.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```bash
+$ touch lib/DigitalLandTitle.js
+```
+</code></pre></div></li>
+<li><p>Open the transaction processor file in an editor of your choice. Enter either the JavaScript for your own transactions, or use the following JavaScript sample. This sample is the  <code>registeryPropertyForSale</code> transaction.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```javascript
+'use strict';
+
+/**
  * Process a property that is held for sale
  * @param {net.biz.digitalPropertyNetwork.RegisterPropertyForSale} propertyForSale the property to be sold
  * @transaction
- */</span>
-<span class="kd">function</span> <span class="nx">onRegisterPropertyForSale</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'### onRegisterPropertyForSale '</span> <span class="o">+</span> <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">toString</span><span class="p">());</span>
-    <span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">forSale</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+ */
+function onRegisterPropertyForSale(propertyForSale) {
+    console.log('### onRegisterPropertyForSale ' + propertyForSale.toString());
+    propertyForSale.title.forSale = true;
 
-    <span class="nx">returAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="nx">result</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">propertyForSale</span><span class="p">.</span><span class="nx">title</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div>
-<p><em>That has completed the creation of the npm module for the Business Network, the next step is to form this into a Business Network Archive</em></p>
+    returAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle').then(function(result) {
+            return result.update(propertyForSale.title);
+        }
+    );
+}
+```
+</code></pre></div></li>
+</ol>
 
-<h1 id="creating-the-business-network-archive">Creating the Business Network Archive</h1>
+<p>Now that the <code>package.json</code> file has been created in addition to the business network definition, the npm module for the business network has been created. The next step is to form this into a business network archive (<code>.bna</code>) file to be depoloyed to an instance of Hyperledger Fabric.</p>
 
-<p>Once we have the network complete we can create a business network definition archive. This is the unit will actually be deployable to the HyperLedger Fabric.</p>
+<hr>
+
+<h1 id="creating-the-business-network-archive-and-deploying-to-hyperledger-fabric">Creating the business network archive and deploying to Hyperledger Fabric</h1>
+
+<p>Now that the business network has been defined, a business network archive must be created. This requires all the files in the business network definition created above. The business network archive (<code>.bna</code>) file can then be deployed to Hyperledger Fabric.</p>
 
 <p>There is a <code>composer archive</code> command that can be used to create and inspect these archives. The <code>composer network</code> command is then used to administer the business network archive on the Hyperledger Fabric.</p>
 
-<h3 id="creating-an-archive">Creating an archive</h3>
-
-<p>The <code>composer archive create</code> command is used to create the archive. The <code>--archiveFile</code> option is used to specify the name of the archive file to create. If this is not specified then a default name will be used that is based on the identifier of the business network (sanitized to be suitable as a filename). For example <code>digitalPropertyNetwork-0.1.2.bna</code>.</p>
+<ol>
+<li>Use the <code>composer archive create</code> command to create the archive. The <code>--archiveFile</code> option is used to specify the name of the archive file to create. If no filename is specified, a default name will be created  based on the identifier of the business network (sanitized to be suitable as a filename). For example <code>digitalPropertyNetwork-0.1.2.bna</code>.</li>
+</ol>
 
 <p>There are two options that control where the inputs for the archive create from.</p>
 
 <ul>
-<li><em>--sourceType</em> can either be <em>dir</em> or <em>module</em>.  <em>dir</em> implies that the source is from a directory, <em>module</em> from an NPM module that has been installed.</li>
-<li><em>--sourceName</em> is either the directory name or the NPM module name as appropriate.</li>
+<li><code>--sourceType</code> can either be <code>dir</code> or <code>module</code>. Specifying <code>dir</code> implies that the source is from a directory. Specifying <code>module</code> indicates that the source is an installed NPM module.</li>
+<li><code>--sourceName</code> is either the directory name or the NPM module name as appropriate.</li>
 </ul>
 
-<p>In the case of a directory being given, this directory must containsthe <code>package.json</code> file of the Business Network&#39;s npm module&#39;s package.json.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer archive create --archiveFile digitalLandTitle.bna --sourceType dir --sourceName .
+<p>In the case of a directory being given, this directory must contain the appropriate <code>package.json</code> file.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    ```bash
+    $ composer archive create --archiveFile digitalLandTitle.bna --sourceType dir --sourceName .
+    ```
 </code></pre></div>
-<p>Once you have this archive it can then be deployed to Hyperledger (which will assuming is all running for the moment)</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer network deploy --archiveFile  DigitalLandTitle.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
-</code></pre></div>
-<h2 id="continued-development-of-the-model-or-transaction-functions">Continued Development of the model or transaction functions</h2>
+<ol>
+<li><p>To deploy an archive file Once you have this archive it can then be deployed to Hyperledger (which will assuming is all running for the moment)</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```bash
+$ composer network deploy --archiveFile  DigitalLandTitle.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+```
+</code></pre></div></li>
+</ol>
+
+<h1 id="next-steps-to-develop-the-model-or-transaction-processor-functions">Next steps to develop the model or transaction processor functions</h1>
 
 <p>The next step in the development process would be to update either the model or transaction functions or both. When you&#39;ve done this, the steps are to recreate the archive and then redeploy the network.</p>
 <div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer archive create --archiveFile digitalLandTitle.bna ---sourceType dir --sourceName .
@@ -285,7 +320,7 @@ transaction RegisterPropertyForSale identified by transactionId{
 </code></pre></div>
 <h1 id="complete">Complete!</h1>
 
-<p>This tutorial is now complete. The next step would be to create a REST api for applications to use. The <a href="../applications/genapp.html">next step</a> will create a REST api for the Digital Property Network.</p>
+<p>This tutorial is now complete. The next step would be to create a REST API for applications to use. The <a href="../applications/genapp.html">next step</a> will create a REST api for the Digital Property Network.</p>
 
             
           </section>

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Deploy a Business Network | Hyperledger Composer</title>
+    <title>Task - Deploy a Business Network Definition | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -67,7 +67,7 @@ ga('send', 'pageview');
                     <a href="services.html">Composer</a>
                 </li> -->
                 <li>
-                    <a href="http://composer-playground.mybluemix.net/">Playground</a>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
                     <a href="../tutorials/tutorialindex.html">Tutorials</a>
@@ -108,6 +108,7 @@ ga('send', 'pageview');
 <a href="../business-network/getting-started-coding-bnd.html">Defining a business network</a>
 <a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
 <a href="../business-network/bnd-define.html">Create a business network definition</a>
+<a href="../business-network/publishing-events.html">Publishing events</a>
 <a href="../business-network/bnd-publish.html">Publish a business network definition</a>
 <a href="../business-network/model-publish.html">Publish a business domain model</a>
 <a href="../business-network/runtime-update.html">Update a business network definition on Composer</a>
@@ -129,51 +130,42 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>A business network is deployed using the <code>composer network deploy</code> command.</p>
+<p>A business network definition is deployed using the <code>composer network deploy</code> command.</p>
+
+<h1 id="before-you-begin">Before you begin</h1>
+
+<p>Before deploying a business network, a <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a> is needed as a <code>zip</code> file with the following structure:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">BusinessNetworkArchive.zip
+├── lib
+│   └── mozart.cto.js
+├── models
+│   └── mozart.cto
+└── package.json
+</code></pre></div>
+<!--
+You can use the `composer archive` command to create an archive with the correct format.
+
+**NOTE**: *Do not zip a a folder containing **lib**, **models**, and **package.json** to create an Business Network Archive, zip the contents themselves*
+-->
 
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li>Before deploying a business network, a <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a> is needed as a <code>zip</code> file with the following structure:</li>
-</ol>
-<div class="highlight"><pre><code class="language-" data-lang="">  BusinessNetworkArchive.zip
-  ├── lib
-  │   └── mozart.cto.js
-  ├── models
-  │   └── mozart.cto
-  └── package.json
-</code></pre></div>
-<ul>
-<li><em>lib</em> contains all of the transactions processor functions</li>
-<li><em>models</em> contains all of the model files written in the <a href="../reference/cto_language.html">CTO Language</a>.</li>
-<li><em>package.json</em> is required, and is used to create the <a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a>&#39;s identifier</li>
-</ul>
-
-<p>You can use the <code>composer archive</code> command to create an archive with the correct format.</p>
-
-<p><strong>NOTE</strong>: <em>Do not zip a a folder containing **lib</em><em>, **models</em><em>, and **package.json</em>* to create an Business Network Archive, zip the contents themselves*</p>
-
-<ol>
-<li><p>Start <a href="runtime-start.html">Hyperledger Fabric Peer and Membership Service</a></p></li>
+<li><p>Start <a href="runtime-start.html">Hyperledger Fabric Peer and Membership Service</a>.</p></li>
 <li><p><a href="../installing/createconnectionprofile.html">Create a Connection Profile</a> or do <em>not</em> use <code>-p</code> and allow Hyperledger Composer to create a <code>Default Connection Profile</code> for you.</p></li>
-<li><p>Enter the command on a single line. For example:</p></li>
-</ol>
-
-<p><code>composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;</code></p>
-
-<ol>
-<li>Enter your Enrollment Secret when prompted.</li>
-</ol>
-
-<p><code>prompt: What is the enrollment secret of the user?:</code></p>
-
-<ol>
-<li>When you see</li>
-</ol>
-<div class="highlight"><pre><code class="language-" data-lang="">  Deploying business network definition. This may take a little time.
-  Command completed successfully.
-</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">you have successfully deployed a business network!
+<li><p>Enter the command on a single line. For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">`composer network deploy -a &lt;BusinessNetworkDefinition&gt;.zip -i &lt;Your EnrollmentID&gt;`
+</code></pre></div></li>
+<li><p>Enter your Enrollment Secret when prompted.</p></li>
+<li><p>When you see</p>
+<div class="highlight"><pre><code class="language-" data-lang="">```
+Deploying business network definition. This may take a little time.
+Command completed successfully.
+```
 </code></pre></div>
+<p>the business network definition has been successfully deployed.</p></li>
+</ol>
+
             
           </section>
         </div>
