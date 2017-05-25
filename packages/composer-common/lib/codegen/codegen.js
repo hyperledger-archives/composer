@@ -14,9 +14,9 @@
 
 'use strict';
 
-
 module.exports.GoLangVisitor = require('./fromcto/golang/golangvisitor');
 module.exports.JSONSchemaVisitor = require('./fromcto/jsonschema/jsonschemavisitor');
 module.exports.PlantUMLVisitor = require('./fromcto/plantuml/plantumlvisitor');
 module.exports.TypescriptVisitor = require('./fromcto/typescript/typescriptvisitor');
 module.exports.FileWriter = require('./filewriter');
+
