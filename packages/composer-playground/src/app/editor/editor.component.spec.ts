@@ -520,7 +520,7 @@ describe('EditorComponent', () => {
 
             component.addScriptFile();
 
-            scriptManagerMock.createScript.should.have.been.calledWith('script1', 'JS', `/**
+            scriptManagerMock.createScript.should.have.been.calledWith('script.js', 'JS', `/**
   * New script file
   */`);
 
