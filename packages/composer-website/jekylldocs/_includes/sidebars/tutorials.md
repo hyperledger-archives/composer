@@ -1,8 +1,9 @@
 **[Introduction](../introduction/introduction.html)**
 **[Getting Started with Hyperledger Composer](../tutorials/getting-started.html)**
 [Getting started with Playground](../tutorials/getting-started-with-playground.html)
-[Getting started with the command line](../tutorials/getting-started-cmd-line.html)
-[Getting started with the playground](../tutorials/using-playground-locally.html)
+[Running the playground locally](../tutorials/using-playground-locally.html)
+[Getting up and running on the command line](../tutorials/getting-started-cmd-line.html)
+[Creating applications for Composer](../tutorials/creating-applications.html)
 **[Installing](../installing/installingindex.html)**
 **[Defining Business Networks](../business-network/businessnetwork.html)**
 **[Writing Applications](../applications/genapp.html)**
