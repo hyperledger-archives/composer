@@ -25,6 +25,7 @@ export class AddFileComponent {
 
     addModelNamespace: string = 'org.acme.model';
     addModelFileName: string = 'lib/org.acme.model';
+    addModelPath: string = 'models/';
     addModelFileExtension: string = '.cto';
     addScriptFileName: string = 'lib/script';
     addScriptFileExtension: string = '.js';
@@ -143,7 +144,7 @@ export class AddFileComponent {
 
 namespace ${newModelNamespace}`;
 
-            this.currentFile = new ModelFile(modelManager, code, newModelNamespace + this.addModelFileExtension);
+            this.currentFile = new ModelFile(modelManager, code, this.addModelPath + newModelNamespace + this.addModelFileExtension);
             this.currentFileName = this.currentFile.getFileName();
         }
     }

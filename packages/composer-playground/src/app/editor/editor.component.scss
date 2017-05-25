@@ -59,6 +59,16 @@ app-editor {
       .edit-label{
         line-height: 2.5rem;
         font-weight:bold;
+        flex-shrink:1;
+        align-self:center;
+        margin-top: 0.2rem;
+      }
+
+      .edit-file-hidden{
+        line-height: 2.5rem;
+        color: $secondary-text;
+        flex-shrink:1;
+        align-self:center;
       }
     }
 

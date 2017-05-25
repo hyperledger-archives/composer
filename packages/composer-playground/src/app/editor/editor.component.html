@@ -62,7 +62,7 @@
       </div>
       <div *ngIf="currentFile && fileType(currentFile)!='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{currentFile.displayID}}</div>
       <div *ngIf="currentFile && fileType(currentFile)=='Readme'" style="flex-shrink:1;align-self:center" class="business-network-version small">{{deployedPackageVersion}}</div>
-      <div class="edit_icon">
+      <div *ngIf="currentFile && fileType(currentFile)!='ACL'" class="edit_icon">
         <button id="editFileButton" type="button" class="action" (click)="toggleEditActive()">
           <svg class="ibm-icon vertical-top" aria-hidden="true">
             <use xlink:href="#icon-edit_24"></use>
@@ -92,9 +92,21 @@
         </button>
       </div>
     </div>
-    <div *ngIf="editActive && fileType(currentFile)!='Readme' && fileType(currentFile)!='ACL'" class="business-network-details">
-      <label class="edit-label margin-right" for="editName">Name</label>
-      <input class="margin-right" id="editName" type="text" (blur)="editFileName()" [(ngModel)]="inputFileName">
+    <div *ngIf="editActive && fileType(currentFile)!='Readme'" class="business-network-details">
+      <div class="flex-container" style="flex-direction:column">
+        <div class="flex-container">
+            <label class="edit-label margin-right" for="editName">Name</label>
+            <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">models/</div>
+            <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">lib/</div>
+            <div *ngIf="!fileNameError"><input style="margin-top: 0.2rem" class="margin-right" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]"></div>
+            <div *ngIf="fileNameError"><input style="margin-top: 0.2rem" class="margin-right error-underline" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]"></div>
+            <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">.cto</div>
+            <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">.js</div>
+        </div>
+      <div *ngIf="fileNameError" style="flex-shrink:1;align-self: center; margin-bottom: 1rem; color:red">
+          <p>{{fileNameError}}</p>
+        </div>
+    </div>
     </div>
   </div>
 

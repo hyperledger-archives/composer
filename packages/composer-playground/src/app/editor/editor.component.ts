@@ -50,9 +50,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     private inputPackageName; // This is the input 'Name' before the BND is updated
     private inputPackageVersion; // This is the input 'Version' before the BND is updated
 
+
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
 
-    private inputFileName; // This is the input 'FileName' before the currentFile is updated
+    private inputFileNameArray: string[] = null ; // This is the input 'FileName' before the currentFile is updated
+    private fileNameError: string = null;
+
 
 
     constructor(private adminService: AdminService,
@@ -150,13 +153,28 @@ export class EditorComponent implements OnInit, OnDestroy {
             this.currentFile = file;
 
             // Update inputFileName
-            this.inputFileName = file.displayID;
+            this.inputFileNameArray = this.formatFileName(file.displayID);
 
             // re-validate, since we do not persist bad files- they revert when navigated away
             if (this.editorFilesValidate()) {
                 this.noError = true;
             }
+
+            // remove fileError flag
+            this.fileNameError = null;
         }
+    }
+
+    formatFileName(fullname: string): string[] {
+        console.log('formatting file');
+        let name = [];
+        let startIdx = fullname.indexOf('/') + 1;
+        let endIdx = fullname.lastIndexOf('.');
+        console.log('start idx', startIdx); console.log('end idx', endIdx);
+        name.push(fullname.substring(0, startIdx));
+        name.push(fullname.substring(startIdx, endIdx));
+        name.push(fullname.substring(endIdx, fullname.length));
+        return name;
     }
 
     updateFiles() {
@@ -381,30 +399,37 @@ export class EditorComponent implements OnInit, OnDestroy {
      * When user edits the file name (in the input box), the underlying file needs to be updated, and the BND needs to be updated
      */
     editFileName() {
-        let regEx = new RegExp(/^((\/)?([a-z_\-0-9\.]|[A-Z_\-0-9\.])+)+\.(js|cto)$/);
-        let result = regEx.test(this.inputFileName);
-        console.log('result is:', result);
-        if (result === true) {
-            if (this.currentFile.script) {
-                // Replace Script
-                let contents = this.clientService.getScriptFile(this.currentFile.id).getContents();
-                this.clientService.replaceFile(this.currentFile.id, this.inputFileName, contents, 'script');
-                this.updateFiles();
-                let index = this.files.findIndex((file) => file.id === this.inputFileName);
-                this.setCurrentFile(this.files[index]);
+        this.fileNameError = null;
+        let regEx = new RegExp(/^((\/)?([a-z_\-0-9\.]|[A-Z_\-0-9\.])+)$/);
+        if (regEx.test(this.inputFileNameArray[1]) === true) {
+            let inputFileName = this.inputFileNameArray[0] + this.inputFileNameArray[1] + this.inputFileNameArray[2];
+            console.log('reconstructed name:', inputFileName);
+            if (this.files.findIndex((file) => file.displayID === inputFileName) !== -1) {
+                this.fileNameError = 'Error: Filename already exists';
+            } else if (this.currentFile.script) {
+                if (this.currentFile.id !== inputFileName) {
+                    // Replace Script
+                    let contents = this.clientService.getScriptFile(this.currentFile.id).getContents();
+                    this.clientService.replaceFile(this.currentFile.id, inputFileName, contents, 'script');
+                    this.updateFiles();
+                    let index = this.files.findIndex((file) => file.id === inputFileName);
+                    this.setCurrentFile(this.files[index]);
+                }
             } else if (this.currentFile.model) {
-                // Update Model filename
-                let modelFile: ModelFile = this.clientService.getModelFile(this.currentFile.id);
-                let contents = modelFile.getDefinitions();
-                this.clientService.replaceFile(this.currentFile.id, this.inputFileName, contents, 'model');
-                this.updateFiles();
-                let index = this.files.findIndex((file) => file.displayID === this.inputFileName);
-                this.setCurrentFile(this.files[index]);
+                if (this.currentFile.displayID !== inputFileName) {
+                    // Update Model filename
+                    let modelFile: ModelFile = this.clientService.getModelFile(this.currentFile.id);
+                    let contents = modelFile.getDefinitions();
+                    this.clientService.replaceFile(this.currentFile.id, inputFileName, contents, 'model');
+                    this.updateFiles();
+                    let index = this.files.findIndex((file) => file.displayID === inputFileName);
+                    this.setCurrentFile(this.files[index]);
+                }
             } else {
-                throw new Error('Unable to process rename on current file type');
+                this.fileNameError = 'Error: Unable to process rename on current file type';
             }
         } else {
-            throw new Error('Bad file name');
+            this.fileNameError = 'Error: Invalid filename, file must be alpha-numeric with no spaces';
         }
     }
 

@@ -90,12 +90,9 @@ export class ClientService {
     updateFile(id: string, content: any, type: string): string {
         try {
             if (type === 'model') {
-                console.log('id: ', id);
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let original: ModelFile = modelManager.getModelFile(id);
                 let modelFile = new ModelFile(modelManager, content, original.getFileName());
-                console.log('original: ', original);
-                console.log('modelFile: ', modelFile);
                 if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                     throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }
@@ -108,7 +105,6 @@ export class ClientService {
                 } else {
                     modelManager.updateModelFile(modelFile);
                 }
-                console.log('model files now', modelManager.getModelFiles());
             } else if (type === 'script') {
                 let scriptManager = this.getBusinessNetwork().getScriptManager();
                 let script = scriptManager.createScript(id, 'JS', content);
@@ -131,10 +127,8 @@ export class ClientService {
     replaceFile(oldId: string, newId: string, content: any, type: string): string {
         try {
             if (type === 'model') {
-                console.log('replacing model file:', content);
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let modelFile = new ModelFile(modelManager, content, newId);
-                console.log('updating model file:', modelFile);
                 modelManager.updateModelFile(modelFile, newId);
             } else if (type === 'script') {
                 let scriptManager = this.getBusinessNetwork().getScriptManager();
