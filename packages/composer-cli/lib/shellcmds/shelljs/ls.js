@@ -30,13 +30,6 @@ module.exports.handler = (argv) => {
     let files = shell.ls();
 
 
-    console.log(files.join('   '));
+    console.log(files.join('\t'));
 
-    // argv.thePromise =  List.handler(argv)
-    // .then(() => {
-    //     console.log ('Command completed successfully.');
-    // })
-    // .catch((error) => {
-    //     console.log(error+ '\nCommand failed.');
-    // });
 };

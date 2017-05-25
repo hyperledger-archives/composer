@@ -17,14 +17,15 @@
 const Api = require('../lib/api');
 const AssetRegistry = require('../lib/api/assetregistry');
 const Factory = require('../lib/api/factory');
+const Serializer = require('composer-common').Serializer;
 const ParticipantRegistry = require('../lib/api/participantregistry');
 const realFactory = require('composer-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
 const EventService = require('../lib/eventservice');
+const HTTPService = require('../lib/httpservice');
 const Context = require('../lib/context');
-const Serializer = require('composer-common').Serializer;
 
 const chai = require('chai');
 chai.should();
@@ -32,6 +33,7 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 require('sinon-as-promised');
+const expect = chai.expect;
 
 describe('Api', () => {
 
@@ -40,6 +42,7 @@ describe('Api', () => {
     let mockParticipant;
     let mockRegistryManager;
     let mockEventService;
+    let mockHTTPService;
     let mockContext;
     let api;
 
@@ -49,8 +52,9 @@ describe('Api', () => {
         mockParticipant = sinon.createStubInstance(Resource);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockEventService = sinon.createStubInstance(EventService);
+        mockHTTPService = sinon.createStubInstance(HTTPService);
         mockContext = sinon.createStubInstance(Context);
-        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockEventService, mockContext);
+        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockHTTPService, mockEventService, mockContext);
     });
 
     describe('#constructor', () => {
@@ -69,6 +73,14 @@ describe('Api', () => {
 
         it('should return the factory', () => {
             api.getFactory().should.be.an.instanceOf(Factory);
+        });
+
+    });
+
+    describe('#getSerializer', () => {
+
+        it('should return the serialzier', () => {
+            api.getSerializer().should.be.an.instanceOf(Serializer);
         });
 
     });
@@ -134,4 +146,17 @@ describe('Api', () => {
         });
     });
 
+    describe('#post', () => {
+        let mockTransaction;
+
+        beforeEach(() => {
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.getFullyQualifiedType.returns('much.wow');
+            mockHTTPService.post.returns(Promise.resolve({foo : 'bar'}));
+        });
+
+        it('should call httpService.post', () => {
+            return expect(api.post('url', mockTransaction)).to.eventually.have.property('foo');
+        });
+    });
 });
