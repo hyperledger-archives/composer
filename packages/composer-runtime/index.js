@@ -30,3 +30,4 @@ module.exports.IdentityService = require('./lib/identityservice');
 module.exports.JSTransactionExecutor = require('./lib/jstransactionexecutor');
 module.exports.LoggingService = require('./lib/loggingservice');
 module.exports.TransactionExecutor = require('./lib/transactionexecutor');
+module.exports.QueryService = require('./lib/queryservice');

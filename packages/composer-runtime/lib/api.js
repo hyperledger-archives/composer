@@ -39,10 +39,11 @@ class Api {
      * @param {Resource} participant The current participant.
      * @param {RegistryManager} registryManager The registry manager to use.
      * @param {EventService} eventService The event service to use.
+     * @param {QueryService} queryService The query service to use.
      * @param {Context} context The transaction context.
      * @private
      */
-    constructor(factory, serializer, participant, registryManager, eventService, context) {
+    constructor(factory, serializer, participant, registryManager, eventService,queryService, context) {
         const method = 'constructor';
         LOG.entry(method, factory, serializer, participant, registryManager, eventService, queryService, context);
    
@@ -189,16 +190,22 @@ class Api {
          */
          this.query = function query(queryString) {
              const method = 'query';
-             LOG.entry(method);
-             const result = queryService.query(queryString);
-             LOG.exit(method);
-             
+             LOG.entry(method + "queryString= " + queryString);
+             return queryService.query(queryString)
+                .then((result) => {
+                    LOG.debug("query result=", result);
+                    LOG.exit(method);
+                    return result;
+                })
+                .catch((err) => {
+                    LOG.debug("query caught exception =", err);
+                    LOG.exit(method);
+                });
          }
          
         Object.freeze(this);
         LOG.exit(method);
     }
-
 }
 
 module.exports = Api;
