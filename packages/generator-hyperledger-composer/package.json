@@ -1,6 +1,6 @@
 {
   "name": "generator-hyperledger-composer",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "Generates skeleton projects from Hyperledger Composer business network definitions",
   "engines": {
     "node": ">=6",
@@ -15,8 +15,8 @@
     "liveNetworkTest": "mocha -t 0 test/angular-network.js"
   },
   "dependencies": {
-    "composer-client": "^0.7.3",
-    "composer-common": "^0.7.3",
+    "composer-client": "^0.7.4",
+    "composer-common": "^0.7.4",
     "fs": "0.0.1-security",
     "shelljs": "^0.7.5",
     "underscore.string": "^3.3.4",
@@ -30,8 +30,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@angular/cli": "^1.0.0-rc.0",
-    "composer-admin": "^0.7.3",
-    "composer-connector-embedded": "^0.7.3",
+    "composer-admin": "^0.7.4",
+    "composer-connector-embedded": "^0.7.4",
     "typings": "^2.1.0",
     "yeoman-test": "^1.6.0"
   }

@@ -123,6 +123,8 @@ describe('EditorComponent', () => {
         it('should initialize the editor', fakeAsync(() => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetFile = sinon.stub(component, 'setCurrentFile');
+            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
             component.ngOnInit();
 
             tick();
@@ -132,6 +134,28 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
+            mockSetFile.should.not.have.been.called;
+            mockSetIntialFile.should.have.been.called;
+        }));
+
+        it('should re-initialize the editor', fakeAsync(() => {
+            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetFile = sinon.stub(component, 'setCurrentFile');
+            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
+            component['editorService'].setCurrentFile('file');
+
+            component.ngOnInit();
+
+            tick();
+
+            component['noError'].should.equal(true);
+            component['dirty'].should.equal(true);
+
+            mockUpdatePackage.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+            mockSetFile.should.have.been.called;
+            mockSetIntialFile.should.not.have.been.called;
         }));
 
         it('should open import modal', fakeAsync(() => {
@@ -520,7 +544,7 @@ describe('EditorComponent', () => {
 
             component.addScriptFile();
 
-            scriptManagerMock.createScript.should.have.been.calledWith('script1', 'JS', `/**
+            scriptManagerMock.createScript.should.have.been.calledWith('script.js', 'JS', `/**
   * New script file
   */`);
 
