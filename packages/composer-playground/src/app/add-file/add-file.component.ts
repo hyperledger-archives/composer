@@ -117,13 +117,12 @@ export class AddFileComponent {
             let existingScripts = scriptManager.getScripts();
             let increment = 0;
 
-            let scriptName = this.addScriptFileName;
+            let scriptName = this.addScriptFileName + this.addScriptFileExtension;
 
             while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
-                scriptName = this.addScriptFileName + increment;
+                scriptName = this.addScriptFileName + increment + this.addScriptFileExtension;
                 increment++;
             }
-
             this.currentFile = scriptManager.createScript(scriptName, 'JS', code);
             this.currentFileName = this.currentFile.getIdentifier();
         } else {

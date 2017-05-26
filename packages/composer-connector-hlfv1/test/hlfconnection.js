@@ -96,7 +96,7 @@ describe('HLFConnection', () => {
             const events = {
                 payload: {
                     toString: () => {
-                        return '{"event":"event"}';
+                        return '"{"event":"event"}"';
                     }
                 }
             };

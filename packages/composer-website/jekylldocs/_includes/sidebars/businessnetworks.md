@@ -7,6 +7,7 @@
 [Defining a business network](../business-network/getting-started-coding-bnd.html)
 [Deploying a business network](../business-network/deploybusinessnetwork.html)
 [Create a business network definition](../business-network/bnd-define.html)
+[Publishing events](../business-network/publishing-events.html)
 [Publish a business network definition](../business-network/bnd-publish.html)
 [Publish a business domain model](../business-network/model-publish.html)
 [Update a business network definition on Composer](../business-network/runtime-update.html)

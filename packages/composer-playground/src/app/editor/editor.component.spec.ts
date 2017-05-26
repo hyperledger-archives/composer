@@ -123,6 +123,8 @@ describe('EditorComponent', () => {
         it('should initialize the editor', fakeAsync(() => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetFile = sinon.stub(component, 'setCurrentFile');
+            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
             component.ngOnInit();
 
             tick();
@@ -132,6 +134,28 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
+            mockSetFile.should.not.have.been.called;
+            mockSetIntialFile.should.have.been.called;
+        }));
+
+        it('should re-initialize the editor', fakeAsync(() => {
+            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetFile = sinon.stub(component, 'setCurrentFile');
+            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
+            component['editorService'].setCurrentFile('file');
+
+            component.ngOnInit();
+
+            tick();
+
+            component['noError'].should.equal(true);
+            component['dirty'].should.equal(true);
+
+            mockUpdatePackage.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+            mockSetFile.should.have.been.called;
+            mockSetIntialFile.should.not.have.been.called;
         }));
 
         it('should open import modal', fakeAsync(() => {
@@ -308,6 +332,16 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.have.been.called;
             component['editingPackage'].should.equal(false);
+        });
+
+        it('should always set current file, if same file selected and is readme file', () => {
+            component['currentFile'] = {displayID: 'readme', readme: true};
+            let serviceSpy = sinon.spy(editorService, 'setCurrentFile');
+            let file = {displayID: 'readme', readme: true};
+
+            component.setCurrentFile(file);
+
+            serviceSpy.should.have.been.called;
         });
 
         it('should not set current file, if same file selected', () => {
@@ -510,7 +544,7 @@ describe('EditorComponent', () => {
 
             component.addScriptFile();
 
-            scriptManagerMock.createScript.should.have.been.calledWith('script1', 'JS', `/**
+            scriptManagerMock.createScript.should.have.been.calledWith('script.js', 'JS', `/**
   * New script file
   */`);
 
@@ -1117,6 +1151,22 @@ describe('EditorComponent', () => {
 
             let result = component['editorFilesValidate']();
             result.should.equal(false);
+        });
+
+        it('should fail validation for multiple invalid files', () => {
+            let fileArray = [];
+            fileArray.push({script: true, displayID: 'test_name'});
+            fileArray.push({acl: true, displayID: 'test_name'});
+            component['files'] = fileArray;
+
+            mockClientService.validateFile.returns('error');
+
+            let result = component['editorFilesValidate']();
+            result.should.equal(false);
+
+            component['files'][0].invalid.should.be.equal(true);
+            component['files'][1].invalid.should.be.equal(true);
+
         });
 
     });

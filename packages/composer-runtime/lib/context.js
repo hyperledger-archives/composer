@@ -248,6 +248,15 @@ class Context {
     }
 
     /**
+     * Get the http service provided by the chaincode container.
+     * @abstract
+     * @return {HTTPService} The http service provided by the chaincode container.
+     */
+    getHTTPService() {
+        throw new Error('abstract function called');
+    }
+
+    /**
      * Get the event service provided by the chaincode container.
      * @abstract
      * @return {EventService} The event service provided by the chaincode container.
@@ -350,7 +359,7 @@ class Context {
      */
     getApi() {
         if (!this.api) {
-            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getEventService(), this.getQueryService(), this);
+            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getHTTPService(), this.getEventService(), this.getQueryService(), this);
         }
         return this.api;
     }
