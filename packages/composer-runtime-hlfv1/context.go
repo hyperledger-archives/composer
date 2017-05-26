@@ -75,7 +75,7 @@ func NewContext(vm *duktape.Context, engine *Engine, stub shim.ChaincodeStubInte
 	vm.PushGoFunction(result.getHTTPService)     // [ stash theEngine global composer theContext getHTTPService ]
 	vm.PutPropString(-2, "getHTTPService")       // [ stash theEngine global composer theContext ]
 
-    vm.PushGoFunction(result.getQueryService) // [ stash theEngine global composer theContext getQueryService ]
+	vm.PushGoFunction(result.getQueryService) // [ stash theEngine global composer theContext getQueryService ]
 	vm.PutPropString(-2, "getQueryService")   // [ stash theEngine global composer theContext getQueryService]
 	// Return the new context.
 	return result
@@ -122,6 +122,9 @@ func (context *Context) getEventService(vm *duktape.Context) (result int) {
 	// Return the JavaScript object from the global stash.
 	vm.PushGlobalStash()
 	vm.GetPropString(-1, "eventService")
+	return 1
+}
+
 // getQueryService returns the query service to use.
 func (context *Context) getQueryService(vm *duktape.Context) (result int) {
 	logger.Debug("Entering Context.getQueryService", vm)
