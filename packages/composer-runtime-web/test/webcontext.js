@@ -20,6 +20,7 @@ const DataService = require('composer-runtime').DataService;
 const Engine = require('composer-runtime').Engine;
 const IdentityService = require('composer-runtime').IdentityService;
 const EventService = require('composer-runtime').EventService;
+const HTTPService = require('composer-runtime').HTTPService;
 const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
 
@@ -82,6 +83,20 @@ describe('WebContext', () => {
             let context = new WebContext(mockEngine, 'bob1');
             context.eventService = {};
             context.getEventService().should.deep.equal({});
+        });
+    });
+
+    describe('#getHTTPService', () => {
+
+        it('should return the container event service', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.getHTTPService().should.be.an.instanceOf(HTTPService);
+        });
+
+        it('should return this.httpService if it is set', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.httpService = {};
+            context.getHTTPService().should.deep.equal({});
         });
     });
 

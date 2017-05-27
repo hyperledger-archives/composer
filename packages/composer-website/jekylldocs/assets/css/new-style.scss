@@ -320,15 +320,17 @@ li {
   box-shadow: 2px 2px 10px 0 rgba(0,0,0,0.20);
   .callout-copy {
     margin: auto;
-    width: 70vh;
+    // width: 70vh;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     a {
       text-decoration: none;
       border-bottom: 1px solid $primary-text;
       color: $primary-text;
+      transition: all 0.2s ease-in-out;
       &:hover {
         border-bottom: 1px solid $primary-text;
+        padding-bottom: 3px;
       }
     }
   }
@@ -922,6 +924,13 @@ nav {
             border: 1px solid $keyline-highlight;
           }
 
+          code {
+            border-radius: 2px;
+            padding-right: 5px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+          }
+
           ul {
             list-style: none;
             padding-left: 2em;
@@ -965,3 +974,10 @@ nav {
     // bottom: 0;
     background-color: $sixth-highlight;
   }
+
+  // 404 page
+.container {
+  .404-info {
+
+  }
+}

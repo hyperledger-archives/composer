@@ -1,0 +1,23 @@
+@import '../../../assets/styles/base/_colors.scss';
+@import '../../../assets/styles/base/_variables.scss';
+
+busy {
+    .contents {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $space-medium;
+
+        span + span {
+            margin-left: $space-xsmall;
+        }
+
+        .ibm-spinner-indeterminate {
+            padding: 0;
+        }
+
+        .busy-text {
+            font-size: 14px;
+        }
+    }
+}
