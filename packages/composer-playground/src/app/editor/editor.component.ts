@@ -71,6 +71,7 @@ export class EditorComponent implements OnInit {
         return this.initializationService.initialize()
         .then(() => {
             this.clientService.businessNetworkChanged$.subscribe((noError) => {
+                this.updateFiles();
                 if (this.editorFilesValidate() && noError) {
                     this.noError = noError;
                     this.dirty = true;
@@ -91,7 +92,7 @@ export class EditorComponent implements OnInit {
             this.updateFiles();
 
             if (this.editorService.getCurrentFile() !== null) {
-                this.currentFile = this.editorService.getCurrentFile();
+                this.setCurrentFile(this.editorService.getCurrentFile());
             } else {
                 this.setInitialFile();
             }
