@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Deploying the REST server for a business network | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  <script src="/composer/unstable/assets/js/clipboard.min.js"></script>
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li>
+                <li>
+                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                </li>
+                <li>
+                    <a href="../introduction/introduction.html">Docs</a>
+                </li>
+                <li>
+                    <a href="../support/index.html">Community</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-3">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
+<strong><a href="../installing/installingindex.html">Installing</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<a href="../integrating/getting-started-rest-api.html">Exposing your business network as a REST API</a>
+<a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a>
+<a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a>
+<a href="../integrating/call-out.html">Calling external REST services</a>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
+<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-9">
+          <section class="content-chunk">
+            
+              <h1 id="deploying-the-rest-server-for-a-business-network">Deploying the REST server for a business network</h1>
+
+<hr>
+
+<p>When deploying the Hyperledger Composer REST server in a production environment, for example using Docker Swarm or Kubernetes, the REST server should be configured to be highly available. This means that you must deploy multiple instances of the REST server, and those instances should be configured to share data. For example, data such as connection profiles, Blockchain identities, and REST API authentication settings should be shared so that a REST API client can make a request to any of the instances without having to reauthenticate.</p>
+
+<h2 id="configuring-the-rest-server-with-a-persistent-data-store">Configuring the REST server with a persistent data store</h2>
+
+<p>All user information is persisted in a LoopBack data source by using a LoopBack connector. By default, the REST server uses the LoopBack &quot;memory&quot; connector to persist user information, which is lost when the REST server is terminated. The REST server should be configured with a LoopBack connector that stores data in a highly available data source, for example a database.</p>
+
+<p>You should be able to use any LoopBack connector, but we recommend that you use a LoopBack connector for a NoSQL database. For example, MongoDB or Apache CouchDB.</p>
+
+<p>The LoopBack connector needs to be installed in order for the REST server to locate and use it. You can install additional LoopBack connectors by using <code>npm</code>, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g loopback-connector-mongodb
+</code></pre></div>
+<p>Finally, you need to supply the REST server with the connection information required by the LoopBack connector. This connection information should be supplied by using the <code>COMPOSER_DATASOURCES</code> environment variable. For more information, see below.</p>
+
+<h2 id="configuring-the-rest-server-using-environment-variables">Configuring the REST server using environment variables</h2>
+
+<p>The REST server can be configured using environment variables, instead of supplying configuration options via the command line. The REST server supports the following environment variables:</p>
+
+<ol>
+<li><p><code>COMPOSER_CONFIG</code></p>
+
+<p>You can use the <code>COMPOSER_CONFIG</code> environment variable to supply connection profiles to the REST server.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONFIG='{
+  "connectionProfiles": {
+    "hlfabric": {
+      "type": "hlf",
+      "keyValStore": "/home/composer/.composer-credentials",
+      "membershipServicesURL": "grpc://membersrvc:7054",
+      "peerURL": "grpc://vp0:7051",
+      "eventHubURL": "grpc://vp0:7053",
+      "deployWaitTime": 300,
+      "invokeWaitTime": 30,
+      "networks": {
+        "org.acme.biznet": "25e9c6abfdc8a081c218e773f2e513ee504ba9acb437d05fac7e08fa5c0d309d"
+      }
+    }
+  }
+}'
+</code></pre></div></li>
+<li><p><code>COMPOSER_CONNECTION_PROFILE</code></p>
+
+<p>You can use the <code>COMPOSER_CONNECTION_PROFILE</code> environment variable to specify the name of the connection profile that the REST server should use.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfabric
+</code></pre></div></li>
+<li><p><code>COMPOSER_BUSINESS_NETWORK</code></p>
+
+<p>You can use the <code>COMPOSER_BUSINESS_NETWORK</code> environment variable to specify the name of the deployed business network that the REST server should connect to.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_BUSINESS_NETWORK=digitalproperty-network
+</code></pre></div></li>
+<li><p><code>COMPOSER_ENROLLMENT_ID</code></p>
+
+<p>You can use the <code>COMPOSER_ENROLLMENT_ID</code> environment variable to specify the enrollment ID of the Blockchain identity that the REST server should use to connect to the deployed business network.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_ENROLLMENT_ID=loopback1
+</code></pre></div></li>
+<li><p><code>COMPOSER_ENROLLMENT_SECRET</code></p>
+
+<p>You can use the <code>COMPOSER_ENROLLMENT_SECRET</code> environment variable to specify the enrollment secret of the Blockchain identity that the REST server should use to connect to the deployed business network.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_ENROLLMENT_SECRET=RVsigkBwXrDv
+</code></pre></div></li>
+<li><p><code>COMPOSER_NAMESPACES</code></p>
+
+<p>You can use the <code>COMPOSER_NAMESPACES</code> environment variable to specify if the REST server should generate a REST API with namespaces or not. Valid values are <code>always</code>, <code>required</code>, and <code>never</code>.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_NAMESPACES=never
+</code></pre></div></li>
+<li><p><code>COMPOSER_SECURITY</code></p>
+
+<p>You can use the <code>COMPOSER_SECURITY</code> environment variable to specify if the REST server should enable REST API authentication or not. Valid values are <code>true</code> and <code>false</code>.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_SECURITY=true
+</code></pre></div>
+<p>For more information, see <a href="./enabling-rest-authentication.html">Enabling REST API authentication for a business network</a>.</p></li>
+<li><p><code>COMPOSER_DATASOURCES</code></p>
+
+<p>You can use the <code>COMPOSER_DATASOURCES</code> environment variable to specify the LoopBack data sources and the connection information required by the selected LoopBack connector.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_DATASOURCES='{
+  "db": {
+    "name": "db",
+    "connector": "mongodb",
+    "host": "mongo"
+  }
+}'
+</code></pre></div></li>
+<li><p><code>COMPOSER_PROVIDERS</code></p>
+
+<p>You can use the <code>COMPOSER_PROVIDERS</code> environment variable to specify the Passport strategies that the REST server should use to authenticate clients of the REST API.</p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_PROVIDERS='{
+  "github": {
+    "provider": "github",
+    "module": "passport-github",
+    "clientID": "REPLACE_WITH_CLIENT_ID",
+    "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
+    "authPath": "/auth/github",
+    "callbackURL": "/auth/github/callback",
+    "successRedirect": "/",
+    "failureRedirect": "/"
+  }
+}'
+</code></pre></div></li>
+</ol>
+
+<h2 id="packaging-the-rest-server-with-additional-node-js-modules">Packaging the REST server with additional Node.js modules</h2>
+
+<p>In order to deploy the REST server as a Docker container with additional LoopBack connectors and Passport strategies, you must extend the <code>hyperledger/composer-rest-server</code> Docker image.</p>
+
+<p>Here is an example Dockerfile that adds the LoopBack connector for MongoDB and the Passport strategy for GitHub to the Docker image:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server
+RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
+    npm cache clean &amp;&amp; \
+    ln -s node_modules .node_modules
+</code></pre></div>
+<p>You can build this Docker image by placing the Dockerfile above into a directory and using the <code>docker build</code> command, for example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/my-composer-rest-server .
+</code></pre></div>
+<p>You may need to publish this Docker image to a Docker image repository, for example Docker Hub, in order to use it with cloud based Docker deployment services.</p>
+
+<h2 id="deploying-a-persistent-and-secured-rest-server-using-docker">Deploying a persistent and secured REST server using Docker</h2>
+
+<p>The following example will demonstrate how to deploy the REST server using Docker. The deployed REST server will persist data using MongoDB, and will be secured using GitHub authentication.</p>
+
+<p>The examples are based on the Getting Started guide for Hyperledger Fabric v1.0, and may need adjusting for your configuration, for example if the Docker network name does not match.</p>
+
+<ol>
+<li><p>Start an instance of MongoDB:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker run -d --name mongo --network hlfv1_default -p 27017:27017 mongo
+</code></pre></div></li>
+<li><p>Create a new, empty directory. Create a new file named <code>Dockerfile</code> in the new directory, with the following contents:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server
+RUN npm install --production loopback-connector-mongodb passport-github &amp;&amp; \
+    npm cache clean &amp;&amp; \
+    ln -s node_modules .node_modules
+</code></pre></div></li>
+<li><p>Change into the directory created in step 2, and build the Docker image:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/my-composer-rest-server .
+</code></pre></div></li>
+<li><p>Create a new file named <code>envvars.txt</code>, with the following contents:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfabric
+COMPOSER_BUSINESS_NETWORK=digitalproperty-network
+COMPOSER_ENROLLMENT_ID=admin
+COMPOSER_ENROLLMENT_SECRET=adminpw
+COMPOSER_NAMESPACES=never
+COMPOSER_SECURITY=true
+COMPOSER_CONFIG='{
+  "connectionProfiles": {
+    "hlfabric": {
+      "type": "hlfv1",
+      "orderers": [
+        "grpc://orderer0:7050"
+      ],
+      "ca": "http://ca0:7054",
+      "peers": [
+        {
+          "requestURL": "grpc://peer0:7051",
+          "eventURL": "grpc://peer0:7053"
+        },
+        {
+          "requestURL": "grpc://peer1:7051",
+          "eventURL": "grpc://peer1:7053"
+        }
+      ],
+      "keyValStore": "/home/composer/.hfc-key-store",
+      "channel": "mychannel",
+      "mspID": "Org1MSP",
+      "deployWaitTime": "300",
+      "invokeWaitTime": "100"
+    }
+  }
+}'
+COMPOSER_DATASOURCES='{
+  "db": {
+    "name": "db",
+    "connector": "mongodb",
+    "host": "mongo"
+  }
+}'
+COMPOSER_PROVIDERS='{
+  "github": {
+      "provider": "github",
+      "module": "passport-github",
+      "clientID": "REPLACE_WITH_CLIENT_ID",
+      "clientSecret": "REPLACE_WITH_CLIENT_SECRET",
+      "authPath": "/auth/github",
+      "callbackURL": "/auth/github/callback",
+      "successRedirect": "/",
+      "failureRedirect": "/"
+  }
+}'
+</code></pre></div></li>
+<li><p>Load the environment variables:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">source envvars.txt
+</code></pre></div></li>
+<li><p>Start the Docker container:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker run \
+    -d \
+    -e COMPOSER_CONNECTION_PROFILE=${COMPOSER_CONNECTION_PROFILE} \
+    -e COMPOSER_BUSINESS_NETWORK=${COMPOSER_BUSINESS_NETWORK} \
+    -e COMPOSER_ENROLLMENT_ID=${COMPOSER_ENROLLMENT_ID} \
+    -e COMPOSER_ENROLLMENT_SECRET=${COMPOSER_ENROLLMENT_SECRET} \
+    -e COMPOSER_NAMESPACES=${COMPOSER_NAMESPACES} \
+    -e COMPOSER_SECURITY=${COMPOSER_SECURITY} \
+    -e COMPOSER_CONFIG="${COMPOSER_CONFIG}" \
+    -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
+    -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
+    --name rest \
+    --network hlfv1_default \
+    -p 3000:3000 \
+    myorg/my-composer-rest-server
+</code></pre></div></li>
+</ol>
+
+<p>You should now be able to access the persistent and secured REST server using the following URL: <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>.</p>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+
+    
+
+    
+    <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/composer/unstable/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/composer/unstable/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+
+      new Clipboard('.btn', {
+    text: function() {
+
+        return document.querySelector("[style='display:none;']").value;
+    }
+});
+  });
+
+</script>
+
+</html>
