@@ -684,6 +684,9 @@ class HLFConnection extends Connection {
                 }
                 return this._waitForEvents(txId, this.connectOptions.invokeWaitTime);
             })
+            .then(() => {
+                LOG.exit(method);
+            })
             .catch((error) => {
                 LOG.error(method, error);
                 throw error;
