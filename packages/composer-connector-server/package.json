@@ -51,7 +51,7 @@
     "serializerr": "^1.0.3",
     "socket.io": "^1.7.3",
     "uuid": "^3.0.1",
-    "yargs": "^6.6.0"
+    "yargs": "^8.0.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
