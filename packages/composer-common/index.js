@@ -63,6 +63,7 @@ module.exports.ConnectionProfileManager = require('./lib/connectionprofilemanage
 module.exports.ConnectionProfileStore = require('./lib/connectionprofilestore');
 module.exports.ConsoleLogger = require('./lib/log/consolelogger');
 module.exports.EnvConnectionProfileStore = require('./lib/envconnectionprofilestore');
+module.exports.EventDeclaration = require('./lib/introspect/eventdeclaration');
 module.exports.Factory = require('./lib/factory');
 module.exports.FileWallet = require('./lib/filewallet');
 module.exports.FileWriter = require('./lib/codegen/filewriter');
