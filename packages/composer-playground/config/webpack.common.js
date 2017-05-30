@@ -80,13 +80,13 @@ module.exports = function (options) {
 
       // Use our versions of Node modules.
       alias: {
-        'fs': 'browserfs/dist/shims/fs.js',
-        'buffer': 'browserfs/dist/shims/buffer.js',
-        'path': 'browserfs/dist/shims/path.js',
-        'processGlobal': 'browserfs/dist/shims/process.js',
-        'bufferGlobal': 'browserfs/dist/shims/bufferGlobal.js',
-        'bfsGlobal': require.resolve('browserfs'),
-        "request$": "xhr" // used for HTTP POST
+        fs: require.resolve('browserfs/dist/shims/fs.js'),
+        buffer: require.resolve('browserfs/dist/shims/buffer.js'),
+        path: require.resolve('browserfs/dist/shims/path.js'),
+        processGlobal: require.resolve('browserfs/dist/shims/process.js'),
+        bufferGlobal: require.resolve('browserfs/dist/shims/bufferGlobal.js'),
+        bfsGlobal: require.resolve('browserfs'),
+        request$: require.resolve('xhr') // used for HTTP POST
       }
 
     },

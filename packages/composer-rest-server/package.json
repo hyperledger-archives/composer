@@ -57,7 +57,7 @@
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^1.0.1",
     "touch": "^1.0.0",
-    "yargs": "^6.6.0"
+    "yargs": "^8.0.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
