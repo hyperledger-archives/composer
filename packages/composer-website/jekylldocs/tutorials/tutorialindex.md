@@ -6,36 +6,20 @@ sidebar: sidebars/tutorials.md
 excerpt: Tutorials
 ---
 
-# Tutorial Homepage
-
----
-
-{{site.data.conrefs.composer_full}} offers tutorials and getting started guides designed to help you take your first steps with {{site.data.conrefs.composer_short}}.
-
----
-
-## Tutorials
-
-Tutorials here are designed to be run through in order, and help guide you through the core concepts of {{site.data.conrefs.composer_short}}.
-
-* [Tutorial 1 - Building your first business network](../tutorials/defining-a-business-network.html). This tutorial walks you through the basics of defining a business network of your own, the contents of a business network, and how they come together to form a business network archive.
+# Getting started with {{site.data.conrefs.composer_full}}
 
 ---
 
 ## Getting started guides
 
-These getting started guides are intended for more technical users and may require some installation before use.
+Getting started with {{site.data.conrefs.composer_full}} is simple. The following guides walkthrough the process of understanding what {{site.data.conrefs.composer_full}} is and does, and help you create your first business networks, get set up on the command line, and create applications to consume data from {{site.data.conrefs.composer_full}}.
 
-* [Quickstart](../installing/quickstart.html) installs and tests the prerequisites for the digital property network sample.
-* [Running a sample with the command line](../tutorials/getting-started-cmd-line.html).
-* [Installing and running the {{site.data.conrefs.composer_short}} Playground locally](../tutorials/getting-started-playground.html). To run the [business network tutorial](../tutorials/defining-a-business-network.html) locally, install the playground locally first.
-* [Writing your own business network using the command line](../business-network/getting-started-coding-bnd.html)
+* If you've never used {{site.data.conrefs.composer_full}} and want to get to grips with creating your first business network, see [**Getting started with Playground**](../tutorials/getting-started-with-playground.html).
+* Once you've got to grips with the basics, if you want to connect to a running blockchain, see [**Running the playground locally**](../tutorials/using-playground-locally.html).
+* Once you have playground running locally, to get to grips with the command line, see [**Getting up and running on the command line**](../tutorials/getting-started-cmd-line.html).
+* If you have a business network running and deployed, see [**Creating applications for {{site.data.conrefs.composer_short}}**](../tutorials/creating-applications.html) for ways to integrate your applications with your blockchain.
 
-<!--
-<ul>
-{% for page in site.tutorials %}
-  <li><a href="{{ page.url }}">{{ page.title }}</a><br/>{{ page.excerpt }}</div></li>
-  <li><a href="{{ page.url }}">{{ page.title }}</a></li>
-{% endfor %}
-</ul>
--->
+## What next?
+
+* Integrate existing data with [**Loopback**](../integrating/getting-started-rest-api.html).
+* [**Manage user permissions and identities**](../managing/managingindex.html).

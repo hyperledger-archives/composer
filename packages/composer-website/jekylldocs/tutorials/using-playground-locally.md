@@ -40,16 +40,12 @@ docker images -aq | xargs docker rmi -f
 
         curl -O https://hyperledger.github.io/composer/tutorials/docker-compose.yml
   (Alternatively, you can do this by right clicking this link and clicking on "Save Link As": <a href="./docker-compose.yml" download>docker-compose.yml</a>)
-
   The Docker Compose file describes a multi-container application that is made up of three Docker containers:
+    * Hyperledger Fabric _variable this_ peer, v0.6.1. This container will use ports 7050 (HTTP), 7051 (gRPC), 7052 (gRPC), 7053 (gRPC, events),
+    * Hyperledger Fabric membership services, v0.6.1. This container will use ports 7054 (gRPC).
+    * Composer Playground. This container will use ports 8080.
 
-  * Hyperledger Fabric peer, v0.6.1. This container will use ports 7050 (HTTP), 7051 (gRPC), 7052 (gRPC), 7053 (gRPC, events).
-
-  * Hyperledger Fabric membership services, v0.6.1. This container will use ports 7054 (gRPC).
-
-  * Composer Playground. This container will use ports 8080.
-
-  These containers will be created once the next step has been completed.
+    These containers will be created once the next step has been completed.
 
 2. In a terminal or command prompt, navigate to the directory that you downloaded the `docker-compose.yml` file into, and run the following commands to start a Hyperledger Fabric instance and {{site.data.conrefs.composer_full}} Playground:
 
@@ -101,9 +97,9 @@ This tutorial is now **complete**. We plan on extending this tutorial with a gui
 
 ---
 
+<a name="installationoptions"></a>
 
-
-## <a name="installationoptions"></a>Alternative installation options
+## Alternative installation options
 
 If you have an existing Hyperledger Fabric instance you want to use with {{site.data.conrefs.composer_full}} Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.
 
@@ -113,7 +109,7 @@ You can choose to install using npm (the Node.js package manager), or you can ch
 *   <a href="#installnpm">Install using npm</a> if you wish to run to {{site.data.conrefs.composer_full}} Playground on your local workstation.
 *   <a href="#installdocker">Install using Docker</a> if you wish to run {{site.data.conrefs.composer_full}} Playground on a server or cloud platform.
 
-**why what does each do differently?**
+**why, what does each do differently?**
 
 Note that the same set of features is available regardless of the installation method that you choose.
 
