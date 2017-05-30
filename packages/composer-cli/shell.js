@@ -37,7 +37,7 @@ function getYargsInstance(){
     .commandDir('./lib/shellcmds')
     .help('help','desc')
     .example('composer archive create --inputDir .\ncomposer identity issue\ncomposer network deploy\ncomposer participant add\ncomposer transaction submit')
-    .demand(1)
+    // .demand(1)
     .wrap(null)
     .strict()
     .epilogue('For more information on Hyperledger Composer: https://hyperledger.github.io/composer/')
@@ -52,18 +52,27 @@ function getYargsInstance(){
     .command('exit', 'exit', function(argv){
         rl.close();
     })
-    .command('enroll',
-    'cache locally the enrollID and enrollSecret',{
-        enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
-        enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }},
+    .command( 'enroll',
+        'cache locally the enrollID and enrollSecret',
+        { enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
+            enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }},
     function (argv) {
-
         enrollId = argv.enrollId;
         enrollSecret = argv.enrollSecret;
         console.log(chalk.green('Cached the enrollId and secret for this session ONLY.'));
         rl.setPrompt(chalk.yellow('composer'+' '+enrollId+' > '));
     }
   )
+    // .command({
+    //     command: 'configure',
+    //     aliases: ['config', 'cfg'],
+    //     desc: 'Set a config variable',
+    //     builder: {enrollId: { alias: 'i', required: true, describe: 'The enrollment ID of the user', type: 'string' },
+    //         enrollSecret: { alias: 's', required: false, describe: 'The enrollment secret of the user', type: 'string' }},
+    //     handler: (argv) => {
+    //         console.log(`setting ${argv.key} to ${argv.value}`);
+    //     }
+    // })
     .exitProcess(false)
     ;
 }
@@ -99,21 +108,19 @@ function runShell(resolve,reject) {
         } else {
             try {
                 // get the yargs instance and add on the enrollment info if not already
-                // TODO: This should be available in a better manner and then consumed by the YARGs structures
-                // appending to the end of the line is not sustainable
                 let y = getYargsInstance();
-                if (typeof(enrollId) !== 'undefined' ){
-
-                    // line = line + ' --enrollId '+ enrollId +' --enrollSecret '+enrollSecret;
-
-                }
 
                 // remove any duplicate or more spaces... YARGS can't handle this using the parse method
                 line = line.replace(/\s\s+/g, ' ');
                 console.log(chalk.blue.italic('submitted :'+line+':'));
 
-                let results = y.parse(line,{enrollId : enrollId , enrollSecret : enrollSecret },function (err, argv, output) {
+                let ctx = {};
+                if (!(enrollId === null || enrollId === undefined)){
+                    ctx.enrollId = enrollId;
+                    ctx.enrollSecret = enrollSecret;
+                }
 
+                let results = y.parse(line,ctx,function (err, argv, output) {
                     if (output){
                         console.log(output);
                     }

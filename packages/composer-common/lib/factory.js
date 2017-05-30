@@ -310,21 +310,24 @@ class Factory {
      * set to a UUID.
      * @param {string} ns - the namespace of the event.
      * @param {string} type - the type of the event.
+     * @param {string} [id] - an optional identifier for the event; if you do not specify
+     * one then an identifier will be automatically generated.
      * @param {Object} [options] - an optional set of options
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} A resource for the new event.
      */
-    newEvent(ns, type, options) {
+    newEvent(ns, type, id, options) {
         if (!ns) {
             throw new Error('ns not specified');
         } else if (!type) {
             throw new Error('type not specified');
         }
-        const id = 'valid';
+        id = id || 'valid';
         let event = this.newResource(ns, type, id, options);
         const classDeclaration = event.getClassDeclaration();
+
         if (!(classDeclaration instanceof EventDeclaration)) {
             throw new Error(event.getClassDeclaration().getFullyQualifiedName() + ' is not an event');
         }

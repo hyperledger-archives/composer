@@ -594,32 +594,6 @@ describe('AppComponent', () => {
         }));
     });
 
-    describe('reset', () => {
-        let mockOnBusy;
-        let mockOnError;
-
-        beforeEach(() => {
-            mockOnBusy = sinon.stub(component, 'onBusyStatus');
-            mockOnError = sinon.stub(component, 'onErrorStatus');
-        });
-
-        // Can't test this properly as can't mock window.location.reload;
-        it('should reset the business network', fakeAsync(() => {
-            mockModal.open.returns({result: Promise.resolve(false)});
-
-            activatedRoute.testParams = {};
-
-            updateComponent();
-
-            component.reset();
-
-            tick();
-
-            mockModal.open.should.have.been.called;
-
-        }));
-    });
-
     describe('updateConnectionData', () => {
         let mockOnBusy;
         let mockOnError;
