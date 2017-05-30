@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -15,6 +15,7 @@ import { EditorService } from '../services/editor.service';
 
 import { ModelFile, ScriptManager, ModelManager } from 'composer-common';
 
+import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
 
 @Component({
@@ -25,7 +26,7 @@ import { saveAs } from 'file-saver';
     ]
 })
 
-export class EditorComponent implements OnInit {
+export class EditorComponent implements OnInit, OnDestroy {
 
     private files: any = [];
     private currentFile: any = null;
@@ -49,6 +50,8 @@ export class EditorComponent implements OnInit {
     private inputPackageName; // This is the input 'Name' before the BND is updated
     private inputPackageVersion; // This is the input 'Version' before the BND is updated
 
+    private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
+
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
@@ -70,8 +73,9 @@ export class EditorComponent implements OnInit {
 
         return this.initializationService.initialize()
         .then(() => {
-            this.clientService.businessNetworkChanged$.subscribe((noError) => {
-                this.updateFiles();
+
+            this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
+            .subscribe((noError) => {
                 if (this.editorFilesValidate() && noError) {
                     this.noError = noError;
                     this.dirty = true;
@@ -80,7 +84,8 @@ export class EditorComponent implements OnInit {
                 }
             });
 
-            this.clientService.fileNameChanged$.subscribe((newName) => {
+            this.clientService.fileNameChanged$.takeWhile(() => this.alive)
+            .subscribe((newName) => {
                 if (this.currentFile !== null) {
                     this.updateFiles();
                     let index = this.files.findIndex((file) => file.id === newName);
@@ -97,6 +102,10 @@ export class EditorComponent implements OnInit {
                 this.setInitialFile();
             }
         });
+    }
+
+    ngOnDestroy() {
+       this.alive = false;
     }
 
     updatePackageInfo() {
