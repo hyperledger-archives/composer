@@ -14,11 +14,10 @@
 
 'use strict';
 
-const EventDeclaration = require('./introspect/eventdeclaration');
+const Resource = require('./model/resource');
 const Globalize = require('./globalize');
 const JSONGenerator = require('./serializer/jsongenerator');
 const JSONPopulator = require('./serializer/jsonpopulator');
-const Resource = require('./model/resource');
 const ResourceValidator = require('./serializer/resourcevalidator');
 const TransactionDeclaration = require('./introspect/transactiondeclaration');
 const TypedStack = require('./serializer/typedstack');
@@ -139,10 +138,6 @@ class Serializer {
             resource = this.factory.newTransaction( classDeclaration.getModelFile().getNamespace(),
                                                     classDeclaration.getName(),
                                                     jsonObject[classDeclaration.getIdentifierFieldName()] );
-        } else if (classDeclaration instanceof EventDeclaration) {
-            resource = this.factory.newEvent( classDeclaration.getModelFile().getNamespace(),
-                                              classDeclaration.getName(),
-                                              jsonObject[classDeclaration.getIdentifierFieldName()] );
         } else {
             resource = this.factory.newResource( classDeclaration.getModelFile().getNamespace(),
                                                  classDeclaration.getName(),

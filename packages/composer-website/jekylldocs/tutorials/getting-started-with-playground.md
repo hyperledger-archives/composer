@@ -50,7 +50,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
           "lastName": "Smith"
         }
 
-3. Create two more *Members* in the same way as the previous step, with different balance, email, and name credentials. Then, click the **Auctioneer** participant type on the left, and then create an Auctioneer participant by click **Create New Participant**.
+3. Create two more *Members* in the same way as step 5, with different balance, email, and name credentials. Then, click the **Auctioneer** participant type on the left, and then create an Auctioneer participant by click **Create New Participant**.
 
 4. Now that there are three *Members*; two to bid against each other and another to be the initial owner of the *Vehicle* asset. We also have an *Auctioneer* to close the bidding. Next we need an assets, in this case a *Vehicle* asset, for them to bid over, and a *Vehicle Listing* asset to control the reserve price and record the current highest offer.
 

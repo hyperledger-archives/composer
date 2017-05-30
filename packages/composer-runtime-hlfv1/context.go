@@ -25,7 +25,6 @@ type Context struct {
 	DataService     *DataService
 	IdentityService *IdentityService
 	EventService    *EventService
-	HTTPService     *HTTPService
 }
 
 // NewContext creates a Go wrapper around a new instance of the Context JavaScript class.
@@ -43,7 +42,6 @@ func NewContext(vm *duktape.Context, engine *Engine, stub shim.ChaincodeStubInte
 	result.DataService = NewDataService(vm, result, stub)
 	result.IdentityService = NewIdentityService(vm, result, stub)
 	result.EventService = NewEventService(vm, result, stub)
-	result.HTTPService = NewHTTPService(vm, result, stub)
 
 	// Find the JavaScript engine object.
 	vm.PushGlobalStash()           // [ stash ]
@@ -70,8 +68,6 @@ func NewContext(vm *duktape.Context, engine *Engine, stub shim.ChaincodeStubInte
 	vm.PutPropString(-2, "getIdentityService")   // [ stash theEngine global composer theContext ]
 	vm.PushGoFunction(result.getEventService)    // [ stash theEngine global composer theContext getEventService ]
 	vm.PutPropString(-2, "getEventService")      // [ stash theEngine global composer theContext ]
-	vm.PushGoFunction(result.getHTTPService)     // [ stash theEngine global composer theContext getHTTPService ]
-	vm.PutPropString(-2, "getHTTPService")       // [ stash theEngine global composer theContext ]
 
 	// Return the new context.
 	return result
@@ -96,17 +92,6 @@ func (context *Context) getIdentityService(vm *duktape.Context) (result int) {
 	// Return the JavaScript object from the global stash.
 	vm.PushGlobalStash()
 	vm.GetPropString(-1, "identityService")
-	return 1
-}
-
-// getHTTPService returns the http service to use.
-func (context *Context) getHTTPService(vm *duktape.Context) (result int) {
-	logger.Debug("Entering Context.getHTTPService", vm)
-	defer func() { logger.Debug("Exiting Context.getHTTPService", result) }()
-
-	// Return the JavaScript object from the global stash.
-	vm.PushGlobalStash()
-	vm.GetPropString(-1, "httpService")
 	return 1
 }
 

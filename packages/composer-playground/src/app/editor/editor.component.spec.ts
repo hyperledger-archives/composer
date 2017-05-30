@@ -22,7 +22,6 @@ import { ModelFile, Script } from 'composer-common';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 
-import 'rxjs/add/operator/takeWhile';
 import * as fileSaver from 'file-saver';
 
 let should = chai.should();
@@ -104,19 +103,15 @@ describe('EditorComponent', () => {
             mockBusinessNetworkService.OPEN_SAMPLE = false;
             mockInitializationService.initialize.returns(Promise.resolve());
             mockClientService.businessNetworkChanged$ = {
-                takeWhile: sinon.stub().returns({
-                    subscribe: (callback) => {
-                        let noError = true;
-                        callback(noError);
-                    }
-                })
+                subscribe: (callback) => {
+                    let noError = true;
+                    callback(noError);
+                }
             };
             mockClientService.fileNameChanged$ = {
-                takeWhile: sinon.stub().returns({
-                    subscribe: (callback) => {
-                        callback('new-name');
-                    }
-                })
+                subscribe: (callback) => {
+                    callback('new-name');
+                }
             };
             mockEditorFilesValidate = sinon.stub(component, 'editorFilesValidate').returns(true);
         });
@@ -128,9 +123,6 @@ describe('EditorComponent', () => {
         it('should initialize the editor', fakeAsync(() => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
-            let mockSetFile = sinon.stub(component, 'setCurrentFile');
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
-
             component.ngOnInit();
 
             tick();
@@ -140,28 +132,6 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.have.been.called;
             mockUpdateFiles.should.have.been.called;
-            mockSetFile.should.not.have.been.called;
-            mockSetIntialFile.should.have.been.called;
-        }));
-
-        it('should re-initialize the editor', fakeAsync(() => {
-            let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
-            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
-            let mockSetFile = sinon.stub(component, 'setCurrentFile');
-            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
-            component['editorService'].setCurrentFile('file');
-
-            component.ngOnInit();
-
-            tick();
-
-            component['noError'].should.equal(true);
-            component['dirty'].should.equal(true);
-
-            mockUpdatePackage.should.have.been.called;
-            mockUpdateFiles.should.have.been.called;
-            mockSetFile.should.have.been.called;
-            mockSetIntialFile.should.not.have.been.called;
         }));
 
         it('should open import modal', fakeAsync(() => {
@@ -181,12 +151,10 @@ describe('EditorComponent', () => {
 
         it('should set noError to false when notified', fakeAsync(() => {
             mockClientService.businessNetworkChanged$ = {
-                takeWhile: sinon.stub().returns({
-                    subscribe: (callback) => {
-                        let noError = false;
-                        callback(noError);
-                    }
-                })
+                subscribe: (callback) => {
+                    let noError = false;
+                    callback(noError);
+                }
             };
 
             mockEditorFilesValidate.returns(false);
@@ -204,12 +172,10 @@ describe('EditorComponent', () => {
 
         it('should set noError and dirty to be true when notified', fakeAsync(() => {
             mockClientService.businessNetworkChanged$ = {
-                takeWhile: sinon.stub().returns({
-                    subscribe: (callback) => {
-                        let noError = true;
-                        callback(noError);
-                    }
-                })
+                subscribe: (callback) => {
+                    let noError = true;
+                    callback(noError);
+                }
             };
 
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
@@ -302,17 +268,6 @@ describe('EditorComponent', () => {
         }));
     });
 
-    describe('ngOnDestroy', () => {
-
-        it('should set this.alive to be false', () => {
-
-            component['alive'] = true;
-            component.ngOnDestroy();
-            component['alive'].should.equal(false);
-
-        });
-    });
-
     describe('updatePackageInfo', () => {
         it('should set the package info', () => {
             let mockMetaData = {
@@ -353,16 +308,6 @@ describe('EditorComponent', () => {
 
             mockUpdatePackage.should.have.been.called;
             component['editingPackage'].should.equal(false);
-        });
-
-        it('should always set current file, if same file selected and is readme file', () => {
-            component['currentFile'] = {displayID: 'readme', readme: true};
-            let serviceSpy = sinon.spy(editorService, 'setCurrentFile');
-            let file = {displayID: 'readme', readme: true};
-
-            component.setCurrentFile(file);
-
-            serviceSpy.should.have.been.called;
         });
 
         it('should not set current file, if same file selected', () => {
@@ -532,65 +477,31 @@ describe('EditorComponent', () => {
     });
 
     describe('addScriptFile', () => {
-        it('should create and add a script file', () => {
-            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
-            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
-
-            mockScriptFile.getIdentifier.returns('script');
-            mockScriptFile.id = 'script';
-            component['files'] = [mockScriptFile];
-
-            let scriptManagerMock = {
-                createScript: sinon.stub().returns(mockScriptFile),
-                addScript: sinon.stub(),
-                getScripts: sinon.stub().returns([]),
-            };
-
-            mockClientService.getBusinessNetwork.returns({
-                getScriptManager: sinon.stub().returns(scriptManagerMock)
-            });
-
-            component.addScriptFile();
-
-            scriptManagerMock.createScript.should.have.been.calledWith('lib/script.js', 'JS', `/**
-  * New script file
-  */`);
-
-            scriptManagerMock.addScript.should.have.been.called;
-            mockUpdateFiles.should.have.been.called;
-
-            mockSetCurrentFile.should.have.been.calledWith({id: 'script'});
-            component['dirty'].should.equal(true);
-        });
-
-        it('should create and add a script file with an incremented name', () => {
+        it('should add a script file', () => {
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
             let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
 
             let mockScript0 = sinon.createStubInstance(Script);
-            mockScript0.getIdentifier.returns('lib/script.js');
+            mockScript0.getIdentifier.returns('script');
             mockScript0.id = 'script';
 
             let mockScript1 = sinon.createStubInstance(Script);
-            mockScript1.getIdentifier.returns('lib/script0.js');
+            mockScript1.getIdentifier.returns('script0');
             mockScript1.id = 'script0';
 
             let mockScript2 = sinon.createStubInstance(Script);
-            mockScript2.getIdentifier.returns('lib/script1.js');
-            mockScript2.id = 'script1';
+            mockScript2.getIdentifier.returns('script2');
+            mockScript2.id = 'script2';
 
-            let mockScript3 = sinon.createStubInstance(Script);
-            mockScript3.getIdentifier.returns('lib/script3.js');
-            mockScript3.id = 'script3';
-
-            component['files'] = [mockScript0, mockScript1, mockScript2, mockScript3];
+            component['addScriptFileName'] = 'script';
+            component['files'] = [mockScript0, mockScript1, mockScript2];
 
             mockScriptFile.getIdentifier.returns('script');
 
             let scriptManagerMock = {
                 createScript: sinon.stub().returns(mockScriptFile),
                 addScript: sinon.stub(),
-                getScripts: sinon.stub().returns([mockScript0, mockScript1, mockScript2, mockScript3]),
+                getScripts: sinon.stub().returns([mockScript0, mockScript1, mockScript2]),
             };
 
             mockClientService.getBusinessNetwork.returns({
@@ -599,7 +510,7 @@ describe('EditorComponent', () => {
 
             component.addScriptFile();
 
-            scriptManagerMock.createScript.should.have.been.calledWith('lib/script2.js', 'JS', `/**
+            scriptManagerMock.createScript.should.have.been.calledWith('script1', 'JS', `/**
   * New script file
   */`);
 
@@ -1206,22 +1117,6 @@ describe('EditorComponent', () => {
 
             let result = component['editorFilesValidate']();
             result.should.equal(false);
-        });
-
-        it('should fail validation for multiple invalid files', () => {
-            let fileArray = [];
-            fileArray.push({script: true, displayID: 'test_name'});
-            fileArray.push({acl: true, displayID: 'test_name'});
-            component['files'] = fileArray;
-
-            mockClientService.validateFile.returns('error');
-
-            let result = component['editorFilesValidate']();
-            result.should.equal(false);
-
-            component['files'][0].invalid.should.be.equal(true);
-            component['files'][1].invalid.should.be.equal(true);
-
         });
 
     });

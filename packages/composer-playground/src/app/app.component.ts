@@ -10,8 +10,9 @@ import { ConnectionProfileService } from './services/connectionprofile.service';
 import { WalletService } from './services/wallet.service';
 import { IdentityService } from './services/identity.service';
 import { InitializationService } from './services/initialization.service';
-import { BusyComponent } from './basic-modals/busy';
-import { ErrorComponent } from './basic-modals/error';
+import { BusyComponent } from './busy';
+import { ErrorComponent } from './error';
+import { ResetComponent } from './reset';
 import { WelcomeComponent } from './welcome';
 import { VersionCheckComponent } from './version-check/version-check.component.ts';
 import { LocalStorageService } from 'angular-2-local-storage';
@@ -164,6 +165,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.usingLocally = false;
             } else {
                 this.usingLocally = true;
+            }
+        });
+    }
+
+    reset(): Promise<any> {
+        return this.modalService.open(ResetComponent).result.then((result) => {
+            if (result) {
+                window.location.reload();
             }
         });
     }

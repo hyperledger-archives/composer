@@ -8,11 +8,11 @@ import { ConnectionProfileComponent } from './connection-profile/connection-prof
 import { IdentityComponent } from './identity';
 
 export const ROUTES: Routes = [
-  {path: 'editor', component: EditorComponent},
-  {path: 'test', component: TestComponent},
-  {path: 'identity', component: IdentityComponent},
-  {path: 'profile', component: ConnectionProfileComponent},
-  {path: 'github', component: GithubComponent},
-  {path: '', redirectTo: 'editor', pathMatch: 'full'},
-  {path: '**', component: NoContentComponent}
+    {path: 'editor', component: EditorComponent},
+    {path: 'test', component: TestComponent},
+    {path: 'identity', component: IdentityComponent},
+    {path: 'profile', component: ConnectionProfileComponent},
+    {path: 'github', component: GithubComponent},
+    {path: '', redirectTo: 'editor', pathMatch: 'full'},
+    {path: '**', component: NoContentComponent}
 ];

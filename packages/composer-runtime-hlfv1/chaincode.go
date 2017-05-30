@@ -18,7 +18,6 @@ import "github.com/hyperledger/fabric/core/chaincode/shim"
 import pb "github.com/hyperledger/fabric/protos/peer"
 import "os"
 import "strings"
-
 // enable logging based on either world state or env variable.
 // default to INFO if neither have a value.
 func EnableLogging(stub shim.ChaincodeStubInterface) {
@@ -87,10 +86,10 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 	// from arguments
 	var loglevel string
 	for i, value := range arguments {
-		if value == "-d" && (i+1) < len(arguments) {
-			loglevel = arguments[i+1]
-			arguments = append(arguments[:i], arguments[i+2:]...)
-		}
+        if value == "-d" && (i + 1) < len(arguments) {
+            loglevel = arguments[i+1]
+            arguments = append(arguments[:i], arguments[i+2:]...)
+        }
 	}
 	SetLogging(stub, loglevel)
 	payload, err := composer.Init(stub, function, arguments)
@@ -117,7 +116,7 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response p
 
 	// Execute the invoke function.
 	function, arguments := stub.GetFunctionAndParameters()
-	if strings.ToLower(function) == "logging" {
+		if strings.ToLower(function) == "logging" {
 		SetLogging(stub, arguments[0])
 		return shim.Success(nil)
 	} else {

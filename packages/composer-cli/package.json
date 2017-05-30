@@ -1,6 +1,6 @@
 {
   "name": "composer-cli",
-  "version": "0.7.4",
+  "version": "0.7.3",
   "description": "Hyperledger Composer command line interfaces (CLIs)",
   "engines": {
     "node": ">=6",
@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "postlint": "npm run licchk",
     "licchk": "license-check",
-    "test": "nyc mocha --recursive -t 5000"
+    "test": "nyc mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -41,10 +41,10 @@
   },
   "dependencies": {
     "chalk": "^1.1.3",
-    "composer-admin": "^0.7.4",
-    "composer-client": "^0.7.4",
-    "composer-common": "^0.7.4",
-    "composer-rest-server": "^0.7.4",
+    "composer-admin": "^0.7.3",
+    "composer-client": "^0.7.3",
+    "composer-common": "^0.7.3",
+    "composer-rest-server": "^0.7.3",
     "homedir": "^0.6.0",
     "npm-paths": "^0.1.3",
     "nunjucks": "^3.0.0",
@@ -53,7 +53,7 @@
     "prompt": "^1.0.0",
     "sanitize-filename": "^1.6.1",
     "shelljs": "^0.7.7",
-    "yargs": "^8.0.1"
+    "yargs": "^6.6.0"
   },
   "license-check-config": {
     "src": [

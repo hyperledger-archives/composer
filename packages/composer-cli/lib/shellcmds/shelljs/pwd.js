@@ -28,4 +28,12 @@ module.exports.handler = (argv) => {
     let shell = require('shelljs');
     console.log(shell.pwd().toString());
 
+    // argv.thePromise = Create.handler(argv)
+    // .then(() => {
+    //     console.log ('Command completed successfully.');
+    // })
+    // .catch((error) => {
+    //     console.log(error.stack);
+    //     console.log(error+ '\nCommand failed.');
+    // });
 };

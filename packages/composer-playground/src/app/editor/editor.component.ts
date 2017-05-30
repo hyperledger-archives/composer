@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from '../add-file/add-file.component';
-import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
+import { DeleteComponent } from '../delete-confirm/delete-confirm.component';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -15,7 +15,6 @@ import { EditorService } from '../services/editor.service';
 
 import { ModelFile, ScriptManager, ModelManager } from 'composer-common';
 
-import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
 
 @Component({
@@ -26,15 +25,14 @@ import { saveAs } from 'file-saver';
     ]
 })
 
-export class EditorComponent implements OnInit, OnDestroy {
+export class EditorComponent implements OnInit {
 
     private files: any = [];
     private currentFile: any = null;
     private deletableFile: boolean = false;
 
     private addModelNamespace: string = 'org.acme.model';
-    private addScriptFileName: string = 'lib/script';
-    private addScriptFileExtension: string = '.js';
+    private addScriptFileName: string = 'lib/script.js';
 
     private noError: boolean = true;
     private dirty: boolean = false;
@@ -49,8 +47,6 @@ export class EditorComponent implements OnInit, OnDestroy {
 
     private inputPackageName; // This is the input 'Name' before the BND is updated
     private inputPackageVersion; // This is the input 'Version' before the BND is updated
-
-    private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
 
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
@@ -73,9 +69,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
         return this.initializationService.initialize()
         .then(() => {
-
-            this.clientService.businessNetworkChanged$.takeWhile(() => this.alive)
-            .subscribe((noError) => {
+            this.clientService.businessNetworkChanged$.subscribe((noError) => {
                 if (this.editorFilesValidate() && noError) {
                     this.noError = noError;
                     this.dirty = true;
@@ -84,8 +78,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 }
             });
 
-            this.clientService.fileNameChanged$.takeWhile(() => this.alive)
-            .subscribe((newName) => {
+            this.clientService.fileNameChanged$.subscribe((newName) => {
                 if (this.currentFile !== null) {
                     this.updateFiles();
                     let index = this.files.findIndex((file) => file.id === newName);
@@ -97,15 +90,11 @@ export class EditorComponent implements OnInit, OnDestroy {
             this.updateFiles();
 
             if (this.editorService.getCurrentFile() !== null) {
-                this.setCurrentFile(this.editorService.getCurrentFile());
+                this.currentFile = this.editorService.getCurrentFile();
             } else {
                 this.setInitialFile();
             }
         });
-    }
-
-    ngOnDestroy() {
-       this.alive = false;
     }
 
     updatePackageInfo() {
@@ -129,7 +118,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     setCurrentFile(file) {
-        if (this.currentFile === null || this.currentFile.displayID !== file.displayID || file.readme) {
+        if (this.currentFile === null || this.currentFile.displayID !== file.displayID) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
@@ -246,9 +235,9 @@ export class EditorComponent implements OnInit, OnDestroy {
 
         if (!scriptFile) {
             let increment = 0;
-            let scriptName = this.addScriptFileName + this.addScriptFileExtension;
+            let scriptName = this.addScriptFileName;
             while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
-                scriptName = this.addScriptFileName + increment + this.addScriptFileExtension;
+                scriptName = this.addScriptFileName + increment;
                 increment++;
             }
 
@@ -455,7 +444,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         let allValid: boolean = true;
 
         for (let file of this.files) {
-            if (file.model) {
+            if (file.model && allValid) {
                 let modelFile = this.clientService.getModelFile(file.id);
                 if (this.clientService.validateFile(file.id, modelFile.getDefinitions(), 'model') !== null) {
                     allValid = false;
@@ -463,7 +452,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     file.invalid = false;
                 }
-            } else if (file.acl) {
+            } else if (file.acl && allValid) {
                 let aclFile = this.clientService.getAclFile();
                 if (this.clientService.validateFile(file.id, aclFile.getDefinitions(), 'acl') !== null) {
                     allValid = false;
@@ -471,7 +460,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 } else {
                     file.invalid = false;
                 }
-            } else if (file.script) {
+            } else if (file.script && allValid) {
                 let script = this.clientService.getScriptFile(file.id);
                 if (this.clientService.validateFile(file.id, script.getContents(), 'script') !== null) {
                     allValid = false;

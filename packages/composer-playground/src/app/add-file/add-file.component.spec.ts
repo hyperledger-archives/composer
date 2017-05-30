@@ -256,38 +256,33 @@ describe('AddFileComponent', () => {
     });
 
     describe('#changeCurrentFileType', () => {
-        it('should set current file to a script file, created by calling createScript with correct parameters', async(() => {
+        it('should change this.currentFileType to a js file', async(() => {
             let mockScript = sinon.createStubInstance(Script);
-            mockScript.getIdentifier.returns('lib/script.js');
+            mockScript.getIdentifier.returns('script.js');
             mockScriptManager.getScripts.returns([]);
             mockScriptManager.createScript.returns(mockScript);
 
             component.fileType = 'js';
+            component.addScriptFileExtension = '.js';
             component.businessNetwork = mockBusinessNetwork;
 
             component.changeCurrentFileType();
-
-            let arg = mockScriptManager.createScript.getCall(0).args[0];
-            arg.should.equal('lib/script.js');
+            component.currentFileName.should.equal('script.js');
+            component.currentFile.should.deep.equal(mockScript);
         }));
 
-        it('should increment a script file name if one already exists', async(() => {
+        it('should append the file number to the js file name', async(() => {
             let mockScript = sinon.createStubInstance(Script);
-            let mockScript0 = sinon.createStubInstance(Script);
-            let mockScript1 = sinon.createStubInstance(Script);
-            mockScript.getIdentifier.returns('lib/script.js');
-            mockScript0.getIdentifier.returns('lib/script0.js');
-            mockScript1.getIdentifier.returns('lib/script1.js');
-            mockScriptManager.getScripts.returns([mockScript, mockScript0, mockScript1]);
+            mockScript.getIdentifier.returns('lib/script1.js');
+            mockScriptManager.getScripts.returns([mockScript]);
             mockScriptManager.createScript.returns(mockScript);
 
             component.fileType = 'js';
+            component.addScriptFileExtension = '.js';
             component.businessNetwork = mockBusinessNetwork;
 
             component.changeCurrentFileType();
-
-            let arg = mockScriptManager.createScript.getCall(0).args[0];
-            arg.should.equal('lib/script2.js');
+            component.currentFileName.should.equal('lib/script1.js');
         }));
 
         it('should change this.currentFileType to a cto file', async(() => {

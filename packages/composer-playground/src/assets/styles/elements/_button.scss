@@ -142,10 +142,6 @@
                 svg.ibm-icon {
                     fill: $first-highlight;
                 }
-
-                svg.standard-icon {
-                    fill: $first-highlight;
-                }
             }
 
             &:focus,
@@ -218,10 +214,6 @@
                 text-decoration: none;
                 color: $first-highlight;
             }
-        }
-
-        & svg.standard-icon {
-            margin-right: 10px;
         }
     }
 }

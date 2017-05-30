@@ -28,9 +28,10 @@ import { IssueIdentityComponent } from './issue-identity';
 import { IdentityIssuedComponent } from './identity-issued';
 import { SwitchIdentityComponent } from './switch-identity';
 import { AboutComponent } from './about';
-import { BusyComponent } from './basic-modals/busy';
-import { ErrorComponent } from './basic-modals/error';
-import { SuccessComponent } from './basic-modals/success';
+import { BusyComponent } from './busy';
+import { ErrorComponent } from './error';
+import { SuccessComponent } from './success';
+import { ResetComponent } from './reset';
 import { FileImporterComponent } from './file-importer';
 import { ImportComponent } from './import';
 import { ResourceComponent } from './resource';
@@ -38,9 +39,8 @@ import { AddFileComponent } from './add-file';
 import { TransactionComponent } from './transaction';
 import { IdentityComponent } from './identity';
 import { WelcomeComponent } from './welcome';
-import { ConfirmComponent } from './basic-modals/confirm';
-import { DeleteComponent } from './basic-modals/delete-confirm';
-import { ReplaceComponent } from './basic-modals/replace-confirm';
+import { ConfirmComponent } from './confirm';
+import { DeleteComponent } from './delete-confirm';
 import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { CodemirrorModule } from 'ng2-codemirror';
@@ -98,7 +98,6 @@ type StoreType = {
         SuccessComponent,
         ConfirmComponent,
         DeleteComponent,
-        ReplaceComponent,
         ResourceComponent,
         TransactionComponent,
         AddFileComponent,
@@ -111,6 +110,7 @@ type StoreType = {
         IdentityIssuedComponent,
         WelcomeComponent,
         VersionCheckComponent,
+        ResetComponent,
         BusyComponent,
         SwitchIdentityComponent
     ],
@@ -130,7 +130,7 @@ type StoreType = {
         SuccessComponent,
         ConfirmComponent,
         DeleteComponent,
-        ReplaceComponent,
+        ResetComponent,
         ImportComponent,
         GithubComponent,
         NoContentComponent,

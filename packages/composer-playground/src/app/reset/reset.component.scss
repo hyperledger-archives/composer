@@ -1,0 +1,14 @@
+@import '../../assets/styles/base/_colors.scss';
+@import '../../assets/styles/base/_variables.scss';
+
+reset-modal {
+  .reset {
+    footer {
+      .circle-path {
+        stroke: $white;
+      }
+
+      width: 100%;
+    }
+  }
+}

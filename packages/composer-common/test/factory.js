@@ -246,15 +246,9 @@ describe('Factory', () => {
             resource.timestamp.should.be.an.instanceOf(Date);
         });
 
-        it('should create a new instance with a specified ID', () => {
-            let resource = factory.newEvent('org.acme.test', 'MyEvent', 'MY_ID_1');
-            resource.eventId.should.equal('MY_ID_1');
-            resource.timestamp.should.be.an.instanceOf(Date);
-        });
-
         it('should pass options onto newEvent', () => {
             let spy = sandbox.spy(factory, 'newResource');
-            factory.newEvent('org.acme.test', 'MyEvent', null, { hello: 'world' });
+            factory.newEvent('org.acme.test', 'MyEvent', { hello: 'world' });
             sinon.assert.calledOnce(spy);
             sinon.assert.calledWith(spy, 'org.acme.test', 'MyEvent', 'valid', { hello: 'world' });
         });

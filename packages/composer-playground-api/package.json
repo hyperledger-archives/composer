@@ -1,6 +1,6 @@
 {
   "name": "composer-playground-api",
-  "version": "0.7.4",
+  "version": "0.7.3",
   "description": "The REST API for the Hyperledger Composer Playground",
   "engines": {
     "node": ">=6",
@@ -18,7 +18,7 @@
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "start": "node cli.js",
-    "test": "nyc mocha --recursive -t 5000"
+    "test": "nyc mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -57,12 +57,12 @@
   },
   "dependencies": {
     "body-parser": "^1.17.0",
-    "composer-common": "^0.7.4",
-    "composer-connector-server": "^0.7.4",
+    "composer-common": "^0.7.3",
+    "composer-connector-server": "^0.7.3",
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "http-status": "^1.0.1",
-    "request": "^2.81.0",
+    "request": "^2.79.0",
     "socket.io": "^1.7.3"
   },
   "nyc": {

@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime",
-  "version": "0.7.4",
+  "version": "0.7.3",
   "description": "The runtime execution environment for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -18,7 +18,7 @@
     "lint": "eslint .",
     "postlint": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/composer-runtime.js",
-    "test": "nyc mocha --recursive -t 5000"
+    "test": "nyc mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -63,10 +63,10 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.7.4",
+    "composer-common": "^0.7.3",
     "debug": "^2.6.2",
     "fast-json-patch": "^1.1.8",
-    "jsonata": "^1.2.2",
+    "jsonata": "^1.1.1",
     "lru-cache": "^4.0.2",
     "sha.js": "^2.4.8"
   },

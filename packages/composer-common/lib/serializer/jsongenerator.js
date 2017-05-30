@@ -106,6 +106,7 @@ class JSONGenerator {
     visitField(field, parameters) {
         const obj = parameters.stack.pop();
         parameters.writer.writeKey(field.getName());
+
         if(field.isArray()) {
             parameters.writer.openArray();
             for(let n=0; n < obj.length; n++) {
@@ -127,7 +128,7 @@ class JSONGenerator {
         }
         else {
             parameters.stack.push(obj);
-            const classDeclaration = parameters.modelManager.getType(obj.getFullyQualifiedType());
+            const classDeclaration = parameters.modelManager.getType(field.getFullyQualifiedTypeName());
             classDeclaration.accept(this, parameters);
         }
 

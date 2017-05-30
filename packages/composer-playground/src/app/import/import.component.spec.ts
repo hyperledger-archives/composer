@@ -287,7 +287,7 @@ describe('ImportComponent', () => {
     });
 
     describe('remove file', () => {
-        it('should remove the file', () => {
+        it('should remove thie file', () => {
             component.removeFile();
 
             component['expandInput'].should.equal(false);
@@ -300,15 +300,13 @@ describe('ImportComponent', () => {
 
             let deployGithubMock = sinon.stub(component, 'deployFromGitHub').returns(Promise.resolve());
 
-            mockNgbModal.open = sinon.stub().returns({
-                result: Promise.resolve(true)
-            });
-
             component.deploy();
 
-            tick();
+            component['deployInProgress'].should.equal(true);
 
             deployGithubMock.should.have.been.called;
+
+            tick();
 
             component['deployInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -316,18 +314,15 @@ describe('ImportComponent', () => {
 
         it('should deploy a business network from business network', fakeAsync(() => {
 
-            mockNgbModal.open = sinon.stub().returns({
-                result: Promise.resolve(true)
-            });
-
             component['currentBusinessNetwork'] = {network: 'my network'};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.resolve());
 
             component.deploy();
 
-            tick();
-
+            component['deployInProgress'].should.equal(true);
             mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+
+            tick();
 
             component['deployInProgress'].should.equal(false);
             mockActiveModal.close.should.have.been.called;
@@ -335,38 +330,32 @@ describe('ImportComponent', () => {
 
         it('should handle rate limit error', fakeAsync(() => {
 
-            mockNgbModal.open = sinon.stub().returns({
-                result: Promise.resolve(true),
-                componentInstance: {}
-            });
-
             component['currentBusinessNetwork'] = {network: 'my network'};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'API rate limit exceeded'}));
 
             component.deploy();
 
+            component['deployInProgress'].should.equal(true);
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+
             tick();
 
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
             component['deployInProgress'].should.equal(false);
             component.modalService.open.should.have.been.called;
         }));
 
         it('should handle error', fakeAsync(() => {
 
-            mockNgbModal.open = sinon.stub().returns({
-                result: Promise.resolve(true),
-                componentInstance: {}
-            });
-
             component['currentBusinessNetwork'] = {network: 'my network'};
             mockBusinessNetworkService.deployBusinessNetwork.returns(Promise.reject({message: 'some error'}));
 
             component.deploy();
 
+            component['deployInProgress'].should.equal(true);
+            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
+
             tick();
 
-            mockBusinessNetworkService.deployBusinessNetwork.should.have.been.calledWith({network: 'my network'});
             component['deployInProgress'].should.equal(false);
             component.modalService.open.should.have.been.called;
         }));

@@ -57,7 +57,6 @@ services:
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/tls/key.pem
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/tls/cert.pem
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/tls/ca-cert.pem
-      - CORE_CHAINCODE_LOGLEVEL=DEBUG
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
@@ -92,7 +91,6 @@ services:
       - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/tls/key.pem
       - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/tls/cert.pem
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/tls/ca-cert.pem
-      - CORE_CHAINCODE_LOGLEVEL=DEBUG
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/

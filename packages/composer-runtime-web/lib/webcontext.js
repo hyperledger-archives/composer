@@ -16,9 +16,7 @@
 
 const Context = require('composer-runtime').Context;
 const WebIdentityService = require('./webidentityservice');
-const WebHTTPService = require('./webhttpservice');
 const WebEventService = require('./webeventservice');
-
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -53,17 +51,6 @@ class WebContext extends Context {
      */
     getIdentityService() {
         return this.identityService;
-    }
-
-    /**
-     * Get the http service provided by the chaincode container.
-     * @return {HTTPService} The http service provided by the chaincode container.
-     */
-    getHTTPService() {
-        if (!this.httpService) {
-            this.httpService = new WebHTTPService();
-        }
-        return this.httpService;
     }
 
     /**

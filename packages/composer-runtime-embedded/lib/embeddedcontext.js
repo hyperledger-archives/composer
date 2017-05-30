@@ -17,7 +17,6 @@
 const Context = require('composer-runtime').Context;
 const EmbeddedIdentityService = require('./embeddedidentityservice');
 const EmbeddedEventService = require('./embeddedeventservice');
-const EmbeddedHTTPService = require('./embeddedhttpservice');
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -64,17 +63,6 @@ class EmbeddedContext extends Context {
             this.eventService = new EmbeddedEventService(this.eventSink);
         }
         return this.eventService;
-    }
-
-    /**
-     * Get the event service provided by the chaincode container.
-     * @return {EventService} The event service provided by the chaincode container.
-     */
-    getHTTPService() {
-        if (!this.httpService) {
-            this.httpService = new EmbeddedHTTPService();
-        }
-        return this.httpService;
     }
 }
 

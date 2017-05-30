@@ -32,7 +32,7 @@ const TransactionDeclaration = require('composer-common/lib/introspect/transacti
 const TransactionRegistry = require('composer-client/lib/transactionregistry');
 
 const chai = require('chai');
-const should = chai.should();
+chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
@@ -1201,21 +1201,20 @@ describe('BusinessNetworkConnector', () => {
                 testConnector.create('org.acme.base.BaseAsset', {
                     $class : 'org.acme.base.BaseAsset',
                     some : 'data'
-                }, { test: 'options' }, (error, identifier) => {
+                }, { test: 'options' }, (error) => {
                     if (error) {
                         return reject(error);
                     }
-                    resolve(identifier);
+                    resolve();
                 });
             })
-                .then((identifier) => {
+                .then(() => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.getAssetRegistry);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.getAssetRegistry, 'org.acme.base.BaseAsset');
                     sinon.assert.calledOnce(mockAssetRegistry.add);
                     sinon.assert.calledWith(mockAssetRegistry.add, mockResource);
-                    should.equal(identifier, undefined);
                 });
         });
 
@@ -1247,21 +1246,20 @@ describe('BusinessNetworkConnector', () => {
                 testConnector.create('org.acme.base.BaseParticipant', {
                     $class : 'org.acme.base.BaseParticipant',
                     some : 'data'
-                }, { test: 'options' }, (error, identifier) => {
+                }, { test: 'options' }, (error) => {
                     if (error) {
                         return reject(error);
                     }
-                    resolve(identifier);
+                    resolve();
                 });
             })
-                .then((identifier) => {
+                .then(() => {
                     sinon.assert.calledOnce(testConnector.ensureConnected);
                     sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
                     sinon.assert.calledOnce(mockBusinessNetworkConnection.getParticipantRegistry);
                     sinon.assert.calledWith(mockBusinessNetworkConnection.getParticipantRegistry, 'org.acme.base.BaseParticipant');
                     sinon.assert.calledOnce(mockParticipantRegistry.add);
                     sinon.assert.calledWith(mockParticipantRegistry.add, mockResource);
-                    should.equal(identifier, undefined);
                 });
         });
 

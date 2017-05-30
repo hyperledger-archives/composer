@@ -23,7 +23,6 @@ const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const EventService = require('../lib/eventservice');
-const HTTPService = require('../lib/httpservice');
 const Factory = require('composer-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
@@ -280,16 +279,6 @@ describe('Context', () => {
 
     });
 
-    describe('#getHTTPService', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                context.getHTTPService();
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
     describe('#getModelManager', () => {
 
         it('should throw if not initialized', () => {
@@ -445,8 +434,6 @@ describe('Context', () => {
             sinon.stub(context, 'getRegistryManager').returns(mockRegistryManager);
             let mockEventService = sinon.createStubInstance(EventService);
             sinon.stub(context, 'getEventService').returns(mockEventService);
-            let mockHTTPService = sinon.createStubInstance(HTTPService);
-            sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
             context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });
