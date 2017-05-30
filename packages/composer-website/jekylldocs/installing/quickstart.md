@@ -32,121 +32,151 @@ git: 2.9.x
 If you need to update or install any of the prerequisites, please refer to [installing prerequisites](../installing/prerequisites.md)
 
 ## Procedure
+# Hyperledger Composer Getting Started
 
-1. To install the Composer command line tools:
+Follow the instructions below to get started by standing up a Hyperledger Fabric, and then getting a simple Hyperledger Composer Business Network deployed and an application running against it.
 
-        ```
-        $ npm install -g composer-cli
-        ```
-  *Please note: When using Ubuntu this command will fail when running in a root user shell.*
+There are two version of Hyperledger Fabric : v0.6 and v1.0-alpha.  The default is for v1.0-alpha and we suggest this is the one you use.
 
-2. Clone the Composer sample applications GitHub repository. Choose from either the v0.6 sample application or the v1.0 sample application, the former will stand up a Hyperledger Fabric v0.6 environment ; the latter will stand up a newer Hyperledger Fabric v1.0 environment using a docker command sequence. For Hyperledger Fabric v0.6 use the following command:
+## Step 1: Getting Hyperledger Fabric running
 
-        $ git clone https://github.com/hyperledger/composer-sample-applications.git
-  For Hyperledger Fabric v1.0 use the following command:
+These scripts use Node v6, and bash, which are Hyperledger Composer depencies. Choose a directory that you wish to have the setup scripts within.
 
-        $ git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
+1. In a directory of your choice (will assume `~/fabric-tools`) get the zip file that contains the tools
+```
+$ mkdir ~/fabric-tools && cd ~/fabric-tools
+$ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/fabric-dev-servers/fabric-dev-servers.zip
+$ unzip fabric-dev-servers.zip
+```
 
-3. Install the getting started application using one of the following commands. If you are using Hyperledger Fabric v0.6 use the following command:
+_note to developers script has been written for this need to add the repo to travis_
 
-        $ cd composer-sample-applications/packages/getting-started
-        $ npm install
-  If you are using Hyperledger Fabric v1.0, use the following command:
+2. Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.
 
-        $ cd composer-sample-applications-hlfv1/packages/getting-started
-        $ npm install
-  Amongst the steps (described below), the command returns information about the deployed digital property network such as name, models, registries etc.<br><br>`npm install` runs several scripts that are packaged into the getting-started directory and uses the docker-compose `.yml` file mentioned below to pull/download the relevant Hyperledger Fabric docker images.<br><br>There is [reference material](https://hyperledger.github.io/composer/reference/commands.html) for Composer CLI.
+```
+$ export FABRIC_VERSION=hlfv0.6
+```
 
-4. Run the `npm test` command. You should see output similar to that shown below (output below is for a v0.6 sample application)
+For v1.0-alpha, there is *nothing to as this the default*. But to 'unset' the v0.6, or to be explicit in using v1 use this command
 
+```
+$ export FABRIC_VERSION=hlfv1
+```
+
+3. If this is the first time, you'll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile.  After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.
+
+All the scripts will be in the directory `~/fabric-tools`  A typical sequence  for Hyperledger Composer use would be
+
+```
+$ cd ~/fabric-tools
+$ ./downloadFabric.sh
+$ ./startFabric.sh
+$ ./createComposerProfile.sh
+```
+
+Then at the end of your development session
+
+```
+$ cd ~/fabric-tools
+$ ./stopFabric.sh
+$ ./teardownFabric.sh
+```
+
+*If you want to swap between v0.6 and v1.0, ensure you have issued a `stopFabric.sh` and a `teardownFabric.sh` command first be START on the other version*
+
+## Script details
+
+### Downloading Fabric
+
+Issue from the `fabric-tools` directory
+```
+$ ./downloadFabric.sh
+```
+
+### Starting Fabric
+
+Issue  from the `fabric-tools` directory
+```
+$ ./startFabric.sh
+```
+
+### Stop Fabric
+
+Issue from the `fabric-tools` directory
+```
+$ ./stop.sh
+```
+
+### Create Composer Profile
+
+Issue from the `fabric-tools` directory
+```
+$ ./createComposerProfile.sh
+```
+
+Note: this create a Hyperledger Composer profile specifically to connect to the development fabric you've already started.
+
+### Teardown Fabric
+
+Issue from the `fabric-tools` directory
+```
+$ ./teardownFabric.sh
+```
+
+
+### Command Ordering
+
+This diagram should to clarify the order in which the scripts can be run.  Remember the version will default to hlfv1 if the version command is not run.
+
+![](CmdOrder.png).
+
+
+# Step 2: Getting the Hyperledger Composer sample application
+
+0. Make sure you've started Fabric as in Step 1 above. For example, If this is your first time for exaple
+
+```
+$ cd ~/fabric-tools
+$ ./downloadFabric.sh
+$ ./startFabric.sh
+$ ./createComposerProfile.sh
+```
+
+1. Clone the sample application into a directory of your choice - BUT not the same directory as in Step 1. (Assume `~/github')
+```
+$ mkdir ~/github && cd ~/github
+$ git clone https://github.com/mbwhite/composer-sample-applications
+$ cd composer-sample-applications
+$ npm install
+```
+
+2. When you started fabric you will have chosen which version to use.  If you have chosen Fabirc v0.6 you will need to suffix the targets in the npm commands below with `:hlfv06`. Both examples are given below - do not issue both commands!
+
+*Note: this does not change the application source code or the model, purely the name of the Composer profile to use, and the Fabric's admin indentity*
+
+3. Deploy the business network
+
+```
+$ cd getting-started
+$ npm run deployNetwork
+$ npm run deployNetwork:hlfv0.6     # if you want to use v0.6
+```
+
+5. Run the sample application
 ```
 $ npm test
-> getting-started@1.0.0 test /home/ibm/samples/sample-applications/packages/getting-started
-> mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
-
-
-  Default
-    #sample test
-      ✓ should pass
-
-
-  1 passing (8ms)
-
-
-    > getting-started@1.0.0 bootstrapAssets /home/ibm/samples/sample-applications/packages/getting-started
-> node cli.js landregistry bootstrap
-
-info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
-info: [Composer-GettingStarted] Adding default land titles to the asset registry
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles getting asset registry for "net.biz.digitalPropertyNetwork.LandTitle"
-info: [Composer-GettingStarted] about to get asset registry
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles got asset registry
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles getting factory and adding assets
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a person
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#1
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Creating a land title#2
-info: [Composer-GettingStarted] LandRegistry:_bootstrapTitles Adding these to the registry
-info: [Composer-GettingStarted] Default titles added
-info: [Composer-GettingStarted] Command completed successfully.
-
-> getting-started@1.0.0 listAssets /home/ibm/samples/sample-applications/packages/getting-started
-> node cli.js landregistry list
-
-info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
-info: [Composer-GettingStarted] listTitles Getting the asset registry
-info: [Composer-GettingStarted] listTitles Getting all assets from the registry.
-info: [Composer-GettingStarted] listTitles Current Land Titles
-info: [Composer-GettingStarted] Titles listed
-info: [Composer-GettingStarted]
-
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ No      │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-
-info: [Composer-GettingStarted] Command completed successfully.
-
-> getting-started@1.0.0 submitTransaction /home/ibm/samples/sample-applications/packages/getting-started
-> node cli.js landregistry submit && node cli.js landregistry list
-
-info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
-info: [Composer-GettingStarted] updateForSale Getting assest from the registry.
-info: [Composer-GettingStarted] updateForSale Submitting transaction
-info: [Composer-GettingStarted] Transaction Submitted
-info: [Composer-GettingStarted] Command completed successfully.
-info: [Composer-GettingStarted] Hyperledger Composer: Getting Started application
-info: [Composer-GettingStarted] LandRegistry:<init> businessNetworkDefinition obtained digitalproperty-network@0.0.6
-info: [Composer-GettingStarted] listTitles Getting the asset registry
-info: [Composer-GettingStarted] listTitles Getting all assets from the registry.
-info: [Composer-GettingStarted] listTitles Current Land Titles
-info: [Composer-GettingStarted] Titles listed
-info: [Composer-GettingStarted]
-
-
-┌──────────┬────────────────┬────────────┬─────────┬─────────────────────────────┬─────────┐
-│ TitleID  │ OwnerID        │ First Name │ Surname │ Description                 │ ForSale │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:1148 │ PID:1234567890 │ Fred       │ Bloggs  │ A nice house in the country │ Yes     │
-├──────────┼────────────────┼────────────┼─────────┼─────────────────────────────┼─────────┤
-│ LID:6789 │ PID:1234567890 │ Fred       │ Bloggs  │ A small flat in the city    │ No      │
-└──────────┴────────────────┴────────────┴─────────┴─────────────────────────────┴─────────┘
-
-info: [Composer-GettingStarted] Command completed successfully.
-
+$ npm test:hlfv0.6     # if you want to use v0.6
 ```
 
-## Testing the application
+# Step 3: And next
+To recap, a fabric has been started, and the Composer framework has been deployed to the Fabric, along with a sample business network.
+An application that uses this network has been run.
 
-1. `mocha --recursive` - Runs all unit tests in the */tests* directory.
-2. `node cli.js landregistry bootstrap` - Run the bootstrap command to create two land titles owned by Fred Bloggs.
-3. `node cli.js landregistry list` - Run the list command to list all of the assets in the LandTitles asset registry.
-4. `node cli.js landregistry submit` - Run the submit command to submit a transaction that changes LandTitle *LID:1148*'s *ForSale*' property to *Yes*.
+## Troubleshooting
+A useful information node.js script has been created to show the available sample applications
+```
+$ node ~/github/composer-sample-applications/info.js
+```
 
 ## Where next?
 
