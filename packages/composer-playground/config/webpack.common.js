@@ -198,7 +198,7 @@ module.exports = function (options) {
           exclude: /(node_modules(?!\/(composer|yallist|jsonata))|bower_components)/,
           loader: 'babel-loader',
           query: {
-            presets: [require.resolve('babel-preset-es2015')]
+            presets: [require.resolve('babel-preset-latest')]
           }
         },
         {
