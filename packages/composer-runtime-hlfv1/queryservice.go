@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	duktape "gopkg.in/olebedev/go-duktape.v3"
@@ -75,6 +76,7 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 	logger.Debug("QueryService.queryString", queryString)
 	vm.Pop() // [theQueryService]
 
+	logger.Debug("QueryService.queryString is using this:", queryString)
 	resultsIterator, err := queryService.Stub.GetQueryResult(queryString)
 	if err != nil {
 		logger.Error("QueryService failed to get result interator", err)
@@ -86,6 +88,7 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 	logger.Debug("QueryService got an iterator", resultsIterator)
 
 	if err != nil {
+		logger.Debug("QueryService got an err?")
 		panic(err)
 	}
 
@@ -93,8 +96,10 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 	var buffer bytes.Buffer
 	buffer.WriteString("[")
 
+	logger.Debug("QueryService before navigate the result")
 	bArrayMemberAlreadyWritten := false
 	for resultsIterator.HasNext() {
+		logger.Debug("QueryService inside Next()")
 		key, value, err := resultsIterator.Next()
 		if err != nil {
 			panic(err)
@@ -108,6 +113,8 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 		buffer.WriteString(key)
 		buffer.WriteString("\"")
 
+		logger.Debug("QueryService inside Next()", key)
+
 		buffer.WriteString(", \"Record\":")
 		// Record is a JSON object, so we write as-is
 		buffer.WriteString(string(value))
@@ -117,7 +124,15 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 	buffer.WriteString("]")
 
 	logger.Debug("QueryService return value ", buffer.String())
-	vm.PushString("Promise.resolve(\"" + buffer.String() + "\")")
+
+	var tempValue []byte
+	tempValue, err = json.Marshal(buffer.String())
+	logger.Debug("QueryService return tempValue", string(tempValue))
+	if err != nil {
+		panic(err)
+	}
+
+	vm.PushString("Promise.resolve(" + string(tempValue) + ")")
 	vm.Eval()
 
 	// return the top of the stack to the JS caller
