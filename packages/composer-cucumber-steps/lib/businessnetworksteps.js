@@ -20,4 +20,8 @@ module.exports = function () {
         return this.composer.deploy(businessNetworkArchive);
     });
 
+    this.Given(/^I have deployed the business network definition (.+?)$/, function (businessNetworkDefinition) {
+        return this.composer.deploy(businessNetworkDefinition);
+    });
+
 };
