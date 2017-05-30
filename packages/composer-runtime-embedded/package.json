@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-embedded",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "The embedded runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -14,7 +14,7 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test": "nyc mocha --recursive"
+    "test": "nyc mocha --recursive -t 5000"
   },
   "repository": {
     "type": "git",
@@ -52,11 +52,12 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.7.3",
-    "composer-runtime": "^0.7.3",
+    "composer-common": "^0.7.4",
+    "composer-runtime": "^0.7.4",
     "debug": "^2.6.2",
     "dexie": "^1.5.1",
     "fake-indexeddb": "^1.0.8",
+    "request": "^2.81.0",
     "uuid": "^3.0.1"
   },
   "nyc": {

@@ -32,7 +32,8 @@ export class EditorComponent implements OnInit {
     private deletableFile: boolean = false;
 
     private addModelNamespace: string = 'org.acme.model';
-    private addScriptFileName: string = 'lib/script.js';
+    private addScriptFileName: string = 'lib/script';
+    private addScriptFileExtension: string = '.js';
 
     private noError: boolean = true;
     private dirty: boolean = false;
@@ -70,6 +71,7 @@ export class EditorComponent implements OnInit {
         return this.initializationService.initialize()
         .then(() => {
             this.clientService.businessNetworkChanged$.subscribe((noError) => {
+                this.updateFiles();
                 if (this.editorFilesValidate() && noError) {
                     this.noError = noError;
                     this.dirty = true;
@@ -90,7 +92,7 @@ export class EditorComponent implements OnInit {
             this.updateFiles();
 
             if (this.editorService.getCurrentFile() !== null) {
-                this.currentFile = this.editorService.getCurrentFile();
+                this.setCurrentFile(this.editorService.getCurrentFile());
             } else {
                 this.setInitialFile();
             }
@@ -235,9 +237,9 @@ export class EditorComponent implements OnInit {
 
         if (!scriptFile) {
             let increment = 0;
-            let scriptName = this.addScriptFileName;
+            let scriptName = this.addScriptFileName + this.addScriptFileExtension;
             while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
-                scriptName = this.addScriptFileName + increment;
+                scriptName = this.addScriptFileName + increment + this.addScriptFileExtension;
                 increment++;
             }
 
