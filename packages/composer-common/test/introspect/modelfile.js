@@ -36,7 +36,15 @@ describe('ModelFile', () => {
     let sandbox;
 
     beforeEach(() => {
+        const mockSystemModel = `
+        namespace org.hyperledger.composer.system
+        abstract asset Asset identified by assetId {
+            o String assetId
+        }`;
+        let mockSystemModelFile = new ModelFile(mockModelManager, mockSystemModel);
         mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+
         sandbox = sinon.sandbox.create();
     });
 
@@ -337,6 +345,13 @@ describe('ModelFile', () => {
     });
 
     describe('#resolveImport', () => {
+
+        it.only('should find the fully qualified name of a type in the system namespace', () => {
+            const model = `
+            namespace org.acme`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.resolveImport('Asset').should.equal('org.hyperledger.composer.system.Asset');
+        });
 
         it('should find the fully qualified name of the import', () => {
             const model = `

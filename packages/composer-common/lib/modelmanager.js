@@ -14,10 +14,15 @@
 
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 const Globalize = require('./globalize');
 const IllegalModelException = require('./introspect/illegalmodelexception');
 const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
+
+const ENCODING = 'utf8';
 
 /**
  * <p>
@@ -48,6 +53,13 @@ class ModelManager {
      */
     constructor() {
         this.modelFiles = {};
+
+        console.log(path.dirname(__filename));
+        let systemModelPath = path.join(path.dirname(__filename), '../models/system.cto');
+        // console.log(systemModelPath);
+        let systemModelContents = fs.readFileSync(systemModelPath, ENCODING);
+        // console.log(systemModelContents);
+        this.addModelFile(systemModelContents);
     }
 
     /**
@@ -224,6 +236,7 @@ class ModelManager {
         // is the type a primitive?
         if (!ModelUtil.isPrimitiveType(type)) {
 
+            console.log(type, 'TYPE');
             let ns = ModelUtil.getNamespace(type);
             let modelFile = this.getModelFile(ns);
 

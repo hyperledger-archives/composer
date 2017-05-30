@@ -79,6 +79,11 @@ class ModelFile {
             this.imports = this.ast.imports;
         }
 
+        let systemNamespace = ModelUtil.getSystemNamespace();
+        if(this.namespace !== systemNamespace) {
+            this.imports.unshift(systemNamespace + '.*');
+        }
+
         for(let n=0; n < this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
 
@@ -146,6 +151,8 @@ class ModelFile {
      * @private
      */
     validate() {
+
+        console.log(this.imports, 'IMPORTS');
 
         // Validate all of the imports to check that they reference
         // namespaces or types that actually exist.
@@ -250,13 +257,17 @@ class ModelFile {
     resolveImport(type) {
         //console.log('resolveImport ' + this.getNamespace() + ' ' + type );
 
+        console.log(type, 'RESOLVETYPE');
         for(let n=0; n < this.imports.length; n++) {
             let importName = this.imports[n];
+            console.log(importName, 'IMPORTNAME');
             if( ModelUtil.getShortName(importName) === type ) {
                 return importName;
             } else if (ModelUtil.isWildcardName(importName)) {
                 const wildcardNamespace = ModelUtil.getNamespace(importName);
+                console.log(wildcardNamespace,'WILDNAME');
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
+                console.log(modelFile, 'MODELFILE');
                 if (modelFile && modelFile.isLocalType(type)) {
                     return wildcardNamespace + '.' + type;
                 }

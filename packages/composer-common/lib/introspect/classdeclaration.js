@@ -273,6 +273,16 @@ class ClassDeclaration {
     }
 
     /**
+     * Returns true if this class can be pointed to by a relationship in a
+     * system model
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isSystemRelationshipTarget() {
+        return this.isRelationshipTarget();
+    }
+
+    /**
      * Returns the short name of a class. This name does not include the
      * namespace from the owning ModelFile.
      *
