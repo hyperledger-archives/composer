@@ -18,7 +18,7 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "postdoc": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/composer-common.js",
-    "test": "node ./scripts/api-changelog.js && nyc mocha --recursive"
+    "test": "node ./scripts/api-changelog.js && nyc mocha --recursive -t 5000"
   },
   "repository": {
     "type": "git",

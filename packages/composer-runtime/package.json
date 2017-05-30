@@ -18,7 +18,7 @@
     "lint": "eslint .",
     "postlint": "npm run browserify",
     "browserify": "browserify ./index.js -t [ babelify --presets [ es2015 ] ] > ./out/composer-runtime.js",
-    "test": "nyc mocha --recursive"
+    "test": "nyc mocha --recursive -t 5000"
   },
   "repository": {
     "type": "git",
