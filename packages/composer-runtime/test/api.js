@@ -33,7 +33,6 @@ chai.use(require('chai-as-promised'));
 chai.use(require('chai-things'));
 const sinon = require('sinon');
 require('sinon-as-promised');
-const expect = chai.expect;
 
 describe('Api', () => {
 
@@ -127,6 +126,34 @@ describe('Api', () => {
 
     });
 
+    describe('#post', () => {
+        let mockTransaction;
+
+        beforeEach(() => {
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.getFullyQualifiedType.returns('much.wow');
+            mockHTTPService.post.resolves({foo : 'bar'});
+            mockSerializer.toJSON.withArgs(mockTransaction).onFirstCall().returns({
+                $class: 'org.doge.DogeTransaction',
+                assetId: 'doge1'
+            });
+        });
+
+        it('should make an POST request using the HTTP service', () => {
+            return api.post('url', mockTransaction)
+                .should.eventually.have.property('foo')
+                .then(() => {
+                    sinon.assert.calledOnce(mockSerializer.toJSON);
+                    sinon.assert.calledWith(mockSerializer.toJSON, mockTransaction, { convertResourcesToRelationships: true, permitResourcesForRelationships: true });
+                    sinon.assert.calledOnce(mockHTTPService.post);
+                    sinon.assert.calledWith(mockHTTPService.post, 'url', {
+                        $class: 'org.doge.DogeTransaction',
+                        assetId: 'doge1'
+                    });
+                });
+        });
+    });
+
     describe('#emit', () => {
         let mockTransaction;
         let mockEvent;
@@ -137,26 +164,22 @@ describe('Api', () => {
             mockTransaction.getIdentifier.returns('much.wow');
             mockContext.getTransaction.returns(mockTransaction);
             mockContext.getEventNumber.returns(0);
+            mockSerializer.toJSON.withArgs(mockEvent).onFirstCall().returns({
+                $class: 'org.doge.DogeEvent',
+                assetId: 'doge1'
+            });
         });
 
-        it('should call eventService.emit', () => {
+        it('should emit the event using the event service', () => {
             api.emit(mockEvent);
+            sinon.assert.calledOnce(mockSerializer.toJSON);
+            sinon.assert.calledWith(mockSerializer.toJSON, mockEvent, { convertResourcesToRelationships: true });
             sinon.assert.calledOnce(mockEventService.emit);
-            // sinon.assert.calledWith(mockEventService.emit, mockEvent);
+            sinon.assert.calledWith(mockEventService.emit, {
+                $class: 'org.doge.DogeEvent',
+                assetId: 'doge1'
+            });
         });
     });
 
-    describe('#post', () => {
-        let mockTransaction;
-
-        beforeEach(() => {
-            mockTransaction = sinon.createStubInstance(Resource);
-            mockTransaction.getFullyQualifiedType.returns('much.wow');
-            mockHTTPService.post.returns(Promise.resolve({foo : 'bar'}));
-        });
-
-        it('should call httpService.post', () => {
-            return expect(api.post('url', mockTransaction)).to.eventually.have.property('foo');
-        });
-    });
 });

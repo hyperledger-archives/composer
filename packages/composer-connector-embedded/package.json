@@ -1,6 +1,6 @@
 {
   "name": "composer-connector-embedded",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "The embedded client connector for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -14,7 +14,7 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test": "nyc mocha --recursive"
+    "test": "nyc mocha --recursive -t 5000"
   },
   "repository": {
     "type": "git",
@@ -52,9 +52,9 @@
     "watchify": "^3.7.0"
   },
   "dependencies": {
-    "composer-common": "^0.7.3",
-    "composer-runtime": "^0.7.3",
-    "composer-runtime-embedded": "^0.7.3"
+    "composer-common": "^0.7.4",
+    "composer-runtime": "^0.7.4",
+    "composer-runtime-embedded": "^0.7.4"
   },
   "nyc": {
     "exclude": [
