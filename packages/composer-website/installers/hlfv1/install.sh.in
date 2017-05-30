@@ -36,6 +36,9 @@ docker ps -aq | xargs docker rm -f || echo 'All removed'
 # Start all Docker containers.
 docker-compose -p composer -f docker-compose-playground.yml up -d
 
+# Wait for playground to start
+sleep 5
+
 # Pull the latest Docker images from Docker Hub.
 ##docker-compose pull
 ##docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha
