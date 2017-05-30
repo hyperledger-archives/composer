@@ -14,7 +14,7 @@
 
 'use strict';
 
-const jsonata = require('jsonata/jsonata-es5');
+const jsonata = require('jsonata');
 const Logger = require('composer-common').Logger;
 const Relationship = require('composer-common').Relationship;
 const Resource = require('composer-common').Resource;
