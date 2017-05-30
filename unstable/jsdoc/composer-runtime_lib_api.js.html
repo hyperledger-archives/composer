@@ -305,7 +305,7 @@ class Api {
             const method = 'emit';
             LOG.entry(method);
             event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
-            let serializedEvent = serializer.toJSON(event);
+            let serializedEvent = serializer.toJSON(event, { convertResourcesToRelationships: true });
             context.incrementEventNumber();
             LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
             eventService.emit(serializedEvent);
