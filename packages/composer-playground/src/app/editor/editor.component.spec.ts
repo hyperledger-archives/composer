@@ -432,13 +432,13 @@ describe('EditorComponent', () => {
             component['files'][1].should.deep.equal({
                 model: true,
                 id: 'model 1',
-                displayID: 'model/model 1.cto',
+                displayID: 'models/model 1.cto',
             });
 
             component['files'][2].should.deep.equal({
                 model: true,
                 id: 'model 2',
-                displayID: 'model/model 2.cto',
+                displayID: 'models/model 2.cto',
             });
 
             component['files'][3].should.deep.equal({
