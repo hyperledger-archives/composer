@@ -1,3 +1,8 @@
+ME=`basename "$0"`
+if [ "${ME}" = "install-hlfv1.sh" ]; then
+  echo "Please re-run as >   cat install-hlfv1.sh | bash"
+  exit 1
+fi
 (cat > composer.sh; chmod +x composer.sh; exec bash composer.sh)
 #!/bin/bash
 set -ev
