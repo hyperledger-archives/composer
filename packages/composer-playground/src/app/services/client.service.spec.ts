@@ -20,6 +20,8 @@ import { IdentityService } from './identity.service';
 
 describe('ClientService', () => {
 
+    let sandbox;
+
     let adminMock;
     let alertMock;
     let connectionProfileMock;
@@ -31,16 +33,20 @@ describe('ClientService', () => {
     let aclFileMock;
 
     beforeEach(() => {
+        sandbox = sinon.sandbox.create();
 
+        businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
         adminMock = sinon.createStubInstance(AdminService);
         alertMock = sinon.createStubInstance(AlertService);
         connectionProfileMock = sinon.createStubInstance(ConnectionProfileService);
-        businessNetworkDefMock = sinon.createStubInstance(BusinessNetworkDefinition);
         identityMock = sinon.createStubInstance(IdentityService);
         businessNetworkConMock = sinon.createStubInstance(BusinessNetworkConnection);
         modelFileMock = sinon.createStubInstance(ModelFile);
         scriptFileMock = sinon.createStubInstance(Script);
         aclFileMock = sinon.createStubInstance(AclFile);
+
+        alertMock.errorStatus$ = {next: sinon.stub()};
+        alertMock.busyStatus$ = {next: sinon.stub()};
 
         TestBed.configureTestingModule({
             providers: [ClientService,
@@ -49,6 +55,10 @@ describe('ClientService', () => {
                 {provide: ConnectionProfileService, useValue: connectionProfileMock},
                 {provide: IdentityService, useValue: identityMock}]
         });
+    });
+
+    afterEach(() => {
+        sandbox.restore();
     });
 
     describe('getBusinessNetworkConnection', () => {
@@ -620,50 +630,98 @@ describe('ClientService', () => {
             connectionProfileMock.getCurrentConnectionProfile.should.not.have.been.called;
         })));
 
-        it('should connect if not connected', fakeAsync(inject([ClientService], (service: ClientService) => {
+        it('should connect if not connected and deploy sample', fakeAsync(inject([ClientService], (service: ClientService) => {
+            connectionProfileMock.getCurrentConnectionProfile.returns('myProfile');
             adminMock.ensureConnected.returns(Promise.resolve());
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+
+            adminMock.isInitialDeploy.returns(true);
+
+            let deployInitialSample = sinon.stub(service, 'deployInitialSample');
 
             service.ensureConnected(false);
 
             tick();
 
+            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+
             adminMock.ensureConnected.should.have.been.calledWith(false);
             refreshMock.should.have.been.called;
+            alertMock.busyStatus$.next.should.have.been.calledTwice;
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
+                title: 'Establishing connection',
+                text: 'Using the connection profile myProfile'
+            });
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith(null);
 
             service['isConnected'].should.equal(true);
             should.not.exist(service['connectingPromise']);
+
+            deployInitialSample.should.have.been.called;
+        })));
+
+        it('should connect if not connected and not deploy sample if already deployed', fakeAsync(inject([ClientService], (service: ClientService) => {
+            connectionProfileMock.getCurrentConnectionProfile.returns('myProfile');
+            adminMock.ensureConnected.returns(Promise.resolve());
+            let refreshMock = sinon.stub(service, 'refresh').returns(Promise.resolve());
+
+            adminMock.isInitialDeploy.returns(false);
+
+            let deployInitialSample = sinon.stub(service, 'deployInitialSample');
+
+            service.ensureConnected(false);
+
+            tick();
+
+            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+
+            adminMock.ensureConnected.should.have.been.calledWith(false);
+            refreshMock.should.have.been.called;
+            alertMock.busyStatus$.next.should.have.been.calledTwice;
+            alertMock.busyStatus$.next.firstCall.should.have.been.calledWith({
+                title: 'Establishing connection',
+                text: 'Using the connection profile myProfile'
+            });
+
+            alertMock.busyStatus$.next.secondCall.should.have.been.calledWith(null);
+
+            service['isConnected'].should.equal(true);
+            should.not.exist(service['connectingPromise']);
+
+            deployInitialSample.should.not.have.been.called;
         })));
 
         it('should send alert if error thrown', fakeAsync(inject([ClientService], (service: ClientService) => {
             adminMock.ensureConnected.returns(Promise.resolve());
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.reject('forced error'));
-            alertMock.errorStatus$ = { next: sinon.stub() };
 
             service.ensureConnected(false)
-            .then(() => {
-                throw new Error('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('forced error');
-                alertMock.errorStatus$.next.should.have.been.called;
-            });
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('forced error');
+                    alertMock.busyStatus$.next.should.have.been.calledWith(null);
+                    alertMock.errorStatus$.next.should.have.been.called;
+                });
         })));
 
         it('should set connection variables if error thrown', fakeAsync(inject([ClientService], (service: ClientService) => {
             adminMock.ensureConnected.returns(Promise.resolve());
             let refreshMock = sinon.stub(service, 'refresh').returns(Promise.reject('forced error'));
-            alertMock.errorStatus$ = { next: sinon.stub() };
+            alertMock.errorStatus$ = {next: sinon.stub()};
 
             service.ensureConnected(false)
-            .then(() => {
-                throw new Error('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('forced error');
-                service['isConnected'].should.be.false;
-                expect(service['connectingPromise']).to.be.null;
-            });
+                .then(() => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    alertMock.busyStatus$.next.should.have.been.calledWith(null);
+                    error.should.equal('forced error');
+                    service['isConnected'].should.be.false;
+                    expect(service['connectingPromise']).to.be.null;
+                });
         })));
 
     });
@@ -671,6 +729,7 @@ describe('ClientService', () => {
     describe('refresh', () => {
         it('should diconnect and reconnect the business network connection', fakeAsync(inject([ClientService], (service: ClientService) => {
             let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+            connectionProfileMock.getCurrentConnectionProfile.returns('myProfile');
             businessNetworkConMock.disconnect.returns(Promise.resolve());
             identityMock.getUserID.returns(Promise.resolve());
             identityMock.getUserSecret.returns(Promise.resolve());
@@ -681,6 +740,52 @@ describe('ClientService', () => {
 
             businessNetworkConMock.disconnect.should.have.been.calledOnce;
             businessNetworkConMock.connect.should.have.been.calledOnce;
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Refreshing Connection',
+                text: 'refreshing the connection to myProfile'
+            });
+        })));
+    });
+
+    describe('getBusinessNetworkFromArchive', () => {
+        it('should get a business network from an archive', fakeAsync(inject([ClientService], (service: ClientService) => {
+            let buffer = Buffer.from('a buffer');
+
+            let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({name: 'myNetwork'}));
+
+            service.getBusinessNetworkFromArchive(buffer).then((result) => {
+                result.should.deep.equal({name: 'myNetwork'});
+            });
+
+            tick();
+
+            businessNetworkFromArchiveMock.should.have.been.calledWith(buffer);
+        })));
+    });
+
+    describe('it should deployInitial sample', () => {
+        it('should deploy the initial sample', fakeAsync(inject([ClientService], (service: ClientService) => {
+            alertMock.busyStatus$ = {next: sinon.stub()};
+
+            let refreshMock = sinon.stub(service, 'refresh');
+            let resetMock = sinon.stub(service, 'reset');
+
+            let businessNetworkFromArchiveMock = sandbox.stub(BusinessNetworkDefinition, 'fromArchive').returns(Promise.resolve({name: 'bob'}));
+
+            service.deployInitialSample();
+
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Deploying Business Network',
+                text: 'deploying sample business network'
+            });
+
+            tick();
+
+            businessNetworkFromArchiveMock.should.have.been.called;
+
+            adminMock.update.should.have.been.calledWith({name: 'bob'});
+            refreshMock.should.have.been.called;
+            resetMock.should.have.been.called;
         })));
     });
 });
