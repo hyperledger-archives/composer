@@ -2,7 +2,7 @@
 layout: default
 title: Task - Creating a connection profile
 category: tasks
-sidebar: sidebars/getting-started.md
+sidebar: sidebars/businessnetworks.md
 excerpt: How to create a new connection profile
 ---
 

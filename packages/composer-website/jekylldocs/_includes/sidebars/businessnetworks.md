@@ -11,6 +11,7 @@
 [Publish a business domain model](../business-network/model-publish.html)
 [Update a business network definition on Composer](../business-network/runtime-update.html)
 [Test a business network definition](../business-network/testing.html)
+[Creating a connection profile](../business-network/connectionprofile.html)
 **[Writing Applications](../applications/genapp.html)**
 **[Integrating Existing Systems](../integrating/integrating-index.html)**
 **[Managing and Operating](../managing/managingindex.html)**

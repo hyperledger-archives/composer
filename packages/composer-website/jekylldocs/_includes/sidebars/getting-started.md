@@ -2,7 +2,7 @@
 **[Installing and Getting Started](../getting-started/getting-started.html)**
 [Prerequisites](../getting-started/prerequisites.html)
 [Getting started online](../getting-started/getting-started-with-playground.html)
-[Installing locally](../using-playground-locally.html)
+[Installing locally](../getting-started/using-playground-locally.html)
 [Getting setup with development tools](../getting-started/getting-started-cmd-line.html)
 **[Defining Business Networks](../business-network/businessnetwork.html)**
 **[Writing Applications](../applications/genapp.html)**
