@@ -47,4 +47,4 @@ services:
 networks:
   default:
     external:
-      name: hlfv1_default
+      name: composer_default
