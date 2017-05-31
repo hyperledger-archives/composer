@@ -2,11 +2,11 @@ Feature: Transaction steps
 
     Background:
         Given I have deployed the business network archive basic-sample-network.bna
-        And I have added the following participant of type org.acme.sample.SampleParticipant
+        And I have added the following participants of type org.acme.sample.SampleParticipant
             | participantId | firstName | lastName |
             | 1             | Alice     | A        |
             | 2             | Bob       | B        |
-        And I have added the following asset of type org.acme.sample.SampleAsset
+        And I have added the following assets of type org.acme.sample.SampleAsset
             | assetId | owner | value |
             | 1       | 1     | 10    |
             | 2       | 2     | 10    |
