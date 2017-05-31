@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,16 +100,16 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<a href="../tutorials/defining-a-business-network.html">Tutorial 1: Building your first business network</a>
-<a href="../tutorials/getting-started-cmd-line.html">Getting started with the command line</a>
-<a href="../tutorials/getting-started-playground.html">Getting started with the playground</a>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
+<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -175,9 +175,9 @@ ga('send', 'pageview');
 <h3 id="clone-the-repository-and-install-dependencies">Clone the Repository and Install Dependencies</h3>
 
 <p>First clone the repository that contains the Business Network Definition (note this is not the same as the sample-applications repository).</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>git clone https://github.com/hyperledger/composer-sample-networks.git
-<span class="gp">$ </span><span class="nb">cd </span>composer-sample-networks/packages/DigitalProperty-Network
-<span class="gp">$ </span>npm install
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">git clone https://github.com/hyperledger/composer-sample-networks.git
+<span class="nb">cd </span>composer-sample-networks/packages/DigitalProperty-Network
+npm install
 </code></pre></div>
 <h3 id="update-the-transaction-processor-function">Update the Transaction Processor Function</h3>
 
@@ -207,7 +207,7 @@ ga('send', 'pageview');
 <p>In a real-life scenario at this point you would edit <code>package.json</code> to increment the version number in the <code>DigitalProperty-Network</code> directory and publish this to npm. Please do not publish to the DigitalProperty-Network in npm.</p>
 
 <p>What we&#39;ll do therefore is adopt a different approach to create the Business Network Archive. From within the DigitalProperty-Network directory.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer archive create --sourceType dir --sourceName .
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer archive create --sourceType dir --sourceName .
 Creating Business Network Archive
 Looking <span class="k">for </span>package.json of Business Network Definition <span class="k">in</span> /home/matthew/git17/DigitalProperty-Network
 
@@ -221,7 +221,7 @@ Command completed successfully.
 <p>We now have a new file that is the digital business network archive.</p>
 
 <h3 id="update-the-deployed-business-network">Update the deployed business network</h3>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>composer network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 Deploying business network from archive digitalproperty-network-0.0.22.bna
 Business network definition:
     Identifier: digitalproperty-network-0.0.22
@@ -232,7 +232,7 @@ Command completed successfully.
 <h3 id="rerun-the-test">Rerun the Test</h3>
 
 <p>If you go back to the getting started directory now - and list all the commands that available, you&#39;ll see one called <code>submitTransaction</code></p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>npm run
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm run
 Lifecycle scripts included <span class="k">in </span>getting-started:
   <span class="nb">test
     </span>mocha --recursive <span class="o">&amp;&amp;</span> npm run bootstrapAssets <span class="o">&amp;&amp;</span> npm run listAssets <span class="o">&amp;&amp;</span> npm run submitTransaction
@@ -257,7 +257,7 @@ available via <span class="sb">`</span>npm run-script<span class="sb">`</span>:
 
 </code></pre></div>
 <p>If you issue this command, that will submit a transaction as before - but importantly this is the updated transaction function. You should now see:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ npm run submitTransaction
+<div class="highlight"><pre><code class="language-" data-lang="">npm run submitTransaction
 
 &gt; getting-started@1.0.0 submitTransaction /home/matthew/github_lenny/sample-applications/packages/getting-started
 &gt; node cli.js landregistry submit &amp;&amp; node cli.js landregistry list

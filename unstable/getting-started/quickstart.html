@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,17 +100,16 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<a href="../installing/prerequisites.html">Prerequisites</a>
-<a href="../installing/quickstart.html">Quickstart</a>
-<a href="../installing/runtime-start.html">Start a Composer runtime</a>
-<a href="../installing/createconnectionprofile.html">Creating a network connection profile</a>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
+<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -147,28 +146,28 @@ git: 2.9.x
 <ol>
 <li><p>To install the Composer command line tools:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">```
-$ npm install -g composer-cli
+npm install -g composer-cli
 ```
 </code></pre></div>
 <p><em>Please note: When using Ubuntu this command will fail when running in a root user shell.</em></p></li>
 <li><p>Clone the Composer sample applications GitHub repository. Choose from either the v0.6 sample application or the v1.0 sample application, the former will stand up a Hyperledger Fabric v0.6 environment ; the latter will stand up a newer Hyperledger Fabric v1.0 environment using a docker command sequence. For Hyperledger Fabric v0.6 use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ git clone https://github.com/hyperledger/composer-sample-applications.git
+<div class="highlight"><pre><code class="language-" data-lang="">git clone https://github.com/hyperledger/composer-sample-applications.git
 </code></pre></div>
 <p>For Hyperledger Fabric v1.0 use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
+<div class="highlight"><pre><code class="language-" data-lang="">git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
 </code></pre></div></li>
 <li><p>Install the getting started application using one of the following commands. If you are using Hyperledger Fabric v0.6 use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ cd composer-sample-applications/packages/getting-started
-$ npm install
+<div class="highlight"><pre><code class="language-" data-lang="">cd composer-sample-applications/packages/getting-started
+npm install
 </code></pre></div>
 <p>If you are using Hyperledger Fabric v1.0, use the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ cd composer-sample-applications-hlfv1/packages/getting-started
-$ npm install
+<div class="highlight"><pre><code class="language-" data-lang="">cd composer-sample-applications-hlfv1/packages/getting-started
+npm install
 </code></pre></div>
 <p>Amongst the steps (described below), the command returns information about the deployed digital property network such as name, models, registries etc.<br><br><code>npm install</code> runs several scripts that are packaged into the getting-started directory and uses the docker-compose <code>.yml</code> file mentioned below to pull/download the relevant Hyperledger Fabric docker images.<br><br>There is <a href="https://hyperledger.github.io/composer/reference/commands.html">reference material</a> for Composer CLI.</p></li>
 <li><p>Run the <code>npm test</code> command. You should see output similar to that shown below (output below is for a v0.6 sample application)</p></li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">$ npm test
+<div class="highlight"><pre><code class="language-" data-lang="">npm test
 &gt; getting-started@1.0.0 test /home/ibm/samples/sample-applications/packages/getting-started
 &gt; mocha --recursive &amp;&amp; npm run bootstrapAssets &amp;&amp; npm run listAssets &amp;&amp; npm run submitTransaction
 

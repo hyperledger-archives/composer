@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Generating a REST API Server | Hyperledger Composer</title>
+    <title>Tutorials | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,17 +100,15 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
-<a href="../applications/genapp.html">Generating a starter application</a>
-<a href="../applications/getting-started-nodejs-app.html">Writing a node.js application</a>
-<a href="../applications/subscribing-to-events.html">Subscribing to events</a>
-<a href="../applications/rest-api-server.html">Generating a REST API</a>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<a href="../tutorials/playground-guide.html">Playground Tutorial</a>
+<a href="../tutorials/developer-guide.html">Developer Tutorial</a>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -120,84 +118,32 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="how-generate-a-rest-api-server-for-a-business-network">How Generate a REST API Server for a Business Network</h1>
+              <h1 id="tutorials">Tutorials</h1>
 
 <hr>
 
-<p>The easiest way to setup a REST API Server that works with a published Business Network is to use the composer-rest-server package.
-Once installed this can be run from the command line in an interactive mode or a non-interactive mode.</p>
+<p>We have two basic tutorial options. For developers, we recommend reading the <a href="../tutorials/developer-guide.html"><strong>developer guide</strong></a>. This guide presumes you have a development environment setup including the <a href="../getting-started/development-tools.html"><strong>installation of the development tools</strong></a>. For other users, we recommend the <a href="../tutorials/playground-guide.html"><strong>playground guide</strong></a>.</p>
 
 <hr>
 
-<h1 id="prerequesites">Prerequesites</h1>
+<h3 id="developer-guide">Developer Guide</h3>
+
+<p>The developer guide will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on Hyperledger Fabric.</p>
+
+<h3 id="playground-guide">Playground Guide</h3>
+
+<p>The Playground guide runs through importing the car auction sample business network. In this guide, you&#39;ll create participants, assets, and transactions; set up and run the auction, and verify that the transactions worked correctly.</p>
+
+<p>If you want to run the playground guide locally <a href="../getting-started/using-playground-locally.html">install the Playground locally</a> first, then use the playground guide.</p>
 
 <hr>
 
-<p>Along with the details of the business network and the connection profile that you will use to connect to it, you will also need to have the following
-prerequesite software installed on your system.</p>
+<h2 id="what-next">What next?</h2>
 
-<p><em>node.js</em>: v6.9.5</p>
-
-<p>Node comes with the <em>npm</em> package manager preinstalled and so once you have node installed you can install the composer-rest-server package using</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g composer-rest-server
-</code></pre></div>
-<p>You may need to use <em>sudo</em> with the command above to gain permission to install.</p>
-
-<hr>
-
-<h1 id="running-the-server">Running the Server</h1>
-
-<hr>
-
-<h2 id="interactive-mode">Interactive Mode</h2>
-
-<p>Once installed, you can start the composer-rest-server using:</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">composer-rest-server
-</code></pre></div>
-<p>You will then be asked to enter a few simple details about your business network.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">  _____           _              _                   ____                                                         
- |  ___|   __ _  | |__    _ __  <span class="o">(</span>_<span class="o">)</span>   ___           / ___|   ___    _ __ ___    _ __     ___    ___    ___   _ __
- | |_     / _<span class="sb">`</span> | | <span class="s1">'_ \  | '</span>__| | |  / __|  _____  | |      / _ <span class="se">\ </span> | <span class="s1">'_ ` _ \  | '</span>_ <span class="se">\ </span>  / _ <span class="se">\ </span> / __|  / _ <span class="se">\ </span>| <span class="s1">'__|
- |  _|   | (_| | | |_) | | |    | | | (__  |_____| | |___  | (_) | | | | | | | | |_) | | (_) | \__ \ |  __/ | |   
- |_|      \__,_| |_.__/  |_|    |_|  \___|          \____|  \___/  |_| |_| |_| | .__/   \___/  |___/  \___| |_|   
-                                                                               |_|                                
-? Enter your Fabric Connection Profile Name: defaultProfile
-? Enter your Business Network Identifier : digitalproperty-network
-? Enter your Fabric username : WebAppAdmin
-? Enter your secret: DJY27pEnl16d
-WARNING: No configurations found in configuration directory:/Users/samsmith/Projects/BlockChain/Composer/fabric-composer/packages/composer-rest-server/config
-WARNING: To disable this warning set SUPPRESS_NO_CONFIG_WARNING in the environment.
-Loopback Connector for Hyperledger Composer
-Models Loaded Now
-Browse your REST API at http://0.0.0.0:3000/explorer
-</span></code></pre></div>
-<h2 id="non-interactive-mode">Non-Interactive Mode</h2>
-
-<p>Alternatively you can run the server specifying all the parameters on the command line
-<code>bash
-$ composer-rest-server -c car-sample -b org.acme.biznet -i WebAppAdmin -p DJY27pEnl16d
-Loopback Connector for Hyperledger Composer
-Models Loaded Now
-Browse your REST API at http://0.0.0.0:3000/explorer
-</code></p>
-
-<h2 id="looking-at-the-generated-apis">Looking at the generated APIs</h2>
-
-<p>Launch your browser and go to the URL given (<a href="http://0.0.0.0:3000/explorer">http://0.0.0.0:3000/explorer</a>)</p>
-
-<p>You will be able to inspect and execute the APIs that are generated from the Business Network.</p>
-
-<h2 id="debug">Debug</h2>
-
-<p>If you should encounter any issues when using the composer-rest-server then you can use the following environment variable to enable extra trace information.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">export </span><span class="nv">DEBUG</span><span class="o">=</span>loopback:connector:businessnetworkconnector<span class="k">*</span>
-</code></pre></div>
-<h2 id="changing-the-port-of-the-server">Changing the port of the server</h2>
-
-<p>You can change the port of the server hosting the API by editing the file:
-<code>bash
-&lt;GLOBAL NPM MODULE PATH/composer-rest-server/server/config.json
-</code></p>
+<ul>
+<li>If you&#39;ve completed the <a href="../tutorials/developer-guide.html"><strong>developer guide</strong></a>, you might want to look at the information under <a href="../integrating/integrating-index.html"><strong>integrating existing systems</strong></a>.</li>
+<li>If you&#39;ve completed the <a href="../tutorials/playground-guide.html"><strong>Playground guide</strong></a>, you might want to look at the <a href="../business-network/businessnetwork.html"><strong>Developing business networks</strong></a> section.</li>
+</ul>
 
             
           </section>

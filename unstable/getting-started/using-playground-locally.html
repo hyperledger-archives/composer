@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Using the Hyperledger Composer Playground Locally | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  <script src="/composer/unstable/assets/js/clipboard.min.js"></script>
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li>
+                <li>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                </li>
+                <li>
+                    <a href="../introduction/introduction.html">Docs</a>
+                </li>
+                <li>
+                    <a href="../support/index.html">Community</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-3">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
+<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
+<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-9">
+          <section class="content-chunk">
+            
+              <h1 id="installing-and-running-hyperledger-composer-playground-locally">Installing and running Hyperledger Composer Playground locally</h1>
+
+<p>This tutorial will take you through how to install and run the Hyperledger Composer Playground on your local machine. It also creates an instance of Hyperledger Fabric v1.0-Alpha1.</p>
+
+<p>Hyperledger Composer Playground can also be used in a &quot;browser only&quot; mode, without a running instance of Hyperledger Fabric. When used in this mode, all the functionality of Hyperledger Composer Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.</p>
+
+<hr>
+
+<h2 id="before-you-begin">Before you begin</h2>
+
+<p>In order to install Hyperledger Composer Playground, you need the following software installed:</p>
+
+<ul>
+<li>Docker Engine 17.03 or greater</li>
+<li>Docker Compose 1.8 or greater</li>
+</ul>
+
+<p><em>Please note:</em> If you&#39;ve previously used Hyperledger Composer Playground locally or Hyperledger Fabric and wish to clear everything and start again, the following commands will delete any running containers and delete all downloaded images, (be careful if you&#39;re using other Docker images on your machine):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">docker ps -aq | xargs docker rm -f
+docker images -aq | xargs docker rmi -f
+</code></pre></div>
+<hr>
+
+<h2 id="creating-the-containers-and-installing-playground-locally">Creating the containers and installing playground locally</h2>
+
+<ol>
+<li><p>First, you must download the example Docker Compose file using the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -O https://hyperledger.github.io/composer/composer/install-hlfv1.sh
+</code></pre></div></li>
+<li><p>In a terminal or command prompt, navigate to the directory that you downloaded the <code>install-hlfv1.sh</code> file into, and run the following command to start a Hyperledger Fabric instance and Hyperledger Composer Playground:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cat install-hlfv1.sh | bash
+</code></pre></div></li>
+<li><p>Access your local Hyperledger Composer Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>.</p>
+
+<p>By default, you are connected to the instance of fabric created in the previous step and the Basic Sample Network business network is loaded. In the connection profiles panel of the playground, the <code>hlfabric</code> connection profile should be selected.</p></li>
+</ol>
+
+<hr>
+
+<!--
+<a name="installationoptions"></a>
+
+## Alternative installation options
+
+If you have an existing Hyperledger Fabric instance you want to use with Hyperledger Composer Playground, then you can install the playground without installing another Hyperledger Fabric instance. The playground can then be configured to connect to your existing Hyperledger Fabric instance by creating a connection profile with the required connection settings.
+
+There are two options for installing the Hyperledger Composer Playground.
+You can choose to install using npm (the Node.js package manager), or you can choose to install with Docker. We recommend that you:
+
+*   <a href="#installnpm">Install using npm</a> if you wish to run to Hyperledger Composer Playground on your local workstation.
+*   <a href="#installdocker">Install using Docker</a> if you wish to run Hyperledger Composer Playground on a server or cloud platform.
+
+**why, what does each do differently?**
+
+Note that the same set of features is available regardless of the installation method that you choose.
+
+## <a name="installnpm"></a>Installing with npm
+
+### Prerequisites
+
+In order to install Hyperledger Composer Playground with npm, you need the following software installed:
+
+*   Node.js v6.x (note that Node.js v7.x is unsupported)
+*   npm v3.x or greater
+
+### Installation
+
+You can install Hyperledger Composer Playground by running the following command in your terminal or command prompt:
+
+  ```
+  npm install -g composer-playground
+  ```
+
+You should see the following output in your terminal or command prompt:
+
+  ```
+  npm install -g composer-playground
+  ...
+  /usr/local/bin/composer-playground -> /usr/local/lib/node_modules/composer-playground/cli.js
+  /usr/local/lib/node_modules
+  └─┬ composer-playground@0.4.3
+  ...
+  ```
+
+Verify that no errors occurred. If any part of this process fails, then Hyperledger Composer Playground will fail to work correctly. You may see errors from a program called `node-gyp`. These errors indicate that your system is not set up correctly to build Node.js C/C++ native modules. You may need to install additional software to correct this error.
+
+You can then start Hyperledger Composer Playground by running the following command in your terminal or command prompt:
+
+  ```
+  composer-playground
+  ```
+
+A web browser will be automatically opened once the playground has started, but should that not happen you should be able to access Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+
+---
+
+## <a name="installdocker"></a>Installing with Docker
+
+### Prerequisites
+
+In order to install Hyperledger Composer Playground with Docker, you need the following software installed:
+
+*   Docker Engine 1.12.3 or greater
+
+### Installation
+
+You can install Hyperledger Composer Playground by running the following Docker command in your terminal or command prompt:
+
+  ```
+  docker run -d -p 8080:8080 hyperledger/composer-playground
+  ```
+
+You should see the following output in your terminal or command prompt:
+
+  ```
+  $ docker run -d -p 8080:8080 hyperledger/composer-playground
+  afd1baff0487de5c69626b8baea69c702744f92813043e3d2b0ef786c7f77517
+  ```
+
+Verify that no errors occurred.
+
+You can then start Hyperledger Composer Playground by clicking on this link: <a href="http://localhost:8080" target="_blank">http://<span></span>localhost:8080</a>
+
+---
+-->
+
+<h2 id="whats-next">What&#39;s next?</h2>
+
+<ul>
+<li>Now that you have the playground running locally and connected to a running instance of Hyperledger Fabric you might want to <a href="../getting-started/development-tools.html">use the developer tools to begin developing and using your own business networks</a>.</li>
+<li>If you&#39;re looking for a tutorial on using Playground, try <a href="../tutorials/playground-guide.html">running a car auction with the Playground</a>.</li>
+</ul>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+
+    
+
+    
+    <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/composer/unstable/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/composer/unstable/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+
+      new Clipboard('.btn', {
+    text: function() {
+
+        return document.querySelector("[style='display:none;']").value;
+    }
+});
+  });
+
+</script>
+
+</html>

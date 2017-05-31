@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Create a Business Network Definition | Hyperledger Composer</title>
+    <title>Solution Architecture | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -100,17 +100,11 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<a href="../introduction/key-concepts.html">Key Concepts</a>
+<a href="../introduction/solution-architecture.html">Typical Solution Architecture</a>
 <strong><a href="../getting-started/getting-started.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
 <strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/bnd-define.html">Creating a business network definition</a>
-<a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
-<a href="../business-network/publishing-events.html">Emitting events</a>
-<a href="../business-network/runtime-update.html">Updating a business network definition</a>
-<a href="../business-network/testing.html">Testing a business network definition</a>
-<a href="../business-network/bnd-publish.html">Publishing a business network definition</a>
-<a href="../business-network/model-publish.html">Publishing a business domain model</a>
 <strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
@@ -124,81 +118,96 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="create-a-business-network-definition">Create a Business Network Definition</h1>
+              <h1 id="typical-hyperledger-composer-solution-architecture">Typical Hyperledger Composer Solution Architecture</h1>
 
 <hr>
 
-<p>A business network definition is composed of three major items:</p>
+<p>Hyperledger Composer enables architects and developers to quickly create &quot;full-stack&quot; blockchain solutions. I.e. business logic that runs on the blockchain, REST APIs that expose the blockchain logic to web or mobile applications, as well as integrating the blockchain with existing enterprise systems of record.</p>
+
+<p><img src="../assets/img/ComposerArchitecture.svg" alt="Diagram of typical Hyperledger Composer archetecture"></p>
+
+<hr>
+
+<p>Hyperledger Composer is composed of the following high-level components:</p>
 
 <ul>
-<li>basic metadata for the business network definition (name, version and description)</li>
-<li>a set of domain models that define the structure of the participants, assets and transactions within the network</li>
-<li>a set of scripts that define business logic</li>
+<li>Execution Runtimes (four are currently supported!)</li>
+<li>JavaScript SDK</li>
+<li>Command Line Interface</li>
+<li>REST Server</li>
+<li>Loopback Connector</li>
+<li>Playground Web User Interface</li>
+<li>Yeoman code generator</li>
+<li>VSCode and Atom editor plugins</li>
 </ul>
 
-<h2 id="generating-skeleton-business-network">Generating Skeleton Business Network</h2>
+<h2 id="execution-runtimes">Execution Runtimes</h2>
 
-<h3 id="generation">Generation</h3>
+<p>Hyperledger Composer has been designed to support different pluggable runtimes, and currently has four runtime implementations:</p>
+
+<ul>
+<li>Hyperledger Fabric version 0.6. State is stored on the distributed ledger.</li>
+<li>Hyperledger Fabric version 1.0 alpha1. State is stored on the distributed ledger.</li>
+<li>Web, which executes within a web page, and is used by Playground. State is stored in browser local storage.</li>
+<li>Embedded, which executes within a Node.js process, and is used primarily for unit testing business logic. State is stored in an in-memory key-value store.</li>
+</ul>
+
+<h3 id="connection-profiles">Connection Profiles</h3>
+
+<p>Connection Profiles are used across Hyperledger Composer to specify how to connect to an execution runtime. There are different configuration options for each <em>type</em> of execution runtime. For example, the connection profile for an Hyperledger Fabric version 1.0 runtime will contain the TCP/IP addresses and ports for the Fabric peers, as well as cryptographic certificates etc.</p>
+
+<p>Connection Profiles are referred to by name (in both code and on the command line) and the connection profile documents (in JSON format) are resolved from the user&#39;s home directory.</p>
+
+<h2 id="javascript-sdk">JavaScript SDK</h2>
+
+<p>The Hyperledger Composer JavaScript SDK is a set of Node.js APIs the enables developers to create applications to manage and interact with deployed business networks.</p>
+
+<p>The APIs are split between two npm modules:</p>
 
 <ol>
-<li><code>yo fabric-composer</code></li>
+<li><code>composer-client</code> used to submit transactions to a business network or to perform Create, Read, Update, Delete operations on assets and participants</li>
+<li><code>composer-admin</code> used to manage business networks (deploy, undeploy)</li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer Skeleton Application Generator?
-Please select the type of Application:
-  CLI Application
-  Angular2 Application
-❯ Skeleton Business Network
-</code></pre></div>
-<p>And select <code>Skeleton Business Netork</code></p>
 
-<ol>
-<li>Answer all of the questions</li>
-</ol>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer Skeleton Application Generator
-? Please select the type of Application: Skeleton Business Network
-You can run this generator using: 'yo fabric-composer:businessnetwork'
-Welcome to the business network skeleton generator
-? What is the business network's name? basic-sample-network
-? What is the business network's namespace? org.acme.biznet
-? Describe the business network Sample Business Network
-? Who is the author? Joe Bloggs
-? Which license do you want to use? Apache-2
-   create index.js
-   create lib/logic.js
-   create package.json
-   create README.md
-   create test/logic.js
-   create .eslintrc.yml
-   create models/org.acme.biznet.cto
-</code></pre></div>
-<p>This generates a skeleton business network with an <code>asset</code>, <code>participant</code> and <code>transaction</code> defined, as well as a <code>mocha</code> unit test.</p>
+<p>Details of all the APIs are available as JSDocs (see reference).</p>
 
-<p>Also included, is a &#39;best practices&#39; eslint config file</p>
+<h3 id="composer-client">composer-client</h3>
 
-<h2 id="metadata">Metadata</h2>
+<p>This module would usually be installed as a local dependency of an application. It provides the API that is used by business applications to connect to a business network to access <strong>assets</strong>, <strong>participants</strong> and submitting <strong>transactions</strong>. When in production this is only module that needs to be added as a direct dependency of the application.</p>
 
-<p>A Business Network Definition has a name (limited to basic ASCII alphanumeric characters and <code>-</code>), a human-readable description and a version number. The version number for the network should take the form Major.Minor.Micro and
-<a href="semver.org">Semantic Versioning</a> principles should be used when incrementing the version number.</p>
+<h3 id="composer-admin">composer-admin</h3>
 
-<p>The identifier of the network is formed from its name, the <code>-</code> character and its version number. A valid identifier is therefore <code>mybusinessnetwork-0.6.3</code>.</p>
+<p>This module would usually be installed as a local dependency of <strong>administrative</strong> applications. This API permits the creation of and deployment of <strong>business network definitions</strong>.</p>
 
-<p>The metadata for a business network definition is read from <code>package.json</code>, meaning that business network definitions may also be valid <code>npm</code> packages.</p>
+<h2 id="command-line-interface">Command Line Interface</h2>
 
-<h2 id="domain-models">Domain Models</h2>
+<p>The <code>composer</code> command line tool enables developers and administrators to deploy and managed business network definitions.</p>
 
-<p>The set of domain models for a business network definition define the types that are valid within the network and outside the network when it is integrated with external systems (for example systems that submit transactions to the network).</p>
+<h2 id="rest-server">REST Server</h2>
 
-<p>A domain model may either be packaged within the business network definition (typically stored under the <code>models</code> directory), or may be declared in <code>package.json</code> as an external dependency. You would refer to models via a dependency if you wanted to share them across business network definitions, for example.</p>
+<p>The Hyperledger Composer REST Server automatically generates a Open API (Swagger) REST API for a business network. The REST Server (based on Loopback technology) converts the Composer model for a business network into an Open API definition, and at runtime implements Create, Read, Update and Delete support for assets and participants and allows transactions to be submitted for processing or retrieved.</p>
 
-<h2 id="scripts">Scripts</h2>
+<h2 id="loopback-connector">Loopback Connector</h2>
 
-<p>The scripts for a business network definition are typically stored under the <code>lib</code> directory and are packaged within the business network definition. The scripts are written in ES 5 JavaScript and refer to the types that are defined in the domain models for the business network.</p>
+<p>The Hyperledger Composer Loopback Connector is used by the Composer REST Server, however it may also be used standalone by integration tools that support Loopback natively. Alternatively it may be used with the Loopback tools to create more sophisticated customizations of the REST APIs.</p>
 
-<h1 id="business-network-archive">Business Network Archive</h1>
+<h2 id="playground-web-user-interface">Playground Web User Interface</h2>
 
-<p>Prior to deploying or updating a business network definition it must be archived using the ZIP standard. A typical ZIP will contain a <code>package.json</code> a <code>lib</code> folder containing one or more <code>.js</code> files and a <code>models</code> folder containing one or more <code>.cto</code> files.</p>
+<p>Hyperledger Composer Playground is a web user interface to define and test business networks. It allows a business analyst to quickly import samples and prototype business logic that executes on the Web or Hyperledger Fabric runtime.</p>
 
-<p>The <code>composer</code> CLI contains commands for creating an archive, deploying business network archives and the <code>BusinessNetworkDefinition.fromArchive, toArchive and fromDirectory</code> APIs can be used to programmatically create business network definitions.</p>
+<h2 id="yeoman-code-generators">Yeoman Code Generators</h2>
+
+<p>Hyperledger Composer uses the Open Source Yeoman code generator framework to create skeleton projects:</p>
+
+<ul>
+<li>Angular web application</li>
+<li>Node.js application</li>
+<li>Skeleton business network</li>
+</ul>
+
+<h2 id="vscode-and-atom-editor-extensions">VSCode and Atom Editor Extensions</h2>
+
+<p>Hyperledger Composer has community contributed editor extensions for VSCode and Atom. The VSCode extension is very powerful and validates Composer model and ACL files, providing syntax highlighting, error detection and snippets support. The Atom plugin is much more rudimentary and only has basic syntax highlighting.</p>
 
             
           </section>

@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,14 +100,13 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
-<a href="../problems/diagnostics.html">Diagnosing problems</a>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -117,13 +116,13 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="diagnose-problems">Diagnose Problems</h1>
+              <h1 id="diagnosing-problems">Diagnosing Problems</h1>
 
 <hr>
 
 <p>If something should ever go wrong with an application, what should you do about getting diagnostics?</p>
 
-<p>Let&#39;s look at the Getting Started application, and use that to explain how to get diagnostics out of the Framework.</p>
+<p>Let&#39;s look at the digitalproperty-app sample, and use that to explain how to get diagnostics out of the Framework.</p>
 
 <p>Key Point: This is a framework - so your application will need to have it&#39;s own logging framework. Plus, your application could also have configuration information to control Hyperledger Composer&#39;s own logging. Composer does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.</p>
 
@@ -214,14 +213,14 @@ ga('send', 'pageview');
 <p>Each Business Network is deployed to it&#39;s own Chaincode container.  In the case of errors say with a transaction function, it can be helpful to look at the logs from that container and see what has happened. <code>docker logs &lt;containerid&gt;</code> will show the logs but you need to know the container id.</p>
 
 <p>Firstly list the docker processes and look for the image name; this command will do this for you in one step</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">matthew@matthew-VirtualBox:~$ </span>docker ps | cut -b 1-13,21-93
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">docker ps | cut -b 1-13,21-93
 CONTAINER ID IMAGE                                                                    
 f71e2a630d6a dev-vp0-9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7
 bb5db2ca4e6a hyperledger/fabric-peer                                                  
 3ec0e41c4898 hyperledger/fabric-membersrvc     
 </code></pre></div>
 <p>The hex value after the dev-vp0 is the &#39;chaincodeid&#39;. If you look in the connection profiles directory you&#39;ll see a simple JSON file that has the anem of the network mapped to the chaincode id. In this example we have two neworks listed.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">matthew@matthew-VirtualBox:~$ </span>cat ~/.composer-connection-profiles/defaultProfile/connection.json
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">cat ~/.composer-connection-profiles/defaultProfile/connection.json
 <span class="o">{</span>
     <span class="s2">"type"</span>: <span class="s2">"hlf"</span>,
     <span class="s2">"membershipServicesURL"</span>: <span class="s2">"grpc://localhost:7054"</span>,

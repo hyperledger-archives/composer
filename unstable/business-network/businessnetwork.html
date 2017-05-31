@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer - Business Network | Hyperledger Composer</title>
+    <title>Hyperledger Composer - Developing Business Networks | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,23 +100,21 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<a href="../business-network/businessnetwork.html">What is a business network?</a>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
 <a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/getting-started-coding-bnd.html">Defining a business network</a>
+<a href="../business-network/bnd-define.html">Creating a business network definition</a>
 <a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
-<a href="../business-network/bnd-define.html">Create a business network definition</a>
-<a href="../business-network/publishing-events.html">Publishing events</a>
-<a href="../business-network/bnd-publish.html">Publish a business network definition</a>
-<a href="../business-network/model-publish.html">Publish a business domain model</a>
-<a href="../business-network/runtime-update.html">Update a business network definition on Composer</a>
-<a href="../business-network/testing.html">Test a business network definition</a>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<a href="../business-network/publishing-events.html">Emitting events</a>
+<a href="../business-network/runtime-update.html">Updating a business network definition</a>
+<a href="../business-network/testing.html">Testing a business network definition</a>
+<a href="../business-network/bnd-publish.html">Publishing a business network definition</a>
+<a href="../business-network/model-publish.html">Publishing a business domain model</a>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -126,49 +124,37 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="business-network">Business Network</h1>
+              <h1 id="developing-business-networks">Developing Business Networks</h1>
 
 <hr>
 
-<p>A <code>Business Network</code> describes the structures and processes that exist in the exchange of assets between participants in economic networks. Hyperledger Composer helps you to easily develop applications for business networks, to digitize these networks - making them more efficient.</p>
+<p>Developers use Hyperledger Composer to digitize business networks. The business network is accessed by multiple participants in the network, some of which may be responsible for the maintenance (hosting) of the network itself, referred to as maintainers of the network.</p>
 
-<p>There are many elements in a business network; the most fundamental of which are participants, assets, registries and transactions.  We&#39;re going to start by explaining these so that you get a feeling for this most important concepts.  We&#39;ll then reinforce these slightly abstract concepts with a concrete example involving a digital property network.</p>
+<p>Typically each maintainer of the network will run several peer nodes (for crash fault tolerance) and Hyperledger Fabric replicates the distributed ledger across the set of peer nodes.</p>
 
-<ul>
-<li><p>Participants.  These are the actors in the business network.  A participant might be an individual or an organization.  A participant has an one of more attributes that are used to identify them to the business network.</p></li>
-<li><p>Assets. Assets are created by participants, and subsequently exchanged between them.  Assets can have a rich lifecycle, as defined by the transaction in which they are involved.</p></li>
-<li><p>Registries. A registry is a collection of assets for a particular purpose.  As assets move through their lifecycle, they move through different registries. Assets can be in more than one registry at the same time.</p></li>
-<li><p>Transactions. These are operations that are performed on assets and other resources as they move through their lifecycle within the business network.</p></li>
-</ul>
+<h2 id="model">Model</h2>
 
-<p>We&#39;re going to learn lots more about what&#39;s possible within digital business networks, but let&#39;s start with a simple example.</p>
+<p>Developers work with business analysts to define the domain data model for the business network. The data model is expressed using the Composer Modelling Language and defines the structure of the resources that will be stored on the ledger, or processed as transactions.</p>
 
-<h2 id="an-example-of-a-business-network">An example of a Business Network</h2>
+<p>Once the domain model is in place, developers can capture <em>smart contracts</em> as executable transaction processor functions, written in JavaScript.</p>
 
-<p>Imagine a property network, comprising participants who want to buy and sell property, estate agents (realtors) who provide matching services between buyers and sellers, conveyancers who exchange legal contracts related to the buying and selling of property, and government land registries who record the ongoing ownership of property.  </p>
+<h2 id="access-control">Access Control</h2>
 
-<p>Here are the key elements of this property network.</p>
+<p>In parallel developers or technical analysts can define the access control rules for the business network, to enforce which participants have access to the data on the ledger and under which conditions.</p>
 
-<ul>
-<li><p>Participants. Buyers, sellers, estate agents (realtors), conveyancers and the government land registry are the people and organizations who participate in this network.</p></li>
-<li><p>Assets. Property is the asset that is exchanged and between buyers and sellers in the property network. Property is advertised by estate agents (realtors), exchanged by conveyancers, and recorded by land registries. Property has a fairly rich lifecycle, in that it can be created, exchanged, modified and destroyed.</p></li>
-<li><p>Registries.  Clearly the Land Registry record of properties is an obvious registry in this network, but there are others.  The estate agent (realtor) has a set of properties for sale by registered sellers and interested buyers, and probably a separate record of the deals between buyers and sellers that are in-flight at a given moment in time.  Conveyancers probably have a registry of properties in the process of being legally exchanged between buyers and sellers.  Assets will be updated within these registries as they are exchanged between buyers and sellers.</p></li>
-<li><p>Transactions. There are many transactions going on in this property network. Sellers sell property and buyers buy them.  Conveyancers create and exchange legal contracts with other conveyancers on behalf of buyers and sellers and their respective property sales.  The Land Registry records updates to property ownership, and estate agents (realtors) indicate that properties are for sale in a market and remove them from that market once they have been sold.</p></li>
-</ul>
+<h2 id="deploy">Deploy</h2>
 
-<p>Hyperledger Composer makes it easy to create these elements in a business network, and the applications which capture interactions between different participants.  </p>
+<p>Developers package the models, scripts and access control rules into a deployable <em>Business Network Archive</em> and use command line tools to deploy the archive to a runtime for testing.</p>
 
-<h2 id="related-concepts">Related Concepts</h2>
+<h2 id="test">Test</h2>
 
-<p><a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a></p>
+<p>Like all business logic, it is important to create unit and system tests for business networks. Developers can use popular JavaScript testing frameworks such as Mocha and Chai to run unit tests (against the Node.js embedded runtime) or run system tests against a Hyperledger Fabric.</p>
 
-<h2 id="related-tasks">Related Tasks</h2>
+<h2 id="integrate">Integrate</h2>
 
-<p><a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a></p>
+<p>Once the business network is tested and in place, front-end applications need to be created. Use the  REST Server to automatically generate a REST API for a business network, and then a skeleton generate Angular application using the Yeoman code generator.</p>
 
-<h2 id="related-reference">Related Reference</h2>
-
-<p><a href="../reference/composer.network.deploy.html">Network deploy command</a></p>
+<p>The REST Server can be configured to authenticate the participants in the business network, ensuring that credentials and permissions are enforced.</p>
 
             
           </section>

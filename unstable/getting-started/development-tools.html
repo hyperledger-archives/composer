@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+  
+  
+  
+
+<head>
+  <meta charset="utf-8">
+  
+    <title>Getting Started with Hyperledger Composer | Hyperledger Composer</title>
+  
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
+  <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
+  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+  <script src="/composer/unstable/assets/js/clipboard.min.js"></script>
+
+  
+    <!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-91314349-2', 'auto');
+ga('require', 'outboundLinkTracker');
+ga('require', 'eventTracker');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<script async src="/composer/unstable/assets/js/autotrack.js"></script>
+<!-- End Google Analytics -->
+
+  
+
+  
+    <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/main.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/footer.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/prettify.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/composer-style.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+  
+</head>
+
+
+<body class="">
+
+  
+  <!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- <li>
+                    <a href="services.html">Composer</a>
+                </li> -->
+                <li>
+                    <a href="https://composer-playground.mybluemix.net/">Playground</a>
+                </li>
+                <li>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
+                </li>
+                <li>
+                    <a href="../introduction/introduction.html">Docs</a>
+                </li>
+                <li>
+                    <a href="../support/index.html">Community</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container
+   -->
+</nav>
+
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="container">
+      <div class="row">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="col-md-3">
+          <nav class="context-nav" id="myScrollspy">
+            
+            
+              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
+<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
+<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../support/index.html">Support</a></strong></p>
+
+            
+          </nav>
+        </div>
+        <div class="col-md-9">
+          <section class="content-chunk">
+            
+              <h1 id="installing-and-developing-with-hyperledger-composer">Installing and developing with Hyperledger Composer</h1>
+
+<p>Follow the instructions below to get the required Hyperledger Composer development tools and stand up a Hyperledger Fabric.</p>
+
+<p>There are two version of Hyperledger Fabric: v0.6 and v1.0-alpha. The default is for v1.0-alpha and we suggest this is the one you use.</p>
+
+<hr>
+
+<h2 id="before-you-begin">Before you begin</h2>
+
+<p>The following are prerequisites for installing the required development tools:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Operating Systems: Ubuntu Linux 14.04 / 16.04 LTS (both 64-bit), or Mac OS 10.12
+Docker Engine: Version 17.03 or higher
+Docker-Compose: Version 1.8 or higher
+Node: 6.x (note version 7 is not supported)
+npm: 3.10.x
+git: 2.9.x
+A code editor of your choice, we recommend VSCode.
+</code></pre></div>
+<p>If you&#39;re running on Ubuntu, you can download the prerequisites using the following commands:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+
+chmod u+x prereqs-ubuntu.sh
+</code></pre></div>
+<p>Next run the script - as this uses sudo you will be prompted for your password.</p>
+
+<p><code>./prereqs-ubuntu.sh</code></p>
+
+<hr>
+
+<h2 id="step-1-installing-hyperledger-composer-development-tools">Step 1: Installing Hyperledger Composer development tools</h2>
+
+<p>The development tools you&#39;ll need can all be installed with <code>npm install -g</code>.</p>
+
+<ol>
+<li><p>To install <code>composer-cli</code> run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-cli
+</code></pre></div>
+<p>The <code>composer-cli</code> contains all the command line operations for developing business networks.</p></li>
+<li><p>To install <code>generator-hyperledger-composer</code> run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g generator-hyperledger-composer
+</code></pre></div>
+<p>The <code>generator-hyperledger-composer</code> is a yoeman plugin that creates bespoke applications for your business network.</p></li>
+<li><p>To install <code>composer-rest-server</code> run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-rest-server
+</code></pre></div>
+<p>The <code>composer-rest-server</code> uses the Hyperledger Composer LoopBack Connector to connect to a business network, extract the models and then present a page containing the REST APIs that have been generated for the model.</p></li>
+<li><p>To install <code>yoeman</code> run the following command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g yo
+</code></pre></div>
+<p>Yoeman is a tool for generating applications. When combined with the <code>generator-hyperledger-composer</code> component, it can interpret business networks and generate applications based on them.</p></li>
+</ol>
+
+<h3 id="optional-development-tools">Optional development tools</h3>
+
+<ol>
+<li><p>If you use VSCode, install the Hyperledger Composer VSCode plugin from the VSCode marketplace.</p></li>
+<li><p>If you want to run the Playground locally, install the <code>composer-playground</code> and <code>composer-playground-api</code> using the following two commands.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground
+npm install -g composer-playground-api
+</code></pre></div></li>
+</ol>
+
+<h2 id="step-2-starting-hyperledger-fabric">Step 2: Starting Hyperledger Fabric</h2>
+
+<p>If you&#39;ve <a href="../getting-started/using-playground-locally.html">installed the Hyperledger Composer Playground locally</a> you&#39;ll need to close the containers by using the following scripts.</p>
+
+<blockquote>
+<p><em>Please note: If you have current work in a local instance of playground, be sure to export it before closing the docker containers.</em></p>
+</blockquote>
+<div class="highlight"><pre><code class="language-" data-lang="">docker ps -aq | xargs docker rm -f
+docker images -aq | xargs docker rmi -f
+</code></pre></div>
+<p>These scripts use Node v6, and bash, which are Hyperledger Composer depencies. Choose a directory that you wish to have the setup scripts within.</p>
+
+<ol>
+<li><p>In a directory of your choice (will assume <code>~/fabric-tools</code>) get the zip file that contains the tools</p>
+<div class="highlight"><pre><code class="language-" data-lang="">mkdir ~/fabric-tools &amp;&amp; cd ~/fabric-tools
+
+curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
+unzip fabric-dev-servers.zip
+</code></pre></div>
+<p>A <code>tar.gz</code> file is also available</p>
+<div class="highlight"><pre><code class="language-" data-lang="">mkdir ~/fabric-tools &amp;&amp; cd ~/fabric-tools
+curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
+
+tar xvz fabric-dev-servers.tar.gz
+</code></pre></div></li>
+<li><p>Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv0.6
+</code></pre></div>
+<p>For v1.0-alpha, there is <em>nothing to as this the default</em>. But to &#39;unset&#39; the v0.6, or to be explicit in using v1 use this command</p>
+<div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv1
+</code></pre></div></li>
+<li><p>If this is the first time, you&#39;ll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.</p>
+
+<p>All the scripts will be in the directory <code>~/fabric-tools</code>  A typical sequence for Hyperledger Composer use would be</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
+./downloadFabric.sh
+./startFabric.sh
+./createComposerProfile.sh
+</code></pre></div>
+<p>Then at the end of your development session</p>
+<div class="highlight"><pre><code class="language-" data-lang="">cd ~/fabric-tools
+./stopFabric.sh
+./teardownFabric.sh
+</code></pre></div></li>
+</ol>
+
+<p><em>If you want to swap between v0.6 and v1.0, ensure you have issued a <code>stopFabric.sh</code> and a <code>teardownFabric.sh</code> command first be START on the other version</em></p>
+
+<h2 id="script-details">Script details</h2>
+
+<p><img src="../assets/img/developer-tools-commands.png" alt="">.</p>
+
+<p>This diagram explains the order in which the scripts can be run. The version will default to Hyperledger Fabric v1.0 if the version command is not run.</p>
+
+<p><strong>Downloading Fabric</strong></p>
+
+<p>Issue from the <code>fabric-tools</code> directory
+<code>
+./downloadFabric.sh
+</code></p>
+
+<p><strong>Starting Fabric</strong></p>
+
+<p>Issue  from the <code>fabric-tools</code> directory
+<code>
+./startFabric.sh
+</code></p>
+
+<p><strong>Stop Fabric</strong></p>
+
+<p>Issue from the <code>fabric-tools</code> directory
+<code>
+./stop.sh
+</code></p>
+
+<p><strong>Create Composer Profile</strong></p>
+
+<p>Issue from the <code>fabric-tools</code> directory
+<code>
+./createComposerProfile.sh
+</code></p>
+
+<p>Note: this create a Hyperledger Composer profile specifically to connect to the development fabric you&#39;ve already started.</p>
+
+<p><strong>Teardown Fabric</strong></p>
+
+<p>Issue from the <code>fabric-tools</code> directory
+<code>
+./teardownFabric.sh
+</code></p>
+
+<hr>
+
+<!--0. Make sure you've started Fabric as in Step 1 above. For example, If this is your first time for exaple:
+
+        $ cd ~/fabric-tools
+        $ ./downloadFabric.sh
+        $ ./startFabric.sh
+        $ ./createComposerProfile.sh
+
+1. Clone the sample application into a directory of your choice - BUT not the same directory as in Step 1. (Assume `~/github`)
+
+        $ mkdir ~/github && cd ~/github
+        $ git clone https://github.com/hyperledger/composer-sample-applications
+        $ cd composer-sample-applications
+        $ npm install
+  To see a summary of all the sample applications, there's a simple command that will show summary details of the applications
+  A useful information node.js script has been created to show the available sample applications
+
+        $ node ~/github/composer-sample-applications/info.js
+
+2. When you started fabric you will have chosen which version to use.  If you have chosen Fabirc v0.6 you will need to suffix the targets in the npm commands below with `:hlfv06`. Both examples are given below - do not issue both commands!
+
+    _Note: this does not change the application source code or the model, purely the name of the Composer profile to use, and the Fabric's admin indentity_
+
+3. Deploy the business network
+
+        $ cd packages/digitalproperty-app
+        $ npm run deployNetwork
+        $ npm run deployNetwork:hlfv0.6     # if you want to use v0.6
+
+5. Run the sample application
+
+        $ npm test
+        $ npm test:hlfv0.6     # if you want to use v0.6
+-->
+
+<h2 id="what-next">What next?</h2>
+
+<ul>
+<li>Begin <a href="../business-network/businessnetwork.html"><strong>writing a business network definition</strong></a>.</li>
+<li>If you&#39;re looking for a tutorial on using the developer tools, see the <a href="../tutorials/developer-guide.html"><strong>developer guide</strong></a> to run through a sample with the developer tools.</li>
+</ul>
+
+            
+          </section>
+        </div>
+        <!-- Otherwise, have the main content fill all 12 columns... -->
+        
+      </div>
+      <div class="PageNavigation">
+    
+    
+  </div>
+    </article>
+</div>
+
+    
+
+    
+    <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+  </div>
+</body>
+
+<!-- jQuery -->
+<script src="/composer/unstable/assets/js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/composer/unstable/assets/js/bootstrap.js"></script>
+
+<script>
+
+  $( document ).ready(function() {
+
+      new Clipboard('.btn', {
+    text: function() {
+
+        return document.querySelector("[style='display:none;']").value;
+    }
+});
+  });
+
+</script>
+
+</html>

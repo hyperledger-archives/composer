@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,14 +100,15 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<a href="../introduction/key-concepts.html">Components and Concepts</a>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<a href="../introduction/key-concepts.html">Key Concepts</a>
+<a href="../introduction/solution-architecture.html">Typical Solution Architecture</a>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -125,43 +126,13 @@ ga('send', 'pageview');
 
 <hr>
 
-<h2 id="framework-features">Framework Features</h2>
+<h2 id="hyperledger-composer-components">Hyperledger Composer Components</h2>
 
-<table><thead>
-<tr>
-<th style="text-align: center">Component</th>
-<th style="text-align: center">Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: center">composer-admin, composer-client, composer-common</td>
-<td style="text-align: center">Composer-admin, composer-client, and composer-common contain the APIs to interact with a Hyperledger Composer runtime. Composer-admin contains APIs for deploying and updating a business network, composer-client contains APIs for manipulating resources within registries via transactions.</td>
-</tr>
-<tr>
-<td style="text-align: center">composer-cli</td>
-<td style="text-align: center">Composer-cli contains</td>
-</tr>
-<tr>
-<td style="text-align: center">composer-runtime</td>
-<td style="text-align: center">There are several versions of the composer-runtime designed for different environments. The embedded runtime runs within local storage, the hlf and hlfv1 runtimes run on Hyperledger Fabric versions 0.6 and 1.0.</td>
-</tr>
-<tr>
-<td style="text-align: center">composer-connector</td>
-<td style="text-align: center">The composer-connector components connect your Composer to a Hyperledger Fabric instance.</td>
-</tr>
-<tr>
-<td style="text-align: center">composer-rest-server</td>
-<td style="text-align: center">The composer-rest-server component creates and connects you to a REST API interface containing APIs for interacting with your business network.</td>
-</tr>
-<tr>
-<td style="text-align: center">generator-fabric-composer</td>
-<td style="text-align: center">The generator-fabric-composer component contains a Yeoman module for generating applications using data from your business network.</td>
-</tr>
-<tr>
-<td style="text-align: center">loopback-connector-composer</td>
-<td style="text-align: center">The loopback-connector-composer component allows you to connect loopback-compatible systems to your Composer business network.</td>
-</tr>
-</tbody></table>
+<p>Hyperledger Composer can be experienced through a browser-based UI called Hyperledger Composer Playground.  This can be used via a hosted version (no install necessary) or a local install (good for editing and testing sample Business Networks offline).</p>
+
+<p>Developers who want to use Hyperledger Composer&#39;s full application development capabilities can install the Developer Tools.</p>
+
+<p><img src="../assets/img/ComposerComponents.svg" alt="Diagram of Hyperledger Composer components"></p>
 
 <hr>
 
@@ -169,7 +140,13 @@ ga('send', 'pageview');
 
 <h3 id="blockchain-state-storage">Blockchain State Storage</h3>
 
-<p>The current state of assets and participants are stored on the blockchain, administered by Hyperledger Fabric. Hyperledger Fabric runs consensus checks to ensure the validity of all blocks in the blockchain. For more information on Hyperledger Fabric consensus, see the <a href="https://hyperledger-fabric.readthedocs.io/en/latest/fabric_model.html#consensus">Hyperledger Fabric documentation</a>.</p>
+<p>The current state of assets and participants are stored on the blockchain (ledger), for example, as administered by Hyperledger Fabric. Hyperledger Fabric distributes the ledger across a set of peers and ensures that updates to the ledger are consistent across all peers (consensus).</p>
+
+<hr>
+
+<h3 id="connection-profiles">Connection Profiles</h3>
+
+<p>Hyperledger Composer uses <em>Connection Profiles</em> to connect to a runtime. A Connection Profile is a JSON document that lives in the user&#39;s home directory (or may come from an environment variable) and is referenced by name when using the Composer APIs or the Command Line tools. Using connection profiles ensures that code and scripts are easily portable from one runtime instance to another. You can read more about Connection Profiles in the reference section.</p>
 
 <hr>
 
@@ -177,13 +154,13 @@ ga('send', 'pageview');
 
 <p>Assets are tangible or intangible goods, services, or property, and are stored in registries. Assets can represent almost anything in a business network, for example, a house for sale, the sale listing, the land registry certificate for that house, and the insurance documents for that house may all be assets in one or more business networks.</p>
 
-<p>Assets must have a unique identifier, but other than that, they can contain whatever properties you define.</p>
+<p>Assets must have a unique identifier, but other than that, they can contain whatever properties you define. Assets may be <em>related to</em> other assets or participants.</p>
 
 <hr>
 
 <h3 id="participants">Participants</h3>
 
-<p>Participants are members of a business network. Participant types can be defined and limited by an access control document which makes up part of the business network definition.</p>
+<p>Participants are members of a business network. They may own assets and submit transactions. Participant types are modelled, and like assets, must have an identifier and can have any other properties as required.</p>
 
 <hr>
 
@@ -195,25 +172,25 @@ ga('send', 'pageview');
 
 <h3 id="events">Events</h3>
 
-<p>Events are defined in the business network definition in the same way as assets or participants. Once events have been defined, they can be included in the transaction processor functions to be emitted as part of a transaction. Applications can subscribe to emitted events through the <code>composer-client</code> API.</p>
+<p>Events are defined in the business network definition in the same way as assets or participants. Once events have been defined, they can be emitted by transaction processor functions to indicate to external systems that something of importance has happened to the ledger. Applications can subscribe to emitted events through the <code>composer-client</code> API.</p>
 
 <hr>
 
-<h3 id="apis">APIs</h3>
+<h3 id="access-control">Access Control</h3>
 
-<p>The <code>composer-admin</code>, <code>composer-client</code>, and <code>composer-common</code> components contain the APIs to interact with a Hyperledger Composer runtime. The <code>composer-rest-server</code> component generates a unique RESTful API for interacting with your deployed business network.</p>
+<p>Business networks may contain a set of access control rules. Access control rules allow fine-grained control over what participants have access to what assets in the business network and under what conditions. The access control language is rich enough to capture sophisticated conditions declaratively, such as &quot;only the owner of a vehicle can transfer ownership of the vehicle&quot;. Externalizing access control from transaction processor function logic makes it easier to inspect, debug, develop and maintain.</p>
+
+<hr>
+
+<h2 id="where-do-i-go-from-here">Where do I go from here?</h2>
 
 <hr>
 
-<h3 id="hyperledger-fabric-1-0-support">Hyperledger Fabric 1.0 Support</h3>
-
-<p>Hyperledger Composer supports the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.</p>
-
-<p>Hyperledger Fabric v1.0 adds support for channels, orderers, and certificate authorities. For more information on Hyperledger Fabric v1.0, see the <a href="https://hyperledger.org">Hyperledger Fabric documentation</a>.</p>
-
-<p>Hyperledger Fabric versions 0.6 and 1.0 are supported.</p>
-
-<hr>
+<ul>
+<li>To try Hyperledger Composer right away, see the <a href="../getting-started/getting-started-with-playground.html">Online Playground</a></li>
+<li>For an architectural overview of a typical solution built with Composer, see <a href="./solution-architecture.html">Typical Solution Architecture</a></li>
+<li>To install the Development Tools, see <a href="../getting-started/getting-started-cmd-line.html">Getting setup with development tools</a></li>
+</ul>
 
             
           </section>

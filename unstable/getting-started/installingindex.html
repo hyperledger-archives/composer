@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Generator CLI | Hyperledger Composer</title>
+    <title>Installing Hyperledger Composer | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,27 +100,17 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
+<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
-<a href="../reference/MeetTheModules.html">Meet the Modules</a>
-<a href="../reference/platforms.html">Supported Platforms</a>
-<a href="../reference/cto_language.html">Modeling Language</a>
-<a href="../reference/acl_language.html">Access Control Language</a>
-<a href="../reference/connectionprofile.html">Connection Profile</a>
-<a href="../reference/js_scripts.html">Transaction Processor Functions</a>
-<a href="../reference/commands.html">Command Line Interface</a>
-<a href="../reference/composer.generator.tests.html">Application Generator</a>
-<a href="../reference/composer.participant.add.html">CLI Add Participant</a>
-<a href="../reference/composer.identity.issue.html">CLI Issue Identity </a>
-<a href="../reference/composer.identity.revoke.html">CLI Revoke Identity</a>
-<a href="../jsdoc/index.html">API Documentation</a>
-<a href="../reference/glossary.html">Glossary</a>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
             
@@ -129,57 +119,28 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h2 id="name">Name</h2>
+              <h1 id="installing-hyperledger-composer">Installing Hyperledger Composer</h1>
 
-<p>composer generator - create code artifacts based on a business network definition</p>
+<hr>
 
-<h2 id="synopsis">Synopsis</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer generator &lt;subcommand&gt;
+<p>There are two ways to install Composer. To model, develop, or test business networks, <a href="../tutorials/getting-started-playground.html">install the Composer Playground locally</a> or <a href="https://composer-playground.mybluemix.net">use the playground online</a>.</p>
 
-Commands:
-  create [options]  Create Code artifacts from Business Network Archive
-  tests [options]   Generate unit tests
+<p>If you want to develop and test applications, connect to a running Hyperledger Fabric instance, or run Hyperledger Composer and Hyperledger Fabric locally, see <a href="../installing/quickstart.html">installing Hyperledger Composer</a>.</p>
 
-Options:
-  --help         Show help  [boolean]
-  -v, --version  Show version number  [boolean]
-</code></pre></div>
-<h2 id="description">Description</h2>
+<p>If you want a more guided &quot;Getting Started&quot; experience, see our <a href="../tutorials/tutorialindex.html">Tutorials and Getting Started guides</a>.</p>
 
-<p>This utility has a number of sub-commands that can be used to create code artifacts
-from a business network definition. As the business network definition contains
-a conceptual model of the business assets, participants and transactions it is possiblke
-to create a variety of difference code artifacts.</p>
+<p>After installing, create a connection profile to connect to a running Hyperledger Fabric instance. See <a href="../installing/createconnectionprofile.html">creating a connection profile</a></p>
 
-<p>These include but are not limited to</p>
+<hr>
+
+<h2 id="related-links">Related Links</h2>
 
 <ul>
-<li>JavaScript and Go language object definitions</li>
-<li>UML Diagrams</li>
-<li>Unit tests</li>
-<li>Sample seed applications tailured to the business network</li>
-</ul>
-
-<h2 id="commands">Commands</h2>
-
-<!-- to create a line break but not a new bullet - add 2 spaces to end of the lines -->
-
-<p>The sub-commands that are available are</p>
-
-<ul>
-<li><code>create</code><br>
-generate code artifacts</li>
-<li><code>tests</code><br>
-generate resources to permit testing of business network definitions</li>
-</ul>
-
-<h2 id="options">Options</h2>
-
-<ul>
-<li><code>--help</code><br>
-Shows the help text</li>
-<li><code>-v</code> <code>--version</code><br>
-Shows the version number</li>
+<li><a href="../tutorials/getting-started-playground.html">Installing the Playground locally</a></li>
+<li><a href="../tutorials/">Run the Playground online</a></li>
+<li><a href="../installing/prerequisites.html">Installation Pre-Requisites</a></li>
+<li><a href="../installing/quickstart.html">Installing Hyperledger Composer</a></li>
+<li><a href="../tutorials/tutorialindex.html">Tutorials and Getting Started</a></li>
 </ul>
 
             
