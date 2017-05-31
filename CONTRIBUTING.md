@@ -2,7 +2,11 @@
 
 We welcome contributions to the code base. There is a contributors [RocketChat channel](https://chat.hyperledger.org/channel/composer-dev) that we would encourage you to join and introduce yourself on.
 
-This document explains how you should work with the Composer repositories within the Hyperledger project. The repositories are:
+There are multiple components within Composer, which can be conceptually viewed using the mindmap
+
+![alt text](./contrib-notes/Features.png "Composer Mindmap")
+
+These components are split across multiple Composer repositories within the Hyperledger project. The repositories are:
 
 - [hyperledger/composer](https://github.com/hyperledger/composer) All the code, cli and documentation
 - [hyperledger/composer-sample-models](https://github.com/hyperledger/composer-sample-models) Sample Business Models

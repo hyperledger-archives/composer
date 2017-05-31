@@ -105,7 +105,7 @@ return Promise.resolve()
             ], global: true })
             // The ignore is to workaround these issues:
             //   https://github.com/Starcounter-Jack/JSON-Patch/issues/140
-            .transform('babelify', { presets: [ 'es2015' ], global: true, ignore: /fast-json-patch/ })
+            .transform('babelify', { presets: [ 'latest' ], global: true, ignore: /fast-json-patch/ })
             .bundle();
         const exorcist = child_process.spawn(`exorcist${execSuffix}`, [targetFile2]);
         rstream.pipe(exorcist.stdin);

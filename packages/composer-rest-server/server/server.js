@@ -19,18 +19,15 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const loopback = require('loopback');
 const loopbackPassport = require('loopback-component-passport');
+const path = require('path');
 const session = require('express-session');
 
 module.exports = function (composer) {
 
-
     // Ensure that the configuration has been provided.
     if (!composer) {
         throw new Error('composer not specified');
-
-
     }
-
 
     // Create the LoopBack application.
     const app = loopback();
@@ -38,7 +35,6 @@ module.exports = function (composer) {
 
         // Store the composer configuration for the boot script to find
         app.set('composer', composer);
-
 
         // Load the model-config.json file; we want to make the visibility of the wallet
         // model dependent on whether or not security is enabled.
@@ -56,7 +52,15 @@ module.exports = function (composer) {
         const bootOptions = {
             appRootDir: __dirname,
             models: models,
-            dataSources: dataSources
+            dataSources: dataSources,
+            components: {
+                'loopback-component-explorer': {
+                    mountPath: '/explorer',
+                    uiDirs: [
+                        path.resolve(__dirname, '..', 'public')
+                    ]
+                }
+            }
         };
         boot(app, bootOptions, (error) => {
             if (error) {

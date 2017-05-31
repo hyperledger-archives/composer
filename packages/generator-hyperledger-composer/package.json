@@ -18,7 +18,7 @@
     "composer-client": "^0.7.4",
     "composer-common": "^0.7.4",
     "fs": "0.0.1-security",
-    "shelljs": "^0.7.5",
+    "shelljs": "^0.7.7",
     "underscore.string": "^3.3.4",
     "yeoman-generator": "^0.24.1"
   },

@@ -18,7 +18,7 @@
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "start": "node cli.js",
-    "test": "nyc mocha --recursive"
+    "test": "nyc mocha --recursive -t 5000"
   },
   "repository": {
     "type": "git",
@@ -62,7 +62,7 @@
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "http-status": "^1.0.1",
-    "request": "^2.79.0",
+    "request": "^2.81.0",
     "socket.io": "^1.7.3"
   },
   "nyc": {
