@@ -7,8 +7,7 @@ set -ev
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${DIR}/installers"
 
-#curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
-curl -O https://raw.githubusercontent.com/mbwhite/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
+curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
 
 
 # Build all of the installers.
@@ -23,4 +22,3 @@ done
 
 # clean up
 rm fabric-dev-servers.zip
- 
