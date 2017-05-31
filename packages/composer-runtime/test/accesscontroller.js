@@ -185,7 +185,7 @@ describe('AccessController', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
                 'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -195,8 +195,8 @@ describe('AccessController', () => {
         it('should not throw if there is two non-matching DENY access control rules followed by one matching ALLOW access control rule', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: DENY}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -206,8 +206,8 @@ describe('AccessController', () => {
         it('should throw if there is two non-matching ALLOW access control rules followed by one matching DENY access control rule', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             (() => {
@@ -219,8 +219,8 @@ describe('AccessController', () => {
         it('should not throw if there is one matching ALLOW access control rule followed by two non-matching ALLOW access control rules', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -230,8 +230,8 @@ describe('AccessController', () => {
         it('should not throw if there is one matching ALLOW access control rule followed by two non-matching DENY access control rules', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: ALLOW}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: DENY}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             controller.check(asset, 'READ');
@@ -241,8 +241,8 @@ describe('AccessController', () => {
         it('should throw if there is one matching DENY access control rule followed by two non-matching ALLOW access control rules', () => {
             setAclFile(
                 'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: READ resource: "org.acme.test.TestAsset#A1234" action: DENY}' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
-                'rule R1 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
+                'rule R2 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: CREATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n' +
+                'rule R3 {description: "Test R1" participant: "org.acme.test.TestParticipant#P5678" operation: UPDATE resource: "org.acme.test.TestAsset#A1234" action: ALLOW}\n'
             );
             let spy = sinon.spy(controller, 'checkRule');
             (() => {

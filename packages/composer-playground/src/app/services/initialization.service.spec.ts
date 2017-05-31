@@ -13,30 +13,24 @@ import { MockBackend } from '@angular/http/testing';
 
 import { InitializationService } from './initialization.service';
 
-import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
 import { AlertService } from './alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
 import { FileWallet } from 'composer-common';
-import { SampleBusinessNetworkService } from './samplebusinessnetwork.service';
 
 import * as sinon from 'sinon';
 
 describe('InitializationService', () => {
 
-    let mockAdminService;
     let mockClientService;
-    let mockSampleBusinessNetworkService;
     let mockAlertService;
     let mockConnectionProfileService;
     let mockWalletService;
 
     beforeEach(() => {
 
-        mockAdminService = sinon.createStubInstance(AdminService);
         mockClientService = sinon.createStubInstance(ClientService);
-        mockSampleBusinessNetworkService = sinon.createStubInstance(SampleBusinessNetworkService);
         mockAlertService = sinon.createStubInstance(AlertService);
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockWalletService = sinon.createStubInstance(WalletService);
@@ -45,9 +39,7 @@ describe('InitializationService', () => {
             imports: [HttpModule],
             providers: [
                 InitializationService,
-                {provide: AdminService, useValue: mockAdminService},
                 {provide: ClientService, useValue: mockClientService},
-                {provide: SampleBusinessNetworkService, useValue: mockSampleBusinessNetworkService},
                 {provide: AlertService, useValue: mockAlertService},
                 {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
                 {provide: WalletService, useValue: mockWalletService},
@@ -84,10 +76,7 @@ describe('InitializationService', () => {
 
             let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
             stubCreateInitialIdentities.returns(Promise.resolve());
-            mockAdminService.ensureConnected.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockAdminService.isInitialDeploy.returns(true);
-            mockSampleBusinessNetworkService.deployInitialSample.returns(Promise.resolve());
 
             mockAlertService.busyStatus$ = {next: sinon.stub()};
 
@@ -98,11 +87,7 @@ describe('InitializationService', () => {
 
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
-            mockAdminService.ensureConnected.should.be.called;
             mockClientService.ensureConnected.should.be.called;
-            mockAdminService.isInitialDeploy.should.be.called;
-            mockSampleBusinessNetworkService.deployInitialSample.should.be.called;
-
         })));
 
         it('should initialize and continue if sample is already deployed', fakeAsync(inject([InitializationService], (service: InitializationService) => {
@@ -115,9 +100,7 @@ describe('InitializationService', () => {
 
             let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
             stubCreateInitialIdentities.returns(Promise.resolve());
-            mockAdminService.ensureConnected.returns(Promise.resolve());
             mockClientService.ensureConnected.returns(Promise.resolve());
-            mockAdminService.isInitialDeploy.returns(false);
 
             mockAlertService.busyStatus$ = {next: sinon.stub()};
             mockAlertService.errorStatus$ = {next: sinon.stub()};
@@ -129,10 +112,7 @@ describe('InitializationService', () => {
             stubLoadConfig.should.be.called;
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
-            mockAdminService.ensureConnected.should.be.called;
             mockClientService.ensureConnected.should.be.called;
-            mockAdminService.isInitialDeploy.should.be.called;
-
         })));
 
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
@@ -172,7 +152,14 @@ describe('InitializationService', () => {
         it('should get initial profile', fakeAsync(inject([InitializationService], (service: InitializationService) => {
             mockConnectionProfileService.getProfile.returns(Promise.resolve());
             mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
-            service['config'] = {connectionProfiles: [{profile1: {name: 'profile1', type: 'hlf'}}, {profile2: {name: 'profile2', type: 'hlf'}}]};
+            service['config'] = {
+                connectionProfiles: [{
+                    profile1: {
+                        name: 'profile1',
+                        type: 'hlf'
+                    }
+                }, {profile2: {name: 'profile2', type: 'hlf'}}]
+            };
             service.createInitialProfiles();
             tick();
             mockConnectionProfileService.getProfile.should.be.called;
@@ -187,7 +174,12 @@ describe('InitializationService', () => {
             tick();
 
             mockConnectionProfileService.getProfile.should.be.called;
-            mockConnectionProfileService.createProfile.should.be.calledWith('0', {'profile1': {name: 'profile1', type: 'hlf'}});
+            mockConnectionProfileService.createProfile.should.be.calledWith('0', {
+                'profile1': {
+                    name: 'profile1',
+                    type: 'hlf'
+                }
+            });
         })));
     });
 
