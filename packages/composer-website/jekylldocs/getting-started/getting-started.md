@@ -2,7 +2,7 @@
 layout: default
 title: Tutorials
 category: tasks
-sidebar: sidebars/tutorials.md
+sidebar: sidebars/getting-started.md
 excerpt: Tutorials
 ---
 

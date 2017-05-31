@@ -2,7 +2,7 @@
 layout: default
 title: Using the Hyperledger Composer Playground Locally
 category: start
-sidebar: sidebars/tutorials.md
+sidebar: sidebars/getting-started.md
 excerpt: Installing and running the Hyperledger Composer Playground
 ---
 

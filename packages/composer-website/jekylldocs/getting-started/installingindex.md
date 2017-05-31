@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Installing Hyperledger Composer
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: Installing Hyperledger Composer
 ---
 

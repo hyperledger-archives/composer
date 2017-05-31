@@ -2,7 +2,7 @@
 layout: default
 title: Task - Creating a connection profile
 category: tasks
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: How to create a new connection profile
 ---
 
@@ -60,7 +60,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
         "invokeWaitTime": "100"
         }
   *Please note: If you are connecting to an instance of {{site.data.conrefs.hyperledger_fabric_full}} v1.0 the `keyValStore` property must be `home/.hfc-key-store`*
-  
+
 ---
 
 ## What next?

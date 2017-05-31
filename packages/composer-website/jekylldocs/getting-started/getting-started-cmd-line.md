@@ -2,7 +2,7 @@
 layout: default
 title: Getting Started with Hyperledger Composer
 category: start
-sidebar: sidebars/tutorials.md
+sidebar: sidebars/getting-started.md
 excerpt: Getting Started with Hyperledger Composer
 ---
 

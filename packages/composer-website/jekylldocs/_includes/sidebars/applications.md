@@ -1,6 +1,5 @@
 **[Introduction](../introduction/introduction.html)**
-**[Getting Started with Hyperledger Composer](../tutorials/tutorialindex.html)**
-**[Installing](../installing/installingindex.html)**
+**[Installing and Getting Started](../getting-started/getting-started.html)**
 **[Defining Business Networks](../business-network/businessnetwork.html)**
 **[Writing Applications](../applications/genapp.html)**
 [Generating a starter application](../applications/genapp.html)

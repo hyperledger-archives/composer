@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Quickstart
 category: start
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: Quickstart
 
 ---

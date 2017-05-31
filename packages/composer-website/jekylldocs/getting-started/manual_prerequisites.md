@@ -1,16 +1,18 @@
 ---
 layout: default
-title: Task - Installing Development Pre-requisites
+title: Task - Installing Development Pre-requisites Manually
 category: tasks
-sidebar: sidebars/installing.md
-excerpt: How to install the development pre-requisites
+sidebar: sidebars/getting-started.md
+excerpt: How to install the development pre-requisites manually
 ---
 
 # Installing Development Pre-requisites
 
 ---
 
-The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor for example *Atom* or *VSCode*. Samples are held in GitHub so *git* will be needed as well.
+The essential tools you will need are *npm*, *docker*, *docker-compose* and a code editor, for example *Atom* or *VSCode*. Samples are held in GitHub so *git* will be needed as well.
+
+Automatic installations scripts are available for [Ubuntu](./prerequisites.md)
 
 The recommended *minimum* versions are:
 *Docker*: v1.12.3
@@ -18,44 +20,30 @@ The recommended *minimum* versions are:
 *npm*: v4.6.0
 *node.js*: v6.9.5
 
+## Manual Installation
 
-## Installation for Ubuntu
+### 1. Installing NVM
+We highly recommend installing NVM to easily install and manage versions of [node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/). The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version higher than v4.6.0.
 
-### 1. Installing Runtime Components
-Supported versions of Ubuntu are: Trusty, Utopic, Xenial and Yakkety. There is an automated installation script that will install *node* *docker* *docker-compose*.  For Trusty and Utopic, additional kernel packages that allow the use of the AUFS storage driver required by Docker, will also be installed.
+[Official nvm GitHub repository](https://github.com/creationix/nvm)
 
-If some of the tools are already installed or to do the installation step-by-step follow the [manual instructions](./manual_prerequisites.md).
+### 2. Kernel Packages
+If running on Ubuntu Trusty or Utopic, it is necessary to obtain additional Kernel packages to enable use of the [AUFS storage driver](https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/#renaming-directories-with-the-aufs-storage-driver) for Docker.
 
+### 3. Installing Docker Engine
+The Docker Engine is essential for running system tests and running the HyperLedger Fabric.
 
-```bash
-$ curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
-$ chmod u+x prereqs-ubuntu.sh
-```
+[Official Docker Engine Installation Guide](https://docs.docker.com/engine/installation/)
 
-Next run the script - as this uses sudo you will be prompted for your password.
+### 4. Installing Docker Compose
+[Docker Compose](https://docs.docker.com/compose/overview/) is used for easily configuring and starting HyperLedger Fabric.
 
-```bash
-$ ./prereqs-ubuntu.sh
-```
+[Official Docker Compose Installation guide](https://docs.docker.com/compose/install/)
 
-**Important:** You will need to logout and login again before continuing.
-
-The script will print out the versions installed, if you wish to check here are the version commands.
-
-```bash
-$ node --version
-v6.9.5
-$ docker --version
-Docker version 1.12.3
-$ docker-compose --version
-docker-compose version 1.10.0
-```
-
-### 2. Installing Git
+### 5. Installing Git
 This is probably already installed on most Linux machines. Pay particular attention to [setting up the SSL keys](https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux) that are required.
 
 [Official Git Download](https://git-scm.com/downloads)
-
 
 ## Optional Installs
 
@@ -74,6 +62,7 @@ Suggested Plugins:
 * [Composer Atom Syntax Highlighter](https://github.com/hyperledger/composer-atom-plugin) A plugin for model file highlighting.
 
 * [File Icons](https://atom.io/packages/file-icons) is a useful UI enhancement to show different icons for different files.
+
 
 **Visual Studio Code**
 

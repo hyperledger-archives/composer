@@ -1,6 +1,5 @@
 **[Introduction](../introduction/introduction.html)**
-**[Getting Started with Hyperledger Composer](../tutorials/tutorialindex.html)**
-**[Installing](../installing/installingindex.html)**
+**[Installing and Getting Started](../getting-started/getting-started.html)**
 **[Defining Business Networks](../business-network/businessnetwork.html)**
 [What is a business network?](../business-network/businessnetwork.html)
 [What is a business network definition?](../business-network/businessnetworkdefinition.html)
