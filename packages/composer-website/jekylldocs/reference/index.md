@@ -15,9 +15,7 @@ excerpt: Hyperledger Composer module info
 
 Explore Reference:
 
-[Meet the Modules](../reference/MeetTheModules.html )
-
-[Supported Platforms](../reference/platforms.html )
+[{{site.data.conrefs.composer_full}} npm Modules](../reference/MeetTheModules.html )
 
 [Modeling Language](../reference/cto_language.html )
 

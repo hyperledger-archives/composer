@@ -1,13 +1,13 @@
 **[Introduction](../introduction/introduction.html)**
-**[Installing and Getting Started](../getting-started/getting-started.html)**
-[Prerequisites](../getting-started/prerequisites.html)
-[Getting started online](../getting-started/getting-started-with-playground.html)
-[Installing locally](../getting-started/using-playground-locally.html)
-[Getting setup with development tools](../getting-started/getting-started-cmd-line.html)
-**[Defining Business Networks](../business-network/businessnetwork.html)**
-**[Writing Applications](../applications/genapp.html)**
+**[Installing](../getting-started/getting-started.html)**
+[Try Online Playground](../getting-started/getting-started-with-playground.html)
+[Install Local Playground](../getting-started/using-playground-locally.html)
+[Install Development Tools](../getting-started/development-tools.html)
+**[Tutorials](../tutorials/tutorials.html)**
+**[Developing Business Networks](../business-network/businessnetwork.html)**
+**[Developing Applications](../applications/genapp.html)**
 **[Integrating Existing Systems](../integrating/integrating-index.html)**
 **[Managing and Operating](../managing/managingindex.html)**
-**[Determining Problems](../problems/diagnostics.html)**
+**[Diagnosing Problems](../problems/diagnostics.html)**
 **[Reference](../reference/MeetTheModules.html)**
 **[Support](../support/index.html)**

@@ -70,9 +70,9 @@ Let's go ahead and make a change to start to show how easy it is to develop with
 First clone the repository that contains the Business Network Definition (note this is not the same as the sample-applications repository).
 
 ```bash
-$ git clone https://github.com/hyperledger/composer-sample-networks.git
-$ cd composer-sample-networks/packages/DigitalProperty-Network
-$ npm install
+git clone https://github.com/hyperledger/composer-sample-networks.git
+cd composer-sample-networks/packages/DigitalProperty-Network
+npm install
 ```
 
 ### Update the Transaction Processor Function
@@ -107,7 +107,7 @@ In a real-life scenario at this point you would edit `package.json` to increment
 What we'll do therefore is adopt a different approach to create the Business Network Archive. From within the DigitalProperty-Network directory.
 
 ```bash
-$ composer archive create --sourceType dir --sourceName .
+composer archive create --sourceType dir --sourceName .
 Creating Business Network Archive
 Looking for package.json of Business Network Definition in /home/matthew/git17/DigitalProperty-Network
 
@@ -124,7 +124,7 @@ We now have a new file that is the digital business network archive.
 ### Update the deployed business network
 
 ```bash
-$ composer network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
+composer network update --archiveFile digitalproperty-network@0.0.22.bna  --enrollId WebAppAdmin --enrollSecret DJY27pEnl16d
 Deploying business network from archive digitalproperty-network-0.0.22.bna
 Business network definition:
 	Identifier: digitalproperty-network-0.0.22
@@ -137,7 +137,7 @@ Command completed successfully.
 If you go back to the getting started directory now - and list all the commands that available, you'll see one called `submitTransaction`
 
 ```bash
-$ npm run
+npm run
 Lifecycle scripts included in getting-started:
   test
     mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
@@ -165,7 +165,7 @@ available via `npm run-script`:
 If you issue this command, that will submit a transaction as before - but importantly this is the updated transaction function. You should now see:
 
 ```
-$ npm run submitTransaction
+npm run submitTransaction
 
 > getting-started@1.0.0 submitTransaction /home/matthew/github_lenny/sample-applications/packages/getting-started
 > node cli.js landregistry submit && node cli.js landregistry list
