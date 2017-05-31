@@ -3,6 +3,7 @@ node_js:
     - '6'
 matrix:
     include:
+        - {}
         - env: DOCS=full FC_TASK=docs
         - env: SYSTEST=embedded FC_TASK=systest
         - env: SYSTEST=hlf FC_TASK=systest
