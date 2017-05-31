@@ -1,7 +1,7 @@
 Feature: Event steps
 
     Background:
-        Given I have deployed the business network archive basic-sample-network.bna
+        Given I have deployed the business network definition basic-sample-network
         And I have added the following participant of type org.acme.sample.SampleParticipant
             | participantId | firstName | lastName |
             | 1             | Alice     | A        |
