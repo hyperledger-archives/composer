@@ -107,12 +107,13 @@ class Composer {
     /**
      * Deploy the specified business network archive, and once complete establish a connection
      * to the deployed business network for subsequent steps to use.
-     * @param {string} businessNetworkArchiveFile The path to the business network archive to deploy.
+     * @param {string} businessNetworkDefinitionPath The business network archive file or
+     * business network definition directory to load.
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    deploy(businessNetworkArchiveFile) {
-        return this.loadBusinessNetworkDefinition(businessNetworkArchiveFile)
+    deploy(businessNetworkDefinitionPath) {
+        return this.loadBusinessNetworkDefinition(businessNetworkDefinitionPath)
             .then((businessNetworkDefinition) => {
                 this.businessNetworkDefinition = businessNetworkDefinition;
                 this.factory = this.businessNetworkDefinition.getFactory();
@@ -151,15 +152,23 @@ class Composer {
 
     /**
      * Load the specified business network archive file from disk.
-     * @param {string} businessNetworkArchiveFile The business network archive file to load.
+     * @param {string} businessNetworkDefinitionPath The business network archive file or
+     * business network definition directory to load.
      * @return {Promise} A promise that is resolved when complete, or rejected with an
      * error.
      */
-    loadBusinessNetworkDefinition(businessNetworkArchiveFile) {
+    loadBusinessNetworkDefinition(businessNetworkDefinitionPath) {
         const directory = path.dirname(this.uri);
-        return fs.readFile(path.resolve(directory, businessNetworkArchiveFile))
-            .then((businessNetworkArchive) => {
-                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+        const resolvedPath = path.resolve(directory, businessNetworkDefinitionPath);
+        return fs.lstat(resolvedPath)
+            .then((stats) => {
+                if (stats.isDirectory()) {
+                    return BusinessNetworkDefinition.fromDirectory(resolvedPath);
+                }
+                return fs.readFile(resolvedPath)
+                    .then((businessNetworkArchive) => {
+                        return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+                    });
             });
     }
 

@@ -1,7 +1,7 @@
 Feature: Participant steps
 
     Background:
-        Given I have deployed the business network archive basic-sample-network.bna
+        Given I have deployed the business network definition basic-sample-network
 
     Scenario: given I have added the following participant of type (1)
         Given I have added the following participant of type org.acme.sample.SampleParticipant
