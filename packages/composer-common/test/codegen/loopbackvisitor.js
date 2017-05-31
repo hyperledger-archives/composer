@@ -934,7 +934,11 @@ describe('LoopbackVisitor', () => {
                                 },
                                 value: {
                                     type: 'string',
-                                    required: true
+                                    required: true,
+                                    enum: [
+                                        'SOME_VALUE',
+                                        'SOME_OTHER_VALUE'
+                                    ]
                                 }
                             },
                             validations: [],
