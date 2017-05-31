@@ -1,35 +1,32 @@
 ---
 layout: default
-title: Tutorial 1 - Building your first business network
-category: tasks
+title: Tutorial - Using the Playground
+category: tutorials
 sidebar: sidebars/tutorials.md
-excerpt: This tutorial walks you through the basics of defining a business network of your own, the contents of a business network, and how they come together to form a business network archive.
+excerpt: Playground Tutorial
 ---
 
-# Building your first business network
-
----
-
-Defining a business network is the entry point to any {{site.data.conrefs.fabric_composer_full}} project. The business network contains participants, assets, and transactions. This tutorial walks you through the basics of defining a business network of your own, the contents of a business network, and how they come together to form a business network archive.
+# Using the Playground to run a Car Auction
 
 ---
 
 ## Before you begin
 
-Before beginning this tutorial you will need:
+Before beginning, you will need:
 
-* A GitHub account
-* If you want to run this tutorial locally, see [Installing and running the {{site.data.conrefs.composer_full}} Playground locally](../tutorials/getting-started-playground.html).
+* A GitHub account (if you want to import sample business network from GitHub)
+* A supported browser i.e. any modern version of Chrome, Firefox or Safari
+
+**OPTIONAL** You can follow this tutorial using a local install of Playground: [Install Local Playground](../getting-started/using-playground-locally.html)
 
 ---
+## Let's get started - Importing the Car Auction sample
 
-## Let's get started - Importing the sample
+1. Open the [{{site.data.conrefs.composer_short}} Playground](https://composer-playground.mybluemix.net). On the left are three file types: a script file, `lib/logic.js` which represents transaction logic, a model file, `lib/org.acme.biznet.cto` which defines the participants assets and transactions of the business network, and an access control file, `permissions.acl` which defines the access different participants have.
 
-1. Open the [{{site.data.conrefs.composer_short}} Playground](https://composer-playground.mybluemix.net). On the left are three files, a script file, `lib/logic.js` which represents transaction logic, a model file, `lib/org.acme.biznet.cto` which defines the participants assets and transactions of the business network, and an access control file, `permissions.acl` which defines the access different participants have.
+2. To get switch out the sample business network click **Import/Replace**. This dialog allows you to import your own business network archive `.bna` files, or to import our premade business network samples. For now we'll use a pre-built sample from the {{site.data.conrefs.composer_short}} GitHub repository. Click **Authenticate with GitHub** then log into your GitHub account and click **Authorize application**.
 
-2. To get set up with a sample business network click **Import/Replace**. This dialog allows you to import your own business network archive `.bna` files, or to import our premade business network samples. For now we'll use a pre-built sample from the {{site.data.conrefs.composer_short}} GitHub repository. Click **Authenticate with GitHub** then log into your GitHub account and click **Authorize application**.
-
-3. From the menu, select **carauction-network** and click **Deploy**. This imports the car auction sample business network into your playground instance. In the model file `lib/org.acme.vehicle.auction.cto` there are the definitions of asset types, participant types, and transactions. The entries in the `.cto` file define the expected format of each asset, participant, and transaction. The script file `lib/logic.js` contains JavaScript
+3. From the menu, select **carauction-network** and click **Deploy**. This imports the car auction sample business network into your Playground instance. In the model file `lib/org.acme.vehicle.auction.cto` there are the definitions of asset types, participant types, and transactions. The entries in the `.cto` file define the expected format of each asset, participant, and transaction. The script file `lib/logic.js` contains JavaScript
 which controls the transactions, in this script file, there is JavaScript logic controlling the `Close Bidding` and `Make Offer` transactions.
 
 ### Setting up the auction
@@ -37,7 +34,6 @@ which controls the transactions, in this script file, there is JavaScript logic 
 1. To get a better understanding of how business network definitions work in practise, click the **Test** tab at the top. From this screen, we can create assets and participants, and submit transactions.
 
 2. To start with, add a *Member* participant by clicking **Member** then clicking **Create New Participant**. Enter the balance, email, and name credentials for the new participant in the following format, then click **Create New**. The credentials which are required for each participant are defined in the `.cto` file viewable in the **Define** tab.
-
 
         {
           "$class": "org.acme.vehicle.auction.Member",
@@ -47,7 +43,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
           "lastName": "Smith"
         }
 
-3. Create two more *Members* in the same way as step 5, with different balance, email, and name credentials. Then, click the **Auctioneer** participant type on the left, and then create an Auctioneer participant by click **Create New Participant**.
+3. Create two more *Members* in the same way as the previous step, with different balance, email, and name credentials. Then, click the **Auctioneer** participant type on the left, and then create an Auctioneer participant by click **Create New Participant**.
 
 4. Now that there are three *Members*; two to bid against each other and another to be the initial owner of the *Vehicle* asset. We also have an *Auctioneer* to close the bidding. Next we need an assets, in this case a *Vehicle* asset, for them to bid over, and a *Vehicle Listing* asset to control the reserve price and record the current highest offer.
 

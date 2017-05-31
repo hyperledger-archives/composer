@@ -26,14 +26,18 @@ import { MockBackend } from '@angular/http/testing';
 
 describe('SampleBusinessNetworkService', () => {
 
-    let adminMock = sinon.createStubInstance(AdminService);
-    let clientMock = sinon.createStubInstance(ClientService);
-    let aclFileMock = sinon.createStubInstance(AclFile);
-    let alertMock = sinon.createStubInstance(AlertService);
+    let adminMock;
+    let clientMock;
+    let aclFileMock;
+    let alertMock;
     let businessNetworkMock = sinon.createStubInstance(BusinessNetworkDefinition);
-    let businessNetworkFromArchiveMock = sinon.stub(BusinessNetworkDefinition, 'fromArchive');
 
     beforeEach(() => {
+        adminMock = sinon.createStubInstance(AdminService);
+        clientMock = sinon.createStubInstance(ClientService);
+        aclFileMock = sinon.createStubInstance(AclFile);
+        alertMock = sinon.createStubInstance(AlertService);
+
         TestBed.configureTestingModule({
             imports: [HttpModule],
             providers: [SampleBusinessNetworkService,
@@ -43,8 +47,6 @@ describe('SampleBusinessNetworkService', () => {
                 {provide: AclFile, useValue: aclFileMock},
                 {provide: XHRBackend, useClass: MockBackend}]
         });
-
-        businessNetworkFromArchiveMock.reset();
     });
 
     describe('isOAuthEnabled', () => {
@@ -90,12 +92,12 @@ describe('SampleBusinessNetworkService', () => {
             });
 
             return service.isOAuthEnabled()
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.message.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.message.should.equal('some error');
+                });
         })));
     });
 
@@ -125,12 +127,12 @@ describe('SampleBusinessNetworkService', () => {
             });
 
             return service.getGithubClientId()
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.message.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.message.should.equal('some error');
+                });
         })));
     });
 
@@ -154,12 +156,12 @@ describe('SampleBusinessNetworkService', () => {
             });
 
             return service.getNpmInfo('sampleModel')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.message.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.message.should.equal('some error');
+                });
         })));
     });
 
@@ -206,12 +208,12 @@ describe('SampleBusinessNetworkService', () => {
         it('should not get the info from a github sample if not connected to github', inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
             service['octo'] = null;
             service.getModelsInfo('myOwner', 'myRepository')
-            .then(() => {
-                throw('Should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('no connection to GitHub');
-            });
+                .then(() => {
+                    throw('Should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('no connection to GitHub');
+                });
         }));
 
         it('should handle 404 from not being a mono-repo', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
@@ -245,12 +247,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = octoMock;
             let getSampleNetworkInfoMock = sinon.stub(service, 'getSampleNetworkInfo');
             service.getModelsInfo('myOwner', 'myRepository')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
         })));
@@ -261,12 +263,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = null;
 
             service.getSampleNetworkInfo('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('Should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('no connection to GitHub');
-            });
+                .then(() => {
+                    throw('Should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('no connection to GitHub');
+                });
 
             tick();
         })));
@@ -286,9 +288,9 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getSampleNetworkInfo('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                result.should.deep.equal({name: 'bob', composerPath: 'packages/'});
-            });
+                .then((result) => {
+                    result.should.deep.equal({name: 'bob', composerPath: 'packages/'});
+                });
 
             tick();
         })));
@@ -309,12 +311,12 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getSampleNetworkInfo('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.message.should.equal('Unexpected end of JSON input');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.message.should.equal('Unexpected end of JSON input');
+                });
 
             tick();
 
@@ -332,12 +334,12 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getSampleNetworkInfo('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
         })));
@@ -348,12 +350,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = null;
 
             service.getDependencyModel('myOwner', 'myRepository', 'myModel')
-            .then(() => {
-                throw('Should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('no connection to GitHub');
-            });
+                .then(() => {
+                    throw('Should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('no connection to GitHub');
+                });
 
             tick();
         })));
@@ -383,7 +385,7 @@ describe('SampleBusinessNetworkService', () => {
         })));
 
         it('should get the model for the dependency with non mono-repo', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            // TODO make sure this is right when add in funcrtionality for own github repos
+            // TODO make sure this is right when add in functionality for own github repos
             let modelMock = sinon.stub(service, 'getModel');
 
             let octoMock = {
@@ -418,12 +420,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = octoMock;
 
             service.getDependencyModel('myOwner', 'myRepository', 'modelTwo')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
 
@@ -436,12 +438,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = null;
 
             service.getModel('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('Should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('no connection to GitHub');
-            });
+                .then(() => {
+                    throw('Should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('no connection to GitHub');
+                });
 
             tick();
         })));
@@ -474,10 +476,10 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = octoMock;
 
             service.getModel('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                result.length.should.equal(1);
-                result[0].should.equal('A model file');
-            });
+                .then((result) => {
+                    result.length.should.equal(1);
+                    result[0].should.equal('A model file');
+                });
 
             tick();
         })));
@@ -498,12 +500,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = octoMock;
 
             service.getModel('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
         })));
@@ -527,10 +529,10 @@ describe('SampleBusinessNetworkService', () => {
             };
 
             service.getSampleNetworkDependencies(dependencies)
-            .then((result) => {
-                result[0].should.deep.equal({name: 'modelOne'});
-                result[1].should.deep.equal({name: 'modelTwo'});
-            });
+                .then((result) => {
+                    result[0].should.deep.equal({name: 'modelOne'});
+                    result[1].should.deep.equal({name: 'modelTwo'});
+                });
 
             tick();
 
@@ -547,12 +549,12 @@ describe('SampleBusinessNetworkService', () => {
             };
 
             service.getSampleNetworkDependencies(dependencies)
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
 
@@ -565,12 +567,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = null;
 
             service.getScripts('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('Should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('no connection to GitHub');
-            });
+                .then(() => {
+                    throw('Should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('no connection to GitHub');
+                });
 
             tick();
         })));
@@ -604,10 +606,10 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getScripts('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                result.length.should.equal(1);
-                result[0].should.deep.equal({name: 'scriptOne', data: 'a script'});
-            });
+                .then((result) => {
+                    result.length.should.equal(1);
+                    result[0].should.deep.equal({name: 'scriptOne', data: 'a script'});
+                });
 
             tick();
         })));
@@ -627,9 +629,9 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getScripts('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                should.not.exist(result);
-            });
+                .then((result) => {
+                    should.not.exist(result);
+                });
 
             tick();
         })));
@@ -649,12 +651,12 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getScripts('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
         })));
@@ -665,12 +667,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = null;
 
             service.getAcls('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('Should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('no connection to GitHub');
-            });
+                .then(() => {
+                    throw('Should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('no connection to GitHub');
+                });
 
             tick();
         })));
@@ -696,9 +698,9 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getAcls('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                result.should.deep.equal({name: 'permissions', data: 'a permissions file'});
-            });
+                .then((result) => {
+                    result.should.deep.equal({name: 'permissions', data: 'a permissions file'});
+                });
 
             tick();
         })));
@@ -718,9 +720,9 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getAcls('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                should.not.exist(result);
-            });
+                .then((result) => {
+                    should.not.exist(result);
+                });
 
             tick();
         })));
@@ -740,12 +742,12 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getAcls('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
         })));
@@ -756,12 +758,12 @@ describe('SampleBusinessNetworkService', () => {
             service['octo'] = null;
 
             service.getReadme('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('Should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('no connection to GitHub');
-            });
+                .then(() => {
+                    throw('Should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('no connection to GitHub');
+                });
 
             tick();
         })));
@@ -787,9 +789,9 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getReadme('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                result.should.deep.equal({name: 'README.md', data: 'a readme file'});
-            });
+                .then((result) => {
+                    result.should.deep.equal({name: 'README.md', data: 'a readme file'});
+                });
 
             tick();
         })));
@@ -809,9 +811,9 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getReadme('myOwner', 'myRepository', 'packages/')
-            .then((result) => {
-                should.not.exist(result);
-            });
+                .then((result) => {
+                    should.not.exist(result);
+                });
 
             tick();
         })));
@@ -831,26 +833,14 @@ describe('SampleBusinessNetworkService', () => {
 
             service['octo'] = octoMock;
             service.getReadme('myOwner', 'myRepository', 'packages/')
-            .then(() => {
-                throw('should not get here');
-            })
-            .catch((error) => {
-                error.should.equal('some error');
-            });
+                .then(() => {
+                    throw('should not get here');
+                })
+                .catch((error) => {
+                    error.should.equal('some error');
+                });
 
             tick();
-        })));
-    });
-
-    describe('getBuisnessNetworkFromArchive', () => {
-        it('should get a business network from an archive', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            let buffer = Buffer.from('a buffer');
-
-            service.getBusinessNetworkFromArchive(buffer);
-
-            tick();
-
-            businessNetworkFromArchiveMock.should.have.been.calledWith(buffer);
         })));
     });
 
@@ -905,7 +895,10 @@ describe('SampleBusinessNetworkService', () => {
 
             service.deploySample(owner, repo, chosenNetwork);
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying bob'});
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Deploying business network',
+                text: 'deploying bob'
+            });
 
             tick();
 
@@ -948,7 +941,10 @@ describe('SampleBusinessNetworkService', () => {
 
             service.deploySample(owner, repo, chosenNetwork);
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying bob'});
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Deploying business network',
+                text: 'deploying bob'
+            });
 
             tick();
 
@@ -988,7 +984,10 @@ describe('SampleBusinessNetworkService', () => {
 
             service.deploySample(owner, repo, chosenNetwork);
 
-            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying bob'});
+            alertMock.busyStatus$.next.should.have.been.calledWith({
+                title: 'Deploying business network',
+                text: 'deploying bob'
+            });
 
             tick();
 
@@ -1031,32 +1030,12 @@ describe('SampleBusinessNetworkService', () => {
             service.deployBusinessNetwork(businessNetworkMock).then(() => {
                 throw('should not get here');
             })
-            .catch((error) => {
-                alertMock.busyStatus$.next.should.have.been.calledWith(null);
-                error.should.equal('some error');
-            });
+                .catch((error) => {
+                    alertMock.busyStatus$.next.should.have.been.calledWith(null);
+                    error.should.equal('some error');
+                });
 
             tick();
-        })));
-    });
-
-    describe('it should deployInitial sample', () => {
-        it('should deploy the initial sample', fakeAsync(inject([SampleBusinessNetworkService], (service: SampleBusinessNetworkService) => {
-            alertMock.busyStatus$ = {next: sinon.stub()};
-
-            let deployBusinessNetworkMock = sinon.stub(service, 'deployBusinessNetwork');
-
-            businessNetworkFromArchiveMock.returns(Promise.resolve({name: 'bob'}));
-
-            service.deployInitialSample();
-
-            alertMock.busyStatus$.next.should.have.been.calledWith({title: 'Deploying business network', text: 'deploying sample business network'});
-
-            tick();
-
-            businessNetworkFromArchiveMock.should.have.been.called;
-
-            deployBusinessNetworkMock.should.have.been.calledWith({name: 'bob'});
         })));
     });
 });

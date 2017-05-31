@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Quickstart
 category: start
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: Quickstart
 
 ---
@@ -49,7 +49,6 @@ $ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/fa
 $ unzip fabric-dev-servers.zip
 ```
 
-_note to developers script has been written for this need to add the repo to travis_
 
 2. Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.
 
