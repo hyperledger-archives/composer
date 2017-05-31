@@ -51,14 +51,13 @@ rule SampleConditionalRule {
 
 Multiple ACL rules may be defined that conceptually define a decision table. The actions of the decision tree define access control decisions (ALLOW or DENY). If the decision table fails to match then by default access is denied.
 
-**Resource** defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class, or a property on an instance of a class.
+**Resource** defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class.
 
 Resource Examples:
 - Namespace: org.acme
 - Class in namespace: org.acme.Car
 - Property on class: org.acme.Car.owner
 - Instance of a class: org.acme.Car#ABC123
-- Property on an instance of a class: org.acme.Car.owner#ABC123
 
 **Operation** identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.
 
@@ -94,7 +93,7 @@ rule R3 {
     description: "Driver can change the ownership of a car that they own"
     participant(d): "org.acme.Driver"
     operation: UPDATE
-    resource(o): "org.acme.Car.owner"
+    resource(o): "org.acme.Car"
     condition: (o == d)
     action: ALLOW
 }

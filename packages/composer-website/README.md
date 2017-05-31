@@ -8,7 +8,7 @@ This directory ( composer/packages/composer-website ) hold the documentation for
 - Install Jeykll, jekyll-sitemap, redcarpet.  The scripts directory contains a setup-jekyll script that does setup these. But you must have performed the Ruby installation first.
 
 ```
-$ ./scripts/setup-jekyll.sh
+./scripts/setup-jekyll.sh
 ```
 
 - Next step is to run or rerun the `lerna bootstrap` in the root of the composer repoistory.

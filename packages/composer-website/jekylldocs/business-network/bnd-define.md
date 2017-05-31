@@ -18,9 +18,6 @@ A business network definition is composed of three major items:
 
 ## Generating Skeleton Business Network
 
-### Installing Yeoman Generator
-Instructions on installing `yo` and {{site.data.conrefs.composer_full}}'s Yeoman generator are found [here](../applications/genapp.md)
-
 ### Generation
 1. `yo fabric-composer`
 

@@ -3,16 +3,16 @@ layout: default
 title: Task - Diagnosing Problems
 category: tasks
 sidebar: sidebars/problems.md
-excerpt: Diagnose Problems
+excerpt: Diagnosing Problems
 ---
 
-# Diagnose Problems
+# Diagnosing Problems
 
 ---
 
 If something should ever go wrong with an application, what should you do about getting diagnostics?
 
-Let's look at the Getting Started application, and use that to explain how to get diagnostics out of the Framework.
+Let's look at the digitalproperty-app sample, and use that to explain how to get diagnostics out of the Framework.
 
 Key Point: This is a framework - so your application will need to have it's own logging framework. Plus, your application could also have configuration information to control {{site.data.conrefs.composer_full}}'s own logging. Composer does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
 
@@ -101,7 +101,7 @@ Each Business Network is deployed to it's own Chaincode container.  In the case 
 Firstly list the docker processes and look for the image name; this command will do this for you in one step
 
 ```bash
-matthew@matthew-VirtualBox:~$ docker ps | cut -b 1-13,21-93
+docker ps | cut -b 1-13,21-93
 CONTAINER ID IMAGE                                                                    
 f71e2a630d6a dev-vp0-9d0a2be10fc5b815bbca1f81c9abcb7072e33fc760342c5789c5bf9703c429c7
 bb5db2ca4e6a hyperledger/fabric-peer                                                  
@@ -111,7 +111,7 @@ bb5db2ca4e6a hyperledger/fabric-peer
 The hex value after the dev-vp0 is the 'chaincodeid'. If you look in the connection profiles directory you'll see a simple JSON file that has the anem of the network mapped to the chaincode id. In this example we have two neworks listed.
 
 ```bash
-matthew@matthew-VirtualBox:~$ cat ~/.composer-connection-profiles/defaultProfile/connection.json
+cat ~/.composer-connection-profiles/defaultProfile/connection.json
 {
     "type": "hlf",
     "membershipServicesURL": "grpc://localhost:7054",

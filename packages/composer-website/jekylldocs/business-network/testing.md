@@ -30,6 +30,6 @@ Use the `composer-client` module and the `BusinessNetworkConnection` API to add 
 
 Use popular JavaScript assertion libraries such as Sinon and Chai.
 
-# Generating Tests
+## Generating Skeleton Tests
 
-You may choose to add skeletal tests to your application using the `composer generator tests` command.
+You may choose to add skeletal tests to your application using the `yo hyperledger-composer` command to generate a skeleton business network that includes unit testing support using the Mocha / Chai frameworks.
