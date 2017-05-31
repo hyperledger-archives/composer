@@ -1,0 +1,50 @@
+version: '2'
+
+services:
+
+  composer:
+    container_name: composer
+    image: hyperledger/composer-playground
+    ports:
+      - '8080:8080'
+    environment:
+      COMPOSER_CONFIG: >
+        {
+          "connectionProfiles": {
+            "hlfabric": {
+              "name": "hlfabric",
+              "description": "Hyperledger Fabric v1.0",
+              "type": "hlfv1",
+              "keyValStore": "/home/composer/.hfc-key-store",
+              "deployWaitTime": 300,
+              "invokeWaitTime": 30,
+              "orderers": [
+                  {
+                      "url": "grpc://orderer0:7050"
+                  }
+              ],
+              "channel": "mychannel",
+              "mspID": "Org1MSP",
+              "ca": "http://ca0:7054",
+              "peers": [
+                  {
+                      "requestURL": "grpc://peer0:7051",
+                      "eventURL": "grpc://peer0:7053"
+                  },
+                  {
+                      "requestURL": "grpc://peer1:7051",
+                      "eventURL": "grpc://peer1:7053"
+                  }
+              ]
+            }
+          },
+          "credentials": {
+            "hlfabric": {
+              "admin": "adminpw"
+            }
+          }
+        }
+networks:
+  default:
+    external:
+      name: composer_default

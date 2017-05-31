@@ -60,6 +60,7 @@ rm -rf ${HOME}/.hfc-key-store
 # configure v1 to run the tests
 if [[ ${SYSTEST} == hlfv1* ]]; then
     sleep 10
+    npm install
     cd hlfv1
     node create-channel.js
     node join-channel.js
