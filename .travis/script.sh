@@ -35,7 +35,6 @@ if [ "${DOCS}" != "" ]; then
     ./build-installers.sh
 
     # Build the documentation.
-    npm install
     if [ -n "${TRAVIS_TAG}" ]; then
        export JEKYLL_ENV=production
        npm run full:prod
