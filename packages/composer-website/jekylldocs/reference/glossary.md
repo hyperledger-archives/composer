@@ -41,7 +41,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 **{{site.data.conrefs.composer_full}} Client API** The Client API is used by applications to connect to a business network and submit transactions. These applications could be command line, web applications, or end-user applications. The Client API permits CRUD operations on the assets that have been defined in the model. It also permits the submission of the transactions to be executed to update assets.
 
-**Identity**: An identity is a distinct unique identifier associated with a participant. When joining a business network, an identity is issued to a participant which is used by the participant to interact with the business network. Identity documents normally expire after a given length of time, but can be issued or revoked maunally. {{site.data.conrefs.composer_full}} uses {{site.data.conrefs.hyperledger_fabric_full}} enrollment certificates as identity documents.
+**Identity**: An identity is a distinct unique identifier associated with a participant. When joining a business network, an identity is issued to a participant which is used by the participant to interact with the business network. Identity documents normally expire after a given length of time, but can be issued or revoked maunally. {{site.data.conrefs.composer_full}} uses {{site.data.conrefs.hlf_full}} enrollment certificates as identity documents.
 
 **Modelling language**: The {{site.data.conrefs.composer_full}} modelling language is used in the business network definition to describe the assets, participants, and transactions in the business network. For a more in-depth explanation of the modelling language, see [modelling language documentation](../reference/cto_language.html).
 

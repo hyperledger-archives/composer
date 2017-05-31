@@ -2,7 +2,7 @@
 layout: default
 title: Task - Installing Development Pre-requisites Manually
 category: tasks
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: How to install the development pre-requisites manually
 ---
 

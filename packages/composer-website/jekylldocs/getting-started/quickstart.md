@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer Quickstart
 category: start
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: Quickstart
 
 ---
@@ -36,31 +36,31 @@ If you need to update or install any of the prerequisites, please refer to [inst
 1. To install the Composer command line tools:
 
         ```
-        $ npm install -g composer-cli
+        npm install -g composer-cli
         ```
   *Please note: When using Ubuntu this command will fail when running in a root user shell.*
 
 2. Clone the Composer sample applications GitHub repository. Choose from either the v0.6 sample application or the v1.0 sample application, the former will stand up a Hyperledger Fabric v0.6 environment ; the latter will stand up a newer Hyperledger Fabric v1.0 environment using a docker command sequence. For Hyperledger Fabric v0.6 use the following command:
 
-        $ git clone https://github.com/hyperledger/composer-sample-applications.git
+        git clone https://github.com/hyperledger/composer-sample-applications.git
   For Hyperledger Fabric v1.0 use the following command:
 
-        $ git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
+        git clone https://github.com/hyperledger/composer-sample-applications-hlfv1.git
 
 3. Install the getting started application using one of the following commands. If you are using Hyperledger Fabric v0.6 use the following command:
 
-        $ cd composer-sample-applications/packages/getting-started
-        $ npm install
+        cd composer-sample-applications/packages/getting-started
+        npm install
   If you are using Hyperledger Fabric v1.0, use the following command:
 
-        $ cd composer-sample-applications-hlfv1/packages/getting-started
-        $ npm install
+        cd composer-sample-applications-hlfv1/packages/getting-started
+        npm install
   Amongst the steps (described below), the command returns information about the deployed digital property network such as name, models, registries etc.<br><br>`npm install` runs several scripts that are packaged into the getting-started directory and uses the docker-compose `.yml` file mentioned below to pull/download the relevant Hyperledger Fabric docker images.<br><br>There is [reference material](https://hyperledger.github.io/composer/reference/commands.html) for Composer CLI.
 
 4. Run the `npm test` command. You should see output similar to that shown below (output below is for a v0.6 sample application)
 
 ```
-$ npm test
+npm test
 > getting-started@1.0.0 test /home/ibm/samples/sample-applications/packages/getting-started
 > mocha --recursive && npm run bootstrapAssets && npm run listAssets && npm run submitTransaction
 
