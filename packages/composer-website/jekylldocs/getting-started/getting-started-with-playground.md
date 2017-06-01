@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Tutorial 1 - Building your first business network
+title: Trying the online Playground
 category: tasks
 sidebar: sidebars/getting-started.md
-excerpt: This tutorial walks you through the basics of defining a business network of your own, the contents of a business network, and how they come together to form a business network archive.
+excerpt: Use Composer features online without any need to install
 ---
 
 # Try {{site.data.conrefs.composer_full}} Playground online
