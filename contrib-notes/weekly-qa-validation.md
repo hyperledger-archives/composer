@@ -16,7 +16,7 @@ __Assumption__ is that stories have been closed off properly
 - Ensure that any CRON jobs that are run are also passing
 
 ## Runtime Verification
-The runtime should be verified against the follwoing platforms:
+The runtime should be verified against the following platforms:
  - Ubuntu 14:04 & Ubuntu 16:04
  - MacOS 10
  - (_Windows 10 is not yet ready_)
@@ -66,10 +66,87 @@ When following the above processes in the documentation, were there any issues o
 ## Playground
 The following describes manual testing required for Playground, to be complete prior to release. The aim of these tests are to try and guard against regressions, and it is the intention to move all of the listed manual tests to automated Protractor tests.
 
-Testing is to be performed against:
- - http://composer-playground-unstable.mybluemix.net/
- - unstable docker image on local machine
+Testing is to be performed against the unstable versions of:
+ - [Composer Playground on Bluemix](http://composer-playground-unstable.mybluemix.net/)
+ - Hyperledger/composer-playground Docker image on local machine
 
+### Playground Unstable Local Image
+Pre-requisites:
+ - [Docker](https://docs.docker.com/engine/installation/#supported-platforms)
+ - [Docker Compose](https://docs.docker.com/compose/install/)
+
+Those working on Ubuntu may follow the following guide to automatically install all required components:
+
+```
+$ curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
+$ chmod u+x prereqs-ubuntu.sh
+
+$ ./prereqs-ubuntu.sh
+```
+
+To obtain the unstable local image:
+ - Ensure machine has docker and docker-compose installed (above)
+ - Clear any running containers
+
+```
+ docker ps -aq | xargs docker rm -f
+ docker images -aq | xargs docker rmi -f
+```
+
+ - Get and run the install script
+``` 
+ curl -O https://hyperledger.github.io/composer/install-hlfv1.sh
+ cat install-hlfv1.sh | bash
+```
+
+We now need to swap out the underlying stable docker image, with the unstable. We can do this by modifying the files that were pulled down via the install script. 
+ - Remove existing containers
+```
+ docker ps -aq | xargs docker rm -f
+```
+ - Remove the composer playground image only
+```
+ docker rmi hyperledger/composer-playground 
+```
+ - Edit composer-data/docker-compose.yaml file to point to tag :unstable for the composer image within the yaml file
+ ```
+ composer:
+    container_name: composer
+    image: hyperledger/composer-playground:unstable
+
+ ```
+ - Edit composer.sh to comment out lines that would cause overwriting the composer-data directory and contents
+```
+    # Create a work directory for extracting files into.
+    WORKDIR="$(pwd)/composer-data"
+    # rm -rf "${WORKDIR}" && mkdir -p "${WORKDIR}"
+    cd "${WORKDIR}"
+
+    # Find the PAYLOAD: marker in this script.
+    # PAYLOAD_LINE=$(grep -a -n '^PAYLOAD:$' "${SOURCE}" | cut -d ':' -f 1)
+    # echo PAYLOAD_LINE=${PAYLOAD_LINE}
+
+    # Find and extract the payload in this script.
+    # PAYLOAD_START=$((PAYLOAD_LINE + 1))
+    # echo PAYLOAD_START=${PAYLOAD_START}
+    # tail -n +${PAYLOAD_START} "${SOURCE}" | tar -xzf -
+
+    # Pull the latest Docker images from Docker Hub.
+```
+ - Run the composer.sh script to install the new image
+ ```
+  ./composer.sh
+ ```
+ - You should now be able to see that the docker image for hyperledger/composer-playground is tagged with unstable.
+ ```
+    user@uvm:$ docker images
+    REPOSITORY                        TAG                  IMAGE ID            CREATED             SIZE
+    hyperledger/composer-playground   unstable             bbd4a7f443d4        15 hours ago        337 MB
+ ```
+
+You should now be able to access the unstable docker build image at http://localhost:8080
+
+### Platform/OS Variations for Playground Testing
 Playground testing should be performed on Ubuntu and OS-X operating systems.
 
 Playground testing should be performed on the following browsers:
@@ -80,9 +157,6 @@ Playground testing should be performed on the following browsers:
 At a minimum, Safari (OS-X) and Chrome/firefox (Ubuntu) should be investigated. Different browsers may render components differently, and this needs to be accounted for, with issues raised as appropriate. A simple rendering issue may not invalidate the release build if it does not prevent user action. Such rendering issues can be added to "known issues" for the build release.
 
 From the initial logon, the user should be presented with the “Hello World” landing page, with the Basic Sample Network loaded. And it is here we will start the Playground testing.
-
-### Getting Started
-We should follow the [Getting Started](https://hyperledger.github.io/composer/tutorials/getting-started-playground.html) process documented for a user, which will give them a local Playground based from a docker image. Ensure to change the flag to unstable for the docker image, otherwise you will be testing against the previous release.
 
 ### Define Page (Side Navigation)
 The define page is used to manage files and file content. Through the side navigation menu it is possible to perform working file selection/creation, and lifecycle actions such as import, export and deploy.
@@ -133,11 +207,11 @@ Start with the basic sample network loaded
  - Add a new model file, it should become the focal item and the empty contents should show in the editor page.
     - Delete icon should be visible on top right of editor, selecting it should bring up a confirmation modal
     - Cancel should return without deleting the file
-    - Confirm should delete the file and return the user to viewing the Readme file
+    - Confirm should delete the file, show a success message, and return the user to viewing the Readme file
  - Add a new script file, it should become the focal item and the empty contents should show in the editor page.
     - Delete icon should be visible on top right of editor, selecting it should bring up a confirmation modal
     - Cancel should return without deleting the file
-    - Confirm should delete the file and return the user to viewing the Readme file
+    - Confirm should delete the file, show a success message, and return the user to viewing the Readme file
  - Select the main model file
     - Edit the namespace – ACL file should show in error due to validation
     - Change the namespace back – ACL file should be valid again
@@ -241,3 +315,7 @@ Different users will attempt different things, be starting from different points
  - Add a new asset type to a model and a new transaction, or write a new model from a different business domain
  - Review the questions found in the week on StackOverflow & Rocket.Chat - how did the user get to the position they are in?
  - What new PRs have gone in this week - how could they deployed and used in the existing networks?
+
+ ## The Release
+
+ Once weekly validation has passed and the consensus is to cut a release, the [release process](./release-process.md) may be followed.
