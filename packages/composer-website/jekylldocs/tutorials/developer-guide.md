@@ -26,7 +26,7 @@ Next, we will need the Yeoman app generator and some pre-requisite Angular 2 pac
 
 Install the [VSCode editor](https://code.visualstudio.com/) (an Open Source code editor for your dev environment). For Linux, download the package and install using the (eg. Ubuntu use dpkg  `dpkg -i file.deb` )
 
-![dpkg install](../assets/img/tutorials/developer/vscode-editor-linux.png]
+![dpkg install](../assets/img/tutorials/developer/vscode_editor_linux.png]
 
 After installation, launch VSCode and select `View > Command Palette...` then type `extensions` and select the `Extensions: Install Extensions` option. In the "Search Extensions in Marketplace" text field type `Composer` and install the {{site.data.conrefs.composer_full}} extension. You may have to 'Reload' the extension (if prompted) to activate it. 
 
