@@ -385,9 +385,7 @@ Change directory to your toplevel project folder (my-network) and re-generate th
 composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 ```
 
-You can now navigate to the online Bluemix Composer Playground [http://composer-playground.mybluemix.net](http://composer-playground.mybluemix.net) and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Navigate to the `dist/my-network.bna` file and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
-
-![Import/Replace business network archive](./import_replace.png)
+You can now navigate to the online Bluemix Composer Playground [https://composer-playground.mybluemix.net](https://composer-playground.mybluemix.net) and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Navigate to the `dist/my-network.bna` file and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
 
 ![Confirm Replace](../assets/img/tutorials/developer/import_replace_confirm.png)
 
