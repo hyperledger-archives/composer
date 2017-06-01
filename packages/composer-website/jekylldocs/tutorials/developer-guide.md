@@ -43,7 +43,7 @@ The easiest way to get started is to clone an **existing sample business network
 **git clone https://github.com/hyperledger/composer-sample-networks.git**
 
 
-**cp -r ./composer-sample-networks/packages/basic-sample-network/ ./my-network**
+**cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network**
 
 You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder using Explorer (once selected the folder, scroll down and click OK to open the folder). You should see the file layout in the explorer pane.
 
