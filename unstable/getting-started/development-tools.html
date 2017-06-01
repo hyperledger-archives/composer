@@ -187,13 +187,12 @@ npm install -g composer-playground-api
 <p>If you&#39;ve <a href="../getting-started/using-playground-locally.html">installed the Hyperledger Composer Playground locally</a> you&#39;ll need to close the containers by using the following scripts.</p>
 
 <blockquote>
-<p><em>Please note: If you have current work in a local instance of playground, be sure to export it before closing the docker containers.</em></p>
+<p><em>Please note: These commands will kill and remove all running containers, and should remove all previously created Hyperledger Fabric chaincode images.</em></p>
 </blockquote>
-<div class="highlight"><pre><code class="language-" data-lang="">docker ps -aq | xargs docker rm -f
-docker images -aq | xargs docker rmi -f
+<div class="highlight"><pre><code class="language-" data-lang="">docker kill $(docker ps -q)
+docker rm $(docker ps -aq)
+docker rmi $(docker images dev-* -q)
 </code></pre></div>
-<p>These scripts use Node v6, and bash, which are Hyperledger Composer depencies. Choose a directory that you wish to have the setup scripts within.</p>
-
 <ol>
 <li><p>In a directory of your choice (will assume <code>~/fabric-tools</code>) get the zip file that contains the tools</p>
 <div class="highlight"><pre><code class="language-" data-lang="">mkdir ~/fabric-tools &amp;&amp; cd ~/fabric-tools
@@ -228,7 +227,7 @@ tar xvz fabric-dev-servers.tar.gz
 </code></pre></div></li>
 </ol>
 
-<p><em>If you want to swap between v0.6 and v1.0, ensure you have issued a <code>stopFabric.sh</code> and a <code>teardownFabric.sh</code> command first be START on the other version</em></p>
+<p><em>If you want to swap between v0.6 and v1.0, ensure you first issue a <code>teardownFabric.sh</code> command on your original version.</em></p>
 
 <h2 id="script-details">Script details</h2>
 
