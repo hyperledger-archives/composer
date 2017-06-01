@@ -59,7 +59,6 @@
 
         "modelutil-getnamespace-nofnq": "FQN is invalid.",
 
-
         "resourcevalidator-notresourceorconcept": "Model violation in instance {resourceId} class {classFQN} has value {invalidValue} expected a Resource or a Concept.",
         "resourcevalidator-notrelationship": "Model violation in instance {resourceId} class {classFQN} has value {invalidValue} expected a Relationship.",
         "resourcevalidator-fieldtypeviolation": "Model violation in instance {resourceId} field {propertyName} has value {value} ({typeOfValue}) expected type {fieldType}",

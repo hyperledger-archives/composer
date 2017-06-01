@@ -44,13 +44,51 @@ class ModelUtil {
     }
 
     /**
-     * Returns true if the specified name is a wildcard.
+     * Returns true if the specified name is a wildcard
      * @param {string} fqn - the source string
-     * @return {boolean} true if the specified name is a wildcard.
+     * @return {boolean} true if the specified name is a wildcard
      * @private
      */
     static isWildcardName(fqn) {
         return ModelUtil.getShortName(fqn) === '*';
+    }
+
+    /**
+     * Returns true if the specified name is a recusive wildcard
+     * @param {string} fqn - the source string
+     * @return {boolean} true if the specified name is a recusive wildcard
+     * @private
+     */
+    static isRecursiveWildcardName(fqn) {
+        return ModelUtil.getShortName(fqn) === '**';
+    }
+
+    /**
+     * Returns true if the specified fully qualified name (fqn) and namespace match the
+     * required fqn. Only the required type may have fully qualified name with a wildcard
+     * or recursive wildcard
+     * @param {Type} type - the type to test
+     * @param {string} fqn - fully qualified name
+     * @return {boolean} true if the specified fqn and namespace match the required fqn
+     * @private
+     */
+    static isMatchingType(type, fqn) {
+        // let fqn = type.getFullyQualifiedType();
+        let ns = ModelUtil.getNamespace(fqn);
+        let typeNS = type.getNamespace();
+
+        if (type.instanceOf(fqn)) {
+            // matching type or subtype
+        } else if (ModelUtil.isWildcardName(fqn) && typeNS === ns) {
+            // matching namespace
+        } else if (ModelUtil.isRecursiveWildcardName(fqn) && (typeNS + '.').startsWith(ns + '.')) {
+            // matching recursive namespace
+        } else {
+            // does not match
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -76,13 +114,13 @@ class ModelUtil {
 
     /**
      * Returns true if the type is a primitive type
-     * @param {string} type - the name of the type
+     * @param {string} typeName - the name of the type
      * @return {boolean} - true if the type is a primitive
      * @private
      */
-    static isPrimitiveType(type) {
+    static isPrimitiveType(typeName) {
         const primitiveTypes = ['Boolean', 'String', 'DateTime', 'Double', 'Integer', 'Long'];
-        return (primitiveTypes.indexOf(type) >= 0);
+        return (primitiveTypes.indexOf(typeName) >= 0);
     }
 
     /**

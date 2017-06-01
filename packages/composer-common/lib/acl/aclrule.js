@@ -108,21 +108,35 @@ class AclRule {
      */
     validate() {
         this.noun.validate();
+        let nounClassDeclaration = this.noun.getClassDeclaration();
+        if (nounClassDeclaration && nounClassDeclaration.constructor.name !== 'AssetDeclaration') {
+            throw new IllegalModelException(`The resource '${nounClassDeclaration.getName()}' must be an asset`);
+        }
 
         const foundVerbs = {};
         this.verbs.forEach((verb) => {
             if (foundVerbs[verb]) {
-                throw new Error(`The verb '${verb}' has been specified more than once in the ACL rule '${this.name}'`);
+                throw new IllegalModelException(`The verb '${verb}' has been specified more than once in the ACL rule '${this.name}'`);
             }
             foundVerbs[verb] = true;
         });
 
         if(this.participant) {
             this.participant.validate();
+
+            let participantClassDeclaration = this.participant.getClassDeclaration();
+            if (participantClassDeclaration && participantClassDeclaration.constructor.name !== 'ParticipantDeclaration') {
+                throw new IllegalModelException(`The participant '${participantClassDeclaration.getName()}' must be a participant`);
+            }
         }
 
         if(this.transaction) {
             this.transaction.validate();
+
+            let transactionClassDeclaration = this.transaction.getClassDeclaration();
+            if (transactionClassDeclaration && transactionClassDeclaration.constructor.name !== 'TransactionDeclaration') {
+                throw new IllegalModelException(`The transaction '${transactionClassDeclaration.getName()}' must be a transaction`);
+            }
         }
 
         if(this.predicate) {

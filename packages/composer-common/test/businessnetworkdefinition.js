@@ -100,7 +100,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getMetadata().getPackageJson().customKey.should.equal('custom value');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
-                businessNetwork.aclManager.getAclRules().should.have.length(5);
+                businessNetwork.aclManager.getAclRules().should.have.length(4);
 
                 const intro = businessNetwork.getIntrospector();
                 intro.getClassDeclarations().length.should.equal(25);
