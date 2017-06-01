@@ -22,9 +22,9 @@ First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow 
 
 Next, we will need the Yeoman app generator and some pre-requisite Angular 2 packages if these are not installed presently. Follow this [Generate App Guide](../applications/genapp.html) and specifically the 'Yeoman' section - that's it.
 
-## Install an Editor (eg. VSCode - and its {{site.data.conrefs.composer_full} Extension for Syntax Highlighting)
+## Install an Editor (eg. VSCode - and its {{site.data.conrefs.composer_full}} Extension for Syntax Highlighting)
 
-Install the [VSCode editor](https://code.visualstudio.com/) (an Open Source code editor for your dev environment). For Linux, download the package and install using the (eg. Ubuntu use dpkg  `dpkg -i file.deb` )
+Install the [VSCode editor](https://code.visualstudio.com/) an Open Source code editor for your dev environment. For Linux, download the package and install using the (eg. Ubuntu use dpkg  `dpkg -i file.deb` )
 
 ![dpkg install](../assets/img/tutorials/developer/vscode_editor_linux.png)
 
@@ -525,7 +525,7 @@ Shut the `composer-rest-server` process down by pressing CTRL-C in the terminal 
 
 [https://hyperledger.github.io/composer/applications/genapp.html](https://hyperledger.github.io/composer/applications/genapp.html)
 
-Run the Composer generator, selecting the options to generate an Angular application and to generate a new REST API when prompted:
+Run the {{site.data.conrefs.composer_short}} generator, selecting the options to generate an Angular application and to generate a new REST API when prompted:
 
 ![Composer REST Server](../assets/img/tutorials/developer/composer-yo-generator.png)
 
