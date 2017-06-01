@@ -16,6 +16,7 @@
 
 const AccessException = require('./accessexception');
 const Logger = require('composer-common').Logger;
+const ModelUtil = require('composer-common').ModelUtil;
 
 const LOG = Logger.getLog('AccessController');
 
@@ -208,22 +209,16 @@ class AccessController {
         const method = 'matchNoun';
         LOG.entry(method, resource.getFullyQualifiedIdentifier(), aclRule);
 
-        // Determine the input fully qualified name and ID.
-        let fqn = resource.getFullyQualifiedType();
-        let ns = resource.getNamespace();
+        // Determine the input ID.
         let id = resource.getIdentifier();
 
-        // Check the namespace and type of the ACL rule.
+        // Check to see if the resource is an instance of the
+        // required resource type, or is in the required
+        // namespace.
         let noun = aclRule.getNoun();
-
-        // Check to see if the fully qualified name matches.
         let reqFQN = noun.getFullyQualifiedName();
-        if (fqn === reqFQN) {
-            // Noun is matching fully qualified type.
-        } else if (ns === reqFQN) {
-            // Noun is matching namespace.
-        } else {
-            // Noun does not match.
+
+        if (!ModelUtil.isMatchingType(resource, reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -292,14 +287,9 @@ class AccessController {
         // Check to see if the participant is an instance of the
         // required participant type, or is in the required
         // namespace.
-        let ns = participant.getNamespace();
         let reqFQN = reqParticipant.getFullyQualifiedName();
-        if (participant.instanceOf(reqFQN)) {
-            // Participant is matching type or subtype.
-        } else if (ns === reqFQN) {
-            // Participant is matching namespace.
-        } else {
-            // Participant does not match.
+
+        if (!ModelUtil.isMatchingType(participant, reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
@@ -352,14 +342,9 @@ class AccessController {
         // Check to see if the participant is an instance of the
         // required participant type, or is in the required
         // namespace.
-        let ns = transaction.getNamespace();
         let reqFQN = reqTransaction.getFullyQualifiedName();
-        if (transaction.instanceOf(reqFQN)) {
-            // Transaction is matching type or subtype.
-        } else if (ns === reqFQN) {
-            // Transaction is matching namespace.
-        } else {
-            // Participant does not match.
+
+        if (!ModelUtil.isMatchingType(transaction, reqFQN)) {
             LOG.exit(method, false);
             return false;
         }
