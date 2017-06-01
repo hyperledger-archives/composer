@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Tutorial - Creating a Business Network | Hyperledger Composer</title>
+    <title>Tutorial - E2E Developer Guide | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -118,163 +118,207 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="develop-a-complete-composer-solution-from-scratch">Develop a complete Composer solution from scratch</h1>
+              <h1 id="create-an-end-to-end-hyperledger-composer-solution-from-scratch">Create an end-to-end Hyperledger Composer solution from scratch</h1>
 
 <hr>
 
-<p>This tutorial will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on Hyperledger Fabric.</p>
+<p><em>Note:</em> this tutorial was written against Hyperledger Composer v0.7.2 on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment. (Appropriate steps for a Hyperledger Fabric v0.6 are shown in <em>italics</em>).</p>
 
-<hr>
+<p>This tutorial will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real Hyperledger Fabric blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading, that interacts with a blockchain network ! </p>
 
-<h2 id="before-you-begin">Before you begin</h2>
+<p>Here are the steps to get this running:</p>
 
-<p>Before beginning, you will need to have completed the Development Tools install: <a href="../getting-started/development-tools.html">Install Development Tools</a></p>
+<h2 id="install-hyperledger-composer">Install Hyperledger Composer</h2>
 
-<hr>
+<p>First, make sure you have installed Hyperledger Composer. Follow this <a href="../getting-started/development-tools.html">Developement Env Install guide</a> - As well as installing Composer, it has instructions to quickly build your Hyperledger Fabric blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages. </p>
 
-<h2 id="clone-an-existing-example">Clone an Existing Example</h2>
+<h2 id="install-an-editor-eg-vscode-and-its-hyperledger-composer-extension-for-syntax-highlighting">Install an Editor (eg. VSCode - and its Hyperledger Composer Extension for Syntax Highlighting)</h2>
 
-<p>The easiest way to get started is to clone an existing sample business network.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">git clone https://github.com/hyperledger/composer-sample-networks.git
-cp -r ./composer-sample-networks/packages/basic-sample-network/ ./my-network
-</code></pre></div>
-<p>You should now have a folder called <code>my-network</code> that we can start to modify. Using VSCode open the <code>my-network</code> folder. You should see the file layout in the explorer.</p>
+<p>If you have not already installed this, install the <a href="https://code.visualstudio.com/">VSCode editor</a> an Open Source code editor for your dev environment. For Linux, download the package and install using the (eg. Ubuntu use dpkg  <code>dpkg -i file.deb</code> )</p>
+
+<p><img src="../assets/img/tutorials/developer/vscode_editor_linux.png" alt="dpkg install"></p>
+
+<p>After installation, launch VSCode and select <code>View &gt; Command Palette...</code> then type <code>extensions</code> and select the <code>Extensions: Install Extensions</code> option. In the &quot;Search Extensions in Marketplace&quot; text field type <code>Composer</code> and install the Hyperledger Composer extension. You may have to &#39;Reload&#39; the extension (if prompted) to activate it. </p>
+
+<p><img src="../assets/img/tutorials/developer/vscode_extensions.png" alt="VSCode extensions"></p>
+
+<p><img src="../assets/img/tutorials/developer/vscode_reload.png" alt="VSCode reload"></p>
+
+<h2 id="create-a-business-network-definition">Create a Business Network Definition</h2>
+
+<p>The key concept for Composer is the <strong>business network definition (BND)</strong>. It defines the data model, business (and therein transaction) logic and access control rules for your blockchain solution. It executes on Hyperledger Fabric. To create a BND,  we need to create a suitable project structure on disk.</p>
+
+<p>The easiest way to get started is to clone an <strong>existing sample business network</strong>. Open up a command prompt and clone the Composer sample networks repo. For Linux, perform this as a non-root user.</p>
+
+<p><strong>git clone <a href="https://github.com/hyperledger/composer-sample-networks.git">https://github.com/hyperledger/composer-sample-networks.git</a></strong></p>
+
+<p><strong>cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network</strong></p>
+
+<p>You should now have a folder called <code>my-network</code> (as the basis for our project) that we can start to modify. Using VSCode,  open the <code>my-network</code> folder using Explorer (once selected the folder, scroll down and click OK to open the folder). You should see the file layout in the explorer pane.</p>
+
+<p><img src="../assets/img/tutorials/developer/vscode_explorer.png" alt="Explorer"></p>
 
 <p><img src="../assets/img/tutorials/developer/vscode_project.png" alt="VSCode project"></p>
 
-<h3 id="update-package-json">Update package.json</h3>
+<h3 id="update-your-package-json-file">Update your package.json file</h3>
 
-<p>The metadata (name, version, description) for the business network definition is stored in the <code>package.json</code> file. Edit the file to change the name to <code>my-network</code> and modify the <code>prepublish</code> script to change the name of the business network archive. Remove the <code>deploy</code> script as we will not be publishing this network to the <code>npm</code> package manager.</p>
+<p>The metadata (name, version, description) for the business network definition is stored in the <code>package.json</code> file. Edit the file to change the name to <code>my-network</code> and modify the <code>prepublish</code> script to change the name of the business network archive. (Note: Remove the &#39;deploy&#39; line after &#39;test&#39; - as we will not be publishing this network to the <code>npm</code> package manager).</p>
+
+<p>Also, depending on timeouts encountered (see &#39;Unit Test&#39; later on) we have added a default &#39;test&#39; timeout of 4 seconds below. </p>
 
 <p>The start of the <code>package.json</code> file should now look like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0.1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My first hyperledger composer network"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"prepublish"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkdirp ./dist &amp;&amp; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"pretest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run lint"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ."</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"postlint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run licchk"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"licchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"license-check"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"postlicchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run doc"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"doc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jsdoc --pedantic --recurse -c jsdoc.conf"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha --recursive"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"deploy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./scripts/deploy.sh"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="err">...</span><span class="w">
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="w">
+</span><span class="p">{</span><span class="w">
+</span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0.1"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My very first Hyperledger Composer Network"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="nt">"prepublish"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkdirp ./dist &amp;&amp; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"pretest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run lint"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ."</span><span class="p">,</span><span class="w">
+</span><span class="nt">"postlint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run licchk"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"licchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"license-check"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"postlicchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run doc"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"doc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jsdoc --pedantic --recurse -c jsdoc.conf"</span><span class="p">,</span><span class="w">
+</span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha --recursive -t 4000"</span><span class="w">
+
+</span><span class="p">},</span><span class="w">
+
 </span></code></pre></div>
-<h2 id="define-domain-model">Define Domain Model</h2>
+<h2 id="define-your-domain-model">Define your Domain Model</h2>
 
-<p>Open the file <code>models/sample.cto</code> and inspect the contents. This is the domain model for the business network. It defines the structure (schema) for the assets, transaction and participants in the business network. You can add as many model files as convenient under the <code>models</code> folder, however each model file must have a unique namespace. You can import types from one namespace into other namespaces.</p>
+<p>Open the file <code>models/sample.cto</code> and inspect the contents. This is the domain model for the business network definition. It defines the structure (schema) for the assets, transaction and participants in the business network. You can add as many model files as convenient under the <code>models</code> folder, however each model file must have a unique namespace; do note that you can import types from one namespace into other namespaces.</p>
 
-<p>As an example, we&#39;re going to replace the contents of the file with a simplistic model to track the ownership of commodities on the blockchain:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * My commodity trading network
- */
+<p>As an example, we&#39;re going to replace the entire contents of the file &#39;sample.cto&#39; with a simplistic model (below) to track the ownership of commodities on the blockchain:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">
+/**
+* My commodity trading network
+*/
 namespace org.acme.mynetwork
 
 asset Commodity identified by tradingSymbol {
-  o String tradingSymbol
-  o String description
-  o String mainExchange
-  o Double quantity
-  --&gt; Trader owner
+o String tradingSymbol
+o String description
+o String mainExchange
+o Double quantity
+--&gt; Trader owner
 }
 
 participant Trader identified by tradeId {
-  o String tradeId
-  o String firstName
-  o String lastName
+o String tradeId
+o String firstName
+o String lastName
 }
 
 transaction Trade identified by transactionId {
-  o String transactionId
-  --&gt; Commodity commodity
-  --&gt; Trader newOwner
+o String transactionId
+--&gt; Commodity commodity
+--&gt; Trader newOwner
 }
 </code></pre></div>
 <p>The domain model defines a single asset (Commodity) and single participant (Trader) and a single transaction (Trade) that is used to modify the owner of a commodity.</p>
 
 <h2 id="write-transaction-processor-functions">Write Transaction Processor Functions</h2>
 
-<p>Now that the domain model has been defined we can write the business logic for the business network. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
+<p>Now that the domain model has been defined, we can write the business logic for the business network definition. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
 
-<p>Open the file <code>lib/logic.js</code> and inspect the contents. You can create an many JavaScript files as convenient for your business network. If a JavaScript function has the <code>@transaction</code> annotation it will be automatically invokes when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
+<p>Open the file <code>lib/logic.js</code> in the left-hand pane and inspect the contents (note that you can create an many JavaScript files as convenient for your business network definition). If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
 
-<p>Replace the contents of <code>logic.js</code> with the function below:</p>
+<p>Now replace the entire contents of <code>logic.js</code> with the function below (including the license header info)</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 /**
- * Track the trade of a commodity from one trader to another
- * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
- * @transaction
- */
+* Track the trade of a commodity from one trader to another
+* @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+* @transaction
+*/
 function tradeCommodity(trade) {
-    trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.mynetwork.Commodity')
-      .then(function (assetRegistry) {
-          return assetRegistry.update(trade.commodity);
-      });
+trade.commodity.owner = trade.newOwner;
+return getAssetRegistry('org.acme.mynetwork.Commodity')
+.then(function (assetRegistry) {
+return assetRegistry.update(trade.commodity);
+});
 }
 </code></pre></div>
-<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry used to store <code>Commodity</code> instances.</p>
+<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p>
 
-<h2 id="update-access-control-rules">Update Access Control Rules</h2>
+<h2 id="update-your-access-control-rules">Update your Access Control Rules</h2>
 
-<p>The file <code>permissions.acl</code> defines the access control rules for the business network. Update the Default rule to use the new namespace for the network:</p>
+<p>The file <code>permissions.acl</code> defines the access control rules for the business network definition. Update the &#39;Default&#39; rule to use the new namespace for the network (just cut and paste the entire contents from below if you prefer):</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
- * Access control rules for mynetwork
- */
+* Access control rules for mynetwork
+*/
 rule Default {
-    description: "Allow all participants access to all resources"
-    participant: "ANY"
-    operation: ALL
-    resource: "org.acme.mynetwork"
-    action: ALLOW
+description: "Allow all participants access to all resources"
+participant: "ANY"
+operation: ALL
+resource: "org.acme.mynetwork"
+action: ALLOW
 }
 </code></pre></div>
-<h2 id="generate-business-network-archive">Generate Business Network Archive</h2>
+<h2 id="generate-the-business-network-archive">Generate the Business Network Archive</h2>
 
-<p>To check that the structure of the files is valid you can now generate a Business Network Archive (BNA) file for your business network definition. The BNA file is the deployable unit -- a file that can be deployed to the Composer runtime for execution.</p>
+<p>To check that the structure of the files is valid, you can now generate a Business Network Archive (BNA) file for your business network definition. The BNA file is the deployable unit -- a file that can be deployed to the Composer runtime for execution.</p>
 
 <p>Switch back to the terminal and type:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install
+
+<p>npm install</p>
+
+<p>You should see the following output:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">&gt; my-network@0.0.1 prepublish /home/joe/dev/git/my-network
+&gt; mkdirp ./dist &amp;&amp; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
+
+
+Creating Business Network Archive
+
+Looking for package.json of Business Network Definition in /home/joe/dev/git/my-network
+
+Found:
+Description:My very first Hyperledger Composer Network
+Name:my-network
+Identifier:my-network@0.0.1
+
+Written Business Network Definition Archive file to ./dist/my-network.bna
+Command completed successfully.
+
+Command succeeded
 </code></pre></div>
-<p>The <code>composer archive create</code> command (run by the npm prepublish script) has created a file called <code>my-network.bna</code> in the <code>dist</code> folder.</p>
+<p>The <code>composer archive create</code> command has created a file called <code>my-network.bna</code> in the <code>dist</code> folder.</p>
 
 <h2 id="write-unit-tests">Write Unit Tests</h2>
 
-<p>All code should have unit tests - even your business network logic! We are now going to add a simple unit test for the business network. The unit test will run against the <strong>embedded</strong> Composer runtime. The embedded runtime simulates Hyperledger Fabric within a Node.js process. The embedded runtime is very useful for unit testing as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The later is more suited to running a system test (which is also possible, but is out of scope for this tutorial).</p>
+<p>All code should have unit tests - even your business network logic! </p>
 
-<p>Open the file <code>tests/Sample.js</code> and inspect the contents.</p>
+<p>We are now going to add a simple unit test for the business network definition. The unit test will run against the <strong>embedded</strong>  runtime. The embedded runtime actually stores the state of &#39;the blockchain&#39; in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this E2E tutorial).</p>
 
-<p>Modify the namespace, types and logic of the unit test to that shown below.</p>
+<p>From your project working directory (my-network), open the file <code>test/Sample.js</code> and inspect the contents.</p>
+
+<p>The test code below will replace the namespace, types and logic of the unit test pertaining to &#39;my-network&#39; as shown below. For convenience, you can copy the entire script contents below and replace the current Sample.js file contents entirely:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 'use strict';
 
@@ -291,115 +335,155 @@ const NS = 'org.acme.mynetwork';
 
 describe('Commodity Trading', () =&gt; {
 
-  // let adminConnection;
-    let businessNetworkConnection;
+// let adminConnection;
+let businessNetworkConnection;
 
-    before(() =&gt; {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type : 'embedded'
-        })
-        .then(() =&gt; {
-            return adminConnection.connect('defaultProfile', 'admin', 'Xurw3yU9zI0l');
-        })
-        .then(() =&gt; {
-            return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
-        })
-        .then((businessNetworkDefinition) =&gt; {
-            return adminConnection.deploy(businessNetworkDefinition);
-        })
-        .then(() =&gt; {
-            businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-            return businessNetworkConnection.connect('defaultProfile', 'my-network', 'admin', 'Xurw3yU9zI0l');
-        });
-    });
+before(() =&gt; {
+BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
+const adminConnection = new AdminConnection({ fs: bfs_fs });
+return adminConnection.createProfile('defaultProfile', {
+type : 'embedded'
+})
+.then(() =&gt; {
+return adminConnection.connect('defaultProfile', 'admin', 'adminpw');
+})
+.then(() =&gt; {
+return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
+})
+.then((businessNetworkDefinition) =&gt; {
+return adminConnection.deploy(businessNetworkDefinition);
+})
+.then(() =&gt; {
+businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
+return businessNetworkConnection.connect('defaultProfile', 'my-network', 'admin', 'adminpw');
+});
+});
 
-    describe('#tradeCommodity', () =&gt; {
+describe('#tradeCommodity', () =&gt; {
 
-        it('should be able to trade a commodity', () =&gt; {
-            const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+it('should be able to trade a commodity', () =&gt; {
+const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
-            // create the traders
-            const dan = factory.newResource(NS, 'Trader', 'dan@email.com');
-            dan.firstName = 'Dan';
-            dan.lastName = 'Selman';
+// create the traders
+const dan = factory.newResource(NS, 'Trader', 'dan@email.com');
+dan.firstName = 'Dan';
+dan.lastName = 'Selman';
 
-            const simon = factory.newResource(NS, 'Trader', 'simon@email.com');
-            simon.firstName = 'Simon';
-            simon.lastName = 'Stone';
+const simon = factory.newResource(NS, 'Trader', 'simon@email.com');
+simon.firstName = 'Simon';
+simon.lastName = 'Stone';
 
-             // create the commodity
-            const commodity = factory.newResource(NS, 'Commodity', 'EMA');
-            commodity.description = 'Corn';
-            commodity.mainExchange = 'Euronext';
-            commodity.quantity = 100;
-            commodity.owner = factory.newRelationship(NS, 'Trader', dan.$identifier);
+// create the commodity
+const commodity = factory.newResource(NS, 'Commodity', 'EMA');
+commodity.description = 'Corn';
+commodity.mainExchange = 'Euronext';
+commodity.quantity = 100;
+commodity.owner = factory.newRelationship(NS, 'Trader', dan.$identifier);
 
-            // create the trade transaction
-            const trade = factory.newTransaction(NS, 'Trade');
-            trade.newOwner = factory.newRelationship(NS, 'Trader', simon.$identifier);
-            trade.commodity = factory.newRelationship(NS, 'Commodity', commodity.$identifier);
+// create the trade transaction
+const trade = factory.newTransaction(NS, 'Trade');
+trade.newOwner = factory.newRelationship(NS, 'Trader', simon.$identifier);
+trade.commodity = factory.newRelationship(NS, 'Commodity', commodity.$identifier);
 
-            // the owner should of the commodity should be dan
-            commodity.owner.$identifier.should.equal(dan.$identifier);
+// the owner should of the commodity should be dan
+commodity.owner.$identifier.should.equal(dan.$identifier);
 
-            // Get the asset registry.
-            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity')
-            .then((assetRegistry) =&gt; {
+// Get the asset registry.
+return businessNetworkConnection.getAssetRegistry(NS + '.Commodity')
+.then((assetRegistry) =&gt; {
 
-                // add the commodity to the asset registry.
-                return assetRegistry.add(commodity)
-                .then(() =&gt; {
-                    return businessNetworkConnection.getParticipantRegistry(NS + '.Trader');
-                })
-                .then((participantRegistry) =&gt; {
-                    // add the traders
-                    return participantRegistry.addAll([dan,simon]);
-                })
-                .then(() =&gt; {
-                   // submit the transaction
-                    return businessNetworkConnection.submitTransaction(trade);
-                })
-                .then(() =&gt; {
-                    return businessNetworkConnection.getAssetRegistry(NS + '.Commodity');
-                })
-                .then((assetRegistry) =&gt; {
-                    // re-get the commodity
-                    return assetRegistry.get(commodity.$identifier);
-                })
-                .then((newCommodity) =&gt; {
-                     // the owner of the commodity should not be simon
-                    newCommodity.owner.$identifier.should.equal(simon.$identifier);
-                });
-            });
-        });
-    });
+// add the commodity to the asset registry.
+return assetRegistry.add(commodity)
+.then(() =&gt; {
+return businessNetworkConnection.getParticipantRegistry(NS + '.Trader');
+})
+.then((participantRegistry) =&gt; {
+// add the traders
+return participantRegistry.addAll([dan,simon]);
+})
+.then(() =&gt; {
+// submit the transaction
+return businessNetworkConnection.submitTransaction(trade);
+})
+.then(() =&gt; {
+return businessNetworkConnection.getAssetRegistry(NS + '.Commodity');
+})
+.then((assetRegistry) =&gt; {
+// re-get the commodity
+return assetRegistry.get(commodity.$identifier);
+})
+.then((newCommodity) =&gt; {
+// the owner of the commodity should not be simon
+newCommodity.owner.$identifier.should.equal(simon.$identifier);
+});
+});
+});
+});
 });
 </code></pre></div>
 <p>Check that the unit tests pass by typing:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm test
+
+<p><strong>npm test</strong></p>
+
+<p>You should see output like the following:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">~joe@ubuntu $ npm test
+
+&gt; my-network@0.0.1 pretest /home/joe/dev/git/my-network
+&gt; npm run lint
+
+
+&gt; my-network@0.0.1 lint /home/joe/dev/git/my-network
+&gt; eslint .
+
+
+&gt; my-network@0.0.1 postlint /home/joe/dev/git/my-network
+&gt; npm run licchk
+
+
+&gt; my-network@0.0.1 licchk /home/joe/dev/git/my-network
+&gt; license-check
+
+
+&gt; my-network@0.0.1 postlicchk /home/joe/dev/git/my-network
+&gt; npm run doc
+
+
+&gt; my-network@0.0.1 doc /home/joe/dev/git/my-network
+&gt; jsdoc --pedantic --recurse -c jsdoc.conf
+
+
+&gt; my-network@0.0.1 test /home/joe/dev/git/my-network
+&gt; mocha --recursive -t 4000
+
+
+
+Commodity Trading
+#tradeCommodity
+✓ should be able to trade a commodity (61ms)
+
+
+1 passing (556ms)
 </code></pre></div>
 <h2 id="import-into-playground-and-test">Import into Playground and Test</h2>
 
-<p>Re-generate the BNA file using the command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install
+<p>Change directory to your toplevel project folder (my-network) and re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the command:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 </code></pre></div>
-<p>You can then navigate to <a href="https://composer-playground.mybluemix.net">https://composer-playground.mybluemix.net</a> and import the BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Navigate to the <code>dist/my-network.bna</code> file and upload it, then press the &quot;Deploy&quot; button.</p>
+<p>You can now navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net">https://composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Navigate to the <code>dist/my-network.bna</code> file and upload it, then press the &quot;Deploy&quot; button. Confirm to replace the current sample definition in Playground.</p>
 
-<p><img src="../assets/img/tutorials/developer/import_replace.png" alt="Import/Replace business network archive"></p>
+<p><img src="../assets/img/tutorials/developer/import_replace_confirm.png" alt="Confirm Replace"></p>
 
-<p>You can browse the structure of the business network by pressing the link on the left, check the contents of the model, script files and access control.</p>
+<p>You can browse the structure of the Trade Commodity business network by pressing the link on the left, check the contents of the model, script files and access control.</p>
 
-<p>You can then press the &quot;Test&quot; tab at the top and create a TRADER1 and TRADER2 instances of Trader by pressing the Trader link on the left and then the &quot;Create New Participant&quot; button.</p>
+<p>Next,  press the &quot;Test&quot; tab at the top and create two &#39;Trader&#39; participants (TRADER1 and TRADER2) by pressing the Trader link on the left and then the &quot;Create New Participant&quot; button.</p>
 
 <p><img src="../assets/img/tutorials/developer/create_trader.png" alt="Create Trader"></p>
 
-<p>The trader registry should look like this:</p>
+<p>The trader registry (with two entries) should look like this:</p>
 
-<p><img src="../assets/img/tutorials/developer/trader_registry.png" alt="Trader Registry"></p>
+<p>![Trader Participant Registry]../assets/img/tutorials/developer/trader_registry.png)</p>
 
-<p>You can then create a new instance of a Commodity by pressing the Commodity link to the left and then the &quot;Create New Asset&quot; button. Create the commodity and assign the owner to be TRADER1.</p>
+<p>Next, create a new instance of a Commodity (asset) by pressing the Commodity link on the left and then the &quot;Create New Asset&quot; button. Create the commodity and assign the owner to be &#39;TRADER1&#39;.</p>
 
 <p><img src="../assets/img/tutorials/developer/create_commodity.png" alt="Create Commodity"></p>
 
@@ -407,32 +491,37 @@ describe('Commodity Trading', () =&gt; {
 
 <p><img src="../assets/img/tutorials/developer/commodity_registry.png" alt="Commodity Registry"></p>
 
-<p>You can then submit a <code>Trade</code> transaction to move the commodity from TRADER1 to TRADER2.</p>
+<p>Next, submit a <code>Trade</code> transaction (click the button, below left) to move the commodity from TRADER1 to TRADER2.</p>
 
 <p><img src="../assets/img/tutorials/developer/submit_tx.png" alt="Submit transaction"></p>
 
-<p>After processing you should see the transaction in the transaction registry.</p>
+<p>After processing, you should now see the transaction in the transaction registry.</p>
 
 <p><img src="../assets/img/tutorials/developer/tx_registry.png" alt="Transaction registry"></p>
 
-<p>The owner of the ABC commodity should now be TRADER2.</p>
+<p>As a result, the owner of the ABC commodity should now be TRADER2.</p>
 
-<p><img src="../assets/img/tutorials/developer/commodity_registry_after.png" alt="Commodity registry"></p>
+<p>![Commodity registry]../assets/img/tutorials/developer/commodity_registry_after.png)</p>
 
-<h2 id="deploy-to-hyperledger-fabric">Deploy to Hyperledger Fabric</h2>
+<h2 id="deploy-to-the-running-hyperledger-fabric">Deploy to the running Hyperledger Fabric</h2>
 
-<p>So, we&#39;ve created our business network definition, written a unit test and interactively tested the solution in the Playground. Now it is time to deploy to a <strong>real</strong> blockchain! We are going to deploy the BNA file to Hyperledger Fabric v0.6, as used by the Quick Start we ran earlier to verify installation.</p>
+<p>So far, we&#39;ve created our business network definition, written a unit test and interactively tested the solution in the Playground. </p>
 
-<p>Switch to the terminal change to the <code>dist</code> folder containing the <code>my-network.bna</code> file and type:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a my-network.bna -i admin -s Xurw3yU9zI0l
+<p>Now it is time to deploy to a <strong>real</strong> blockchain! We are going to deploy the BNA (suffix .bna) file to Hyperledger Fabric v1.0 ; this blockchain environment should be set up as a pre-requisite to this E2E tutorial. </p>
+
+<p>Switch to the terminal  and change directory to the <code>dist</code> folder containing the <code>my-network.bna</code> file and type:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+
+
+Note: You'll notice that the flag '-p' specifies that we should use a v1 connection profile  to connect to the running v1.0 Fabric. If you're using a 0.6 Fabric environment its: * composer network deploy -a my-network.bna -i admin -s &lt;password? *
 </code></pre></div>
-<p>After approximately 30 seconds the business network should have been deployed to your local Hyperledger Fabric. You should see output as follows:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">pc52:dist dselman$ composer network deploy -a my-network.bna -i admin -s Xurw3yU9zI0l
+<p>After approximately 30 seconds or so, the business network should have been deployed to your local Hyperledger Fabric. You should see output as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">joe@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
 
 Deploying business network from archive: my-network.bna
 Business network definition:
-    Identifier: my-network@0.0.1
-    Description: My first hyperledger fabric composer network
+Identifier: my-network@0.0.1
+Description: My very first Hyperledger Composer Network
 
 ✔ Deploying business network definition. This may take a minute...
 
@@ -440,14 +529,17 @@ Business network definition:
 Command succeeded
 </code></pre></div>
 <p>You can verify that the network has been deployed by typing:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network ping -n my-network -i admin -s Xurw3yU9zI0l
-</code></pre></div>
+
+<p>composer network ping -n my-network -p hlfv1 -i admin -s adminpw</p>
+
+<p>Note: for 0.6 environments its: * composer network ping -n my-network -i admin -s &lt;password? *</p>
+
 <p>Which should give the following output:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">pc52:dist dselman$ composer network ping -n my-network -i admin -s Xurw3yU9zI0l
+<div class="highlight"><pre><code class="language-" data-lang="">joe@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
-    version: 0.5.10
-    participant: &lt;no participant found&gt;
+version: 0.7.2
+participant: &lt;no participant found&gt;
 
 Command succeeded
 </code></pre></div>
@@ -459,103 +551,81 @@ Command succeeded
 
 <p>To create the REST API we need to launch the <code>composer-rest-server</code> and tell it how to connect to our deployed business network.</p>
 
-<p>First install the composer-rest-server:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-rest-server
-</code></pre></div>
-<p>Note: if you have already installed the composer-rest-server please run <code>npm uninstall -g composer-rest-server</code> first.</p>
+<p>Note that the module composer-rest-server would have been installed when you installed the Development environment.</p>
 
-<p>Then launch the server with the command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server
-</code></pre></div>
+<p>Now launch the server with the command:</p>
+
+<p>composer-rest-server</p>
+
 <p>Answer the questions posed at startup. These allow the composer-rest-server to connect to Hyperledger Fabric and configure how the REST API is generated.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">
- _   _                       _          _                 
-| | | |_   _ _ __   ___ _ __| | ___  __| | __ _  ___ _ __
-| |_| | | | | <span class="s1">'_ \ / _ \ '</span>__| |/ _ <span class="se">\/</span> _<span class="sb">`</span> |/ _<span class="sb">`</span> |/ _ <span class="se">\ </span><span class="s1">'__|
-|  _  | |_| | |_) |  __/ |  | |  __/ (_| | (_| |  __/ |   
-|_| |_|\__, | .__/ \___|_|  |_|\___|\__,_|\__, |\___|_|   
-       |___/|_|                           |___/           
-  ____                                          
- / ___|___  _ __ ___  _ __   ___  ___  ___ _ __
-| |   / _ \| '</span>_ <span class="sb">`</span> _ <span class="se">\|</span> <span class="s1">'_ \ / _ \/ __|/ _ \ '</span>__|
-| |__| <span class="o">(</span>_<span class="o">)</span> | | | | | | |_<span class="o">)</span> | <span class="o">(</span>_<span class="o">)</span> <span class="se">\_</span>_ <span class="se">\ </span> __/ |   
- <span class="se">\_</span>___<span class="se">\_</span>__/|_| |_| |_| .__/ <span class="se">\_</span>__/|___/<span class="se">\_</span>__|_|   
-                     |_|                                                     
-? Enter your Fabric Connection Profile Name: defaultProfile
-? Enter your Business Network Identifier : digitalproperty-network
-? Enter your Fabric username : WebAppAdmin
-? Enter your secret: DJY27pEnl16d
-Loopback Connector <span class="k">for </span>Hyperledger Composer
-Models Loaded Now
-Browse your REST API at http://0.0.0.0:3000/explorer
-</code></pre></div>
+
+<p><img src="../assets/img/tutorials/developer/composer-rest-server.png" alt="Composer REST Server"></p>
+
 <h2 id="test-rest-api">Test REST API</h2>
 
 <p>If the composer-rest-server started successfully you should see these two lines are output:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Web server listening at: http://localhost:3000
-Browse your REST API at http://localhost:3000/explorer
-</code></pre></div>
+
+<p>Web server listening at: <a href="http://localhost:3000">http://localhost:3000</a>
+Browse your REST API at <a href="http://localhost:3000/explorer">http://localhost:3000/explorer</a></p>
+
 <p>Open a web browser and navigate to <a href="">http://localhost:3000/explorer</a></p>
 
 <p>You should see the LoopBack API Explorer, allowing you to inspect and test the generated REST API.</p>
 
 <p><img src="../assets/img/tutorials/developer/lb_explorer.png" alt="LoopBack Explorer"></p>
 
-<p>First use the <code>POST</code> method on <code>Trader</code> to create a new instance of a Trader.</p>
+<p>First use the POST method on Trader to create a new instance of a Trader - first select &#39;List Operations&#39; alongside the Trader to see the operations available.</p>
 
 <p><img src="../assets/img/tutorials/developer/lb_create_trader.png" alt="Create trader"></p>
 
 <p>Enter the values and then press the &quot;Try it Out&quot; button to submit. You should see an HTTP 200 response indicating that the Trader was successfully created and stored on the blockchain.</p>
 
-<p>Use the <code>GET</code> method on <code>Trader</code> (leave the filter parameter blank) and press the &quot;Try it Out&quot; button. You should see your Trader returned.</p>
+<p>Use the <code>GET</code> operation/method on <code>Trader</code> (leave the filter parameter blank) and press the &quot;Try it Out&quot; button. You should see your Trader returned.</p>
 
-<p><img src="../assets/img/tutorials/developer/lb_get_trader.png" alt="Get trader"></p>
+<p>![Get trader]../assets/img/tutorials/developer/lb_get_trader.png)</p>
 
 <p>Similarly you can create/read/update/delete Commodities by using the appropriate HTTP request methods. You can submit a <code>Trade</code> transaction using an HTTP POST to the <code>/Trade</code> API endpoint.</p>
 
-<h2 id="generate-skeleton-web-application">Generate Skeleton Web Application</h2>
+<h2 id="generate-your-skeleton-web-application">Generate your Skeleton Web Application</h2>
 
 <p>You are now ready to create a skeleton Angular web application to interact with your business network.</p>
 
-<p>Shut the <code>composer-rest-server</code> process down by pressing CTRL-C, and then follow the instructions to install the Yeoman generator for Hyperledger Composer:
-<a href="https://fabric-composer.github.io/applications/genapp.html">https://fabric-composer.github.io/applications/genapp.html</a></p>
+<p>Shut the <code>composer-rest-server</code> process down by pressing CTRL-C in the terminal window).</p>
 
-<p>Run the generator, selecting the options to generate an Angular application:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">pc52:my-network dselman$ yo hyperledger-composer
-Welcome to the Hyperledger Composer Skeleton Application Generator
-? Please select the type of Application: Angular2 Application
-You can run this generator using: 'yo hyperledger-composer:angular'
-Welcome to the Angular2 skeleton app generator
-? Do you want to connect to a running Business Network? Yes
-? What is the name of the application you wish to generate?: my-app
-? Description of the application: Commodities trading app
-? Author name: Dan
-? Author email: daniel@email.com
-? What is the Business Network Identifier?: my-network
-? What is the Connection Profile to use? defaultProfile
-? Enrollment id: admin
-? Enrollment Secret: Xurw3yU9zI0l
-</code></pre></div>
+<p>Run the Hyperledger Composer generator, selecting the options below to generate an Angular application and to also generate a new REST API when prompted:</p>
+
+<p>yo hyperledger-composer </p>
+
+<p><img src="../assets/img/tutorials/developer/composer-yo-generator.png" alt="Composer Yo Generator"></p>
+
 <p>You should see that the generator has created Angular components for the asset types:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">   create src/app/Commodity/Commodity.component.ts
-   create src/app/Commodity/Commodity.service.ts
-   create src/app/Commodity/Commodity.component.spec.ts
-   create src/app/Commodity/Commodity.component.html
-   create src/app/Commodity/Commodity.component.css
+<div class="highlight"><pre><code class="language-" data-lang="">create src/app/Commodity/Commodity.component.ts
+create src/app/Commodity/Commodity.service.ts
+create src/app/Commodity/Commodity.component.spec.ts
+create src/app/Commodity/Commodity.component.html
+create src/app/Commodity/Commodity.component.css
 </code></pre></div>
-<p>Wait a couple of minutes for the install of the application dependencies to complete.</p>
+<p>Wait a couple of minutes for the install of the application dependencies to complete. </p>
 
-<p>The type:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd my-app
-npm start
-</code></pre></div>
-<p>You should see the <code>composer-rest-server</code> start, and then Angular webpacks the web application and serves it at: <a href="">http://localhost:4200</a></p>
+<p>Next, change directory to your home directory (eg. /home/joe)</p>
 
-<p>If you navigate to the page and press the &quot;Assets&quot; drop down at the top-right of the page you can see the instances of Commodity stored on the Hyperledger Fabric in the table. You can create new instances using the &quot;Add Asset&quot; button. Note that the Angular skeleton does not yet allow you to create Participants, so you will need to create a test Trader instance to act as the owner of the Commodity using the Loopback Swagger UI before you can create a Commodity.</p>
+<p>Then change directory to your application directory:</p>
+
+<p>cd my-app</p>
+
+<p>Finally run:</p>
+
+<p>npm start</p>
+
+<p>Your application is running. You should see the <code>composer-rest-server</code> start, and then Angular webpacks the web application - it serves the content at URL: <a href="">http://localhost:4200</a></p>
+
+<p>If you navigate to this URL and press the &quot;Assets&quot; drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the Hyperledger Fabric in the table (we have not stored them on blockchain yet!). You can create new instances using the &quot;Add Asset&quot; button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI ( (ie using Playground) before you can create a Commodity.</p>
 
 <p><img src="../assets/img/tutorials/developer/skeleton_add_asset.png" alt="Add commodity"></p>
 
-<h2 id="congratulations">Congratulations!</h2>
+<p><img src="../assets/img/tutorials/developer/commodity_app.png" alt="Asset listing refreshed"></p>
+
+<h1 id="congratulations">Congratulations!</h1>
 
 <p>Well done, you&#39;ve now completed this tutorial and I hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!</p>
 
