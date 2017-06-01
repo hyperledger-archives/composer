@@ -397,7 +397,7 @@ Next,  press the "Test" tab at the top and create two 'Trader' participants (TRA
 
 The trader registry (with two entries) should look like this:
 
-![Trader Participant Registry]../assets/img/tutorials/developer/trader_registry.png)
+![Trader Participant Registry](../assets/img/tutorials/developer/trader_registry.png)
 
 Next, create a new instance of a Commodity (asset) by pressing the Commodity link on the left and then the "Create New Asset" button. Create the commodity and assign the owner to be 'TRADER1'.
 
@@ -417,7 +417,7 @@ After processing, you should now see the transaction in the transaction registry
 
 As a result, the owner of the ABC commodity should now be TRADER2.
 
-![Commodity registry]../assets/img/tutorials/developer/commodity_registry_after.png)
+![Commodity registry](../assets/img/tutorials/developer/commodity_registry_after.png)
 
 ## Deploy to the running {{site.data.conrefs.hlf_full}}
 
@@ -430,7 +430,7 @@ Switch to the terminal  and change directory to the `dist` folder containing the
     composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
     
     
-    Note: You'll notice that the flag '-p' specifies that we should use a v1 connection profile  to connect to the running v1.0 Fabric. If you're using a 0.6 Fabric environment its: * composer network deploy -a my-network.bna -i admin -s <password? *
+Note: You'll notice the flag '-p' : it specifies that we should use a v1 connection profile  to connect to the running v1.0 Fabric. If you're using a 0.6 Fabric environment its: *composer network deploy -a my-network.bna -i admin -s <password>*
     
 After approximately 30 seconds or so, the business network should have been deployed to your local {{site.data.conrefs.hlf_full}}. You should see output as follows:
 
@@ -452,7 +452,7 @@ You can verify that the network has been deployed by typing:
 
 composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
-Note: for 0.6 environments its: * composer network ping -n my-network -i admin -s <password? *
+Note: for 0.6 environments its: *composer network ping -n my-network -i admin -s <password>*
 
 Which should give the following output:
 
@@ -474,9 +474,9 @@ If you are creating a web application (or running in a non Node.js environment) 
 
 To create the REST API we need to launch the `composer-rest-server` and tell it how to connect to our deployed business network.
 
-Note that the module composer-rest-server would have been installed when you installed the Development environment.
+Note that the composer-rest-server module would have been installed earlier, when you installed the Development environment.
 
-Now launch the server with the command:
+Launch the server with the command:
 
 composer-rest-server
 
@@ -491,7 +491,7 @@ If the composer-rest-server started successfully you should see these two lines 
 Web server listening at: http://localhost:3000
 Browse your REST API at http://localhost:3000/explorer
 
-Open a web browser and navigate to [http://localhost:3000/explorer]()
+Open a web browser and navigate to the URL http://localhost:3000/explorer
 
 You should see the LoopBack API Explorer, allowing you to inspect and test the generated REST API.
 
@@ -537,13 +537,17 @@ Next, change directory to your home directory (eg. /home/joe)
 
 Then change directory to your application directory:
 
+```
 cd my-app
+```
 
 Finally run:
 
+```
 npm start
+```
 
-Your application is running. You should see the `composer-rest-server` start, and then Angular webpacks the web application - it serves the content at URL: [http://localhost:4200]()
+Your application is running. You should see the `composer-rest-server` start, and then Angular webpacks the web application - it serves the content at URL: http://localhost:4200
 
 If you navigate to this URL and press the "Assets" drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the {{site.data.conrefs.hlf_full}} in the table (we have not stored them on blockchain yet!). You can create new instances using the "Add Asset" button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI ( (ie using Playground) before you can create a Commodity.
 
