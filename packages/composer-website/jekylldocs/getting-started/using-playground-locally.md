@@ -32,18 +32,13 @@ docker images -aq | xargs docker rmi -f
 
 ## Creating the containers and installing playground locally
 
-1. First, you must download the example Docker Compose file using the following command:
+1. Pick a directory that you want to install into, then run the following command to download and start a {{site.data.conrefs.hlf_full}} instance and {{site.data.conrefs.composer_full}} Playground:
 
-        curl -O https://hyperledger.github.io/composer/composer/install-hlfv1.sh
+        curl -sSL https://hyperledger.github.io/composer/install-hlfv1.sh | bash
 
-2. In a terminal or command prompt, navigate to the directory that you downloaded the `install-hlfv1.sh` file into, and run the following command to start a Hyperledger Fabric instance and {{site.data.conrefs.composer_full}} Playground:
+2. Access your local {{site.data.conrefs.composer_full}} Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>.
 
-        cat install-hlfv1.sh | bash
-
-3. Access your local {{site.data.conrefs.composer_full}} Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>.
-
-    By default, you are connected to the instance of fabric created in the previous step and the Basic Sample Network business network is loaded. In the connection profiles panel of the playground, the `hlfabric` connection profile should be selected.
-
+    By default, the Web Browser connection profile is in use (for developing and testing in browser memory).  To connect instead to the {{site.data.conrefs.hlf_full}} instance created in the previous step, click the globe icon in the top right of the UI to visit the Connection Profiles panel and change your active profile to 'hlfabric'.
 
 ---
 <!--
@@ -135,5 +130,4 @@ You can then start {{site.data.conrefs.composer_full}} Playground by clicking on
 
 ## What's next?
 
-* Now that you have the playground running locally and connected to a running instance of {{site.data.conrefs.hlf_full}} you might want to [use the developer tools to begin developing and using your own business networks](../getting-started/development-tools.html).
-* If you're looking for a tutorial on using Playground, try [running a car auction with the Playground](../tutorials/playground-guide.html).
+* Take a tutorial on using Playground, and try [running a car auction with the Playground](../tutorials/playground-guide.html).
