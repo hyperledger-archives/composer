@@ -18,13 +18,11 @@ Here are the steps to get this running:
 
 ## Install {{site.data.conrefs.composer_full}}
 
-First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Quickstart guide](../getting-started/quickstart.html) ; as well as installing Composer, it will quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) that we will use later on.
-
-Next, we will need the Yeoman app generator and some pre-requisite Angular 2 packages if these are not installed presently. Follow this [Generate App Guide](../applications/genapp.html) and specifically the 'Yeoman' section - that's it.
+First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Developement Env Install guide](../getting-started/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages. 
 
 ## Install an Editor (eg. VSCode - and its {{site.data.conrefs.composer_full}} Extension for Syntax Highlighting)
 
-Install the [VSCode editor](https://code.visualstudio.com/) an Open Source code editor for your dev environment. For Linux, download the package and install using the (eg. Ubuntu use dpkg  `dpkg -i file.deb` )
+If you have not already installed this, install the [VSCode editor](https://code.visualstudio.com/) an Open Source code editor for your dev environment. For Linux, download the package and install using the (eg. Ubuntu use dpkg  `dpkg -i file.deb` )
 
 ![dpkg install](../assets/img/tutorials/developer/vscode_editor_linux.png)
 
@@ -478,13 +476,9 @@ If you are creating a web application (or running in a non Node.js environment) 
 
 To create the REST API we need to launch the `composer-rest-server` and tell it how to connect to our deployed business network.
 
-First install the composer-rest-server - you may need sudo privileges to install 'global' (like shown below):
+Note that the module composer-rest-server would have been installed when you installed the Development environment.
 
-sudo npm install -g composer-rest-server
-
-Note: if you have already installed the composer-rest-server please run `npm uninstall -g composer-rest-server` first.
-
-Then launch the server with the command:
+Now launch the server with the command:
 
 composer-rest-server
 
@@ -521,13 +515,13 @@ Similarly you can create/read/update/delete Commodities by using the appropriate
 
 You are now ready to create a skeleton Angular web application to interact with your business network.
 
-Shut the `composer-rest-server` process down by pressing CTRL-C in the terminal window), and then follow the instructions to install the Yeoman generator for {{site.data.conrefs.composer_full}}:
+Shut the `composer-rest-server` process down by pressing CTRL-C in the terminal window).
 
-[https://hyperledger.github.io/composer/applications/genapp.html](https://hyperledger.github.io/composer/applications/genapp.html)
+Run the {{site.data.conrefs.composer_full}} generator, selecting the options below to generate an Angular application and to also generate a new REST API when prompted:
 
-Run the {{site.data.conrefs.composer_short}} generator, selecting the options to generate an Angular application and to generate a new REST API when prompted:
+yo hyperledger-composer 
 
-![Composer REST Server](../assets/img/tutorials/developer/composer-yo-generator.png)
+![Composer Yo Generator](../assets/img/tutorials/developer/composer-yo-generator.png)
 
 You should see that the generator has created Angular components for the asset types:
 
