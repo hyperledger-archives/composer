@@ -9,6 +9,9 @@ import { AlertService } from './alert.service';
 import { BusinessNetworkConnection } from 'composer-client';
 import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile } from 'composer-common';
 
+/* tslint:disable-next-line:no-var-requires */
+const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
+
 @Injectable()
 export class ClientService {
     public businessNetworkChanged$: Subject<boolean> = new BehaviorSubject<boolean>(null);
@@ -120,8 +123,8 @@ export class ClientService {
     }
 
     modelNamespaceCollides(newNamespace, previousNamespace): boolean {
-        let allModelFiles =  this.currentBusinessNetwork.getModelManager().getModelFiles();
-        if ( (newNamespace !== previousNamespace) && (allModelFiles.findIndex((model) => model.getNamespace() === newNamespace) !== -1) ) {
+        let allModelFiles = this.currentBusinessNetwork.getModelManager().getModelFiles();
+        if ((newNamespace !== previousNamespace) && (allModelFiles.findIndex((model) => model.getNamespace() === newNamespace) !== -1)) {
             return true;
         } else {
             return false;
@@ -189,47 +192,91 @@ export class ClientService {
             return this.connectingPromise;
         }
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+        this.alertService.busyStatus$.next({
+            title: 'Establishing connection',
+            text: 'Using the connection profile ' + connectionProfile
+        });
         console.log('Connecting to connection profile', connectionProfile);
         this.connectingPromise = this.adminService.ensureConnected(force)
-        .then(() => {
-            return this.refresh();
-        })
-        .then(() => {
-            this.isConnected = true;
-            this.connectingPromise = null;
-        })
-        .catch((error) => {
-            this.alertService.errorStatus$.next(`Failed to connect: ${error}`);
-            this.isConnected = false;
-            this.connectingPromise = null;
-            throw error;
-        });
+            .then(() => {
+                return this.refresh();
+            })
+            .then(() => {
+                console.log('connected');
+                this.isConnected = true;
+                this.connectingPromise = null;
+            })
+            .then(() => {
+                if (this.adminService.isInitialDeploy()) {
+                    return this.deployInitialSample();
+                }
+            })
+            .then(() => {
+                this.alertService.busyStatus$.next(null);
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                this.alertService.errorStatus$.next(`Failed to connect: ${error}`);
+                this.isConnected = false;
+                this.connectingPromise = null;
+                throw error;
+            });
         return this.connectingPromise;
     }
 
     reset(): Promise<any> {
         return this.ensureConnected()
-        .then(() => {
-            // TODO: hack hack hack, this should be in the admin API.
-            return Util.invokeChainCode((<any> (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
-        });
+            .then(() => {
+                // TODO: hack hack hack, this should be in the admin API.
+                return Util.invokeChainCode((<any> (this.getBusinessNetworkConnection())).securityContext, 'resetBusinessNetwork', []);
+            });
     }
 
     refresh(): Promise<any> {
         this.currentBusinessNetwork = null;
         let connectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
+        this.alertService.busyStatus$.next({
+            title: 'Refreshing Connection',
+            text: 'refreshing the connection to ' + connectionProfile
+        });
         let userID;
         return this.getBusinessNetworkConnection().disconnect()
-        .then(() => {
-            return this.identityService.getUserID();
-        })
-        .then((userId) => {
-            userID = userId;
-            return this.identityService.getUserSecret();
-        })
-        .then((userSecret) => {
-            return this.getBusinessNetworkConnection().connect(connectionProfile, 'org.acme.biznet', userID, userSecret);
+            .then(() => {
+                return this.identityService.getUserID();
+            })
+            .then((userId) => {
+                userID = userId;
+                return this.identityService.getUserSecret();
+            })
+            .then((userSecret) => {
+                return this.getBusinessNetworkConnection().connect(connectionProfile, 'org.acme.biznet', userID, userSecret);
+            });
+    }
+
+    public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
+        return BusinessNetworkDefinition.fromArchive(buffer);
+    }
+
+    deployInitialSample(): Promise<any> {
+        this.alertService.busyStatus$.next({
+            title: 'Deploying Business Network',
+            text: 'deploying sample business network'
         });
+
+        return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
+            .then((sampleBusinessNetworkDefinition) => {
+                return this.adminService.update(sampleBusinessNetworkDefinition);
+            })
+            .then(() => {
+                return this.refresh();
+            })
+            .then(() => {
+                return this.reset();
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                throw error;
+            });
     }
 
     private createNewBusinessNetwork(name, version, description, packageJson, readme) {
@@ -247,7 +294,5 @@ export class ClientService {
         }
 
         this.businessNetworkChanged$.next(true);
-
     }
-
 }

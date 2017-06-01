@@ -42,18 +42,6 @@ describe('AclFile', () => {
         sandbox.restore();
     });
 
-    describe('#fromJSON', () => {
-
-        it('should round trip the model file', () => {
-            let aclFile1 = new AclFile( 'test', modelManager, testAcl);
-            let json = JSON.stringify(aclFile1);
-            let aclFile2 = AclFile.fromJSON(modelManager, JSON.parse(json));
-            aclFile2.should.deep.equal(aclFile1);
-            aclFile1.getIdentifier().should.equal(aclFile2.getIdentifier());
-        });
-
-    });
-
     describe('#constructor', () => {
 
         it('should throw when null definitions provided', () => {
@@ -335,6 +323,29 @@ describe('AclFile', () => {
             const aclFile = new AclFile( 'test', modelManager, testAcl);
             aclFile.validate();
         });
+
+        it('should throw for duplicate rule names', () => {
+            const aclContents = `rule R1 {
+                description: "some rule"
+                participant: "ANY"
+                operation: ALL
+                resource: "org.acme"
+                action: ALLOW
+            }
+
+            rule R1 {
+                description: "some rule"
+                participant: "ANY"
+                operation: ALL
+                resource: "org.acme"
+                action: ALLOW
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            (() => {
+                aclFile.validate();
+            }).should.throw(/Found two or more ACL rules with the name/);
+        });
+
     });
 
     describe('#accept', () => {

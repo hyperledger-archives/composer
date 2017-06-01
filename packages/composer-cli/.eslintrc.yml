@@ -22,7 +22,7 @@ rules:
     no-unused-vars:
         - error
         - args: none
-    no-console: off
+    no-console: warn
     curly: error
     eqeqeq: error
     no-throw-literal: error

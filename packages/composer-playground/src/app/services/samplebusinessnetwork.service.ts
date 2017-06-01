@@ -9,9 +9,6 @@ import { AlertService } from './alert.service';
 
 import { BusinessNetworkDefinition, AclFile } from 'composer-common';
 
-/* tslint:disable-next-line:no-var-requires */
-const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sample-network.bna');
-
 @Injectable()
 export class SampleBusinessNetworkService {
 
@@ -40,18 +37,18 @@ export class SampleBusinessNetworkService {
 
     public isOAuthEnabled(): Promise<boolean> {
         return this.http.get(PLAYGROUND_API + '/api/isOAuthEnabled')
-        .toPromise()
-        .then((response) => {
-            let enabled: boolean = response.json();
-            // if we aren't doing oauth then we need to setup github without token
-            if (!enabled) {
-                this.setUpGithub(null);
-            }
-            return enabled;
-        })
-        .catch((error) => {
-            throw(error);
-        });
+            .toPromise()
+            .then((response) => {
+                let enabled: boolean = response.json();
+                // if we aren't doing oauth then we need to setup github without token
+                if (!enabled) {
+                    this.setUpGithub(null);
+                }
+                return enabled;
+            })
+            .catch((error) => {
+                throw(error);
+            });
     }
 
     public getGithubClientId(): Promise<string> {
@@ -60,25 +57,25 @@ export class SampleBusinessNetworkService {
         }
 
         return this.http.get(PLAYGROUND_API + '/api/getGithubClientId')
-        .toPromise()
-        .then((response) => {
-            this.CLIENT_ID = response.json();
-            return this.CLIENT_ID;
-        })
-        .catch((error) => {
-            throw(error);
-        });
+            .toPromise()
+            .then((response) => {
+                this.CLIENT_ID = response.json();
+                return this.CLIENT_ID;
+            })
+            .catch((error) => {
+                throw(error);
+            });
     }
 
     getNpmInfo(name): Promise<any> {
         return this.http.get(PLAYGROUND_API + '/api/getNpmInfo/' + name)
-        .toPromise()
-        .then((response) => {
-            return response.json();
-        })
-        .catch((error) => {
-            throw error;
-        });
+            .toPromise()
+            .then((response) => {
+                return response.json();
+            })
+            .catch((error) => {
+                throw error;
+            });
     }
 
     public setUpGithub(accessToken: string) {
@@ -100,20 +97,20 @@ export class SampleBusinessNetworkService {
         let repo = this.octo.repos(owner, repository);
 
         return repo.contents('packages').fetch()
-        .then((result) => {
-            return this.getModelsInfoMonoRepo(owner, repository, result);
-        })
-        .catch((error) => {
-            if (error.status === 404) {
-                return this.getSampleNetworkInfo(owner, repository, '')
-                .then((info) => {
-                    let infoArray = [];
-                    infoArray.push(info);
-                });
-            } else {
-                throw error;
-            }
-        });
+            .then((result) => {
+                return this.getModelsInfoMonoRepo(owner, repository, result);
+            })
+            .catch((error) => {
+                if (error.status === 404) {
+                    return this.getSampleNetworkInfo(owner, repository, '')
+                        .then((info) => {
+                            let infoArray = [];
+                            infoArray.push(info);
+                        });
+                } else {
+                    throw error;
+                }
+            });
     }
 
     public getSampleNetworkInfo(owner: string, repository: string, path: string): Promise<any> {
@@ -124,16 +121,16 @@ export class SampleBusinessNetworkService {
         let repo = this.octo.repos(owner, repository);
 
         return repo.contents(path + 'package.json').fetch()
-        .then((info) => {
-            let decodedString = atob(info.content);
-            let contentInfo = JSON.parse(decodedString);
-            // needed to know where to look in the repository for the files
-            contentInfo.composerPath = path;
-            return contentInfo;
-        })
-        .catch((error) => {
-            throw error;
-        });
+            .then((info) => {
+                let decodedString = atob(info.content);
+                let contentInfo = JSON.parse(decodedString);
+                // needed to know where to look in the repository for the files
+                contentInfo.composerPath = path;
+                return contentInfo;
+            })
+            .catch((error) => {
+                throw error;
+            });
     }
 
     getDependencyModel(owner: string, repository: string, dependencyName: string): Promise<any> {
@@ -144,21 +141,21 @@ export class SampleBusinessNetworkService {
         let repo = this.octo.repos(owner, repository);
         return repo.contents('packages').fetch()
         // in this case we have a mono-repo so need to find the path to the model
-        .then((result) => {
-            let foundItem = result.items.find((item) => {
-                return item.name.toLowerCase() === dependencyName;
-            });
+            .then((result) => {
+                let foundItem = result.items.find((item) => {
+                    return item.name.toLowerCase() === dependencyName;
+                });
 
-            return this.getModel(owner, repository, 'packages/' + foundItem.name + '/');
-        })
-        .catch((error) => {
-            // we don't have a mono-repo so just get the model
-            if (error.status === 404) {
-                return this.getModel(owner, repository, '');
-            } else {
-                throw error;
-            }
-        });
+                return this.getModel(owner, repository, 'packages/' + foundItem.name + '/');
+            })
+            .catch((error) => {
+                // we don't have a mono-repo so just get the model
+                if (error.status === 404) {
+                    return this.getModel(owner, repository, '');
+                } else {
+                    throw error;
+                }
+            });
     }
 
     getModel(owner: string, repository: string, path: string): Promise<any> {
@@ -168,27 +165,27 @@ export class SampleBusinessNetworkService {
 
         let repo = this.octo.repos(owner, repository);
         return repo.contents(path + 'models').fetch()
-        .then((models) => {
-            let modelFilePromises: Promise<any>[] = [];
-            models.items.forEach((model) => {
-                modelFilePromises.push(repo.contents(model.path).fetch());
+            .then((models) => {
+                let modelFilePromises: Promise<any>[] = [];
+                models.items.forEach((model) => {
+                    modelFilePromises.push(repo.contents(model.path).fetch());
+                });
+                return Promise.all(modelFilePromises);
+            })
+            .then((modelFiles) => {
+
+                let fileArray: string[] = [];
+
+                modelFiles.forEach((file) => {
+                    let decodedString = atob(file.content);
+                    fileArray.push(decodedString);
+                });
+
+                return fileArray;
+            })
+            .catch((error) => {
+                throw error;
             });
-            return Promise.all(modelFilePromises);
-        })
-        .then((modelFiles) => {
-
-            let fileArray: string[] = [];
-
-            modelFiles.forEach((file) => {
-                let decodedString = atob(file.content);
-                fileArray.push(decodedString);
-            });
-
-            return fileArray;
-        })
-        .catch((error) => {
-            throw error;
-        });
     }
 
     public getSampleNetworkDependencies(dependencies: any): Promise<any> {
@@ -199,35 +196,35 @@ export class SampleBusinessNetworkService {
         });
 
         return Promise.all(dependencyPromises)
-        .then((results) => {
-            let modelsPromises: Promise<any>[] = [];
-            results.forEach((npmInfo) => {
-                // TODO: remove hacky stuff to make work with url
-                const github = 'git+https://github.com/';
-                const git = '.git';
-                let unparsed = npmInfo.repository.url;
-                //  let url = unparsed.substring(git.length, unparsed.length - git.length);
-                let sortOfParsed = unparsed.substring(github.length, unparsed.length - git.length);
-                let split = sortOfParsed.split('/');
-                let owner = split[0];
-                let repo = split[1];
-                modelsPromises.push(this.getDependencyModel(owner, repo, npmInfo.name));
-            });
-
-            return Promise.all(modelsPromises)
-            .then((result) => {
-                // put all models into one array for easier processing later
-                let allModels = [];
-                result.forEach((models) => {
-                    Array.prototype.push.apply(allModels, models);
+            .then((results) => {
+                let modelsPromises: Promise<any>[] = [];
+                results.forEach((npmInfo) => {
+                    // TODO: remove hacky stuff to make work with url
+                    const github = 'git+https://github.com/';
+                    const git = '.git';
+                    let unparsed = npmInfo.repository.url;
+                    //  let url = unparsed.substring(git.length, unparsed.length - git.length);
+                    let sortOfParsed = unparsed.substring(github.length, unparsed.length - git.length);
+                    let split = sortOfParsed.split('/');
+                    let owner = split[0];
+                    let repo = split[1];
+                    modelsPromises.push(this.getDependencyModel(owner, repo, npmInfo.name));
                 });
 
-                return allModels;
+                return Promise.all(modelsPromises)
+                    .then((result) => {
+                        // put all models into one array for easier processing later
+                        let allModels = [];
+                        result.forEach((models) => {
+                            Array.prototype.push.apply(allModels, models);
+                        });
+
+                        return allModels;
+                    });
+            })
+            .catch((error) => {
+                throw error;
             });
-        })
-        .catch((error) => {
-            throw error;
-        });
     }
 
     getScripts(owner: string, repository: string, path: string): Promise<any> {
@@ -238,29 +235,29 @@ export class SampleBusinessNetworkService {
         let repo = this.octo.repos(owner, repository);
 
         return repo.contents(path + 'lib').fetch()
-        .then((scripts) => {
-            let scriptFilePromises: Promise<any>[] = [];
-            scripts.items.forEach((script) => {
-                scriptFilePromises.push(repo.contents(script.path).fetch());
-            });
-            return Promise.all(scriptFilePromises);
-        })
-        .then((scriptFiles) => {
-            let scriptFileData = [];
-            scriptFiles.forEach((scriptFile) => {
-                let decodedString = atob(scriptFile.content);
-                scriptFileData.push({name: scriptFile.name, data: decodedString});
-            });
+            .then((scripts) => {
+                let scriptFilePromises: Promise<any>[] = [];
+                scripts.items.forEach((script) => {
+                    scriptFilePromises.push(repo.contents(script.path).fetch());
+                });
+                return Promise.all(scriptFilePromises);
+            })
+            .then((scriptFiles) => {
+                let scriptFileData = [];
+                scriptFiles.forEach((scriptFile) => {
+                    let decodedString = atob(scriptFile.content);
+                    scriptFileData.push({name: scriptFile.name, data: decodedString});
+                });
 
-            return scriptFileData;
-        })
-        .catch((error) => {
-            // don't need scripts files to be valid
-            if (error.status === 404) {
-                return Promise.resolve();
-            }
-            throw error;
-        });
+                return scriptFileData;
+            })
+            .catch((error) => {
+                // don't need scripts files to be valid
+                if (error.status === 404) {
+                    return Promise.resolve();
+                }
+                throw error;
+            });
     }
 
     getAcls(owner: string, repository: string, path: string): Promise<any> {
@@ -271,21 +268,21 @@ export class SampleBusinessNetworkService {
         let repo = this.octo.repos(owner, repository);
 
         return repo.contents(path + 'permissions.acl').fetch()
-        .then((permissions) => {
-            let decodedString = atob(permissions.content);
-            let aclFileData = {
-                name: permissions.name,
-                data: decodedString
-            };
-            return aclFileData;
-        })
-        .catch((error) => {
-            // don't need to have a permissions file to be valid
-            if (error.status === 404) {
-                return Promise.resolve();
-            }
-            throw error;
-        });
+            .then((permissions) => {
+                let decodedString = atob(permissions.content);
+                let aclFileData = {
+                    name: permissions.name,
+                    data: decodedString
+                };
+                return aclFileData;
+            })
+            .catch((error) => {
+                // don't need to have a permissions file to be valid
+                if (error.status === 404) {
+                    return Promise.resolve();
+                }
+                throw error;
+            });
     }
 
     getReadme(owner: string, repository: string, path: string): Promise<any> {
@@ -296,37 +293,28 @@ export class SampleBusinessNetworkService {
         let repo = this.octo.repos(owner, repository);
 
         return repo.contents(path + 'README.md').fetch()
-        .then((readme) => {
-            let decodedString = atob(readme.content);
-            let readmeData = {
-                name: readme.name,
-                data: decodedString
-            };
-            return readmeData;
-        })
-        .catch((error) => {
-            // don't need to have a readme file to be valid
-            if (error.status === 404) {
-                return Promise.resolve();
-            }
-            throw error;
-        });
-    }
-
-    public deployInitialSample(): Promise<any> {
-        this.alertService.busyStatus$.next({title: 'Deploying business network', text: 'deploying sample business network'});
-        return BusinessNetworkDefinition.fromArchive(sampleBusinessNetworkArchive)
-        .then((businessNetworkDefinition) => {
-            return this.deployBusinessNetwork(businessNetworkDefinition);
-        });
-    }
-
-    public getBusinessNetworkFromArchive(buffer): Promise<BusinessNetworkDefinition> {
-        return BusinessNetworkDefinition.fromArchive(buffer);
+            .then((readme) => {
+                let decodedString = atob(readme.content);
+                let readmeData = {
+                    name: readme.name,
+                    data: decodedString
+                };
+                return readmeData;
+            })
+            .catch((error) => {
+                // don't need to have a readme file to be valid
+                if (error.status === 404) {
+                    return Promise.resolve();
+                }
+                throw error;
+            });
     }
 
     public deploySample(owner: string, repository: string, chosenNetwork: any): Promise<any> {
-        this.alertService.busyStatus$.next({title: 'Deploying business network', text: 'deploying ' + chosenNetwork.name});
+        this.alertService.busyStatus$.next({
+            title: 'Deploying business network',
+            text: 'deploying ' + chosenNetwork.name
+        });
         let sampleNetworkPromises: Promise<any>[] = [];
         let path = chosenNetwork.composerPath;
 
@@ -341,50 +329,50 @@ export class SampleBusinessNetworkService {
         sampleNetworkPromises.push(this.getSampleNetworkInfo(owner, repository, path));
 
         return Promise.all(sampleNetworkPromises)
-        .then((results) => {
+            .then((results) => {
 
-            let models = results[0];
-            let scripts = results[1];
-            let acls = results[2];
-            let readme = results[3];
-            let packageContents = results[4];
+                let models = results[0];
+                let scripts = results[1];
+                let acls = results[2];
+                let readme = results[3];
+                let packageContents = results[4];
 
-            let businessNetworkDefinition = this.createBusinessNetworkInstance(null, null, packageContents, readme.data);
-            let modelManager = businessNetworkDefinition.getModelManager();
+                let businessNetworkDefinition = this.createBusinessNetworkInstance(null, null, packageContents, readme.data);
+                let modelManager = businessNetworkDefinition.getModelManager();
 
-            modelManager.addModelFiles(models);
+                modelManager.addModelFiles(models);
 
-            let scriptManager = businessNetworkDefinition.getScriptManager();
-            scripts.forEach((script) => {
-                let thisScript = scriptManager.createScript(script.name, 'JS', script.data);
-                scriptManager.addScript(thisScript);
+                let scriptManager = businessNetworkDefinition.getScriptManager();
+                scripts.forEach((script) => {
+                    let thisScript = scriptManager.createScript(script.name, 'JS', script.data);
+                    scriptManager.addScript(thisScript);
+                });
+
+                if (acls) {
+                    let aclManager = businessNetworkDefinition.getAclManager();
+                    let aclFile = this.createAclFileInstance(acls.name, modelManager, acls.data);
+                    aclManager.setAclFile(aclFile);
+                }
+
+                return this.deployBusinessNetwork(businessNetworkDefinition);
             });
-
-            if (acls) {
-                let aclManager = businessNetworkDefinition.getAclManager();
-                let aclFile = this.createAclFileInstance(acls.name, modelManager, acls.data);
-                aclManager.setAclFile(aclFile);
-            }
-
-            return this.deployBusinessNetwork(businessNetworkDefinition);
-        });
     }
 
     public deployBusinessNetwork(businessNetworkDefinition: BusinessNetworkDefinition): Promise<any> {
         return this.adminService.update(businessNetworkDefinition)
-        .then(() => {
-            return this.clientService.refresh();
-        })
-        .then(() => {
-            return this.clientService.reset();
-        })
-        .then(() => {
-            this.alertService.busyStatus$.next(null);
-        })
-        .catch((error) => {
-            this.alertService.busyStatus$.next(null);
-            throw error;
-        });
+            .then(() => {
+                return this.clientService.refresh();
+            })
+            .then(() => {
+                return this.clientService.reset();
+            })
+            .then(() => {
+                this.alertService.busyStatus$.next(null);
+            })
+            .catch((error) => {
+                this.alertService.busyStatus$.next(null);
+                throw error;
+            });
     }
 
     private getModelsInfoMonoRepo(owner: string, repository: string, models: any): Promise<any> {
@@ -400,14 +388,14 @@ export class SampleBusinessNetworkService {
         });
 
         return Promise.all(infoPromises)
-        .then((results) => {
-            return results;
-        })
-        .catch((error) => {
-            if (error.message) {
-                throw error;
-            }
-        });
+            .then((results) => {
+                return results;
+            })
+            .catch((error) => {
+                if (error.message) {
+                    throw error;
+                }
+            });
     }
 
 }
