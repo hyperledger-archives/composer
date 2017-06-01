@@ -557,6 +557,10 @@ If you navigate to this URL and press the "Assets" drop down (at the top-right o
 
 ![Add commodity](../assets/img/tutorials/developer/skeleton_add_asset.png)
 
+![Asset listing refreshed](../assets/img/tutorials/developer/commodity_app.png)
+
+
+
 # Congratulations!
 
 Well done, you've now completed this tutorial and I hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!
