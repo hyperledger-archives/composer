@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Installing Hyperledger Composer
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: Installing Hyperledger Composer
 ---
 
@@ -11,11 +11,11 @@ excerpt: Installing Hyperledger Composer
 
 There are two ways to install {{site.data.conrefs.composer_short}}. To model, develop, or test business networks, [install the {{site.data.conrefs.composer_short}} Playground locally](../tutorials/getting-started-playground.html) or [use the playground online](https://composer-playground.mybluemix.net).
 
-If you want to develop and test applications, connect to a running {{site.data.conrefs.hyperledger_fabric_full}} instance, or run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hyperledger_fabric_full}} locally, see [installing {{site.data.conrefs.composer_full}}](../installing/quickstart.html).
+If you want to develop and test applications, connect to a running {{site.data.conrefs.hlf_full}} instance, or run {{site.data.conrefs.composer_full}} and {{site.data.conrefs.hlf_full}} locally, see [installing {{site.data.conrefs.composer_full}}](../installing/quickstart.html).
 
 If you want a more guided "Getting Started" experience, see our [Tutorials and Getting Started guides](../tutorials/tutorialindex.html).
 
-After installing, create a connection profile to connect to a running {{site.data.conrefs.hyperledger_fabric_full}} instance. See [creating a connection profile](../installing/createconnectionprofile.html)
+After installing, create a connection profile to connect to a running {{site.data.conrefs.hlf_full}} instance. See [creating a connection profile](../installing/createconnectionprofile.html)
 
 ---
 

@@ -22,7 +22,7 @@ The easiest way to publish a domain model for reuse by business network definiti
   },
   "repository": {
     "type": "git",
-    "url": "https://github.ibm.com/Blockchain-WW-Labs/DigitalProperty-Model.git"
+    "url": "https://github.com/DigitalProperty-Model.git"
   },"main": "index.js",
   "keywords": [
     "property",

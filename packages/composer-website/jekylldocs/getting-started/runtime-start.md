@@ -2,7 +2,7 @@
 layout: default
 title: Task - Start a Fabric Runtime
 category: tasks
-sidebar: sidebars/installing.md
+sidebar: sidebars/getting-started.md
 excerpt: How to start a Fabric Runtime
 ---
 
