@@ -145,15 +145,12 @@ docker images -aq | xargs docker rmi -f
 <h2 id="creating-the-containers-and-installing-playground-locally">Creating the containers and installing playground locally</h2>
 
 <ol>
-<li><p>First, you must download the example Docker Compose file using the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">curl -O https://hyperledger.github.io/composer/composer/install-hlfv1.sh
-</code></pre></div></li>
-<li><p>In a terminal or command prompt, navigate to the directory that you downloaded the <code>install-hlfv1.sh</code> file into, and run the following command to start a Hyperledger Fabric instance and Hyperledger Composer Playground:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cat install-hlfv1.sh | bash
+<li><p>Pick a directory that you want to install into, then run the following command to download and start a Hyperledger Fabric instance and Hyperledger Composer Playground:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">curl -sSL https://hyperledger.github.io/composer/install-hlfv1.sh | bash
 </code></pre></div></li>
 <li><p>Access your local Hyperledger Composer Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>.</p>
 
-<p>By default, you are connected to the instance of fabric created in the previous step and the Basic Sample Network business network is loaded. In the connection profiles panel of the playground, the <code>hlfabric</code> connection profile should be selected.</p></li>
+<p>By default, the Web Browser connection profile is in use (for developing and testing in browser memory).  To connect instead to the Hyperledger Fabric instance created in the previous step, click the globe icon in the top right of the UI to visit the Connection Profiles panel and change your active profile to &#39;hlfabric&#39;.</p></li>
 </ol>
 
 <hr>
@@ -248,8 +245,7 @@ You can then start Hyperledger Composer Playground by clicking on this link: <a 
 <h2 id="whats-next">What&#39;s next?</h2>
 
 <ul>
-<li>Now that you have the playground running locally and connected to a running instance of Hyperledger Fabric you might want to <a href="../getting-started/development-tools.html">use the developer tools to begin developing and using your own business networks</a>.</li>
-<li>If you&#39;re looking for a tutorial on using Playground, try <a href="../tutorials/playground-guide.html">running a car auction with the Playground</a>.</li>
+<li>Take a tutorial on using Playground, and try <a href="../tutorials/playground-guide.html">running a car auction with the Playground</a>.</li>
 </ul>
 
             
