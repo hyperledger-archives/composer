@@ -26,7 +26,7 @@ Next, we will need the Yeoman app generator and some pre-requisite Angular 2 pac
 
 Install the [VSCode editor](https://code.visualstudio.com/) (an Open Source code editor for your dev environment). For Linux, download the package and install using the (eg. Ubuntu use dpkg  `dpkg -i file.deb` )
 
-![dpkg install](../assets/img/tutorials/developer/vscode_editor_linux.png]
+![dpkg install](../assets/img/tutorials/developer/vscode_editor_linux.png)
 
 After installation, launch VSCode and select `View > Command Palette...` then type `extensions` and select the `Extensions: Install Extensions` option. In the "Search Extensions in Marketplace" text field type `Composer` and install the {{site.data.conrefs.composer_full}} extension. You may have to 'Reload' the extension (if prompted) to activate it. 
 
@@ -209,7 +209,7 @@ The `composer archive create` command has created a file called `my-network.bna`
 
 All code should have unit tests - even your business network logic! 
 
-We are now going to add a simple unit test for the business network definition. The unit test will run against the **embedded** Composer runtime. The embedded runtime {{site.data.conrefs.hlf_full}} within a Node.js process. The embedded runtime is very useful for unit testing as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this E2E tutorial).
+We are now going to add a simple unit test for the business network definition. The unit test will run against the **embedded** {{site.data.conrefs.hlf_short}} runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this E2E tutorial).
 
 From your project working directory (my-network), open the file `test/Sample.js` and inspect the contents.
 
