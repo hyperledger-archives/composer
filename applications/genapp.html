@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Generating an Application | Hyperledger Composer</title>
+    <title>Writing a node.js application | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,17 +100,15 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
-<a href="../applications/genapp.html">Generating a starter application</a>
-<a href="../applications/getting-started-nodejs-app.html">Writing a node.js application</a>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<a href="../applications/genapp.html">Writing a node.js application</a>
 <a href="../applications/subscribing-to-events.html">Subscribing to events</a>
-<a href="../applications/rest-api-server.html">Generating a REST API</a>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -120,184 +118,160 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="how-generate-a-starter-application">How Generate a Starter Application</h1>
+              <h1 id="writing-a-node-js-application">Writing a node.js Application</h1>
 
 <hr>
 
-<p>We&#39;re going to assume that you&#39;ve been through the Getting Started section and would like to now start to look at writing your own application to use Hyperledger Composer.</p>
+<p>Let&#39;s take a look at the code for a simple Node.js sample application. </p>
 
-<p>To help getting started with this, there&#39;s a <a href="http://yeoman.io/">Yeoman</a> generator that creates a suitable directory structure and helps bring in the required model and network modules.</p>
+<p>Use <code>git clone</code> to download the composer-sample-applications repository, available at:</p>
 
-<h2 id="yeoman">Yeoman</h2>
+<p><code>https://github.com/hyperledger/composer-sample-applications</code></p>
 
-<p>If you don&#39;t already have it, install Yeoman</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g yo
+<p>The <a href="https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js"><code>landregistry.js</code></a> file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.
+This has been implemented using a JavaScript class; however you are free to structure your code as you wish. The framework&#39;s API is agnostic to this.
+The application is also setup as a command line driven application using yargs (see the files in the cmd directory).</p>
+
+<p>We&#39;ll look at section of functionality in turn after first looking at the modules that are required and how to connect to a Hyperledger Composer hosted application on the Hyperledger Fabric.</p>
+
+<h2 id="promises">Promises</h2>
+
+<p>It&#39;s worth highlighting that the style of the API is to use promises. Typically Hyperledger Composer APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.</p>
+
+<p>If you&#39;re not familiar with Promise based development it&#39;s worth reviewing some of the tutorials online to get an idea. For example [<a href="https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics">https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics</a>]</p>
+
+<h2 id="modules-required">Modules required</h2>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
 </code></pre></div>
-<p>If you wish to use the Angular 2 Application Generator, then you will need a few other globally installed packages</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g typings
+<p>For a client application this is only Hyperledger Composer require needed. In this getting started application we also use the <code>cli-table</code> and <code>winston</code> and <code>config</code> modules for support processing. We use these to get information from the command line options, formatting of output and logging.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">winston</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'winston'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">config</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'config'</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s1">'gettingstarted'</span><span class="p">);</span>
 
-npm install -g bower
-
-npm install -g @angular/cli
+<span class="c1">// these are the credentials to use to connect to the Hyperledger Fabric</span>
+<span class="kd">let</span> <span class="nx">participantId</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'participantId'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">participantPwd</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'participantPwd'</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">LOG</span> <span class="o">=</span> <span class="nx">winston</span><span class="p">.</span><span class="nx">loggers</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'application'</span><span class="p">);</span>
 </code></pre></div>
-<p>Then install the generator for it</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">npm install -g generator-hyperledger-composer
+<h2 id="connecting-to-the-hyperledger-composer-runtime">Connecting to the Hyperledger Composer Runtime</h2>
+
+<p>We&#39;ve split the code to connect into two parts, part in the constructor of the object and part in an initialization method. This is an implementation decision made for this example - you are free to structure this in the way that best suits your application. What&#39;s important is the API calls and the data.</p>
+
+<p>The key thing here is that we need to create a new BusinessNetworkConnection object; and get from application configuration, the connection profile and the business network identifier needed.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">();</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">CONNECTION_PROFILE_NAME</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'connectionProfile'</span><span class="p">);</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkIdentifier</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'businessNetworkIdentifier'</span><span class="p">);</span>
 </code></pre></div>
-<h2 id="running-the-generator">Running the generator</h2>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">yo hyperledger-composer
-</code></pre></div><div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer Skeleton Application Generator
-? Please select the type of Application: (Use arrow keys)
-❯ CLI Application
-  Angular 2 Application
-  Skeleton Business Network
+<p>The first Hyperledger Composer API call that we are going to make here, is the connect() API, to establish the connection to the Hyperledger Composer runtime on the Hyperledger Fabric.
+This API returns the businessNetworkDefinition if successful - which we hold onto.  The API takes, the connection profile name, business network identifier and participant details.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">CONNECTION_PROFILE_NAME</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkIdentifier</span><span class="p">,</span> <span class="nx">participantId</span><span class="p">,</span> <span class="nx">participantPwd</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">});</span>
 </code></pre></div>
-<hr>
+<p>For a client application this is all the essential setup that is required, from this point on it&#39;s up to what the application wants to do as to what APIs are called.</p>
 
-<h1 id="what-are-the-generator-options">What are the generator options?</h1>
+<h2 id="adding-assets-to-a-regsitry">Adding assets to a regsitry</h2>
 
-<h1 id="1-generating-a-cli-application">1. Generating a CLI Application</h1>
-
-<p>This generator can be ran using <code>yo hyperledger-composer:cli</code></p>
-
-<h3 id="what-questions-does-this-ask">What questions does this ask?</h3>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the CLI skeleton app generator
-? Your NPM library name: composer-sample-app
-? Short description: Test Composer project
-? Author name: Sophie Black
-? Author email: sophie@email.com
-? NPM Module name of the Business Network to connect to: digitalproperty-network
-
-
-? Is the name in NPM registry the same as the Business Network Identifier?: Yes
-? What is the Connection Profile to use? defaultProfile
-? Enrollment id: WebAppAdmin
-? Enrollment Secret: DJY27pEnl16d
-configuring: composer-sample-app
-   create config/default.json
-   create Dockerfile
-   create gulpfile.js
-   create index.js
-   create package.json
-   create scripts/docker-compose.yml
-   create scripts/setup.sh
-   create scripts/teardown.sh
-   create .gitignore
+<p>The Hyperledger Composer runtime will create a default registry to store assets in. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. This <code>getAssetRegistry()</code> takes the fully qualified asset name as defined in the CTO model file (That&#39;s namespace plus asset name). It returns a promise that is resolved with the asset registry, which we hold onto.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">titlesRegistry</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">});</span>
 </code></pre></div>
-<h3 id="what-does-this-do">What does this do?</h3>
+<p>Next step is to create some assets (look for the method <code>_bootstrapTitles</code> in the code )</p>
 
-<p>Firstly it creates a standard npm module with the usual attributes of name, author, description.
-Secondly it asks a set of Hyperledger Composer questions to help create the sample structure.</p>
-
-<ul>
-<li>NPM Module name:  What is the name of the business network you want to connect to - and is this the same as the modules NPM registry name</li>
-<li>Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric</li>
-<li>The EnrollmentId/Secret: Are needed to create a connection to the fabric</li>
-</ul>
-
-<h3 id="testing-this-has-worked">Testing this has worked</h3>
-
-<p>The <code>index.js</code> file is a very simple application that lists the asset registries that have been defined.</p>
-
-<hr>
-
-<h1 id="2-generating-an-angular-2-application">2. Generating an Angular 2 Application</h1>
-
-<p>This generator can be ran using <code>yo hyperledger-composer:angular</code>.</p>
-
-<p>The user has the ability to generate an application in two different ways:</p>
-
-<ol>
-<li><p>Generating the application by connecting to a running business network</p></li>
-<li><p>Generating the application with a business network archive file</p></li>
-</ol>
-
-<h2 id="generating-the-application-by-connecting-to-a-running-business-network">Generating the application by connecting to a running business network</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer Angular 2 skeleton application generator
-
-? Do you want to connect to a running Business Network? Yes
-? What is the name of the application you wish to generate?: angular-app
-? Description of the application: Skeleton Hyperledger Composer Angular2 project
-? Author name: Sophie Black
-? Author email: sophie@email.com
-? What is the Business Network Identifier?: digitalproperty-network
-? What is the Connection Profile to use? defaultProfile
-? Enrollment id: WebAppAdmin
-? Enrollment Secret: DJY27pEnl16d
-? Do you want to generate a new REST API or connect to an existing REST API?: Generate a new REST API
-? What port number should the generated REST server run on?: 3000
-? Should namespaces be used in the generated REST API:  Always use namespaces
-About to connect to a running business network
-
-...
+<p>We use a factory style pattern to be able to create assets. A factory is obtained from the businessNetworkDefinition we got early. From this we can create an instance of a &#39;person&#39;.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The indentifiers here (firstName lastName) matches with the identifiers in the model.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
+<span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">,</span> <span class="s1">'Person'</span><span class="p">,</span> <span class="s1">'PID:1234567890'</span><span class="p">);</span>
+<span class="nx">owner</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Fred'</span><span class="p">;</span>
+<span class="nx">owner</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Bloggs'</span><span class="p">;</span>
 </code></pre></div>
-<p>Firstly the generator will also a series of basic regarding the application name, author, description, etc.
-Then it will ask the user to enter the details required to connect a running business network.
-After the generator has stopped prompting the user to answer questions, it will then attempt to connect to the business network using the details provided.
-If it successfully connects to the business network, the generator will then examine the assets, transactions and participants.
-The generator will then create Angular components based upon the different modelled types.</p>
-
-<ul>
-<li>Business Network Identifier:  This is the name of the business network you want to connect to - and is this the same as the modules NPM registry name</li>
-<li>Business Network Archive File: This is a business network definition archived using the Composer-CLI</li>
-<li>Connection Profile:  This is the connection profile used to locate IP/ports etc of the running fabric</li>
-<li>The EnrollmentId/Secret: Are needed to create a connection to the fabric</li>
-</ul>
-
-<h3 id="rest-api-options">REST API Options</h3>
-
-<p>If generating an application with a business network archive file, it is only possible to connect to an existing REST API server which is running.</p>
-
-<p>When generating an application it is possible to either:</p>
-
-<ol>
-<li>Generate and bundle the application with a REST API server</li>
-<li>Connect to an existing REST API server</li>
-</ol>
-
-<p>This REST API server configuration can be edited in <code>APP_DIR/src/app/configuration.ts</code>.</p>
-
-<h3 id="using-the-application">Using the Application</h3>
-
-<p>The application can be started using <code>npm start</code>.</p>
-
-<p>The application can be tested using <code>npm test</code>.</p>
-
-<h2 id="generating-the-application-with-a-business-network-archive-file">Generating the application with a business network archive file</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Angular2 skeleton app generator
-
-? Do you want to connect to a running Business Network? No
-? What is the name of the application you wish to generate?: angular-app
-? Description of the application: Skeleton Hyperledger Composer Angular2 project
-? Author name: Sophie Black
-? Author email: sophie@email.com
-? What is the name of the business network archive file? (Path from the current working directory): digitalPropertyNetwork.bna
-? What is the address of the running REST server?: http://localhost
-? What port number is the REST server running on?: 3000
-? Are namespaces used in the generated REST API:  Namespaces are used
-
-
-About to read a business network archive file
-Reading file: digitalPropertyNetwork.bna    
-
-...
+<p>We now have a Person! Now we need a land title. Note how the owner is specified as being the person we just created. (In the actual sample code we do this code twice to create landTitle1 and landTitle2).</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">landTitle2</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">,</span> <span class="s1">'LandTitle'</span><span class="p">,</span> <span class="s1">'LID:6789'</span><span class="p">);</span>
+<span class="nx">landTitle2</span><span class="p">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">owner</span><span class="p">;</span>
+<span class="nx">landTitle2</span><span class="p">.</span><span class="nx">information</span> <span class="o">=</span> <span class="s1">'A small flat in the city'</span><span class="p">;</span>
 </code></pre></div>
-<p>Firstly the generator will also a series of basic regarding the application name, author, description, etc.
-Then it will ask the user to enter the relative path to a business network archive file.
-After the generator has stopped prompting the user to answer questions, it will then attempt to read the business network archive file provided.
-If it successfully reads the file, the generator will then examine the assets, transactions and participants.
-The generator will then create Angular components based upon the different modelled types.</p>
+<p>We now have a land title created that needs to be stored in the registry.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">titlesRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">landTitle1</span><span class="p">,</span> <span class="nx">landTitle2</span><span class="p">]);</span>
+</code></pre></div>
+<p>This is using an API to add multiple titles, which returns a promise that is resolved when the assets are added. The last thing we need to do is add the Person, Fred Bloggs. As this is a &#39;participant&#39;, it&#39;s added using a different. It is very similar to assets, but this time the getParticipantRegistry API is used.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript">    <span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.Person'</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">personRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">personRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">owner</span><span class="p">);</span>
+      <span class="p">})</span>
+</code></pre></div>
+<h2 id="listing-assets-in-a-regsitry">Listing assets in a regsitry</h2>
 
-<h3 id="rest-api-options">REST API Options</h3>
+<p>In the sample application this is handled in a different method <code>list()</code>.  The same setup as for putting assets is required, so as before we need to get the asset registry but this tile we call the getAll() API. This returns an array of objects.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">registry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">getAll</span><span class="p">();</span>
+<span class="p">})</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">aResources</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// instantiate</span>
+  <span class="kd">let</span> <span class="nx">table</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Table</span><span class="p">({</span>
+    <span class="na">head</span><span class="p">:</span> <span class="p">[</span><span class="s1">'TitleID'</span><span class="p">,</span> <span class="s1">'OwnerID'</span><span class="p">,</span> <span class="s1">'First Name'</span><span class="p">,</span> <span class="s1">'Surname'</span><span class="p">,</span> <span class="s1">'Description'</span><span class="p">,</span> <span class="s1">'ForSale'</span><span class="p">]</span>
+  <span class="p">});</span>
+  <span class="kd">let</span> <span class="nx">arrayLength</span> <span class="o">=</span> <span class="nx">aResources</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+  <span class="k">for</span><span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arrayLength</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">tableLine</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nx">tableLine</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">aResources</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">titleId</span><span class="p">);</span>
+    <span class="nx">tableLine</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">aResources</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">owner</span><span class="p">.</span><span class="nx">personId</span><span class="p">);</span>
+    <span class="nx">tableLine</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">aResources</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">owner</span><span class="p">.</span><span class="nx">firstName</span><span class="p">);</span>
+    <span class="nx">tableLine</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">aResources</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">owner</span><span class="p">.</span><span class="nx">lastName</span><span class="p">);</span>
+    <span class="nx">tableLine</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">aResources</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">information</span><span class="p">);</span>
+    <span class="nx">tableLine</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">aResources</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">forSale</span> <span class="p">?</span> <span class="s1">'Yes'</span> <span class="p">:</span> <span class="s1">'No'</span><span class="p">);</span>
+    <span class="nx">table</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">tableLine</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="c1">// Put to stdout - as this is really a command line app</span>
+  <span class="k">return</span><span class="p">(</span><span class="nx">table</span><span class="p">);</span>
+<span class="p">})</span>
+</code></pre></div>
+<p>Most of this isn&#39;t Hyperledger Composer API code - but it shows how to access the details of the objects that have been returned. At this point it&#39;s worth just looking again at the model.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">asset LandTitle identified by titleId {
+  o String   titleId
+  o Person   owner
+  o String   information
+  o Boolean  forSale   optional
+}
 
-<p>If generating an application with a business network archive file, it is only possible to connect to an existing REST API server which is running.</p>
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+</code></pre></div>
+<p>You can see how the owner and title information are being accessed in a very simple manner</p>
 
-<p>This REST API server configuration can be edited in <code>APP_DIR/src/app/configuration.ts</code>.</p>
+<h2 id="submitting-a-transactions">Submitting a transactions</h2>
 
-<h3 id="using-the-application">Using the Application</h3>
+<p>The last thing that we need to do is submit a transaction. This is the definition of the transaction in the model file:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">transaction RegisterPropertyForSale identified by transactionId{
+  o String transactionId
+  --&gt; LandTitle title
+}
+</code></pre></div>
+<p>The transaction has two fields here, a trandsactionId, and a reference to the land title that should be submitted for sale. The first step is get access to the registry for the landtitle, and get back the specific land title we want to submit for sale.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">registry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'LID:1148'</span><span class="p">);</span>
+<span class="p">})</span>
+</code></pre></div>
+<p>The getAssetRegistry call should now be looking a bit familar, the get API is used to get a specific land title.
+The next step is to create the transaction we want to submit.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">serializer</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getSerializer</span><span class="p">();</span>
 
-<p>The application can be started using <code>npm start</code>.</p>
+<span class="kd">let</span> <span class="nx">resource</span> <span class="o">=</span> <span class="nx">serializer</span><span class="p">.</span><span class="nx">fromJSON</span><span class="p">({</span>
+  <span class="s1">'$class'</span><span class="p">:</span> <span class="s1">'net.biz.digitalPropertyNetwork.RegisterPropertyForSale'</span><span class="p">,</span>
+  <span class="s1">'title'</span><span class="p">:</span> <span class="s1">'LID:1148'</span>
+<span class="p">});</span>
 
-<p>The application can be tested using <code>npm test</code>.</p>
+<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">submitTransaction</span><span class="p">(</span><span class="nx">resource</span><span class="p">);</span>
+
+</code></pre></div>
+<p>What we need to do here is create a &#39;serializer&#39;.  This is able to create a resource - this resource is then passed to the submitTransaction API. Note that the transaction JSON matches the structure specified in the model file.</p>
+
+<p>That&#39;s it!</p>
 
             
           </section>

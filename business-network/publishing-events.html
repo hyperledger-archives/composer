@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Publishing Events | Hyperledger Composer</title>
+    <title>Emitting Events | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,23 +100,21 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<a href="../business-network/businessnetwork.html">What is a business network?</a>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
 <a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/getting-started-coding-bnd.html">Defining a business network</a>
+<a href="../business-network/bnd-define.html">Creating a business network definition</a>
 <a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
-<a href="../business-network/bnd-define.html">Create a business network definition</a>
-<a href="../business-network/publishing-events.html">Publishing events</a>
-<a href="../business-network/bnd-publish.html">Publish a business network definition</a>
-<a href="../business-network/model-publish.html">Publish a business domain model</a>
-<a href="../business-network/runtime-update.html">Update a business network definition on Composer</a>
-<a href="../business-network/testing.html">Test a business network definition</a>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<a href="../business-network/publishing-events.html">Emitting events</a>
+<a href="../business-network/runtime-update.html">Updating a business network definition</a>
+<a href="../business-network/testing.html">Testing a business network definition</a>
+<a href="../business-network/bnd-publish.html">Publishing a business network definition</a>
+<a href="../business-network/model-publish.html">Publishing a business domain model</a>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -126,9 +124,9 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="publishing-events">Publishing Events</h1>
+              <h1 id="emitting-events">Emitting Events</h1>
 
-<p>Events can be published by Hyperledger Composer and subscribed to by applications. Events are defined in the model file of a business network definition, and are emitted by transaction JavaScript in the transaction processor functions file.</p>
+<p>Events can be emitted by Hyperledger Composer and subscribed to by external applications. Events are defined in the model file of a business network definition, and are emitted by transaction JavaScript in the transaction processor functions file.</p>
 
 <h2 id="before-you-begin">Before you begin</h2>
 
@@ -138,15 +136,12 @@ ga('send', 'pageview');
 
 <ol>
 <li><p>Events are defined in the model file (<code>.cto</code>) of your business network definition, in the same way as assets and participants. Events use the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```
-event BasicEvent identified by eventId {
+<div class="highlight"><pre><code class="language-" data-lang="">event BasicEvent identified by eventId {
 o String eventId
 }
-```
 </code></pre></div></li>
-<li><p>In order for the event to be published the transaction which creates the event must include three functions, the first is the <code>getFactory</code> function. The <code>getFactory</code> allows events to be created as part of a transaction. Next, an event must be created by using <code>factory.newEvent(&#39;org.namespace&#39;, &#39;BasicEvent&#39;)</code>. This creates a <code>BasicEvent</code> from the business network model file in the defined organisation namespace. Lastly, the event must be emitted by using <code>emit(BasicEvent)</code>. A simple transaction which calls this event would look like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```JavaScript
-/**
+<li><p>In order for the event to be published the transaction which creates the event must call three functions, the first is the <code>getFactory</code> function. The <code>getFactory</code> allows events to be created as part of a transaction. Next, an event must be created by using <code>factory.newEvent(&#39;org.namespace&#39;, &#39;BasicEvent&#39;)</code>. This creates a <code>BasicEvent</code> defined in a specified namespace. Then the required properties on the event must be set. Lastly, the event must be emitted by using <code>emit(BasicEvent)</code>. A simple transaction which calls this event would look like this:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
  * @param {org.namespace.BasicEventTransaction} basicEventTransaction
  * @transaction
  */
@@ -156,11 +151,10 @@ function basicEventTransaction(basicEventTransaction) {
     var basicEvent = factory.newEvent('org.namespace', 'BasicEvent');
     emit(basicEvent);
 }
-```
 </code></pre></div></li>
 </ol>
 
-<p>This transaction would create and publish an event of the <code>BasicEvent</code> type as defined in the business network&#39;s model file. For more information on the getFactory function, see the <a href="https://hyperledger.github.io/composer/jsdoc/module-composer-runtime.html#getFactory">Composer API documentation</a>.</p>
+<p>This transaction creates and emits an event of the <code>BasicEvent</code> type as defined in the business network&#39;s model file. For more information on the getFactory function, see the <a href="https://hyperledger.github.io/composer/jsdoc/module-composer-runtime.html#getFactory">Composer API documentation</a>.</p>
 
 <h2 id="what-next">What next?</h2>
 

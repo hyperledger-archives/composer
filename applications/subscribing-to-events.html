@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,17 +100,15 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
-<a href="../applications/genapp.html">Generating a starter application</a>
-<a href="../applications/getting-started-nodejs-app.html">Writing a node.js application</a>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<a href="../applications/genapp.html">Writing a node.js application</a>
 <a href="../applications/subscribing-to-events.html">Subscribing to events</a>
-<a href="../applications/rest-api-server.html">Generating a REST API</a>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -126,21 +124,18 @@ ga('send', 'pageview');
 
 <h2 id="before-you-begin">Before you begin</h2>
 
-<p>Before an application can subscribe to events, you must have defined some events and the transactions which will emit them. The business network must also be deployed and you must have connected to it. Follow the steps for <a href="../applications/getting-started-nodejs-app.html">connecting to the Hyperledger Composer runtime</a>.</p>
+<p>Before an application can subscribe to events, you must have defined some events and the transactions which will emit them. The business network must also be deployed and you must have a connection profile that can connect to it.</p>
 
 <h2 id="procedure">Procedure</h2>
 
 <ol>
-<li><p>An application must send a specific API call to subscribe to events emitted transactions in a business network. Currently, an application which subscribes to events will receive all events which are emitted. The API call should take the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">```Javascript
-businessNetworkConnection.on('event', (event) =&gt; {
+<li>An application must send a specific API call to subscribe to events emitted transactions in a business network. Currently, an application which subscribes to events will receive all events which are emitted. The API call should take the following format:</li>
+</ol>
+<div class="highlight"><pre><code class="language-Javascript" data-lang="Javascript">businessNetworkConnection.on('event', (event) =&gt; {
     // event: { "$class": "org.namespace.BasicEvent", "eventId": "0000-0000-0000-000000#0" }
     console.log(event);
 });
-```
-</code></pre></div></li>
-</ol>
-
+</code></pre></div>
 <p>This includes an event called <code>BasicEvent</code> which was created in the <a href="../business-network/publishing-events.html">publishing events</a> documentation. The <code>eventId</code> property is always the same as the <code>transactionId</code> of the transaction which emitted the event, with an appended number in the form <code>&quot;transactionId&quot;: &quot;&lt;transactionId&gt;#number&quot;</code>.</p>
 
 <h2 id="what-next">What next?</h2>

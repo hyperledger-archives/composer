@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Installing Development Pre-requisites | Hyperledger Composer</title>
+    <title>Task - Installing Development Pre-requisites Manually | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,17 +100,16 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<a href="../installing/prerequisites.html">Prerequisites</a>
-<a href="../installing/quickstart.html">Quickstart</a>
-<a href="../installing/runtime-start.html">Start a Composer runtime</a>
-<a href="../installing/createconnectionprofile.html">Creating a network connection profile</a>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
+<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -124,7 +123,9 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>The essential tools you will need are <em>npm</em>, <em>docker</em>, <em>docker-compose</em> and a code editor for example <em>Atom</em> or <em>VSCode</em>. Samples are held in GitHub so <em>git</em> will be needed as well.</p>
+<p>The essential tools you will need are <em>npm</em>, <em>docker</em>, <em>docker-compose</em> and a code editor, for example <em>Atom</em> or <em>VSCode</em>. Samples are held in GitHub so <em>git</em> will be needed as well.</p>
+
+<p>Automatic installations scripts are available for <a href="./prerequisites.html">Ubuntu</a></p>
 
 <p>The recommended <em>minimum</em> versions are:
 <em>Docker</em>: v1.12.3
@@ -132,30 +133,31 @@ ga('send', 'pageview');
 <em>npm</em>: v4.6.0
 <em>node.js</em>: v6.9.5</p>
 
-<h2 id="installation-for-ubuntu">Installation for Ubuntu</h2>
+<h2 id="manual-installation">Manual Installation</h2>
 
-<h3 id="1-installing-runtime-components">1. Installing Runtime Components</h3>
+<h3 id="1-installing-nvm">1. Installing NVM</h3>
 
-<p>Supported versions of Ubuntu are: Trusty, Utopic, Xenial and Yakkety. There is an automated installation script that will install <em>node</em> <em>docker</em> <em>docker-compose</em>.  For Trusty and Utopic, additional kernel packages that allow the use of the AUFS storage driver required by Docker, will also be installed.</p>
+<p>We highly recommend installing NVM to easily install and manage versions of <a href="https://nodejs.org/en/">node.js</a> and <a href="https://www.npmjs.com/">npm</a>. The main runtime uses node.js and npm is used for package management and dependency installation. The runtime requires a version higher than v4.6.0.</p>
 
-<p>If some of the tools are already installed or to do the installation step-by-step follow the <a href="./manual_prerequisites.html">manual instructions</a>.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>curl -O https://raw.githubusercontent.com/hyperledger/composer-sample-applications/master/packages/getting-started/scripts/prereqs-ubuntu.sh
-<span class="gp">$ </span>chmod u+x prereqs-ubuntu.sh
-</code></pre></div>
-<p>Next run the script - as this uses sudo you will be prompted for your password.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>./prereqs-ubuntu.sh
-</code></pre></div>
-<p><strong>Important:</strong> You will need to logout and login again before continuing.</p>
+<p><a href="https://github.com/creationix/nvm">Official nvm GitHub repository</a></p>
 
-<p>The script will print out the versions installed, if you wish to check here are the version commands.</p>
-<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>node --version
-v6.9.5
-<span class="gp">$ </span>docker --version
-Docker version 1.12.3
-<span class="gp">$ </span>docker-compose --version
-docker-compose version 1.10.0
-</code></pre></div>
-<h3 id="2-installing-git">2. Installing Git</h3>
+<h3 id="2-kernel-packages">2. Kernel Packages</h3>
+
+<p>If running on Ubuntu Trusty or Utopic, it is necessary to obtain additional Kernel packages to enable use of the <a href="https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/#renaming-directories-with-the-aufs-storage-driver">AUFS storage driver</a> for Docker.</p>
+
+<h3 id="3-installing-docker-engine">3. Installing Docker Engine</h3>
+
+<p>The Docker Engine is essential for running system tests and running the HyperLedger Fabric.</p>
+
+<p><a href="https://docs.docker.com/engine/installation/">Official Docker Engine Installation Guide</a></p>
+
+<h3 id="4-installing-docker-compose">4. Installing Docker Compose</h3>
+
+<p><a href="https://docs.docker.com/compose/overview/">Docker Compose</a> is used for easily configuring and starting HyperLedger Fabric.</p>
+
+<p><a href="https://docs.docker.com/compose/install/">Official Docker Compose Installation guide</a></p>
+
+<h3 id="5-installing-git">5. Installing Git</h3>
 
 <p>This is probably already installed on most Linux machines. Pay particular attention to <a href="https://help.github.com/enterprise/2.7/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#platform-linux">setting up the SSL keys</a> that are required.</p>
 

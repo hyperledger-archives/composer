@@ -70,7 +70,7 @@ ga('send', 'pageview');
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li>
                 <li>
-                    <a href="../tutorials/tutorialindex.html">Tutorials</a>
+                    <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
                 <li>
                     <a href="../introduction/introduction.html">Docs</a>
@@ -100,14 +100,15 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<a href="../introduction/key-concepts.html">Components and Concepts</a>
-<strong><a href="../tutorials/tutorialindex.html">Tutorials</a></strong>
-<strong><a href="../installing/installingindex.html">Installing</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Defining Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Writing Applications</a></strong>
+<a href="../introduction/key-concepts.html">Key Concepts</a>
+<a href="../introduction/solution-architecture.html">Typical Solution Architecture</a>
+<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
+<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Determining Problems</a></strong>
+<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
@@ -117,25 +118,17 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <hr>
-
-<h1 id="welcome-to-hyperledger-composer">Welcome to Hyperledger Composer</h1>
+              <h1 id="welcome-to-hyperledger-composer">Welcome to Hyperledger Composer</h1>
 
 <hr>
 
-<p>Hyperledger Composer is an extensive, open development toolset and framework to make developing blockchain applications easier. Our primary goal is to accelerate time to value, and make it easier to integrate your blockchain applications with the existing business systems. You can use Hyperledger Composer to rapidly develop use cases and deploy a blockchain solution in weeks rather than months. Hyperledger Composer allows you to model your business network and integrate existing systems and data with your blockchain applications.</p>
+<p>Hyperledger Composer is an extensive, open development toolset and framework to make developing blockchain applications easier. Our primary goal is to accelerate time to value, and make it easier to integrate your blockchain applications with the existing business systems. You can use Composer to rapidly develop use cases and deploy a blockchain solution in weeks rather than months. Composer allows you to model your business network and integrate existing systems and data with your blockchain applications.</p>
 
-<p>Hyperledger Composer supports the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> infrastructure and runtime, and supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.</p>
+<p>Hyperledger Composer supports the existing <a href="https://hyperledger.org">Hyperledger Fabric blockchain</a> infrastructure and runtime, which supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.</p>
 
 <p>Everyday applications can consume the data from business networks, providing end users with simple and controlled access points.</p>
 
 <p>You can use Hyperledger Composer to quickly model your current business network, containing your existing assets and the transactions related to them; assets are tangible or intangible goods, services, or property. As part of your business network model, you define the transactions which can interact with assets. Business networks also include the participants who interact with them, each of which can be associated with a unique identity, across multiple business networks.</p>
-
-<hr>
-
-<h2 id="key-hyperledger-composer-concepts-diagram">Key Hyperledger Composer concepts diagram</h2>
-
-<hr>
 
 <p><img src="../assets/img/Composer-Diagram.svg" alt="Diagram of Hyperledger Composer"></p>
 
@@ -143,7 +136,15 @@ ga('send', 'pageview');
 
 <h2 id="how-does-hyperledger-composer-work-in-practise">How does Hyperledger Composer work in practise?</h2>
 
-<p>For an example of a business network in action; a realtor can quickly model their business network; including houses and listings assets, buyers and homeowners as participants, and buying or selling houses, and creating and closing listings as transactions. Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.</p>
+<p>For an example of a business network in action; a realtor can quickly model their business network as such:</p>
+
+<ul>
+<li><strong>Assets:</strong> houses and listings</li>
+<li><strong>Participants:</strong> buyers and homeowners</li>
+<li><strong>Transactions:</strong> buying or selling houses, and creating and closing listings</li>
+</ul>
+
+<p>Participants can have their access to transactions restricted based on their role as either a buyer, seller, or realtor. The realtor can then create an application to present buyers and sellers with a simple user interface for viewing open listings and making offers. This business network could also be integrated with existing inventory system, adding new houses as assets and removing sold properties. Relevant other parties can be registered as participants, for example a land registry might interact with a buyer to transfer ownership of the land.</p>
 
 <hr>
 
@@ -151,7 +152,11 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>To get started with Hyperledger Composer right away, try the <a href="../tutorials/tutorialindex.html">Hyperledger Composer tutorials</a>, to learn more about Hyperledger Composer read <a href="../introduction/key-concepts.html">understanding Hyperledger Composer</a>, to get installed and trying the full product immediately go to <a href="../installing/prerequisites.html">installing Hyperledger Composer</a>.</p>
+<ul>
+<li>To try Hyperledger Composer right away, see the <a href="../getting-started/getting-started-with-playground.html">Online Playground</a></li>
+<li>For an introduction to Composer components and concepts, see <a href="./key-concepts.html">Key Concepts</a></li>
+<li>For an architectural overview of a typical solution built with Composer, see <a href="./solution-architecture.html">Typical Solution Architecture</a></li>
+</ul>
 
             
           </section>
