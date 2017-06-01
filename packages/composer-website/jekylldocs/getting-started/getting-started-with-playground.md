@@ -25,11 +25,11 @@ Before beginning, you will need:
 
 ---
 
-The Online Playground can be accessed here: <a href="http://composer-playground.mybluemix.net" target="blank">composer-playground.mybluemix.net</a>
+The Online Playground can be accessed here: <a href="https://composer-playground.mybluemix.net" target="blank">composer-playground.mybluemix.net</a>
 
 Simply click "Let's Blockchain" to begin using Online Playground!  Play around with any of the available samples however you like - clearing your browser storage will effectively "reset" the Online Playground.  If you're looking for a more guided example of what Playground can do, try the [Playground Tutorial](../tutorials/playground-guide.html).
 
-<a href="http://composer-playground.mybluemix.net" target="blank"><img src="../assets/img/LetsBlockchain.png"></a>
+<a href="https://composer-playground.mybluemix.net" target="blank"><img src="../assets/img/LetsBlockchain.png"></a>
 
 ---
 
