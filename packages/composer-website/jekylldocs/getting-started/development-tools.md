@@ -80,14 +80,14 @@ The development tools you'll need can all be installed with `npm install -g`.
 
 If you've [installed the {{site.data.conrefs.composer_full}} Playground locally](../getting-started/using-playground-locally.html) you'll need to close the containers by using the following scripts.
 
->_Please note: If you have current work in a local instance of playground, be sure to export it before closing the docker containers._
+>_Please note: These commands will kill and remove all running containers, and should remove all previously created {{site.data.conrefs.hlf_full}} chaincode images._
 
 ```
-docker ps -aq | xargs docker rm -f
-docker images -aq | xargs docker rmi -f
+docker kill $(docker ps -q)
+docker rm $(docker ps -aq)
+docker rmi $(docker images dev-* -q)
 ```
 
-These scripts use Node v6, and bash, which are Hyperledger Composer depencies. Choose a directory that you wish to have the setup scripts within.
 
 1. In a directory of your choice (will assume `~/fabric-tools`) get the zip file that contains the tools
 
@@ -126,7 +126,7 @@ These scripts use Node v6, and bash, which are Hyperledger Composer depencies. C
         ./stopFabric.sh
         ./teardownFabric.sh
 
-*If you want to swap between v0.6 and v1.0, ensure you have issued a `stopFabric.sh` and a `teardownFabric.sh` command first be START on the other version*
+*If you want to swap between v0.6 and v1.0, ensure you first issue a `teardownFabric.sh` command on your original version.*
 
 ## Script details
 
