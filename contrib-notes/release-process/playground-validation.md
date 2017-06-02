@@ -1,76 +1,11 @@
-
-# Validation of the quality of Hyperledger Composer
-
-Hyperledger Composer is an open source technology that is developed in the open. Therefore every Pull Request that is merged is a *public* release of code, api, and documentation.
-
-First impressions and the overall first experience do count. Even if something isn't perfect for whatever reason, then we can still retain this new relationship _if_ the solution is easily found.
-
-## Aim
-To run over a weekly set of testing that ensures we meet a Minimal Standard for Release. A failure of any of the below listed items, or indeed undocumented exploratory testing that reveals an undesired aspect or behaviour introduced since the previous release, should prevent a release going ahead without a fix first being delivered and subsequently proven.
-
-## Pre-requisties
-
-__Assumption__ is that stories have been closed off properly
-
-- Current state of the build is green with all test passing, and all aspects green:  This is for a merge build, not a pull request. This ensures that the code is clean, unit and systests are passing, documentation is being generated, npm and docker images pushed to the repositories, and the Bluemix images have been pushed
-- Ensure that any CRON jobs that are run are also passing
-
-## Runtime Verification
-The runtime should be verified against the following platforms:
- - Ubuntu 14:04 & Ubuntu 16:04
- - MacOS 10
- - (_Windows 10 is not yet ready_)
-
-A fresh virtualised image should be used where possible, to ensure that the process will be as that of a new user with a fresh machine. This does however preclude this process from detecting issues where a user already has some components (dependancies etc) pre-installed and may cause a conflict with script files provided.
-
-### CLI
-Cmd line Installation Verification  (Mac OS X and Ubuntu). These test should be run following the instructions in the web pages.
-_These should be run using the unstable releases of the code to validate what is going to be released is good_
-
-This short output shows how to install and update the package.json of the getting started application to use the unstable versions. It replaces the procedure outlined in https://hyperledger.github.io/composer/installing/quickstart.html
-
-```bash
-$ npm install -g composer-cli@unstable
-<output redacted>
-$ composer --version
-composer-cli                   v0.5.2-20170313111819
-composer-admin                 v0.5.2-20170313111819
-composer-client                v0.5.2-20170313111819
-composer-common                v0.5.2-20170313111819
-composer-runtime-hlf           v0.5.2-20170313111819
-composer-connector-hlf         v0.5.2-20170313111819
-
-$ git clone https://github.com/hyperledger/composer-sample-applications.git
-<output redacted>
-$ cd composer-sample-applications/packages/getting-started
-$ sed -i.ORIG 's/\("composer-.*".*\):.*"/\1:"unstable"/g' package.json
-$ npm install --tag=unstable
-$ npm test
-
-```
-
-### Pre-Reqs and And Documented Turtorials
-- Running the [pre-req scripts](https://hyperledger.github.io/composer/installing/prerequisites.html) on clean platform images
-- Run the [QuickStart](https://hyperledger.github.io/composer/installing/quickstart.html) and follow on tutorials to ensure they are correct [_note currently this means following the instructions on the website, however there is a plan to automate this_]
-- [Yo Generator (Angular + CLI)](https://hyperledger.github.io/composer/applications/genapp.html) - generates and the code runs successfully
-- [Expose as REST API tutorial](https://hyperledger.github.io/composer/applications/rest-api-server.html)
-- [Event emitting and detection](https://hyperledger.github.io/composer/applications/subscribing-to-events.html)
-- [Calling external REST services](https://hyperledger.github.io/composer/integrating/call-out.html)
-
-### Documentation
-When following the above processes in the documentation, were there any issues or did you get confused in the process? For instance:
- - Is the overall initial presentation of the website sound?  
- - Did you encounter any broken links?
- - Are the JSDocs being produced and linked correctly
-
-## Playground
+# Playground Validation
 The following describes manual testing required for Playground, to be complete prior to release. The aim of these tests are to try and guard against regressions, and it is the intention to move all of the listed manual tests to automated Protractor tests.
 
 Testing is to be performed against the unstable versions of:
  - [Composer Playground on Bluemix](http://composer-playground-unstable.mybluemix.net/)
  - Hyperledger/composer-playground Docker image on local machine
 
-### Playground Unstable Local Image
+## Obtaining Playground Unstable Local Image
 Pre-requisites:
  - [Docker](https://docs.docker.com/engine/installation/#supported-platforms)
  - [Docker Compose](https://docs.docker.com/compose/install/)
@@ -146,7 +81,7 @@ We now need to swap out the underlying stable docker image, with the unstable. W
 
 You should now be able to access the unstable docker build image at http://localhost:8080
 
-### Platform/OS Variations for Playground Testing
+## Platform/OS Variations for Playground Testing
 Playground testing should be performed on Ubuntu and OS-X operating systems.
 
 Playground testing should be performed on the following browsers:
@@ -157,6 +92,8 @@ Playground testing should be performed on the following browsers:
 At a minimum, Safari (OS-X) and Chrome/firefox (Ubuntu) should be investigated. Different browsers may render components differently, and this needs to be accounted for, with issues raised as appropriate. A simple rendering issue may not invalidate the release build if it does not prevent user action. Such rendering issues can be added to "known issues" for the build release.
 
 From the initial logon, the user should be presented with the “Hello World” landing page, with the Basic Sample Network loaded. And it is here we will start the Playground testing.
+
+## Playground Test Areas
 
 ### Define Page (Side Navigation)
 The define page is used to manage files and file content. Through the side navigation menu it is possible to perform working file selection/creation, and lifecycle actions such as import, export and deploy.
@@ -304,18 +241,14 @@ We will now create some IDs to use
     - Select a vehicle in the list and try to delete it
     - Should succeed
 
-## New Feature Testing
+### New Feature Testing
 
 All new features added for the release, which will be named in the release notes outline, should be proven on the unstable build. At this point some exploratory testing needs to be investigated, in an attempt to break the delivered feature and/or knowingly drive it towards a state where features could be working from invalid information.
 
-## Exploratory Testing
+### Exploratory Testing
 
 Different users will attempt different things, be starting from different points with different skill level. Options to consider
 
  - Add a new asset type to a model and a new transaction, or write a new model from a different business domain
  - Review the questions found in the week on StackOverflow & Rocket.Chat - how did the user get to the position they are in?
  - What new PRs have gone in this week - how could they deployed and used in the existing networks?
-
- ## The Release
-
- Once weekly validation has passed and the consensus is to cut a release, the [release process](./release-process.md) may be followed.
