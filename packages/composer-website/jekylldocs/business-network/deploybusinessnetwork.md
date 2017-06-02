@@ -10,42 +10,12 @@ excerpt: How to deploy a Business Network
 
 ---
 
-A business network definition is deployed using the `composer network deploy` command.
+A business network definition is deployed using the `composer network deploy` command. You can use the `composer archive` command to create an archive with the correct format.
 
-# Before you begin
+1. [Create a Connection Profile](../reference/connectionprofile.html)
 
-Before deploying a business network, a [Business Network Definition](../business-network/businessnetworkdefinition.html) is needed as a `zip` file with the following structure:
+2. Enter the command on a single line. For example:
 
-```
-BusinessNetworkArchive.zip
-├── lib
-│   └── mozart.cto.js
-├── models
-│   └── mozart.cto
-└── package.json
-```
-<!--
-You can use the `composer archive` command to create an archive with the correct format.
+        composer network deploy -p connectionProfileName -a <BusinessNetworkDefinition>.bna -i <Your EnrollmentID>
 
-**NOTE**: *Do not zip a a folder containing **lib**, **models**, and **package.json** to create an Business Network Archive, zip the contents themselves*
--->
-
-## Procedure
-
-1. Start [Hyperledger Fabric Peer and Membership Service](runtime-start.md).
-
-2. [Create a Connection Profile](../installing/createconnectionprofile.html) or do *not* use `-p` and allow {{site.data.conrefs.composer_full}} to create a `Default Connection Profile` for you.
-
-3. Enter the command on a single line. For example:
-
-        `composer network deploy -a <BusinessNetworkDefinition>.zip -i <Your EnrollmentID>`
-
-4. Enter your Enrollment Secret when prompted.
-
-5. When you see
-
-        ```
-        Deploying business network definition. This may take a little time.
-        Command completed successfully.
-        ```
-  the business network definition has been successfully deployed.
+3. Enter your Enrollment Secret when prompted.

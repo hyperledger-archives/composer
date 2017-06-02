@@ -1,53 +1,38 @@
 ---
 layout: default
-title: Hyperledger Composer - Business Network
+title: Hyperledger Composer - Developing Business Networks
 category: concepts
 sidebar: sidebars/businessnetworks.md
-excerpt: Business Network
+excerpt: Overview of Developing Business Networks
 ---
 
-# Business Network
+# Developing Business Networks
 
 ---
 
-A `Business Network` describes the structures and processes that exist in the exchange of assets between participants in economic networks. {{site.data.conrefs.composer_full}} helps you to easily develop applications for business networks, to digitize these networks - making them more efficient.
+Developers use {{site.data.conrefs.composer_full}} to digitize business networks. The business network is accessed by multiple participants in the network, some of which may be responsible for the maintenance (hosting) of the network itself, referred to as maintainers of the network.
 
-There are many elements in a business network; the most fundamental of which are participants, assets, registries and transactions.  We're going to start by explaining these so that you get a feeling for this most important concepts.  We'll then reinforce these slightly abstract concepts with a concrete example involving a digital property network.
+Typically each maintainer of the network will run several peer nodes (for crash fault tolerance) and {{site.data.conrefs.hlf_full}} replicates the distributed ledger across the set of peer nodes.
 
-* Participants.  These are the actors in the business network.  A participant might be an individual or an organization.  A participant has an one of more attributes that are used to identify them to the business network.
+## Model
+Developers work with business analysts to define the domain data model for the business network. The data model is expressed using the {{site.data.conrefs.composer_short}} Modelling Language and defines the structure of the resources that will be stored on the ledger, or processed as transactions.
 
-* Assets. Assets are created by participants, and subsequently exchanged between them.  Assets can have a rich lifecycle, as defined by the transaction in which they are involved.
+Once the domain model is in place, developers can capture _smart contracts_ as executable transaction processor functions, written in JavaScript.
 
-* Registries. A registry is a collection of assets for a particular purpose.  As assets move through their lifecycle, they move through different registries. Assets can be in more than one registry at the same time.
+## Access Control
 
-* Transactions. These are operations that are performed on assets and other resources as they move through their lifecycle within the business network.
+In parallel developers or technical analysts can define the access control rules for the business network, to enforce which participants have access to the data on the ledger and under which conditions.
 
-We're going to learn lots more about what's possible within digital business networks, but let's start with a simple example.
+## Deploy
 
-## An example of a Business Network
+Developers package the models, scripts and access control rules into a deployable _Business Network Archive_ and use command line tools to deploy the archive to a runtime for testing.
 
-Imagine a property network, comprising participants who want to buy and sell property, estate agents (realtors) who provide matching services between buyers and sellers, conveyancers who exchange legal contracts related to the buying and selling of property, and government land registries who record the ongoing ownership of property.  
+## Test
 
-Here are the key elements of this property network.
+Like all business logic, it is important to create unit and system tests for business networks. Developers can use popular JavaScript testing frameworks such as Mocha and Chai to run unit tests (against the Node.js embedded runtime) or run system tests against a {{site.data.conrefs.hlf_full}}.
 
-* Participants. Buyers, sellers, estate agents (realtors), conveyancers and the government land registry are the people and organizations who participate in this network.
+## Integrate
 
-* Assets. Property is the asset that is exchanged and between buyers and sellers in the property network. Property is advertised by estate agents (realtors), exchanged by conveyancers, and recorded by land registries. Property has a fairly rich lifecycle, in that it can be created, exchanged, modified and destroyed.
+Once the business network is tested and in place, front-end applications need to be created. Use the {{site.data.conrefs.hlf_short}} REST Server to automatically generate a REST API for a business network, and then a skeleton generate Angular application using the Yeoman code generator.
 
-* Registries.  Clearly the Land Registry record of properties is an obvious registry in this network, but there are others.  The estate agent (realtor) has a set of properties for sale by registered sellers and interested buyers, and probably a separate record of the deals between buyers and sellers that are in-flight at a given moment in time.  Conveyancers probably have a registry of properties in the process of being legally exchanged between buyers and sellers.  Assets will be updated within these registries as they are exchanged between buyers and sellers.
-
-* Transactions. There are many transactions going on in this property network. Sellers sell property and buyers buy them.  Conveyancers create and exchange legal contracts with other conveyancers on behalf of buyers and sellers and their respective property sales.  The Land Registry records updates to property ownership, and estate agents (realtors) indicate that properties are for sale in a market and remove them from that market once they have been sold.
-
-{{site.data.conrefs.composer_full}} makes it easy to create these elements in a business network, and the applications which capture interactions between different participants.  
-
-## Related Concepts
-
-[Business Network Definition](../business-network/businessnetworkdefinition.html)
-
-## Related Tasks
-
-[Deploying a business network](../business-network/deploybusinessnetwork.html)
-
-## Related Reference
-
-[Network deploy command](../reference/composer.network.deploy.html)
+The REST Server can be configured to authenticate the participants in the business network, ensuring that credentials and permissions are enforced.
