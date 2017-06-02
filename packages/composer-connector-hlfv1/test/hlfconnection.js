@@ -83,7 +83,7 @@ describe('HLFConnection', () => {
     });
 
     describe('#generateCcid', () => {
-        it.only('should create a valid ccid', () => {
+        it('should create a valid ccid', () => {
             HLFConnection.generateCcid('my.domain.biznet').should.equal('my-domain-biznet');
             HLFConnection.generateCcid('My.Domain.BIZnet').should.equal('my-domain-biznet');
         });
