@@ -4,7 +4,7 @@ exports.config = {
   framework: 'jasmine',
   directConnect: true,
   chromeDriver: './e2e/drivers/chromedriver_2.29',
-  baseUrl: 'http://localhost:3000',
+  baseUrl: 'http://127.0.0.1:3001',
   specs: ['./e2e/**/*.*spec.ts'],
   capabilities: {
     'browserName': 'chrome'
@@ -15,7 +15,7 @@ exports.config = {
   },
   beforeLaunch: function() {
     require('ts-node').register({
-      project: 'e2e/tsconfig.json'
+      project: './tsconfig.json'
     });
   }
 }
