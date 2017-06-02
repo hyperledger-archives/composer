@@ -37,13 +37,13 @@ class QueryService {
      * @param {string} queryString - the couchdb query string
      * @return {Promise} A promise that will be resolved with a {@link HttpResponse}
      */
-    query(queryString) {
-        const method = 'query';
+    queryNative(queryString) {
+        const method = 'queryNative';
         LOG.entry(method, queryString);
         this.queryString = queryString;
         LOG.debug(method, queryString);
 
-        return this._query();
+        return this._queryNative();
     }
 
     /**
@@ -51,7 +51,7 @@ class QueryService {
      * @abstract
      * @param {commitCallback} callback The callback function to call when complete.
      */
-    _query() {
+    _queryNative() {
         throw new Error('abstract function called');
     }
 

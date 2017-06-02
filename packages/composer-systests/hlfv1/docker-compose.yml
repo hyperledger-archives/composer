@@ -38,7 +38,7 @@ services:
 #        - ./tls/orderer:/etc/hyperledger/tls/orderer
 #        - ./tls/peers:/etc/hyperledger/tls/peers
 
- couchdb0:
+  couchdb0:
       container_name: couchdb0
       image: hyperledger/fabric-couchdb:x86_64-1.0.0-alpha
       ports:
