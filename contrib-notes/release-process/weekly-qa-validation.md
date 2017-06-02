@@ -21,7 +21,7 @@ __Assumption__ is that stories have been closed off properly
 We wish to validate three core aspects:
  - [User guides](./guide-validation.md)
  - [Runtime](./runtime-validation.md)
- - [Playground](./playground-validation)
+ - [Playground](./playground-validation.md)
 
 Each link above will provide a guide for validation purposes. It should be possible to follow the guides without reaching an error case. Upon completion of the above valiadtion guides, and in the presence of a clean build, we can progress to the release phase.
 
