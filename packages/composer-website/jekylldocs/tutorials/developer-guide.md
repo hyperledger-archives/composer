@@ -336,31 +336,31 @@ You should see output similar to the following:
 ```
 ~joe@ubuntu $ npm test
 
-> my-network@0.0.1 pretest /home/joe/dev/git/my-network
+> my-network@0.0.1 pretest /home/joe/my-network
 > npm run lint
 
 
-> my-network@0.0.1 lint /home/joe/dev/git/my-network
+> my-network@0.0.1 lint /home/joe/my-network
 > eslint .
 
 
-> my-network@0.0.1 postlint /home/joe/dev/git/my-network
+> my-network@0.0.1 postlint /home/joe/my-network
 > npm run licchk
 
 
-> my-network@0.0.1 licchk /home/joe/dev/git/my-network
+> my-network@0.0.1 licchk /home/joe/my-network
 > license-check
 
 
-> my-network@0.0.1 postlicchk /home/joe/dev/git/my-network
+> my-network@0.0.1 postlicchk /home/joe/my-network
 > npm run doc
 
 
-> my-network@0.0.1 doc /home/joe/dev/git/my-network
+> my-network@0.0.1 doc /home/joe/my-network
 > jsdoc --pedantic --recurse -c jsdoc.conf
 
 
-> my-network@0.0.1 test /home/joe/dev/git/my-network
+> my-network@0.0.1 test /home/joe/my-network
 > mocha --recursive -t 4000
 
 
