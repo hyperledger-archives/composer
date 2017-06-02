@@ -50,4 +50,4 @@ To enable us to quickly review and accept your pull requests, always create one 
 
 ## The Release
 
-The master branches are currently being used as a base to cut new releases. The release process itself follows a process to ensure that the release is of suitable quallity. For more information, please see the [release process](./contrib-notes/weekly-qa-validation.md)
+The master branches are currently being used as a base to cut new releases. The release process itself follows a process to ensure that the release is of suitable quallity. For more information, please see the [release process](./contrib-notes/release-process/weekly-qa-validation.md)
