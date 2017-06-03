@@ -366,7 +366,7 @@ You should see output like the following:
 
 Commodity Trading
 #tradeCommodity
-✓ should be able to trade a commodity (61ms)
+✓ should be able to trade a commodity (62ms)
 
 
 1 passing (556ms)
