@@ -559,4 +559,69 @@ describe('Transaction (asset specific) system tests', () => {
             });
     });
 
+    it('should submit and execute a transaction that validates that an asset add is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions.assets', 'AssetAddIsAtomic');
+        return client
+            .submitTransaction(transaction)
+            .should.be.rejected
+            .then(() => {
+                return client.getAssetRegistry('systest.transactions.assets.SimpleStringAsset');
+            })
+            .then((assetRegistry) => {
+                return assetRegistry.exists('stringAsset1');
+            })
+            .then((exists) => {
+                exists.should.be.false;
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an asset update is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        asset.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.assets', 'AssetUpdateIsAtomic');
+        let assetRegistry;
+        return client
+            .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+            .then((assetRegistry_) => {
+                assetRegistry = assetRegistry_;
+                return assetRegistry.add(asset);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return assetRegistry.get('stringAsset1');
+            })
+            .then((asset) => {
+                asset.stringValue.should.equal('party parrot in hursley');
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an asset remove is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        asset.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.assets', 'AssetRemoveIsAtomic');
+        let assetRegistry;
+        return client
+            .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+            .then((assetRegistry_) => {
+                assetRegistry = assetRegistry_;
+                return assetRegistry.add(asset);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return assetRegistry.exists('stringAsset1');
+            })
+            .then((exists) => {
+                exists.should.be.true;
+            });
+    });
+
 });
