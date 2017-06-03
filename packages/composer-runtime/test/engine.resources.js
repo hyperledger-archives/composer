@@ -50,6 +50,11 @@ describe('EngineResources', () => {
         mockContainer.getLoggingService.returns(mockLoggingService);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
+        mockContext.transactionStart.resolves();
+        mockContext.transactionPrepare.resolves();
+        mockContext.transactionCommit.resolves();
+        mockContext.transactionRollback.resolves();
+        mockContext.transactionEnd.resolves();
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockRegistry = sinon.createStubInstance(Registry);
         mockRegistryManager.get.withArgs('Asset', 'doges').resolves(mockRegistry);

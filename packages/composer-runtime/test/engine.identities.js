@@ -40,6 +40,11 @@ describe('EngineIdentities', () => {
         mockContainer.getLoggingService.returns(mockLoggingService);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
+        mockContext.transactionStart.resolves();
+        mockContext.transactionPrepare.resolves();
+        mockContext.transactionCommit.resolves();
+        mockContext.transactionRollback.resolves();
+        mockContext.transactionEnd.resolves();
         mockIdentityManager = sinon.createStubInstance(IdentityManager);
         mockContext.getIdentityManager.returns(mockIdentityManager);
         engine = new Engine(mockContainer);

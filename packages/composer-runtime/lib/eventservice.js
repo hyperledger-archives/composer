@@ -15,6 +15,8 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
+const Service = require('./service');
+
 const LOG = Logger.getLog('EventService');
 
 /**
@@ -23,12 +25,13 @@ const LOG = Logger.getLog('EventService');
  * @abstract
  * @memberof module:composer-runtime
  */
-class EventService {
+class EventService extends Service {
 
     /**
      * Constructor.
      */
     constructor() {
+        super();
         this.eventBuffer = [];
     }
 
