@@ -47,6 +47,11 @@ describe('EngineBusinessNetworks', () => {
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
+        mockContext.transactionStart.resolves();
+        mockContext.transactionPrepare.resolves();
+        mockContext.transactionCommit.resolves();
+        mockContext.transactionRollback.resolves();
+        mockContext.transactionEnd.resolves();
         mockDataService = sinon.createStubInstance(DataService);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getDataService.returns(mockDataService);

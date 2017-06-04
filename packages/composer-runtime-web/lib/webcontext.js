@@ -15,10 +15,10 @@
 'use strict';
 
 const Context = require('composer-runtime').Context;
+const WebDataService = require('./webdataservice');
 const WebIdentityService = require('./webidentityservice');
 const WebHTTPService = require('./webhttpservice');
 const WebEventService = require('./webeventservice');
-
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -34,7 +34,7 @@ class WebContext extends Context {
      */
     constructor(engine, userID, eventSink) {
         super(engine);
-        this.dataService = engine.getContainer().getDataService();
+        this.dataService = new WebDataService(engine.getContainer().getUUID());
         this.identityService = new WebIdentityService(userID);
         this.eventSink = eventSink;
     }
@@ -56,17 +56,6 @@ class WebContext extends Context {
     }
 
     /**
-     * Get the http service provided by the chaincode container.
-     * @return {HTTPService} The http service provided by the chaincode container.
-     */
-    getHTTPService() {
-        if (!this.httpService) {
-            this.httpService = new WebHTTPService();
-        }
-        return this.httpService;
-    }
-
-    /**
      * Get the event service provided by the chaincode container.
      * @return {EventService} The event service provided by the chaincode container.
      */
@@ -75,6 +64,17 @@ class WebContext extends Context {
             this.eventService = new WebEventService(this.eventSink);
         }
         return this.eventService;
+    }
+
+    /**
+     * Get the http service provided by the chaincode container.
+     * @return {HTTPService} The http service provided by the chaincode container.
+     */
+    getHTTPService() {
+        if (!this.httpService) {
+            this.httpService = new WebHTTPService();
+        }
+        return this.httpService;
     }
 
 }

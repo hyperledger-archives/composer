@@ -49,14 +49,14 @@ func NewEventService(vm *otto.Otto, context *Context, stub shim.ChaincodeStubInt
 	}
 
 	// Bind the methods into the JavaScript object.
-	result.This.Set("_commit", result.commit)
+	result.This.Set("_transactionCommit", result.transactionCommit)
 	return result
 }
 
 // Serializes the buffered events and emits them
-func (eventService *EventService) commit(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering EventService.commit", call)
-	defer func() { logger.Debug("Exiting EventService.commit", result) }()
+func (eventService *EventService) transactionCommit(call otto.FunctionCall) (result otto.Value) {
+	logger.Debug("Entering EventService.transactionCommit", call)
+	defer func() { logger.Debug("Exiting EventService.transactionCommit", result) }()
 
 	callback := call.Argument(0)
 
@@ -67,11 +67,11 @@ func (eventService *EventService) commit(call otto.FunctionCall) (result otto.Va
 	}
 
 	if len(value.String()) > 0 {
-		logger.Debug("Emitting event from EventService.commit", value.String())
+		logger.Debug("Emitting event from EventService.transactionCommit", value.String())
 		eventService.Stub.SetEvent("composer", []byte(value.String()))
 	}
 
-	_, err = callback.Call(callback, nil, eventService.This)
+	_, err = callback.Call(callback, nil)
 	if err != nil {
 		panic(err)
 	}
