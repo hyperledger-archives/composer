@@ -75,6 +75,7 @@ describe('EmbeddedConnection', () => {
 
         it('should construct a new connection', () => {
             connection.should.be.an.instanceOf(Connection);
+            connection.dataService.autocommit.should.be.true;
         });
 
     });
@@ -301,18 +302,18 @@ describe('EmbeddedConnection', () => {
 
     describe('#getIdentities', () => {
 
-        let mockFabricDataService;
+        let mockDataService;
         let mockIdentitiesDataCollection;
 
         beforeEach(() => {
-            connection.fabricDataService = mockFabricDataService = sinon.createStubInstance(DataService);
+            connection.dataService = mockDataService = sinon.createStubInstance(DataService);
             mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
 
         });
 
         it('should create and return the identities collection if it does not exist', () => {
-            mockFabricDataService.existsCollection.withArgs('identities').resolves(false);
-            mockFabricDataService.createCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
+            mockDataService.existsCollection.withArgs('identities').resolves(false);
+            mockDataService.createCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
             return connection.getIdentities()
                .then((identities) => {
                    identities.should.equal(mockIdentitiesDataCollection);
@@ -320,8 +321,8 @@ describe('EmbeddedConnection', () => {
         });
 
         it('should return the existing identities collection if it already exists', () => {
-            mockFabricDataService.existsCollection.withArgs('identities').resolves(true);
-            mockFabricDataService.getCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
+            mockDataService.existsCollection.withArgs('identities').resolves(true);
+            mockDataService.getCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
             return connection.getIdentities()
                .then((identities) => {
                    identities.should.equal(mockIdentitiesDataCollection);
