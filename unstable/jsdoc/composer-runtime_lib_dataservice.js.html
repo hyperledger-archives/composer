@@ -100,13 +100,15 @@
 
 'use strict';
 
+const Service = require('./service');
+
 /**
  * Base class representing the data service provided by a {@link Container}.
  * @protected
  * @abstract
  * @memberof module:composer-runtime
  */
-class DataService {
+class DataService extends Service {
 
     /**
      * Create a collection with the specified ID.

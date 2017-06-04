@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-runtime/lib/loggingservice.js</title>
+	<title>Hyperledger Composer Source: composer-runtime/lib/service.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-runtime/lib/loggingservice.js</h1>
+		<h1 class="page-title">Source: composer-runtime/lib/service.js</h1>
     
 <section>
     <article>
@@ -100,81 +100,186 @@
 
 'use strict';
 
-const Service = require('./service');
-
 /**
- * Base class representing the logging service provided by a {@link Container}.
+ * Base class for all services provided by a {@link Container}.
  * @protected
  * @abstract
  * @memberof module:composer-runtime
  */
-class LoggingService extends Service {
+class Service {
 
     /**
-     * Write a critical message to the log.
-     * @abstract
-     * @param {string} message The message to write to the log.
+     * Constructor.
      */
-    logCritical(message) {
-        throw new Error('abstract function called');
+    constructor() {
+
     }
 
     /**
-     * Write a debug message to the log.
+     * Called at the start of a transaction.
      * @abstract
-     * @param {string} message The message to write to the log.
+     * @param {boolean} readOnly Is the transaction read-only?
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
      */
-    logDebug(message) {
-        throw new Error('abstract function called');
+    transactionStart(readOnly) {
+        return new Promise((resolve, reject) => {
+            this._transactionStart(readOnly, (error) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve();
+            });
+        });
     }
 
     /**
-     * Write an error message to the log.
-     * @abstract
-     * @param {string} message The message to write to the log.
+     * @callback transactionStartCallback
+     * @protected
+     * @param {Error} error The error if any.
      */
-    logError(message) {
-        throw new Error('abstract function called');
+
+    /**
+     * Called at the start of a transaction.
+     * @abstract
+     * @param {boolean} readOnly Is the transaction read-only?
+     * @param {transactionStartCallback} callback The callback function to call when complete.
+     */
+    _transactionStart(readOnly, callback) {
+        callback();
     }
 
     /**
-     * Write a informational message to the log.
+     * Called when a transaction is preparing to commit.
      * @abstract
-     * @param {string} message The message to write to the log.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
      */
-    logInfo(message) {
-        throw new Error('abstract function called');
+    transactionPrepare() {
+        return new Promise((resolve, reject) => {
+            this._transactionPrepare((error) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve();
+            });
+        });
     }
 
     /**
-     * Write a notice message to the log.
-     * @abstract
-     * @param {string} message The message to write to the log.
+     * @callback transactionPrepareCallback
+     * @protected
+     * @param {Error} error The error if any.
      */
-    logNotice(message) {
-        throw new Error('abstract function called');
+
+    /**
+     * Called when a transaction is preparing to commit.
+     * @abstract
+     * @param {transactionPrepareCallback} callback The callback function to call when complete.
+     */
+    _transactionPrepare(callback) {
+        callback();
     }
 
     /**
-     * Write a warning message to the log.
+     * Called when a transaction is rolling back.
      * @abstract
-     * @param {string} message The message to write to the log.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
      */
-    logWarning(message) {
-        throw new Error('abstract function called');
+    transactionRollback() {
+        return new Promise((resolve, reject) => {
+            this._transactionRollback((error) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve();
+            });
+        });
     }
 
     /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
+     * @callback transactionRollbackCallback
+     * @protected
+     * @param {Error} error The error if any.
      */
-    toJSON() {
-        return {};
+
+    /**
+     * Called when a transaction is rolling back
+     * @abstract
+     * @param {transactionRollbackCallback} callback The callback function to call when complete.
+     */
+    _transactionRollback(callback) {
+        callback();
+    }
+
+    /**
+     * Called when a transaction is committing.
+     * @abstract
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionCommit() {
+        return new Promise((resolve, reject) => {
+            this._transactionCommit((error) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve();
+            });
+        });
+    }
+
+    /**
+     * @callback transactionCommitCallback
+     * @protected
+     * @param {Error} error The error if any.
+     */
+
+    /**
+     * Called when a transaction is committing.
+     * @abstract
+     * @param {transactionCommitCallback} callback The callback function to call when complete.
+     */
+    _transactionCommit(callback) {
+        callback();
+    }
+
+    /**
+     * Called at the end of a transaction.
+     * @abstract
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionEnd() {
+        return new Promise((resolve, reject) => {
+            this._transactionEnd((error) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve();
+            });
+        });
+    }
+
+    /**
+     * @callback transactionEndCallback
+     * @protected
+     * @param {Error} error The error if any.
+     */
+
+    /**
+     * Called at the end of a transaction.
+     * @abstract
+     * @param {transactionEndCallback} callback The callback function to call when complete.
+     */
+    _transactionEnd(callback) {
+        callback();
     }
 
 }
 
-module.exports = LoggingService;
+module.exports = Service;
 </pre>
     </article>
 </section>
