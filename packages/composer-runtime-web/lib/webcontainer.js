@@ -17,10 +17,7 @@
 const Container = require('composer-runtime').Container;
 const uuidv4 = require('uuid');
 const version = require('../package.json').version;
-const WebDataService = require('./webdataservice');
 const WebLoggingService = require('./webloggingservice');
-const WebHTTPService = require('./webhttpservice');
-const WebEventService = require('./webeventservice');
 
 /**
  * A class representing the chaincode container hosting the JavaScript engine.
@@ -35,10 +32,7 @@ class WebContainer extends Container {
     constructor(uuid) {
         super();
         this.uuid = uuid || uuidv4.v4();
-        this.dataService = new WebDataService(this.uuid);
         this.loggingService = new WebLoggingService();
-        this.httpService = new WebHTTPService();
-        this.eventService = new WebEventService();
     }
 
     /**
@@ -47,14 +41,6 @@ class WebContainer extends Container {
      */
     getVersion() {
         return version;
-    }
-
-    /**
-     * Get the data service provided by the chaincode container.
-     * @return {DataService} The data service provided by the chaincode container.
-     */
-    getDataService() {
-        return this.dataService;
     }
 
     /**

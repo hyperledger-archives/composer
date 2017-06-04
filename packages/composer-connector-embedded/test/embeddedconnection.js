@@ -141,9 +141,7 @@ describe('EmbeddedConnection', () => {
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
             mockBusinessNetwork.getName.returns('testnetwork');
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             mockSecurityContext.getUserID.returns('bob1');
             sandbox.stub(EmbeddedConnection, 'createContainer').returns(mockContainer);
@@ -179,9 +177,7 @@ describe('EmbeddedConnection', () => {
         it('should update the business network', () => {
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -200,9 +196,7 @@ describe('EmbeddedConnection', () => {
     describe('#undeploy', () => {
 
         it('should remove the business network', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -214,9 +208,7 @@ describe('EmbeddedConnection', () => {
         });
 
         it('should handle a duplicate removal of a business network', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -248,9 +240,7 @@ describe('EmbeddedConnection', () => {
     describe('#queryChainCode', () => {
 
         it('should call the engine query method', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -276,9 +266,7 @@ describe('EmbeddedConnection', () => {
     describe('#invokeChainCode', () => {
 
         it('should call the engine invoke method', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');

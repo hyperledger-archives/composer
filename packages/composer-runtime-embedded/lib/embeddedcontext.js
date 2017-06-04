@@ -15,6 +15,7 @@
 'use strict';
 
 const Context = require('composer-runtime').Context;
+const EmbeddedDataService = require('./embeddeddataservice');
 const EmbeddedIdentityService = require('./embeddedidentityservice');
 const EmbeddedEventService = require('./embeddedeventservice');
 const EmbeddedHTTPService = require('./embeddedhttpservice');
@@ -33,7 +34,7 @@ class EmbeddedContext extends Context {
      */
     constructor(engine, userID, eventSink) {
         super(engine);
-        this.dataService = engine.getContainer().getDataService();
+        this.dataService = new EmbeddedDataService(engine.getContainer().getUUID());
         this.identityService = new EmbeddedIdentityService(userID);
         this.eventSink = eventSink;
     }
