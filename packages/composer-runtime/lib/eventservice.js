@@ -49,32 +49,6 @@ class EventService extends Service {
     }
 
     /**
-     * Emit all buffered events
-     * @abstract
-     * @return {Promise} A promise that will be resolved with a {@link DataCollection}
-     */
-    commit() {
-        return new Promise((resolve, reject) => {
-            this._commit((error) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve();
-            });
-        });
-    }
-
-    /**
-     * Emit all buffered events
-     * @abstract
-     *
-     * @param {commitCallback} callback The callback function to call when complete.
-     */
-    _commit(callback) {
-        throw new Error('abstract function called');
-    }
-
-    /**
      *  Get an array of events as a string
      * @return {String} - An array of serialized events
      */
@@ -83,6 +57,19 @@ class EventService extends Service {
         LOG.entry(method);
         LOG.exit(method, this.eventBuffer);
         return JSON.stringify(this.eventBuffer);
+    }
+
+    /**
+     * Called at the start of a transaction.
+     * @param {boolean} readOnly Is the transaction read-only?
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionStart(readOnly) {
+        return super.transactionStart(readOnly)
+            .then(() => {
+                this.eventBuffer = [];
+            });
     }
 
     /**
