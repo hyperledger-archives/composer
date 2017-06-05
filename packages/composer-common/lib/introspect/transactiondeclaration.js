@@ -44,7 +44,11 @@ class TransactionDeclaration extends ClassDeclaration {
     process() {
         super.process();
 
-        // we add the timestamp property that all transactions must have
+    }
+
+    /** fixes up the model, post-process*/
+    retrofit(){
+     // we add the timestamp property that all transactions must have
         if(this.getProperty('timestamp') === null) {
             const ast = {
                 id : {name: 'timestamp'},
@@ -53,6 +57,8 @@ class TransactionDeclaration extends ClassDeclaration {
             this.properties.push(new Field(this, ast));
         }
     }
+
+
 }
 
 module.exports = TransactionDeclaration;

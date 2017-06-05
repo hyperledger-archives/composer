@@ -186,6 +186,16 @@ class ModelManager {
                 this.modelFiles[ns].validate();
             }
 
+            // let's go and retrofit the model to make sure all is good
+            // make sure that models are all correctly/
+            // temp workaround until system models in place
+            for (let ns in this.modelFiles) {
+                if (! this.modelFiles[ns] === undefined) {
+                    this.modelFiles[ns].retrofit();
+                }
+            }
+
+
             // return the model files.
             return newModelFiles;
         }
