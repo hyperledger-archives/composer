@@ -41,6 +41,11 @@ describe('EngineRegistries', () => {
         mockContainer.getLoggingService.returns(mockLoggingService);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
+        mockContext.transactionStart.resolves();
+        mockContext.transactionPrepare.resolves();
+        mockContext.transactionCommit.resolves();
+        mockContext.transactionRollback.resolves();
+        mockContext.transactionEnd.resolves();
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.getRegistryManager.returns(mockRegistryManager);
         engine = new Engine(mockContainer);

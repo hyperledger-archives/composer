@@ -15,7 +15,6 @@
 'use strict';
 
 const Container = require('composer-runtime').Container;
-const EmbeddedDataService = require('./embeddeddataservice');
 const EmbeddedLoggingService = require('./embeddedloggingservice');
 const uuid = require('uuid');
 const version = require('../package.json').version;
@@ -32,7 +31,6 @@ class EmbeddedContainer extends Container {
     constructor() {
         super();
         this.uuid = uuid.v4();
-        this.dataService = new EmbeddedDataService(this.uuid);
         this.loggingService = new EmbeddedLoggingService();
     }
 
@@ -42,14 +40,6 @@ class EmbeddedContainer extends Container {
      */
     getVersion() {
         return version;
-    }
-
-    /**
-     * Get the data service provided by the chaincode container.
-     * @return {DataService} The data service provided by the chaincode container.
-     */
-    getDataService() {
-        return this.dataService;
     }
 
     /**
