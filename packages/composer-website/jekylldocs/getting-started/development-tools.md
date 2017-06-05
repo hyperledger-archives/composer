@@ -1,9 +1,11 @@
 ---
 layout: default
-title: Getting Started with Hyperledger Composer
+title: Installing a development environment
 category: start
+section: installing
 sidebar: sidebars/getting-started.md
-excerpt: Hyperledger Composer Development Tools
+excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../getting-started/development-tools.html) here or in the table of contents on the left.
+index-order: 3
 ---
 
 # Installing and developing with {{site.data.conrefs.composer_full}}

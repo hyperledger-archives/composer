@@ -1,9 +1,11 @@
 ---
 layout: default
-title: Using the Hyperledger Composer Playground Locally
+title: Installing the Playground locally
 category: start
 sidebar: sidebars/getting-started.md
-excerpt: Installing and running the Hyperledger Composer Playground
+section: installing
+excerpt: To run the Playground locally with a local instance of Hyperledger Fabric, click [**Install Local Playground**](../getting-started/using-playground-locally.html) here or in the table of contents on the left.
+index-order: 2
 ---
 
 # Installing and running {{site.data.conrefs.composer_full}} Playground locally

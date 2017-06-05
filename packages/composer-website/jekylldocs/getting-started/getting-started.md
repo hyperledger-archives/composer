@@ -1,8 +1,9 @@
 ---
 layout: default
-title: Tutorials
+title: Installing Index
 category: tasks
 sidebar: sidebars/getting-started.md
+section: installing
 excerpt: Tutorials
 ---
 
@@ -14,17 +15,13 @@ excerpt: Tutorials
 
 Installing {{site.data.conrefs.composer_full}} is simple. You can get started using the Playground online without any installation, install the playground locally with an instance of {{site.data.conrefs.hlf_full}}, or get setup up with development tools for working on the command line.
 
-### Using the Playground online
-
-To jump into the online Playground, click [**Try Online Playground**](../getting-started/getting-started-with-playground.html) here or in the table of contents on the left.
-
-### Installing the Playground locally
-
-To run the Playground locally with a local instance of {{site.data.conrefs.hlf_full}}, click [**Install Local Playground**](../getting-started/using-playground-locally.html) here or in the table of contents on the left.
-
-### Installing development tools
-
-To install the command line and development tools, along with a local instance of {{site.data.conrefs.hlf_full}} click [**Install Development Tools**](../getting-started/development-tools.html) here or in the table of contents on the left.
+{% assign sorted = (site.pages | sort: 'index-order') %}
+{% for page in sorted %}
+{% if page.section == 'installing' and page.title != "Installing Index" %}
+### {{ page.title }}
+{{ page.excerpt }}
+{% endif %}
+{% endfor %}
 
 ## What next?
 
