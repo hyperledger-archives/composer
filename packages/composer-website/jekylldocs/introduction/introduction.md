@@ -22,7 +22,7 @@ You can use {{site.data.conrefs.composer_full}} to quickly model your current bu
 
 ---
 
-## How does {{site.data.conrefs.composer_full}} work in practise?
+## How does {{site.data.conrefs.composer_full}} work in practice?
 
 For an example of a business network in action; a realtor can quickly model their business network as such:
 

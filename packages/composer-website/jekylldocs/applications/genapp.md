@@ -6,11 +6,11 @@ sidebar: sidebars/applications.md
 excerpt: Writing a node.js application
 ---
 
-# Writing a node.js Application
+# Writing a Node.js Application
 
 ---
 
-Let's take a look at the code for a simple Node.js sample application. 
+Let's take a look at the code for a simple Node.js sample application.
 
 Use `git clone` to download the composer-sample-applications repository, available at:
 

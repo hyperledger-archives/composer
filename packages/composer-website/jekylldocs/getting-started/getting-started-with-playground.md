@@ -20,14 +20,14 @@ The {{site.data.conrefs.composer_short}} Playground is a tool which provides a s
 
 Before beginning, you will need:
 
-* A GitHub account (if you want to import sample business network from GitHub)
+* A GitHub account (if you want to import sample business networks from GitHub)
 * A supported browser i.e. any modern version of Chrome, Firefox or Safari
 
 ---
 
 The Online Playground can be accessed here: <a href="https://composer-playground.mybluemix.net" target="blank">composer-playground.mybluemix.net</a>
 
-Simply click "Let's Blockchain" to begin using Online Playground!  Play around with any of the available samples however you like - clearing your browser storage will effectively "reset" the Online Playground.  If you're looking for a more guided example of what Playground can do, try the [Playground Tutorial](../tutorials/playground-guide.html).
+Simply click "Let's Blockchain" to begin using Online Playground!  Play around with any of the available samples however you like - clearing your browser local storage will effectively "reset" the Online Playground.  If you're looking for a more guided example of what Playground can do, try the [Playground Tutorial](../tutorials/playground-guide.html).
 
 <a href="https://composer-playground.mybluemix.net" target="blank"><img src="../assets/img/LetsBlockchain.png"></a>
 

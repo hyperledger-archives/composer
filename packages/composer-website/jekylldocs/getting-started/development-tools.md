@@ -70,10 +70,9 @@ The development tools you'll need can all be installed with `npm install -g`.
 
 1. If you use VSCode, install the {{site.data.conrefs.composer_full}} VSCode plugin from the VSCode marketplace.
 
-2. If you want to run the Playground locally, install the `composer-playground` and `composer-playground-api` using the following two commands.
+2. If you want to run the Playground locally, install the `composer-playground` using the following command.
 
         npm install -g composer-playground
-        npm install -g composer-playground-api
 
 
 ## Step 2: Starting {{site.data.conrefs.hlf_full}}
@@ -107,7 +106,7 @@ docker rmi $(docker images dev-* -q)
 
         export FABRIC_VERSION=hlfv0.6
 
-    For v1.0-alpha, there is *nothing to as this the default*. But to 'unset' the v0.6, or to be explicit in using v1 use this command
+    {{site.data.conrefs.hlf_full}} v1.0-alpha is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
 
         export FABRIC_VERSION=hlfv1
 

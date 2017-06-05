@@ -38,7 +38,7 @@ Welcome to the Hyperledger Composer Skeleton Application Generator
 You can run this generator using: 'yo fabric-composer:businessnetwork'
 Welcome to the business network skeleton generator
 ? What is the business network's name? basic-sample-network
-? What is the business network's namespace? org.acme.biznet
+? What is the business network's namespace? org.example.biznet
 ? Describe the business network Sample Business Network
 ? Who is the author? Joe Bloggs
 ? Which license do you want to use? Apache-2
@@ -48,7 +48,7 @@ Welcome to the business network skeleton generator
    create README.md
    create test/logic.js
    create .eslintrc.yml
-   create models/org.acme.biznet.cto
+   create models/org.example.biznet.cto
 ```
 
 This generates a skeleton business network with an `asset`, `participant` and `transaction` defined, as well as a `mocha` unit test.

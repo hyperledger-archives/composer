@@ -15,9 +15,9 @@ excerpt:
 
 ## {{site.data.conrefs.composer_full}} Components
 
-{{site.data.conrefs.composer_full}} can be experienced through a browser-based UI called {{site.data.conrefs.composer_full}} Playground.  This can be used via a hosted version (no install necessary) or a local install (good for editing and testing sample Business Networks offline).
+You can experience {{site.data.conrefs.composer_full}} with our browser-based UI called {{site.data.conrefs.composer_full}} Playground. {{site.data.conrefs.composer}} Playground is available as a hosted version (no install necessary) or a local install (good for editing and testing sample business networks offline).
 
-Developers who want to use {{site.data.conrefs.composer_full}}'s full application development capabilities can install the Developer Tools.
+Developers who want to use {{site.data.conrefs.composer_full}}'s full application development capabilities should install the Developer Tools.
 
 ![Diagram of {{site.data.conrefs.composer_full}} components](../assets/img/ComposerComponents.svg)
 
@@ -27,7 +27,7 @@ Developers who want to use {{site.data.conrefs.composer_full}}'s full applicatio
 
 ### Blockchain State Storage
 
-The current state of assets and participants are stored on the blockchain (ledger), for example, as administered by {{site.data.conrefs.hlf_full}}. {{site.data.conrefs.hlf_full}} distributes the ledger across a set of peers and ensures that updates to the ledger are consistent across all peers (consensus).
+All transactions submitted through a business network are stored on the blockchain ledger, and the current state of assets and participants are stored in the blockchain state database. The blockchain distributes the ledger and the state database across a set of peers and ensures that updates to the ledger and state database are consistent across all peers using a consensus algorithm.
 
 ---
 

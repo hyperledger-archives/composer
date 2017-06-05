@@ -12,7 +12,7 @@ excerpt: Tutorials
 
 ## Installation options
 
-Installing {{site.data.conrefs.composer_full}} is simple. You can get started using the Playground online without any installation, install the playground locally with an instance of {{site.data.conrefs.hlf_full}}, or get setup up with development tools for working on the command line straight away.
+Installing {{site.data.conrefs.composer_full}} is simple. You can get started using the Playground online without any installation, install the playground locally with an instance of {{site.data.conrefs.hlf_full}}, or get setup up with development tools for working on the command line.
 
 ### Using the Playground online
 
