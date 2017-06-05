@@ -559,4 +559,69 @@ describe('Transaction (participant specific) system tests', () => {
             });
     });
 
+    it('should submit and execute a transaction that validates that an participant add is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions.participants', 'ParticipantAddIsAtomic');
+        return client
+            .submitTransaction(transaction)
+            .should.be.rejected
+            .then(() => {
+                return client.getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant');
+            })
+            .then((participantRegistry) => {
+                return participantRegistry.exists('stringParticipant1');
+            })
+            .then((exists) => {
+                exists.should.be.false;
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an participant update is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        participant.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.participants', 'ParticipantUpdateIsAtomic');
+        let participantRegistry;
+        return client
+            .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+            .then((participantRegistry_) => {
+                participantRegistry = participantRegistry_;
+                return participantRegistry.add(participant);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return participantRegistry.get('stringParticipant1');
+            })
+            .then((participant) => {
+                participant.stringValue.should.equal('party parrot in hursley');
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an participant remove is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let participant = factory.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+        participant.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.participants', 'ParticipantRemoveIsAtomic');
+        let participantRegistry;
+        return client
+            .getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+            .then((participantRegistry_) => {
+                participantRegistry = participantRegistry_;
+                return participantRegistry.add(participant);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return participantRegistry.exists('stringParticipant1');
+            })
+            .then((exists) => {
+                exists.should.be.true;
+            });
+    });
+
 });

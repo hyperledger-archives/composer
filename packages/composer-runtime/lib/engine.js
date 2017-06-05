@@ -109,6 +109,12 @@ class Engine {
         return Promise.resolve()
             .then(() => {
 
+                // Start the transaction.
+                return context.transactionStart(false);
+
+            })
+            .then(() => {
+
                 // Load, validate, and hash the business network definition.
                 LOG.debug(method, 'Loading business network definition');
                 businessNetworkBase64 = args[0];
@@ -218,9 +224,24 @@ class Engine {
                     });
 
             })
+            .then(() => {
+                return context.transactionPrepare()
+                    .then(() => {
+                        return context.transactionCommit();
+                    })
+                    .then(() => {
+                        return context.transactionEnd();
+                    });
+            })
             .catch((error) => {
                 LOG.error(method, 'Caught error, rethrowing', error);
-                throw error;
+                return context.transactionRollback()
+                    .then(() => {
+                        return context.transactionEnd();
+                    })
+                    .then(() => {
+                        throw error;
+                    });
             })
             .then(() => {
                 LOG.exit(method);
@@ -260,12 +281,33 @@ class Engine {
             LOG.debug(method, 'Initializing context');
             return context.initialize()
                 .then(() => {
+                    return context.transactionStart(false);
+                })
+                .then(() => {
                     LOG.debug(method, 'Calling engine function', fcn);
                     return this[fcn](context, args);
                 })
+                .then((result) => {
+                    return context.transactionPrepare()
+                        .then(() => {
+                            return context.transactionCommit();
+                        })
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            return result;
+                        });
+                })
                 .catch((error) => {
                     LOG.error(method, 'Caught error, rethrowing', error);
-                    throw error;
+                    return context.transactionRollback()
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            throw error;
+                        });
                 })
                 .then((result) => {
                     LOG.exit(method, result);
@@ -310,12 +352,33 @@ class Engine {
             LOG.debug(method, 'Initializing context');
             return context.initialize()
                 .then(() => {
+                    return context.transactionStart(true);
+                })
+                .then(() => {
                     LOG.debug(method, 'Calling engine function', fcn);
                     return this[fcn](context, args);
                 })
+                .then((result) => {
+                    return context.transactionPrepare()
+                        .then(() => {
+                            return context.transactionCommit();
+                        })
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            return result;
+                        });
+                })
                 .catch((error) => {
                     LOG.error(method, 'Caught error, rethrowing', error);
-                    throw error;
+                    return context.transactionRollback()
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            throw error;
+                        });
                 })
                 .then((result) => {
                     LOG.exit(method, result);

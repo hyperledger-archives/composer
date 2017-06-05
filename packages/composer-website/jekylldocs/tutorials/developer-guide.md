@@ -86,8 +86,8 @@ As an example, we're going to replace the entire contents of the file 'sample.ct
 
 ```
 /**
-* My commodity trading network
-*/
+ * My commodity trading network
+ */
 namespace org.acme.mynetwork
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
@@ -121,24 +121,24 @@ Now replace the entire contents of `logic.js` with the function below (including
 
 ```
 /*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /**
-* Track the trade of a commodity from one trader to another
-* @param {org.acme.mynetwork.Trade} trade - the trade to be processed
-* @transaction
-*/
+ * Track the trade of a commodity from one trader to another
+ * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @transaction
+ */
 function tradeCommodity(trade) {
     trade.commodity.owner = trade.newOwner;
     return getAssetRegistry('org.acme.mynetwork.Commodity')
@@ -156,8 +156,8 @@ The file `permissions.acl` defines the access control rules for the business net
 
 ```
 /**
-* Access control rules for mynetwork
-*/
+ * Access control rules for mynetwork
+ */
 rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
@@ -211,18 +211,18 @@ The test code below will replace the namespace, types and logic of the unit test
 
 ```
 /*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 'use strict';
 
@@ -367,7 +367,7 @@ You should see output similar to the following:
 
 Commodity Trading
 #tradeCommodity
-✓ should be able to trade a commodity (61ms)
+✓ should be able to trade a commodity (62ms)
 
 
 1 passing (556ms)
