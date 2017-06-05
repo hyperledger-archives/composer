@@ -219,4 +219,11 @@
 #dropdownMenu1 {
   width: 100%;
   text-align: left;
+
+    span {
+      width: 85%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      float: left;
+    }
 }
