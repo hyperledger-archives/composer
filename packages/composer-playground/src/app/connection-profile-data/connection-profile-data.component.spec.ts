@@ -505,8 +505,7 @@ describe('ConnectionProfileDataComponent', () => {
                 ca: ['http://localhost:7054', [Validators.required]],
                 eventHubURL: ['grpc://localhost:7053', [Validators.required]],
                 keyValStore: ['/tmp/keyValStore', [Validators.required]],
-                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
-                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
+                timeout: [300, [Validators.pattern('[0-9]+')]]
             });
 
             component.onValueChanged();
@@ -572,7 +571,10 @@ describe('ConnectionProfileDataComponent', () => {
                 }],
                 channel: 'mychannel',
                 mspID: 'Org1MSP',
-                ca: 'http://localhost:7054',
+                ca: {
+                    url: 'http://localhost:7054',
+                    name: ''
+                },
                 peers: [{
                     requestURL: 'grpc://localhost:7051',
                     eventURL: 'grpc://localhost:7053',
@@ -580,8 +582,7 @@ describe('ConnectionProfileDataComponent', () => {
                     hostnameOverride: ''
                 }],
                 keyValStore: '/tmp/keyValStore',
-                deployWaitTime: 300,
-                invokeWaitTime: 30
+                timeout: 300
             };
 
             let profileTwo = {
@@ -595,7 +596,10 @@ describe('ConnectionProfileDataComponent', () => {
                 }],
                 channel: 'mychannel',
                 mspID: 'Org1MSP',
-                ca: 'http://localhost:7054',
+                ca: {
+                    url: 'http://localhost:7054',
+                    name: ''
+                },
                 peers: [{
                     requestURL: 'grpc://localhost:7051',
                     eventURL: 'grpc://localhost:7053',
@@ -603,8 +607,7 @@ describe('ConnectionProfileDataComponent', () => {
                     hostnameOverride: ''
                 }],
                 keyValStore: '/tmp/keyValStore',
-                deployWaitTime: 300,
-                invokeWaitTime: 30
+                timeout: 300
             };
 
             mockConnectionProfileService.createProfile.returns(Promise.resolve());
@@ -628,10 +631,12 @@ describe('ConnectionProfileDataComponent', () => {
                 })]),
                 channel: ['mychannel', [Validators.required]],
                 mspID: ['Org1MSP', [Validators.required]],
-                ca: ['http://localhost:7054', [Validators.required]],
+                ca: component['fb'].group({
+                    url: ['http://localhost:7054', [Validators.required]],
+                    name: ['']
+                }),
                 keyValStore: ['/tmp/keyValStore', [Validators.required]],
-                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
-                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
+                timeout: [300, [Validators.pattern('[0-9]+')]],
             });
 
             component.onSubmit();

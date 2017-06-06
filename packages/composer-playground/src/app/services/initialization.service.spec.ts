@@ -113,6 +113,7 @@ describe('InitializationService', () => {
             stubLoadConfig.should.be.called;
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
+<<<<<<< HEAD
             mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
             mockClientService.ensureConnected.should.be.called;
         })));
@@ -140,6 +141,9 @@ describe('InitializationService', () => {
             stubCreateInitialIdentities.should.be.called;
             mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockClientService.ensureConnected.should.be.called;
+=======
+            mockClientService.ensureConnected.should.be.called;
+>>>>>>> Merges
         })));
 
         it('should handle errors and revert to uninitialized state', fakeAsync(inject([InitializationService], (service: InitializationService) => {
@@ -207,6 +211,7 @@ describe('InitializationService', () => {
                     type: 'hlf'
                 }
             });
+<<<<<<< HEAD
         })));
 
         it('should handle no config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
@@ -218,6 +223,8 @@ describe('InitializationService', () => {
 
             mockConnectionProfileService.getProfile.should.not.have.been.called;
             mockConnectionProfileService.createProfile.should.not.have.been.called;
+=======
+>>>>>>> Merges
         })));
     });
 

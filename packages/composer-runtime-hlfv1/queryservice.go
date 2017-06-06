@@ -52,11 +52,11 @@ func NewQueryService(vm *duktape.Context, context *Context, stub shim.ChaincodeS
 	vm.Pop()                             // [ global composer theQueryService]
 
 	//Bind the methods into the JavaScript object.
-	vm.PushGoFunction(result.query) // [global composer theQueryService query]
-	vm.PushString("bind")           // [global composer theQueryService query "bind"]
-	vm.Dup(-3)                      // [global composer theQueryService query "bind" theQueryService]
-	vm.PcallProp(-3, 1)             // [global composer theQueryService query boundCommit ]
-	vm.PutPropString(-3, "_query")  // [global composer theQueryService ]
+	vm.PushGoFunction(result.queryNative) // [global composer theQueryService query]
+	vm.PushString("bind")                 // [global composer theQueryService query "bind"]
+	vm.Dup(-3)                            // [global composer theQueryService query "bind" theQueryService]
+	vm.PcallProp(-3, 1)                   // [global composer theQueryService query boundCommit ]
+	vm.PutPropString(-3, "_queryNative")  // [global composer theQueryService ]
 
 	// return a new query service
 
@@ -64,9 +64,9 @@ func NewQueryService(vm *duktape.Context, context *Context, stub shim.ChaincodeS
 }
 
 // HTTP POST to a URL and return the response to the caller
-func (queryService *QueryService) query(vm *duktape.Context) (result int) {
-	logger.Debug("Entering QueryService.query", vm)
-	defer func() { logger.Debug("Exiting QueryService.query", result) }()
+func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) {
+	logger.Debug("Entering QueryService.queryNative", vm)
+	defer func() { logger.Debug("Exiting QueryService.queryNative", result) }()
 
 	vm.PushThis()                //[theQueryService]
 	vm.PushString("queryString") //[ theQueryService queryString ]
@@ -100,7 +100,7 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 	bArrayMemberAlreadyWritten := false
 	for resultsIterator.HasNext() {
 		logger.Debug("QueryService inside Next()")
-		key, value, err := resultsIterator.Next()
+		key, err := resultsIterator.Next()
 		if err != nil {
 			panic(err)
 		}
@@ -110,14 +110,14 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 		}
 		buffer.WriteString("{\"Key\":")
 		buffer.WriteString("\"")
-		buffer.WriteString(key)
+		buffer.WriteString(key.Key)
 		buffer.WriteString("\"")
 
-		logger.Debug("QueryService inside Next()", key)
+		logger.Debug("QueryService inside Next()", key.Key)
 
 		buffer.WriteString(", \"Record\":")
 		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(value))
+		buffer.WriteString(string(key.Value))
 		buffer.WriteString("}")
 		bArrayMemberAlreadyWritten = true
 	}
@@ -125,14 +125,14 @@ func (queryService *QueryService) query(vm *duktape.Context) (result int) {
 
 	logger.Debug("QueryService return value ", buffer.String())
 
-	var tempValue []byte
-	tempValue, err = json.Marshal(buffer.String())
-	logger.Debug("QueryService return tempValue", string(tempValue))
+	var jsonValue []byte
+	jsonValue, err = json.Marshal(buffer.String())
+	logger.Debug("QueryService return jsonValue", string(jsonValue))
 	if err != nil {
 		panic(err)
 	}
 
-	vm.PushString("Promise.resolve(" + string(tempValue) + ")")
+	vm.PushString("Promise.resolve(" + string(jsonValue) + ")")
 	vm.Eval()
 
 	// return the top of the stack to the JS caller

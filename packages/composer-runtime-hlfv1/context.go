@@ -74,9 +74,8 @@ func NewContext(vm *duktape.Context, engine *Engine, stub shim.ChaincodeStubInte
 	vm.PutPropString(-2, "getEventService")      // [ stash theEngine global composer theContext ]
 	vm.PushGoFunction(result.getHTTPService)     // [ stash theEngine global composer theContext getHTTPService ]
 	vm.PutPropString(-2, "getHTTPService")       // [ stash theEngine global composer theContext ]
-
-	vm.PushGoFunction(result.getQueryService) // [ stash theEngine global composer theContext getQueryService ]
-	vm.PutPropString(-2, "getQueryService")   // [ stash theEngine global composer theContext getQueryService]
+	vm.PushGoFunction(result.getQueryService)    // [ stash theEngine global composer theContext getQueryService ]
+	vm.PutPropString(-2, "getQueryService")      // [ stash theEngine global composer theContext getQueryService]
 	// Return the new context.
 	return result
 }
