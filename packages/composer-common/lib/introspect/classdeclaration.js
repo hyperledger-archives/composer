@@ -505,6 +505,9 @@ class ClassDeclaration {
         }
         return 'ClassDeclaration {id=' + this.getFullyQualifiedName() + superType + ' enum=' + this.isEnum() + ' abstract=' + this.isAbstract() + '}';
     }
+
+    /** fixes up the model, post-process*/
+    retrofit(){}
 }
 
 module.exports = ClassDeclaration;
