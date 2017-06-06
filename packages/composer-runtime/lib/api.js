@@ -226,17 +226,17 @@ class Api {
             LOG.exit(method);
         };
          /**
-         * Post a query string to a URL
+         * Post a query string to a query service
 
          * @method module:composer-runtime#query
          * @param {string} queryString the couchdb ad hoc rich query string
          * @public
          * @return {Promise} A promise. The promise is resolved with the result of the query.
          */
-        this.query = function query(queryString) {
+        this.queryNative = function queryNative(queryString) {
             const method = 'query';
             LOG.entry(method + 'queryString= ' + queryString);
-            return queryService.query(queryString)
+            return queryService.queryNative(queryString)
                 .then((result) => {
                     LOG.debug('query result=', result);
                     LOG.exit(method);

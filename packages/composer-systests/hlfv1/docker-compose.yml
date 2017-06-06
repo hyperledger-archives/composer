@@ -38,7 +38,7 @@ services:
 #        - ./tls/orderer:/etc/hyperledger/tls/orderer
 #        - ./tls/peers:/etc/hyperledger/tls/peers
 
- couchdb0:
+  couchdb0:
       container_name: couchdb0
       image: hyperledger/fabric-couchdb:x86_64-1.0.0-alpha
       ports:
@@ -52,8 +52,8 @@ services:
     container_name: peer0
     image: hyperledger/fabric-peer:x86_64-1.0.0-alpha
     environment:
-      - CORE_CHAINCODE_EXECUTETIMEOUT=90000
-#      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_CHAINCODE_EXECUTETIMEOUT=900000
+      - CORE_LOGGING_LEVEL=DEBUG
       - CORE_NEXT=true
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - CORE_PEER_ID=peer0

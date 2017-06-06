@@ -38,6 +38,13 @@ function onCreateMarble(transaction) {
         return getAssetRegistry('org.fabric_composer.marbles.Marble');
     })
     .then(function(assetRegistry){
+        return getParticipantRegistry('org.fabric_composer.marbles.Player');
+    })
+    .then(function(participantRegitry){
+        return participantRegitry.add(player);
+    }).then(function(){
+        return getAssetRegistry('org.fabric_composer.marbles.Marble');
+    }).then(function(assetRegistry){
         var marble = createMarble(factory, player, transaction.size, transaction.colour, transaction.marbleId);
         return assetRegistry.add(marble);
     });
