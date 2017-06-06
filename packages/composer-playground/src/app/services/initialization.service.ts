@@ -76,7 +76,11 @@ export class InitializationService {
                 const connectionProfileNames = Object.keys(connectionProfiles).sort();
                 return connectionProfileNames.reduce((result, connectionProfileName) => {
                     return result.then(() => {
+<<<<<<< HEAD
                         console.log('Checking for connection profile...', connectionProfileName);
+=======
+                        console.log('Checking for connection profile', connectionProfileName);
+>>>>>>> Merges
                         return this.connectionProfileService.getProfile(connectionProfileName)
                             .catch((error) => {
                                 console.log('Connection profile does not exist, creating');

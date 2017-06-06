@@ -24,6 +24,7 @@ const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const EventService = require('../lib/eventservice');
 const HTTPService = require('../lib/httpservice');
+const QueryService = require('../lib/queryservice');
 const Factory = require('composer-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
@@ -311,6 +312,16 @@ describe('Context', () => {
 
     });
 
+    describe('#getQueryService', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getQueryService();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
     describe('#getModelManager', () => {
 
         it('should throw if not initialized', () => {
@@ -468,6 +479,8 @@ describe('Context', () => {
             sinon.stub(context, 'getEventService').returns(mockEventService);
             let mockHTTPService = sinon.createStubInstance(HTTPService);
             sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
+            let mockQueryService = sinon.createStubInstance(QueryService);
+            sinon.stub(context, 'getQueryService').returns(mockQueryService);
             context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });
