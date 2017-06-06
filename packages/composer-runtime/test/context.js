@@ -24,6 +24,7 @@ const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const EventService = require('../lib/eventservice');
 const HTTPService = require('../lib/httpservice');
+const QueryService = require('../lib/queryservice');
 const Factory = require('composer-common').Factory;
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
@@ -250,6 +251,27 @@ describe('Context', () => {
 
     });
 
+    describe('#getServices', () => {
+
+        it('should return all of the services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
+            sinon.stub(context, 'getEventService').returns(mockEventService);
+            sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
+            sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
+            context.getServices().should.deep.equal([
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ]);
+        });
+
+    });
+
     describe('#getDataService', () => {
 
         it('should throw as abstract method', () => {
@@ -285,6 +307,16 @@ describe('Context', () => {
         it('should throw as abstract method', () => {
             (() => {
                 context.getHTTPService();
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#getQueryService', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                context.getQueryService();
             }).should.throw(/abstract function called/);
         });
 
@@ -447,6 +479,8 @@ describe('Context', () => {
             sinon.stub(context, 'getEventService').returns(mockEventService);
             let mockHTTPService = sinon.createStubInstance(HTTPService);
             sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
+            let mockQueryService = sinon.createStubInstance(QueryService);
+            sinon.stub(context, 'getQueryService').returns(mockQueryService);
             context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });
@@ -688,6 +722,131 @@ describe('Context', () => {
             context.incrementEventNumber();
             context.getEventNumber().should.equal(1);
         });
+    });
+
+    describe('#transactionStart', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionStart(true)
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionStart);
+                        sinon.assert.calledWith(service.transactionStart, true);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionPrepare', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionPrepare()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionPrepare);
+                        sinon.assert.calledWith(service.transactionPrepare);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionRollback', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionRollback()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionRollback);
+                        sinon.assert.calledWith(service.transactionRollback);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionCommit', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionCommit()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionCommit);
+                        sinon.assert.calledWith(service.transactionCommit);
+                    });
+                });
+        });
+
+    });
+
+    describe('#transactionEnd', () => {
+
+        it('should notify all services', () => {
+            let mockDataService = sinon.createStubInstance(DataService);
+            let mockEventService = sinon.createStubInstance(EventService);
+            let mockIdentityService = sinon.createStubInstance(IdentityService);
+            let mockHTTPService = sinon.createStubInstance(HTTPService);
+            let services = [
+                mockDataService,
+                mockEventService,
+                mockIdentityService,
+                mockHTTPService
+            ];
+            sinon.stub(context, 'getServices').returns(services);
+            return context.transactionEnd()
+                .then(() => {
+                    services.forEach((service) => {
+                        sinon.assert.calledOnce(service.transactionEnd);
+                        sinon.assert.calledWith(service.transactionEnd);
+                    });
+                });
+        });
+
     });
 
     describe('#toJSON', () => {

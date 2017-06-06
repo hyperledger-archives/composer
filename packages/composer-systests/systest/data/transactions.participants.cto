@@ -154,3 +154,15 @@ transaction TransactionUsingUtilityFunctions identified by transactionId {
     o String transactionId
     o String stringValue
 }
+
+transaction ParticipantAddIsAtomic identified by transactionId {
+    o String transactionId
+}
+
+transaction ParticipantUpdateIsAtomic identified by transactionId {
+    o String transactionId
+}
+
+transaction ParticipantRemoveIsAtomic identified by transactionId {
+    o String transactionId
+}

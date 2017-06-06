@@ -101,8 +101,6 @@ class ClassDeclaration {
         for(let n=0; n < this.ast.body.declarations.length; n++ ) {
             let thing = this.ast.body.declarations[n];
 
-            //console.log('Found: ' + thing.type + ' ' + thing.id.name);
-
             if(thing.type === 'FieldDeclaration') {
                 this.properties.push( new Field(this, thing) );
             }

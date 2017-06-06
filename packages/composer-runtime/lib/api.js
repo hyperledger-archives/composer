@@ -47,7 +47,6 @@ class Api {
     constructor(factory, serializer, participant, registryManager, httpService, eventService, queryService, context) {
         const method = 'constructor';
         LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, queryService, context);
-
         /**
          * Get the factory. The factory can be used to create new instances of
          * assets, participants, and transactions for storing in registries. The
@@ -249,6 +248,28 @@ class Api {
                 });
         };
 
+         /**
+         * Post a query string to a query service
+
+         * @method module:composer-runtime#query
+         * @public
+         * @param {string} queryString - The couchdb query string
+         * @return {Promise} A promise. The promise is resolved with the result of the query.
+         */
+        this.queryNative = function queryNative(queryString) {
+            const method = 'query';
+            LOG.entry(method + 'queryString= ' + queryString);
+            return queryService.queryNative(queryString)
+                .then((result) => {
+                    LOG.debug('query result=', result);
+                    LOG.exit(method);
+                    return result;
+                })
+                .catch((err) => {
+                    LOG.debug('query caught exception =', err);
+                    LOG.exit(method);
+                });
+        };
         Object.freeze(this);
         LOG.exit(method);
     }

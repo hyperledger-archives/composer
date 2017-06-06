@@ -1,3 +1,8 @@
+ME=`basename "$0"`
+if [ "${ME}" = "install-hlfv1.sh" ]; then
+  echo "Please re-run as >   cat install-hlfv1.sh | bash"
+  exit 1
+fi
 (cat > composer.sh; chmod +x composer.sh; exec bash composer.sh)
 #!/bin/bash
 set -ev
@@ -22,37 +27,33 @@ PAYLOAD_START=$((PAYLOAD_LINE + 1))
 echo PAYLOAD_START=${PAYLOAD_START}
 tail -n +${PAYLOAD_START} "${SOURCE}" | tar -xzf -
 
-# Pull the latest Docker images from Docker Hub.
-docker-compose pull
-docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha
-
 # Kill and remove any running Docker containers.
-docker-compose -p composer kill
-docker-compose -p composer down --remove-orphans
+docker-compose -p composer -f fabric-dev-servers/fabric-scripts/hlfv1/composer/docker-compose.yml kill
+docker-compose -p composer -f fabric-dev-servers/fabric-scripts/hlfv1/composer/docker-compose.yml down --remove-orphans
 
 # Kill any other Docker containers.
-docker ps -aq | xargs docker rm -f
+docker ps -aq | xargs docker rm -f || echo 'All removed'
 
-# Start all Docker containers.
-docker-compose -p composer up -d
+# run the fabric-dev-scripts to get a running fabric
+./fabric-dev-servers/downloadFabric.sh
+./fabric-dev-servers/startFabric.sh
 
-# Wait for the Docker containers to start and initialize.
-sleep 10
 
-# Create the channel on peer0.
-docker exec peer0 peer channel create -o orderer0:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx
+# Start composer
+docker-compose -p composer -f docker-compose-playground.yml up -d
+# copy over pre-imported admin credentials
+# docker exec composer cp -R /etc/playground/creds /home/composer/.hfc-key-store
+cd fabric-dev-servers/fabric-scripts/hlfv1/composer/creds
+docker exec composer mkdir /home/composer/.hfc-key-store
+tar -cv * | docker exec -i composer tar x -C /home/composer/.hfc-key-store
+cd "${WORKDIR}"
 
-# Join peer0 to the channel.
-docker exec peer0 peer channel join -b mychannel.block
+# Wait for playground to start
+sleep 5
 
-# Fetch the channel block on peer1.
-docker exec peer1 peer channel fetch -o orderer0:7050 -c mychannel
-
-# Join peer1 to the channel.
-docker exec peer1 peer channel join -b mychannel.block
 
 # Open the playground in a web browser.
-case "$(uname)" in 
+case "$(uname)" in
 "Darwin") open http://localhost:8080
           ;;
 "Linux")  if [ -n "$BROWSER" ] ; then
@@ -62,7 +63,7 @@ case "$(uname)" in
           elif  	which gnome-open > /dev/null ; then
 	                gnome-open http://localhost:8080
           #elif other types blah blah
-	        else   
+	        else
     	            echo "Could not detect web browser to use - please launch Composer Playground URL using your chosen browser ie: <browser executable name> http://localhost:8080 or set your BROWSER variable to the browser launcher in your PATH"
 	        fi
           ;;

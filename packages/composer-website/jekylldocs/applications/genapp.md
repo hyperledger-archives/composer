@@ -1,212 +1,198 @@
 ---
 layout: default
-title: Task - Generating an Application
-category: tasks
+title: Writing a node.js application
+category: start
 sidebar: sidebars/applications.md
-excerpt: How to generate a starter application
+excerpt: Writing a node.js application
 ---
 
-# How Generate a Starter Application
-
----
-
-We're going to assume that you've been through the Getting Started section and would like to now start to look at writing your own application to use {{site.data.conrefs.composer_full}}.
-
-To help getting started with this, there's a [Yeoman](http://yeoman.io/) generator that creates a suitable directory structure and helps bring in the required model and network modules.
-
-## Yeoman
-
-If you don't already have it, install Yeoman
-
-```bash
-npm install -g yo
-```
-
-
-If you wish to use the Angular 2 Application Generator, then you will need a few other globally installed packages
-
-```bash
-npm install -g typings
-
-npm install -g bower
-
-npm install -g @angular/cli
-```
-
-
-Then install the generator for it
-
-
-```bash
-npm install -g generator-hyperledger-composer
-```
-
-
-## Running the generator
-
-```bash
-yo hyperledger-composer
-```
-
-```
-Welcome to the Hyperledger Composer Skeleton Application Generator
-? Please select the type of Application: (Use arrow keys)
-❯ CLI Application
-  Angular 2 Application
-  Skeleton Business Network
-```
+# Writing a node.js Application
 
 ---
 
-# What are the generator options?
+Let's take a look at the code for a simple Node.js sample application. 
 
+Use `git clone` to download the composer-sample-applications repository, available at:
 
-# 1. Generating a CLI Application
+`https://github.com/hyperledger/composer-sample-applications`
 
-This generator can be ran using ```yo hyperledger-composer:cli```
+The [`landregistry.js`](https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js) file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.
+This has been implemented using a JavaScript class; however you are free to structure your code as you wish. The framework's API is agnostic to this.
+The application is also setup as a command line driven application using yargs (see the files in the cmd directory).
 
-### What questions does this ask?
+We'll look at section of functionality in turn after first looking at the modules that are required and how to connect to a {{site.data.conrefs.composer_full}} hosted application on the {{site.data.conrefs.hlf_full}}.
 
+## Promises
+It's worth highlighting that the style of the API is to use promises. Typically {{site.data.conrefs.composer_full}} APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.
+
+If you're not familiar with Promise based development it's worth reviewing some of the tutorials online to get an idea. For example [https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics]
+
+##  Modules required
+
+```javascript
+const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 ```
-Welcome to the CLI skeleton app generator
-? Your NPM library name: composer-sample-app
-? Short description: Test Composer project
-? Author name: Sophie Black
-? Author email: sophie@email.com
-? NPM Module name of the Business Network to connect to: digitalproperty-network
+For a client application this is only {{site.data.conrefs.composer_full}} require needed. In this getting started application we also use the `cli-table` and `winston` and `config` modules for support processing. We use these to get information from the command line options, formatting of output and logging.
 
+```javascript
+const winston = require('winston');
+let config = require('config').get('gettingstarted');
 
-? Is the name in NPM registry the same as the Business Network Identifier?: Yes
-? What is the Connection Profile to use? defaultProfile
-? Enrollment id: WebAppAdmin
-? Enrollment Secret: DJY27pEnl16d
-configuring: composer-sample-app
-   create config/default.json
-   create Dockerfile
-   create gulpfile.js
-   create index.js
-   create package.json
-   create scripts/docker-compose.yml
-   create scripts/setup.sh
-   create scripts/teardown.sh
-   create .gitignore
-```
-
-### What does this do?
-Firstly it creates a standard npm module with the usual attributes of name, author, description.
-Secondly it asks a set of {{site.data.conrefs.composer_full}} questions to help create the sample structure.
-
-- NPM Module name:  What is the name of the business network you want to connect to - and is this the same as the modules NPM registry name
-- Connection Profile:  This is the connection profile used to locate ip/ports etc of the running fabric
-- The EnrollmentId/Secret: Are needed to create a connection to the fabric
-
-### Testing this has worked
-The `index.js` file is a very simple application that lists the asset registries that have been defined.
-
----
-
-# 2. Generating an Angular 2 Application
-
-This generator can be ran using ```yo hyperledger-composer:angular```.
-
-The user has the ability to generate an application in two different ways:
-
-1. Generating the application by connecting to a running business network
-
-2. Generating the application with a business network archive file
-
-
-## Generating the application by connecting to a running business network
-
-```
-Welcome to the Hyperledger Composer Angular 2 skeleton application generator
-
-? Do you want to connect to a running Business Network? Yes
-? What is the name of the application you wish to generate?: angular-app
-? Description of the application: Skeleton Hyperledger Composer Angular2 project
-? Author name: Sophie Black
-? Author email: sophie@email.com
-? What is the Business Network Identifier?: digitalproperty-network
-? What is the Connection Profile to use? defaultProfile
-? Enrollment id: WebAppAdmin
-? Enrollment Secret: DJY27pEnl16d
-? Do you want to generate a new REST API or connect to an existing REST API?: Generate a new REST API
-? What port number should the generated REST server run on?: 3000
-? Should namespaces be used in the generated REST API:  Always use namespaces
-About to connect to a running business network
-
-...
+// these are the credentials to use to connect to the Hyperledger Fabric
+let participantId = config.get('participantId');
+let participantPwd = config.get('participantPwd');
+const LOG = winston.loggers.get('application');
 ```
 
-Firstly the generator will also a series of basic regarding the application name, author, description, etc.
-Then it will ask the user to enter the details required to connect a running business network.
-After the generator has stopped prompting the user to answer questions, it will then attempt to connect to the business network using the details provided.
-If it successfully connects to the business network, the generator will then examine the assets, transactions and participants.
-The generator will then create Angular components based upon the different modelled types.
 
-- Business Network Identifier:  This is the name of the business network you want to connect to - and is this the same as the modules NPM registry name
-- Business Network Archive File: This is a business network definition archived using the Composer-CLI
-- Connection Profile:  This is the connection profile used to locate IP/ports etc of the running fabric
-- The EnrollmentId/Secret: Are needed to create a connection to the fabric
+## Connecting to the {{site.data.conrefs.composer_full}} Runtime
+We've split the code to connect into two parts, part in the constructor of the object and part in an initialization method. This is an implementation decision made for this example - you are free to structure this in the way that best suits your application. What's important is the API calls and the data.
 
+The key thing here is that we need to create a new BusinessNetworkConnection object; and get from application configuration, the connection profile and the business network identifier needed.
 
-### REST API Options
-
-If generating an application with a business network archive file, it is only possible to connect to an existing REST API server which is running.
-
-When generating an application it is possible to either:
-
-1. Generate and bundle the application with a REST API server
-2. Connect to an existing REST API server
-
-This REST API server configuration can be edited in ``APP_DIR/src/app/configuration.ts``.
-
-
-### Using the Application
-
-The application can be started using ``npm start``.
-
-The application can be tested using ``npm test``.
-
-
-## Generating the application with a business network archive file
-
-```
-Welcome to the Angular2 skeleton app generator
-
-? Do you want to connect to a running Business Network? No
-? What is the name of the application you wish to generate?: angular-app
-? Description of the application: Skeleton Hyperledger Composer Angular2 project
-? Author name: Sophie Black
-? Author email: sophie@email.com
-? What is the name of the business network archive file? (Path from the current working directory): digitalPropertyNetwork.bna
-? What is the address of the running REST server?: http://localhost
-? What port number is the REST server running on?: 3000
-? Are namespaces used in the generated REST API:  Namespaces are used
-
-
-About to read a business network archive file
-Reading file: digitalPropertyNetwork.bna    
-
-...
+```javascript
+this.bizNetworkConnection = new BusinessNetworkConnection();
+this.CONNECTION_PROFILE_NAME = config.get('connectionProfile');
+this.businessNetworkIdentifier = config.get('businessNetworkIdentifier');
 ```
 
-Firstly the generator will also a series of basic regarding the application name, author, description, etc.
-Then it will ask the user to enter the relative path to a business network archive file.
-After the generator has stopped prompting the user to answer questions, it will then attempt to read the business network archive file provided.
-If it successfully reads the file, the generator will then examine the assets, transactions and participants.
-The generator will then create Angular components based upon the different modelled types.
+The first {{site.data.conrefs.composer_full}} API call that we are going to make here, is the connect() API, to establish the connection to the {{site.data.conrefs.composer_full}} runtime on the Hyperledger Fabric.
+This API returns the businessNetworkDefinition if successful - which we hold onto.  The API takes, the connection profile name, business network identifier and participant details.
+
+```javascript
+this.bizNetworkConnection.connect(this.CONNECTION_PROFILE_NAME, this.businessNetworkIdentifier, participantId, participantPwd)
+.then((result) => {
+  this.businessNetworkDefinition = result;
+});
+```
+
+For a client application this is all the essential setup that is required, from this point on it's up to what the application wants to do as to what APIs are called.
+
+##Adding assets to a regsitry
+The {{site.data.conrefs.composer_full}} runtime will create a default registry to store assets in. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. This `getAssetRegistry()` takes the fully qualified asset name as defined in the CTO model file (That's namespace plus asset name). It returns a promise that is resolved with the asset registry, which we hold onto.
+
+```javascript
+this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle')
+.then((result) => {
+    this.titlesRegistry = result;
+});
+```
+
+Next step is to create some assets (look for the method `_bootstrapTitles` in the code )
+
+We use a factory style pattern to be able to create assets. A factory is obtained from the businessNetworkDefinition we got early. From this we can create an instance of a 'person'.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The indentifiers here (firstName lastName) matches with the identifiers in the model.
+
+```javascript
+let factory = this.businessNetworkDefinition.getFactory();
+owner = factory.newResource('net.biz.digitalPropertyNetwork', 'Person', 'PID:1234567890');
+owner.firstName = 'Fred';
+owner.lastName = 'Bloggs';
+```
+
+We now have a Person! Now we need a land title. Note how the owner is specified as being the person we just created. (In the actual sample code we do this code twice to create landTitle1 and landTitle2).
+
+```javascript
+let landTitle2 = factory.newResource('net.biz.digitalPropertyNetwork', 'LandTitle', 'LID:6789');
+landTitle2.owner = owner;
+landTitle2.information = 'A small flat in the city';
+```
+
+We now have a land title created that needs to be stored in the registry.
+
+```javascript
+this.titlesRegistry.addAll([landTitle1, landTitle2]);
+```
+This is using an API to add multiple titles, which returns a promise that is resolved when the assets are added. The last thing we need to do is add the Person, Fred Bloggs. As this is a 'participant', it's added using a different. It is very similar to assets, but this time the getParticipantRegistry API is used.
+
+```javascript
+    this.bizNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork.Person')
+      .then((personRegistry) => {
+          return personRegistry.add(owner);
+      })
+```
+
+##Listing assets in a regsitry
+In the sample application this is handled in a different method `list()`.  The same setup as for putting assets is required, so as before we need to get the asset registry but this tile we call the getAll() API. This returns an array of objects.
 
 
-### REST API Options
+```javascript
+this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle')
+.then((registry) => {
+   return registry.getAll();
+})
+.then((aResources) => {
+  // instantiate
+  let table = new Table({
+    head: ['TitleID', 'OwnerID', 'First Name', 'Surname', 'Description', 'ForSale']
+  });
+  let arrayLength = aResources.length;
+  for(let i = 0; i < arrayLength; i++) {
+    let tableLine = [];
+    tableLine.push(aResources[i].titleId);
+    tableLine.push(aResources[i].owner.personId);
+    tableLine.push(aResources[i].owner.firstName);
+    tableLine.push(aResources[i].owner.lastName);
+    tableLine.push(aResources[i].information);
+    tableLine.push(aResources[i].forSale ? 'Yes' : 'No');
+    table.push(tableLine);
+  }
+  // Put to stdout - as this is really a command line app
+  return(table);
+})
+```
+Most of this isn't {{site.data.conrefs.composer_full}} API code - but it shows how to access the details of the objects that have been returned. At this point it's worth just looking again at the model.
 
-If generating an application with a business network archive file, it is only possible to connect to an existing REST API server which is running.
+```
+asset LandTitle identified by titleId {
+  o String   titleId
+  o Person   owner
+  o String   information
+  o Boolean  forSale   optional
+}
 
-This REST API server configuration can be edited in ``APP_DIR/src/app/configuration.ts``.
+participant Person identified by personId {
+  o String personId
+  o String firstName
+  o String lastName
+}
+```
+You can see how the owner and title information are being accessed in a very simple manner
+
+## Submitting a transactions
+The last thing that we need to do is submit a transaction. This is the definition of the transaction in the model file:
+
+```
+transaction RegisterPropertyForSale identified by transactionId{
+  o String transactionId
+  --> LandTitle title
+}
+```
+
+The transaction has two fields here, a trandsactionId, and a reference to the land title that should be submitted for sale. The first step is get access to the registry for the landtitle, and get back the specific land title we want to submit for sale.
 
 
-### Using the Application
+```javascript
+this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle')
+.then((registry) => {
+  return registry.get('LID:1148');
+})
+```
+The getAssetRegistry call should now be looking a bit familar, the get API is used to get a specific land title.
+The next step is to create the transaction we want to submit.
 
-The application can be started using ``npm start``.
 
-The application can be tested using ``npm test``.
+
+```javascript
+let serializer = this.businessNetworkDefinition.getSerializer();
+
+let resource = serializer.fromJSON({
+  '$class': 'net.biz.digitalPropertyNetwork.RegisterPropertyForSale',
+  'title': 'LID:1148'
+});
+
+return this.bizNetworkConnection.submitTransaction(resource);
+
+```
+What we need to do here is create a 'serializer'.  This is able to create a resource - this resource is then passed to the submitTransaction API. Note that the transaction JSON matches the structure specified in the model file.
+
+That's it!

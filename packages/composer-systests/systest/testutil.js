@@ -23,6 +23,7 @@ const net = require('net');
 const path = require('path');
 const sleep = require('sleep-promise');
 const Util = require('composer-common').Util;
+const fs = require('fs');
 
 let adminConnection;
 let client;
@@ -222,12 +223,6 @@ class TestUtil {
                                         eventURL: 'grpcs://localhost:7053',
                                         cert: './hlfv1/tls/peers/peer0/ca-cert.pem',
                                         hostnameOverride: 'peer0'
-                                    },
-                                    {
-                                        requestURL: 'grpcs://localhost:7056',
-                                        eventURL: 'grpcs://localhost:7058',
-                                        cert: './hlfv1/tls/peers/peer1/ca-cert.pem',
-                                        hostnameOverride: 'peer1'
                                     }
                                 ],
                                 keyValStore: keyValStoreV1,
@@ -243,22 +238,20 @@ class TestUtil {
                                 orderers: [
                                     'grpc://localhost:7050'
                                 ],
-                                ca: 'http://localhost:7054',
+                                ca: {
+                                    url: 'http://localhost:7054',
+                                    name: 'ca-org1'
+                                },
                                 peers: [
                                     {
                                         requestURL: 'grpc://localhost:7051',
                                         eventURL: 'grpc://localhost:7053'
-                                    },
-                                    {
-                                        requestURL: 'grpc://localhost:7056',
-                                        eventURL: 'grpc://localhost:7058'
                                     }
                                 ],
                                 channel: 'mychannel',
                                 mspID: 'Org1MSP',
-                                deployWaitTime: '300',
-                                invokeWaitTime: '100',
-                                keyValStore: keyValStoreV1
+                                timeout: '500',
+                                keyValStore: keyValStore
                             };
                         }
                     } else {
@@ -281,14 +274,32 @@ class TestUtil {
                     adminOptions.invokeWaitTime = parseInt(process.env.COMPOSER_INVOKE_WAIT_SECS);
                     console.log('COMPOSER_INVOKE_WAIT_SECS set, using: ', adminOptions.invokeWaitTime);
                 }
+                if (process.env.COMPOSER_TIMEOUT_SECS) {
+                    adminOptions.timeout = parseInt(process.env.COMPOSER_TIMEOUT_SECS);
+                    console.log('COMPOSER_TIMEOUT_SECS set, using: ', adminOptions.timeout);
+                }
+
                 console.log('Calling AdminConnection.createProfile() ...');
                 return adminConnection.createProfile('composer-systests', adminOptions);
             })
             .then(function () {
                 console.log('Called AdminConnection.createProfile()');
+                if (TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1')) {
+                    let org = 'org1';
+                    let keyPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk');
+                    let certPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/signcerts/Admin@org1.example.com-cert.pem');
+                    let signerCert = fs.readFileSync(certPath).toString();
+                    let key = fs.readFileSync(keyPath).toString();
+                    console.log('Calling AdminConnection.importIdentity() ...');
+                    return adminConnection.importIdentity('composer-systests', 'Org1PeerAdmin', signerCert, key);
+                }
+                return Promise.resolve();
+            })
+            .then(function () {
                 console.log('Calling AdminConnection.connect() ...');
-                let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'adminpw' : 'Xurw3yU9zI0l';
-                return adminConnection.connect('composer-systests', 'admin', password);
+                let user = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'Org1PeerAdmin' : 'admin';
+                let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'NOTNEEDED' : 'Xurw3yU9zI0l';
+                return adminConnection.connect('composer-systests', user, password);
             })
             .then(function () {
                 console.log('Called AdminConnection.connect()');
@@ -306,10 +317,10 @@ class TestUtil {
         if (!adminConnection) {
             throw new Error('Must call setUp successfully before calling tearDown');
         }
-        console.log('Calling BusinessNetworkConnection.disconnect() ...');
+        console.log('Calling adminConnection.disconnect() ...');
         return adminConnection.disconnect()
             .then(function () {
-                console.log('Called BusinessNetworkConnection.disconnect()');
+                console.log('Called adminConnection.disconnect()');
             });
     }
 

@@ -51,6 +51,11 @@ describe('Engine', () => {
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
+        mockContext.transactionStart.resolves();
+        mockContext.transactionPrepare.resolves();
+        mockContext.transactionCommit.resolves();
+        mockContext.transactionRollback.resolves();
+        mockContext.transactionEnd.resolves();
         mockDataService = sinon.createStubInstance(DataService);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.initialize.resolves();
@@ -171,6 +176,12 @@ describe('Engine', () => {
                         sysregistries: sysregistries,
                         sysidentities: sysidentities
                     });
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -189,6 +200,12 @@ describe('Engine', () => {
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysdata');
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -215,6 +232,12 @@ describe('Engine', () => {
                         sysregistries: sysregistries,
                         sysidentities: sysidentities
                     });
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -240,6 +263,12 @@ describe('Engine', () => {
                         sysregistries: sysregistries,
                         sysidentities: sysidentities
                     });
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -253,6 +282,12 @@ describe('Engine', () => {
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.neverCalledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -265,7 +300,15 @@ describe('Engine', () => {
             mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
             mockRegistryManager.add.withArgs('Transaction', 'default').rejects();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
-                .should.be.rejected;
+                .should.be.rejected
+                .then(() => {
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.notCalled(mockContext.transactionPrepare);
+                    sinon.assert.notCalled(mockContext.transactionCommit);
+                    sinon.assert.calledOnce(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
         });
 
     });
@@ -308,11 +351,36 @@ describe('Engine', () => {
             }).should.throw(/Unsupported function "blahblahblah" with arguments "\[\]"/);
         });
 
-        it('should initialize the context', () => {
+        it('should initialize the context and call the function', () => {
             engine.test = sinon.stub().resolves();
             return engine.invoke(mockContext, 'test', [])
                 .then(() => {
                     sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
+        });
+
+        it('should handle an error from calling the function', () => {
+            engine.test = sinon.stub().rejects(new Error('ruhroh'));
+            return engine.invoke(mockContext, 'test', [])
+                .should.be.rejectedWith(/ruhroh/)
+                .then(() => {
+                    sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.notCalled(mockContext.transactionPrepare);
+                    sinon.assert.notCalled(mockContext.transactionCommit);
+                    sinon.assert.calledOnce(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -356,11 +424,36 @@ describe('Engine', () => {
             }).should.throw(/Unsupported function "blahblahblah" with arguments "\[\]"/);
         });
 
-        it('should initialize the context', () => {
+        it('should initialize the context and call the function', () => {
             engine.test = sinon.stub().resolves({});
             return engine.query(mockContext, 'test', [])
                 .then(() => {
                     sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, true);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
+        });
+
+        it('should handle an error from calling the function', () => {
+            engine.test = sinon.stub().rejects(new Error('ruhroh'));
+            return engine.query(mockContext, 'test', [])
+                .should.be.rejectedWith(/ruhroh/)
+                .then(() => {
+                    sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, true);
+                    sinon.assert.notCalled(mockContext.transactionPrepare);
+                    sinon.assert.notCalled(mockContext.transactionCommit);
+                    sinon.assert.calledOnce(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 

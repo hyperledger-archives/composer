@@ -7,7 +7,7 @@ set -o pipefail
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-npm install -g npm
+npm install -g npm@4
 npm install -g @alrra/travis-scripts
 
 echo "ABORT_BUILD=false" > ${DIR}/build.cfg

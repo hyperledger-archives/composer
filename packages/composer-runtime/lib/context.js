@@ -221,6 +221,19 @@ class Context {
     }
 
     /**
+     * Get all of the services provided by the chaincode container.
+     * @return {Service[]} All of the services provided by the chaincode container.
+     */
+    getServices() {
+        return [
+            this.getDataService(),
+            this.getEventService(),
+            this.getIdentityService(),
+            this.getHTTPService()
+        ];
+    }
+
+    /**
      * Get the data service provided by the chaincode container.
      * @abstract
      * @return {DataService} The data service provided by the chaincode container.
@@ -505,6 +518,81 @@ class Context {
      */
     incrementEventNumber() {
         return this.eventNumber++;
+    }
+
+    /**
+     * Called at the start of a transaction.
+     * @param {boolean} readOnly Is the transaction read-only?
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionStart(readOnly) {
+        const services = this.getServices();
+        return services.reduce((promise, service) => {
+            return promise.then(() => {
+                return service.transactionStart(readOnly);
+            });
+        }, Promise.resolve());
+    }
+
+    /**
+     * Called when a transaction is preparing to commit.
+     * @abstract
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionPrepare() {
+        const services = this.getServices();
+        return services.reduce((promise, service) => {
+            return promise.then(() => {
+                return service.transactionPrepare();
+            });
+        }, Promise.resolve());
+    }
+
+    /**
+     * Called when a transaction is rolling back.
+     * @abstract
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionRollback() {
+        const services = this.getServices();
+        return services.reduce((promise, service) => {
+            return promise.then(() => {
+                return service.transactionRollback();
+            });
+        }, Promise.resolve());
+    }
+
+    /**
+     * Called when a transaction is committing.
+     * @abstract
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionCommit() {
+        const services = this.getServices();
+        return services.reduce((promise, service) => {
+            return promise.then(() => {
+                return service.transactionCommit();
+            });
+        }, Promise.resolve());
+    }
+
+    /**
+     * Called at the end of a transaction.
+     * @abstract
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    transactionEnd() {
+        const services = this.getServices();
+        return services.reduce((promise, service) => {
+            return promise.then(() => {
+                return service.transactionEnd();
+            });
+        }, Promise.resolve());
     }
 
     /**
