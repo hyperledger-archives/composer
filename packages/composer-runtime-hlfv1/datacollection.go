@@ -103,8 +103,8 @@ func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
 	for iterator.HasNext() {
 
 		// Read the current key and value.
-		_, value, err := iterator.Next()
-		// kv, err := iterator.Next()
+		//_, value, err := iterator.Next()
+		kv, err := iterator.Next()
 		if err != nil {
 			vm.Dup(0)
 			vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
@@ -115,8 +115,8 @@ func (dataCollection *DataCollection) getAll(vm *duktape.Context) (result int) {
 		}
 
 		// Parse the current value.
-		vm.PushString(string(value))
-		// vm.PushString(string(kv.Value))
+		// vm.PushString(string(value))
+		vm.PushString(string(kv.Value))
 		vm.JsonDecode(-1)
 		vm.PutPropIndex(arrIdx, arrCount)
 		arrCount++
