@@ -120,7 +120,6 @@ export class EditorFileComponent {
                 this.clientService.setBusinessNetworkPackageJson(packageObject);
                 this.clientService.businessNetworkChanged$.next(true);
             }
-
             this.currentError = this.clientService.updateFile(this._editorFile.id, this.editorContent, type);
         } catch (e) {
             this.currentError = e.toString();
