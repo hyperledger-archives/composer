@@ -100,7 +100,7 @@ func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) 
 	bArrayMemberAlreadyWritten := false
 	for resultsIterator.HasNext() {
 		logger.Debug("QueryService inside Next()")
-		key, value, err := resultsIterator.Next()
+		key, err := resultsIterator.Next()
 		if err != nil {
 			panic(err)
 		}
@@ -110,14 +110,14 @@ func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) 
 		}
 		buffer.WriteString("{\"Key\":")
 		buffer.WriteString("\"")
-		buffer.WriteString(key)
+		buffer.WriteString(key.Key)
 		buffer.WriteString("\"")
 
-		logger.Debug("QueryService inside Next()", key)
+		logger.Debug("QueryService inside Next()", key.Key)
 
 		buffer.WriteString(", \"Record\":")
 		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(value))
+		buffer.WriteString(string(key.Value))
 		buffer.WriteString("}")
 		bArrayMemberAlreadyWritten = true
 	}
