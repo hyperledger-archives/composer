@@ -45,7 +45,7 @@ app-editor {
     .business-network-details {
       display: flex;
       height:50px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.2rem;
 
       .business-network-version {
         margin-right: $space-smedium;
@@ -82,7 +82,6 @@ app-editor {
         flex:2;
         display:flex;
         padding-bottom:$space-medium;
-        margin-top: 0.2rem;
 
         .edit-file-value{
             flex-basis:50%;
