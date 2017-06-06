@@ -40,8 +40,9 @@
     <button type="button" class="secondary" (click)="activeModal.dismiss();">
       <span>Cancel</span>
     </button>
+      <!-- disable if show wallet view and no identitites, or no identity has been entered on the other view, or a connection is in progress -->
     <button type="submit" form="switch-identity-form" class="primary"
-            [disabled]="(!showWalletView && switchIdentityForm && switchIdentityForm.form && !switchIdentityForm.form.valid) || addInProgress">
+            [disabled]="(showWalletView && identities.length === 0) || (!showWalletView && switchIdentityForm && switchIdentityForm.form && !switchIdentityForm.form.valid) || addInProgress">
       <div *ngIf="!switchInProgress">
         <span>Connect</span>
       </div>

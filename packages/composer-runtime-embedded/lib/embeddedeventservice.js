@@ -17,7 +17,7 @@
 const EventService = require('composer-runtime').EventService;
 const Logger = require('composer-common').Logger;
 
-const LOG = Logger.getLog('WebDataService');
+const LOG = Logger.getLog('EmbeddedEventService');
 
 /**
  * Base class representing the event service provided by a {@link Container}.
@@ -32,19 +32,23 @@ class EmbeddedEventService extends EventService {
     constructor(eventSink) {
         super();
         const method = 'constructor';
-
         this.eventSink = eventSink;
-
         LOG.exit(method);
     }
 
     /**
      * Emit the events stored in eventBuffer
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
      */
-    commit() {
-        const jsonEvent = JSON.parse(this.serializeBuffer());
-        this.eventSink.emit('events', jsonEvent);
+    transactionCommit() {
+        return super.transactionCommit()
+            .then(() => {
+                const jsonEvent = JSON.parse(this.serializeBuffer());
+                this.eventSink.emit('events', jsonEvent);
+            });
     }
+
 }
 
 module.exports = EmbeddedEventService;

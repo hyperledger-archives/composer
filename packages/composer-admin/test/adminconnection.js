@@ -68,6 +68,7 @@ describe('AdminConnection', () => {
         mockConnectionManager.connect.resolves(mockConnection);
         adminConnection = new AdminConnection();
         sinon.stub(adminConnection.connectionProfileManager, 'connect').resolves(mockConnection);
+        sinon.stub(adminConnection.connectionProfileManager, 'getConnectionManager').resolves(mockConnectionManager);
         sinon.stub(adminConnection.connectionProfileStore, 'save').withArgs('testprofile', sinon.match.any).resolves();
         sinon.stub(adminConnection.connectionProfileStore, 'load').withArgs('testprofile').resolves(config);
         sinon.stub(adminConnection.connectionProfileStore, 'loadAll').resolves({ profile1: config, profile2: config2 });
@@ -250,6 +251,31 @@ describe('AdminConnection', () => {
             return adminConnection.list()
                 .should.eventually.be.deep.equal(['biznet1', 'biznet2']);
         });
+
+    });
+
+    describe('#importIdentity', () => {
+        it('should be able to import an identity', () => {
+            mockConnectionManager.importIdentity = sinon.stub();
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnectionManager.importIdentity);
+                sinon.assert.calledWith(mockConnectionManager.importIdentity, config, 'anid', 'acerttosign', 'akey');
+            });
+        });
+
+        it('should error if import of identity isn\'t available', () => {
+            if (mockConnectionManager.importIdentity) {
+                delete mockConnectionManager.importIdentity;
+            }
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
+            .should.be.rejectedWith(/failed to import identity. the connector doesn\'t support identity import/);
+        });
+
 
     });
 

@@ -20,11 +20,16 @@ services:
               "invokeWaitTime": 30,
               "orderers": [
                   {
+<<<<<<< HEAD
                       "url": "grpc://orderer0:7050"
+=======
+                      "url": "grpc://orderer.example.com:7050"
+>>>>>>> Merges
                   }
               ],
               "channel": "mychannel",
               "mspID": "Org1MSP",
+<<<<<<< HEAD
               "ca": "http://ca0:7054",
               "peers": [
                   {
@@ -34,17 +39,32 @@ services:
                   {
                       "requestURL": "grpc://peer1:7051",
                       "eventURL": "grpc://peer1:7053"
+=======
+              "ca": {"url": "http://ca.example.com:7054", "name": "ca.example.com"},
+              "peers": [
+                  {
+                      "requestURL": "grpc://peer0.org1.example.com:7051",
+                      "eventURL": "grpc://peer0.org1.example.com:7053"
+>>>>>>> Merges
                   }
               ]
             }
           },
           "credentials": {
             "hlfabric": {
+<<<<<<< HEAD
               "admin": "adminpw"
+=======
+              "MyAdmin": "NOTUSED"
+>>>>>>> Merges
             }
           }
         }
 networks:
   default:
     external:
+<<<<<<< HEAD
       name: composer_default
+=======
+      name: composer_default
+>>>>>>> Merges

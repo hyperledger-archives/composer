@@ -40,6 +40,9 @@ export class InitializationService {
                 return this.createInitialIdentities();
             })
             .then(() => {
+                if (this.config && this.config.defaultConnectionProfile) {
+                    this.connectionProfileService.setCurrentConnectionProfile(this.config.defaultConnectionProfile);
+                }
                 return this.clientService.ensureConnected();
             })
             .then(() => {
@@ -73,7 +76,11 @@ export class InitializationService {
                 const connectionProfileNames = Object.keys(connectionProfiles).sort();
                 return connectionProfileNames.reduce((result, connectionProfileName) => {
                     return result.then(() => {
+<<<<<<< HEAD
+                        console.log('Checking for connection profile...', connectionProfileName);
+=======
                         console.log('Checking for connection profile', connectionProfileName);
+>>>>>>> Merges
                         return this.connectionProfileService.getProfile(connectionProfileName)
                             .catch((error) => {
                                 console.log('Connection profile does not exist, creating');
