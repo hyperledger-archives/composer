@@ -27,7 +27,7 @@ function createMarble(factory, player, size, colour, marbleId) {
  * @param {org.fabric_composer.marbles.CreateMarble} transaction
  * @transaction
  */
-function onCreateMable(transaction) {
+function onCreateMarble(transaction) {
     var factory = getFactory();
     var player = createPlayer(factory, transaction.email, 'Fenglian', 'Xu');
     return getParticipantRegistry('org.fabric_composer.marbles.Player').then(function(participantRegitry){

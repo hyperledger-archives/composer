@@ -38,7 +38,7 @@ describe('Query system tests', function () {
         const scriptFiles =  [
             { identifier: 'query.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/query.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.query@0.0.1', 'The network for the query system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest.query1@0.0.2', 'The network for the query system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile);
         });
@@ -54,7 +54,7 @@ describe('Query system tests', function () {
                     .then((result) => {
                         client = result;
                         let factory = client.getBusinessNetwork().getFactory();
-                        let transaction = factory.newTransaction('org.fabric_composer.marbles', 'CreateMable');
+                        let transaction = factory.newTransaction('org.fabric_composer.marbles', 'CreateMarble');
                         transaction.marbleId = '1';
                         transaction.email = 'mail1@1234';
                         transaction.colour ='RED';
