@@ -94,17 +94,19 @@
     </div>
     <div *ngIf="editActive && fileType(currentFile)!='Readme'" class="business-network-details">
       <div class="flex-container" style="flex-direction:column">
-        <div class="flex-container">
-            <label class="edit-label margin-right" for="editName">Name</label>
+        <div class="edit-file-row">
+            <label class="edit-file-label" for="editName">Name</label>
             <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">models/</div>
             <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">lib/</div>
-            <div *ngIf="!fileNameError"><input style="margin-top: 0.2rem" class="margin-right" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]"></div>
-            <div *ngIf="fileNameError"><input style="margin-top: 0.2rem" class="margin-right error-underline" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]"></div>
+            <div class="edit-file-value">
+                <input *ngIf="!fileNameError" style="margin-top: 0.2rem" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]">
+                <input *ngIf="fileNameError" class="error-underline" style="margin-top: 0.2rem" type="text" (blur)="editFileName()" [(ngModel)]="inputFileNameArray[1]">
+            </div>
             <div *ngIf="fileType(currentFile)=='Model'" class="edit-file-hidden">.cto</div>
             <div *ngIf="fileType(currentFile)=='Script'" class="edit-file-hidden">.js</div>
         </div>
-      <div *ngIf="fileNameError" style="flex-shrink:1;align-self: center; margin-bottom: 1rem; color:red">
-          <p>{{fileNameError}}</p>
+        <div *ngIf="fileNameError" class="error-message">
+              {{fileNameError}}
         </div>
     </div>
     </div>

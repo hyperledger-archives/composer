@@ -30,8 +30,8 @@ export class ClientService {
     }
 
     // horrible hack for testing
-    createModelFile(modelManager, content) {
-        return new ModelFile(modelManager, content);
+    createModelFile(modelManager, content, fileName) {
+        return new ModelFile(modelManager, content, fileName);
     }
 
     // horrible hack for testing
@@ -71,7 +71,7 @@ export class ClientService {
         try {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
-                let modelFile = this.createModelFile(modelManager, content);
+                let modelFile = this.createModelFile(modelManager, content, null);
                 modelManager.validateModelFile(modelFile);
             } else if (type === 'script') {
                 let scriptManager = this.getBusinessNetwork().getScriptManager();
@@ -92,11 +92,10 @@ export class ClientService {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let original: ModelFile = modelManager.getModelFile(id);
-                let modelFile = new ModelFile(modelManager, content, original.getFileName());
+                let modelFile = this.createModelFile(modelManager, content, original.getFileName());
                 if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                     throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }
-
                 if (id !== modelFile.getNamespace()) {
                     // Then we are changing namespace and must delete old reference
                     modelManager.addModelFile(modelFile);
@@ -128,16 +127,16 @@ export class ClientService {
         try {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
-                let modelFile = new ModelFile(modelManager, content, newId);
+                let modelFile = this.createModelFile(modelManager, content, newId);
                 modelManager.updateModelFile(modelFile, newId);
+                this.businessNetworkChanged$.next(true);
             } else if (type === 'script') {
                 let scriptManager = this.getBusinessNetwork().getScriptManager();
                 let script = scriptManager.createScript(newId, 'JS', content);
                 scriptManager.addScript(script);
                 scriptManager.deleteScript(oldId);
+                this.businessNetworkChanged$.next(true);
             }
-
-            this.businessNetworkChanged$.next(true);
             return null;
         } catch (e) {
             this.businessNetworkChanged$.next(false);

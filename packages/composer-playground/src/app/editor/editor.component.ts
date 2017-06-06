@@ -50,13 +50,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     private inputPackageName; // This is the input 'Name' before the BND is updated
     private inputPackageVersion; // This is the input 'Version' before the BND is updated
 
-
     private alive: boolean = true; // used to prevent memory leaks on subscribers within ngOnInit/ngOnDestory
 
     private inputFileNameArray: string[] = null ; // This is the input 'FileName' before the currentFile is updated
     private fileNameError: string = null;
-
-
 
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
@@ -94,8 +91,7 @@ export class EditorComponent implements OnInit, OnDestroy {
             .subscribe((newName) => {
                 if (this.currentFile !== null) {
                     this.updateFiles();
-                    let index = this.files.findIndex((file) => file.id === newName);
-                    console.log('settign file: ', this.files[index]);
+                    let index = this.findFileIndex(true, newName);
                     this.setCurrentFile(this.files[index]);
                 }
             });
@@ -166,11 +162,9 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     formatFileName(fullname: string): string[] {
-        console.log('formatting file');
         let name = [];
         let startIdx = fullname.indexOf('/') + 1;
         let endIdx = fullname.lastIndexOf('.');
-        console.log('start idx', startIdx); console.log('end idx', endIdx);
         name.push(fullname.substring(0, startIdx));
         name.push(fullname.substring(startIdx, endIdx));
         name.push(fullname.substring(endIdx, fullname.length));
@@ -240,7 +234,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         if (!contents) {
             let newModelNamespace = this.addModelNamespace;
             let increment = 0;
-            while ( this.files.findIndex((file) => file.id === newModelNamespace) !== -1) {
+            while ( this.findFileIndex(true, newModelNamespace) !== -1) {
                 newModelNamespace = this.addModelNamespace + increment;
                 increment++;
             }
@@ -257,7 +251,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
         let newFile = modelManager.addModelFile(code);
         this.updateFiles();
-        let index = this.files.findIndex((file) => file.id === newFile.getNamespace());
+        let index = this.findFileIndex(true, newFile.getNamespace());
         this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
@@ -288,7 +282,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
         scriptManager.addScript(script);
         this.updateFiles();
-        let index = this.files.findIndex((file) => file.id === script.getIdentifier());
+        let index = this.findFileIndex(true, script.getIdentifier());
         this.setCurrentFile(this.files[index]);
         this.dirty = true;
     }
@@ -400,11 +394,10 @@ export class EditorComponent implements OnInit, OnDestroy {
      */
     editFileName() {
         this.fileNameError = null;
-        let regEx = new RegExp(/^((\/)?([a-z_\-0-9\.]|[A-Z_\-0-9\.])+)$/);
+        let regEx = new RegExp(/^(([a-z_\-0-9\.]|[A-Z_\-0-9\.])+)$/);
         if (regEx.test(this.inputFileNameArray[1]) === true) {
             let inputFileName = this.inputFileNameArray[0] + this.inputFileNameArray[1] + this.inputFileNameArray[2];
-            console.log('reconstructed name:', inputFileName);
-            if (this.files.findIndex((file) => file.displayID === inputFileName) !== -1) {
+            if ( (this.findFileIndex(false, inputFileName) !== -1) && (this.currentFile.displayID !== inputFileName) ) {
                 this.fileNameError = 'Error: Filename already exists';
             } else if (this.currentFile.script) {
                 if (this.currentFile.id !== inputFileName) {
@@ -412,18 +405,19 @@ export class EditorComponent implements OnInit, OnDestroy {
                     let contents = this.clientService.getScriptFile(this.currentFile.id).getContents();
                     this.clientService.replaceFile(this.currentFile.id, inputFileName, contents, 'script');
                     this.updateFiles();
-                    let index = this.files.findIndex((file) => file.id === inputFileName);
+                    let index = this.findFileIndex(true, inputFileName);
                     this.setCurrentFile(this.files[index]);
+                    this.dirty = true;
                 }
             } else if (this.currentFile.model) {
                 if (this.currentFile.displayID !== inputFileName) {
                     // Update Model filename
-                    let modelFile: ModelFile = this.clientService.getModelFile(this.currentFile.id);
-                    let contents = modelFile.getDefinitions();
+                    let contents = this.clientService.getModelFile(this.currentFile.id).getDefinitions();
                     this.clientService.replaceFile(this.currentFile.id, inputFileName, contents, 'model');
                     this.updateFiles();
-                    let index = this.files.findIndex((file) => file.displayID === inputFileName);
+                    let index = this.findFileIndex(false, inputFileName);
                     this.setCurrentFile(this.files[index]);
+                    this.dirty = true;
                 }
             } else {
                 this.fileNameError = 'Error: Unable to process rename on current file type';
@@ -475,7 +469,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 }
 
                 // remove file from list view
-                let index = this.files.findIndex((x) => { return x.displayID === deleteFile.displayID; });
+                let index = this.findFileIndex(false, deleteFile.displayID);
                 this.files.splice(index, 1);
 
                 // Make sure we set a file to remove the deleted file from the view
@@ -513,6 +507,14 @@ export class EditorComponent implements OnInit, OnDestroy {
             return 'ACL';
         } else {
             return 'Readme';
+        }
+    }
+
+    findFileIndex(byId: boolean, matcher) {
+        if (byId) {
+            return this.files.findIndex((file) => file.id === matcher);
+        } else {
+            return this.files.findIndex((file) => file.displayID === matcher);
         }
     }
 

@@ -111,7 +111,7 @@ describe('EditorComponent', () => {
                     }
                 })
             };
-            mockClientService.fileNameChanged$ = {
+            mockClientService.namespaceChanged$ = {
                 takeWhile: sinon.stub().returns({
                     subscribe: (callback) => {
                         callback('new-name');
@@ -261,7 +261,7 @@ describe('EditorComponent', () => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
-            let file = {testFile: true};
+            let file = {id: 'testFile', displayID: 'script.js'};
             component['editorService'].setCurrentFile(file);
 
             component.ngOnInit();
@@ -335,19 +335,19 @@ describe('EditorComponent', () => {
 
     describe('setCurrentFile', () => {
         it('should set current file', () => {
-            component['currentFile'] = {displayID: 'oldFile'};
-            let file = {file: 'myFile'};
+            component['currentFile'] = {displayID: 'oldFile', id: 'oldID'};
+            let file = {displayID: 'newFile', id: 'newID'};
             component.setCurrentFile(file);
             component['currentFile'].should.deep.equal(file);
         });
 
         it('should set current file', () => {
-            component['currentFile'] = {displayID: 'oldFile'};
+            component['currentFile'] = {displayID: 'oldFile', id: 'oldID'};
             component['editingPackage'] = true;
 
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
 
-            let file = {displayID: 'myFile'};
+            let file = {displayID: 'myFile', id: 'newID'};
             component.setCurrentFile(file);
             component['currentFile'].should.deep.equal(file);
 
@@ -405,8 +405,10 @@ describe('EditorComponent', () => {
     describe('updateFiles', () => {
         it('should update the files', () => {
             mockClientService.getModelFiles.returns([
-                {getNamespace: sinon.stub().returns('model 2')},
-                {getNamespace: sinon.stub().returns('model 1')}
+                {getNamespace: sinon.stub().returns('model 2'),
+                 getFileName: sinon.stub().returns('models/model2.cto')},
+                {getNamespace: sinon.stub().returns('model 1'),
+                 getFileName: sinon.stub().returns('models/model1.cto')},
             ]);
 
             mockClientService.getScripts.returns([
@@ -432,13 +434,13 @@ describe('EditorComponent', () => {
             component['files'][1].should.deep.equal({
                 model: true,
                 id: 'model 1',
-                displayID: 'models/model 1.cto',
+                displayID: 'models/model1.cto',
             });
 
             component['files'][2].should.deep.equal({
                 model: true,
                 id: 'model 2',
-                displayID: 'models/model 2.cto',
+                displayID: 'models/model2.cto',
             });
 
             component['files'][3].should.deep.equal({
@@ -974,11 +976,17 @@ describe('EditorComponent', () => {
             component['editActive'].should.equal(true);
         });
 
-        it('should make edit fields visible when true', () => {
+        it('should make edit package fields visible when true for README', () => {
             component['editActive'] = false;
+            component['editingPackage'] = false;
             component['editingPackage'] = false;
             component['deployedPackageName'] = 'TestPackageName';
             component['deployedPackageVersion'] = '1.0.0';
+
+            // Specify README file
+            let file = {readme: true, id: 'readme', displayID: 'README.md'};
+            component.setCurrentFile(file);
+
             fixture.detectChanges();
 
             // Expect to see "deployedPackageName" visible within class="business-network-details"
@@ -1004,8 +1012,12 @@ describe('EditorComponent', () => {
 
         });
 
-        it('should make edit fields interactable when true', () => {
+        it('should make edit fields interactable when true for README', () => {
             component['editActive'] = true;
+
+            // Specify README file
+            let file = {readme: true, id: 'readme', displayID: 'README.md'};
+            component['currentFile'] = file;
 
             fixture.detectChanges();
 
@@ -1108,28 +1120,36 @@ describe('EditorComponent', () => {
 
     describe('fileType', () => {
 
-        it('should initialise model file parameters', () => {
+        it('should identify model file via parameters', () => {
             let testItem = {model: true, displayID: 'test_name'};
 
             let result = component['fileType'](testItem);
 
-            result.should.equal('Model File');
+            result.should.equal('Model');
         });
 
-        it('should initialise script file parameters', () => {
+        it('should identify script file via parameters', () => {
             let testItem = {script: true, displayID: 'test_name'};
 
             let result = component['fileType'](testItem);
 
-            result.should.equal('Script File');
+            result.should.equal('Script');
         });
 
-        it('should initialise unknown file parameters', () => {
+        it('should identify ACL file via parameters', () => {
+            let testItem = {acl: true, displayID: 'test_name'};
+
+            let result = component['fileType'](testItem);
+
+            result.should.equal('ACL');
+        });
+
+        it('should identify unknown file via parameters as README', () => {
             let testItem = {displayID: 'test_name'};
 
             let result = component['fileType'](testItem);
 
-            result.should.equal('File');
+            result.should.equal('Readme');
         });
     });
 
@@ -1259,11 +1279,11 @@ describe('EditorComponent', () => {
 
             // Create file array of length 5
             let fileArray = [];
-            fileArray.push({acl: true, displayID: 'acl0'});
-            fileArray.push({script: true, displayID: 'script0'});
-            fileArray.push({script: true, displayID: 'script1'});
-            fileArray.push({model: true, displayID: 'model1'});
-            fileArray.push({script: true, displayID: 'script2'});
+            fileArray.push({acl: true, id: 'acl file', displayID: 'acl0'});
+            fileArray.push({script: true, id: 'script 0', displayID: 'script0'});
+            fileArray.push({script: true, id: 'script 1', displayID: 'script1'});
+            fileArray.push({model: true, id: 'model 1', displayID: 'model1'});
+            fileArray.push({script: true, id: 'script 2', displayID: 'script2'});
             component['files'] = fileArray;
         });
 
@@ -1328,9 +1348,13 @@ describe('EditorComponent', () => {
         it('should delete the correct script file', fakeAsync(() => {
 
             component['currentFile'] = component['files'][2];
+            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
 
             component.openDeleteFileModal();
             tick();
+
+            // Check innitial file set
+            mockSetIntialFile.should.have.been.called;
 
             // Check services called
             mockClientService.businessNetworkChanged$.next.should.have.been.called;
@@ -1351,9 +1375,13 @@ describe('EditorComponent', () => {
         it('should delete the correct model file', fakeAsync(() => {
 
             component['currentFile'] = component['files'][3];
+            let mockSetIntialFile = sinon.stub(component, 'setInitialFile');
 
             component.openDeleteFileModal();
             tick();
+
+            // Check innitial file set
+            mockSetIntialFile.should.have.been.called;
 
             // Check services called
             mockClientService.businessNetworkChanged$.next.should.have.been.called;
@@ -1422,4 +1450,214 @@ describe('EditorComponent', () => {
             index.should.equal(-1);
         }));
     });
+
+    describe('editFileName', () => {
+
+        it('should prevent user creating invalid file names during edit', () => {
+            let invalidNames = [];
+            invalidNames.push('name with spaces');
+            invalidNames.push('name!');
+            invalidNames.push('name#');
+            invalidNames.push('/name');
+            invalidNames.push('name/name');
+            invalidNames.push('/name');
+            invalidNames.push('na]me');
+            invalidNames.push('na:me');
+            invalidNames.push('na`me');
+
+            invalidNames.forEach( (fileName) => {
+                component['inputFileNameArray'] = [ '', fileName, ''];
+                component['editFileName']();
+                component['fileNameError'].should.be.equal('Error: Invalid filename, file must be alpha-numeric with no spaces');
+            });
+        });
+
+        it('should prevent edit of acl file', () => {
+            // Attempt edit of ACL
+            component['inputFileNameArray'] = ['', 'permissions', '.acl'];
+            component['currentFile'] = { acl: true};
+
+            component['editFileName']();
+            component['fileNameError'].should.be.equal('Error: Unable to process rename on current file type');
+        });
+
+        it('should prevent edit of readme file', () => {
+            // Attempt edit of README
+            component['inputFileNameArray'] = ['', 'README', '.md'];
+            component['currentFile'] = { readme: true };
+
+            component['editFileName']();
+            component['fileNameError'].should.be.equal('Error: Unable to process rename on current file type');
+        });
+
+        it('should prevent renaming file to existing file', () => {
+            // Attempt edit of model
+            component['inputFileNameArray'] = ['', 'myModelFile', '.cto'];
+            component['currentFile'] = { model: true, displayID: 'oldNameID.cto' };
+
+            component['files'] = [{displayID: 'muchRandom'},
+                                  {displayID: 'oldNameID.cto'},
+                                  {displayID: 'myModelFile.cto'}];
+
+            component['editFileName']();
+            component['fileNameError'].should.be.equal('Error: Filename already exists');
+        });
+
+        it('should not rename script file if name unchanged', () => {
+            // Attempt edit of script
+            component['inputFileNameArray'] = ['', 'myScriptFile', '.js'];
+            component['currentFile'] = { script: true, id: 'myScriptFile.js' };
+
+            component['files'] = [{id: 'muchRandom'},
+                                  {id: 'myScriptFile.js'},
+                                  {id: 'oldNameID'}];
+
+            component['editFileName']();
+        });
+
+        it('should not rename model file if name unchanged', () => {
+            // Attempt edit of model
+            component['inputFileNameArray'] = ['', 'myModelFile', '.cto'];
+            component['currentFile'] = { model: true, displayID: 'myModelFile.cto' };
+
+            component['files'] = [{displayID: 'muchRandom'},
+                                  {displayID: 'myModelFile.cto'},
+                                  {displayID: 'oldNameID'}];
+
+            component['editFileName']();
+        });
+
+        it('should enable script file rename by replacing script', () => {
+            // Should call:
+            // - this.clientService.replaceFile(this.currentFile.id, inputFileName, contents, 'script');
+            // - this.updateFiles();
+            // - this.setCurrentFile(this.files[index]);
+            // Should set:
+            // - this.dirty = true;
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockFindIndex = sinon.stub(component, 'findFileIndex');
+            mockFindIndex.onCall(0).returns(-1);
+            mockFindIndex.onCall(1).returns(2);
+
+            mockClientService.getScriptFile.returns({
+                getContents: sinon.stub().returns('my script content')
+            });
+
+            component['inputFileNameArray'] = ['', 'myNewScriptFile', '.js'];
+            component['currentFile'] = { script: true, id: 'myCurrentScriptFile.js' };
+
+            component['files'] = [{id: 'muchRandom'},
+                                  {id: 'myCurrentScriptFile.js'},
+                                  {id: 'otherScriptFile.js'},
+                                  {id: 'oldNameID'}];
+
+            // Call Method
+            component['editFileName']();
+
+            mockClientService.replaceFile.should.have.been.calledWith('myCurrentScriptFile.js', 'myNewScriptFile.js', 'my script content', 'script');
+            mockUpdateFiles.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({id: 'otherScriptFile.js'});
+            component['dirty'].should.be.equal(true);
+        });
+
+        it('should enable model file rename by editing filename', () => {
+            // Should call:
+            // - this.clientService.replaceFile(this.currentFile.id, inputFileName, contents, 'script');
+            // - this.updateFiles();
+            // - this.setCurrentFile(this.files[index]);
+            // Should set:
+            // - this.dirty = true;
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockFindIndex = sinon.stub(component, 'findFileIndex');
+            mockFindIndex.onCall(0).returns(-1);
+            mockFindIndex.onCall(1).returns(2);
+
+            mockClientService.getModelFile.returns({
+                getDefinitions: sinon.stub().returns('My ModelFile content')
+            });
+            component['inputFileNameArray'] = ['', 'myNewModelFile', '.cto'];
+            component['currentFile'] = { model: true, id: 'myCurrentModelFile.cto' };
+
+            component['files'] = [{id: 'muchRandom'},
+                                  {displayID: 'myCurrentModelFile.cto'},
+                                  {displayID: 'otherModelFile.cto'},
+                                  {id: 'oldNameID'}];
+
+            // Call Method
+            component['editFileName']();
+
+            mockClientService.replaceFile.should.have.been.calledWith('myCurrentModelFile.cto', 'myNewModelFile.cto', 'My ModelFile content', 'model');
+            mockUpdateFiles.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({displayID: 'otherModelFile.cto'});
+            component['dirty'].should.be.equal(true);
+        });
+
+    });
+
+    describe('findFileIndex', () => {
+
+        it('should find a file index by id', () => {
+            component['files'] = [{id: 'match0'},
+                                  {id: 'match1'},
+                                  {id: 'match2'},
+                                  {id: 'match3'},
+                                  {id: 'match4'}];
+
+            for (let i = 0; i < 4; i++) {
+                 let match = component['findFileIndex'](true, 'match' + i);
+                 match.should.be.equal(i);
+            }
+        });
+
+        it('should find a file index by displayID', () => {
+            component['files'] = [{displayID: 'match0'},
+                                  {displayID: 'match1'},
+                                  {displayID: 'match2'},
+                                  {displayID: 'match3'},
+                                  {displayIDid: 'match4'}];
+
+            for (let i = 0; i < 4; i++) {
+                 let match = component['findFileIndex'](false, 'match' + i);
+                 match.should.be.equal(i);
+            }
+        });
+
+        it('should find a file index by id within mixed items', () => {
+            component['files'] = [{id: 'match0'},
+                                  {displayID: 'match0'},
+                                  {id: 'match1'},
+                                  {displayID: 'match1'},
+                                  {id: 'match2'},
+                                  {displayID: 'match2'},
+                                  {id: 'match3'},
+                                  {displayID: 'match3'}];
+            let j = 0;
+            for (let i = 0; i < 4; i++) {
+                 let match = component['findFileIndex'](true, 'match' + i);
+                 match.should.be.equal(j);
+                 j += 2;
+            }
+        });
+
+        it('should find a file index by displayID within mixed items', () => {
+            component['files'] = [{id: 'match0'},
+                                  {displayID: 'match0'},
+                                  {id: 'match1'},
+                                  {displayID: 'match1'},
+                                  {id: 'match2'},
+                                  {displayID: 'match2'},
+                                  {id: 'match3'},
+                                  {displayID: 'match3'}];
+            let j = 1;
+            for (let i = 0; i < 4; i++) {
+                 let match = component['findFileIndex'](false, 'match' + i);
+                 match.should.be.equal(j);
+                 j += 2;
+            }
+        });
+
+    });
+
 });

@@ -273,7 +273,8 @@ class BusinessNetworkDefinition {
         let modelManager = this.getModelManager();
         let modelFiles = modelManager.getModelFiles();
         modelFiles.forEach(function(file) {
-            zip.folder('models').file(file.namespace + '.cto', file.definitions);
+            let filename = file.getFileName().substring(file.getFileName().indexOf('/') + 1, file.getFileName().length);
+            zip.folder('models').file(filename, file.definitions);
         });
 
         let scriptManager = this.getScriptManager();
