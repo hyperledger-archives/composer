@@ -20,6 +20,15 @@ in this namespace.
 2. Optional import declarations that import resources from other namespaces.
 3. A set of resource definitions (see below).
 
+### Imports
+
+Use the `import` keyword with a fully-qualified type name to import a type from another namespace. Alternatively use the `.*` notation to import all the types from another namespace.
+
+```
+import org.example.MyAsset
+import org.example2.*
+```
+
 ### Declarations of enumerated types
 
 ```
