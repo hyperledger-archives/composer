@@ -15,7 +15,6 @@
 'use strict';
 
 const Container = require('composer-runtime').Container;
-const DataService = require('composer-runtime').DataService;
 const LoggingService = require('composer-runtime').LoggingService;
 const EmbeddedContainer = require('..').EmbeddedContainer;
 const uuid = require('uuid');
@@ -50,15 +49,6 @@ describe('EmbeddedContainer', () => {
         it('should return the container version', () => {
             let container = new EmbeddedContainer();
             container.getVersion().should.equal(version);
-        });
-
-    });
-
-    describe('#getDataService', () => {
-
-        it('should return the container data service', () => {
-            let container = new EmbeddedContainer();
-            container.getDataService().should.be.an.instanceOf(DataService);
         });
 
     });

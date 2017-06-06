@@ -6,7 +6,7 @@
 'use strict';
 
 function createPlayer(factory, email, fn, ln){
-    var player = factory.newParticipant('org.fabric_composer.marbles', 'Player', email);
+    var player = factory.newResource('org.fabric_composer.marbles', 'Player', email);
     player.firstName = fn;
     player.lastName = ln;
 
@@ -30,7 +30,17 @@ function createMarble(factory, player, size, colour, marbleId) {
 function onCreateMarble(transaction) {
     var factory = getFactory();
     var player = createPlayer(factory, transaction.email, 'Fenglian', 'Xu');
-    return getParticipantRegistry('org.fabric_composer.marbles.Player').then(function(participantRegitry){
+    return getParticipantRegistry('org.fabric_composer.marbles.Player')
+    .then(function(participantRegitry){
+        return participantRegitry.add(player);
+    })
+    .then(function(){
+        return getAssetRegistry('org.fabric_composer.marbles.Marble');
+    })
+    .then(function(assetRegistry){
+        return getParticipantRegistry('org.fabric_composer.marbles.Player');
+    })
+    .then(function(participantRegitry){
         return participantRegitry.add(player);
     }).then(function(){
         return getAssetRegistry('org.fabric_composer.marbles.Marble');

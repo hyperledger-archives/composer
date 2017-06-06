@@ -6,7 +6,7 @@ Please note that this is the **Getting Started** for developing Hyperledger Comp
 
 ## Setup Scripts
 
-The requirements for developing Hyperledger Composer are the same as developing an application using Hyperledger Composer. Follow these [instructions](https://hyperledger.github.io/composer/installing/prerequisites.html)  
+The requirements for developing Hyperledger Composer are the same as developing an application using Hyperledger Composer. Follow these [instructions](./prerequisites.md)  
 
 If you wish to install manually or review the individual tool's own documentation the details are below.
 

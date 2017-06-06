@@ -130,7 +130,7 @@ class WebConnection extends Connection {
      */
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
-        this.fabricDataService = new WebDataService();
+        this.dataService = new WebDataService(null, true);
     }
 
     /**
@@ -291,12 +291,12 @@ class WebConnection extends Connection {
      * @return {DataCollection} The data collection that stores identities.
      */
     getIdentities() {
-        return this.fabricDataService.existsCollection('identities')
+        return this.dataService.existsCollection('identities')
             .then((exists) => {
                 if (exists) {
-                    return this.fabricDataService.getCollection('identities');
+                    return this.dataService.getCollection('identities');
                 } else {
-                    return this.fabricDataService.createCollection('identities');
+                    return this.dataService.createCollection('identities');
                 }
             });
     }

@@ -46,14 +46,15 @@ describe('EmbeddedEventService', () => {
         });
     });
 
-    describe('#commit', () => {
+    describe('#transactionCommit', () => {
         it ('should emit a list of events', () => {
-            eventService.serializeBuffer = sinon.stub();
-            eventService.serializeBuffer.returns('[{"event":"event"}]');
-            eventService.commit();
-            sinon.assert.calledOnce(eventService.serializeBuffer);
-            sinon.assert.calledOnce(mockEventEmitter.emit);
-            sinon.assert.calledWith(mockEventEmitter.emit, 'events', [{'event':'event'}]);
+            sinon.stub(eventService, 'serializeBuffer').returns('[{"event":"event"}]');
+            return eventService.transactionCommit()
+                .then(() => {
+                    sinon.assert.calledOnce(eventService.serializeBuffer);
+                    sinon.assert.calledOnce(mockEventEmitter.emit);
+                    sinon.assert.calledWith(mockEventEmitter.emit, 'events', [{'event':'event'}]);
+                });
         });
     });
 });

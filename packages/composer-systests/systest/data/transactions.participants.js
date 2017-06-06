@@ -1,3 +1,4 @@
+/*eslint no-var: 0*/
 'use strict';
 
 function onSimpleTransactionWithPrimitiveTypes(transaction) {
@@ -301,5 +302,59 @@ function onRemoveNewParticipantWithRelationshipInParticipantRegistryTransaction(
             var a = f.newResource('systest.transactions.participants', 'SimpleRelationshipParticipant', 'relationshipParticipant1');
             a.stringParticipant = f.newRelationship('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
             return ar.remove(a);
+        });
+}
+
+/**
+ * Handle the transaction to check that transactions are atomic.
+ * @param {systest.transactions.participants.ParticipantAddIsAtomic} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ * @transaction
+ */
+function participantAddIsAtomic(transaction) {
+    return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            a.stringValue = 'party parrot in hursley';
+            return ar.add(a);
+        })
+        .then(function () {
+            throw new Error('we dont want no stinkin party parrots');
+        });
+}
+
+/**
+ * Handle the transaction to check that transactions are atomic.
+ * @param {systest.transactions.participants.ParticipantUpdateIsAtomic} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ * @transaction
+ */
+function participantUpdateIsAtomic(transaction) {
+    return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newResource('systest.transactions.participants', 'SimpleStringParticipant', 'stringParticipant1');
+            a.stringValue = 'party parrot in san francisco';
+            return ar.update(a);
+        })
+        .then(function () {
+            throw new Error('we dont want no stinkin party parrots');
+        });
+}
+
+/**
+ * Handle the transaction to check that transactions are atomic.
+ * @param {systest.transactions.participants.ParticipantRemoveIsAtomic} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ * @transaction
+ */
+function participantRemoveIsAtomic(transaction) {
+    return getParticipantRegistry('systest.transactions.participants.SimpleStringParticipant')
+        .then(function (ar) {
+            return ar.remove('stringParticipant1');
+        })
+        .then(function () {
+            throw new Error('we dont want no stinkin party parrots');
         });
 }
