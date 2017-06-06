@@ -206,20 +206,21 @@ Reset to the basic sample network, we will test the addition and edit of an exis
 
 Reset to the basic sample network, we will test the addition and edit of a new model file
  - Add a new model file
- - Within editor select the edit icon
- - Change the name to include illegal characters (non-alphanumeric)
-    - Validation error should show on click away
- - Change the name to be valid, but different from original name. On click away:
-    - No validation errors
-    - Name of selected file should update in side tab
-    - Deploy button should be active
- - Click deploy
-    - Deploy success message should show
-    - Deploy button should become diabled
-    - Newly renamed file should be visible in side tab
- - Click export
-    - BND should export as a BNA
-    - BNA should include new file in models directory of archive
+    - Within editor select the edit icon
+    - Change the name to include illegal characters (non-alphanumeric)
+        - Validation error should show on click away
+    - Change the name to be valid, but different from original name. On click away:
+        - No validation errors
+        - Name of selected file should update in side tab
+        - Deploy button should be active
+    - Click deploy
+        - Deploy success message should show
+        - Deploy button should become diabled
+        - Newly renamed file should be visible in side tab
+    - Click export
+        - BND should export as a BNA
+        - BNA should include new file in models directory of archive
+- Add an existing model file from disc and repeat above steps
 
 Reset to the basic sample network, we will test the addition and edit of an existing script file
  - Select the script file
@@ -239,21 +240,23 @@ Reset to the basic sample network, we will test the addition and edit of an exis
     - BNA should contain renamed file in lib direcotory of archive
 
 Reset to the basic sample network, we will test the addition and edit of a new script file
- - Add a new script file
- - Within editor select the edit icon
- - Change the name to include illegal characters (non-alphanumeric)
-    - Validation error should show on click away
- - Change the name to be valid, but different from original name. On click away:
-    - No validation errors
-    - Name of selected file should update in side tab
-    - Deploy button should be active
- - Click deploy
-    - Deploy success message should show
-    - Deploy button should become diabled
-    - Newly renamed file should be visible in side tab
- - Click export
-    - BND should export as a BNA
-    - BNA should include new file in lib directory of archive
+ - Add a new script file via "new script file" selection
+    - Within editor select the edit icon
+    - Change the name to include illegal characters (non-alphanumeric)
+        - Validation error should show on click away
+    - Change the name to be valid, but different from original name. On click away:
+        - No validation errors
+        - Name of selected file should update in side tab
+        - Deploy button should be active
+    - Click deploy
+        - Deploy success message should show
+        - Deploy button should become diabled
+        - Newly renamed file should be visible in side tab
+    - Click export
+        - BND should export as a BNA
+        - BNA should include new file in lib directory of archive
+ - Add an existing script file from disc and repeat above steps
+
 
 ### Test and ID Page
 The test page enables testing of the currently deployed Business Network Definition, using a web runtime. The ID page enables access to resources based upon a selected ID existing within the BND. The Admin ID is a default ID, though in testing we will create new IDs and interact with resources based on the newly defined IDs that have ACL rules applied.

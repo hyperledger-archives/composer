@@ -32,7 +32,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     private currentFile: any = null;
     private deletableFile: boolean = false;
 
-    private addModelNamespace: string = 'org.acme.model';
+    private addModelNamespace: string = 'models/org.acme.model';
     private addScriptFileName: string = 'lib/script';
     private addScriptFileExtension: string = '.js';
 
