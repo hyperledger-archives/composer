@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Tutorial - E2E Developer Guide
+title: Tutorial - Developer Guide
 category: tutorials
 sidebar: sidebars/tutorials.md
-excerpt: Developer E2E Guide
+excerpt: Developer Guide
 ---
 
 # Create an end-to-end {{site.data.conrefs.composer_full}} solution from scratch
@@ -18,7 +18,7 @@ Here are the steps to get this running:
 
 ## Install {{site.data.conrefs.composer_full}}
 
-First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Developement Env Install guide](../getting-started/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.
+First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Developement Env Install guide](../installing/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.
 
 ## Install an Editor (eg. VSCode - and its {{site.data.conrefs.composer_full}} Extension for Syntax Highlighting)
 
@@ -38,11 +38,12 @@ The key concept for Composer is the **business network definition (BND)**. It de
 
 The easiest way to get started is to clone an **existing sample business network**. Open up a command prompt and clone the Composer sample networks repo. For Linux, perform this as a non-root user.
 
-**git clone https://github.com/hyperledger/composer-sample-networks.git**
-
-
-**cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network**
-
+```
+git clone https://github.com/hyperledger/composer-sample-networks.git
+```
+```
+cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network
+```
 You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder using Explorer (once selected the folder, scroll down and click OK to open the folder). You should see the file layout in the explorer pane.
 
 ![Explorer](../assets/img/tutorials/developer/vscode_explorer.png)
@@ -172,7 +173,9 @@ To check that the structure of the files is valid, you can now generate a Busine
 
 Switch back to the terminal and type:
 
+```
 npm install
+```
 
 You should see the following output:
 
@@ -202,7 +205,7 @@ The `composer archive create` command has created a file called `my-network.bna`
 
 All code should have unit tests - even your business network logic!
 
-We are now going to add a simple unit test for the business network definition. The unit test will run against the **embedded** {{site.data.conrefs.hlf_short}} runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this E2E tutorial).
+We are now going to add a simple unit test for the business network definition. The unit test will run against the **embedded** {{site.data.conrefs.hlf_short}} runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this guide).
 
 From your project working directory (my-network), open the file `test/Sample.js` and inspect the contents.
 
@@ -328,7 +331,9 @@ describe('Commodity Trading', () => {
 
 Check that the unit tests pass by typing:
 
-**npm test**
+```
+npm test
+```
 
 You should see output like the following:
 
@@ -392,7 +397,7 @@ Next,  press the "Test" tab at the top and create two 'Trader' participants (TRA
 
 The trader registry (with two entries) should look like this:
 
-![Trader Participant Registry]../assets/img/tutorials/developer/trader_registry.png)
+![Trader Participant Registry](../assets/img/tutorials/developer/trader_registry.png)
 
 Next, create a new instance of a Commodity (asset) by pressing the Commodity link on the left and then the "Create New Asset" button. Create the commodity and assign the owner to be 'TRADER1'.
 
@@ -412,7 +417,7 @@ After processing, you should now see the transaction in the transaction registry
 
 As a result, the owner of the ABC commodity should now be TRADER2.
 
-![Commodity registry]../assets/img/tutorials/developer/commodity_registry_after.png)
+![Commodity registry](../assets/img/tutorials/developer/commodity_registry_after.png)
 
 ## Deploy to the running {{site.data.conrefs.hlf_full}}
 
@@ -445,7 +450,9 @@ Command succeeded
 
 You can verify that the network has been deployed by typing:
 
-`composer network ping -n my-network -p hlfv1 -i admin -s adminpw`
+```
+composer network ping -n my-network -p hlfv1 -i admin -s adminpw
+```
 
 Which should give the following output:
 
@@ -471,7 +478,9 @@ Note that the module composer-rest-server would have been installed when you ins
 
 Now launch the server with the command:
 
+```
 composer-rest-server
+```
 
 Answer the questions posed at startup. These allow the composer-rest-server to connect to {{site.data.conrefs.hlf_full}} and configure how the REST API is generated.
 
@@ -498,7 +507,7 @@ Enter the values and then press the "Try it Out" button to submit. You should se
 
 Use the `GET` operation/method on `Trader` (leave the filter parameter blank) and press the "Try it Out" button. You should see your Trader returned.
 
-![Get trader]../assets/img/tutorials/developer/lb_get_trader.png)
+![Get trader](../assets/img/tutorials/developer/lb_get_trader.png)
 
 Similarly you can create/read/update/delete Commodities by using the appropriate HTTP request methods. You can submit a `Trade` transaction using an HTTP POST to the `/Trade` API endpoint.
 
@@ -510,7 +519,9 @@ Shut the `composer-rest-server` process down by pressing CTRL-C in the terminal 
 
 Run the {{site.data.conrefs.composer_full}} generator, selecting the options below to generate an Angular application and to also generate a new REST API when prompted:
 
+```
 yo hyperledger-composer
+```
 
 ![Composer Yo Generator](../assets/img/tutorials/developer/composer-yo-generator.png)
 
@@ -530,11 +541,15 @@ Next, change directory to your home directory (eg. /home/joe)
 
 Then change directory to your application directory:
 
+```
 cd my-app
+```
 
 Finally run:
 
+```
 npm start
+```
 
 Your application is running. You should see the `composer-rest-server` start, and then Angular webpacks the web application - it serves the content at URL: [http://localhost:4200]()
 

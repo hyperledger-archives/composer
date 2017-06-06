@@ -27,7 +27,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 **Business Network Model**: The business network model describes the assets, participants, and transactions in the business network. The model is in effect the static object structure of the overall business network.
 
-**Connection Profile**: Connection profiles are `.json` files used by {{site.data.conrefs.composer_full}} to connect to an instance of {{site.data.conrefs.hyperledger_full}}.
+**Connection Profile**: Connection profiles are `.json` files used by {{site.data.conrefs.composer_full}} to connect to an instance of {{site.data.conrefs.hlf_full}}.
 
 **{{site.data.conrefs.composer_short}} Playground**: The {{site.data.conrefs.composer_full}} Playground is an open toolset allowing business networks to be rapidly modelled and tested. Sample business networks can be imported to learn more about {{site.data.conrefs.composer_full}} and business network archives can be exported for local editing or later use.
 

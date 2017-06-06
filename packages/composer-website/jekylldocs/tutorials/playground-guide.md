@@ -17,7 +17,7 @@ Before beginning, you will need:
 * A GitHub account (if you want to import sample business network from GitHub)
 * A supported browser i.e. any modern version of Chrome, Firefox or Safari
 
-**OPTIONAL** You can follow this tutorial using a local install of Playground: [Install Local Playground](../getting-started/using-playground-locally.html)
+**OPTIONAL** You can follow this tutorial using a local install of Playground: [Install Local Playground](../installing/using-playground-locally.html)
 
 ---
 ## Let's get started - Importing the Car Auction sample

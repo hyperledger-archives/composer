@@ -73,6 +73,6 @@ Business networks may contain a set of access control rules. Access control rule
 
 ---
 
-* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../getting-started/getting-started-with-playground.html)
+* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../installing/getting-started-with-playground.html)
 * For an architectural overview of a typical solution built with {{site.data.conrefs.composer_short}}, see [Typical Solution Architecture](./solution-architecture.html)
-* To install the Development Tools, see [Getting setup with development tools](../getting-started/getting-started-cmd-line.html)
+* To install the Development Tools, see [Getting setup with development tools](../installing/getting-started-cmd-line.html)

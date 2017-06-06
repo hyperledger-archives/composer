@@ -3,8 +3,8 @@ layout: default
 title: Installing a development environment
 category: start
 section: installing
-sidebar: sidebars/getting-started.md
-excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../getting-started/development-tools.html) here or in the table of contents on the left.
+sidebar: sidebars/installing.md
+excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../installing/development-tools.html) here or in the table of contents on the left.
 index-order: 3
 ---
 
@@ -79,7 +79,7 @@ The development tools you'll need can all be installed with `npm install -g`.
 
 ## Step 2: Starting {{site.data.conrefs.hlf_full}}
 
-If you've [installed the {{site.data.conrefs.composer_full}} Playground locally](../getting-started/using-playground-locally.html) you'll need to close the containers by using the following scripts.
+If you've [installed the {{site.data.conrefs.composer_full}} Playground locally](../installing/using-playground-locally.html) you'll need to close the containers by using the following scripts.
 
 >_Please note: These commands will kill and remove all running containers, and should remove all previously created {{site.data.conrefs.hlf_full}} chaincode images._
 
@@ -210,5 +210,5 @@ Issue from the `fabric-tools` directory
 
 ## What next?
 
-* Begin [**writing a business network definition**](../business-network/businessnetwork.html).
+* Begin [**writing a business network definition**](../business-network/business-network-index.html).
 * If you're looking for a tutorial on using the developer tools, see the [**developer guide**](../tutorials/developer-guide.html) to run through a sample with the developer tools.

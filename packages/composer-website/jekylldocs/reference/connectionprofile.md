@@ -38,6 +38,44 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
   If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
 
         {
+            "type": "hlfv1",
+            "orderers": [
+                {
+                    "url": "grpcs://",
+                    "cert": ""
+                },
+                {
+                    "url": "grpcs://",
+                    "cert": ""
+                }
+            ],
+            "ca": {
+                    "url:" "https://",
+                    "trustedRoots": "",
+                    "verify": true
+            },
+            "peers": [
+                {
+                    "requestURL": "grpcs://",
+                    "eventURL": "grpcs://",
+                    "cert": ""
+                },
+                {
+                    "requestURL": "grpcs://",
+                    "eventURL": "grpcs://",
+                    "cert": ""
+                }
+            ],
+            "keyValStore": "/YOUR_HOME_DIR/.hfc-key-store",
+            "channel": "mychannel",
+            "mspID": "Org1MSP",
+            "deployWaitTime": "300",
+            "invokeWaitTime": "100"
+        }
+
+    If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
+
+        {
         "type": "hlfv1",
         "orderers": [
             "grpc://localhost:7050"
@@ -59,4 +97,18 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
         "deployWaitTime": "300",
         "invokeWaitTime": "100"
         }
+
+  - `type` defines the version of {{site.data.conrefs.hlf_full}} that you will connect to. To connect to {{site.data.conrefs.hlf_full}} v1.0-alpha is must be `hlfv1`.
+  - `orderers` is an array of objects which describe the orderes to communicate with. Within `orderers`, you must define the `url` of each orderer. If you are connecting via TLS, all `url` properties in your connection profile must begin with `grpcs://` and must also contain the correct TLS certificate in the `cert` property.
+  - `peers` is an array of objects describing the peers to communicate with. Each `peer` must have a defined `requestURL` and a defined `eventURL`. If you are connecting using TLS, each `peer` must also have the correct TLS certificate in the `cert` property.
+
+  - Each instance of the `cert` property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each `cert` property.  
+
+        -----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----
+
+
+  - `mspid` is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.
+  - `deployWaitTime` is an optional property which sets a wait time for a response before timing out when attempting to deploy your business network.
+  - `invokeWaitTime` is an optional property which sets a wait time for a response before timing out when invoking a transaction or making a query request.
+
   *Please note: If you are connecting to an instance of {{site.data.conrefs.hlf_full}} v1.0 the `keyValStore` property must be `home/.hfc-key-store`*

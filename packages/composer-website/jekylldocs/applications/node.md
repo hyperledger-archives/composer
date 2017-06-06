@@ -1,54 +1,34 @@
 ---
 layout: default
-title: Writing a node.js application
+title: Writing a Node.js application
 category: start
 sidebar: sidebars/applications.md
-excerpt: Writing a node.js application
+excerpt: Writing a Node.js application
 ---
 
-# Writing a Node.js Application
+# Writing Node.js Applications
 
 ---
 
-Let's take a look at the code for a simple Node.js sample application.
+Application developers use the `composer-client` npm module to programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions. If applications need to be able to deploy or administer business networks, then the `composer-admin` npm module can be used.
 
-Use `git clone` to download the composer-sample-applications repository, available at:
+The sample [`landregistry.js`](https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js) file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction. This has been implemented using a JavaScript class; however you are free to structure your code as you wish. 
 
-`https://github.com/hyperledger/composer-sample-applications`
-
-The [`landregistry.js`](https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js) file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction.
-This has been implemented using a JavaScript class; however you are free to structure your code as you wish. The framework's API is agnostic to this.
-The application is also setup as a command line driven application using yargs (see the files in the cmd directory).
-
-We'll look at section of functionality in turn after first looking at the modules that are required and how to connect to a {{site.data.conrefs.composer_full}} hosted application on the {{site.data.conrefs.hlf_full}}.
-
-## Promises
 It's worth highlighting that the style of the API is to use promises. Typically {{site.data.conrefs.composer_full}} APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.
 
-If you're not familiar with Promise based development it's worth reviewing some of the tutorials online to get an idea. For example [https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics]
+If you're not familiar with Promise based development it's worth reviewing some of the tutorials online to get an idea.
 
 ##  Modules required
 
 ```javascript
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 ```
-For a client application this is only {{site.data.conrefs.composer_full}} require needed. In this getting started application we also use the `cli-table` and `winston` and `config` modules for support processing. We use these to get information from the command line options, formatting of output and logging.
 
-```javascript
-const winston = require('winston');
-let config = require('config').get('gettingstarted');
-
-// these are the credentials to use to connect to the Hyperledger Fabric
-let participantId = config.get('participantId');
-let participantPwd = config.get('participantPwd');
-const LOG = winston.loggers.get('application');
-```
-
+For a {{site.data.conrefs.composer_full}} client application this is the only npm module required.
 
 ## Connecting to the {{site.data.conrefs.composer_full}} Runtime
-We've split the code to connect into two parts, part in the constructor of the object and part in an initialization method. This is an implementation decision made for this example - you are free to structure this in the way that best suits your application. What's important is the API calls and the data.
 
-The key thing here is that we need to create a new BusinessNetworkConnection object; and get from application configuration, the connection profile and the business network identifier needed.
+A BusinessNetworkConnection instance is created and then used to connect to a runtime:
 
 ```javascript
 this.bizNetworkConnection = new BusinessNetworkConnection();
@@ -57,7 +37,7 @@ this.businessNetworkIdentifier = config.get('businessNetworkIdentifier');
 ```
 
 The first {{site.data.conrefs.composer_full}} API call that we are going to make here, is the connect() API, to establish the connection to the {{site.data.conrefs.composer_full}} runtime on the Hyperledger Fabric.
-This API returns the businessNetworkDefinition if successful - which we hold onto.  The API takes, the connection profile name, business network identifier and participant details.
+This API returns a Promise to the businessNetworkDefinition if successful:
 
 ```javascript
 this.bizNetworkConnection.connect(this.CONNECTION_PROFILE_NAME, this.businessNetworkIdentifier, participantId, participantPwd)
@@ -69,7 +49,8 @@ this.bizNetworkConnection.connect(this.CONNECTION_PROFILE_NAME, this.businessNet
 For a client application this is all the essential setup that is required, from this point on it's up to what the application wants to do as to what APIs are called.
 
 ##Adding assets to a regsitry
-The {{site.data.conrefs.composer_full}} runtime will create a default registry to store assets in. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. This `getAssetRegistry()` takes the fully qualified asset name as defined in the CTO model file (That's namespace plus asset name). It returns a promise that is resolved with the asset registry, which we hold onto.
+
+The {{site.data.conrefs.composer_full}} runtime will create a default registry for each type of modeled asset. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. The `getAssetRegistry()` method takes the fully qualified asset name as defined in the CTO model file (that is the namespace plus the name of the asset type). It returns a promise that is resolved with the asset registry:
 
 ```javascript
 this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandTitle')
@@ -80,7 +61,7 @@ this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandT
 
 Next step is to create some assets (look for the method `_bootstrapTitles` in the code )
 
-We use a factory style pattern to be able to create assets. A factory is obtained from the businessNetworkDefinition we got early. From this we can create an instance of a 'person'.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The indentifiers here (firstName lastName) matches with the identifiers in the model.
+A factory style pattern is used to create assets. A factory is obtained from the businessNetworkDefinition and used to create instances of all the types defined in the business network.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The indentifiers here (firstName lastName) matches with the properties defined in the model.
 
 ```javascript
 let factory = this.businessNetworkDefinition.getFactory();
@@ -102,7 +83,7 @@ We now have a land title created that needs to be stored in the registry.
 ```javascript
 this.titlesRegistry.addAll([landTitle1, landTitle2]);
 ```
-This is using an API to add multiple titles, which returns a promise that is resolved when the assets are added. The last thing we need to do is add the Person, Fred Bloggs. As this is a 'participant', it's added using a different. It is very similar to assets, but this time the getParticipantRegistry API is used.
+This is using an API to add multiple titles, which returns a promise that is resolved when the assets are added. The last thing we need to do is add the Person, Fred Bloggs. As this is a 'participant', the getParticipantRegistry API is used.
 
 ```javascript
     this.bizNetworkConnection.getParticipantRegistry('net.biz.digitalPropertyNetwork.Person')
@@ -156,7 +137,7 @@ participant Person identified by personId {
   o String lastName
 }
 ```
-You can see how the owner and title information are being accessed in a very simple manner
+You can see how the owner and title information are being accessed in a very simple manner.
 
 ## Submitting a transactions
 The last thing that we need to do is submit a transaction. This is the definition of the transaction in the model file:
@@ -180,8 +161,6 @@ this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandT
 The getAssetRegistry call should now be looking a bit familar, the get API is used to get a specific land title.
 The next step is to create the transaction we want to submit.
 
-
-
 ```javascript
 let serializer = this.businessNetworkDefinition.getSerializer();
 
@@ -195,4 +174,7 @@ return this.bizNetworkConnection.submitTransaction(resource);
 ```
 What we need to do here is create a 'serializer'.  This is able to create a resource - this resource is then passed to the submitTransaction API. Note that the transaction JSON matches the structure specified in the model file.
 
-That's it!
+## References
+
+* [**JavaScript API Documentation**](../jsdoc/index.html)
+* [**Promises tutorial**](https://scotch.io/tutorials/understanding-javascript-promises-pt-i-background-basics)

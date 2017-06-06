@@ -2,9 +2,9 @@
 layout: default
 title: Installing the Playground locally
 category: start
-sidebar: sidebars/getting-started.md
+sidebar: sidebars/installing.md
 section: installing
-excerpt: To run the Playground locally with a local instance of Hyperledger Fabric, click [**Install Local Playground**](../getting-started/using-playground-locally.html) here or in the table of contents on the left.
+excerpt: To run the Playground locally with a local instance of Hyperledger Fabric, click [**Install Local Playground**](../installing/using-playground-locally.html) here or in the table of contents on the left.
 index-order: 2
 ---
 
