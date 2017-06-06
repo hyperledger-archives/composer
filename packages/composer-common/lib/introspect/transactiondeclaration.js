@@ -49,9 +49,9 @@ class TransactionDeclaration extends ClassDeclaration {
     /** fixes up the model, post-process*/
     retrofit(){
      // we add the timestamp property that all transactions must have
-        if(this.getProperty('timestamp') === null) {
+        if(this.getProperty('$timestamp') === null) {
             const ast = {
-                id : {name: 'timestamp'},
+                id : {name: '$timestamp'},
                 propertyType: {name: 'DateTime'}
             };
             this.properties.push(new Field(this, ast));

@@ -98,10 +98,12 @@ class ModelManager {
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             m.validate();
+            m.retrofit();
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
             modelFile.validate();
+            modelFile.retrofit();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
             return modelFile;
         }
@@ -124,6 +126,7 @@ class ModelManager {
                 throw new Error('model file does not exist');
             }
             m.validate();
+            m.retrofit();
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
@@ -131,6 +134,7 @@ class ModelManager {
                 throw new Error('model file does not exist');
             }
             modelFile.validate();
+            modelFile.retrofit();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
             return modelFile;
         }
