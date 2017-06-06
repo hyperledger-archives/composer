@@ -145,25 +145,25 @@ export class ImportComponent implements OnInit {
                     this.deployInProgress = false;
                     this.activeModal.close();
                 })
-                    .catch((error) => {
-                        if (error.message.includes('API rate limit exceeded')) {
-                            error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
-                        }
+                .catch((error) => {
+                    if (error.message.includes('API rate limit exceeded')) {
+                        error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
+                    }
 
-                        this.deployInProgress = false;
-                        this.alertService.busyStatus$.next(null);
-                        this.alertService.errorStatus$.next(error);
-                    });
+                    this.deployInProgress = false;
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.errorStatus$.next(error);
+                });
 
                 return deployPromise;
             }
         })
-            .catch((error) => {
-                this.deployInProgress = false;
-                if (error && error !== 1) {
-                    this.alertService.errorStatus$.next(error);
-                }
-            });
+        .catch((error) => {
+            this.deployInProgress = false;
+            if (error && error !== 1) {
+                this.alertService.errorStatus$.next(error);
+            }
+        });
     }
 
     deployFromGitHub(): Promise<any> {
