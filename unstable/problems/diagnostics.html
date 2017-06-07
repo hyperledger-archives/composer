@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,10 +100,10 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -122,11 +122,13 @@ ga('send', 'pageview');
 
 <p>If something should ever go wrong with an application, what should you do about getting diagnostics?</p>
 
-<p>Let&#39;s look at the digitalproperty-app sample, and use that to explain how to get diagnostics out of the Framework.</p>
+<p>Let&#39;s look at the <code>digitalproperty-app</code> sample, and use that to explain how to get diagnostics out of the framework.</p>
 
-<p>Key Point: This is a framework - so your application will need to have it&#39;s own logging framework. Plus, your application could also have configuration information to control Hyperledger Composer&#39;s own logging. Composer does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.</p>
+<blockquote>
+<p>Please note: This is a framework - so your application will need to have it&#39;s own logging framework. Also, your application could also have configuration information to control Hyperledger Composer&#39;s own logging. Composer uses the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.</p>
+</blockquote>
 
-<p>Note that the config module does write out a warning, if there are no configuration files set. Eg. <code>WARNING: No configurations found in configuration directory</code>. This can be suppressed with an environment variable if you are happy with the defaults and don&#39;t wish to use config in your application. See more information <a href="https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning">here</a>.</p>
+<p>The config module does write out a warning, if there are no configuration files set. Eg. <code>WARNING: No configurations found in configuration directory</code>. This can be suppressed with an environment variable if you are happy with the defaults and don&#39;t wish to use config in your application. See more information <a href="https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning">here</a>.</p>
 
 <p>There are two containers that are relevant to logging;</p>
 
@@ -159,12 +161,12 @@ ga('send', 'pageview');
 
 <ul>
 <li><p>One is a text file that is the location <code>${CurrentWorkingDir}/logs/trace_&lt;processid&gt;.trc</code></p></li>
-<li><p>The other is <code>stdout</code>. By default, <code>stdout</code> will only show any data logged with a level of &#39;error&#39; and the file will show any data logged with &#39;info&#39; or above (i.e. info, warn and error).</p>
+<li><p>The other is <code>stdout</code>. By default, <code>stdout</code> will only show any data logged with a level of &#39;error&#39; and the file will show any data logged with &#39;info&#39; or above (i.e. info, warn and error).</p></li>
+</ul>
 
 <h2 id="control-of-what-is-produced">Control of what is produced</h2>
 
-<p>The Config module is used to locate information to control how the logs are produced.</p></li>
-</ul>
+<p>The Config module is used to locate information to control how the logs are produced.</p>
 
 <p>For example</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
@@ -252,25 +254,6 @@ bb5db2ca4e6a hyperledger/fabric-peer
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

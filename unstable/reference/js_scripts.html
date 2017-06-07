@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,10 +100,10 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -117,6 +117,7 @@ ga('send', 'pageview');
 <a href="../reference/composer.participant.add.html">CLI Add Participant</a>
 <a href="../reference/composer.identity.issue.html">CLI Issue Identity </a>
 <a href="../reference/composer.identity.revoke.html">CLI Revoke Identity</a>
+<a href="../reference/composer.identity.import.html">CLI Import Identity</a>
 <a href="../jsdoc/index.html">API Documentation</a>
 <a href="../reference/glossary.html">Glossary</a>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -143,8 +144,7 @@ Network Definition&#39;s model files.</p>
 <h2 id="sample-script">Sample Script</h2>
 
 <p>The script below defines two transaction processor functions, called <code>onAnimalMovementDeparture</code> and <code>onAnimalMovementArrival</code>. Note that the model files within the <code>BusinessNetworkDefinition</code> must define the two transaction types <code>com.ibm.composer.mozart.AnimalMovementDeparture</code> and <code>com.ibm.composer.mozart.AnimalMovementArrival</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    ```
-    'use strict';
+<div class="highlight"><pre><code class="language-" data-lang="">    'use strict';
 
     /*eslint-disable no-unused-vars*/
     /*eslint-disable no-undef*/
@@ -170,18 +170,17 @@ Network Definition&#39;s model files.</p>
     /*eslint-enable no-unused-vars*/
     /*eslint-enable no-undef*/
     }
-    ```
 </code></pre></div>
-<p>Transaction processor functions may use the APIs defined in the <code>composer-runtime</code> module to access asset registries to create/read/update/delete assets. The <code>getCurrentParticipant</code> function may be called to determine the identity of the caller (identity used to submit a transaction for processing).</p>
+<p>Transaction processor functions may use the APIs defined in the <code>composer-runtime</code> module to access asset registries to create/read/update/delete assets. The <code>getCurrentParticipant()</code> function may be called to determine the identity of the caller (identity used to submit a transaction for processing).</p>
 
 <h2 id="decorators">Decorators</h2>
 
 <p>JSDoc documentation comments are used to supply metadata about the purpose and
 parameters of the functions in the script.</p>
 
-<p>The standard @param decorator must be used to specify the types of parameters for functions.</p>
+<p>The standard <code>@param</code> decorator must be used to specify the types of parameters for functions.</p>
 
-<p>The @transaction decorator is added to a function to indicate that it processes incoming transactions. Functions with the @transaction decorator must take a single transaction type parameter. The transaction type must be defined in the model files in the business network definition.</p>
+<p>The <code>@transaction</code> decorator is added to a function to indicate that it processes incoming transactions. Functions with the @transaction decorator must take a single transaction type parameter. The transaction type must be defined in the model files in the business network definition.</p>
 
             
           </section>
@@ -198,25 +197,6 @@ parameters of the functions in the script.</p>
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

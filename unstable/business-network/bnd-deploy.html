@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Deploy a Business Network Definition | Hyperledger Composer</title>
+    <title>Task - Deploying and Updating Business Networks | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,18 +100,16 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
 <a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/bnd-define.html">Creating a business network definition</a>
-<a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
+<a href="../business-network/bnd-create.html">Creating a business network definition</a>
+<a href="../business-network/bnd-deploy.html">Deploying and updating</a>
 <a href="../business-network/publishing-events.html">Emitting events</a>
-<a href="../business-network/runtime-update.html">Updating a business network definition</a>
-<a href="../business-network/testing.html">Testing a business network definition</a>
-<a href="../business-network/bnd-publish.html">Publishing a business network definition</a>
-<a href="../business-network/model-publish.html">Publishing a business domain model</a>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<a href="../business-network/testing.html">Testing</a>
+<a href="../business-network/bnd-publish.html">Publishing to npm</a>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -124,19 +122,25 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="deploying-a-business-network">Deploying a Business Network</h1>
+              <h1 id="deploying-and-updating-business-networks">Deploying and Updating Business Networks</h1>
 
 <hr>
 
-<p>A business network definition is deployed using the <code>composer network deploy</code> command. You can use the <code>composer archive</code> command to create an archive with the correct format.</p>
+<p>Before a business network definition can be deployed it must be packaged into a <em>Business Network Archive</em> (BNA) file. The <code>composer archive create</code> command is used to create a BNA file from a root folder on disk.</p>
 
-<ol>
-<li><p><a href="../reference/connectionprofile.html">Create a Connection Profile</a></p></li>
-<li><p>Enter the command on a single line. For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna -i &lt;Your EnrollmentID&gt;
-</code></pre></div></li>
-<li><p>Enter your Enrollment Secret when prompted.</p></li>
-</ol>
+<p>Once the BNA file has been created it can be deployed to a runtime using the <code>composer network deploy</code> command using a suitable <a href="../reference/connectionprofile.html">Connection Profile</a></p>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna 
+       -i &lt;Your EnrollmentID&gt; -s &lt;Your EnrollmentSecret&gt;
+</code></pre></div>
+<p>To update the definition of an already deployed business network use the <code>composer network update</code> CLI command.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="../reference/commands.html"><strong>Composer CLI commands</strong></a></li>
+</ul>
 
             
           </section>
@@ -153,25 +157,6 @@ ga('send', 'pageview');
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

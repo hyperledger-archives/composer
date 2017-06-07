@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Start a Fabric Runtime | Hyperledger Composer</title>
+    <title>Writing a node.js application | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,13 +100,13 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
-<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
-<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
-<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
+<a href="../applications/node.html">Node.js applications</a>
+<a href="../applications/web.html">Web or mobile applications</a>
+<a href="../applications/subscribing-to-events.html">Subscribing to events</a>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -119,11 +119,20 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="start-a-fabric-runtime">Start a Fabric Runtime</h1>
+              <h1 id="developing-applications">Developing Applications</h1>
 
 <hr>
 
-<p>You can start a local Fabric using Docker compose. The Getting Started project includes the setup.sh and teardown.sh scripts you need to download the required Docker images for Hyperledger and start or stop them.</p>
+<p>Hyperledger Composer supports creating web, mobile or native Node.js applications. It includes the <code>composer-rest-server</code> (itself based on LoopBack technology) to automatically generate a REST API for a business network, and the <code>hyperledger-composer</code> code generation plugin for the Yeoman framework to generate a skeleton Angular application.</p>
+
+<p>In addition it includes a rich set of JavaScript APIs to build native Node.js applications.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="http://yeoman.io"><strong>Yeoman Code Generator</strong></a></li>
+<li><a href="https://angular.io"><strong>Angular Framework</strong></a></li>
+</ul>
 
             
           </section>
@@ -140,25 +149,6 @@ ga('send', 'pageview');
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

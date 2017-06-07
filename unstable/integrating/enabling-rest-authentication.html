@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,10 +100,10 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <a href="../integrating/getting-started-rest-api.html">Exposing your business network as a REST API</a>
 <a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a>
@@ -200,7 +200,7 @@ ga('send', 'pageview');
 
 <h2 id="adding-a-blockchain-identity-to-the-default-wallet">Adding a Blockchain identity to the default wallet</h2>
 
-<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.acme.sample.SampleParticipant#alice@email.com</code>, and the secret is <code>suchs3cret</code>.</p>
+<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.example.sample.SampleParticipant#alice@email.com</code>, and the secret is <code>suchs3cret</code>.</p>
 
 <p>Follow these steps to add a Blockchain identity to the default wallet:</p>
 
@@ -247,7 +247,7 @@ The response from the operation should be:</p>
 <p>You can test that the Blockchain identity is being used by calling the <code>GET /system/ping</code> operation. This operation returns the fully qualified identifier for the participant that the Blockchain identity was issued to:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
   </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.7.3"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"participant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.sample.SampleParticipant#alice@email.com"</span><span class="w">
+  </span><span class="nt">"participant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.example.sample.SampleParticipant#alice@email.com"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <h2 id="final-notes">Final notes</h2>
@@ -271,25 +271,6 @@ The response from the operation should be:</p>
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Installing Hyperledger Composer | Hyperledger Composer</title>
+    <title>Writing Web or mobile applications | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,13 +100,13 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
-<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
-<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
-<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
+<a href="../applications/node.html">Node.js applications</a>
+<a href="../applications/web.html">Web or mobile applications</a>
+<a href="../applications/subscribing-to-events.html">Subscribing to events</a>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -119,28 +119,21 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="installing-hyperledger-composer">Installing Hyperledger Composer</h1>
+              <h1 id="writing-web-or-mobile-applications">Writing Web or mobile Applications</h1>
 
 <hr>
 
-<p>There are two ways to install Composer. To model, develop, or test business networks, <a href="../tutorials/getting-started-playground.html">install the Composer Playground locally</a> or <a href="https://composer-playground.mybluemix.net">use the playground online</a>.</p>
+<p>Web or mobile applications that need to interact with deployed business networks should make calls to a REST API. The easiest way to create the REST API is to use the <code>composer-rest-server</code> to dynamically generate a REST API from the deployed business network.</p>
 
-<p>If you want to develop and test applications, connect to a running Hyperledger Fabric instance, or run Hyperledger Composer and Hyperledger Fabric locally, see <a href="../installing/quickstart.html">installing Hyperledger Composer</a>.</p>
+<p>In addition the <code>yo hyperledger-composer</code> command can be used to generate a skeleton Angular project that calls the <code>composer-rest-server</code> to interact with a business network.</p>
 
-<p>If you want a more guided &quot;Getting Started&quot; experience, see our <a href="../tutorials/tutorialindex.html">Tutorials and Getting Started guides</a>.</p>
+<p>Please follow the Developer Guide for an example of how to use the <code>composer-rest-server</code> and the Angular generator.</p>
 
-<p>After installing, create a connection profile to connect to a running Hyperledger Fabric instance. See <a href="../installing/createconnectionprofile.html">creating a connection profile</a></p>
-
-<hr>
-
-<h2 id="related-links">Related Links</h2>
+<h2 id="references">References</h2>
 
 <ul>
-<li><a href="../tutorials/getting-started-playground.html">Installing the Playground locally</a></li>
-<li><a href="../tutorials/">Run the Playground online</a></li>
-<li><a href="../installing/prerequisites.html">Installation Pre-Requisites</a></li>
-<li><a href="../installing/quickstart.html">Installing Hyperledger Composer</a></li>
-<li><a href="../tutorials/tutorialindex.html">Tutorials and Getting Started</a></li>
+<li><a href="../tutorials/developer-guide.html"><strong>Developer Guide</strong></a></li>
+<li><a href="../integrating/getting-started-rest-api.html"><strong>Composer REST Server</strong></a></li>
 </ul>
 
             
@@ -158,25 +151,6 @@ ga('send', 'pageview');
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 
