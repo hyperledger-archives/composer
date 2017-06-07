@@ -13,7 +13,7 @@ import * as chai from 'chai';
 
 let should = chai.should();
 
-describe('DeleteComponent', () => {
+describe('ReplaceComponent', () => {
     let component: ReplaceComponent;
     let fixture: ComponentFixture<ReplaceComponent>;
 
@@ -32,16 +32,4 @@ describe('DeleteComponent', () => {
         component.should.be.ok;
     });
 
-    describe('onInit', () => {
-
-        it('should set default messages', () => {
-
-            component['ngOnInit']();
-
-            component['headerMessage'].should.be.equal('Current definition will be replaced');
-            component['mainMessage'].should.be.equal('Your Business Network Definition currently in the Playground will be removed & replaced.');
-            component['supplementaryMessage'].should.be.equal('Please ensure that you have exported any current model files in the Playground.');
-        });
-
-    });
 });

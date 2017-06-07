@@ -68,6 +68,13 @@ describe('ClientService', () => {
 
             result.should.deep.equal(businessNetworkConMock);
         }));
+
+        it('should create a new business network connection if none exist', inject([ClientService], (service: ClientService) => {
+            let mockCreate = sinon.stub(service, 'createBusinessNetworkConnection');
+            let result = service.getBusinessNetworkConnection();
+
+            mockCreate.should.have.been.called;
+        }));
     });
 
     describe('getBusinessNetwork', () => {
@@ -614,6 +621,22 @@ describe('ClientService', () => {
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
 
             mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
+        }));
+
+        it('should set business network readme', inject([ClientService], (service: ClientService) => {
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+
+            businessNetworkDefMock.getMetadata.returns({
+                getVersion: sinon.stub().returns('my version'),
+                getDescription: sinon.stub().returns('my description'),
+                getPackageJson: sinon.stub().returns({package: 'such data'}),
+                getName: sinon.stub().returns('my name')
+            });
+
+            service.setBusinessNetworkReadme('my readme');
+
+            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {package: 'such data'}, 'my readme');
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
         it('should set business network name', inject([ClientService], (service: ClientService) => {

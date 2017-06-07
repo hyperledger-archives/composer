@@ -316,6 +316,7 @@ describe('ImportComponent', () => {
             let deployGithubMock = sinon.stub(component, 'deployFromGitHub').returns(Promise.resolve());
 
             mockNgbModal.open = sinon.stub().returns({
+                componentInstance: {},
                 result: Promise.resolve(true)
             });
 
@@ -332,6 +333,7 @@ describe('ImportComponent', () => {
         it('should deploy a business network from business network', fakeAsync(() => {
 
             mockNgbModal.open = sinon.stub().returns({
+                componentInstance: {},
                 result: Promise.resolve(true)
             });
 
