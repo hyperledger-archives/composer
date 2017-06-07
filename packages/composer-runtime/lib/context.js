@@ -18,17 +18,18 @@ const AccessController = require('./accesscontroller');
 const Api = require('./api');
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
 const IdentityManager = require('./identitymanager');
-const JSTransactionExecutor = require('./jstransactionexecutor');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
 const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
 const Resolver = require('./resolver');
+const ScriptCompiler = require('./scriptcompiler');
 const TransactionLogger = require('./transactionlogger');
 
 const LOG = Logger.getLog('Context');
 
 const businessNetworkCache = LRU(8);
+const compiledScriptBundleCache = LRU(8);
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -51,6 +52,18 @@ class Context {
     }
 
     /**
+     * Store a compiled script bundle in the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @param {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
+     */
+    static cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle) {
+        const method = 'cacheCompiledScriptBundle';
+        LOG.entry(method, businessNetworkHash, compiledScriptBundle);
+        compiledScriptBundleCache.set(businessNetworkHash, compiledScriptBundle);
+        LOG.exit(method);
+    }
+
+    /**
      * Constructor.
      * @param {Engine} engine The chaincode engine that owns this context.
      */
@@ -64,51 +77,89 @@ class Context {
         this.identityManager = null;
         this.participant = null;
         this.transaction = null;
-        this.transactionExecutors = [];
         this.accessController = null;
         this.sysregistries = null;
         this.sysidentities = null;
         this.eventNumber = 0;
+        this.scriptCompiler = null;
+        this.compiledScriptBundle = null;
     }
 
     /**
-     * Load the business network definition.
-     * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
+     * Load the business network record from the world state.
+     * @return {Promise} A promise that will be resolved with the business network record
      * when complete, or rejected with an error.
      */
-    loadBusinessNetworkDefinition() {
-        const method = 'loadBusinessNetworkDefinition';
+    loadBusinessNetworkRecord() {
+        const method = 'loadBusinessNetworkRecord';
         LOG.entry(method);
         return this.getDataService().getCollection('$sysdata')
             .then((collection) => {
-
                 LOG.debug(method, 'Getting business network archive from the $sysdata collection');
                 return collection.get('businessnetwork');
             })
             .then((object) => {
-
                 // check if the network has been undeployed first. if is has throw exception.
                 if (object.undeployed){
                     throw new Error('The business network has been undeployed');
                 }
+                LOG.exit(object);
+                return object;
+            });
+    }
 
-                LOG.debug(method, 'Looking in cache for business network', object.hash);
-                let businessNetworkDefinition = businessNetworkCache.get(object.hash);
-                if (businessNetworkDefinition) {
-                    LOG.debug(method, 'Business network is in cache');
-                    return businessNetworkDefinition;
-                }
-                LOG.debug(method, 'Business network is not in cache, loading');
-                let businessNetworkArchive = Buffer.from(object.data, 'base64');
-                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
-                    .then((businessNetworkDefinition) => {
-                        Context.cacheBusinessNetwork(object.hash, businessNetworkDefinition);
-                        return businessNetworkDefinition;
-                    });
-            })
+    /**
+     * Load the business network definition.
+     * @param {Object} businessNetworkRecord The business network record.
+     * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
+     * when complete, or rejected with an error.
+     */
+    loadBusinessNetworkDefinition(businessNetworkRecord) {
+        const method = 'loadBusinessNetworkDefinition';
+        LOG.entry(method);
+        LOG.debug(method, 'Looking in cache for business network', businessNetworkRecord.hash);
+        let businessNetworkDefinition = businessNetworkCache.get(businessNetworkRecord.hash);
+        if (businessNetworkDefinition) {
+            LOG.debug(method, 'Business network is in cache');
+            return Promise.resolve(businessNetworkDefinition);
+        }
+        LOG.debug(method, 'Business network is not in cache, loading');
+        let businessNetworkArchive = Buffer.from(businessNetworkRecord.data, 'base64');
+        return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
             .then((businessNetworkDefinition) => {
+                Context.cacheBusinessNetwork(businessNetworkRecord.hash, businessNetworkDefinition);
                 LOG.exit(method, businessNetworkDefinition);
                 return businessNetworkDefinition;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
+    }
+
+    /**
+     * Load or compile the compiled script bundle.
+     * @param {Object} businessNetworkRecord The business network record.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
+     * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
+     * when complete, or rejected with an error.
+     */
+    loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition) {
+        const method = 'loadCompiledScriptBundle';
+        LOG.entry(method);
+        LOG.debug(method, 'Looking in cache for compiled script bundle', businessNetworkRecord.hash);
+        let compiledScriptBundle = compiledScriptBundleCache.get(businessNetworkRecord.hash);
+        if (compiledScriptBundle) {
+            LOG.debug(method, 'Compiled script bundle is in cache');
+            return Promise.resolve(compiledScriptBundle);
+        }
+        LOG.debug(method, 'Compiled script bundle is not in cache, loading');
+        return Promise.resolve()
+            .then(() => {
+                let compiledScriptBundle = this.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                Context.cacheCompiledScriptBundle(businessNetworkRecord.hash, compiledScriptBundle);
+                LOG.exit(method, compiledScriptBundle);
+                return compiledScriptBundle;
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -147,9 +198,71 @@ class Context {
     }
 
     /**
+     * Get the business network definition to use.
+     * @param {Object} [options] The options to use.
+     * @param {BusinessNetworkDefinition} [options.businessNetworkDefinition] The business network definition to use.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    findBusinessNetworkDefinition(options) {
+        const method = 'findBusinessNetworkDefinition';
+        LOG.entry(method, options);
+        options = options || {};
+        return Promise.resolve()
+            .then(() => {
+                if (options.businessNetworkDefinition) {
+                    LOG.debug(method, 'Business network definition already specified');
+                    return options.businessNetworkDefinition;
+                } else {
+                    LOG.debug(method, 'Business network definition not specified, loading from world state');
+                    return this.loadBusinessNetworkRecord()
+                        .then((businessNetworkRecord) => {
+                            return this.loadBusinessNetworkDefinition(businessNetworkRecord);
+                        });
+                }
+            })
+            .then((businessNetworkDefinition) => {
+                LOG.exit(method, businessNetworkDefinition);
+                return businessNetworkDefinition;
+            });
+    }
+
+    /**
+     * Get the compiled script bundle to use.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition to use.
+     * @param {Object} [options] The options to use.
+     * @param {CompiledScriptBundle} [options.compiledScriptBundle] The business network definition to use.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    findCompiledScriptBundle(businessNetworkDefinition, options) {
+        const method = 'findCompiledScriptBundle';
+        LOG.entry(method, options);
+        options = options || {};
+        return Promise.resolve()
+            .then(() => {
+                if (options.compiledScriptBundle) {
+                    LOG.debug(method, 'Compiled script bundle already specified');
+                    return options.compiledScriptBundle;
+                } else {
+                    LOG.debug(method, 'Compiled script bundle not specified, loading from world state');
+                    return this.loadBusinessNetworkRecord()
+                        .then((businessNetworkRecord) => {
+                            return this.loadCompiledScriptBundle(businessNetworkRecord, businessNetworkDefinition);
+                        });
+                }
+            })
+            .then((compiledScriptBundle) => {
+                LOG.exit(method, compiledScriptBundle);
+                return compiledScriptBundle;
+            });
+    }
+
+    /**
      * Initialize the context for use.
      * @param {Object} [options] The options to use.
      * @param {BusinessNetworkDefinition} [options.businessNetworkDefinition] The business network definition to use.
+     * @param {CompiledScriptBundle} [options.compiledScriptBundle] The compiled script bundle to use.
      * @param {boolean} [options.reinitialize] Set to true if being reinitialized as a result of an upgrade to the
      * business network, falsey value if not.
      * @param {DataCollection} [options.sysregistries] The system registries collection to use.
@@ -163,19 +276,16 @@ class Context {
         options = options || {};
         return Promise.resolve()
             .then(() => {
-                if (options.businessNetworkDefinition) {
-                    LOG.debug(method, 'Business network definition already specified');
-                    return options.businessNetworkDefinition;
-                } else {
-                    LOG.debug(method, 'Business network definition not specified, loading from world state');
-                    return this.loadBusinessNetworkDefinition();
-                }
+                return this.findBusinessNetworkDefinition(options);
             })
             .then((businessNetworkDefinition) => {
-                LOG.debug(method, 'Loaded business network archive');
+                LOG.debug(method, 'Got business network archive');
                 this.businessNetworkDefinition = businessNetworkDefinition;
+                return this.findCompiledScriptBundle(businessNetworkDefinition, options);
             })
-            .then(() => {
+            .then((compiledScriptBundle) => {
+                LOG.debug(method, 'Got compiled script bundle');
+                this.compiledScriptBundle = compiledScriptBundle;
                 LOG.debug(method, 'Loading sysregistries collection', options.sysregistries);
                 if (options.sysregistries) {
                     this.sysregistries = options.sysregistries;
@@ -211,13 +321,8 @@ class Context {
                 }
             })
             .then(() => {
-                LOG.debug(method, 'Installing default JavaScript transaction executor');
-                this.addTransactionExecutor(new JSTransactionExecutor());
-            })
-            .then(() => {
                 LOG.exit(method);
             });
-
     }
 
     /**
@@ -432,37 +537,6 @@ class Context {
     }
 
     /**
-     * Add a transaction executor.
-     * @param {TransactionExecutor} transactionExecutor The transaction executor.
-     */
-    addTransactionExecutor(transactionExecutor) {
-        const method = 'addTransactionExecutor';
-        LOG.entry(method, transactionExecutor);
-        let replaced = this.transactionExecutors.some((existingTransactionExecutor, index) => {
-            if (transactionExecutor.getType() === existingTransactionExecutor.getType()) {
-                LOG.debug(method, 'Found existing executor for type, replacing', transactionExecutor.getType());
-                this.transactionExecutors[index] = transactionExecutor;
-                return true;
-            } else {
-                return false;
-            }
-        });
-        if (!replaced) {
-            LOG.debug(method, 'Did not replace executor, adding to end of list', transactionExecutor.getType());
-            this.transactionExecutors.push(transactionExecutor);
-        }
-        LOG.exit(method);
-    }
-
-    /**
-     * Get the list of transaction executors.
-     * @return {TransactionExecutor[]} The list of transaction executors.
-     */
-    getTransactionExecutors() {
-        return this.transactionExecutors;
-    }
-
-    /**
      * Get the access controller.
      * @return {AccessController} The access controller.
      */
@@ -509,6 +583,25 @@ class Context {
      */
     incrementEventNumber() {
         return this.eventNumber++;
+    }
+
+    /**
+     * Get the script compiler.
+     * @return {ScriptCompiler} scriptCompiler The script compiler.
+     */
+    getScriptCompiler() {
+        if (!this.scriptCompiler) {
+            this.scriptCompiler = new ScriptCompiler();
+        }
+        return this.scriptCompiler;
+    }
+
+    /**
+     * Get the compiled script bundle.
+     * @return {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
+     */
+    getCompiledScriptBundle() {
+        return this.compiledScriptBundle;
     }
 
     /**
