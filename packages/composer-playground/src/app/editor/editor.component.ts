@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ImportComponent } from '../import/import.component';
 import { AddFileComponent } from '../add-file/add-file.component';
 import { DeleteComponent } from '../basic-modals/delete-confirm/delete-confirm.component';
+import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
@@ -13,7 +14,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { AlertService } from '../services/alert.service';
 import { EditorService } from '../services/editor.service';
 
-import { ModelFile, ScriptManager, ModelManager } from 'composer-common';
+import { ModelFile, Script, ScriptManager, ModelManager } from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -287,6 +288,30 @@ export class EditorComponent implements OnInit, OnDestroy {
         this.dirty = true;
     }
 
+    addReadme(readme) {
+        if (this.files[0].readme) {
+            const confirmModalRef = this.modalService.open(ReplaceComponent);
+
+            confirmModalRef.componentInstance.mainMessage = 'Your current README file will be replaced.';
+            confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your README file to disc.';
+            confirmModalRef.result.then((result) => {
+                this.clientService.setBusinessNetworkReadme(readme);
+                this.updateFiles();
+                this.setCurrentFile(this.files[0]);
+                this.dirty = true;
+        }, (reason) => {
+            if (reason && reason !== 1) {
+                this.alertService.errorStatus$.next(reason);
+            }
+        });
+        } else {
+            this.clientService.setBusinessNetworkReadme(readme);
+            this.updateFiles();
+            this.setCurrentFile(this.files[0]);
+            this.dirty = true;
+        }
+    }
+
     openImportModal() {
         this.modalService.open(ImportComponent).result.then((result) => {
             this.updatePackageInfo();
@@ -325,8 +350,10 @@ export class EditorComponent implements OnInit, OnDestroy {
             if (result !== 0) {
                 if (result instanceof ModelFile) {
                     this.addModelFile(result);
-                } else {
+                } else if (result instanceof Script) {
                     this.addScriptFile(result);
+                } else {
+                    this.addReadme(result);
                 }
                 this.clientService.businessNetworkChanged$.next(true);
             }
