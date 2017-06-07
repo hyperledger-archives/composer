@@ -14,22 +14,23 @@
 
 'use strict';
 
-const Concerto = require('..');
+const Composer = require('..');
 
 require('chai').should();
 
-describe('Concerto', () => {
+describe('Composer', () => {
 
     it('should export all types required by Go', () => {
-        Concerto.Container.should.be.a('function');
-        Concerto.Context.should.be.a('function');
-        Concerto.DataCollection.should.be.a('function');
-        Concerto.DataService.should.be.a('function');
-        Concerto.Engine.should.be.a('function');
-        Concerto.EventService.should.be.a('function');
-        Concerto.HTTPService.should.be.a('function');
-        Concerto.IdentityService.should.be.a('function');
-        Concerto.LoggingService.should.be.a('function');
+        Composer.Container.should.be.a('function');
+        Composer.Context.should.be.a('function');
+        Composer.DataCollection.should.be.a('function');
+        Composer.DataService.should.be.a('function');
+        Composer.Engine.should.be.a('function');
+        Composer.EventService.should.be.a('function');
+        Composer.HTTPService.should.be.a('function');
+        Composer.IdentityService.should.be.a('function');
+        Composer.LoggingService.should.be.a('function');
+        Composer.ScriptCompiler.should.be.a('function');
     });
 
 });

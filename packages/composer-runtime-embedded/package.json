@@ -57,6 +57,7 @@
     "debug": "^2.6.2",
     "dexie": "^1.5.1",
     "fake-indexeddb": "^1.0.8",
+    "istanbul-lib-instrument": "^1.7.2",
     "request": "^2.81.0",
     "uuid": "^3.0.1"
   },
