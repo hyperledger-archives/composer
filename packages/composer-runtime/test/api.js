@@ -59,6 +59,15 @@ describe('Api', () => {
         api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockHTTPService, mockEventService, mockQueryService, mockContext);
     });
 
+    describe('#getMethodNames', () => {
+
+        it('should return a list of method names', () => {
+            const propertyNames = Object.getOwnPropertyNames(api);
+            Api.getMethodNames().should.deep.equal(propertyNames);
+        });
+
+    });
+
     describe('#constructor', () => {
 
         it('should obscure any implementation details', () => {

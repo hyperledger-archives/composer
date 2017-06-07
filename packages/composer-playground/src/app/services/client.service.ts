@@ -15,7 +15,7 @@ const sampleBusinessNetworkArchive = require('basic-sample-network/dist/basic-sa
 @Injectable()
 export class ClientService {
     public businessNetworkChanged$: Subject<boolean> = new BehaviorSubject<boolean>(null);
-    public fileNameChanged$: Subject<string> = new BehaviorSubject<string>(null);
+    public namespaceChanged$: Subject<string> = new BehaviorSubject<string>(null);
 
     private businessNetworkConnection: BusinessNetworkConnection = null;
     private isConnected: boolean = false;
@@ -30,8 +30,8 @@ export class ClientService {
     }
 
     // horrible hack for testing
-    createModelFile(modelManager, content) {
-        return new ModelFile(modelManager, content);
+    createModelFile(modelManager, content, fileName) {
+        return new ModelFile(modelManager, content, fileName);
     }
 
     // horrible hack for testing
@@ -71,7 +71,7 @@ export class ClientService {
         try {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
-                let modelFile = this.createModelFile(modelManager, content);
+                let modelFile = this.createModelFile(modelManager, content, null);
                 modelManager.validateModelFile(modelFile);
             } else if (type === 'script') {
                 let scriptManager = this.getBusinessNetwork().getScriptManager();
@@ -91,15 +91,16 @@ export class ClientService {
         try {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
-                let modelFile = this.createModelFile(modelManager, content);
+                let original: ModelFile = modelManager.getModelFile(id);
+                let modelFile = this.createModelFile(modelManager, content, original.getFileName());
                 if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                     throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }
                 if (id !== modelFile.getNamespace()) {
-                    // Then we are changing namespace and must delete old file
+                    // Then we are changing namespace and must delete old reference
                     modelManager.addModelFile(modelFile);
                     modelManager.deleteModelFile(id);
-                    this.fileNameChanged$.next(modelFile.getNamespace());
+                    this.namespaceChanged$.next(modelFile.getNamespace());
                 } else {
                     modelManager.updateModelFile(modelFile);
                 }
@@ -115,6 +116,27 @@ export class ClientService {
             }
 
             this.businessNetworkChanged$.next(true);
+            return null;
+        } catch (e) {
+            this.businessNetworkChanged$.next(false);
+            return e.toString();
+        }
+    }
+
+    replaceFile(oldId: string, newId: string, content: any, type: string): string {
+        try {
+            if (type === 'model') {
+                let modelManager = this.getBusinessNetwork().getModelManager();
+                let modelFile = this.createModelFile(modelManager, content, newId);
+                modelManager.updateModelFile(modelFile, newId);
+                this.businessNetworkChanged$.next(true);
+            } else if (type === 'script') {
+                let scriptManager = this.getBusinessNetwork().getScriptManager();
+                let script = scriptManager.createScript(newId, 'JS', content);
+                scriptManager.addScript(script);
+                scriptManager.deleteScript(oldId);
+                this.businessNetworkChanged$.next(true);
+            }
             return null;
         } catch (e) {
             this.businessNetworkChanged$.next(false);

@@ -34,14 +34,14 @@ describe('Transaction (participant specific) system tests', () => {
 
     before(function () {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/transactions.participants.cto'), 'utf8')
+            { fileName: 'models/transactions.participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.participants.cto'), 'utf8') }
         ];
         const scriptFiles=  [
             { identifier: 'transactions.participants.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.participants.js'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions.participants@0.0.1', 'The network for the transaction (participant specific) system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();

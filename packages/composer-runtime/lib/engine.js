@@ -104,7 +104,7 @@ class Engine {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive']));
         }
         let dataService = context.getDataService();
-        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
+        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition, compiledScriptBundle;
         let sysregistries, sysidentities;
         return Promise.resolve()
             .then(() => {
@@ -131,6 +131,11 @@ class Engine {
                 businessNetworkDefinition = businessNetworkDefinition_;
                 LOG.debug(method, 'Loaded business network definition, storing in cache');
                 Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
+
+                // Cache the compiled script bundle.
+                compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
+                Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
@@ -196,6 +201,7 @@ class Engine {
                 LOG.debug(method, 'Initializing context');
                 return context.initialize({
                     businessNetworkDefinition: businessNetworkDefinition,
+                    compiledScriptBundle: compiledScriptBundle,
                     sysregistries: sysregistries,
                     sysidentities: sysidentities
                 });
