@@ -11,7 +11,9 @@ excerpt: Generating a REST API
 ---
 
 ## Running the REST server
-You should now be able to run the {{site.data.conrefs.composer_full}} REST server.
+{{site.data.conrefs.composer_full}} includes a standalone Node.js process that exposes a business network as a REST API. The LoopBack framework is used to generate an Open API, described by a Swagger document.
+
+To launch the REST Server simply type:
 
 ```bash
 composer-rest-server

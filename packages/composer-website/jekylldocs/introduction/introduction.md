@@ -22,7 +22,7 @@ You can use {{site.data.conrefs.composer_full}} to quickly model your current bu
 
 ---
 
-## How does {{site.data.conrefs.composer_full}} work in practise?
+## How does {{site.data.conrefs.composer_full}} work in practice?
 
 For an example of a business network in action; a realtor can quickly model their business network as such:
 
@@ -39,6 +39,6 @@ Participants can have their access to transactions restricted based on their rol
 
 ---
 
-* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../getting-started/getting-started-with-playground.html)
+* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../installing/getting-started-with-playground.html)
 * For an introduction to {{site.data.conrefs.composer_short}} components and concepts, see [Key Concepts](./key-concepts.html)
 * For an architectural overview of a typical solution built with {{site.data.conrefs.composer_short}}, see [Typical Solution Architecture](./solution-architecture.html)

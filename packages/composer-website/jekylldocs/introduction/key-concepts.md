@@ -15,9 +15,9 @@ excerpt:
 
 ## {{site.data.conrefs.composer_full}} Components
 
-{{site.data.conrefs.composer_full}} can be experienced through a browser-based UI called {{site.data.conrefs.composer_full}} Playground.  This can be used via a hosted version (no install necessary) or a local install (good for editing and testing sample Business Networks offline).
+You can experience {{site.data.conrefs.composer_full}} with our browser-based UI called {{site.data.conrefs.composer_full}} Playground. {{site.data.conrefs.composer}} Playground is available as a hosted version (no install necessary) or a local install (good for editing and testing sample business networks offline).
 
-Developers who want to use {{site.data.conrefs.composer_full}}'s full application development capabilities can install the Developer Tools.
+Developers who want to use {{site.data.conrefs.composer_full}}'s full application development capabilities should install the Developer Tools.
 
 ![Diagram of {{site.data.conrefs.composer_full}} components](../assets/img/ComposerComponents.svg)
 
@@ -27,7 +27,7 @@ Developers who want to use {{site.data.conrefs.composer_full}}'s full applicatio
 
 ### Blockchain State Storage
 
-The current state of assets and participants are stored on the blockchain (ledger), for example, as administered by {{site.data.conrefs.hlf_full}}. {{site.data.conrefs.hlf_full}} distributes the ledger across a set of peers and ensures that updates to the ledger are consistent across all peers (consensus).
+All transactions submitted through a business network are stored on the blockchain ledger, and the current state of assets and participants are stored in the blockchain state database. The blockchain distributes the ledger and the state database across a set of peers and ensures that updates to the ledger and state database are consistent across all peers using a consensus algorithm.
 
 ---
 
@@ -73,6 +73,6 @@ Business networks may contain a set of access control rules. Access control rule
 
 ---
 
-* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../getting-started/getting-started-with-playground.html)
+* To try {{site.data.conrefs.composer_full}} right away, see the [Online Playground](../installing/getting-started-with-playground.html)
 * For an architectural overview of a typical solution built with {{site.data.conrefs.composer_short}}, see [Typical Solution Architecture](./solution-architecture.html)
-* To install the Development Tools, see [Getting setup with development tools](../getting-started/getting-started-cmd-line.html)
+* To install the Development Tools, see [Getting setup with development tools](../installing/getting-started-cmd-line.html)

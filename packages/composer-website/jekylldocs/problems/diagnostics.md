@@ -12,11 +12,11 @@ excerpt: Diagnosing Problems
 
 If something should ever go wrong with an application, what should you do about getting diagnostics?
 
-Let's look at the digitalproperty-app sample, and use that to explain how to get diagnostics out of the Framework.
+Let's look at the `digitalproperty-app` sample, and use that to explain how to get diagnostics out of the framework.
 
-Key Point: This is a framework - so your application will need to have it's own logging framework. Plus, your application could also have configuration information to control {{site.data.conrefs.composer_full}}'s own logging. Composer does use the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
+>Please note: This is a framework - so your application will need to have it's own logging framework. Also, your application could also have configuration information to control {{site.data.conrefs.composer_full}}'s own logging. Composer uses the Winston logging module by default - and will use the Config module to look for any configuration information. If none is found, then a set of defaults will be used.
 
-Note that the config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
+The config module does write out a warning, if there are no configuration files set. Eg. `WARNING: No configurations found in configuration directory`. This can be suppressed with an environment variable if you are happy with the defaults and don't wish to use config in your application. See more information [here](https://github.com/lorenwest/node-config/wiki/Environment-Variables#suppress_no_config_warning).
 
 There are two containers that are relevant to logging;
 
@@ -46,7 +46,9 @@ By default, there are two locations for data:
 - One is a text file that is the location `${CurrentWorkingDir}/logs/trace_<processid>.trc`
 
 - The other is `stdout`. By default, `stdout` will only show any data logged with a level of 'error' and the file will show any data logged with 'info' or above (i.e. info, warn and error).
+
 ## Control of what is produced
+
 The Config module is used to locate information to control how the logs are produced.
 
 For example
@@ -84,7 +86,7 @@ The first section is specific to the Getting Started application, the second `Co
 - `logger` is used to refer the module that does actual logging. default is implying that this is the winston framework
 - `config` is passed to the logger to control what it does.  So this section is specific to the logger in use.
 
-##Enabling more information
+## Enabling more information
 
 The standard way of enabling node.js applications for debug is to use the `DEBUG` environment variable. So therefore
 

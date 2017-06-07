@@ -36,3 +36,9 @@ Like all business logic, it is important to create unit and system tests for bus
 Once the business network is tested and in place, front-end applications need to be created. Use the {{site.data.conrefs.hlf_short}} REST Server to automatically generate a REST API for a business network, and then a skeleton generate Angular application using the Yeoman code generator.
 
 The REST Server can be configured to authenticate the participants in the business network, ensuring that credentials and permissions are enforced.
+
+## References
+
+* [**Modeling Language**](../reference/cto_language.html)
+* [**Access Control Language**](../reference/acl_language.html)
+* [**Transaction Processor Functions**](../reference/js_scripts.html)
