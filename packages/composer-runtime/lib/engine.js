@@ -121,8 +121,6 @@ class Engine {
                 let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
                 let sha256 = createHash('sha256');
                 businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
-                // console.log('got base64', businessNetworkBase64);
-                console.log('got hash', businessNetworkHash);
                 LOG.debug(method, 'Calculated business network definition hash', businessNetworkHash);
 
                 // Create the business network record.
