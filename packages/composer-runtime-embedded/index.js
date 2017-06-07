@@ -22,9 +22,5 @@ module.exports.EmbeddedHTTPService = require('./lib/embeddedhttpservice');
 module.exports.EmbeddedEventService = require('./lib/embeddedeventservice');
 module.exports.EmbeddedIdentityService = require('./lib/embeddedidentityservice');
 module.exports.EmbeddedLoggingService = require('./lib/embeddedloggingservice');
-<<<<<<< HEAD
 module.exports.EmbeddedQueryService = require('./lib/embeddedqueryservice');
-
-=======
 module.exports.EmbeddedScriptCompiler = require('./lib/embeddedscriptcompiler');
->>>>>>> 519ee7f969295e94d5d02f9a07c1901af3f125ea

@@ -45,7 +45,8 @@ class Api {
             'getParticipantRegistry',
             'getCurrentParticipant',
             'post',
-            'emit'
+            'emit',
+            'queryNative',
         ];
     }
 
