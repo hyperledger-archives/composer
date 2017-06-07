@@ -117,7 +117,7 @@ describe('AddFileComponent', () => {
     });
 
     describe('#fileAccepted', () => {
-        it('should call this.createModel', fakeAsync(() => {
+        it('should call this.createModel if model file detected', fakeAsync(() => {
             let b = new Blob(['/**CTO File*/'], {type: 'text/plain'});
             let file = new File([b], 'newfile.cto');
 
@@ -130,12 +130,26 @@ describe('AddFileComponent', () => {
             createMock.should.have.been.called;
         }));
 
-        it('should call this.createScript', fakeAsync(() => {
+        it('should call this.createScript if script file detected', fakeAsync(() => {
 
             let b = new Blob(['/**JS File*/'], {type: 'text/plain'});
             let file = new File([b], 'newfile.js');
 
             let createMock = sandbox.stub(component, 'createScript');
+            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
+            .returns(Promise.resolve('some data'));
+
+            component.fileAccepted(file);
+            tick();
+            createMock.should.have.been.called;
+        }));
+
+        it('should call this.createReadme if readme file detected', fakeAsync(() => {
+
+            let b = new Blob(['/**README File*/'], {type: 'text/plain'});
+            let file = new File([b], 'README.md');
+
+            let createMock = sandbox.stub(component, 'createReadme');
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
             .returns(Promise.resolve('some data'));
 
@@ -253,6 +267,20 @@ describe('AddFileComponent', () => {
             component.currentFileName.should.equal(mockModel.getFileName());
             component.currentFileName.should.equal(fileName);
         }));
+    });
+
+    describe('#createModel', () => {
+        it('should establish a readme file', async(() => {
+            component.businessNetwork = mockBusinessNetwork;
+            let dataBuffer = new Buffer('/**README File**/ read all the things');
+
+            component.createReadme(dataBuffer);
+
+            component.fileType.should.equal('md');
+            component.currentFileName.should.equal('README.md');
+            component.currentFile.should.equal(dataBuffer.toString());
+        }));
+
     });
 
     describe('#changeCurrentFileType', () => {

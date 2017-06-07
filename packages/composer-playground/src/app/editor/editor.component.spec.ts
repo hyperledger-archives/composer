@@ -643,6 +643,111 @@ describe('EditorComponent', () => {
         });
     });
 
+    describe('addReadme', () => {
+        it('should not open confirm modal if no readme present', fakeAsync(() => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            component['files'] = [{id: 'random'}, {id: 'script'}];
+
+            let b = new Blob(['/**README File*/'], {type: 'text/plain'});
+            let mockReadmeFile = new File([b], 'redme.md');
+
+            component.addReadme(mockReadmeFile);
+            tick();
+
+            mockModal.open.should.not.have.been.called;
+        }));
+
+        it('should create readme if no existing readme present', fakeAsync(() => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+
+            component['files'] = [{id: 'zero-index'}, {id: 'script'}];
+
+            let b = new Blob(['/**README File*/'], {type: 'text/plain'});
+            let mockReadmeFile = new File([b], 'readme.md');
+
+            component.addReadme(mockReadmeFile);
+
+            tick();
+
+            mockClientService.setBusinessNetworkReadme.should.have.been.calledWith(mockReadmeFile);
+            mockUpdateFiles.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({id: 'zero-index'});
+            component['dirty'].should.be.equal(true);
+        }));
+
+        it('should open confirm modal if readme present and handle error', fakeAsync(() => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            component['files'] = [{readme: true}, {id: 'script'}];
+
+            let b = new Blob(['/**README File*/'], {type: 'text/plain'});
+            let mockReadmeFile = new File([b], 'redme.md');
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            component.addReadme(mockReadmeFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+            mockClientService.setBusinessNetworkReadme.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+            mockSetCurrentFile.should.not.have.been.called;
+        }));
+
+        it('should handle confirm modal cancel', fakeAsync(() => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            component['files'] = [{readme: true}, {id: 'script'}];
+
+            let b = new Blob(['/**README File*/'], {type: 'text/plain'});
+            let mockReadmeFile = new File([b], 'redme.md');
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(1)
+            });
+
+            component.addReadme(mockReadmeFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockClientService.setBusinessNetworkReadme.should.not.have.been.called;
+            mockUpdateFiles.should.not.have.been.called;
+            mockSetCurrentFile.should.not.have.been.called;
+        }));
+
+        it('should create readme on modal confirm', fakeAsync(() => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            component['files'] = [{readme: true}, {id: 'script'}];
+
+            let b = new Blob(['/**README File*/'], {type: 'text/plain'});
+            let mockReadmeFile = new File([b], 'redme.md');
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve()
+            });
+
+            component.addReadme(mockReadmeFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockClientService.setBusinessNetworkReadme.should.have.been.called;
+            mockUpdateFiles.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({readme: true});
+        }));
+
+    });
+
     describe('openImportModal', () => {
         it('should open the import modal', fakeAsync(() => {
             let mockUpdatePackage = sinon.stub(component, 'updatePackageInfo');
@@ -793,6 +898,7 @@ describe('EditorComponent', () => {
     describe('openAddFileModal', () => {
         let mockAddModel;
         let mockAddScript;
+        let mockAddReadme;
 
         beforeEach(() => {
             mockModal.open = sinon.stub().returns({
@@ -808,6 +914,7 @@ describe('EditorComponent', () => {
 
             mockAddModel = sinon.stub(component, 'addModelFile');
             mockAddScript = sinon.stub(component, 'addScriptFile');
+            mockAddReadme = sinon.stub(component, 'addReadme');
         });
 
         it('should open add file modal', fakeAsync(() => {
@@ -819,7 +926,23 @@ describe('EditorComponent', () => {
             mockAddModel.should.have.been.called;
         }));
 
-        it('should open add file script', fakeAsync(() => {
+        it('should open AddFileComponent modal and call addModelFile if model returned', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {
+                    businessNetwork: {}
+                },
+                result: Promise.resolve(mockModelFile)
+            });
+
+            component.openAddFileModal();
+
+            tick();
+
+            mockAddModel.should.have.been.called;
+            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
+        }));
+
+        it('should open AddFileComponent modal and call addScriptFile if script returned', fakeAsync(() => {
             mockModal.open = sinon.stub().returns({
                 componentInstance: {
                     businessNetwork: {}
@@ -832,6 +955,22 @@ describe('EditorComponent', () => {
             tick();
 
             mockAddScript.should.have.been.called;
+            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
+        }));
+
+        it('should open AddFileComponent modal and call addreadme if README returned', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {
+                    businessNetwork: {}
+                },
+                result: Promise.resolve({})
+            });
+
+            component.openAddFileModal();
+
+            tick();
+
+            mockAddReadme.should.have.been.called;
             mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
         }));
 
