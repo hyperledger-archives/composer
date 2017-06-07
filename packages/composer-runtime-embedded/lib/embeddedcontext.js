@@ -19,6 +19,7 @@ const EmbeddedDataService = require('./embeddeddataservice');
 const EmbeddedIdentityService = require('./embeddedidentityservice');
 const EmbeddedEventService = require('./embeddedeventservice');
 const EmbeddedHTTPService = require('./embeddedhttpservice');
+const EmbeddedQueryService = require('./embeddedqueryservice');
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -76,6 +77,17 @@ class EmbeddedContext extends Context {
             this.httpService = new EmbeddedHTTPService();
         }
         return this.httpService;
+    }
+
+    /**
+     * Get the event service provided by the chaincode container.
+     * @return {QueryService} The event service provided by the chaincode container.
+     */
+    getQueryService() {
+        if (!this.queryService) {
+            this.queryService = new EmbeddedQueryService();
+        }
+        return this.queryService;
     }
 }
 

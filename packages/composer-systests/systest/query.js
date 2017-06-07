@@ -32,6 +32,10 @@ describe('Query system tests', function () {
     let client;
 
     before(function () {
+        if(!TestUtil.isHyperledgerFabricV1()){
+            this.skip();
+            return;
+        }
         const modelFiles = [
             fs.readFileSync(path.resolve(__dirname, 'data/query.cto'), 'utf8')
         ];

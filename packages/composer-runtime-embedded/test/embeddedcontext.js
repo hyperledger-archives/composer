@@ -23,6 +23,7 @@ const EmbeddedContext = require('..').EmbeddedContext;
 const IdentityService = require('composer-runtime').IdentityService;
 const EventService = require('composer-runtime').EventService;
 const HTTPService = require('composer-runtime').HTTPService;
+const QueryService = require('composer-runtime').QueryService;
 
 require('chai').should();
 const sinon = require('sinon');
@@ -82,6 +83,21 @@ describe('EmbeddedContext', () => {
             context.eventService = {};
             context.getEventService().should.deep.equal({});
         });
+    });
+
+    describe('#getQueryService', () => {
+
+        it('should return the container query service', () => {
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.getQueryService().should.be.an.instanceOf(QueryService);
+        });
+
+        it('should return this.queryService if it is set', () => {
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.queryService = {};
+            context.getQueryService().should.deep.equal({});
+        });
+
     });
 
     describe('#getHTTPService', () => {

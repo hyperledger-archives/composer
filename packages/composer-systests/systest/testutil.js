@@ -77,6 +77,14 @@ class TestUtil {
         return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy();
     }
 
+     /**
+     * Check to see if running in Hyperledger Fabric mode.
+     * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
+     */
+    static isHyperledgerFabricV1() {
+        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy() && process.env.npm_lifecycle_event === 'systest:hlfv1';
+    }
+
     /**
      * Wait for the specified hostname to start listening on the specified port.
      * @param {string} hostname - the hostname.

@@ -225,28 +225,6 @@ class Api {
             eventService.emit(serializedEvent);
             LOG.exit(method);
         };
-         /**
-         * Post a query string to a query service
-
-         * @method module:composer-runtime#query
-         * @param {string} queryString the couchdb ad hoc rich query string
-         * @public
-         * @return {Promise} A promise. The promise is resolved with the result of the query.
-         */
-        this.queryNative = function queryNative(queryString) {
-            const method = 'query';
-            LOG.entry(method + 'queryString= ' + queryString);
-            return queryService.queryNative(queryString)
-                .then((result) => {
-                    LOG.debug('query result=', result);
-                    LOG.exit(method);
-                    return result;
-                })
-                .catch((err) => {
-                    LOG.debug('query caught exception =', err);
-                    LOG.exit(method);
-                });
-        };
 
          /**
          * Post a query string to a query service
@@ -257,7 +235,7 @@ class Api {
          * @return {Promise} A promise. The promise is resolved with the result of the query.
          */
         this.queryNative = function queryNative(queryString) {
-            const method = 'query';
+            const method = 'queryNative';
             LOG.entry(method + 'queryString= ' + queryString);
             return queryService.queryNative(queryString)
                 .then((result) => {
