@@ -229,7 +229,7 @@ describe('AddFileComponent', () => {
             );
             let file = new File([b], 'newfile.cto');
             let dataBuffer = new Buffer('/**CTO File**/ namespace test');
-            let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
+            let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), 'models/' + file.name);
             component.createModel(file, dataBuffer);
             component.fileType.should.equal('cto');
             component.currentFile.should.deep.equal(mockModel);
@@ -237,7 +237,7 @@ describe('AddFileComponent', () => {
         }));
 
         it('should use the addModelFileName variable as the file name', async(() => {
-            let fileName = 'testFileName.cto';
+            let fileName = 'models/testFileName.cto';
             component.addModelFileName = fileName;
             component.businessNetwork = mockBusinessNetwork;
             let b = new Blob(
@@ -300,7 +300,7 @@ describe('AddFileComponent', () => {
 namespace org.acme.model`],
                 {type: 'text/plain'}
             );
-            let file = new File([b], 'org.acme.model.cto');
+            let file = new File([b], 'models/org.acme.model.cto');
             let dataBuffer = new Buffer(`/**
  * New model file
  */
@@ -312,7 +312,7 @@ namespace org.acme.model`);
             component.businessNetwork = mockBusinessNetwork;
 
             component.changeCurrentFileType();
-            component.currentFileName.should.equal('org.acme.model.cto');
+            component.currentFileName.should.equal('models/org.acme.model.cto');
             component.currentFile.should.deep.equal(mockModel);
 
         }));
@@ -342,7 +342,7 @@ namespace org.acme.model`);
             component.businessNetwork = mockBusinessNetwork;
 
             component.changeCurrentFileType();
-            component.currentFileName.should.equal('org.acme.model0.cto');
+            component.currentFileName.should.equal('models/org.acme.model0.cto');
         });
 
         it('should fill in template model name indices for a cto file name', async(() => {
@@ -379,7 +379,7 @@ namespace org.acme.model`);
             component.businessNetwork = mockBusinessNetwork;
 
             component.changeCurrentFileType();
-            component.currentFileName.should.equal('org.acme.model2.cto');
+            component.currentFileName.should.equal('models/org.acme.model2.cto');
         }));
     });
 

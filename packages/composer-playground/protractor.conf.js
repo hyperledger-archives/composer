@@ -1,9 +1,11 @@
 // Protractor conf file
+var os = require('os');
+
 exports.config = {
   allScriptsTimeout: 11000,
   framework: 'jasmine',
   directConnect: true,
-  chromeDriver: './e2e/drivers/chromedriver_2.29',
+  chromeDriver: os.type().includes('Linux') ? './e2e/drivers/chromedriver_linux' : './e2e/drivers/chromedriver_mac',
   baseUrl: 'http://127.0.0.1:3001',
   specs: ['./e2e/**/*.*spec.ts'],
   capabilities: {

@@ -33,11 +33,11 @@ describe('Participant system tests', function () {
 
     before(function () {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/participants.cto'), 'utf8')
+            { fileName: 'models/participants.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/participants.cto'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.participants@0.0.1', 'The network for the participant system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)

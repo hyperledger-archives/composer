@@ -16,7 +16,9 @@
 
 const JavascriptParser = require('./../../lib/codegen/javascriptparser');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-things'));
 
 describe('JavascriptParser', () => {
 
@@ -96,6 +98,16 @@ describe('JavascriptParser', () => {
                 'throws': '',
                 'visibility': '+',
             }]);
+        });
+    });
+
+    describe('#getTokens', () => {
+        it('should return all of the tokens', () => {
+            const contents = 'eval(true)';
+            const parser = new JavascriptParser(contents);
+            const tokens = parser.getTokens();
+            tokens.should.have.lengthOf(5);
+            tokens.should.all.have.property('loc');
         });
     });
 
