@@ -26,6 +26,8 @@ describe('Concerto', () => {
         Concerto.DataCollection.should.be.a('function');
         Concerto.DataService.should.be.a('function');
         Concerto.Engine.should.be.a('function');
+        Concerto.EventService.should.be.a('function');
+        Concerto.HTTPService.should.be.a('function');
         Concerto.IdentityService.should.be.a('function');
         Concerto.LoggingService.should.be.a('function');
     });

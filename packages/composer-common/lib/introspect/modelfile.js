@@ -139,6 +139,16 @@ class ModelFile {
         return this.imports;
     }
 
+    /** retrofit the model
+     */
+    retrofit() {
+       // Validate all of the types in this model file.
+        for(let n=0; n < this.declarations.length; n++) {
+            let classDeclaration = this.declarations[n];
+            classDeclaration.retrofit();
+        }
+    }
+
     /**
      * Validates the ModelFile.
      *
