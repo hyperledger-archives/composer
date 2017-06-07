@@ -1,16 +1,14 @@
 **[Introduction](../introduction/introduction.html)**
-**[Installing](../getting-started/getting-started.html)**
+**[Installing](../installing/installing-index.html)**
 **[Tutorials](../tutorials/tutorials.html)**
-**[Developing Business Networks](../business-network/businessnetwork.html)**
+**[Developing Business Networks](../business-network/business-network-index.html)**
 [What is a business network definition?](../business-network/businessnetworkdefinition.html)
-[Creating a business network definition](../business-network/bnd-define.html)
-[Deploying a business network](../business-network/deploybusinessnetwork.html)
+[Creating a business network definition](../business-network/bnd-create.html)
+[Deploying and updating](../business-network/bnd-deploy.html)
 [Emitting events](../business-network/publishing-events.html)
-[Updating a business network definition](../business-network/runtime-update.html)
-[Testing a business network definition](../business-network/testing.html)
-[Publishing a business network definition](../business-network/bnd-publish.html)
-[Publishing a business domain model](../business-network/model-publish.html)
-**[Developing Applications](../applications/genapp.html)**
+[Testing](../business-network/testing.html)
+[Publishing to npm](../business-network/bnd-publish.html)
+**[Developing Applications](../applications/applications-index.html)**
 **[Integrating Existing Systems](../integrating/integrating-index.html)**
 **[Managing and Operating](../managing/managingindex.html)**
 **[Diagnosing Problems](../problems/diagnostics.html)**

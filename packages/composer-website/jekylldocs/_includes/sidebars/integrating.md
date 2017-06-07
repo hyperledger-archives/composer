@@ -1,8 +1,8 @@
 **[Introduction](../introduction/introduction.html)**
-**[Installing](../getting-started/getting-started.html)**
+**[Installing](../installing/installing-index.html)**
 **[Tutorials](../tutorials/tutorials.html)**
-**[Developing Business Networks](../business-network/businessnetwork.html)**
-**[Developing Applications](../applications/genapp.html)**
+**[Developing Business Networks](../business-network/business-network-index.html)**
+**[Developing Applications](../applications/applications-index.html)**
 **[Integrating Existing Systems](../integrating/integrating-index.html)**
 [Exposing your business network as a REST API](../integrating/getting-started-rest-api.html)
 [Enabling REST API authentication for a business network](../integrating/enabling-rest-authentication.html)

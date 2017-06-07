@@ -83,7 +83,7 @@ Now, navigate to the REST API explorer at http://localhost:3000/explorer/. Attem
 
 ## Adding a Blockchain identity to the default wallet
 
-First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.acme.sample.SampleParticipant#alice@email.com`, and the secret is `suchs3cret`.
+First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.example.sample.SampleParticipant#alice@email.com`, and the secret is `suchs3cret`.
 
 Follow these steps to add a Blockchain identity to the default wallet:
 
@@ -144,7 +144,7 @@ You can test that the Blockchain identity is being used by calling the `GET /sys
 
     {
       "version": "0.7.3",
-      "participant": "org.acme.sample.SampleParticipant#alice@email.com"
+      "participant": "org.example.sample.SampleParticipant#alice@email.com"
     }
 
 ## Final notes

@@ -1,9 +1,11 @@
 ---
 layout: default
-title: Getting Started with Hyperledger Composer
+title: Installing a development environment
 category: start
-sidebar: sidebars/getting-started.md
-excerpt: Hyperledger Composer Development Tools
+section: installing
+sidebar: sidebars/installing.md
+excerpt: To install the command line and development tools, along with a local instance of Hyperledger Fabric click [**Install Development Tools**](../installing/development-tools.html) here or in the table of contents on the left.
+index-order: 3
 ---
 
 # Installing and developing with {{site.data.conrefs.composer_full}}
@@ -70,15 +72,14 @@ The development tools you'll need can all be installed with `npm install -g`.
 
 1. If you use VSCode, install the {{site.data.conrefs.composer_full}} VSCode plugin from the VSCode marketplace.
 
-2. If you want to run the Playground locally, install the `composer-playground` and `composer-playground-api` using the following two commands.
+2. If you want to run the Playground locally, install the `composer-playground` using the following command.
 
         npm install -g composer-playground
-        npm install -g composer-playground-api
 
 
 ## Step 2: Starting {{site.data.conrefs.hlf_full}}
 
-If you've [installed the {{site.data.conrefs.composer_full}} Playground locally](../getting-started/using-playground-locally.html) you'll need to close the containers by using the following scripts.
+If you've [installed the {{site.data.conrefs.composer_full}} Playground locally](../installing/using-playground-locally.html) you'll need to close the containers by using the following scripts.
 
 >_Please note: These commands will kill and remove all running containers, and should remove all previously created {{site.data.conrefs.hlf_full}} chaincode images._
 
@@ -107,7 +108,7 @@ docker rmi $(docker images dev-* -q)
 
         export FABRIC_VERSION=hlfv0.6
 
-    For v1.0-alpha, there is *nothing to as this the default*. But to 'unset' the v0.6, or to be explicit in using v1 use this command
+    {{site.data.conrefs.hlf_full}} v1.0-alpha is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
 
         export FABRIC_VERSION=hlfv1
 
@@ -209,5 +210,5 @@ Issue from the `fabric-tools` directory
 
 ## What next?
 
-* Begin [**writing a business network definition**](../business-network/businessnetwork.html).
+* Begin [**writing a business network definition**](../business-network/business-network-index.html).
 * If you're looking for a tutorial on using the developer tools, see the [**developer guide**](../tutorials/developer-guide.html) to run through a sample with the developer tools.

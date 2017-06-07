@@ -22,28 +22,28 @@ ACL rules are defined in a file called `permissions.acl` in the root of the busi
 
 There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
 
-For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset`.
+For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampeAsset`.
 
 ````
 rule SimpleRule {
     description: "Description of the ACL rule"
-    participant: "org.acme.SampleParticipant"
+    participant: "org.example.SampleParticipant"
     operation: ALL
-    resource: "org.acme.SampeAsset"
+    resource: "org.example.SampeAsset"
     action: ALLOW
 }
 ````
 
 Conditional ACL rules introduce variable bindings for the participant and the resource being accessed, and a Boolean JavaScript expression, which, when true, can either ALLOW or DENY access to the resource by the participant.
 
-For example, the rule below states that any instance of the `org.acme.SampleParticipant` type can perform ALL operations on all instances of `org.acme.SampeAsset` IF the participant is the owner of the asset.
+For example, the rule below states that any instance of the `org.example.SampleParticipant` type can perform ALL operations on all instances of `org.example.SampeAsset` IF the participant is the owner of the asset.
 
 ````
 rule SampleConditionalRule {
     description: "Description of the ACL rule"
-    participant(m): "org.acme.SampleParticipant"
+    participant(m): "org.example.SampleParticipant"
     operation: ALL
-    resource(v): "org.acme.SampeAsset"
+    resource(v): "org.example.SampeAsset"
     condition: (v.owner.getIdentifier() == m.getIdentifier())
     action: ALLOW
 }
@@ -54,10 +54,10 @@ Multiple ACL rules may be defined that conceptually define a decision table. The
 **Resource** defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class.
 
 Resource Examples:
-- Namespace: org.acme
-- Class in namespace: org.acme.Car
-- Property on class: org.acme.Car.owner
-- Instance of a class: org.acme.Car#ABC123
+- Namespace: org.example
+- Class in namespace: org.example.Car
+- Property on class: org.example.Car.owner
+- Instance of a class: org.example.Car#ABC123
 
 **Operation** identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.
 
@@ -74,43 +74,43 @@ Example ACL rules (in evaluation order):
 ```
 rule R1 {
     description: "Fred can DELETE the car ABC123"
-    participant: "org.acme.Driver#Fred"
+    participant: "org.example.Driver#Fred"
     operation: DELETE
-    resource: "org.acme.Car#ABC123"
+    resource: "org.example.Car#ABC123"
     action: ALLOW
 }
 
 rule R2 {
     description: "regulator with ID Bill can not update a Car if they own it"
-    participant(r): "org.acme.Regulator#Bill"
+    participant(r): "org.example.Regulator#Bill"
     operation: UPDATE
-    resource(c): "org.acme.Car"
+    resource(c): "org.example.Car"
     condition: (c.owner == r)
     action: DENY
 }
 
 rule R3 {
     description: "Driver can change the ownership of a car that they own"
-    participant(d): "org.acme.Driver"
+    participant(d): "org.example.Driver"
     operation: UPDATE
-    resource(o): "org.acme.Car"
+    resource(o): "org.example.Car"
     condition: (o == d)
     action: ALLOW
 }
 
 rule R4 {
     description: "regulators can perform all operations on Cars"
-    participant: "org.acme.Regulator"
+    participant: "org.example.Regulator"
     operation: ALL
-    resource: "org.acme.Car"
+    resource: "org.example.Car"
     action: ALLOW
 }
 
 rule R5 {
-    description: "Everyone can read all resources in the org.acme namespace"
+    description: "Everyone can read all resources in the org.example namespace"
     participant: "ANY"
     operation: READ
-    resource: "org.acme"
+    resource: "org.example"
     action: ALLOW
 }
 ```

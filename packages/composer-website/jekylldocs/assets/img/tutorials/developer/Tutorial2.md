@@ -62,7 +62,7 @@ As an example, we're going to replace the contents of the file with a simplistic
 /**
 * My commodity trading network
 */
-namespace org.acme.mynetwork
+namespace org.example.mynetwork
 
 asset Commodity identified by tradingSymbol {
 o String tradingSymbol
@@ -112,12 +112,12 @@ Replace the contents of `logic.js` with the function below:
 
 /**
 * Track the trade of a commodity from one trader to another
-* @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+* @param {org.example.mynetwork.Trade} trade - the trade to be processed
 * @transaction
 */
 function tradeCommodity(trade) {
 trade.commodity.owner = trade.newOwner;
-return getAssetRegistry('org.acme.mynetwork.Commodity')
+return getAssetRegistry('org.example.mynetwork.Commodity')
 .then(function (assetRegistry) {
 return assetRegistry.update(trade.commodity);
 });
@@ -138,7 +138,7 @@ rule Default {
 description: "Allow all participants access to all resources"
 participant: "ANY"
 operation: ALL
-resource: "org.acme.mynetwork"
+resource: "org.example.mynetwork"
 action: ALLOW
 }
 ```
@@ -209,7 +209,7 @@ const path = require('path');
 require('chai').should();
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
-const NS = 'org.acme.mynetwork';
+const NS = 'org.example.mynetwork';
 
 describe('Commodity Trading', () => {
 

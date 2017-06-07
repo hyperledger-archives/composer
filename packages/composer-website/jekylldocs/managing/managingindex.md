@@ -2,27 +2,26 @@
 layout: default
 title: Managing Index
 category: concepts
+section: managing
 sidebar: sidebars/managing.md
-excerpt: Managing your {{site.data.conrefs.composer_full}}
+excerpt: "Managing your {{site.data.conrefs.composer_full}}"
 ---
 
 # Managing your {{site.data.conrefs.composer_full}} Solution
 
 ---
 
-Operating a business network may require management tasks, for information on how to add participants, issue or revoke identities, enable OAuth authentication, and enabling access control, see the following topics.
-
-{% for page in site.managing %}
-  {% unless page.title == "Managing Index" %}
-    {{ page.title }}
-    {{ page.excerpt }}
-  {% endunless %}
+{% assign sorted = (site.pages | sort: 'index-order') %}
+{% for page in sorted %}
+{% if page.section == 'managing' and page.title != "Managing Index" %}
+### {{ page.title }}
+{{ page.excerpt }}
+{% endif %}
 {% endfor %}
 
+---
 
-* [What are participants and identities](../managing/participantsandidentities.html)
-* [Adding a participant](../managing/participant-add.html)
-* [Issuing an identity](../managing/identity-issue.html)
-* [Revoking an identity](../managing/identity-revoke.html)
-* [Enabling OAuth with GitHub](../managing/github-oauth.html)
-* [Enabling access control as a set participant](current-participant.html)
+## What next?
+
+* You might want to [**integrate your existing systems**](../integrating/integrating-index.html) with {{site.data.conrefs.composer_full}} using LoopBack.
+* Applications which consume data from your business network can [**subscribe to events**](../applications/subscribing-to-events.html).
