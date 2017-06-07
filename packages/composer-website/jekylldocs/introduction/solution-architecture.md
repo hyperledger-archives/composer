@@ -21,7 +21,7 @@ excerpt:
 * JavaScript SDK
 * Command Line Interface
 * REST Server
-* Loopback Connector
+* LoopBack Connector
 * Playground Web User Interface
 * Yeoman code generator
 * VSCode and Atom editor plugins
@@ -64,11 +64,11 @@ The `composer` command line tool enables developers and administrators to deploy
 
 ## REST Server
 
-The {{site.data.conrefs.composer_full}} REST Server automatically generates a Open API (Swagger) REST API for a business network. The REST Server (based on Loopback technology) converts the {{site.data.conrefs.composer_short}} model for a business network into an Open API definition, and at runtime implements Create, Read, Update and Delete support for assets and participants and allows transactions to be submitted for processing or retrieved.
+The {{site.data.conrefs.composer_full}} REST Server automatically generates a Open API (Swagger) REST API for a business network. The REST Server (based on LoopBack technology) converts the {{site.data.conrefs.composer_short}} model for a business network into an Open API definition, and at runtime implements Create, Read, Update and Delete support for assets and participants and allows transactions to be submitted for processing or retrieved.
 
-## Loopback Connector
+## LoopBack Connector
 
-The {{site.data.conrefs.composer_full}} Loopback Connector is used by the {{site.data.conrefs.composer_short}} REST Server, however it may also be used standalone by integration tools that support Loopback natively. Alternatively it may be used with the Loopback tools to create more sophisticated customizations of the REST APIs.
+The {{site.data.conrefs.composer_full}} LoopBack Connector is used by the {{site.data.conrefs.composer_short}} REST Server, however it may also be used standalone by integration tools that support LoopBack natively. Alternatively it may be used with the LoopBack tools to create more sophisticated customizations of the REST APIs.
 
 ## Playground Web User Interface
 

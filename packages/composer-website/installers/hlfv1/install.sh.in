@@ -1,6 +1,6 @@
 ME=`basename "$0"`
-if [ "${ME}" = "install-hlfv1.sh" ]; then
-  echo "Please re-run as >   cat install-hlfv1.sh | bash"
+if [ "${ME}" = "install-hlfv1{{ENV}}.sh" ]; then
+  echo "Please re-run as >   cat install-hlfv1{{ENV}}.sh | bash"
   exit 1
 fi
 (cat > composer.sh; chmod +x composer.sh; exec bash composer.sh)
@@ -14,7 +14,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE="${DIR}/composer.sh"
 
 # Create a work directory for extracting files into.
-WORKDIR="$(pwd)/composer-data"
+WORKDIR="$(pwd)/composer-data{{ENV}}"
 rm -rf "${WORKDIR}" && mkdir -p "${WORKDIR}"
 cd "${WORKDIR}"
 
@@ -28,8 +28,8 @@ echo PAYLOAD_START=${PAYLOAD_START}
 tail -n +${PAYLOAD_START} "${SOURCE}" | tar -xzf -
 
 # Kill and remove any running Docker containers.
-docker-compose -p composer -f fabric-dev-servers/fabric-scripts/hlfv1/composer/docker-compose.yml kill
-docker-compose -p composer -f fabric-dev-servers/fabric-scripts/hlfv1/composer/docker-compose.yml down --remove-orphans
+docker-compose -p composer kill
+docker-compose -p composer down --remove-orphans
 
 # Kill any other Docker containers.
 docker ps -aq | xargs docker rm -f || echo 'All removed'
@@ -38,18 +38,18 @@ docker ps -aq | xargs docker rm -f || echo 'All removed'
 ./fabric-dev-servers/downloadFabric.sh
 ./fabric-dev-servers/startFabric.sh
 
-# Start composer
-docker-compose -p composer -f docker-compose-playground.yml up -d
-# copy over pre-imported admin credentials
-# docker exec composer cp -R /etc/playground/creds /home/composer/.hfc-key-store
-cd fabric-dev-servers/fabric-scripts/hlfv1/composer/creds
-docker exec composer mkdir /home/composer/.hfc-key-store
-tar -cv * | docker exec -i composer tar x -C /home/composer/.hfc-key-store
-cd "${WORKDIR}"
+# Start all Docker containers.
+docker-compose -p composer -f docker-compose-playground{{ENV}}.yml up -d
 
 # Wait for playground to start
 sleep 5
 
+# Kill and remove any running Docker containers.
+##docker-compose -p composer kill
+##docker-compose -p composer down --remove-orphans
+
+# Kill any other Docker containers.
+##docker ps -aq | xargs docker rm -f
 
 # Open the playground in a web browser.
 case "$(uname)" in

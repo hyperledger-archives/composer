@@ -1,28 +1,28 @@
 ---
 layout: default
-title: Tutorial - E2E Developer Guide
+title: Tutorial - Developer Guide
 category: tutorials
 sidebar: sidebars/tutorials.md
-excerpt: Developer E2E Guide
+excerpt: Developer Guide
 ---
 
 # Create an end-to-end {{site.data.conrefs.composer_full}} solution from scratch
 
 ---
 
-*Note:* this tutorial was written against {{site.data.conrefs.composer_full}} v0.7.2 on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (Appropriate steps for a {{site.data.conrefs.hlf_full}} v0.6 are shown in *italics*).
+*Note:* this tutorial was written against {{site.data.conrefs.composer_full}} v0.7.2 on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
 
-This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading, that interacts with a blockchain network !
+This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.
 
 Here are the steps to get this running:
 
 ## Install {{site.data.conrefs.composer_full}}
 
-First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Developement Env Install guide](../getting-started/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.
+First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Development Environment Install guide](../installing/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.
 
 ## Install an Editor (eg. VSCode - and its {{site.data.conrefs.composer_full}} Extension for Syntax Highlighting)
 
-If you have not already installed this, install the [VSCode editor](https://code.visualstudio.com/) an Open Source code editor for your dev environment. For Linux, download the package and install using the (eg. Ubuntu use dpkg  `dpkg -i file.deb` )
+If you have not already installed this, install the [VSCode editor](https://code.visualstudio.com/) an Open Source code editor for your dev environment. For Linux, download the package and install using the installation manager (eg. Ubuntu use dpkg  `dpkg -i file.deb` ).
 
 ![dpkg install](../assets/img/tutorials/developer/vscode_editor_linux.png)
 
@@ -36,14 +36,16 @@ After installation, launch VSCode and select `View > Command Palette...` then ty
 
 The key concept for Composer is the **business network definition (BND)**. It defines the data model, business (and therein transaction) logic and access control rules for your blockchain solution. It executes on {{site.data.conrefs.hlf_full}}. To create a BND,  we need to create a suitable project structure on disk.
 
-The easiest way to get started is to clone an **existing sample business network**. Open up a command prompt and clone the Composer sample networks repo. For Linux, perform this as a non-root user.
+The easiest way to get started is to clone an **existing sample business network**. Open up a command prompt and clone the Composer sample networks GitHub repository. For Linux, perform this as a non-root user.
 
-**git clone https://github.com/hyperledger/composer-sample-networks.git**
-
-
-**cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network**
-
-You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder using Explorer (once selected the folder, scroll down and click OK to open the folder). You should see the file layout in the explorer pane.
+```
+git clone https://github.com/hyperledger/composer-sample-networks.git
+```
+Then, make a copy of this directory in your project, called 'my-network'.
+```
+cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network
+```
+You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder using Explorer, click OK to open the folder. You should see the file layout in the explorer pane.
 
 ![Explorer](../assets/img/tutorials/developer/vscode_explorer.png)
 
@@ -51,9 +53,9 @@ You should now have a folder called `my-network` (as the basis for our project) 
 
 ### Update your package.json file
 
-The metadata (name, version, description) for the business network definition is stored in the `package.json` file. Edit the file to change the name to `my-network` and modify the `prepublish` script to change the name of the business network archive. (Note: Remove the 'deploy' line after 'test' - as we will not be publishing this network to the `npm` package manager).
+The metadata (name, version, description) for the business network definition is stored in the `package.json` file. Edit the file to change the name to `my-network` and modify the `prepublish` script to change the name of the business network archive. (Note: Add a timeout to the "test" command line and remove the 'deploy' line after 'test' - as we will not be publishing this network to the `npm` package manager).
 
-Also, depending on timeouts encountered (see 'Unit Test' later on) we have added a default 'test' timeout of 4 seconds below.
+Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added a default mocha 'test' timeout of 4 seconds below.
 
 The start of the `package.json` file should now look like this:
 
@@ -85,14 +87,9 @@ As an example, we're going to replace the entire contents of the file 'sample.ct
 
 ```
 /**
-<<<<<<< HEAD
  * My commodity trading network
  */
-=======
-* My commodity trading network
-*/
->>>>>>> Merges
-namespace org.acme.mynetwork
+namespace org.example.mynetwork
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
@@ -125,7 +122,6 @@ Now replace the entire contents of `logic.js` with the function below (including
 
 ```
 /*
-<<<<<<< HEAD
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -141,32 +137,12 @@ Now replace the entire contents of `logic.js` with the function below (including
 
 /**
  * Track the trade of a commodity from one trader to another
- * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.example.mynetwork.Trade} trade - the trade to be processed
  * @transaction
  */
-=======
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
-/**
-* Track the trade of a commodity from one trader to another
-* @param {org.acme.mynetwork.Trade} trade - the trade to be processed
-* @transaction
-*/
->>>>>>> Merges
 function tradeCommodity(trade) {
     trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.mynetwork.Commodity')
+    return getAssetRegistry('org.example.mynetwork.Commodity')
         .then(function (assetRegistry) {
             return assetRegistry.update(trade.commodity);
         });
@@ -181,18 +157,13 @@ The file `permissions.acl` defines the access control rules for the business net
 
 ```
 /**
-<<<<<<< HEAD
  * Access control rules for mynetwork
  */
-=======
-* Access control rules for mynetwork
-*/
->>>>>>> Merges
 rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.acme.mynetwork"
+    resource: "org.example.mynetwork"
     action: ALLOW
 }
 ```
@@ -203,18 +174,20 @@ To check that the structure of the files is valid, you can now generate a Busine
 
 Switch back to the terminal and type:
 
+```
 npm install
+```
 
 You should see the following output:
 
 ```
-> my-network@0.0.1 prepublish /home/joe/dev/git/my-network
+> my-network@0.0.1 prepublish /home/joe/my-network
 > mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
 
 Creating Business Network Archive
 
-Looking for package.json of Business Network Definition in /home/joe/dev/git/my-network
+Looking for package.json of Business Network Definition in /home/joe/my-network
 
 Found:
 Description:My very first Hyperledger Composer Network
@@ -233,7 +206,7 @@ The `composer archive create` command has created a file called `my-network.bna`
 
 All code should have unit tests - even your business network logic!
 
-We are now going to add a simple unit test for the business network definition. The unit test will run against the **embedded** {{site.data.conrefs.hlf_short}} runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this E2E tutorial).
+We are now going to add a simple unit test for the business network definition. The unit test will run against the **embedded** {{site.data.conrefs.hlf_short}} runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this guide).
 
 From your project working directory (my-network), open the file `test/Sample.js` and inspect the contents.
 
@@ -241,7 +214,6 @@ The test code below will replace the namespace, types and logic of the unit test
 
 ```
 /*
-<<<<<<< HEAD
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -254,20 +226,6 @@ The test code below will replace the namespace, types and logic of the unit test
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-=======
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
->>>>>>> Merges
 
 'use strict';
 
@@ -280,7 +238,7 @@ const path = require('path');
 require('chai').should();
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
-const NS = 'org.acme.mynetwork';
+const NS = 'org.example.mynetwork';
 
 describe('Commodity Trading', () => {
 
@@ -374,49 +332,47 @@ describe('Commodity Trading', () => {
 
 Check that the unit tests pass by typing:
 
-**npm test**
+```
+npm test
+```
 
-You should see output like the following:
+You should see output similar to the following:
 
 ```
 ~joe@ubuntu $ npm test
 
-> my-network@0.0.1 pretest /home/joe/dev/git/my-network
+> my-network@0.0.1 pretest /home/joe/my-network
 > npm run lint
 
 
-> my-network@0.0.1 lint /home/joe/dev/git/my-network
+> my-network@0.0.1 lint /home/joe/my-network
 > eslint .
 
 
-> my-network@0.0.1 postlint /home/joe/dev/git/my-network
+> my-network@0.0.1 postlint /home/joe/my-network
 > npm run licchk
 
 
-> my-network@0.0.1 licchk /home/joe/dev/git/my-network
+> my-network@0.0.1 licchk /home/joe/my-network
 > license-check
 
 
-> my-network@0.0.1 postlicchk /home/joe/dev/git/my-network
+> my-network@0.0.1 postlicchk /home/joe/my-network
 > npm run doc
 
 
-> my-network@0.0.1 doc /home/joe/dev/git/my-network
+> my-network@0.0.1 doc /home/joe/my-network
 > jsdoc --pedantic --recurse -c jsdoc.conf
 
 
-> my-network@0.0.1 test /home/joe/dev/git/my-network
+> my-network@0.0.1 test /home/joe/my-network
 > mocha --recursive -t 4000
 
 
 
 Commodity Trading
 #tradeCommodity
-<<<<<<< HEAD
 ✓ should be able to trade a commodity (62ms)
-=======
-✓ should be able to trade a commodity (61ms)
->>>>>>> Merges
 
 
 1 passing (556ms)
@@ -424,27 +380,33 @@ Commodity Trading
 
 ## Import into Playground and Test
 
-Change directory to your toplevel project folder (my-network) and re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the command:
+Change directory to your toplevel project folder (my-network) for example:
+
+```
+`cd $HOME/my-network`
+```
+
+Now re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the command (including the trailing '.' please note):
 
 ```
 composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 ```
 
-You can now navigate to the online Bluemix Composer Playground [https://composer-playground.mybluemix.net](https://composer-playground.mybluemix.net) and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Navigate to the `dist/my-network.bna` file and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
+Next, in a browser, navigate to the online Bluemix Composer Playground [https://composer-playground.mybluemix.net](https://composer-playground.mybluemix.net) and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your 'my-network' folder and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
 
 ![Confirm Replace](../assets/img/tutorials/developer/import_replace_confirm.png)
 
 You can browse the structure of the Trade Commodity business network by pressing the link on the left, check the contents of the model, script files and access control.
 
-Next,  press the "Test" tab at the top and create two 'Trader' participants (TRADER1 and TRADER2) by pressing the Trader link on the left and then the "Create New Participant" button.
+Next, press the "Test" tab at the top and create two 'Trader' participants (TRADER1 and TRADER2) by pressing the Trader link on the left and then the "Create New Participant" button.
 
 ![Create Trader](../assets/img/tutorials/developer/create_trader.png)
 
 The trader registry (with two entries) should look like this:
 
-![Trader Participant Registry]../assets/img/tutorials/developer/trader_registry.png)
+![Trader Participant Registry](../assets/img/tutorials/developer/trader_registry.png)
 
-Next, create a new instance of a Commodity (asset) by pressing the Commodity link on the left and then the "Create New Asset" button. Create the commodity and assign the owner to be 'TRADER1'.
+Create a new instance of a Commodity (asset) by pressing the Commodity link on the left and then the "Create New Asset" button. Create the commodity and assign the owner to be 'TRADER1'.
 
 ![Create Commodity](../assets/img/tutorials/developer/create_commodity.png)
 
@@ -462,13 +424,13 @@ After processing, you should now see the transaction in the transaction registry
 
 As a result, the owner of the ABC commodity should now be TRADER2.
 
-![Commodity registry]../assets/img/tutorials/developer/commodity_registry_after.png)
+![Commodity registry](../assets/img/tutorials/developer/commodity_registry_after.png)
 
 ## Deploy to the running {{site.data.conrefs.hlf_full}}
 
 So far, we've created our business network definition, written a unit test and interactively tested the solution in the Playground.
 
-Now it is time to deploy to a **real** blockchain! We are going to deploy the BNA (suffix .bna) file to {{site.data.conrefs.hlf_full}} v1.0 ; this blockchain environment should be set up as a pre-requisite to this E2E tutorial.
+Now it is time to deploy to a **real** blockchain! We are going to deploy the BNA (suffix .bna) file to {{site.data.conrefs.hlf_full}} v1.0; this blockchain environment was set up earlier in this guide.
 
 Switch to the terminal  and change directory to the `dist` folder containing the `my-network.bna` file and type:
 
@@ -495,7 +457,9 @@ Command succeeded
 
 You can verify that the network has been deployed by typing:
 
-`composer network ping -n my-network -p hlfv1 -i admin -s adminpw`
+```
+composer network ping -n my-network -p hlfv1 -i admin -s adminpw
+```
 
 Which should give the following output:
 
@@ -515,13 +479,15 @@ To integrate with the deployed business network (creating assets/participants an
 
 If you are creating a web application (or running in a non Node.js environment) the REST API provides a useful layer of language-neutral abstraction.
 
-To create the REST API we need to launch the `composer-rest-server` and tell it how to connect to our deployed business network.
+To create the REST API we need to launch the `composer-rest-server` and tell it how to connect to our deployed business network. The `composer-rest-server` was installed when you installed the development environment.
 
 Note that the module composer-rest-server would have been installed when you installed the Development environment.
 
-Now launch the server with the command:
+Now launch the server from your my-network folder with the command:
 
+```
 composer-rest-server
+```
 
 Answer the questions posed at startup. These allow the composer-rest-server to connect to {{site.data.conrefs.hlf_full}} and configure how the REST API is generated.
 
@@ -531,8 +497,10 @@ Answer the questions posed at startup. These allow the composer-rest-server to c
 
 If the composer-rest-server started successfully you should see these two lines are output:
 
+```
 Web server listening at: http://localhost:3000
 Browse your REST API at http://localhost:3000/explorer
+```
 
 Open a web browser and navigate to [http://localhost:3000/explorer]()
 
@@ -540,7 +508,7 @@ You should see the LoopBack API Explorer, allowing you to inspect and test the g
 
 ![LoopBack Explorer](../assets/img/tutorials/developer/lb_explorer.png)
 
-First use the POST method on Trader to create a new instance of a Trader - first select 'List Operations' alongside the Trader to see the operations available.
+First, use the `POST` method on Trader to create a new instance of a Trader - first select 'List Operations' alongside the Trader to see the operations available.
 
 ![Create trader](../assets/img/tutorials/developer/lb_create_trader.png)
 
@@ -548,9 +516,9 @@ Enter the values and then press the "Try it Out" button to submit. You should se
 
 Use the `GET` operation/method on `Trader` (leave the filter parameter blank) and press the "Try it Out" button. You should see your Trader returned.
 
-![Get trader]../assets/img/tutorials/developer/lb_get_trader.png)
+![Get trader](../assets/img/tutorials/developer/lb_get_trader.png)
 
-Similarly you can create/read/update/delete Commodities by using the appropriate HTTP request methods. You can submit a `Trade` transaction using an HTTP POST to the `/Trade` API endpoint.
+Similarly you can create/read/update/delete Commodities by using the appropriate HTTP request methods. You can submit a `Trade` transaction using an HTTP POST method on the `/Trade` API endpoint.
 
 ## Generate your Skeleton Web Application
 
@@ -560,7 +528,9 @@ Shut the `composer-rest-server` process down by pressing CTRL-C in the terminal 
 
 Run the {{site.data.conrefs.composer_full}} generator, selecting the options below to generate an Angular application and to also generate a new REST API when prompted:
 
+```
 yo hyperledger-composer
+```
 
 ![Composer Yo Generator](../assets/img/tutorials/developer/composer-yo-generator.png)
 
@@ -576,15 +546,17 @@ create src/app/Commodity/Commodity.component.css
 
 Wait a couple of minutes for the install of the application dependencies to complete.
 
-Next, change directory to your home directory (eg. /home/joe)
+Next, change directory to your new Angular application directory (eg. my-app) located in your homw directory (eg. /home/joe):
 
-Then change directory to your application directory:
+```
+cd $HOME/my-app
+```
 
-cd my-app
+Run:
 
-Finally run:
-
+```
 npm start
+```
 
 Your application is running. You should see the `composer-rest-server` start, and then Angular webpacks the web application - it serves the content at URL: [http://localhost:4200]()
 
@@ -607,7 +579,7 @@ Well done, you've now completed this tutorial and I hope you now have a much bet
 
 ## Related Tasks
 
-[Deploying a business network](../business-network/deploybusinessnetwork.html)
+[Deploying a business network](../business-network/bnd-deploy.html)
 
 ## Related Reference
 

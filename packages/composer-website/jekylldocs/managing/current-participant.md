@@ -1,22 +1,22 @@
 ---
 layout: default
-title: Task - Implement access control using the current Participant
+title: Implementing participant-based access control
 category: tasks
+section: managing
 sidebar: sidebars/managing.md
-excerpt: How to use the current Participant to implement access control
+excerpt: Transaction processor functions can be used to [**implement participant-based access control**](../managing/current-participant.html) by checking the participant type and identifier.
+index-order: 6
 ---
 
-# Implementing access control using the current Participant
+# Implementing participant-based access control
 
 ---
 
-The current participant can be used to implement access control in a transaction
-processor function. You can use the type and the identifier of the current
-participant to permit or reject the execution of a transaction processor function.
+The current participant can be used to implement access control in a transaction processor function. You can use the type and the identifier of the current participant to permit or reject the execution of a transaction processor function.
 
 ## Before you start
 
-Before you follow these steps, you must have modelled a participant in a Business
+Before you follow these steps, you must have modeled a participant in a Business
 Network Definition and deployed it as a Business Network. You must have created
 some instances of those participants, and issued those participants with identities.
 
