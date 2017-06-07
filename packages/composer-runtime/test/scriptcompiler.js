@@ -180,6 +180,36 @@ describe('ScriptCompiler', () => {
             sourceMap.should.be.a('string');
         });
 
+        it('should allow the script to be transformed', () => {
+            scriptCompiler.transformScript = (sourceFileName, sourceCode, sourceMap) => {
+                return {
+                    sourceFileName: sourceFileName,
+                    sourceCode: sourceCode.replace(/function/, /FANCTION/),
+                    sourceMap: sourceMap
+                };
+            };
+            const context = {};
+            const script = scriptManager.getScript('script1');
+            const sourceNode = scriptCompiler.convertScriptToScriptNode(context, script);
+            sourceNode.should.be.an.instanceOf(SourceNode);
+            const result = sourceNode.toStringWithSourceMap();
+            result.code.should.match(/FANCTION/);
+            const sourceMap = result.map.toString();
+            sourceMap.should.be.a('string');
+        });
+
+    });
+
+    describe('#transformScript', () => {
+
+        it('should return the script', () => {
+            scriptCompiler.transformScript('script1', 'eval(true)', 'some map').should.deep.equal({
+                sourceCode: 'eval(true)',
+                sourceFileName: 'script1',
+                sourceMap: 'some map'
+            });
+        });
+
     });
 
 });
