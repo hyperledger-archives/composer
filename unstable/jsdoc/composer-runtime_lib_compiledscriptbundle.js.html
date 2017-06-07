@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/businessnetworkmetadata.js</title>
+	<title>Hyperledger Composer Source: composer-runtime/lib/compiledscriptbundle.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/businessnetworkmetadata.js</h1>
+		<h1 class="page-title">Source: composer-runtime/lib/compiledscriptbundle.js</h1>
     
 <section>
     <article>
@@ -100,100 +100,118 @@
 
 'use strict';
 
-const Logger = require('./log/logger');
-const LOG = Logger.getLog('BusinessNetworkMetadata');
+const Logger = require('composer-common').Logger;
+
+const LOG = Logger.getLog('CompiledScriptBundle');
 
 /**
- * &lt;p>
- * Defines the metadata for a BusinessNeworkDefinition. This includes:
- * &lt;ul>
- *   &lt;li>package.json&lt;/li>
- *   &lt;li>README.md (optional)&lt;/li>
- * &lt;/ul>
- * &lt;/p>
- * @class
- * @memberof module:composer-common
+ * A script compiler compiles all scripts in a script manager into a compiled
+ * script bundle that can easily be called by the runtime.
  */
-class BusinessNetworkMetadata {
+class CompiledScriptBundle {
 
     /**
-     * Create the BusinessNetworkMetadata.
-     * &lt;p>
-     * &lt;strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link BusinessNetworkDefinition}&lt;/strong>
-     * &lt;/p>
-     * @param {object} packageJson  - the JS object for package.json (required)
-     * @param {String} readme  - the README.md for the business network (may be null)
+     * Constructor.
+     * @param {FunctionDeclaration[]} functionDeclarations The function declarations to use.
+     * @param {Function} generatorFunction The generator function to use.
      */
-    constructor(packageJson, readme) {
-        const method = 'constructor';
-        LOG.entry(method, readme);
+    constructor(functionDeclarations, generatorFunction) {
+        this.functionDeclarations = functionDeclarations;
+        this.generatorFunction = generatorFunction;
+    }
 
-        if(!packageJson || typeof(packageJson) !== 'object') {
-            throw new Error('package.json is required and must be an object');
+    /**
+     * Execute the specified transaction.
+     * @param {Api} api The API to use.
+     * @param {Resource} resolvedTransaction The resolved transaction to execute.
+     * @return {Promise} A promise that is resolved when the transaction has been
+     * executed, or rejected with an error.
+     */
+    execute(api, resolvedTransaction) {
+        const method = 'execute';
+        LOG.entry(method, api, resolvedTransaction);
+
+        // Find all of the function names.
+        const functionNames = this.findFunctionNames(resolvedTransaction);
+
+        // If we didn't find any functions to call, then throw an error!
+        if (functionNames.length === 0) {
+            LOG.error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
+            throw new Error(`Could not find any functions to execute for transaction ${resolvedTransaction.getFullyQualifiedIdentifier()}`);
         }
 
-        this.packageJson = packageJson;
+        // Generate an instance of the compiled script bundle.
+        const bundle = this.generatorFunction(api);
 
-        if(readme &amp;&amp; typeof(readme) !== 'string') {
-            throw new Error('README must be a string');
-        }
+        // Execute each function for the transaction.
+        return functionNames.reduce((result, functionName) => {
+            return result.then(() => {
+                LOG.debug(method, 'Executing function', functionName);
+                const func = bundle[functionName];
+                const funcResult = func(resolvedTransaction);
+                if (funcResult &amp;&amp; typeof funcResult.then === 'function') {
+                    return funcResult.then(() => {
+                        LOG.debug(method, 'Function executed (returned promise)');
+                    });
+                } else {
+                    LOG.debug(method, 'Function executed');
+                }
+            });
+        }, Promise.resolve())
+            .then(() => {
+                LOG.exit(method);
+            });
 
-
-        this.readme = readme;
-        LOG.exit(method);
     }
 
     /**
-     * Returns the README.md for this business network. This may be null if the business network does not have a README.md
-     * @return {String} the README.md file for the business network or null
+     * Find all of the function names that should be executed.
+     * @param {Resource} transaction The transaction to execute.
+     * @return {string[]} All function names to execute.
      */
-    getREADME() {
-        return this.readme;
+    findFunctionNames(transaction) {
+        const method = 'findFunctionNames';
+        LOG.entry(method, transaction);
+
+        // Look at all the functions.
+        const functionNames = [];
+        this.functionDeclarations.forEach((functionDeclaration) => {
+
+            // Is this function annotated with @transaction?
+            LOG.debug(method, 'Looking at function declaration', functionDeclaration.getName());
+            if (functionDeclaration.getDecorators().indexOf('transaction') !== -1) {
+
+                // Yes - is the type of the only parameter (validated elsewhere)
+                // the same type as the transaction?
+                LOG.debug(method, 'Function is annotated with @transaction');
+                if (functionDeclaration.getParameterTypes()[0] === transaction.getFullyQualifiedType()) {
+                    LOG.debug(method, 'Function parameter type matches transaction');
+                    functionNames.push(functionDeclaration.getName());
+                } else {
+                    LOG.debug(method, 'Function parameter type does not match transaction');
+                }
+
+            // It's not annotated with @transaction, does it start with on&lt;transactionType>?
+            // This is to keep supporting the original transaction processor function format
+            // which went by naming conventions rather than annotations.
+            } else if (functionDeclaration.getTransactionDeclarationName() === transaction.getType()) {
+                LOG.debug(method, 'Function name matches on&lt;transactionType>');
+                functionNames.push(functionDeclaration.getName());
+
+            // Must be a query or utility function.
+            } else {
+                LOG.debug(method, 'Function is query or utility function');
+            }
+
+        });
+
+        LOG.exit(method, functionNames);
+        return functionNames;
     }
 
-    /**
-     * Returns the package.json for this business network.
-     * @return {object} the Javascript object for package.json
-     */
-    getPackageJson() {
-        return this.packageJson;
-    }
-
-    /**
-     * Returns the name for this business network.
-     * @return {string} the name of the business network
-     */
-    getName() {
-        return this.packageJson.name;
-    }
-
-    /**
-     * Returns the description for this business network.
-     * @return {string} the description of the business network
-     */
-    getDescription() {
-        return this.packageJson.description;
-    }
-
-    /**
-     * Returns the version for this business network.
-     * @return {string} the description of the business network
-     */
-    getVersion() {
-        return this.packageJson.version;
-    }
-
-    /**
-     * Returns the identifier for this business network, formed from name@version.
-     * @return {string} the identifier of the business network
-     */
-    getIdentifier() {
-        return this.packageJson.name + '@' + this.packageJson.version;
-    }
 }
 
-module.exports = BusinessNetworkMetadata;
+module.exports = CompiledScriptBundle;
 </pre>
     </article>
 </section>

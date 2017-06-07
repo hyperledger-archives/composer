@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Class: Identifiable</title>
+	<title>Hyperledger Composer Class: ScriptCompiler</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,19 +79,16 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: Identifiable</h1>
+	<h1 class="page-title">Class: ScriptCompiler</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
-        
-        Identifiable
+        ScriptCompiler
         </h2>
         
-            <div class="class-description"><p>Identifiable is an entity with a namespace, type and an identifier.</p>
-<p>This class is abstract.</p></div>
+            <div class="class-description"><p>A script compiler compiles all scripts in a script manager into a compiled<br>script bundle that can easily be called by the runtime.</p></div>
         
     
 </header>
@@ -103,146 +100,19 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="Identifiable"><span class="type-signature">&lt;abstract> </span>new Identifiable(modelManager, ns, type, id)</h4>
+    <h4 class="name" id="ScriptCompiler"><span class="type-signature"></span>new ScriptCompiler()</h4>
     
     
 </dt>
 <dd>
 
     
-    <div class="description">
-        <p>Create an instance.</p>
-<p><br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from Factory</strong><br></p>
-    </div>
-    
 
     
 
     
 
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>modelManager</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">ModelManager</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The ModelManager for this instance</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>ns</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The namespace this instance.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The type this instance.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The identifier of this instance.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
     
 
     
@@ -280,8 +150,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-27">line 27</a>
+				<a href="composer-runtime_lib_scriptcompiler.js.html">composer-runtime/lib/scriptcompiler.js</a>,
+				 <a href="composer-runtime_lib_scriptcompiler.js.html#sunlight-1-line-30">line 30</a>
 			</li>
 		</ul>
 	</dd>
@@ -332,7 +202,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="getFullyQualifiedIdentifier"><span class="type-signature"></span>getFullyQualifiedIdentifier()</h4>
+    <h4 class="name" id="compile"><span class="type-signature"></span>compile(scriptManager)</h4>
     
     
 </dt>
@@ -340,455 +210,7 @@
 
     
     <div class="description">
-        <p>Get the fully qualified identifier of this instance.<br>(namespace '.' type '#' identifier).</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-71">line 71</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>the fully qualified identifier of this instance</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="getIdentifier"><span class="type-signature"></span>getIdentifier()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Get the identifier of this instance</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-50">line 50</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The identifier for this object</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="isRelationship"><span class="type-signature"></span>isRelationship()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Determine if this identifiable is a relationship.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-88">line 88</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>True if this identifiable is a relationship,<br>false if not.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="isResource"><span class="type-signature"></span>isResource()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Determine if this identifiable is a resource.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-97">line 97</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>True if this identifiable is a resource,<br>false if not.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="setIdentifier"><span class="type-signature"></span>setIdentifier(id)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Set the identifier of this instance</p>
+        <p>Compile all the scripts in the specified script manager into a compiled<br>script bundle for use by the runtime.</p>
     </div>
     
 
@@ -823,13 +245,13 @@
 
         <tr>
             
-                <td class="name"><code>id</code></td>
+                <td class="name"><code>scriptManager</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">ScriptManager</span>
 
 
 
@@ -840,7 +262,7 @@
 
             
 
-            <td class="description last"><p>the new identifier for this object</p></td>
+            <td class="description last"><p>The script manager to process.</p></td>
         </tr>
 
     
@@ -884,8 +306,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-58">line 58</a>
+				<a href="composer-runtime_lib_scriptcompiler.js.html">composer-runtime/lib/scriptcompiler.js</a>,
+				 <a href="composer-runtime_lib_scriptcompiler.js.html#sunlight-1-line-38">line 38</a>
 			</li>
 		</ul>
 	</dd>
@@ -910,6 +332,30 @@
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The compiled script bundle.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -918,7 +364,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="toString"><span class="type-signature"></span>toString()</h4>
+    <h4 class="name" id="convertScriptToScriptNode"><span class="type-signature"></span>convertScriptToScriptNode(context, script)</h4>
     
     
 </dt>
@@ -926,7 +372,7 @@
 
     
     <div class="description">
-        <p>Returns the string representation of this class</p>
+        <p>Convert the specified script into a script node with a source map.</p>
     </div>
     
 
@@ -935,6 +381,80 @@
     
 
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The compiler context.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>script</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Script</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function declaration to process.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
     
 
     
@@ -972,8 +492,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-79">line 79</a>
+				<a href="composer-runtime_lib_scriptcompiler.js.html">composer-runtime/lib/scriptcompiler.js</a>,
+				 <a href="composer-runtime_lib_scriptcompiler.js.html#sunlight-1-line-173">line 173</a>
 			</li>
 		</ul>
 	</dd>
@@ -1002,7 +522,7 @@
     
             
 <div class="param-desc">
-    <p>the string representation of the class</p>
+    <p>The script node.</p>
 </div>
 
 
@@ -1013,7 +533,7 @@
     </dt>
     <dd>
         
-<span class="param-type">String</span>
+<span class="param-type">SourceNode</span>
 
 
 
@@ -1030,7 +550,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="toURI"><span class="type-signature"></span>toURI()</h4>
+    <h4 class="name" id="convertScriptToSourceMap"><span class="type-signature"></span>convertScriptToSourceMap(context, script)</h4>
     
     
 </dt>
@@ -1038,7 +558,7 @@
 
     
     <div class="description">
-        <p>Returns a URI representation of a reference to this identifiable</p>
+        <p>Convert the specified script into a source map.</p>
     </div>
     
 
@@ -1047,6 +567,80 @@
     
 
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The compiler context.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>script</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Script</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function declaration to process.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
     
 
     
@@ -1084,8 +678,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_identifiable.js.html">composer-common/lib/model/identifiable.js</a>,
-				 <a href="composer-common_lib_model_identifiable.js.html#sunlight-1-line-105">line 105</a>
+				<a href="composer-runtime_lib_scriptcompiler.js.html">composer-runtime/lib/scriptcompiler.js</a>,
+				 <a href="composer-runtime_lib_scriptcompiler.js.html#sunlight-1-line-139">line 139</a>
 			</li>
 		</ul>
 	</dd>
@@ -1114,7 +708,7 @@
     
             
 <div class="param-desc">
-    <p>the URI for the identifiable</p>
+    <p>The source map.</p>
 </div>
 
 
@@ -1134,6 +728,330 @@
 
 
         
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="processScript"><span class="type-signature"></span>processScript(context, script)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Process the specified script by processing the function declarations in the script,<br>then convert the script into a script node and add it to the root node.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The compiler context.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>script</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Script</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The script to process.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_scriptcompiler.js.html">composer-runtime/lib/scriptcompiler.js</a>,
+				 <a href="composer-runtime_lib_scriptcompiler.js.html#sunlight-1-line-116">line 116</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="processScriptManager"><span class="type-signature"></span>processScriptManager(context, scriptManager)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Process the specified script manager by processing the scripts in the script manager.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The compiler context.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scriptManager</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">ScriptManager</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The script manager to process.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_scriptcompiler.js.html">composer-runtime/lib/scriptcompiler.js</a>,
+				 <a href="composer-runtime_lib_scriptcompiler.js.html#sunlight-1-line-97">line 97</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>

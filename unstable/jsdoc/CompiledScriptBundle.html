@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/businessnetworkmetadata.js</title>
+	<title>Hyperledger Composer Class: CompiledScriptBundle</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -74,130 +74,565 @@
 <div class="row">
 
 	
-	<div class="col-md-12">
+	<div class="col-md-8">
 	
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/businessnetworkmetadata.js</h1>
-    
+	<h1 class="page-title">Class: CompiledScriptBundle</h1>
 <section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript linenums">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-'use strict';
-
-const Logger = require('./log/logger');
-const LOG = Logger.getLog('BusinessNetworkMetadata');
-
-/**
- * &lt;p>
- * Defines the metadata for a BusinessNeworkDefinition. This includes:
- * &lt;ul>
- *   &lt;li>package.json&lt;/li>
- *   &lt;li>README.md (optional)&lt;/li>
- * &lt;/ul>
- * &lt;/p>
- * @class
- * @memberof module:composer-common
- */
-class BusinessNetworkMetadata {
-
-    /**
-     * Create the BusinessNetworkMetadata.
-     * &lt;p>
-     * &lt;strong>Note: Only to be called by framework code. Applications should
-     * retrieve instances from {@link BusinessNetworkDefinition}&lt;/strong>
-     * &lt;/p>
-     * @param {object} packageJson  - the JS object for package.json (required)
-     * @param {String} readme  - the README.md for the business network (may be null)
-     */
-    constructor(packageJson, readme) {
-        const method = 'constructor';
-        LOG.entry(method, readme);
-
-        if(!packageJson || typeof(packageJson) !== 'object') {
-            throw new Error('package.json is required and must be an object');
-        }
-
-        this.packageJson = packageJson;
-
-        if(readme &amp;&amp; typeof(readme) !== 'string') {
-            throw new Error('README must be a string');
-        }
+<header>
+    
+        <h2>
+        CompiledScriptBundle
+        </h2>
+        
+            <div class="class-description"><p>A script compiler compiles all scripts in a script manager into a compiled<br>script bundle that can easily be called by the runtime.</p></div>
+        
+    
+</header>
 
 
-        this.readme = readme;
-        LOG.exit(method);
-    }
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="CompiledScriptBundle"><span class="type-signature"></span>new CompiledScriptBundle(functionDeclarations, generatorFunction)</h4>
+    
+    
+</dt>
+<dd>
 
-    /**
-     * Returns the README.md for this business network. This may be null if the business network does not have a README.md
-     * @return {String} the README.md file for the business network or null
-     */
-    getREADME() {
-        return this.readme;
-    }
+    
+    <div class="description">
+        <p>Constructor.</p>
+    </div>
+    
 
-    /**
-     * Returns the package.json for this business network.
-     * @return {object} the Javascript object for package.json
-     */
-    getPackageJson() {
-        return this.packageJson;
-    }
+    
 
-    /**
-     * Returns the name for this business network.
-     * @return {string} the name of the business network
-     */
-    getName() {
-        return this.packageJson.name;
-    }
+    
 
-    /**
-     * Returns the description for this business network.
-     * @return {string} the description of the business network
-     */
-    getDescription() {
-        return this.packageJson.description;
-    }
+    
+    
+        <h5>Parameters:</h5>
+        
 
-    /**
-     * Returns the version for this business network.
-     * @return {string} the description of the business network
-     */
-    getVersion() {
-        return this.packageJson.version;
-    }
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-    /**
-     * Returns the identifier for this business network, formed from name@version.
-     * @return {string} the identifier of the business network
-     */
-    getIdentifier() {
-        return this.packageJson.name + '@' + this.packageJson.version;
-    }
-}
+        <th>Type</th>
 
-module.exports = BusinessNetworkMetadata;
-</pre>
-    </article>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>functionDeclarations</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;FunctionDeclaration></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The function declarations to use.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>generatorFunction</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The generator function to use.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_compiledscriptbundle.js.html">composer-runtime/lib/compiledscriptbundle.js</a>,
+				 <a href="composer-runtime_lib_compiledscriptbundle.js.html#sunlight-1-line-25">line 25</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="execute"><span class="type-signature"></span>execute(api, resolvedTransaction)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Execute the specified transaction.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>api</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Api</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The API to use.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>resolvedTransaction</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Resource</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The resolved transaction to execute.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_compiledscriptbundle.js.html">composer-runtime/lib/compiledscriptbundle.js</a>,
+				 <a href="composer-runtime_lib_compiledscriptbundle.js.html#sunlight-1-line-44">line 44</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise that is resolved when the transaction has been<br>executed, or rejected with an error.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="findFunctionNames"><span class="type-signature"></span>findFunctionNames(transaction)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Find all of the function names that should be executed.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>transaction</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Resource</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The transaction to execute.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_compiledscriptbundle.js.html">composer-runtime/lib/compiledscriptbundle.js</a>,
+				 <a href="composer-runtime_lib_compiledscriptbundle.js.html#sunlight-1-line-86">line 86</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>All function names to execute.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;string></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
 </section>
-
 
 
 
@@ -207,6 +642,10 @@ module.exports = BusinessNetworkMetadata;
 
 	<div class="clearfix"></div>
 
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
 	
 
 </div>
