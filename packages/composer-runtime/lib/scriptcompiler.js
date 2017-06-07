@@ -175,11 +175,39 @@ class ScriptCompiler {
         LOG.entry(method, context, script);
 
         // Convert the script into a source map.
-        const sourceMap = this.convertScriptToSourceMap(context, script);
+        let sourceFileName = script.getIdentifier();
+        let sourceCode = script.getContents();
+        let sourceMap = this.convertScriptToSourceMap(context, script);
+
+        // Allow someone else to post-process the converted script.
+        const transformedScript = this.transformScript(sourceFileName, sourceCode, sourceMap);
+        sourceFileName = transformedScript.sourceFileName;
+        sourceCode = transformedScript.sourceCode;
+        sourceMap = transformedScript.sourceMap;
 
         // Create a new source node from the script contents and source map
         const sourceMapConsumer = new SourceMapConsumer(sourceMap);
-        const result = SourceNode.fromStringWithSourceMap(script.getContents(), sourceMapConsumer);
+        const result = SourceNode.fromStringWithSourceMap(sourceCode, sourceMapConsumer);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Optional hook to transform a script into another format, for example
+     * by using a code coverage instrumenter.
+     * @param {String} sourceFileName The file name for the script.
+     * @param {String} sourceCode The source code for the script.
+     * @param {String} sourceMap The source map for the script.
+     * @return {Object} The transformed script.
+     */
+    transformScript(sourceFileName, sourceCode, sourceMap) {
+        const method = 'transformScript';
+        LOG.entry(method, sourceFileName, sourceCode, sourceMap);
+        const result = {
+            sourceFileName: sourceFileName,
+            sourceCode: sourceCode,
+            sourceMap: sourceMap
+        };
         LOG.exit(method, result);
         return result;
     }
