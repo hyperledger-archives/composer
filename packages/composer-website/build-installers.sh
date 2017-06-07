@@ -7,18 +7,20 @@ set -ev
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${DIR}/installers"
 
+
+# Get the fabric tools
 curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.zip
 
-
 # Build all of the installers.
-for i in hlf*
-do
-    echo $i/fabric-dev-servers/
-    unzip fabric-dev-servers.zip -d $i/fabric-dev-servers/
-    $i/build.sh
-    cp -f $i/install.sh ../jekylldocs/install-$i.sh
-    rm -rf $i/fabric-dev-servers/
-done
+
+
+VERSION=hlfv1
+unzip fabric-dev-servers.zip -d $VERSION/fabric-dev-servers/
+$VERSION/build.sh
+cp -f $VERSION/install.sh ../jekylldocs/install-$VERSION.sh
+cp -f $VERSION/install-unstable.sh ../jekylldocs/install-$VERSION-unstable.sh
+
+rm -rf $VERSION/fabric-dev-servers/
 
 # clean up
 rm fabric-dev-servers.zip
