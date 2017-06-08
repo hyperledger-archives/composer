@@ -179,9 +179,7 @@ class Typed {
     instanceOf(fqt) {
         const classDeclaration = this.getClassDeclaration();
         return classDeclaration.getFullyQualifiedName() === fqt ||
-            classDeclaration.getAllSuperTypeDeclarations().
-                map(declaration => declaration.getFullyQualifiedName()).
-                indexOf(fqt) > -1;
+            classDeclaration.getAllSuperTypeDeclarations().some(declaration => declaration.getFullyQualifiedName() === fqt);
     }
 
     /**
