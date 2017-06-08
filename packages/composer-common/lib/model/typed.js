@@ -177,19 +177,11 @@ class Typed {
      * qualified type name, false otherwise.
      */
     instanceOf(fqt) {
-        let classDeclaration = this.getClassDeclaration();
-        if (classDeclaration.getFullyQualifiedName() === fqt) {
-            return true;
-        }
-        let superType = classDeclaration.getSuperType();
-        while (superType) {
-            classDeclaration = this.$modelManager.getType(superType);
-            if (classDeclaration.getFullyQualifiedName() === fqt) {
-                return true;
-            }
-            superType = classDeclaration.getSuperType();
-        }
-        return false;
+        const classDeclaration = this.getClassDeclaration();
+        return classDeclaration.getFullyQualifiedName() === fqt ||
+            classDeclaration.getAllSuperTypeDeclarations().
+                map(declaration => declaration.getFullyQualifiedName()).
+                indexOf(fqt) > -1;
     }
 
     /**
