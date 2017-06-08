@@ -30,16 +30,14 @@ const sinon = require('sinon');
 describe('WebContext', () => {
 
     let mockWebContainer;
-    let mockDataService;
     let mockSerializer;
     let mockEngine;
 
     beforeEach(() => {
         mockWebContainer = sinon.createStubInstance(WebContainer);
-        mockDataService = sinon.createStubInstance(DataService);
+        mockWebContainer.getUUID.returns('d8f08eba-2746-4801-8318-3a7611aed45e');
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockWebContainer);
-        mockWebContainer.getDataService.returns(mockDataService);
         mockSerializer = sinon.createStubInstance(Serializer);
     });
 

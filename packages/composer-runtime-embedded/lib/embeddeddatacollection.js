@@ -90,10 +90,12 @@ class EmbeddedDataCollection extends DataCollection {
      * with an error.
      */
     add(id, object) {
-        return this.db.objects.add({
-            id: id,
-            collectionId: this.collectionId,
-            object: object
+        return this.dataService.handleAction(() => {
+            return this.db.objects.add({
+                id: id,
+                collectionId: this.collectionId,
+                object: object
+            });
         });
     }
 
@@ -106,10 +108,12 @@ class EmbeddedDataCollection extends DataCollection {
      * with an error.
      */
     update(id, object) {
-        return this.db.objects.put({
-            id: id,
-            collectionId: this.collectionId,
-            object: object
+        return this.dataService.handleAction(() => {
+            return this.db.objects.put({
+                id: id,
+                collectionId: this.collectionId,
+                object: object
+            });
         });
     }
 
@@ -121,7 +125,9 @@ class EmbeddedDataCollection extends DataCollection {
      * with an error.
      */
     remove(id) {
-        return this.db.objects.where('[id+collectionId]').equals([id, this.collectionId]).delete();
+        return this.dataService.handleAction(() => {
+            return this.db.objects.where('[id+collectionId]').equals([id, this.collectionId]).delete();
+        });
     }
 
 }

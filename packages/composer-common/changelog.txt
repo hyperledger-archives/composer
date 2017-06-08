@@ -12,6 +12,12 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.7.5 {b2c1c30d370b04c153426500a03c3061} 2017-06-07
+- Added optional JSZip options parameter to toArchive
+
+Version 0.7.4 {ebaf2453e8e5af80aa8e2d36a7513b63} 2017-05-30
+- Fixed Factory.newEvent to accept optional event ID
+
 Version 0.7.1 {90a630e8b408292357ee801e5b79512c} 2017-05-04
 - Added Factory.newEvent
 

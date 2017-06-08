@@ -143,6 +143,29 @@ describe('ModelFile', () => {
 
     });
 
+    // describe('#retrofit', () => {
+    //
+    //     it('should complete succefully when having a transaction',  () => {
+    //         const model1 = `
+    //     namespace org.acme.boilerplate
+    //     import org.acme.core.basetx
+    //     transaction tr1 extends basetx {
+    //     }`;
+    //         const model2 = `
+    //     namespace org.acme.core
+    //
+    //     abstract transaction basetx identified by id {
+    //         o String id
+    //     }`;
+    //         let modelFile1 = new ModelFile(mockModelManager, model1);
+    //         let modelFile2 = new ModelFile(mockModelManager, model2);
+    //         modelFile2.retrofit();
+    //         modelFile1.retrofit();
+    //     });
+    //
+    //
+    // } );
+
     describe('#validate', () => {
 
         it('should throw if an import exists for an invalid namespace', () => {

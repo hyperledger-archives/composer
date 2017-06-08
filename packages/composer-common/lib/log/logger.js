@@ -364,7 +364,7 @@ class Logger {
             // _root = new Node('root',false);
             _tree = new Tree();
 
-            const regex = /(-?)concerto:(.*)?/;
+            const regex = /(-?)composer:(.*)?/;
         // now we have an array of the elements that we might need to be enabled
         //
             for (let i=0; i< details.length;i++){

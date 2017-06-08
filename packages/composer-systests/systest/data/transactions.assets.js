@@ -1,3 +1,4 @@
+/*eslint no-var: 0*/
 'use strict';
 
 function onSimpleTransactionWithPrimitiveTypes(transaction) {
@@ -301,5 +302,59 @@ function onRemoveNewAssetWithRelationshipInAssetRegistryTransaction(transaction)
             var a = f.newResource('systest.transactions.assets', 'SimpleRelationshipAsset', 'relationshipAsset1');
             a.stringAsset = f.newRelationship('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
             return ar.remove(a);
+        });
+}
+
+/**
+ * Handle the transaction to check that transactions are atomic.
+ * @param {systest.transactions.assets.AssetAddIsAtomic} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ * @transaction
+ */
+function assetAddIsAtomic(transaction) {
+    return getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+            a.stringValue = 'party parrot in hursley';
+            return ar.add(a);
+        })
+        .then(function () {
+            throw new Error('we dont want no stinkin party parrots');
+        });
+}
+
+/**
+ * Handle the transaction to check that transactions are atomic.
+ * @param {systest.transactions.assets.AssetUpdateIsAtomic} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ * @transaction
+ */
+function assetUpdateIsAtomic(transaction) {
+    return getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+        .then(function (ar) {
+            var f = getFactory();
+            var a = f.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+            a.stringValue = 'party parrot in san francisco';
+            return ar.update(a);
+        })
+        .then(function () {
+            throw new Error('we dont want no stinkin party parrots');
+        });
+}
+
+/**
+ * Handle the transaction to check that transactions are atomic.
+ * @param {systest.transactions.assets.AssetRemoveIsAtomic} transaction The transaction
+ * @return {Promise} A promise that is resolved when complete.
+ * @transaction
+ */
+function assetRemoveIsAtomic(transaction) {
+    return getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+        .then(function (ar) {
+            return ar.remove('stringAsset1');
+        })
+        .then(function () {
+            throw new Error('we dont want no stinkin party parrots');
         });
 }

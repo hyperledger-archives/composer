@@ -6,7 +6,7 @@ sidebar: sidebars/reference.md
 excerpt: Hyperledger Composer module info
 ---
 
-# Meet the npm Modules
+# {{site.data.conrefs.composer_full}} npm Modules
 
 ---
 

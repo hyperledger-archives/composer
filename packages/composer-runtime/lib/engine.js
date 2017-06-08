@@ -104,9 +104,15 @@ class Engine {
             throw new Error(util.format('Invalid arguments "%j" to function "%s", expecting "%j"', args, 'init', ['businessNetworkArchive']));
         }
         let dataService = context.getDataService();
-        let businessNetworkBase64, businessNetworkHash, businessNetworkDefinition;
+        let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition, compiledScriptBundle;
         let sysregistries, sysidentities;
         return Promise.resolve()
+            .then(() => {
+
+                // Start the transaction.
+                return context.transactionStart(false);
+
+            })
             .then(() => {
 
                 // Load, validate, and hash the business network definition.
@@ -116,15 +122,40 @@ class Engine {
                 let sha256 = createHash('sha256');
                 businessNetworkHash = sha256.update(businessNetworkBase64, 'utf8').digest('hex');
                 LOG.debug(method, 'Calculated business network definition hash', businessNetworkHash);
-                return BusinessNetworkDefinition.fromArchive(businessNetworkArchive);
+
+                // Create the business network record.
+                businessNetworkRecord = {
+                    data: businessNetworkBase64,
+                    hash: businessNetworkHash
+                };
+
+                // Load the business network.
+                businessNetworkDefinition = Context.getCachedBusinessNetwork(businessNetworkHash);
+                if (!businessNetworkDefinition) {
+                    return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
+                        .then((businessNetworkDefinition_) => {
+
+                            // Cache the business network.
+                            businessNetworkDefinition = businessNetworkDefinition_;
+                            LOG.debug(method, 'Loaded business network definition, storing in cache');
+                            Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
+
+                        });
+                }
 
             })
-            .then((businessNetworkDefinition_) => {
+            .then(() => {
 
-                // Cache the business network.
-                businessNetworkDefinition = businessNetworkDefinition_;
-                LOG.debug(method, 'Loaded business network definition, storing in cache');
-                Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
+                // Load the compiled script bundle.
+                compiledScriptBundle = Context.getCachedCompiledScriptBundle(businessNetworkHash);
+                if (!compiledScriptBundle) {
+
+                    // Cache the compiled script bundle.
+                    compiledScriptBundle = context.getScriptCompiler().compile(businessNetworkDefinition.getScriptManager());
+                    LOG.debug(method, 'Loaded compiled script bundle, storing in cache');
+                    Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
+
+                }
 
                 // Get the sysdata collection where the business network definition is stored.
                 LOG.debug(method, 'Loaded business network definition, storing in $sysdata collection');
@@ -142,10 +173,7 @@ class Engine {
             .then((sysdata) => {
 
                 // Add the business network definition to the sysdata collection.
-                return sysdata.add('businessnetwork', {
-                    data: businessNetworkBase64,
-                    hash: businessNetworkHash
-                });
+                return sysdata.add('businessnetwork', businessNetworkRecord);
 
             })
             .then(() => {
@@ -190,6 +218,7 @@ class Engine {
                 LOG.debug(method, 'Initializing context');
                 return context.initialize({
                     businessNetworkDefinition: businessNetworkDefinition,
+                    compiledScriptBundle: compiledScriptBundle,
                     sysregistries: sysregistries,
                     sysidentities: sysidentities
                 });
@@ -218,9 +247,24 @@ class Engine {
                     });
 
             })
+            .then(() => {
+                return context.transactionPrepare()
+                    .then(() => {
+                        return context.transactionCommit();
+                    })
+                    .then(() => {
+                        return context.transactionEnd();
+                    });
+            })
             .catch((error) => {
                 LOG.error(method, 'Caught error, rethrowing', error);
-                throw error;
+                return context.transactionRollback()
+                    .then(() => {
+                        return context.transactionEnd();
+                    })
+                    .then(() => {
+                        throw error;
+                    });
             })
             .then(() => {
                 LOG.exit(method);
@@ -260,12 +304,33 @@ class Engine {
             LOG.debug(method, 'Initializing context');
             return context.initialize()
                 .then(() => {
+                    return context.transactionStart(false);
+                })
+                .then(() => {
                     LOG.debug(method, 'Calling engine function', fcn);
                     return this[fcn](context, args);
                 })
+                .then((result) => {
+                    return context.transactionPrepare()
+                        .then(() => {
+                            return context.transactionCommit();
+                        })
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            return result;
+                        });
+                })
                 .catch((error) => {
                     LOG.error(method, 'Caught error, rethrowing', error);
-                    throw error;
+                    return context.transactionRollback()
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            throw error;
+                        });
                 })
                 .then((result) => {
                     LOG.exit(method, result);
@@ -310,12 +375,33 @@ class Engine {
             LOG.debug(method, 'Initializing context');
             return context.initialize()
                 .then(() => {
+                    return context.transactionStart(true);
+                })
+                .then(() => {
                     LOG.debug(method, 'Calling engine function', fcn);
                     return this[fcn](context, args);
                 })
+                .then((result) => {
+                    return context.transactionPrepare()
+                        .then(() => {
+                            return context.transactionCommit();
+                        })
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            return result;
+                        });
+                })
                 .catch((error) => {
                     LOG.error(method, 'Caught error, rethrowing', error);
-                    throw error;
+                    return context.transactionRollback()
+                        .then(() => {
+                            return context.transactionEnd();
+                        })
+                        .then(() => {
+                            throw error;
+                        });
                 })
                 .then((result) => {
                     LOG.exit(method, result);
