@@ -5,7 +5,7 @@ if [ "${ME}" = "install-hlfv1{{ENV}}.sh" ]; then
 fi
 (cat > composer.sh; chmod +x composer.sh; exec bash composer.sh)
 #!/bin/bash
-set -ev
+set -e
 
 # Docker stop function
 function stop()
@@ -90,11 +90,13 @@ case "$(uname)" in
           ;;
 esac
 
+echo
+echo "--------------------------------------------------------------------------------------"
 echo "Hyperledger Fabric and Hyperleder Composer installed, and Composer Playground launched"
 echo "Please use  'composer.sh' to re-start"
 
 # removing instalation image
-rm ./install-hlfv1{{ENV}}.sh
+rm "${DIR}"/install-hlfv1{{ENV}}.sh
 
 # Exit; this is required as the payload immediately follows.
 exit 0
