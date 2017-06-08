@@ -35,8 +35,9 @@ describe('Identity system tests', () => {
     let participant;
 
     before(function () {
+        // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying null as the value
         const modelFiles = [
-            { fileName: 'models/identities.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8') }
+            { fileName: null, contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8') }
         ];
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.js'), 'utf8') }

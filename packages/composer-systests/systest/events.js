@@ -32,6 +32,7 @@ describe('Event system tests', function () {
     let client;
 
     before(function () {
+        // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying no value in model creation
         const modelFiles = [
             { fileName: 'models/events.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/events.cto'), 'utf8') }
         ];
@@ -40,7 +41,7 @@ describe('Event system tests', function () {
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.events@0.0.1', 'The network for the event system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
