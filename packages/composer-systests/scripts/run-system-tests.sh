@@ -66,10 +66,17 @@ fi
 # configure v1 to run the tests
 if [[ ${SYSTEST} == hlfv1* ]]; then
     sleep 10
-    # Create the channel
-    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx
-    # Join peer0 to the channel.
-    docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel join -b mychannel.block
+    if [[ ${SYSTEST} == *tls ]]; then
+        # Create the channel
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx --tls true --cafile /etc/hyperledger/orderer/example.com-cert.pem
+        # Join peer0 to the channel.
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel join -b mychannel.block --tls true --cafile /etc/hyperledger/orderer/example.com-cert.pem
+    else
+        # Create the channel
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx
+        # Join peer0 to the channel.
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel join -b mychannel.block
+    fi
 fi
 
 # Run the system tests.

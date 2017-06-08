@@ -15,7 +15,7 @@
 'use strict';
 
 const api = require('fabric-client/lib/api');
-const Chain = require('fabric-client/lib/Chain');
+const Channel = require('fabric-client/lib/Channel');
 const Client = require('fabric-client');
 const ConnectionProfileManager = require('composer-common').ConnectionProfileManager;
 const FabricCAClientImpl = require('fabric-ca-client');
@@ -23,6 +23,7 @@ const HLFConnection = require('../lib/hlfconnection');
 const HLFConnectionManager = require('..');
 const HLFWalletProxy = require('../lib/hlfwalletproxy');
 const KeyValueStore = api.KeyValueStore;
+const CryptoSuite = api.CryptoSuite;
 const Orderer = require('fabric-client/lib/Orderer');
 const Peer = require('fabric-client/lib/Peer');
 const Wallet = require('composer-common').Wallet;
@@ -528,8 +529,8 @@ describe('HLFConnectionManager', () => {
             };
             mockClient = sinon.createStubInstance(Client);
             sandbox.stub(HLFConnectionManager, 'createClient').returns(mockClient);
-            mockChannel = sinon.createStubInstance(Chain);
-            mockClient.newChain.returns(mockChannel);
+            mockChannel = sinon.createStubInstance(Channel);
+            mockClient.newChannel.returns(mockChannel);
             mockOrderer = sinon.createStubInstance(Orderer);
             sandbox.stub(HLFConnectionManager, 'createOrderer').withArgs(connectOptions.orderers[0]).returns(mockOrderer);
             mockPeer = sinon.createStubInstance(Peer);
@@ -619,12 +620,14 @@ describe('HLFConnectionManager', () => {
             }).should.throw(/The certificate authority URL has not been specified/);
         });
 
-        it('should throw if keyValStore is not specified', () => {
+        it('should throw if keyValStore and wallet are not specified', () => {
             delete connectOptions.keyValStore;
             (() => {
                 connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
-            }).should.throw(/No key value store directory has been specified/);
+            }).should.throw(/No key value store directory or wallet has been specified/);
         });
+
+        //TODO: should throw if wallet not of the right type.
 
         it('should throw if channel is not specified', () => {
             delete connectOptions.channel;
@@ -643,7 +646,7 @@ describe('HLFConnectionManager', () => {
                     connection.client.should.deep.equal(mockClient);
                     connection.channel.should.deep.equal(mockChannel);
                     connection.caClient.should.deep.equal(mockCAClient);
-                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
+                    sinon.assert.calledWith(mockClient.newChannel, connectOptions.channel);
                     sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
                     sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', null, null);
                     sinon.assert.calledOnce(HLFConnectionManager.createPeer);
@@ -669,7 +672,7 @@ describe('HLFConnectionManager', () => {
                     connection.client.should.deep.equal(mockClient);
                     connection.channel.should.deep.equal(mockChannel);
                     connection.caClient.should.deep.equal(mockCAClient);
-                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
+                    sinon.assert.calledWith(mockClient.newChannel, connectOptions.channel);
                     sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
                     sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', null, null);
                     sinon.assert.calledOnce(HLFConnectionManager.createPeer);
@@ -724,7 +727,6 @@ describe('HLFConnectionManager', () => {
                     configSettingStub.called.should.be.false;
                 });
         });
-
 
         it('should add a single orderer to the chain', () => {
             return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
@@ -806,7 +808,7 @@ describe('HLFConnectionManager', () => {
                     connection.client.should.deep.equal(mockClient);
                     connection.channel.should.deep.equal(mockChannel);
                     connection.caClient.should.deep.equal(mockCAClient);
-                    sinon.assert.calledWith(mockClient.newChain, connectOptions.channel);
+                    sinon.assert.calledWith(mockClient.newChannel, connectOptions.channel);
                     sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
                     sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'https://localhost:7054', {
                         'trustedRoots' : ['trusted'],
@@ -845,8 +847,17 @@ describe('HLFConnectionManager', () => {
                 });
         });
 
-        it('should handle an error creating a default key value store', () => {
+        it('should handle an error creating a store using keyValStore', () => {
             Client.newDefaultKeyValueStore.rejects('wow such fail');
+            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+                .should.be.rejectedWith(/wow such fail/);
+        });
+
+        it('should handle an error creating a store using a wallet', () => {
+            delete connectOptions.keyValStore;
+            connectOptions.wallet = {};
+            sandbox.stub(Client, 'newCryptoKeyStore').throws('wow such fail');
+
             return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
                 .should.be.rejectedWith(/wow such fail/);
         });
@@ -858,7 +869,6 @@ describe('HLFConnectionManager', () => {
                     sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
                 });
         });
-
 
         it('should configure a wallet proxy if a singleton wallet is provided', () => {
             Wallet.setWallet(mockWallet);
@@ -886,12 +896,15 @@ describe('HLFConnectionManager', () => {
     });
 
     describe('#importIdentity', () => {
-        let mockClient, mockKeyValueStore, profile;
+        let mockClient, mockKeyValueStore, profile, mockCryptoSuite;
         beforeEach(() => {
             mockClient = sinon.createStubInstance(Client);
             sandbox.stub(HLFConnectionManager, 'createClient').returns(mockClient);
             mockKeyValueStore = sinon.createStubInstance(KeyValueStore);
+            mockCryptoSuite = sinon.createStubInstance(CryptoSuite);
+            mockCryptoSuite.setCryptoKeyStore = sinon.stub();
             sandbox.stub(Client, 'newDefaultKeyValueStore').resolves(mockKeyValueStore);
+            sandbox.stub(Client, 'newCryptoSuite').returns(mockCryptoSuite);
 
             profile = {
                 orderers: [
@@ -918,8 +931,9 @@ describe('HLFConnectionManager', () => {
                     sinon.assert.calledWith(Client.newDefaultKeyValueStore, { path: '/tmp/hlfabric1' });
                     sinon.assert.calledOnce(mockClient.setStateStore);
                     sinon.assert.calledWith(mockClient.setStateStore, mockKeyValueStore);
-                    sinon.assert.calledOnce(mockClient.newCryptoSuite);
-                    sinon.assert.calledWith(mockClient.newCryptoSuite, null, null, { path: '/tmp/hlfabric1' });
+                    sinon.assert.calledOnce(Client.newCryptoSuite);
+                    sinon.assert.calledOnce(mockClient.setCryptoSuite);
+//                    sinon.assert.calledWith(mockClient.newCryptoSuite, null, null, { path: '/tmp/hlfabric1' });
                     sinon.assert.calledOnce(mockClient.createUser);
                     sinon.assert.calledWith(mockClient.createUser, {
                         username: 'anid',
@@ -987,11 +1001,11 @@ describe('HLFConnectionManager', () => {
             }).should.throw(/No msp id defined/);
         });
 
-        it('should throw if keyValStore is not specified', () => {
+        it('should throw if no keyValStore or wallet is not specified', () => {
             delete profile.keyValStore;
             (() => {
                 connectionManager.importIdentity(profile, 'anid', 'acert', 'akey');
-            }).should.throw(/No key value store directory has been specified/);
+            }).should.throw(/No key value store directory or wallet has been specified/);
         });
 
         it('should handle an error creating a default key value store', () => {
@@ -1001,7 +1015,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should handle an error creating a new cryptosuite', () => {
-            mockClient.newCryptoSuite.throws(new Error('another fail'));
+            mockClient.setCryptoSuite.throws(new Error('another fail'));
             return connectionManager.importIdentity(profile, 'anid', 'acert', 'akey')
                 .should.be.rejectedWith(/another fail/);
         });

@@ -36,6 +36,10 @@ class HLFWalletProxy extends KeyValueStore {
         LOG.entry(method, wallet);
         this.wallet = wallet;
         LOG.exit(method);
+        let self = this;
+        return new Promise(function(resolve, reject) {
+            resolve(self);
+        });
     }
 
     /**
