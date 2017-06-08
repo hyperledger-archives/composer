@@ -1,6 +1,6 @@
 {
   "name": "composer-playground",
-  "version": "0.7.5",
+  "version": "0.7.5-wibble-wiblle",
   "description": "A test harness/UI for the web runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=6",
