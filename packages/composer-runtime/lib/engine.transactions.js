@@ -66,18 +66,9 @@ class EngineTransactions {
         return context.getResolver().resolve(resolvedTransaction)
             .then(() => {
 
-                // Get the list of transaction executors.
-                let transactionExecutors = context.getTransactionExecutors();
+                // Execute the transaction.
                 let api = context.getApi();
-                let scriptManager = context.getScriptManager();
-
-                // Let each one process the transaction in turn.
-                return transactionExecutors.reduce((result, transactionExecutor) => {
-                    return result.then(() => {
-                        LOG.debug(method, 'Calling transaction executor', transactionExecutor.getType());
-                        return transactionExecutor.execute(api, scriptManager, transaction, resolvedTransaction);
-                    });
-                }, Promise.resolve());
+                return context.getCompiledScriptBundle().execute(api, resolvedTransaction);
 
             })
             .then(() => {
@@ -93,10 +84,6 @@ class EngineTransactions {
                 LOG.debug(method, 'Storing executed transaction in transaction registry');
                 return transactionRegistry.add(transaction);
 
-            })
-            .then(() => {
-                // Commit all transactions
-                return context.getEventService().commit();
             });
 
     }

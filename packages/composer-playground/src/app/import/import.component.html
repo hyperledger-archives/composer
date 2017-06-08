@@ -38,7 +38,7 @@
           <div class="title">Files:</div>
           <ul>
             <li *ngFor="let modelFile of currentBusinessNetwork.getModelManager().getModelFiles()">
-              {{modelFile.getNamespace()}}.cto
+              {{modelFile.getFileName()}}
             </li>
             <li *ngFor="let scriptFile of currentBusinessNetwork.getScriptManager().getScripts()">
               {{scriptFile.getIdentifier()}}

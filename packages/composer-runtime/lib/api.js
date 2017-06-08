@@ -33,6 +33,23 @@ const LOG = Logger.getLog('Api');
 class Api {
 
     /**
+     * The runtime API method names.
+     * @private
+     * @returns {String[]} The runtime API method names.
+     */
+    static getMethodNames() {
+        return [
+            'getFactory',
+            'getSerializer',
+            'getAssetRegistry',
+            'getParticipantRegistry',
+            'getCurrentParticipant',
+            'post',
+            'emit'
+        ];
+    }
+
+    /**
      * Constructor.
      * @param {Factory} factory The factory to use.
      * @param {Serializer} serializer The serializer to use.
@@ -219,7 +236,7 @@ class Api {
             const method = 'emit';
             LOG.entry(method);
             event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
-            let serializedEvent = serializer.toJSON(event);
+            let serializedEvent = serializer.toJSON(event, { convertResourcesToRelationships: true });
             context.incrementEventNumber();
             LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
             eventService.emit(serializedEvent);

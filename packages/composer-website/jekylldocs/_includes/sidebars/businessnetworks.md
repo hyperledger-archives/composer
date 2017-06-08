@@ -1,20 +1,16 @@
 **[Introduction](../introduction/introduction.html)**
-**[Tutorials](../tutorials/tutorialindex.html)**
-**[Installing](../installing/installingindex.html)**
-**[Defining Business Networks](../business-network/businessnetwork.html)**
-[What is a business network?](../business-network/businessnetwork.html)
+**[Installing](../installing/installing-index.html)**
+**[Tutorials](../tutorials/tutorials.html)**
+**[Developing Business Networks](../business-network/business-network-index.html)**
 [What is a business network definition?](../business-network/businessnetworkdefinition.html)
-[Defining a business network](../business-network/getting-started-coding-bnd.html)
-[Deploying a business network](../business-network/deploybusinessnetwork.html)
-[Create a business network definition](../business-network/bnd-define.html)
-[Publishing events](../business-network/publishing-events.html)
-[Publish a business network definition](../business-network/bnd-publish.html)
-[Publish a business domain model](../business-network/model-publish.html)
-[Update a business network definition on Composer](../business-network/runtime-update.html)
-[Test a business network definition](../business-network/testing.html)
-**[Writing Applications](../applications/genapp.html)**
+[Creating a business network definition](../business-network/bnd-create.html)
+[Deploying and updating](../business-network/bnd-deploy.html)
+[Emitting events](../business-network/publishing-events.html)
+[Testing](../business-network/testing.html)
+[Publishing to npm](../business-network/bnd-publish.html)
+**[Developing Applications](../applications/applications-index.html)**
 **[Integrating Existing Systems](../integrating/integrating-index.html)**
 **[Managing and Operating](../managing/managingindex.html)**
-**[Determining Problems](../problems/diagnostics.html)**
+**[Diagnosing Problems](../problems/diagnostics.html)**
 **[Reference](../reference/MeetTheModules.html)**
 **[Support](../support/index.html)**

@@ -101,10 +101,15 @@ class AclFile {
      * @private
      */
     validate() {
-        for(let n=0; n < this.rules.length; n++) {
-            let aclRule = this.rules[n];
+        const aclRules = {};
+        this.rules.forEach((aclRule) => {
             aclRule.validate();
-        }
+            let name = aclRule.getName();
+            if (aclRules[name]){
+                throw new Error(`Found two or more ACL rules with the name '${name}'`);
+            }
+            aclRules[name] = aclRule;
+        });
     }
 
     /**
@@ -123,29 +128,6 @@ class AclFile {
         return this.definitions;
     }
 
-    /**
-     * Convert the specified JSON into an instance of an ACL file.
-     * @param {ModelManager} modelManager - the ModelManager that manages this
-     * ModelFile
-     * @param {Object} aclFile - A serialized instance of an AclFile.
-     * @param {string} aclFile.definitions - The definitions for the AclFile.
-     * @return {AclFile} An instance of an AclFile.
-     */
-    static fromJSON(modelManager, aclFile) {
-        return new AclFile(aclFile.identifier, modelManager, aclFile.definitions);
-    }
-
-    /**
-     * Convert this ACL file into an object that is suitable for converting
-     * into a JSON string for serialization purposes.
-     * @return {Object} An object suitable for converting into a JSON string.
-     */
-    toJSON() {
-        return {
-            identifier: this.identifier,
-            definitions: this.definitions,
-        };
-    }
 }
 
 module.exports = AclFile;

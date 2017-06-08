@@ -19,8 +19,10 @@ const JSONGenerator = require('../../lib/serializer/jsongenerator');
 const JSONWriter = require('../../lib/codegen/jsonwriter');
 const ModelManager = require('../../lib/modelmanager');
 const TypedStack = require('../../lib/serializer/typedstack');
+const ModelUtil = require('../../lib/modelutil');
 
-require('chai').should();
+
+let chai = require('chai'), should = chai.should();
 const sinon = require('sinon');
 
 describe('JSONGenerator', () => {
@@ -78,6 +80,24 @@ describe('JSONGenerator', () => {
             namespace org.foo
             asset AnotherAsset identified by assetId {
                 o String assetId
+            }
+        `);
+
+        modelManager.addModelFile(`
+            namespace org.acme.sample
+
+            asset SampleAsset identified by assetId {
+            o String assetId
+            o Vehicle vehicle
+            }
+
+            abstract concept Vehicle{
+            o String numberPlate
+            o String color
+            }
+
+            concept Car extends Vehicle{
+            o Integer numberOfSeats
             }
         `);
 
@@ -299,6 +319,25 @@ describe('JSONGenerator', () => {
             jsonGenerator = new JSONGenerator(true); // true enables convertResourcesToRelationships
             let resource = factory.newResource('org.acme', 'MyAsset1', 'DOGE_1');
             jsonGenerator.getRelationshipText(relationshipDeclaration1, resource).should.equal('resource:org.acme.MyAsset1#DOGE_1');
+        });
+
+    });
+
+    describe('#visitField', () => {
+
+        it('should visit field', () => {
+            let field = {'getName':function(){return 'vehicle';},'isArray':function(){return false;},'isPrimitive':function(){return false;},
+                'getParent':function(){return 'vehicle';}};
+            let concept = factory.newConcept('org.acme.sample','Car');
+            let parameters = {
+                stack: new TypedStack({}),
+                writer: new JSONWriter(),
+                modelManager: modelManager,
+                seenResources: new Set()
+            };
+            parameters.stack.push(concept);
+            sinon.stub(ModelUtil.prototype.constructor,'isEnum').returns(false);
+            should.equal(jsonGenerator.visitField(field,parameters),null);
         });
 
     });

@@ -563,17 +563,18 @@ class BusinessNetworkConnector extends Connector {
                 if (classDeclaration instanceof TransactionDeclaration) {
 
                     // For transactions, we submit the transaction for execution.
+                    // Ensure we return the generated identifier, so that LoopBack can return
+                    // the generated identifier back to the user.
                     return businessNetworkConnection.submitTransaction(resource)
                         .then(() => {
-
-                            // We also want to return the generated transaction identifier.
                             return resource.getIdentifier();
-
                         });
 
                 }
 
-                // For assets and participants, we add the resource to its default registry
+                // For assets and participants, we add the resource to its default registry.
+                // Ensure we return undefined so that we don't tell LoopBack about a generated
+                // identifier, as it was specified by the user.
                 return this.getRegistryForModel(businessNetworkConnection, composerModelName)
                     .then((registry) => {
                         return registry.add(resource);

@@ -14,20 +14,20 @@
 
 'use strict';
 
-const Logger = require('./log/logger');
-const ModelManager = require('./modelmanager');
-const Introspector = require('./introspect/introspector');
-const AclManager = require('./aclmanager');
 const AclFile = require('./acl/aclfile');
-const Factory = require('./factory');
-const Serializer = require('./serializer');
-const ScriptManager = require('./scriptmanager');
+const AclManager = require('./aclmanager');
 const BusinessNetworkMetadata = require('./businessnetworkmetadata');
-const JSZip = require('jszip');
-const semver = require('semver');
+const Factory = require('./factory');
 const fs = require('fs');
 const fsPath = require('path');
+const Introspector = require('./introspect/introspector');
+const JSZip = require('jszip');
+const Logger = require('./log/logger');
+const ModelManager = require('./modelmanager');
 const minimatch = require('minimatch');
+const ScriptManager = require('./scriptmanager');
+const semver = require('semver');
+const Serializer = require('./serializer');
 
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
@@ -148,7 +148,7 @@ class BusinessNetworkDefinition {
         const method = 'fromArchive';
         LOG.entry(method, Buffer.length);
         return JSZip.loadAsync(Buffer).then(function(zip) {
-            const allPromises = [];
+            let promise = Promise.resolve();
             let ctoModelFiles = [];
             let ctoModelFileNames = [];
             let jsScriptFiles = [];
@@ -160,9 +160,9 @@ class BusinessNetworkDefinition {
             LOG.debug(method, 'Loading README.md');
             let readme = zip.file('README.md');
             if(readme) {
-                const readmePromise = readme.async('string');
-                allPromises.push(readmePromise);
-                readmePromise.then(contents => {
+                promise = promise.then(() => {
+                    return readme.async('string');
+                }).then((contents) => {
                     LOG.debug(method, 'Loaded README.md');
                     readmeContents = contents;
                 });
@@ -173,9 +173,9 @@ class BusinessNetworkDefinition {
             if (packageJson === null) {
                 throw Error('package.json must exist');
             }
-            const packagePromise = packageJson.async('string');
-            allPromises.push(packagePromise);
-            packagePromise.then(contents => {
+            promise = promise.then(() => {
+                return packageJson.async('string');
+            }).then((contents) => {
                 LOG.debug(method, 'Loaded package.json');
                 packageJsonContents = JSON.parse(contents);
             });
@@ -185,9 +185,9 @@ class BusinessNetworkDefinition {
             ctoFiles.forEach(function(file) {
                 LOG.debug(method, 'Found model file, loading it', file.name);
                 ctoModelFileNames.push(file.name);
-                const ctoPromise = file.async('string');
-                allPromises.push(ctoPromise);
-                ctoPromise.then(contents => {
+                promise = promise.then(() => {
+                    return file.async('string');
+                }).then((contents) => {
                     LOG.debug(method, 'Loaded model file');
                     ctoModelFiles.push(contents);
                 });
@@ -197,9 +197,9 @@ class BusinessNetworkDefinition {
             let jsFiles = zip.file(/lib\/.*\.js$/); //Matches any file which is in the 'lib' folder and has a .js extension
             jsFiles.forEach(function(file) {
                 LOG.debug(method, 'Found JavaScript file, loading it', file.name);
-                const jsPromise = file.async('string');
-                allPromises.push(jsPromise);
-                jsPromise.then(contents => {
+                promise = promise.then(() => {
+                    return file.async('string');
+                }).then((contents) => {
                     LOG.debug(method, 'Loaded JavaScript file');
                     let tempObj = {
                         'name': file.name,
@@ -213,75 +213,84 @@ class BusinessNetworkDefinition {
             LOG.debug(method, 'Loading permissions.acl');
             let aclFile = zip.file('permissions.acl');
             if (aclFile !== null) {
-                const aclPromise = aclFile.async('string');
-                allPromises.push(aclPromise);
-                aclPromise.then(contents => {
+                promise = promise.then(() => {
+                    return aclFile.async('string');
+                }).then(contents => {
                     LOG.debug(method, 'Loaded permissions.acl');
                     permissionsFiles.push(contents);
                 });
             }
 
-            return Promise.all(allPromises)
-                .then(() => {
-                    LOG.debug(method, 'Loaded package.json');
-                    businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageJsonContents, readmeContents);
+            return promise.then(() => {
+                LOG.debug(method, 'Loaded package.json');
+                businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageJsonContents, readmeContents);
 
-                    LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
-                    LOG.debug(method, 'Adding model files to model manager');
-                    businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames); // Adds all cto files to model manager
-                    LOG.debug(method, 'Added model files to model manager');
+                LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
+                LOG.debug(method, 'Adding model files to model manager');
+                businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames); // Adds all cto files to model manager
+                LOG.debug(method, 'Added model files to model manager');
                     // console.log('What are the jsObjectsArray?',jsObjectArray);
-                    LOG.debug(method, 'Adding JavaScript files to script manager');
-                    jsScriptFiles.forEach(function(obj) {
-                        let jsObject = businessNetworkDefinition.scriptManager.createScript(obj.name, 'js', obj.contents);
-                        businessNetworkDefinition.scriptManager.addScript(jsObject); // Adds all js files to script manager
-                    });
-                    LOG.debug(method, 'Added JavaScript files to script manager');
-                    LOG.debug(method, 'Adding ACL files to ACL manager');
-                    permissionsFiles.forEach((permissionFile) => {
-                        businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile));
-                    });
-                    LOG.debug(method, 'Added ACL files to ACL manager');
-
-                    LOG.exit(method, businessNetworkDefinition.toString());
-                    return businessNetworkDefinition; // Returns business network (with model manager and script manager)
+                LOG.debug(method, 'Adding JavaScript files to script manager');
+                jsScriptFiles.forEach(function(obj) {
+                    let jsObject = businessNetworkDefinition.scriptManager.createScript(obj.name, 'js', obj.contents);
+                    businessNetworkDefinition.scriptManager.addScript(jsObject); // Adds all js files to script manager
                 });
+                LOG.debug(method, 'Added JavaScript files to script manager');
+                LOG.debug(method, 'Adding ACL files to ACL manager');
+                permissionsFiles.forEach((permissionFile) => {
+                    businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile));
+                });
+                LOG.debug(method, 'Added ACL files to ACL manager');
+
+                LOG.exit(method, businessNetworkDefinition.toString());
+                return businessNetworkDefinition; // Returns business network (with model manager and script manager)
+            });
         });
     }
 
     /**
      * Store a BusinessNetworkDefinition as an archive.
+     * @param {Object} [options]  - JSZip options
      * @return {Buffer} buffer  - the zlib buffer
      */
-    toArchive() {
+    toArchive(options) {
 
         let zip = new JSZip();
 
         let packageFileContents = JSON.stringify(this.getMetadata().getPackageJson());
-        zip.file('package.json', packageFileContents);
+        zip.file('package.json', packageFileContents, options);
 
         // save the README.md if present
         if(this.getMetadata().getREADME()) {
-            zip.file('README.md', this.getMetadata().getREADME());
+            zip.file('README.md', this.getMetadata().getREADME(), options);
         }
 
         const aclFile = this.getAclManager().getAclFile();
         if(aclFile) {
-            zip.file(aclFile.getIdentifier(), aclFile.definitions);
+            zip.file(aclFile.getIdentifier(), aclFile.definitions, options);
         }
 
         let modelManager = this.getModelManager();
         let modelFiles = modelManager.getModelFiles();
+        zip.file('models/', null, Object.assign({}, options, { dir: true }));
         modelFiles.forEach(function(file) {
-            zip.folder('models').file(file.namespace + '.cto', file.definitions);
+            let fileName;
+            if (file.fileName === 'UNKNOWN'  || file.fileName === null) {
+                fileName = file.namespace + '.cto';
+            } else {
+                let fileIdentifier = file.fileName;
+                fileName = fsPath.parse(fileIdentifier).base;
+            }
+            zip.file('models/' + fileName, file.definitions, options);
         });
 
         let scriptManager = this.getScriptManager();
         let scriptFiles = scriptManager.getScripts();
+        zip.file('lib/', null, Object.assign({}, options, { dir: true }));
         scriptFiles.forEach(function(file) {
             let fileIdentifier = file.identifier;
             let fileName = fsPath.parse(fileIdentifier).base;
-            zip.folder('lib').file(fileName, file.contents);
+            zip.file('lib/' + fileName, file.contents, options);
         });
 
         return zip.generateAsync({
@@ -623,6 +632,7 @@ class BusinessNetworkDefinition {
     getModelManager() {
         return this.modelManager;
     }
+
 }
 
 module.exports = BusinessNetworkDefinition;

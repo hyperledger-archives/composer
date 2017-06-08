@@ -23,4 +23,12 @@
       border-bottom:2px solid #ff5c49;
     }
   }
+
+  input[type=text] {
+
+    &.error-underline{
+      border-bottom: 2px solid $first-warning;
+      background: $error-colour-2;
+    }
+  }
 }

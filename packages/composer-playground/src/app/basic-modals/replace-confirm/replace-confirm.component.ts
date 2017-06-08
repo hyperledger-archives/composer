@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -7,18 +7,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./replace-confirm.component.scss'.toString()]
 })
 
-export class ReplaceComponent implements OnInit {
+export class ReplaceComponent {
 
-    public headerMessage: string = null;
-    public mainMessage: string = null;
-    public supplementaryMessage: string = null;
+    @Input() headerMessage: string = null;
+    @Input() mainMessage: string = null;
+    @Input() supplementaryMessage: string = null;
 
     constructor(public activeModal: NgbActiveModal) {
-    }
-
-    ngOnInit() {
-        this.headerMessage = 'Current definition will be replaced';
-        this.mainMessage = 'Your Business Network Definition currently in the Playground will be removed & replaced.';
-        this.supplementaryMessage = 'Please ensure that you have exported any current model files in the Playground.';
     }
 }

@@ -1,3 +1,4 @@
+/*eslint no-var: 0*/
 'use strict';
 
 function onSimpleTransactionWithPrimitiveTypes(transaction) {
