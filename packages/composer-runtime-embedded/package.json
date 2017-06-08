@@ -1,6 +1,6 @@
 {
   "name": "composer-runtime-embedded",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "The embedded runtime container for Hyperledger Composer",
   "engines": {
     "node": ">=6",
@@ -52,8 +52,8 @@
     "logError": true
   },
   "dependencies": {
-    "composer-common": "^0.7.5",
-    "composer-runtime": "^0.7.5",
+    "composer-common": "^0.7.6",
+    "composer-runtime": "^0.7.6",
     "debug": "^2.6.2",
     "dexie": "^1.5.1",
     "fake-indexeddb": "^1.0.8",

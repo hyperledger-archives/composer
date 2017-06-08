@@ -54,17 +54,17 @@ function to use.
 
 ## Related Concepts
 
-[Business Network](../introduction/businessnetwork.html)
+[Business Network](../business-network/business-network-index.html)
 
 ## Related Tasks
 
-[Create a Business Domain Model](../business-network/model-define.html)  
-[Add a Participant](../managing/participant-add.html)  
-[Issue an Identity to a Participant](../managing/identity-issue.html)  
-[Revoke an Identity from a Participant](../managing/identity-revoke.html)
+[Create a Business Network Definition](../business-network/bnd-create.html)  
+[Add a Participant](participant-add.html)  
+[Issue an Identity to a Participant](identity-issue.html)  
+[Revoke an Identity from a Participant](identity-revoke.html)
 
 ## Related Reference
 
-[Participant add command](../reference/participant-add.html)  
-[Identity issue command](../reference/identity-issue.html)  
-[Identity revoke command](../reference/identity-revoke.html)  
+[Participant add command](../reference/composer.participant.add.html)  
+[Identity issue command](../reference/composer.identity.issue.html)  
+[Identity revoke command](../reference/composer.identity.revoke.html)  
