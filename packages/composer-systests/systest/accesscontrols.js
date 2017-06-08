@@ -38,6 +38,7 @@ describe('Access control system tests', () => {
     let aliceCar, bobCar;
 
     before(function () {
+        // In this systest we are fully specifying the model file with a fileName and content
         const modelFiles = [
             { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.cto'), 'utf8')}
         ];
