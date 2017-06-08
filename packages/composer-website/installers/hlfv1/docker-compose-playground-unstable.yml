@@ -4,7 +4,7 @@ services:
 
   composer:
     container_name: composer
-    image: hyperledger/composer-playground
+    image: hyperledger/composer-playground:unstable
     ports:
       - '8080:8080'
     environment:
