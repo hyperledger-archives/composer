@@ -21,7 +21,7 @@ export class AddFileComponent {
     expandInput: boolean = false;
 
     maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.js', '.cto'];
+    supportedFileTypes: string[] = ['.js', '.cto', '.md'];
 
     addModelNamespace: string = 'org.acme.model';
     addModelFileName: string = 'models/org.acme.model';
@@ -64,6 +64,10 @@ export class AddFileComponent {
                     this.expandInput = true;
                     this.createModel(file, data);
                     break;
+                case 'md':
+                    this.expandInput = true;
+                    this.createReadme(data);
+                    break;
                 default:
                     throw new Error('Unexpected File Type');
             }
@@ -92,7 +96,7 @@ export class AddFileComponent {
         this.fileType = 'js';
         let scriptManager = this.businessNetwork.getScriptManager();
         let filename = file.name ? 'lib/' + file.name : this.addScriptFileName;
-        this.currentFile = scriptManager.createScript('lib/' + file.name || this.addScriptFileName, 'JS', dataBuffer.toString());
+        this.currentFile = scriptManager.createScript(filename, 'JS', dataBuffer.toString());
         this.currentFileName = this.currentFile.getIdentifier();
     }
 
@@ -102,6 +106,12 @@ export class AddFileComponent {
         let filename = file.name ? 'models/' + file.name : this.addModelFileName;
         this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), filename);
         this.currentFileName = this.currentFile.getFileName();
+    }
+
+    createReadme(dataBuffer) {
+        this.fileType = 'md';
+        this.currentFile = dataBuffer.toString();
+        this.currentFileName = 'README.md';
     }
 
     fileRejected(reason: string) {

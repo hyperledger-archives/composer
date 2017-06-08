@@ -44,9 +44,14 @@ export class ClientService {
         return new BusinessNetworkDefinition(identifier, description, packageJson, readme);
     }
 
+    // horrible hack for tests
+    createBusinessNetworkConnection() {
+        return new BusinessNetworkConnection();
+    }
+
     getBusinessNetworkConnection(): BusinessNetworkConnection {
         if (!this.businessNetworkConnection) {
-            this.businessNetworkConnection = new BusinessNetworkConnection();
+            this.businessNetworkConnection = this.createBusinessNetworkConnection();
         }
         return this.businessNetworkConnection;
     }
@@ -167,6 +172,15 @@ export class ClientService {
 
     getMetaData() {
         return this.getBusinessNetwork().getMetadata();
+    }
+
+    setBusinessNetworkReadme(readme) {
+        let name = this.getBusinessNetwork().getMetadata().getName();
+        let description = this.getBusinessNetwork().getMetadata().getDescription();
+        let packageJson = this.getBusinessNetwork().getMetadata().getPackageJson();
+        let version = this.getBusinessNetwork().getMetadata().getVersion();
+
+        this.createNewBusinessNetwork(name, version, description, packageJson, readme);
     }
 
     setBusinessNetworkName(name: string) {
