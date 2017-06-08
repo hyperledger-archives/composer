@@ -161,8 +161,8 @@ Start with the basic sample network loaded
     - Cancel should return without deleting the file
     - Confirm should delete the file, show a success message, and return the user to viewing the Readme file
  - Select the main model file
-    - Edit the namespace – ACL file should show in error due to validation
-    - Change the namespace back – ACL file should be valid again
+    - Edit the namespace – ACL and Script files should show in error due to validation
+    - Change the namespace back – ACL and Script files should be valid again
     - Edit the file to cause a breakage, it should show an error message under the editor. repeair the file and the error message should disappear.
     - Edit the model namespace, select ACL file and change the target namespace to match the edited model file – the ACL file should no longer be in error
  - Select the script file
