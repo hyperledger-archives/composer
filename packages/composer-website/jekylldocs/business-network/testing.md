@@ -42,7 +42,7 @@ https://github.com/hyperledger/composer-sample-networks/blob/master/packages/bon
 ## References
 
 * [**Composer CLI commands**](../reference/commands.html)
-* [**Mocha**](https://mochajs.orgl)
+* [**Mocha**](https://mochajs.org)
 * [**Chai**](http://chaijs.com)
 * [**Sinon**](http://sinonjs.org)
 * [**Istambul**](https://istanbul.js.org)
