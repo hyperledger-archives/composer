@@ -23,28 +23,16 @@ if [ "${P2}" != "" ]; then
 fi
 }
 
-
-while getopts ":x" opt; do
-  case $opt in
-    x)
-      echo "Stopping all docker containers" >&2
-      stop
-      exit
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit
-      ;;
-  esac
-done
-
-
+if [ "$1" == "stop"]; then
+ echo "Stopping all docker containers" >&2
+ stop
+exit
 
 # Get the current directory.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Get the full path to this script.
-SOURCE="${DIR}/composer.sh"
+SOURCE="${DIR}/composer-cfg.sh"
 
 # Create a work directory for extracting files into.
 WORKDIR="$(pwd)/composer-data{{ENV}}"
