@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer - Developing Business Networks | Hyperledger Composer</title>
+    <title>Installing Index | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,18 +100,13 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
+<a href="../installing/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../installing/using-playground-locally.html">Install Local Playground</a>
+<a href="../installing/development-tools.html">Install a Development Environment</a>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/bnd-define.html">Creating a business network definition</a>
-<a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
-<a href="../business-network/publishing-events.html">Emitting events</a>
-<a href="../business-network/runtime-update.html">Updating a business network definition</a>
-<a href="../business-network/testing.html">Testing a business network definition</a>
-<a href="../business-network/bnd-publish.html">Publishing a business network definition</a>
-<a href="../business-network/model-publish.html">Publishing a business domain model</a>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -124,37 +119,30 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="developing-business-networks">Developing Business Networks</h1>
+              <h1 id="installing-hyperledger-composer">Installing Hyperledger Composer</h1>
 
 <hr>
 
-<p>Developers use Hyperledger Composer to digitize business networks. The business network is accessed by multiple participants in the network, some of which may be responsible for the maintenance (hosting) of the network itself, referred to as maintainers of the network.</p>
+<p><a href="../installing/getting-started-with-playground.html"><img src='../assets/img/Install01.svg' width="30%"/></a> <a href="../installing/using-playground-locally.html"><img src='../assets/img/Install02.svg' width="30%"/></a> <a href="../installing/development-tools.html"><img src='../assets/img/Install03.svg' width="30%"/></a></p>
 
-<p>Typically each maintainer of the network will run several peer nodes (for crash fault tolerance) and Hyperledger Fabric replicates the distributed ledger across the set of peer nodes.</p>
+<h3 id="using-the-playground-online">Using the Playground online</h3>
 
-<h2 id="model">Model</h2>
+<p>To jump into the online Playground, click <a href="../installing/getting-started-with-playground.html"><strong>Try Online Playground</strong></a> here or in the table of contents on the left.</p>
 
-<p>Developers work with business analysts to define the domain data model for the business network. The data model is expressed using the Composer Modelling Language and defines the structure of the resources that will be stored on the ledger, or processed as transactions.</p>
+<h3 id="installing-the-playground-locally">Installing the Playground locally</h3>
 
-<p>Once the domain model is in place, developers can capture <em>smart contracts</em> as executable transaction processor functions, written in JavaScript.</p>
+<p>To run the Playground locally with a local instance of Hyperledger Fabric, click <a href="../installing/using-playground-locally.html"><strong>Install Local Playground</strong></a> here or in the table of contents on the left.</p>
 
-<h2 id="access-control">Access Control</h2>
+<h3 id="installing-a-development-environment">Installing a development environment</h3>
 
-<p>In parallel developers or technical analysts can define the access control rules for the business network, to enforce which participants have access to the data on the ledger and under which conditions.</p>
+<p>To install the command line and development tools, along with a local instance of Hyperledger Fabric click <a href="../installing/development-tools.html"><strong>Install Development Tools</strong></a> here or in the table of contents on the left.</p>
 
-<h2 id="deploy">Deploy</h2>
+<h2 id="what-next">What next?</h2>
 
-<p>Developers package the models, scripts and access control rules into a deployable <em>Business Network Archive</em> and use command line tools to deploy the archive to a runtime for testing.</p>
-
-<h2 id="test">Test</h2>
-
-<p>Like all business logic, it is important to create unit and system tests for business networks. Developers can use popular JavaScript testing frameworks such as Mocha and Chai to run unit tests (against the Node.js embedded runtime) or run system tests against a Hyperledger Fabric.</p>
-
-<h2 id="integrate">Integrate</h2>
-
-<p>Once the business network is tested and in place, front-end applications need to be created. Use the  REST Server to automatically generate a REST API for a business network, and then a skeleton generate Angular application using the Yeoman code generator.</p>
-
-<p>The REST Server can be configured to authenticate the participants in the business network, ensuring that credentials and permissions are enforced.</p>
+<ul>
+<li><a href="../introduction/key-concepts.html"><strong>Learn about key concepts</strong></a></li>
+<li><a href="../introduction/solution-architecture.html"><strong>View solution architecture</strong></a></li>
+</ul>
 
             
           </section>
@@ -171,25 +159,6 @@ ga('send', 'pageview');
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

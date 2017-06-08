@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,10 +100,10 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <a href="../managing/participantsandidentities.html">Participants and Identities</a>
@@ -126,15 +126,37 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>Operating a business network may require management tasks, for information on how to add participants, issue or revoke identities, enable OAuth authentication, and enabling access control, see the following topics.</p>
+<h3 id="participants-and-identities">Participants and identities</h3>
+
+<p>Participants and identities are core concepts of Hyperledger Composer. A participant is a member of business networks and might represent individuals or organizations. Participants have identity documents which can be validated to prove their identity. For more information, see <a href="../managing/participantsandidentities.html"><strong>participants and identities</strong></a>.</p>
+
+<h3 id="adding-participants">Adding participants</h3>
+
+<p><a href="../managing/participant-add.html"><strong>Participants must be added to a business network</strong></a> before they can make transactions. Participants can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.</p>
+
+<h3 id="issuing-an-identity-to-a-participant">Issuing an identity to a participant</h3>
+
+<p><a href="../managing/identity-issue.html"><strong>An identity can be issued to a participant using either the API or the command line</strong></a>. Once an identity has been issued, the identity can then be used by the participant to interact with the business network in the context of that participant.</p>
+
+<h3 id="revoking-the-identity-of-a-participant">Revoking the identity of a participant</h3>
+
+<p><a href="../managing/identity-revoke.html"><strong>An identity can be revoked from a participant using either the API or the command line</strong></a>. Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant.</p>
+
+<h3 id="enabling-playground-oauth-with-github">Enabling Playground OAuth with GitHub</h3>
+
+<p>By <a href="../managing/github-oauth.html"><strong>enabling OAuth with GitHub</strong></a>, you avoid an error if the GitHub rate limit is hit.</p>
+
+<h3 id="implementing-participant-based-access-control">Implementing participant-based access control</h3>
+
+<p>Transaction processor functions can be used to <a href="../managing/current-participant.html"><strong>implement participant-based access control</strong></a> by checking the participant type and identifier.</p>
+
+<hr>
+
+<h2 id="what-next">What next?</h2>
 
 <ul>
-<li><a href="../managing/participantsandidentities.html">What are participants and identities</a></li>
-<li><a href="../managing/participant-add.html">Adding a participant</a></li>
-<li><a href="../managing/identity-issue.html">Issuing an identity</a></li>
-<li><a href="../managing/identity-revoke.html">Revoking an identity</a></li>
-<li><a href="../managing/github-oauth.html">Enabling OAuth with GitHub</a></li>
-<li><a href="current-participant.html">Enabling access control as a set participant</a></li>
+<li>You might want to <a href="../integrating/integrating-index.html"><strong>integrate your existing systems</strong></a> with Hyperledger Composer using LoopBack.</li>
+<li>Applications which consume data from your business network can <a href="../applications/subscribing-to-events.html"><strong>subscribe to events</strong></a>.</li>
 </ul>
 
             
@@ -152,25 +174,6 @@ ga('send', 'pageview');
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

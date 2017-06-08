@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,18 +100,16 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
 <a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/bnd-define.html">Creating a business network definition</a>
-<a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
+<a href="../business-network/bnd-create.html">Creating a business network definition</a>
+<a href="../business-network/bnd-deploy.html">Deploying and updating</a>
 <a href="../business-network/publishing-events.html">Emitting events</a>
-<a href="../business-network/runtime-update.html">Updating a business network definition</a>
-<a href="../business-network/testing.html">Testing a business network definition</a>
-<a href="../business-network/bnd-publish.html">Publishing a business network definition</a>
-<a href="../business-network/model-publish.html">Publishing a business domain model</a>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<a href="../business-network/testing.html">Testing</a>
+<a href="../business-network/bnd-publish.html">Publishing to npm</a>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -128,77 +126,90 @@ ga('send', 'pageview');
 
 <hr>
 
-<p>A business network definition is composed of three major items:</p>
+<p>A business network definition has the following layout:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">models/ (optional)
+lib/
+permissions.acl (optional)
+package.json
+README.md (optional)
+</code></pre></div>
+<p>The easiest way to create a new business network definition is to either <code>git clone</code> an example, or to use the Hyperledger Composer Yeoman generator to create a skeleton business network.</p>
 
-<ul>
-<li>basic metadata for the business network definition (name, version and description)</li>
-<li>a set of domain models that define the structure of the participants, assets and transactions within the network</li>
-<li>a set of scripts that define business logic</li>
-</ul>
+<h2 id="readme-md">README.md</h2>
 
-<h2 id="generating-skeleton-business-network">Generating Skeleton Business Network</h2>
+<p>A description of the purpose of the business network using the Markdown mark-up language.</p>
 
-<h3 id="generation">Generation</h3>
+<h2 id="package-json">Package.json</h2>
+
+<p>A Business Network Definition has a name (limited to basic ASCII alphanumeric characters and <code>-</code>), a human-readable description and a version number. The version number for the network should take the form Major.Minor.Micro and
+<a href="http://semver.org">Semantic Versioning</a> principles should be used when incrementing the version number.</p>
+
+<p>The identifier of the network is formed from its name, the <code>-</code> character and its version number. A valid identifier is therefore <code>mybusinessnetwork-0.6.3</code>.</p>
+
+<p>The metadata for a business network definition is read from <code>package.json</code>, meaning that business network definitions may also be valid <code>npm</code> packages.</p>
+
+<h2 id="models">Models</h2>
+
+<p>The set of domain models for a business network definition define the types that are valid within the network and outside the network when it is integrated with external systems (for example systems that submit transactions to the network).</p>
+
+<p>A domain model may either be packaged within the business network definition (typically stored under the <code>models</code> directory), or may be declared in <code>package.json</code> as an external dependency. You refer to models via an npm dependency if you wanted to share them across business network definitions.</p>
+
+<h2 id="scripts">Scripts</h2>
+
+<p>The scripts for a business network definition are typically stored under the <code>lib</code> directory and are packaged within the business network definition. The scripts are written in ES 5 JavaScript and refer to the types that are defined in the domain models for the business network.</p>
+
+<h2 id="permissions-acl">Permissions.acl</h2>
+
+<p>The permissions for the business network expressed are expressed in an optional <code>permissions.acl</code> file. </p>
+
+<h1 id="cloning-an-example-business-network-definition">Cloning an Example Business Network Definition</h1>
+
+<p>The sample business network definitions are stored on GitHub at <code>https://github.com/hyperledger/composer-sample-networks</code>. You can <code>git clone</code> this repository to pull down all the sample networks. Each sample network is stored under the <code>packages</code> directory.</p>
+
+<h1 id="generating-a-business-network-definition">Generating a Business Network Definition</h1>
+
+<h2 id="generation">Generation</h2>
 
 <ol>
-<li><code>yo fabric-composer</code></li>
+<li><code>yo hyperledger-composer</code></li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer Skeleton Application Generator?
-Please select the type of Application:
-  CLI Application
-  Angular2 Application
-❯ Skeleton Business Network
+<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer Skeleton Application Generator
+? Please select the type of Application: (Use arrow keys)
+❯ CLI Application
+  Angular 2 Application
+  Skeleton Business Network
 </code></pre></div>
 <p>And select <code>Skeleton Business Netork</code></p>
 
 <ol>
 <li>Answer all of the questions</li>
 </ol>
-<div class="highlight"><pre><code class="language-" data-lang="">Welcome to the Hyperledger Composer Skeleton Application Generator
-? Please select the type of Application: Skeleton Business Network
-You can run this generator using: 'yo fabric-composer:businessnetwork'
+<div class="highlight"><pre><code class="language-" data-lang="">? Please select the type of Application: Skeleton Business Network
+You can run this generator using: 'yo hyperledger-composer:businessnetwork'
 Welcome to the business network skeleton generator
-? What is the business network's name? basic-sample-network
-? What is the business network's namespace? org.acme.biznet
-? Describe the business network Sample Business Network
-? Who is the author? Joe Bloggs
+? Do you only want to generate a model? Yes
+? What is the business network's name? mynetwork
+? What is the business network's namespace? org.example
+? Describe the business network This is my test network
+? Who is the author? Dan Selman
 ? Which license do you want to use? Apache-2
    create index.js
-   create lib/logic.js
    create package.json
    create README.md
-   create test/logic.js
+   create models/org.example.cto
    create .eslintrc.yml
-   create models/org.acme.biznet.cto
 </code></pre></div>
 <p>This generates a skeleton business network with an <code>asset</code>, <code>participant</code> and <code>transaction</code> defined, as well as a <code>mocha</code> unit test.</p>
 
-<p>Also included, is a &#39;best practices&#39; eslint config file</p>
+<p>Also included, is a &#39;best practice&#39; eslint config file which defines sample linting rules for JS code.</p>
 
-<h2 id="metadata">Metadata</h2>
+<h2 id="references">References</h2>
 
-<p>A Business Network Definition has a name (limited to basic ASCII alphanumeric characters and <code>-</code>), a human-readable description and a version number. The version number for the network should take the form Major.Minor.Micro and
-<a href="semver.org">Semantic Versioning</a> principles should be used when incrementing the version number.</p>
-
-<p>The identifier of the network is formed from its name, the <code>-</code> character and its version number. A valid identifier is therefore <code>mybusinessnetwork-0.6.3</code>.</p>
-
-<p>The metadata for a business network definition is read from <code>package.json</code>, meaning that business network definitions may also be valid <code>npm</code> packages.</p>
-
-<h2 id="domain-models">Domain Models</h2>
-
-<p>The set of domain models for a business network definition define the types that are valid within the network and outside the network when it is integrated with external systems (for example systems that submit transactions to the network).</p>
-
-<p>A domain model may either be packaged within the business network definition (typically stored under the <code>models</code> directory), or may be declared in <code>package.json</code> as an external dependency. You would refer to models via a dependency if you wanted to share them across business network definitions, for example.</p>
-
-<h2 id="scripts">Scripts</h2>
-
-<p>The scripts for a business network definition are typically stored under the <code>lib</code> directory and are packaged within the business network definition. The scripts are written in ES 5 JavaScript and refer to the types that are defined in the domain models for the business network.</p>
-
-<h1 id="business-network-archive">Business Network Archive</h1>
-
-<p>Prior to deploying or updating a business network definition it must be archived using the ZIP standard. A typical ZIP will contain a <code>package.json</code> a <code>lib</code> folder containing one or more <code>.js</code> files and a <code>models</code> folder containing one or more <code>.cto</code> files.</p>
-
-<p>The <code>composer</code> CLI contains commands for creating an archive, deploying business network archives and the <code>BusinessNetworkDefinition.fromArchive, toArchive and fromDirectory</code> APIs can be used to programmatically create business network definitions.</p>
+<ul>
+<li><a href="../reference/cto_language.html"><strong>Modeling Language</strong></a></li>
+<li><a href="../reference/acl_language.html"><strong>Access Control Language</strong></a></li>
+<li><a href="../reference/js_scripts.html"><strong>Transaction Processor Functions</strong></a></li>
+</ul>
 
             
           </section>
@@ -215,25 +226,6 @@ Welcome to the business network skeleton generator
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

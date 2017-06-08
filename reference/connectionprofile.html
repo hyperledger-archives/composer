@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,10 +100,10 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -117,6 +117,7 @@ ga('send', 'pageview');
 <a href="../reference/composer.participant.add.html">CLI Add Participant</a>
 <a href="../reference/composer.identity.issue.html">CLI Issue Identity </a>
 <a href="../reference/composer.identity.revoke.html">CLI Revoke Identity</a>
+<a href="../reference/composer.identity.import.html">CLI Import Identity</a>
 <a href="../jsdoc/index.html">API Documentation</a>
 <a href="../reference/glossary.html">Glossary</a>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -156,6 +157,43 @@ ga('send', 'pageview');
 </span></code></pre></div>
 <p>If you are creating a connection profile for Hyperledger Fabric v1.0, use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hlfv1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"orderers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nt">"ca"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"url:"</span><span class="w"> </span><span class="nt">"https://"</span><span class="err">,</span><span class="w">
+            </span><span class="nt">"trustedRoots"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"verify"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nt">"peers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"requestURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"eventURL"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grpcs://"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"cert"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nt">"keyValStore"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/YOUR_HOME_DIR/.hfc-key-store"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mychannel"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"mspID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Org1MSP"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"deployWaitTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"300"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invokeWaitTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>If you are connecting to Hyperledger Fabric v1.0 and are not using TLS or if you don&#39;t need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
 </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hlfv1"</span><span class="p">,</span><span class="w">
 </span><span class="nt">"orderers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
     </span><span class="s2">"grpc://localhost:7050"</span><span class="w">
@@ -177,9 +215,22 @@ ga('send', 'pageview');
 </span><span class="nt">"deployWaitTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"300"</span><span class="p">,</span><span class="w">
 </span><span class="nt">"invokeWaitTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p><em>Please note: If you are connecting to an instance of Hyperledger Fabric v1.0 the <code>keyValStore</code> property must be <code>home/.hfc-key-store</code></em></p></li>
+</span></code></pre></div></li>
 </ol>
+
+<ul>
+<li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0-alpha is must be <code>hlfv1</code>.</li>
+<li><code>orderers</code> is an array of objects which describe the orderes to communicate with. Within <code>orderers</code>, you must define the <code>url</code> of each orderer. If you are connecting via TLS, all <code>url</code> properties in your connection profile must begin with <code>grpcs://</code> and must also contain the correct TLS certificate in the <code>cert</code> property.</li>
+<li><p><code>peers</code> is an array of objects describing the peers to communicate with. Each <code>peer</code> must have a defined <code>requestURL</code> and a defined <code>eventURL</code>. If you are connecting using TLS, each <code>peer</code> must also have the correct TLS certificate in the <code>cert</code> property.</p></li>
+<li><p>Each instance of the <code>cert</code> property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each <code>cert</code> property.  </p>
+<div class="highlight"><pre><code class="language-" data-lang="">-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----
+</code></pre></div></li>
+<li><p><code>mspid</code> is the Membership Service Provider ID of your organization. It is associated with the enrollment id that you will use to interact with the business network.</p></li>
+<li><p><code>deployWaitTime</code> is an optional property which sets a wait time for a response before timing out when attempting to deploy your business network.</p></li>
+<li><p><code>invokeWaitTime</code> is an optional property which sets a wait time for a response before timing out when invoking a transaction or making a query request.</p></li>
+</ul>
+
+<p><em>Please note: If you are connecting to an instance of Hyperledger Fabric v1.0 the <code>keyValStore</code> property must be <code>home/.hfc-key-store</code></em></p>
 
             
           </section>
@@ -196,25 +247,6 @@ ga('send', 'pageview');
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

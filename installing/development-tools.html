@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Getting Started with Hyperledger Composer | Hyperledger Composer</title>
+    <title>Installing a development environment | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,13 +100,13 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
-<a href="../getting-started/getting-started-with-playground.html">Try Online Playground</a>
-<a href="../getting-started/using-playground-locally.html">Install Local Playground</a>
-<a href="../getting-started/development-tools.html">Install Development Tools</a>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
+<a href="../installing/getting-started-with-playground.html">Try Online Playground</a>
+<a href="../installing/using-playground-locally.html">Install Local Playground</a>
+<a href="../installing/development-tools.html">Install a Development Environment</a>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -176,15 +176,14 @@ chmod u+x prereqs-ubuntu.sh
 
 <ol>
 <li><p>If you use VSCode, install the Hyperledger Composer VSCode plugin from the VSCode marketplace.</p></li>
-<li><p>If you want to run the Playground locally, install the <code>composer-playground</code> and <code>composer-playground-api</code> using the following two commands.</p>
+<li><p>If you want to run the Playground locally, install the <code>composer-playground</code> using the following command.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">npm install -g composer-playground
-npm install -g composer-playground-api
 </code></pre></div></li>
 </ol>
 
 <h2 id="step-2-starting-hyperledger-fabric">Step 2: Starting Hyperledger Fabric</h2>
 
-<p>If you&#39;ve <a href="../getting-started/using-playground-locally.html">installed the Hyperledger Composer Playground locally</a> you&#39;ll need to close the containers by using the following scripts.</p>
+<p>If you&#39;ve <a href="../installing/using-playground-locally.html">installed the Hyperledger Composer Playground locally</a> you&#39;ll need to close the containers by using the following scripts.</p>
 
 <blockquote>
 <p><em>Please note: These commands will kill and remove all running containers, and should remove all previously created Hyperledger Fabric chaincode images.</em></p>
@@ -209,7 +208,7 @@ tar xvz fabric-dev-servers.tar.gz
 <li><p>Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv0.6
 </code></pre></div>
-<p>For v1.0-alpha, there is <em>nothing to as this the default</em>. But to &#39;unset&#39; the v0.6, or to be explicit in using v1 use this command</p>
+<p>Hyperledger Fabric v1.0-alpha is the default, but to &#39;unset&#39; the v0.6, or to be explicit in using v1 use this command</p>
 <div class="highlight"><pre><code class="language-" data-lang="">export FABRIC_VERSION=hlfv1
 </code></pre></div></li>
 <li><p>If this is the first time, you&#39;ll need to download the fabric first. If you have already downloaded then first start the fabric, and create a Composer profile. After that you can then choose to stop the fabric, and start it again later. Alternatively to completely clean up you can teardown the Fabric and the Composer profile.</p>
@@ -311,7 +310,7 @@ tar xvz fabric-dev-servers.tar.gz
 <h2 id="what-next">What next?</h2>
 
 <ul>
-<li>Begin <a href="../business-network/businessnetwork.html"><strong>writing a business network definition</strong></a>.</li>
+<li>Begin <a href="../business-network/business-network-index.html"><strong>writing a business network definition</strong></a>.</li>
 <li>If you&#39;re looking for a tutorial on using the developer tools, see the <a href="../tutorials/developer-guide.html"><strong>developer guide</strong></a> to run through a sample with the developer tools.</li>
 </ul>
 
@@ -330,25 +329,6 @@ tar xvz fabric-dev-servers.tar.gz
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 

@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Task - Publish Business Network Definition | Hyperledger Composer</title>
+    <title>Task - Publish Models or Business Network Definitions | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/favicon.ico">
@@ -66,9 +66,9 @@ ga('send', 'pageview');
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
-                <li>
+                <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
-                </li>
+                </li> -->
                 <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
                 </li>
@@ -100,18 +100,16 @@ ga('send', 'pageview');
             
             
               <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../getting-started/getting-started.html">Installing</a></strong>
+<strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<strong><a href="../business-network/businessnetwork.html">Developing Business Networks</a></strong>
+<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
 <a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/bnd-define.html">Creating a business network definition</a>
-<a href="../business-network/deploybusinessnetwork.html">Deploying a business network</a>
+<a href="../business-network/bnd-create.html">Creating a business network definition</a>
+<a href="../business-network/bnd-deploy.html">Deploying and updating</a>
 <a href="../business-network/publishing-events.html">Emitting events</a>
-<a href="../business-network/runtime-update.html">Updating a business network definition</a>
-<a href="../business-network/testing.html">Testing a business network definition</a>
-<a href="../business-network/bnd-publish.html">Publishing a business network definition</a>
-<a href="../business-network/model-publish.html">Publishing a business domain model</a>
-<strong><a href="../applications/genapp.html">Developing Applications</a></strong>
+<a href="../business-network/testing.html">Testing</a>
+<a href="../business-network/bnd-publish.html">Publishing to npm</a>
+<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
@@ -124,13 +122,26 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="publish-the-business-network-definition-for-use-by-applications">Publish the Business Network Definition for use by applications</h1>
+              <h1 id="publish-models-or-business-network-definitions-for-use-by-applications">Publish Models or Business Network Definitions for use by applications</h1>
 
 <hr>
 
-<p>The easiest way to publish a business network definition for use by applications it to push the business network definition to the <code>npm</code> package manager using the <code>npm publish</code> command. This will allow the applications that would like to use the business network definition (for example to deploy it via API) to reference the business network definition as a dependency in their <code>package.json</code> file.</p>
+<p>Hyperledger Composer can optionally use the <code>npm</code> package manager to publish both business networks, and models. By publishing business networks to <code>npm</code> applications that need to reference the business networks (for example to introspect them, or deploy them) can declare a binary package dependency on the published <code>npm</code> package. Using <em>semantic versioning</em> of the npm package for the business network also allows applications to specify their tolerance for accepting incompatible changes to the business network.</p>
 
-<p>Thanks to <code>npm</code> the dependency between the application and the business network definition is versioned, and if semantic versioning is used to update the version number of the business network definition then applications can safely reference the network.</p>
+<p>The <code>npm</code> package manager is a powerful (Internet scale) mechanism to distribute any binaries, along with metadata expressed in a <code>package.json</code> file.</p>
+
+<p>Similarly, a set of Composer domain models (CTO files) may be packaged into an <code>npm</code> package for publication. The ability to publish models allows the models to be reused across multiple business networks (by declaring a <code>package.json</code> dependency), as well as ensures that semantic versioning can be used to control the evolution of the models themselves.</p>
+
+<p>However, publication to <code>npm</code> is not required to use Composer. You may bundle a business network inside an application, and simply manage its source files using version control software, such as git.</p>
+
+<p>The easiest way to publish a model or business network definition for use by applications it to push the business network definition to the <code>npm</code> package manager using the <code>npm publish</code> command. This will allow the applications that would like to use the business network definition (for example to deploy it via API) to reference the business network definition as a dependency in their <code>package.json</code> file.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="https://www.npmjs.com/package/perishable-network"><strong>Example business network published to npm</strong></a></li>
+<li><a href="https://www.npmjs.com/package/animaltracking-model"><strong>Example model published to npm</strong></a></li>
+</ul>
 
             
           </section>
@@ -147,25 +158,6 @@ ga('send', 'pageview');
 
     
 
-    
-    <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
-
-    
   </div>
 </body>
 
