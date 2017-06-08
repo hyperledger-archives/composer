@@ -133,7 +133,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     setCurrentFile(file) {
-        if (this.currentFile === null || this.currentFile.id !== file.id || file.readme) {
+        if (this.currentFile === null || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID  || file.readme) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
