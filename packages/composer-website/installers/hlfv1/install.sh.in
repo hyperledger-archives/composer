@@ -27,6 +27,9 @@ PAYLOAD_START=$((PAYLOAD_LINE + 1))
 echo PAYLOAD_START=${PAYLOAD_START}
 tail -n +${PAYLOAD_START} "${SOURCE}" | tar -xzf -
 
+# bring down any running fabric
+./fabric-dev-servers/teardownFabric.sh
+
 # Kill and remove any running Docker containers.
 docker-compose -p composer kill
 docker-compose -p composer down --remove-orphans
@@ -38,8 +41,13 @@ docker ps -aq | xargs docker rm -f || echo 'All removed'
 ./fabric-dev-servers/downloadFabric.sh
 ./fabric-dev-servers/startFabric.sh
 
-# Start all Docker containers.
+# Start all composer
 docker-compose -p composer -f docker-compose-playground{{ENV}}.yml up -d
+# copy over pre-imported admin credentials
+# docker exec composer cp -R /etc/playground/creds /home/composer/.hfc-key-store
+cd fabric-dev-servers/fabric-scripts/hlfv1/composer/creds
+docker exec composer mkdir /home/composer/.hfc-key-store
+tar -cv * | docker exec -i composer tar x -C /home/composer/.hfc-key-store
 
 # Wait for playground to start
 sleep 5
