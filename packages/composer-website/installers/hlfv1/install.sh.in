@@ -23,16 +23,17 @@ if [ "${P2}" != "" ]; then
 fi
 }
 
-if [ "$1" == "stop"]; then
- echo "Stopping all docker containers" >&2
+if [ "$1" == "stop" ]; then
+ echo "Stopping all Docker containers" >&2
  stop
-exit
+ exit 0
+fi
 
 # Get the current directory.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Get the full path to this script.
-SOURCE="${DIR}/composer-cfg.sh"
+SOURCE="${DIR}/composer.sh"
 
 # Create a work directory for extracting files into.
 WORKDIR="$(pwd)/composer-data{{ENV}}"
@@ -55,6 +56,7 @@ stop
 # run the fabric-dev-scripts to get a running fabric
 ./fabric-dev-servers/downloadFabric.sh
 ./fabric-dev-servers/startFabric.sh
+./fabric-dev-servers/createComposerProfile.sh
 
 # Start all Docker containers.
 docker-compose -p composer -f docker-compose-playground{{ENV}}.yml up -d
@@ -87,6 +89,12 @@ case "$(uname)" in
 *)        echo "Playground not launched - this OS is currently not supported "
           ;;
 esac
+
+echo "Hyperledger Fabric and Hyperleder Composer installed, and Composer Playground launched"
+echo "Please use  'composer.sh' to re-start"
+
+# removing instalation image
+rm ./install-hlfv1{{ENV}}.sh
 
 # Exit; this is required as the payload immediately follows.
 exit 0
