@@ -11,7 +11,7 @@ let protractorRC = null;
 let childServer = spawn('http-server', ['./dist', '-p 3001', '--cors', '--push-state']);
 
 // Execute protractor and attach to listeners
-var childProtractor = exec('protractor -- protractor.conf.js');
+var childProtractor = exec('webdriver-manager update && protractor -- protractor.conf.js');
 // Log all output of Protractor run
 childProtractor.stdout.on('data', function(data) {
     console.log(data);
