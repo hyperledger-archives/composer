@@ -43,7 +43,7 @@ export class ConnectionProfileService {
 
     createDefaultProfile(): Promise<any> {
         // Check to see if the default connection profile exists.
-        console.log("Currently running version "+version);
+        console.log('Currently running version ' + version);
         console.log('Checking for $default connection profile');
         return this.getAdminConnection().getProfile('$default')
         .catch((error) => {
