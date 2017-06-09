@@ -15,7 +15,7 @@ curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/pack
 
 
 VERSION=hlfv1
-unzip fabric-dev-servers.zip -d $VERSION/fabric-dev-servers/
+unzip -q fabric-dev-servers.zip -d $VERSION/fabric-dev-servers/
 $VERSION/build.sh
 cp -f $VERSION/install.sh ../jekylldocs/install-$VERSION.sh
 cp -f $VERSION/install-unstable.sh ../jekylldocs/install-$VERSION-unstable.sh
