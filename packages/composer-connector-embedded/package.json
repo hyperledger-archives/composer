@@ -55,6 +55,7 @@
     "composer-common": "^0.7.6",
     "composer-runtime": "^0.7.6",
     "composer-runtime-embedded": "^0.7.6"
+
   },
   "nyc": {
     "exclude": [

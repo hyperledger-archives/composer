@@ -1,6 +1,7 @@
 {
   "name": "composer-admin",
   "version": "0.7.6",
+
   "description": "Hyperledger Composer Admin, code that manages business networks deployed to Hyperledger Fabric",
   "engines": {
     "node": ">=6",

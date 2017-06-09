@@ -36,7 +36,9 @@
     "chalk": "^1.1.3",
     "clear": "0.0.1",
     "clui": "^0.3.1",
+
     "composer-common": "^0.7.6",
+
     "compression": "^1.0.3",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
@@ -67,6 +69,7 @@
     "composer-admin": "^0.7.6",
     "composer-client": "^0.7.6",
     "composer-connector-embedded": "^0.7.6",
+
     "eslint": "^3.17.1",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",

@@ -15,7 +15,7 @@
 'use strict';
 
 const ClassDeclaration = require('./classdeclaration');
-const Field = require('./field');
+// const Field = require('./field');
 
 /** Class representing the definition of an Transaction.
  * @extends ClassDeclaration
@@ -44,14 +44,29 @@ class TransactionDeclaration extends ClassDeclaration {
     process() {
         super.process();
 
+        // if(!this.ast.classExtension) {
+        //     this.superType = 'Transaction';
+        // }
+
+        console.log(this.superType);
+
         // we add the timestamp property that all transactions must have
-        if(this.getProperty('timestamp') === null) {
-            const ast = {
-                id : {name: 'timestamp'},
-                propertyType: {name: 'DateTime'}
-            };
-            this.properties.push(new Field(this, ast));
-        }
+        // if(this.getProperty('timestamp') === null) {
+        //     const ast = {
+        //         id : {name: 'timestamp'},
+        //         propertyType: {name: 'DateTime'}
+        //     };
+        //     this.properties.push(new Field(this, ast));
+        // }
+    }
+
+    /**
+     * Returns true if this class can be pointed to by a relationship
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isSystemRelationshipTarget() {
+        return true;
     }
 }
 

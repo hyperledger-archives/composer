@@ -294,7 +294,7 @@ describe('ModelManager', () => {
             let mf2 = sinon.createStubInstance(ModelFile);
             mf2.getNamespace.returns('org.such');
             modelManager.addModelFile(mf2);
-            modelManager.getNamespaces().should.include.members(['org.wow', 'org.such']);
+            modelManager.getNamespaces().should.have.members(['org.hyperledger.composer.system', 'org.wow', 'org.such']);
         });
 
     });

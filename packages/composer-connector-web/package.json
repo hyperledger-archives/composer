@@ -65,6 +65,7 @@
     "composer-common": "^0.7.6",
     "composer-runtime": "^0.7.6",
     "composer-runtime-web": "^0.7.6",
+
     "uuid": "^3.0.1"
   }
 }
