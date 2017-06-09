@@ -43,11 +43,11 @@ elif [[ ${SYSTEST} == hlfv1* ]]; then
     else
         DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
     fi
-    docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha2
-    docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha2
-    docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha2
-    docker pull hyperledger/fabric-orderer:x86_64-1.0.0-alpha2
-    docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-alpha2
+    docker pull hyperledger/fabric-peer:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-ca:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-orderer:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-beta
     if [ ! -d ./hlfv1/crypto-config ]; then
         cd hlfv1
         tar -xvf crypto-config.tar.gz
