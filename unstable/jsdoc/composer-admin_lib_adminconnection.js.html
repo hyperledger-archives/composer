@@ -404,6 +404,35 @@ class AdminConnection {
         return this.connection.list(this.securityContext);
     }
 
+    /**
+     * import an identity into a profiles' wallet
+     *
+     * @param {string} connectionProfile Name of the connection profile
+     * @param {string} id The id to associate with this identity
+     * @param {string} signerCert The signer cert in PEM format
+     * @param {string} key The private key in PEM format
+     * @returns {Promise} A promise
+     *
+     * @memberOf AdminConnection
+     */
+    importIdentity(connectionProfile, id, signerCert, key) {
+        let savedConnectionManager;
+        return this.connectionProfileManager.getConnectionManager(connectionProfile)
+            .then((connectionManager) => {
+                if (!connectionManager.importIdentity || typeof connectionManager.importIdentity !== 'function') {
+                    throw new Error('the connector doesn\'t support identity import');
+                }
+                savedConnectionManager = connectionManager;
+                return this.getProfile(connectionProfile);
+            })
+            .then((profileData) => {
+                return savedConnectionManager.importIdentity(profileData, id, signerCert, key);
+            })
+            .catch((error) => {
+                throw new Error('failed to import identity. ' + error.message);
+            });
+    }
+
 }
 
 module.exports = AdminConnection;
