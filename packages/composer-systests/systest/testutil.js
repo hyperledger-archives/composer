@@ -210,7 +210,6 @@ class TestUtil {
                 } else if (TestUtil.isHyperledgerFabric()) {
                     // hlf need to decide if v1 or 0.6
                     let keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
-                    //let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
                     if (process.env.SYSTEST.match('^hlfv1')) {
                         if (process.env.SYSTEST.match('tls$')) {
@@ -307,6 +306,7 @@ class TestUtil {
                 return Promise.resolve();
             })
             .then(function () {
+                console.log('Called AdminConnection.importIdentity() ...');
                 console.log('Calling AdminConnection.connect() ...');
                 let user = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'Org1PeerAdmin' : 'admin';
                 let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'NOTNEEDED' : 'Xurw3yU9zI0l';

@@ -970,16 +970,16 @@ describe('HLFConnectionManager', () => {
             }).should.throw(/id not specified or not a string/);
         });
 
-        it('should throw if signerCert not specified', () => {
+        it('should throw if publicKey not specified', () => {
             (() => {
                 connectionManager.importIdentity(profile, 'anid');
-            }).should.throw(/signerCert not specified or not a string/);
+            }).should.throw(/publicKey not specified or not a string/);
         });
 
-        it('should throw if signerCert not a string', () => {
+        it('should throw if publicKey not a string', () => {
             (() => {
                 connectionManager.importIdentity(profile, 'anid', []);
-            }).should.throw(/signerCert not specified or not a string/);
+            }).should.throw(/publicKey not specified or not a string/);
         });
         it('should throw if key not specified', () => {
             (() => {

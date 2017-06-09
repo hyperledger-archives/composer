@@ -51,8 +51,8 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            signerCertFile: CERT_PATH,
-            keyFile: KEY_PATH
+            publicKeyFile: CERT_PATH,
+            privateKeyFile: KEY_PATH
         };
 
         let fsStub = sandbox.stub(fs, 'readFileSync').withArgs(CERT_PATH).returns('acert');
@@ -69,8 +69,8 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            signerCertFile: CERT_PATH,
-            keyFile: KEY_PATH
+            publicKeyFile: CERT_PATH,
+            privateKeyFile: KEY_PATH
         };
 
         let fsStub = sandbox.stub(fs, 'readFileSync').withArgs(CERT_PATH).returns('acert');
@@ -84,8 +84,8 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            signerCertFile: CERT_PATH,
-            keyFile: KEY_PATH
+            publicKeyFile: CERT_PATH,
+            privateKeyFile: KEY_PATH
         };
 
         let fsStub = sandbox.stub(fs, 'readFileSync').withArgs(CERT_PATH).throws(new Error('no file found'));
@@ -100,8 +100,8 @@ describe('composer identity import CLI unit tests', () => {
         let argv = {
             connectionProfileName: PROFILE_NAME,
             userId: USER_ID,
-            signerCertFile: CERT_PATH,
-            keyFile: KEY_PATH
+            publicKeyFile: CERT_PATH,
+            privateKeyFile: KEY_PATH
         };
 
         let fsStub = sandbox.stub(fs, 'readFileSync').withArgs(CERT_PATH).returns('acert');

@@ -34,26 +34,26 @@ class Import {
     */
     static handler(argv) {
         let userId;
-        let signerCertFile;
-        let keyFile;
+        let publicKeyFile;
+        let privateKeyFile;
         let connectionProfileName;
 
         userId = argv.userId;
-        signerCertFile = argv.signerCertFile;
-        keyFile = argv.keyFile;
+        publicKeyFile = argv.publicKeyFile;
+        privateKeyFile = argv.privateKeyFile;
         connectionProfileName = argv.connectionProfileName;
         let adminConnection = cmdUtil.createAdminConnection();
         let signerCert;
         let key;
         try {
-            signerCert = fs.readFileSync(signerCertFile).toString();
+            signerCert = fs.readFileSync(publicKeyFile).toString();
         } catch(error) {
-            return Promise.reject(new Error('Unable to read certificate file ' + signerCertFile + '. ' + error.message));
+            return Promise.reject(new Error('Unable to read public key file ' + publicKeyFile + '. ' + error.message));
         }
         try {
-            key = fs.readFileSync(keyFile).toString();
+            key = fs.readFileSync(privateKeyFile).toString();
         } catch(error) {
-            return Promise.reject(new Error('Unable to read key file ' + keyFile + '. ' + error.message));
+            return Promise.reject(new Error('Unable to read private key file ' + privateKeyFile + '. ' + error.message));
         }
         return adminConnection.importIdentity(connectionProfileName, userId, signerCert, key)
             .then((result) => {

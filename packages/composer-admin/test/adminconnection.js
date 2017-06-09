@@ -266,14 +266,13 @@ describe('AdminConnection', () => {
             });
         });
 
-        it('should error if import of identity isn\'t available', () => {
-            if (mockConnectionManager.importIdentity) {
-                delete mockConnectionManager.importIdentity;
-            }
+        it('should throw an error if import fails', () => {
+            mockConnectionManager.importIdentity = sinon.stub();
+            mockConnectionManager.importIdentity.rejects(new Error('no identity imported'));
             adminConnection.connection = mockConnection;
             adminConnection.securityContext = mockSecurityContext;
             return adminConnection.importIdentity('testprofile', 'anid', 'acerttosign', 'akey')
-            .should.be.rejectedWith(/failed to import identity. the connector doesn\'t support identity import/);
+            .should.be.rejectedWith(/no identity imported/);
         });
 
 

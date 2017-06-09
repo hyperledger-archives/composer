@@ -351,23 +351,23 @@ class HLFConnectionManager extends ConnectionManager {
      *
      * @param {object} profileDefinition the profile definition
      * @param {string} id the id to associate with the identity
-     * @param {string} signerCert the signer cert
+     * @param {string} publicKey the public key
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      *
      * @memberOf HLFConnectionManager
      */
-    importIdentity(profileDefinition, id, signerCert, privateKey) {
+    importIdentity(profileDefinition, id, publicKey, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, profileDefinition, id, signerCert, privateKey);
+        LOG.entry(method, profileDefinition, id, publicKey, privateKey);
 
         // validate arguments
         if (!profileDefinition || typeof profileDefinition !== 'object') {
             throw new Error('profileDefinition not specified or not an object');
         } else if (!id || typeof id !== 'string') {
             throw new Error('id not specified or not a string');
-        } else if (!signerCert || typeof signerCert !== 'string') {
-            throw new Error('signerCert not specified or not a string');
+        } else if (!publicKey || typeof publicKey !== 'string') {
+            throw new Error('publicKey not specified or not a string');
         } else if (!privateKey || typeof privateKey !== 'string') {
             throw new Error('privateKey not specified or not a string');
         }
@@ -387,7 +387,7 @@ class HLFConnectionManager extends ConnectionManager {
                     mspid: mspID,
                     cryptoContent: {
                         privateKeyPEM: privateKey,
-                        signedCertPEM: signerCert
+                        signedCertPEM: publicKey
                     }
                 });
             })
@@ -459,52 +459,6 @@ class HLFConnectionManager extends ConnectionManager {
             LOG.debug(method, 'Adding peer URL', peer);
             channel.addPeer(HLFConnectionManager.parsePeer(peer, connectOptions.timeout, connectOptions.globalCert, eventHubDefs));
         });
-
-        /*
-        // If a wallet has been specified, then we want to use that.
-        let result;
-
-        wallet = new filewallet({directory: connectOptions.keyValStore});
-
-        if (wallet) {
-            LOG.debug(method, 'A wallet has been specified, using wallet proxy');
-            result = new HLFWalletProxy(wallet)
-            .then((store) => {
-                let cryptostore = Client.newCryptoKeyStore(HLFWalletProxy, wallet);
-                client.setStateStore(store);
-                let cryptoSuite = Client.newCryptoSuite();
-                cryptoSuite.setCryptoKeyStore(cryptostore);
-                client.setCryptoSuite(cryptoSuite);
-                return store;
-            })
-            .catch((error) => {
-                LOG.error(method, error);
-                let newError = new Error('error trying to setup a keystore or wallet. ' + error);
-                throw newError;
-            });
-
-        } else {
-            // No wallet specified, so create a file based key value store.
-            LOG.debug(method, 'Using key value store', connectOptions.keyValStore);
-            result = Client.newDefaultKeyValueStore({
-                path: connectOptions.keyValStore
-            })
-            .then((store) => {
-                client.setStateStore(store);
-
-                let cryptoSuite = Client.newCryptoSuite();
-                cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: connectOptions.keyValStore}));
-                client.setCryptoSuite(cryptoSuite);
-
-                return store;
-            })
-            .catch((error) => {
-                LOG.error(method, error);
-                let newError = new Error('error trying to setup a keystore or wallet. ' + error);
-                throw newError;
-            });
-        }
-        */
 
         return this._setupWallet(client, wallet, connectOptions.keyValStore)
             .then(() => {

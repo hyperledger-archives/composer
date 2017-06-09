@@ -323,24 +323,21 @@ class AdminConnection {
      *
      * @param {string} connectionProfile Name of the connection profile
      * @param {string} id The id to associate with this identity
-     * @param {string} signerCert The signer cert in PEM format
-     * @param {string} key The private key in PEM format
-     * @returns {Promise} A promise
+     * @param {string} publicKey The signer cert in PEM format
+     * @param {string} privateKey The private key in PEM format
+     * @returns {Promise} A promise which is resolved when the identity is imported
      *
      * @memberOf AdminConnection
      */
-    importIdentity(connectionProfile, id, signerCert, key) {
+    importIdentity(connectionProfile, id, publicKey, privateKey) {
         let savedConnectionManager;
         return this.connectionProfileManager.getConnectionManager(connectionProfile)
             .then((connectionManager) => {
-                if (!connectionManager.importIdentity || typeof connectionManager.importIdentity !== 'function') {
-                    throw new Error('the connector doesn\'t support identity import');
-                }
                 savedConnectionManager = connectionManager;
                 return this.getProfile(connectionProfile);
             })
             .then((profileData) => {
-                return savedConnectionManager.importIdentity(profileData, id, signerCert, key);
+                return savedConnectionManager.importIdentity(profileData, id, publicKey, privateKey);
             })
             .catch((error) => {
                 throw new Error('failed to import identity. ' + error.message);
