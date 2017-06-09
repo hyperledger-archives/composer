@@ -1,6 +1,6 @@
 <div class="welcome">
   <div class="modal-header">
-    <button class="icon modal-exit" (click)="activeModal.close()">
+    <button id="welcome_exit" class="icon modal-exit" (click)="activeModal.close()">
       <svg class="ibm-icon" aria-hidden="true">
         <use xlink:href="#icon-close_new"></use>
       </svg>
@@ -15,7 +15,7 @@
     </p>
   </section>
   <footer>
-    <button type="button" class="primary centre" (click)="activeModal.close();">
+    <button id="welcome_start" type="button" class="primary centre" (click)="activeModal.close();">
       <span>Let's Blockchain!</span>
     </button>
   </footer>

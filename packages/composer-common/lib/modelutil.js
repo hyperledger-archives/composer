@@ -109,8 +109,7 @@ class ModelUtil {
         }
 
         return typeDeclaration.getAllSuperTypeDeclarations().
-            map(type => type.getFullyQualifiedName()).
-            includes(propertyTypeName);
+            some(type => type.getFullyQualifiedName() === propertyTypeName);
     }
 
     /**
