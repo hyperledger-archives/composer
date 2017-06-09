@@ -92,8 +92,8 @@ esac
 
 echo
 echo "--------------------------------------------------------------------------------------"
-echo "Hyperledger Fabric and Hyperleder Composer installed, and Composer Playground launched"
-echo "Please use  'composer.sh' to re-start"
+echo "Hyperledger Fabric and Hyperledger Composer installed, and Composer Playground launched"
+echo "Please use 'composer.sh' to re-start"
 
 # removing instalation image
 rm "${DIR}"/install-hlfv1{{ENV}}.sh
