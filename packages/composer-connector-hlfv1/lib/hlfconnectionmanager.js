@@ -322,7 +322,6 @@ class HLFConnectionManager extends ConnectionManager {
                     let newError = new Error('error trying to setup a wallet. ' + error);
                     throw newError;
                 });
-            //return result;
 
         } else {
             // No wallet specified, so create a file based key value store.
@@ -342,7 +341,6 @@ class HLFConnectionManager extends ConnectionManager {
                     let newError = new Error('error trying to setup a keystore path. ' + error);
                     throw newError;
                 });
-            //return result;
         }
     }
 
