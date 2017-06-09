@@ -275,7 +275,7 @@ class BusinessNetworkDefinition {
         zip.file('models/', null, Object.assign({}, options, { dir: true }));
         modelFiles.forEach(function(file) {
             let fileName;
-            if (file.fileName === 'UNKNOWN'  || file.fileName === null) {
+            if (file.fileName === 'UNKNOWN'  || file.fileName === null || !file.fileName) {
                 fileName = file.namespace + '.cto';
             } else {
                 let fileIdentifier = file.fileName;
