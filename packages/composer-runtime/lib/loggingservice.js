@@ -14,13 +14,15 @@
 
 'use strict';
 
+const Service = require('./service');
+
 /**
  * Base class representing the logging service provided by a {@link Container}.
  * @protected
  * @abstract
  * @memberof module:composer-runtime
  */
-class LoggingService {
+class LoggingService extends Service {
 
     /**
      * Write a critical message to the log.

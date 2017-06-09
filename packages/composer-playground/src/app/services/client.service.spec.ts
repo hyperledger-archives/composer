@@ -68,6 +68,13 @@ describe('ClientService', () => {
 
             result.should.deep.equal(businessNetworkConMock);
         }));
+
+        it('should create a new business network connection if none exist', inject([ClientService], (service: ClientService) => {
+            let mockCreate = sinon.stub(service, 'createBusinessNetworkConnection');
+            let result = service.getBusinessNetworkConnection();
+
+            mockCreate.should.have.been.called;
+        }));
     });
 
     describe('getBusinessNetwork', () => {
@@ -124,28 +131,31 @@ describe('ClientService', () => {
         let mockBusinessNetwork;
         let businessNetworkChangedSpy;
         let modelManagerMock;
-        let fileNameChangedSpy;
+        let namespaceChangedSpy;
         let mockNamespaceCollide;
 
         beforeEach(inject([ClientService], (service: ClientService) => {
             mockBusinessNetwork = sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
             mockNamespaceCollide = sinon.stub(service, 'modelNamespaceCollides').returns(false);
             businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
-            fileNameChangedSpy = sinon.spy(service.fileNameChanged$, 'next');
+            namespaceChangedSpy = sinon.spy(service.namespaceChanged$, 'next');
 
             modelManagerMock = {
                 addModelFile: sinon.stub(),
                 updateModelFile: sinon.stub(),
-                deleteModelFile: sinon.stub()
+                deleteModelFile: sinon.stub(),
+                getModelFile: sinon.stub().returns(modelFileMock),
             };
         }));
 
         it('should update a model file if id matches namespace', inject([ClientService], (service: ClientService) => {
+            modelFileMock.getNamespace.returns('model-ns');
+            modelFileMock.getFileName.returns('model.cto');
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
-            modelFileMock.getNamespace.returns('model');
+
             let mockCreateModelFile = sinon.stub(service, 'createModelFile').returns(modelFileMock);
 
-            let result = service.updateFile('model', 'my-model', 'model');
+            let result = service.updateFile('model-ns', 'my-model-content', 'model');
 
             modelManagerMock.updateModelFile.should.have.been.calledWith(modelFileMock);
             modelManagerMock.addModelFile.should.not.have.been.called;
@@ -155,27 +165,29 @@ describe('ClientService', () => {
 
         it('should replace a model file if id does not match namespace', inject([ClientService], (service: ClientService) => {
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
+            modelFileMock.getNamespace.returns('model-ns');
+            modelFileMock.getFileName.returns('model.cto');
 
-            modelFileMock.getNamespace.returns('new-model');
             let mockCreateModelFile = sinon.stub(service, 'createModelFile').returns(modelFileMock);
 
-            let result = service.updateFile('model', 'my-model', 'model');
+            let result = service.updateFile('diff-model-ns', 'my-model-content', 'model');
 
             modelManagerMock.addModelFile.should.have.been.calledWith(modelFileMock);
             should.not.exist(result);
             businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
-        it('should notify if file name changes', inject([ClientService], (service: ClientService) => {
+        it('should notify if model file namespace changes', inject([ClientService], (service: ClientService) => {
 
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
+            modelFileMock.getNamespace.returns('new-model-ns');
+            modelManagerMock.getModelFile.returns(modelFileMock);
 
-            modelFileMock.getNamespace.returns('new-model');
             let mockCreateModelFile = sinon.stub(service, 'createModelFile').returns(modelFileMock);
 
-            service.updateFile('model', 'my-model', 'model');
+            service.updateFile('model-ns', 'my-model-content', 'model');
 
-            fileNameChangedSpy.should.have.been.calledWith('new-model');
+            namespaceChangedSpy.should.have.been.calledWith('new-model-ns');
         }));
 
         it('should update a script file', inject([ClientService], (service: ClientService) => {
@@ -215,15 +227,16 @@ describe('ClientService', () => {
             modelManagerMock = {
                 addModelFile: sinon.stub().throws('invalid'),
                 updateModelFile: sinon.stub().throws('invalid'),
-                deleteModelFile: sinon.stub()
+                deleteModelFile: sinon.stub(),
+                getModelFile: sinon.stub().returns(modelFileMock)
             };
 
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
-            modelFileMock.getNamespace.returns('model');
+            modelFileMock.getNamespace.returns('model-ns');
 
             let mockCreateModelFile = sinon.stub(service, 'createModelFile').returns(modelFileMock);
 
-            let result = service.updateFile('model', 'my-model', 'model');
+            let result = service.updateFile('model-ns', 'my-model-content', 'model');
 
             result.should.equal('Error');
             businessNetworkChangedSpy.should.have.been.calledWith(false);
@@ -234,7 +247,8 @@ describe('ClientService', () => {
             modelManagerMock = {
                 addModelFile: sinon.stub().throws('invalid'),
                 updateModelFile: sinon.stub().throws('invalid'),
-                deleteModelFile: sinon.stub()
+                deleteModelFile: sinon.stub(),
+                getModelFile: sinon.stub().returns(modelFileMock)
             };
 
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
@@ -280,7 +294,8 @@ describe('ClientService', () => {
             modelManagerMock = {
                 addModelFile: sinon.stub(),
                 updateModelFile: sinon.stub(),
-                deleteModelFile: sinon.stub()
+                deleteModelFile: sinon.stub(),
+                getModelFile: sinon.stub().returns(modelFileMock)
             };
 
             mockNamespaceCollide.returns(true);
@@ -405,6 +420,63 @@ describe('ClientService', () => {
             result.should.equal('Error');
         }));
 
+    });
+
+    describe('replaceFile', () => {
+        // replaceFile(oldId: string, newId: string, content: any, type: string)
+        it('should handle error case by notifying and returning error message in string', inject([ClientService], (service: ClientService) => {
+            sinon.stub(service, 'getBusinessNetwork').throws(new Error('Forced Error'));
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+
+            let response = service['replaceFile']('oldId', 'newId', 'content', 'model');
+
+            businessNetworkChangedSpy.should.have.been.calledWith(false);
+            response.should.equal('Error: Forced Error');
+
+        }));
+
+        it('should replace a model file by model manager update', inject([ClientService], (service: ClientService) => {
+
+            let modelManagerMock = {
+                updateModelFile: sinon.stub()
+            };
+            businessNetworkDefMock.getModelManager.returns(modelManagerMock);
+            sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            let mockCreateModelFile = sinon.stub(service, 'createModelFile').returns(modelFileMock);
+
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+
+            // Call the method (model)
+            let response = service['replaceFile']('oldId', 'newId', 'content', 'model');
+
+            // Check correct items were called with correct parameters
+            modelManagerMock.updateModelFile.should.have.been.calledWith(modelFileMock, 'newId');
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
+            should.not.exist(response);
+        }));
+
+        it('should replace a script file by deletion and addition', inject([ClientService], (service: ClientService) => {
+
+            let scriptManagerMock = {
+                createScript: sinon.stub().returns(scriptFileMock),
+                addScript: sinon.stub(),
+                deleteScript: sinon.stub()
+            };
+            businessNetworkDefMock.getScriptManager.returns(scriptManagerMock);
+            let businessNetworkMock = sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
+
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+
+            // Call the method (script)
+            let response = service['replaceFile']('oldId', 'newId', 'content', 'script');
+
+            // Check correct items were called with correct parameters
+            scriptManagerMock.addScript.should.have.been.calledWith(scriptFileMock);
+            scriptManagerMock.deleteScript.should.have.been.calledWith('oldId');
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
+            should.not.exist(response);
+        }));
     });
 
     describe('modelNamespaceCollides', () => {
@@ -549,6 +621,22 @@ describe('ClientService', () => {
             sinon.stub(service, 'getBusinessNetwork').returns(businessNetworkDefMock);
 
             mockCreateBusinessNetwork = sinon.stub(service, 'createBusinessNetwork').returns(businessNetworkDefMock);
+        }));
+
+        it('should set business network readme', inject([ClientService], (service: ClientService) => {
+            let businessNetworkChangedSpy = sinon.spy(service.businessNetworkChanged$, 'next');
+
+            businessNetworkDefMock.getMetadata.returns({
+                getVersion: sinon.stub().returns('my version'),
+                getDescription: sinon.stub().returns('my description'),
+                getPackageJson: sinon.stub().returns({package: 'such data'}),
+                getName: sinon.stub().returns('my name')
+            });
+
+            service.setBusinessNetworkReadme('my readme');
+
+            mockCreateBusinessNetwork.should.have.been.calledWith('my name@my version', 'my description', {package: 'such data'}, 'my readme');
+            businessNetworkChangedSpy.should.have.been.calledWith(true);
         }));
 
         it('should set business network name', inject([ClientService], (service: ClientService) => {

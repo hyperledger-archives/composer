@@ -1116,6 +1116,8 @@ figure {
 img {
   vertical-align: middle;
   max-width: 100%;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 .img-responsive,
 .thumbnail > img,
@@ -2984,6 +2986,9 @@ select[multiple].input-lg {
   }
 }
 .btn {
+  position: absolute;
+  right: 30px;
+  bottom: 36px;
   display: inline-block;
   padding: 6px 12px;
   margin-bottom: 0;
@@ -5446,6 +5451,7 @@ button.list-group-item-danger.active:focus {
 }
 .panel-body {
   padding: 15px;
+  min-height:140px;
 }
 .panel-heading {
   padding: 10px 15px;

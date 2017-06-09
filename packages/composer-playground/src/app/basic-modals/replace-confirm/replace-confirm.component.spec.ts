@@ -13,7 +13,7 @@ import * as chai from 'chai';
 
 let should = chai.should();
 
-describe('DeleteComponent', () => {
+describe('ReplaceComponent', () => {
     let component: ReplaceComponent;
     let fixture: ComponentFixture<ReplaceComponent>;
 
@@ -31,4 +31,5 @@ describe('DeleteComponent', () => {
     it('should create', () => {
         component.should.be.ok;
     });
+
 });

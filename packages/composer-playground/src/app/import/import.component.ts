@@ -131,7 +131,10 @@ export class ImportComponent implements OnInit {
     }
 
     deploy() {
-        this.modalService.open(ReplaceComponent).result.then((result) => {
+        const confirmModalRef = this.modalService.open(ReplaceComponent);
+        confirmModalRef.componentInstance.mainMessage = 'Your Business Network Definition currently in the Playground will be removed & replaced.';
+        confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have exported any current model files in the Playground.';
+        confirmModalRef.result.then((result) => {
             if (result === true) {
                 this.deployInProgress = true;
                 let deployPromise;
@@ -145,25 +148,25 @@ export class ImportComponent implements OnInit {
                     this.deployInProgress = false;
                     this.activeModal.close();
                 })
-                    .catch((error) => {
-                        if (error.message.includes('API rate limit exceeded')) {
-                            error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
-                        }
+                .catch((error) => {
+                    if (error.message.includes('API rate limit exceeded')) {
+                        error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
+                    }
 
-                        this.deployInProgress = false;
-                        this.alertService.busyStatus$.next(null);
-                        this.alertService.errorStatus$.next(error);
-                    });
+                    this.deployInProgress = false;
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.errorStatus$.next(error);
+                });
 
                 return deployPromise;
             }
         })
-            .catch((error) => {
-                this.deployInProgress = false;
-                if (error && error !== 1) {
-                    this.alertService.errorStatus$.next(error);
-                }
-            });
+        .catch((error) => {
+            this.deployInProgress = false;
+            if (error && error !== 1) {
+                this.alertService.errorStatus$.next(error);
+            }
+        });
     }
 
     deployFromGitHub(): Promise<any> {

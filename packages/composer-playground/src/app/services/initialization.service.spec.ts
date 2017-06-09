@@ -87,6 +87,7 @@ describe('InitializationService', () => {
 
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
+            mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
             mockClientService.ensureConnected.should.be.called;
         })));
 
@@ -112,6 +113,32 @@ describe('InitializationService', () => {
             stubLoadConfig.should.be.called;
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
+            mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
+            mockClientService.ensureConnected.should.be.called;
+        })));
+
+        it('should connect to profile specified in config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            let stubLoadConfig = sinon.stub(service, 'loadConfig');
+            stubLoadConfig.returns(Promise.resolve({defaultConnectionProfile: 'myProfile'}));
+
+            let stubCreateInitialProfiles = sinon.stub(service, 'createInitialProfiles');
+            stubCreateInitialProfiles.returns(Promise.resolve());
+
+            let stubCreateInitialIdentities = sinon.stub(service, 'createInitialIdentities');
+            stubCreateInitialIdentities.returns(Promise.resolve());
+
+            mockClientService.ensureConnected.returns(Promise.resolve());
+
+            mockAlertService.busyStatus$ = {next: sinon.stub()};
+
+            service.initialize();
+
+            tick();
+            stubLoadConfig.should.be.called;
+
+            stubCreateInitialProfiles.should.be.called;
+            stubCreateInitialIdentities.should.be.called;
+            mockConnectionProfileService.setCurrentConnectionProfile.should.have.been.calledWith('myProfile');
             mockClientService.ensureConnected.should.be.called;
         })));
 
@@ -133,18 +160,18 @@ describe('InitializationService', () => {
     });
 
     describe('loadConfig', () => {
-        it('should load config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
-            async(inject([InitializationService, XHRBackend], (aboutService, mockBackend) => {
-                // setup a mocked response
-                mockBackend.connections.subscribe((connection) => {
-                    connection.mockRespond(new Response(new ResponseOptions({
-                        body: JSON.stringify({})
-                    })));
-                });
+        it('should load config', fakeAsync(inject([InitializationService, XHRBackend], (service: InitializationService, mockBackend) => {
+            // setup a mocked response
+            mockBackend.connections.subscribe((connection) => {
+                connection.mockRespond(new Response(new ResponseOptions({
+                    body: JSON.stringify({result: 'a result'})
+                })));
+            });
 
-                service.loadConfig();
-                tick();
-            }));
+            service.loadConfig().then((config) => {
+                config.should.deep.equal({result: 'a result'});
+            });
+            tick();
         })));
     });
 
@@ -181,6 +208,17 @@ describe('InitializationService', () => {
                 }
             });
         })));
+
+        it('should handle no config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            mockConnectionProfileService.createDefaultProfile.returns(Promise.resolve());
+            service['config'] = {};
+            service.createInitialProfiles();
+
+            tick();
+
+            mockConnectionProfileService.getProfile.should.not.have.been.called;
+            mockConnectionProfileService.createProfile.should.not.have.been.called;
+        })));
     });
 
     describe('createInitialIdentities', () => {
@@ -210,6 +248,16 @@ describe('InitializationService', () => {
 
             fileWalletStub.get.should.be.called;
             fileWalletStub.add.should.be.calledWith('profile1', {name: 'profile1', type: 'hlf'});
+        })));
+
+        it('should handle no config', fakeAsync(inject([InitializationService], (service: InitializationService) => {
+            service['config'] = {};
+
+            service.createInitialIdentities();
+
+            tick();
+
+            mockWalletService.getWallet.should.not.have.been.called;
         })));
     });
 

@@ -28,6 +28,5 @@ module.exports.Engine = require('./lib/engine');
 module.exports.HTTPService = require('./lib/httpservice');
 module.exports.EventService = require('./lib/eventservice');
 module.exports.IdentityService = require('./lib/identityservice');
-module.exports.JSTransactionExecutor = require('./lib/jstransactionexecutor');
 module.exports.LoggingService = require('./lib/loggingservice');
-module.exports.TransactionExecutor = require('./lib/transactionexecutor');
+module.exports.ScriptCompiler = require('./lib/scriptcompiler');

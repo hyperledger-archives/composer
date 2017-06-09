@@ -35,15 +35,16 @@ describe('Identity system tests', () => {
     let participant;
 
     before(function () {
+        // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying null as the value
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8')
+            { fileName: null, contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.cto'), 'utf8') }
         ];
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.js'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.identities@0.0.1', 'The network for the identities system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
