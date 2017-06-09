@@ -15,7 +15,6 @@
 'use strict';
 
 const Logger = require('composer-common').Logger;
-//const filewallet = require('composer-common').FileWallet;
 const util = require('util');
 const fs = require('fs');
 
@@ -167,7 +166,7 @@ class HLFConnectionManager extends ConnectionManager {
      * @memberOf HLFConnectionManager
      */
     static createPeer(peerURL, opts) {
-        return new Peer(peerURL, opts); //TODO: Change this.
+        return new Peer(peerURL, opts);
     }
 
     /**
@@ -304,7 +303,6 @@ class HLFConnectionManager extends ConnectionManager {
         // If a wallet has been specified, then we want to use that.
         //let result;
         LOG.entry(method, client, wallet, keyValStorePath);
-        //wallet = new filewallet({directory: keyValStorePath});
 
         if (wallet) {
             LOG.debug(method, 'A wallet has been specified, using wallet proxy');

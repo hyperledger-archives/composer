@@ -62,7 +62,6 @@ stop
 # Start all composer
 docker-compose -p composer -f docker-compose-playground{{ENV}}.yml up -d
 # copy over pre-imported admin credentials
-# docker exec composer cp -R /etc/playground/creds /home/composer/.hfc-key-store
 cd fabric-dev-servers/fabric-scripts/hlfv1/composer/creds
 docker exec composer mkdir /home/composer/.hfc-key-store
 tar -cv * | docker exec -i composer tar x -C /home/composer/.hfc-key-store
