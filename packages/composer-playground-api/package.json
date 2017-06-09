@@ -57,13 +57,8 @@
   },
   "dependencies": {
     "body-parser": "^1.17.0",
-<<<<<<< HEAD
     "composer-common": "^0.7.6",
     "composer-connector-server": "^0.7.6",
-=======
-    "composer-common": "^0.8.0",
-    "composer-connector-server": "^0.8.0",
->>>>>>> 98e76c5ab492cb47828e32d7a5a844d32ad5f290
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "http-status": "^1.0.1",
