@@ -404,32 +404,6 @@ class AdminConnection {
         return this.connection.list(this.securityContext);
     }
 
-    /**
-     * import an identity into a profiles' wallet
-     *
-     * @param {string} connectionProfile Name of the connection profile
-     * @param {string} id The id to associate with this identity
-     * @param {string} publicKey The signer cert in PEM format
-     * @param {string} privateKey The private key in PEM format
-     * @returns {Promise} A promise which is resolved when the identity is imported
-     *
-     * @memberOf AdminConnection
-     */
-    importIdentity(connectionProfile, id, publicKey, privateKey) {
-        let savedConnectionManager;
-        return this.connectionProfileManager.getConnectionManager(connectionProfile)
-            .then((connectionManager) => {
-                savedConnectionManager = connectionManager;
-                return this.getProfile(connectionProfile);
-            })
-            .then((profileData) => {
-                return savedConnectionManager.importIdentity(profileData, id, publicKey, privateKey);
-            })
-            .catch((error) => {
-                throw new Error('failed to import identity. ' + error.message);
-            });
-    }
-
 }
 
 module.exports = AdminConnection;
