@@ -46,7 +46,6 @@ class QueryFile {
 
         try {
             this.ast = parser.parse(definitions);
-            console.log(JSON.stringify(this.ast));
         }
         catch(err) {
             if(err.location && err.location.start) {
@@ -59,11 +58,8 @@ class QueryFile {
 
         for(let n=0; n < this.ast.queries.length; n++ ) {
             let thing = this.ast.queries[n];
-            const query = new Query(this, thing);
-            this.queries.push(query);
+            this.queries.push(new Query(this, thing));
         }
-
-        // console.log(JSON.stringify(this.ast));
     }
 
     /**

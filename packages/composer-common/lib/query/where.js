@@ -15,7 +15,6 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
-const Condition = require('./condition');
 
 /**
  * Where defines the WHERE portion of a SELECT statement
@@ -71,13 +70,6 @@ class Where {
      * @private
      */
     process() {
-        this.conditions = null;
-
-        if(this.ast.conditions) {
-            for(let n=0; n<this.ast.conditions; n++) {
-                this.conditions.push(new Condition(this, this.ast.conditions[n]));
-            }
-        }
     }
 
     /**
@@ -87,11 +79,7 @@ class Where {
      * @private
      */
     validate() {
-        if(this.conditions) {
-            for(let n=0; n<this.conditions; n++) {
-                this.conditions.validate();
-            }
-        }
+        // TODO (DCS) walk the AST and check that the properties exist in the model!
     }
 
     /**
@@ -101,7 +89,7 @@ class Where {
      */
     toJSON() {
         let result = {
-            conditions: this.conditions.toJSON()
+            ast: this.ast
         };
         return result;
     }

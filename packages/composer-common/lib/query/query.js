@@ -15,6 +15,7 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
+const Select = require('./select');
 
 /**
  * Query defines a SELECT query over a resource (asset, transaction or participant)
@@ -72,6 +73,7 @@ class Query {
     process() {
         this.name = this.ast.identifier.name;
         this.description = this.ast.description;
+        this.select = new Select(this, this.ast.select);
     }
 
     /**
@@ -109,7 +111,8 @@ class Query {
     toJSON() {
         let result = {
             name: this.name,
-            description: this.description
+            description: this.description,
+            select: this.select.toJSON()
         };
         return result;
     }

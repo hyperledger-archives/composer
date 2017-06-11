@@ -58,7 +58,7 @@ describe('QueryFile', () => {
 
         it('should call the parser with the definitions and save the abstract syntax tree', () => {
             const ast = {
-                queries: [ {identifier: {name: 'fake'}, statement: 'org.acme'} ]
+                queries: [ {identifier: {name: 'fake'}, description: 'foo', select: {resource: 'org.acme.Driver', where: {} } } ]
             };
             sandbox.stub(parser, 'parse').returns(ast);
             let mf = new QueryFile( 'test', modelManager, 'fake definitions');

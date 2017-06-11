@@ -76,7 +76,7 @@ class Select {
 
         this.where = null;
         if(this.ast.where) {
-            this.where = new Where(this.ast.where);
+            this.where = new Where(this, this.ast.where);
         }
 
         this.limit = null;
@@ -91,7 +91,7 @@ class Select {
 
         this.orderBy = null;
         if(this.ast.orderBy) {
-            this.orderBy = new OrderBy(this.ast.orderBy);
+            this.orderBy = new OrderBy(this, this.ast.orderBy);
         }
     }
 
@@ -137,7 +137,11 @@ class Select {
      */
     toJSON() {
         let result = {
-            resouce: this.resource
+            resouce: this.resource,
+            where: this.where ? this.where.toJSON() : null,
+            limit: this.limit ? this.limit : null,
+            skip: this.skip ? this.skip : null,
+            orderBy: this.orderBy ? this.orderBy.toJSON() : null
         };
         return result;
     }

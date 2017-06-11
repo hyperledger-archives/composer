@@ -15,7 +15,7 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
-const Where = require('../where');
+const Sort = require('./sort');
 
 /**
  * Defines the ORDER BY specification for a SELECT statement
@@ -71,26 +71,14 @@ class OrderBy {
      * @private
      */
     process() {
-        this.resource = this.ast.resource;
+        this.sortCriteria = null;
 
-        this.where = null;
-        if(this.ast.where) {
-            this.where = new Where(this.ast.where);
-        }
+        if(this.ast.sort) {
+            this.sortCriteria = [];
 
-        this.limit = null;
-        if(this.ast.limit) {
-            this.limit = this.ast.limit;
-        }
-
-        this.skip = null;
-        if(this.ast.skip) {
-            this.skip = this.ast.skip;
-        }
-
-        this.orderBy = null;
-        if(this.ast.orderBy) {
-            this.orderBy = new OrderBy(this.ast.orderBy);
+            for(let n=0; n < this.ast.sort.length; n++) {
+                this.sortCriteria.push( new Sort(this, this.ast.sort[n]));
+            }
         }
     }
 
@@ -101,15 +89,7 @@ class OrderBy {
      * @private
      */
     validate() {
-    }
-
-    /**
-     * Returns the FQN of the resource of this select.
-     *
-     * @return {string} the fully qualified name of the select
-     */
-    getResource() {
-        return this.resource;
+        // TODO (DCS) check that the fields we are sorting by exist!
     }
 
     /**
@@ -119,7 +99,7 @@ class OrderBy {
      */
     toJSON() {
         let result = {
-            resouce: this.resource
+            sortCriteria: this.sortCriteria.toJSON()
         };
         return result;
     }
