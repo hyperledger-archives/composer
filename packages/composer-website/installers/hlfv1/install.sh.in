@@ -5,7 +5,29 @@ if [ "${ME}" = "install-hlfv1{{ENV}}.sh" ]; then
 fi
 (cat > composer.sh; chmod +x composer.sh; exec bash composer.sh)
 #!/bin/bash
-set -ev
+set -e
+
+# Docker stop function
+function stop()
+{
+P1=$(docker ps -q)
+if [ "${P1}" != "" ]; then
+  echo "Killing all running containers"  &2> /dev/null
+  docker kill ${P1}
+fi
+
+P2=$(docker ps -aq)
+if [ "${P2}" != "" ]; then
+  echo "Removing all containers"  &2> /dev/null
+  docker rm ${P2} -f
+fi
+}
+
+if [ "$1" == "stop" ]; then
+ echo "Stopping all Docker containers" >&2
+ stop
+ exit 0
+fi
 
 # Get the current directory.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -27,16 +49,14 @@ PAYLOAD_START=$((PAYLOAD_LINE + 1))
 echo PAYLOAD_START=${PAYLOAD_START}
 tail -n +${PAYLOAD_START} "${SOURCE}" | tar -xzf -
 
-# Kill and remove any running Docker containers.
-docker-compose -p composer kill
-docker-compose -p composer down --remove-orphans
+# stop all the docker containers
+stop
 
-# Kill any other Docker containers.
-docker ps -aq | xargs docker rm -f || echo 'All removed'
 
 # run the fabric-dev-scripts to get a running fabric
 ./fabric-dev-servers/downloadFabric.sh
 ./fabric-dev-servers/startFabric.sh
+./fabric-dev-servers/createComposerProfile.sh
 
 # Start all Docker containers.
 docker-compose -p composer -f docker-compose-playground{{ENV}}.yml up -d
@@ -69,6 +89,14 @@ case "$(uname)" in
 *)        echo "Playground not launched - this OS is currently not supported "
           ;;
 esac
+
+echo
+echo "--------------------------------------------------------------------------------------"
+echo "Hyperledger Fabric and Hyperledger Composer installed, and Composer Playground launched"
+echo "Please use 'composer.sh' to re-start"
+
+# removing instalation image
+rm "${DIR}"/install-hlfv1{{ENV}}.sh
 
 # Exit; this is required as the payload immediately follows.
 exit 0

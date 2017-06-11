@@ -11,10 +11,15 @@ let protractorRC = null;
 let childServer = spawn('http-server', ['./dist', '-p 3001', '--cors', '--push-state']);
 
 // Execute protractor and attach to listeners
-var childProtractor = exec('protractor -- protractor.conf.js');
+var childProtractor = exec('webdriver-manager update && protractor -- protractor.conf.js');
 // Log all output of Protractor run
 childProtractor.stdout.on('data', function(data) {
-    console.log(data);
+    // do not log return characters or "green dot progress"
+    let msg = data.replace(/\n$/, "");
+    msg = msg.replace(/\x1b\[32m.\x1b\[0m/, "");
+    if (msg.length) {
+        console.log(msg);
+    }
 });
 // Log ony error output
 childProtractor.stderr.on('data', function(data) {
