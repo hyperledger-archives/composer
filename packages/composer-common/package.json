@@ -9,7 +9,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "prepublish": "pegjs ./lib/introspect/parser.pegjs && pegjs ./lib/acl/parser.pegjs && node ./scripts/tsgen.js",
+    "prepublish": "pegjs ./lib/introspect/parser.pegjs && pegjs ./lib/acl/parser.pegjs && pegjs ./lib/query/parser.pegjs && node ./scripts/tsgen.js",
     "pretest": "npm run prepublish && npm run lint",
     "lint": "eslint .",
     "postlint": "npm run licchk",
