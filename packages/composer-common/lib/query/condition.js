@@ -14,8 +14,6 @@
 
 'use strict';
 
-const Where = require('./where');
-const OrderBy = require('./orderby');
 const IllegalModelException = require('../introspect/illegalmodelexception');
 
 /**
@@ -29,20 +27,19 @@ const IllegalModelException = require('../introspect/illegalmodelexception');
 class Condition {
 
     /**
-     * Create an Select from an Abstract Syntax Tree. The AST is the
-     * result of parsing.
+     * Create a Condition for a Where clause
      *
-     * @param {Query} query - the Query for this select
+     * @param {Where} where - the Where for this condition
      * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(query, ast) {
-        if(!query || !ast) {
-            throw new IllegalModelException('Invalid Query or AST');
+    constructor(where, ast) {
+        if(!where || !ast) {
+            throw new IllegalModelException('Invalid Where or AST');
         }
 
         this.ast = ast;
-        this.query = query;
+        this.where = where;
         this.process();
     }
 
@@ -58,12 +55,12 @@ class Condition {
     }
 
     /**
-     * Returns the QueryFile that owns this Query.
+     * Returns the Where that owns this condition.
      *
-     * @return {AclFile} the owning QueryFile
+     * @return {Where} the owning where clause
      */
-    getQuery() {
-        return this.query;
+    getWhere() {
+        return this.where;
     }
 
     /**
@@ -73,27 +70,9 @@ class Condition {
      * @private
      */
     process() {
-        this.resource = this.ast.resource;
-
-        this.where = null;
-        if(this.ast.where) {
-            this.where = new Where(this.ast.where);
-        }
-
-        this.limit = null;
-        if(this.ast.limit) {
-            this.limit = parseInt(this.ast.limit);
-        }
-
-        this.skip = null;
-        if(this.ast.skip) {
-            this.skip = parseInt(this.ast.skip);
-        }
-
-        this.orderBy = null;
-        if(this.ast.orderBy) {
-            this.orderBy = new OrderBy(this.ast.orderBy);
-        }
+        this.left = this.ast.left;
+        this.op = this.ast.op;
+        this.right = this.right.value;
     }
 
     /**
@@ -103,32 +82,6 @@ class Condition {
      * @private
      */
     validate() {
-        const mm = this.getQuery().getQueryFile().getModelManager();
-
-        // checks the resource type exists
-        const resourceClassDeclaration = mm.getType(this.resource);
-
-        // check that it is not an enum or concept
-        if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
-            throw new Error('Can only select assets, participants and transactions.');
-        }
-
-        if(this.where) {
-            this.where.validate();
-        }
-
-        if(this.orderBy) {
-            this.orderBy.validate();
-        }
-    }
-
-    /**
-     * Returns the FQN of the resource of this select.
-     *
-     * @return {string} the fully qualified name of the select
-     */
-    getResource() {
-        return this.resource;
     }
 
     /**
@@ -138,7 +91,9 @@ class Condition {
      */
     toJSON() {
         let result = {
-            resouce: this.resource
+            left: this.left,
+            op: this.op,
+            right: this.right
         };
         return result;
     }

@@ -167,11 +167,41 @@ ReservedWord
   / BooleanLiteral
 
 Keyword
-  = SelectToken
-  / WhereToken
+  = BreakToken
+  / CaseToken
+  / CatchToken
+  / ContinueToken
+  / DebuggerToken
+  / DefaultToken
+  / DeleteToken
+  / DoToken
+  / ElseToken
+  / FinallyToken
+  / ForToken
+  / FunctionToken
+  / IfToken
+  / InstanceofToken
+  / InToken
+  / NewToken
+  / ReturnToken
+  / SwitchToken
+  / ThisToken
+  / ThrowToken
+  / TryToken
+  / TypeofToken
+  / VarToken
+  / VoidToken
+  / WhileToken
+  / WithToken
 
 FutureReservedWord
-  = ImportToken
+  = ClassToken
+  / ConstToken
+  / EnumToken
+  / ExportToken
+  / ExtendsToken
+  / ImportToken
+  / SuperToken
 
 Literal
   = NullLiteral
@@ -399,11 +429,898 @@ Pc = [\u005F\u203F-\u2040\u2054\uFE33-\uFE34\uFE4D-\uFE4F\uFF3F]
 Zs = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
 
 /* Tokens */
-QueryToken      = "query"      !IdentifierPart
-ImportToken     = "import"     !IdentifierPart
-NullToken       = "null"       !IdentifierPart
-TrueToken       = "true"       !IdentifierPart
+
+BreakToken      = "break"      !IdentifierPart
+CaseToken       = "case"       !IdentifierPart
+CatchToken      = "catch"      !IdentifierPart
+ClassToken      = "class"      !IdentifierPart
+AssetToken      = "asset"      !IdentifierPart
+TransactionToken = "transaction" !IdentifierPart
+ParticipantToken = "participant" !IdentifierPart
+ConstToken      = "const"      !IdentifierPart
+ContinueToken   = "continue"   !IdentifierPart
+DebuggerToken   = "debugger"   !IdentifierPart
+DefaultToken    = "default"    !IdentifierPart
+DeleteToken     = "delete"     !IdentifierPart
+DoToken         = "do"         !IdentifierPart
+ElseToken       = "else"       !IdentifierPart
+EnumToken       = "enum"       !IdentifierPart
+ExportToken     = "export"     !IdentifierPart
+ExtendsToken    = "extends"    !IdentifierPart
 FalseToken      = "false"      !IdentifierPart
+FinallyToken    = "finally"    !IdentifierPart
+ForToken        = "for"        !IdentifierPart
+FunctionToken   = "function"   !IdentifierPart
+GetToken        = "get"        !IdentifierPart
+IfToken         = "if"         !IdentifierPart
+ImportToken     = "import"     !IdentifierPart
+InstanceofToken = "instanceof" !IdentifierPart
+InToken         = "in"         !IdentifierPart
+NewToken        = "new"        !IdentifierPart
+NullToken       = "null"       !IdentifierPart
+ReturnToken     = "return"     !IdentifierPart
+SetToken        = "set"        !IdentifierPart
+SuperToken      = "super"      !IdentifierPart
+SwitchToken     = "switch"     !IdentifierPart
+ThisToken       = "this"       !IdentifierPart
+ThrowToken      = "throw"      !IdentifierPart
+TrueToken       = "true"       !IdentifierPart
+TryToken        = "try"        !IdentifierPart
+TypeofToken     = "typeof"     !IdentifierPart
+VarToken        = "var"        !IdentifierPart
+VoidToken       = "void"       !IdentifierPart
+WhileToken      = "while"      !IdentifierPart
+WithToken       = "with"       !IdentifierPart
+NamespaceToken  = "namespace"  !IdentifierPart
+AbstractToken  = "abstract"    !IdentifierPart
+
+/* Skipped */
+
+__
+  = (WhiteSpace / LineTerminatorSequence / Comment)*
+
+_
+  = (WhiteSpace / MultiLineCommentNoLineTerminator)*
+
+/* Automatic Semicolon Insertion */
+
+EOS
+  = __ ";"
+  / _ SingleLineComment? LineTerminatorSequence
+  / _ &"}"
+  / __ EOF
+
+EOF
+  = !.
+
+/* ----- A.2 Number Conversions ----- */
+
+/* Irrelevant. */
+
+/* ----- A.3 Expressions ----- */
+
+PrimaryExpression
+  = ThisToken { return { type: "ThisExpression" }; }
+  / Identifier
+  / Literal
+  / ArrayLiteral
+  / ObjectLiteral
+  / "(" __ expression:Expression __ ")" { return expression; }
+
+ArrayLiteral
+  = "[" __ elision:(Elision __)? "]" {
+      return {
+        type:     "ArrayExpression",
+        elements: optionalList(extractOptional(elision, 0))
+      };
+    }
+  / "[" __ elements:ElementList __ "]" {
+      return {
+        type:     "ArrayExpression",
+        elements: elements
+      };
+    }
+  / "[" __ elements:ElementList __ "," __ elision:(Elision __)? "]" {
+      return {
+        type:     "ArrayExpression",
+        elements: elements.concat(optionalList(extractOptional(elision, 0)))
+      };
+    }
+
+ElementList
+  = first:(
+      elision:(Elision __)? element:AssignmentExpression {
+        return optionalList(extractOptional(elision, 0)).concat(element);
+      }
+    )
+    rest:(
+      __ "," __ elision:(Elision __)? element:AssignmentExpression {
+        return optionalList(extractOptional(elision, 0)).concat(element);
+      }
+    )*
+    { return Array.prototype.concat.apply(first, rest); }
+
+Elision
+  = "," commas:(__ ",")* { return filledArray(commas.length + 1, null); }
+
+ObjectLiteral
+  = "{" __ "}" { return { type: "ObjectExpression", properties: [] }; }
+  / "{" __ properties:PropertyNameAndValueList __ "}" {
+       return { type: "ObjectExpression", properties: properties };
+     }
+  / "{" __ properties:PropertyNameAndValueList __ "," __ "}" {
+       return { type: "ObjectExpression", properties: properties };
+     }
+PropertyNameAndValueList
+  = first:PropertyAssignment rest:(__ "," __ PropertyAssignment)* {
+      return buildList(first, rest, 3);
+    }
+
+PropertyAssignment
+  = key:PropertyName __ ":" __ value:AssignmentExpression {
+      return { key: key, value: value, kind: "init" };
+    }
+  / GetToken __ key:PropertyName __
+    "(" __ ")" __
+    "{" __ body:FunctionBody __ "}"
+    {
+      return {
+        key:   key,
+        value: {
+          type:   "FunctionExpression",
+          id:     null,
+          params: [],
+          body:   body
+        },
+        kind:  "get"
+      };
+    }
+  / SetToken __ key:PropertyName __
+    "(" __ params:PropertySetParameterList __ ")" __
+    "{" __ body:FunctionBody __ "}"
+    {
+      return {
+        key:   key,
+        value: {
+          type:   "FunctionExpression",
+          id:     null,
+          params: params,
+          body:   body
+        },
+        kind:  "set"
+      };
+    }
+
+PropertyName
+  = IdentifierName
+  / StringLiteral
+  / NumericLiteral
+
+PropertySetParameterList
+  = id:Identifier { return [id]; }
+
+MemberExpression
+  = first:(
+        PrimaryExpression
+      / FunctionExpression
+      / NewToken __ callee:MemberExpression __ args:Arguments {
+          return { type: "NewExpression", callee: callee, arguments: args };
+        }
+    )
+    rest:(
+        __ "[" __ property:Expression __ "]" {
+          return { property: property, computed: true };
+        }
+      / __ "." __ property:IdentifierName {
+          return { property: property, computed: false };
+        }
+    )*
+    {
+      return buildTree(first, rest, function(result, element) {
+        return {
+          type:     "MemberExpression",
+          object:   result,
+          property: element.property,
+          computed: element.computed
+        };
+      });
+    }
+
+NewExpression
+  = MemberExpression
+  / NewToken __ callee:NewExpression {
+      return { type: "NewExpression", callee: callee, arguments: [] };
+    }
+
+CallExpression
+  = first:(
+      callee:MemberExpression __ args:Arguments {
+        return { type: "CallExpression", callee: callee, arguments: args };
+      }
+    )
+    rest:(
+        __ args:Arguments {
+          return { type: "CallExpression", arguments: args };
+        }
+      / __ "[" __ property:Expression __ "]" {
+          return {
+            type:     "MemberExpression",
+            property: property,
+            computed: true
+          };
+        }
+      / __ "." __ property:IdentifierName {
+          return {
+            type:     "MemberExpression",
+            property: property,
+            computed: false
+          };
+        }
+    )*
+    {
+      return buildTree(first, rest, function(result, element) {
+        element[TYPES_TO_PROPERTY_NAMES[element.type]] = result;
+
+        return element;
+      });
+    }
+
+Arguments
+  = "(" __ args:(ArgumentList __)? ")" {
+      return optionalList(extractOptional(args, 0));
+    }
+
+ArgumentList
+  = first:AssignmentExpression rest:(__ "," __ AssignmentExpression)* {
+      return buildList(first, rest, 3);
+    }
+
+LeftHandSideExpression
+  = MemberExpression
+
+UnaryExpression
+  = LeftHandSideExpression
+  / operator:UnaryOperator __ argument:UnaryExpression {
+      return {
+        type:     "UnaryExpression",
+        operator: operator,
+        argument: argument,
+        prefix:   true
+      };
+    }
+
+UnaryOperator
+ = "!"
+
+MultiplicativeExpression
+  = first:UnaryExpression
+    rest:(__ MultiplicativeOperator __ UnaryExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+MultiplicativeOperator
+  = $("*" !"=")
+  / $("/" !"=")
+  / $("%" !"=")
+
+AdditiveExpression
+  = first:MultiplicativeExpression
+    rest:(__ AdditiveOperator __ MultiplicativeExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+AdditiveOperator
+  = $("+" ![+=])
+  / $("-" ![-=])
+
+ShiftExpression
+  = first:UnaryExpression
+    rest:(__ ShiftOperator __ UnaryExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+ShiftOperator
+  = $("<<"  !"=")
+  / $(">>>" !"=")
+  / $(">>"  !"=")
+
+RelationalExpression
+  = first:ShiftExpression
+    rest:(__ RelationalOperator __ ShiftExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+RelationalOperator
+  = "<="
+  / ">="
+  / $("<" !"<")
+  / $(">" !">")
+
+//  / $InToken
+
+RelationalExpressionNoIn
+  = first:ShiftExpression
+    rest:(__ RelationalOperatorNoIn __ ShiftExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+RelationalOperatorNoIn
+  = "<="
+  / ">="
+  / $("<" !"<")
+  / $(">" !">")
+
+EqualityExpression
+  = first:RelationalExpression
+    rest:(__ EqualityOperator __ RelationalExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+EqualityExpressionNoIn
+  = first:RelationalExpressionNoIn
+    rest:(__ EqualityOperator __ RelationalExpressionNoIn)*
+    { return buildBinaryExpression(first, rest); }
+
+EqualityOperator
+  = "=="
+  / "!="
+
+BitwiseANDExpression
+  = first:EqualityExpression
+    rest:(__ BitwiseANDOperator __ EqualityExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+BitwiseANDExpressionNoIn
+  = first:EqualityExpressionNoIn
+    rest:(__ BitwiseANDOperator __ EqualityExpressionNoIn)*
+    { return buildBinaryExpression(first, rest); }
+
+BitwiseANDOperator
+  = $("&" ![&=])
+
+BitwiseXORExpression
+  = first:BitwiseANDExpression
+    rest:(__ BitwiseXOROperator __ BitwiseANDExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+BitwiseXORExpressionNoIn
+  = first:BitwiseANDExpressionNoIn
+    rest:(__ BitwiseXOROperator __ BitwiseANDExpressionNoIn)*
+    { return buildBinaryExpression(first, rest); }
+
+BitwiseXOROperator
+  = $("^" !"=")
+
+BitwiseORExpression
+  = first:BitwiseXORExpression
+    rest:(__ BitwiseOROperator __ BitwiseXORExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+BitwiseORExpressionNoIn
+  = first:BitwiseXORExpressionNoIn
+    rest:(__ BitwiseOROperator __ BitwiseXORExpressionNoIn)*
+    { return buildBinaryExpression(first, rest); }
+
+BitwiseOROperator
+  = $("|" ![|=])
+
+LogicalANDExpression
+  = first:BitwiseORExpression
+    rest:(__ LogicalANDOperator __ BitwiseORExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+LogicalANDExpressionNoIn
+  = first:BitwiseORExpressionNoIn
+    rest:(__ LogicalANDOperator __ BitwiseORExpressionNoIn)*
+    { return buildBinaryExpression(first, rest); }
+
+LogicalANDOperator
+  = "AND"
+
+LogicalORExpression
+  = first:LogicalANDExpression
+    rest:(__ LogicalOROperator __ LogicalANDExpression)*
+    { return buildBinaryExpression(first, rest); }
+
+LogicalORExpressionNoIn
+  = first:LogicalANDExpressionNoIn
+    rest:(__ LogicalOROperator __ LogicalANDExpressionNoIn)*
+    { return buildBinaryExpression(first, rest); }
+
+LogicalOROperator
+  = "OR"
+
+ConditionalExpression
+  = test:LogicalORExpression __
+    "?" __ consequent:AssignmentExpression __
+    ":" __ alternate:AssignmentExpression
+    {
+      return {
+        type:       "ConditionalExpression",
+        test:       test,
+        consequent: consequent,
+        alternate:  alternate
+      };
+    }
+  / LogicalORExpression
+
+ConditionalExpressionNoIn
+  = test:LogicalORExpressionNoIn __
+    "?" __ consequent:AssignmentExpression __
+    ":" __ alternate:AssignmentExpressionNoIn
+    {
+      return {
+        type:       "ConditionalExpression",
+        test:       test,
+        consequent: consequent,
+        alternate:  alternate
+      };
+    }
+  / LogicalORExpressionNoIn
+
+AssignmentExpression
+  = left:LeftHandSideExpression __
+    "=" !"=" __
+    right:AssignmentExpression
+    {
+      return {
+        type:     "AssignmentExpression",
+        operator: "=",
+        left:     left,
+        right:    right
+      };
+    }
+  / left:LeftHandSideExpression __
+    operator:AssignmentOperator __
+    right:AssignmentExpression
+    {
+      return {
+        type:     "AssignmentExpression",
+        operator: operator,
+        left:     left,
+        right:    right
+      };
+    }
+  / ConditionalExpression
+
+AssignmentExpressionNoIn
+  = left:LeftHandSideExpression __
+    "=" !"=" __
+    right:AssignmentExpressionNoIn
+    {
+      return {
+        type:     "AssignmentExpression",
+        operator: "=",
+        left:     left,
+        right:    right
+      };
+    }
+  / left:LeftHandSideExpression __
+    operator:AssignmentOperator __
+    right:AssignmentExpressionNoIn
+    {
+      return {
+        type:     "AssignmentExpression",
+        operator: operator,
+        left:     left,
+        right:    right
+      };
+    }
+  / ConditionalExpressionNoIn
+
+AssignmentOperator
+  = "*="
+  / "/="
+  / "%="
+  / "+="
+  / "-="
+  / "<<="
+  / ">>="
+  / ">>>="
+  / "&="
+  / "^="
+  / "|="
+
+Expression
+  = first:AssignmentExpression rest:(__ "," __ AssignmentExpression)* {
+      return rest.length > 0
+        ? { type: "SequenceExpression", expressions: buildList(first, rest, 3) }
+        : first;
+    }
+
+ExpressionNoIn
+  = first:AssignmentExpressionNoIn rest:(__ "," __ AssignmentExpressionNoIn)* {
+      return rest.length > 0
+        ? { type: "SequenceExpression", expressions: buildList(first, rest, 3) }
+        : first;
+    }
+
+/* ----- A.4 Statements ----- */
+
+Statement
+  = Block
+  / VariableStatement
+  / EmptyStatement
+  / ExpressionStatement
+  / IfStatement
+  / IterationStatement
+  / ContinueStatement
+  / BreakStatement
+  / ReturnStatement
+  / WithStatement
+  / LabelledStatement
+  / SwitchStatement
+  / ThrowStatement
+  / TryStatement
+  / DebuggerStatement
+
+Block
+  = "{" __ body:(StatementList __)? "}" {
+      return {
+        type: "BlockStatement",
+        body: optionalList(extractOptional(body, 0))
+      };
+    }
+
+StatementList
+  = first:Statement rest:(__ Statement)* { return buildList(first, rest, 1); }
+
+VariableStatement
+  = VarToken __ declarations:VariableDeclarationList EOS {
+      return {
+        type:         "VariableDeclaration",
+        declarations: declarations
+      };
+    }
+
+VariableDeclarationList
+  = first:VariableDeclaration rest:(__ "," __ VariableDeclaration)* {
+      return buildList(first, rest, 3);
+    }
+
+VariableDeclarationListNoIn
+  = first:VariableDeclarationNoIn rest:(__ "," __ VariableDeclarationNoIn)* {
+      return buildList(first, rest, 3);
+    }
+
+VariableDeclaration
+  = id:Identifier init:(__ Initialiser)? {
+      return {
+        type: "VariableDeclarator",
+        id:   id,
+        init: extractOptional(init, 1)
+      };
+    }
+
+VariableDeclarationNoIn
+  = id:Identifier init:(__ InitialiserNoIn)? {
+      return {
+        type: "VariableDeclarator",
+        id:   id,
+        init: extractOptional(init, 1)
+      };
+    }
+
+Initialiser
+  = "=" !"=" __ expression:AssignmentExpression { return expression; }
+
+InitialiserNoIn
+  = "=" !"=" __ expression:AssignmentExpressionNoIn { return expression; }
+
+EmptyStatement
+  = ";" { return { type: "EmptyStatement" }; }
+
+ExpressionStatement
+  = !("{" / FunctionToken) expression:Expression EOS {
+      return {
+        type:       "ExpressionStatement",
+        expression: expression
+      };
+    }
+
+IfStatement
+  = IfToken __ "(" __ test:Expression __ ")" __
+    consequent:Statement __
+    ElseToken __
+    alternate:Statement
+    {
+      return {
+        type:       "IfStatement",
+        test:       test,
+        consequent: consequent,
+        alternate:  alternate
+      };
+    }
+  / IfToken __ "(" __ test:Expression __ ")" __
+    consequent:Statement {
+      return {
+        type:       "IfStatement",
+        test:       test,
+        consequent: consequent,
+        alternate:  null
+      };
+    }
+
+IterationStatement
+  = DoToken __
+    body:Statement __
+    WhileToken __ "(" __ test:Expression __ ")" EOS
+    { return { type: "DoWhileStatement", body: body, test: test }; }
+  / WhileToken __ "(" __ test:Expression __ ")" __
+    body:Statement
+    { return { type: "WhileStatement", test: test, body: body }; }
+  / ForToken __
+    "(" __
+    init:(ExpressionNoIn __)? ";" __
+    test:(Expression __)? ";" __
+    update:(Expression __)?
+    ")" __
+    body:Statement
+    {
+      return {
+        type:   "ForStatement",
+        init:   extractOptional(init, 0),
+        test:   extractOptional(test, 0),
+        update: extractOptional(update, 0),
+        body:   body
+      };
+    }
+  / ForToken __
+    "(" __
+    VarToken __ declarations:VariableDeclarationListNoIn __ ";" __
+    test:(Expression __)? ";" __
+    update:(Expression __)?
+    ")" __
+    body:Statement
+    {
+      return {
+        type:   "ForStatement",
+        init:   {
+          type:         "VariableDeclaration",
+          declarations: declarations
+        },
+        test:   extractOptional(test, 0),
+        update: extractOptional(update, 0),
+        body:   body
+      };
+    }
+  / ForToken __
+    "(" __
+    left:LeftHandSideExpression __
+    InToken __
+    right:Expression __
+    ")" __
+    body:Statement
+    {
+      return {
+        type:  "ForInStatement",
+        left:  left,
+        right: right,
+        body:  body
+      };
+    }
+  / ForToken __
+    "(" __
+    VarToken __ declarations:VariableDeclarationListNoIn __
+    InToken __
+    right:Expression __
+    ")" __
+    body:Statement
+    {
+      return {
+        type:  "ForInStatement",
+        left:  {
+          type:         "VariableDeclaration",
+          declarations: declarations
+        },
+        right: right,
+        body:  body
+      };
+    }
+
+ContinueStatement
+  = ContinueToken EOS {
+      return { type: "ContinueStatement", label: null };
+    }
+  / ContinueToken _ label:Identifier EOS {
+      return { type: "ContinueStatement", label: label };
+    }
+
+BreakStatement
+  = BreakToken EOS {
+      return { type: "BreakStatement", label: null };
+    }
+  / BreakToken _ label:Identifier EOS {
+      return { type: "BreakStatement", label: label };
+    }
+
+ReturnStatement
+  = ReturnToken EOS {
+      return { type: "ReturnStatement", argument: null };
+    }
+  / ReturnToken _ argument:Expression EOS {
+      return { type: "ReturnStatement", argument: argument };
+    }
+
+WithStatement
+  = WithToken __ "(" __ object:Expression __ ")" __
+    body:Statement
+    { return { type: "WithStatement", object: object, body: body }; }
+
+SwitchStatement
+  = SwitchToken __ "(" __ discriminant:Expression __ ")" __
+    cases:CaseBlock
+    {
+      return {
+        type:         "SwitchStatement",
+        discriminant: discriminant,
+        cases:        cases
+      };
+    }
+
+CaseBlock
+  = "{" __ clauses:(CaseClauses __)? "}" {
+      return optionalList(extractOptional(clauses, 0));
+    }
+  / "{" __
+    before:(CaseClauses __)?
+    default_:DefaultClause __
+    after:(CaseClauses __)? "}"
+    {
+      return optionalList(extractOptional(before, 0))
+        .concat(default_)
+        .concat(optionalList(extractOptional(after, 0)));
+    }
+
+CaseClauses
+  = first:CaseClause rest:(__ CaseClause)* { return buildList(first, rest, 1); }
+
+CaseClause
+  = CaseToken __ test:Expression __ ":" consequent:(__ StatementList)? {
+      return {
+        type:       "SwitchCase",
+        test:       test,
+        consequent: optionalList(extractOptional(consequent, 1))
+      };
+    }
+
+DefaultClause
+  = DefaultToken __ ":" consequent:(__ StatementList)? {
+      return {
+        type:       "SwitchCase",
+        test:       null,
+        consequent: optionalList(extractOptional(consequent, 1))
+      };
+    }
+
+LabelledStatement
+  = label:Identifier __ ":" __ body:Statement {
+      return { type: "LabeledStatement", label: label, body: body };
+    }
+
+ThrowStatement
+  = ThrowToken _ argument:Expression EOS {
+      return { type: "ThrowStatement", argument: argument };
+    }
+
+TryStatement
+  = TryToken __ block:Block __ handler:Catch __ finalizer:Finally {
+      return {
+        type:      "TryStatement",
+        block:     block,
+        handler:   handler,
+        finalizer: finalizer
+      };
+    }
+  / TryToken __ block:Block __ handler:Catch {
+      return {
+        type:      "TryStatement",
+        block:     block,
+        handler:   handler,
+        finalizer: null
+      };
+    }
+  / TryToken __ block:Block __ finalizer:Finally {
+      return {
+        type:      "TryStatement",
+        block:     block,
+        handler:   null,
+        finalizer: finalizer
+      };
+    }
+
+Catch
+  = CatchToken __ "(" __ param:Identifier __ ")" __ body:Block {
+      return {
+        type:  "CatchClause",
+        param: param,
+        body:  body
+      };
+    }
+
+Finally
+  = FinallyToken __ block:Block { return block; }
+
+DebuggerStatement
+  = DebuggerToken EOS { return { type: "DebuggerStatement" }; }
+
+/* ----- A.5 Functions and Programs ----- */
+
+FunctionDeclaration
+  = FunctionToken __ id:Identifier __
+    "(" __ params:(FormalParameterList __)? ")" __
+    "{" __ body:FunctionBody __ "}"
+    {
+      return {
+        type:   "FunctionDeclaration",
+        id:     id,
+        params: optionalList(extractOptional(params, 0)),
+        body:   body
+      };
+    }
+
+FunctionExpression
+  = FunctionToken __ id:(Identifier __)?
+    "(" __ params:(FormalParameterList __)? ")" __
+    "{" __ body:FunctionBody __ "}"
+    {
+      return {
+        type:   "FunctionExpression",
+        id:     extractOptional(id, 0),
+        params: optionalList(extractOptional(params, 0)),
+        body:   body
+      };
+    }
+
+FormalParameterList
+  = first:Identifier rest:(__ "," __ Identifier)* {
+      return buildList(first, rest, 3);
+    }
+
+FunctionBody
+  = statementList:StatementList {
+      return {
+        type: "FunctionBody",
+        statementList: statementList
+      };
+    }
+
+Validator
+   = "validator" __ "=" __ validator:StringLiteral {
+      return {
+        type: "Validator",
+        text: validator
+      };
+    }
+
+Optional
+   = "optional"{
+      return {
+        type: "Optional"
+      };
+    }
+
+Default
+   = "default" __ "=" __ def:StringLiteral {
+      return {
+        type: "Default",
+        text: def
+      };
+    }
+
+QualifiedName
+  = first:$Identifier rest:$('.' Identifier)* {
+    return first.concat(JSON.stringify(rest).replace(/['"]+/g, ''));
+  }
+
+/* ----- A.6 Universal Resource Identifier Character Classes ----- */
+
+/* Irrelevant. */
+
+/* ----- A.7 Regular Expressions ----- */
+
+/* Irrelevant. */
+
+/* ----- A.8 JSON ----- */
+
+/* Irrelevant. */
+
+/* Tokens */
+QueryToken      = "query"      !IdentifierPart
 
 SelectToken     = "SELECT"     !IdentifierPart
 FromToken       = "FROM"       !IdentifierPart
@@ -432,41 +1349,6 @@ GTEToken        = ">="
 // ExistsToken     = "EXISTS"     !IdentifierPart
 // SizeToken       = "SIZE"       !IdentifierPart
 
-/* Skipped */
-
-__
-  = (WhiteSpace / LineTerminatorSequence / Comment)*
-
-_
-  = (WhiteSpace / MultiLineCommentNoLineTerminator)*
-
-/* Automatic Semicolon Insertion */
-
-EOS
-  = __ ";"
-  / _ SingleLineComment? LineTerminatorSequence
-  / _ &"}"
-  / __ EOF
-
-EOF
-  = !.
-
-QualifiedName
-  = first:$Identifier rest:$('.' Identifier)* {
-    return first.concat(JSON.stringify(rest).replace(/['"]+/g, ''));
-  }
-
-/* ----- A.6 Universal Resource Identifier Character Classes ----- */
-
-/* Irrelevant. */
-
-/* ----- A.7 Regular Expressions ----- */
-
-/* Irrelevant. */
-
-/* ----- A.8 JSON ----- */
-
-/* Irrelevant. */
 
 /* ROOT OF GRAMMAR */
 Program
@@ -501,7 +1383,7 @@ FromSelectStatement
   = __ SelectToken
     __ resource:QualifiedName
     __ from:FromToken __ registry:QualifiedName
-    __ where:WhereExpr?
+    __ where:Predicate?
     __ orderBy:OrderBy?
     __ limit:Limit?
     __ skip:Skip? {
@@ -520,7 +1402,7 @@ FromSelectStatement
 SimpleSelectStatement
   = __ SelectToken
     __ resource:QualifiedName
-    __ where:WhereExpr? 
+    __ where:Predicate? 
     __ orderBy:OrderBy?
     __ limit:Limit?
     __ skip:Skip? {
@@ -603,39 +1485,16 @@ SortSingleField
       direction: direction
     };
   }
+
+Predicate
+ = WhereToken __ "(" __ test:Expression __ ")" __
+   {
+     return test;
+   }
   
-WhereExpr "where expression"
-  = WhereToken x:LogicExpr xs:LogicExprRest* {
-    return {
-      conditions: [x].concat(xs),
-      location: location()
-    };
-  }
-
-LogicExpr
-  = _ "(" _ x:LogicExpr xs:LogicExprRest* _ ")" _ {
-    return [x].concat(xs);
-  }
-  / _ left:Expr _ op:Operator _ right:Expr _ {
-    return {
-      left: left,
-      op: op,
-      right: right,
-      location: location()
-    };
-  }
-
-LogicExprRest
-  = _ j:Joiner _ l:LogicExpr {
-    return {
-      joiner: j,
-      expression: l
-    };
-  }
-
 Joiner
-  = OrToken
-  / AndToken
+  = OrToken { return "OR"; }
+  / AndToken { return "AND"; }
 
 Operator
   = NotEqualToken { return "!="; }
@@ -646,7 +1505,7 @@ Operator
   / GTEToken { return ">="; }
 
 Placeholder 
-  = _ "@" name:Identifier {
+  = _ "$" name:Identifier {
   return {
     type: "Placeholder",
     index: name,

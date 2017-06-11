@@ -15,32 +15,31 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
-const Where = require('../where');
 
 /**
- * Defines the ORDER BY specification for a SELECT statement
+ * Defines a sort on a field for an ORDER BY clause
  *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class OrderBy {
+class Sort {
 
     /**
-     * Create an OrderBy from an Abstract Syntax Tree. The AST is the
+     * Create a Sort from an Abstract Syntax Tree. The AST is the
      * result of parsing.
      *
-     * @param {Select} select - the Select for this order by
+     * @param {OrderBy} orderBy - the OrderBy for this sort by
      * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(select, ast) {
-        if(!select || !ast) {
-            throw new IllegalModelException('Invalid Select or AST');
+    constructor(orderBy, ast) {
+        if(!orderBy || !ast) {
+            throw new IllegalModelException('Invalid OrderBy or AST');
         }
 
         this.ast = ast;
-        this.select = select;
+        this.orderBy = orderBy;
         this.process();
     }
 
@@ -56,12 +55,12 @@ class OrderBy {
     }
 
     /**
-     * Returns the Select that owns this OrderBy.
+     * Returns the OrderBy that owns this Sort.
      *
-     * @return {Select} the owning Select
+     * @return {OrderBy} the owning OrderBy
      */
-    getSelect() {
-        return this.select;
+    getOrderBy() {
+        return this.orderBy;
     }
 
     /**
@@ -71,27 +70,14 @@ class OrderBy {
      * @private
      */
     process() {
-        this.resource = this.ast.resource;
+        this.propertyPath = this.ast.fieldName.name;
 
-        this.where = null;
-        if(this.ast.where) {
-            this.where = new Where(this.ast.where);
-        }
+        this.direction = 'ASC';
 
-        this.limit = null;
-        if(this.ast.limit) {
-            this.limit = this.ast.limit;
+        if(this.ast.direction) {
+            this.direction = this.ast.direction;
         }
-
-        this.skip = null;
-        if(this.ast.skip) {
-            this.skip = this.ast.skip;
-        }
-
-        this.orderBy = null;
-        if(this.ast.orderBy) {
-            this.orderBy = new OrderBy(this.ast.orderBy);
-        }
+        this.direction = this.ast.direction;
     }
 
     /**
@@ -104,12 +90,23 @@ class OrderBy {
     }
 
     /**
-     * Returns the FQN of the resource of this select.
+     * Returns the name of the property of the owning resource. This may be an dotted expression
+     * to navigate to sub-properties of the owning resource. E.g. x.y.z.
      *
-     * @return {string} the fully qualified name of the select
+     * @return {string} the navigation property
      */
-    getResource() {
-        return this.resource;
+    getPropertyPath() {
+        return this.propertyPath;
+    }
+
+    /**
+     * Returns the name of the property of the owning resource. This may be an dotted expression
+     * to navigate to sub-properties of the owning resource. E.g. x.y.z.
+     *
+     * @return {string} the navigation property
+     */
+    getDirection() {
+        return this.direction;
     }
 
     /**
@@ -125,4 +122,4 @@ class OrderBy {
     }
 }
 
-module.exports = OrderBy;
+module.exports = Sort;

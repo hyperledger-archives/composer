@@ -46,6 +46,7 @@ class QueryFile {
 
         try {
             this.ast = parser.parse(definitions);
+            console.log(JSON.stringify(this.ast));
         }
         catch(err) {
             if(err.location && err.location.start) {
