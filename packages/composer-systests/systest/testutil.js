@@ -82,7 +82,7 @@ class TestUtil {
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabricV1() {
-        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy() && process.env.npm_lifecycle_event === 'systest:hlfv1';
+        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy() && process.env.SYSTEST.match('^hlfv1');
     }
 
     /**
@@ -210,7 +210,6 @@ class TestUtil {
                 } else if (TestUtil.isHyperledgerFabric()) {
                     // hlf need to decide if v1 or 0.6
                     let keyValStore = path.resolve(homedir(), '.composer-credentials', 'composer-systests');
-                    let keyValStoreV1 = path.resolve(homedir(), '.hfc-key-store');
                     mkdirp.sync(keyValStore);
                     if (process.env.SYSTEST.match('^hlfv1')) {
                         if (process.env.SYSTEST.match('tls$')) {
@@ -220,20 +219,23 @@ class TestUtil {
                                 orderers: [
                                     {
                                         url: 'grpcs://localhost:7050',
-                                        cert: './hlfv1/tls/orderer/ca-cert.pem',
-                                        hostnameOverride: 'orderer0'
+                                        hostnameOverride: 'orderer.example.com',
+                                        cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/cacerts/example.com-cert.pem'
                                     }
                                 ],
-                                ca: 'https://localhost:7054',
+                                ca: {
+                                    url: 'https://localhost:7054',
+                                    name: 'ca-org1'
+                                },
                                 peers: [
                                     {
                                         requestURL: 'grpcs://localhost:7051',
                                         eventURL: 'grpcs://localhost:7053',
-                                        cert: './hlfv1/tls/peers/peer0/ca-cert.pem',
-                                        hostnameOverride: 'peer0'
+                                        hostnameOverride: 'peer0.org1.example.com',
+                                        cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/cacerts/org1.example.com-cert.pem'
                                     }
                                 ],
-                                keyValStore: keyValStoreV1,
+                                keyValStore: keyValStore,
                                 channel: 'mychannel',
                                 mspID: 'Org1MSP',
                                 deployWaitTime: '300',
@@ -304,6 +306,7 @@ class TestUtil {
                 return Promise.resolve();
             })
             .then(function () {
+                console.log('Called AdminConnection.importIdentity() ...');
                 console.log('Calling AdminConnection.connect() ...');
                 let user = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'Org1PeerAdmin' : 'admin';
                 let password = TestUtil.isHyperledgerFabric() && process.env.SYSTEST.match('^hlfv1') ? 'NOTNEEDED' : 'Xurw3yU9zI0l';

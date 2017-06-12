@@ -318,14 +318,12 @@ func (dataService *DataService) clearCollection(collectionID string) (err error)
 	for iterator.HasNext() {
 
 		// Read the current key.
-		// key, _, err := iterator.Next()
 		kv, err := iterator.Next()
 		if err != nil {
 			return err
 		}
 
 		// Delete the current key.
-		// err = dataService.Stub.DelState(key)
 		err = dataService.Stub.DelState(kv.Key)
 		if err != nil {
 			return err

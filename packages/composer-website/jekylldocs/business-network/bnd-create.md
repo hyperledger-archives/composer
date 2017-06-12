@@ -27,7 +27,7 @@ A description of the purpose of the business network using the Markdown mark-up 
 ## Package.json
 
 A Business Network Definition has a name (limited to basic ASCII alphanumeric characters and `-`), a human-readable description and a version number. The version number for the network should take the form Major.Minor.Micro and
-[Semantic Versioning](semver.org) principles should be used when incrementing the version number.
+[Semantic Versioning](http://semver.org) principles should be used when incrementing the version number.
 
 The identifier of the network is formed from its name, the `-` character and its version number. A valid identifier is therefore `mybusinessnetwork-0.6.3`.
 

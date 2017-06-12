@@ -18,7 +18,6 @@ import "github.com/hyperledger/fabric/core/chaincode/shim"
 import pb "github.com/hyperledger/fabric/protos/peer"
 import "os"
 import "strings"
-import "fmt"
 
 // enable logging based on either world state or env variable.
 // default to INFO if neither have a value.
@@ -71,12 +70,6 @@ func NewChaincode() (result *Chaincode) {
 func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.Response) {
 	//logging needs to be set here again as the fabric chaincode disables it
 	//even though it was enabled in main.
-    for _, e := range os.Environ() {
-        pair := strings.Split(e, "=")
-        fmt.Println(pair[0] + " ... " + pair[1])
-    }
-
-
 	EnableLogging(stub)
 	logger.Debug("Entering Chaincode.Init", &stub)
 	defer func() {

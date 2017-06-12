@@ -71,12 +71,13 @@ global.hfc = {
 
 
 const Client = require('fabric-client');
-const ConnectionManager = require('composer-common').ConnectionManager;
 const FabricCAClientImpl = require('fabric-ca-client');
-const HLFConnection = require('./hlfconnection');
-const HLFWalletProxy = require('./hlfwalletproxy');
 const Orderer = require('fabric-client/lib/Orderer');
 const Peer = require('fabric-client/lib/Peer');
+
+const ConnectionManager = require('composer-common').ConnectionManager;
+const HLFConnection = require('./hlfconnection');
+const HLFWalletProxy = require('./hlfwalletproxy');
 const Wallet = require('composer-common').Wallet;
 
 /**
@@ -102,7 +103,7 @@ class HLFConnectionManager extends ConnectionManager {
      * @return {Orderer} A new orderer.
      */
     static createOrderer(ordererURL, opts) {
-        return new Orderer(ordererURL, opts);
+        return new Orderer(ordererURL, opts);  //TODO: Change this
     }
 
     /**
@@ -275,7 +276,7 @@ class HLFConnectionManager extends ConnectionManager {
         } else if (!profileDefinition.peers.length) {
             throw new Error('No peer URLs have been specified in the connection profile');
         }  else if (!wallet && !profileDefinition.keyValStore) {
-            throw new Error('No key value store directory has been specified');
+            throw new Error('No key value store directory or wallet has been specified');
         } else if (!profileDefinition.ca) {
             throw new Error('The certificate authority URL has not been specified in the connection profile');
         } else if (!profileDefinition.channel) {
@@ -286,27 +287,83 @@ class HLFConnectionManager extends ConnectionManager {
     }
 
     /**
+     * link a wallet to the fabric-client store and cryptostore
+     * or use the fabric-clients default FileKeyValStore if no
+     * wallet specified.
+     *
+     * @param {Client} client the fabric-client
+     * @param {Wallet} wallet the wallet implementation or null/undefined
+     * @param {string} keyValStorePath a path for the fileKeyValStore to use or null/undefined if a wallet specified.
+     * @returns {Promise} resolves to a client configured with the required stores
+     *
+     * @memberOf HLFConnectionManager
+     */
+    _setupWallet(client, wallet, keyValStorePath) {
+        const method = '_setupWallet';
+        // If a wallet has been specified, then we want to use that.
+        //let result;
+        LOG.entry(method, client, wallet, keyValStorePath);
+
+        if (wallet) {
+            LOG.debug(method, 'A wallet has been specified, using wallet proxy');
+            return new HLFWalletProxy(wallet)
+                .then((store) => {
+                    let cryptostore = Client.newCryptoKeyStore(HLFWalletProxy, wallet);
+                    client.setStateStore(store);
+                    let cryptoSuite = Client.newCryptoSuite();
+                    cryptoSuite.setCryptoKeyStore(cryptostore);
+                    client.setCryptoSuite(cryptoSuite);
+                    return store;
+                })
+                .catch((error) => {
+                    LOG.error(method, error);
+                    let newError = new Error('error trying to setup a wallet. ' + error);
+                    throw newError;
+                });
+
+        } else {
+            // No wallet specified, so create a file based key value store.
+            LOG.debug(method, 'Using key value store', keyValStorePath);
+            return Client.newDefaultKeyValueStore({path: keyValStorePath})
+                .then((store) => {
+                    client.setStateStore(store);
+
+                    let cryptoSuite = Client.newCryptoSuite();
+                    cryptoSuite.setCryptoKeyStore(Client.newCryptoKeyStore({path: keyValStorePath}));
+                    client.setCryptoSuite(cryptoSuite);
+
+                    return store;
+                })
+                .catch((error) => {
+                    LOG.error(method, error);
+                    let newError = new Error('error trying to setup a keystore path. ' + error);
+                    throw newError;
+                });
+        }
+    }
+
+    /**
      * Import an identity into a profile wallet or keystore
      *
      * @param {object} profileDefinition the profile definition
      * @param {string} id the id to associate with the identity
-     * @param {string} signerCert the signer cert
+     * @param {string} publicKey the public key
      * @param {string} privateKey the private key
      * @returns {Promise} a promise
      *
      * @memberOf HLFConnectionManager
      */
-    importIdentity(profileDefinition, id, signerCert, privateKey) {
+    importIdentity(profileDefinition, id, publicKey, privateKey) {
         const method = 'importIdentity';
-        LOG.entry(method, profileDefinition, id, signerCert, privateKey);
+        LOG.entry(method, profileDefinition, id, publicKey, privateKey);
 
         // validate arguments
         if (!profileDefinition || typeof profileDefinition !== 'object') {
             throw new Error('profileDefinition not specified or not an object');
         } else if (!id || typeof id !== 'string') {
             throw new Error('id not specified or not a string');
-        } else if (!signerCert || typeof signerCert !== 'string') {
-            throw new Error('signerCert not specified or not a string');
+        } else if (!publicKey || typeof publicKey !== 'string') {
+            throw new Error('publicKey not specified or not a string');
         } else if (!privateKey || typeof privateKey !== 'string') {
             throw new Error('privateKey not specified or not a string');
         }
@@ -318,31 +375,25 @@ class HLFConnectionManager extends ConnectionManager {
         this.validateProfileDefinition(profileDefinition, wallet);
 
         let mspID = profileDefinition.mspID;
-
-        if (!wallet) {
-            let fileKeyStore = profileDefinition.keyValStore;
-
-            const client = HLFConnectionManager.createClient();
-            return Client.newDefaultKeyValueStore({path: fileKeyStore})
-                .then((store) => {
-                    client.setStateStore(store);
-                    client.newCryptoSuite(null, null, {
-                        path: fileKeyStore
-                    });
-                    return client.createUser({
-                        username: id,
-                        mspid: mspID,
-                        cryptoContent: {
-                            privateKeyPEM: privateKey,
-                            signedCertPEM: signerCert
-                        }
-                    });
-                })
-                .catch((error) => {
-                    LOG.error(method, error);
-                    throw error;
+        const client = HLFConnectionManager.createClient();
+        return this._setupWallet(client, wallet, profileDefinition.keyValStore)
+            .then(() => {
+                return client.createUser({
+                    username: id,
+                    mspid: mspID,
+                    cryptoContent: {
+                        privateKeyPEM: privateKey,
+                        signedCertPEM: publicKey
+                    }
                 });
-        }
+            })
+            .then(() => {
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
     }
 
     /**
@@ -390,7 +441,7 @@ class HLFConnectionManager extends ConnectionManager {
         const client = HLFConnectionManager.createClient();
 
         // Create a new channel instance.
-        const channel = client.newChain(connectOptions.channel);
+        const channel = client.newChannel(connectOptions.channel);
 
         // Load all of the orderers into the client.
         connectOptions.orderers.forEach((orderer) => {
@@ -405,51 +456,22 @@ class HLFConnectionManager extends ConnectionManager {
             channel.addPeer(HLFConnectionManager.parsePeer(peer, connectOptions.timeout, connectOptions.globalCert, eventHubDefs));
         });
 
-        // If a wallet has been specified, then we want to use that.
-        let result;
-        if (wallet) {
-            LOG.debug(method, 'A wallet has been specified, using wallet proxy');
-            let store = new HLFWalletProxy(wallet);
-            client.setStateStore(store);
-            // TODO: We need the cryptosuite to use the wallet.
-            result = Promise.resolve(store);
-        } else {
-            // No wallet specified, so create a file based key value store.
-            LOG.debug(method, 'Using key value store', connectOptions.keyValStore);
-            result = Client.newDefaultKeyValueStore({
-                path: connectOptions.keyValStore
-            })
-            .then((store) => {
-                client.setStateStore(store);
+        return this._setupWallet(client, wallet, connectOptions.keyValStore)
+            .then(() => {
 
-                // set up a default cryptosuite that uses the same location as the state store
-                client.newCryptoSuite(null, null, {
-                    path: connectOptions.keyValStore
-                });
-                return store;
+                // Create a CA client.
+                const caClient = HLFConnectionManager.parseCA(connectOptions.ca, client.getCryptoSuite());
+
+                // Now we can create the connection.
+                let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient);
+                LOG.exit(method, connection);
+                return connection;
+
             })
             .catch((error) => {
                 LOG.error(method, error);
-                let newError = new Error('error trying to setup a keystore or wallet. ' + error);
-                throw newError;
+                throw error;
             });
-        }
-
-        return result.then((store) => {
-
-            // Create a CA client.
-            const caClient = HLFConnectionManager.parseCA(connectOptions.ca, client.getCryptoSuite());
-
-            // Now we can create the connection.
-            let connection = new HLFConnection(this, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient);
-            LOG.exit(method, connection);
-            return connection;
-
-        }).catch((error) => {
-            LOG.error(method, error);
-            throw error;
-        });
-
     }
 }
 

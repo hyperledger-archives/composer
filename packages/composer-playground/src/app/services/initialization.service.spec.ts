@@ -113,7 +113,6 @@ describe('InitializationService', () => {
             stubLoadConfig.should.be.called;
             stubCreateInitialProfiles.should.be.called;
             stubCreateInitialIdentities.should.be.called;
-<<<<<<< HEAD
             mockConnectionProfileService.setCurrentConnectionProfile.should.not.have.been.called;
             mockClientService.ensureConnected.should.be.called;
         })));

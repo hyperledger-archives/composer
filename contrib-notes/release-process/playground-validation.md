@@ -95,6 +95,9 @@ From the initial logon, the user should be presented with the “Hello World” 
 
 ## Playground Test Areas
 
+### General
+Check that all page links are linking correctly (no 404s)
+
 ### Define Page (Side Navigation)
 The define page is used to manage files and file content. Through the side navigation menu it is possible to perform working file selection/creation, and lifecycle actions such as import, export and deploy.
 
@@ -130,6 +133,14 @@ Following from reset to basic sample network by import of the basic sample netwo
     - deploy button no longer active
     - All files previously visible remain in navigation
  - Repeat to add another script and model file
+ - Add a ReadMe file via the "AddFile" option and browsing to a ReadMe file on disc
+    - On selection the modal should indicate that a Readme file is to be imported
+    - On confirmation a warning modal should inform that the current readme will be overwritten
+    - On confirm, the existing readme should be replaced with that selected
+ - Add a ReadMe file via the "AddFile" option and drag/drop action of a ReadMe file on disc
+    - On selection the modal should indicate that a Readme file is to be imported
+    - On confirmation a warning modal should inform that the current readme will be overwritten
+    - On confirm, the existing readme should be replaced with that selected
  - On export, exported BNA should contain the newly added files (2 script, 2 model)
 
 ### Define Page (File-Editor)
