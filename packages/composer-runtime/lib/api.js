@@ -45,7 +45,8 @@ class Api {
             'getParticipantRegistry',
             'getCurrentParticipant',
             'post',
-            'emit'
+            'emit',
+            'queryNative',
         ];
     }
 
@@ -57,13 +58,13 @@ class Api {
      * @param {RegistryManager} registryManager The registry manager to use.
      * @param {HTTPService} httpService The http service to use.
      * @param {EventService} eventService The event service to use.
+     * @param {QueryService} queryService The query service to use.
      * @param {Context} context The transaction context.
      * @private
      */
-    constructor(factory, serializer, participant, registryManager, httpService, eventService, context) {
+    constructor(factory, serializer, participant, registryManager, httpService, eventService, queryService, context) {
         const method = 'constructor';
-        LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, context);
-
+        LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, queryService, context);
         /**
          * Get the factory. The factory can be used to create new instances of
          * assets, participants, and transactions for storing in registries. The
@@ -243,6 +244,36 @@ class Api {
             LOG.exit(method);
         };
 
+         /**
+         * Post a query string to a query service
+
+         * @method module:composer-runtime#query
+         * @public
+         * @param {string} queryString - The couchdb query string
+         * @return {Promise} A promise. The promise is resolved with the result of the query.
+         * @public
+         */
+        this.queryNative = function queryNative(queryString) {
+            const method = 'queryNative';
+            LOG.entry(method + 'queryString= ' + queryString);
+            return queryService.queryNative(queryString)
+                .then((resultArray) => {
+                    LOG.debug('**** typeof query result: ', typeof resultArray);
+                    LOG.debug('query result: ', resultArray);
+                    // result = JSON.parse(result);
+                    LOG.debug('query result as object: ', resultArray);
+
+                    // TODO (DCS) HACK, HACK -- the record is a string, convert to JS object
+                    for(let n=0;n < resultArray.length; n++) {
+                        const cur = resultArray[n];
+                        cur.Record = JSON.parse(cur.Record);
+                        resultArray[n] = cur;
+                    }
+
+                    LOG.exit(method);
+                    return resultArray;
+                });
+        };
         Object.freeze(this);
         LOG.exit(method);
     }

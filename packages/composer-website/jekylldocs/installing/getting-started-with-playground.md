@@ -35,7 +35,6 @@ The Online Playground can be accessed here: <a href="https://composer-playground
 
 Play around with any of the available samples however you like - clearing your browser local storage will effectively "reset" the Online Playground.  If you're looking for a more guided example of what Playground can do, try the [Playground Tutorial](../tutorials/playground-guide.html).
 
-
 ---
 
 ## Where do I go from here?
