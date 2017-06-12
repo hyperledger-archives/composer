@@ -109,6 +109,7 @@ describe('AddConnectionProfileComponent', () => {
     const KEY_VAL_STORE = 'kvs';
     const DEPLOY_TIME = 100;
     const WAIT_TIME = 999;
+    const TIMEOUT = 134;
     const CERT = 'cert';
     const CERT_PATH = 'certpath';
     const PEERS = ['peers'];
@@ -291,8 +292,7 @@ describe('AddConnectionProfileComponent', () => {
             ca: CA,
             peers: PEERS,
             keyValStore: KEY_VAL_STORE,
-            deployWaitTime: DEPLOY_TIME,
-            invokeWaitTime: WAIT_TIME,
+            timeout: TIMEOUT,
             channel: CHANNEL,
             mspID: MSPID,
         };
@@ -339,8 +339,7 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfileKeyValStore'].should.equal(KEY_VAL_STORE);
             component['addConnectionProfileChannel'].should.equal(CHANNEL);
             component['addConnectionProfileMspId'].should.equal(MSPID);
-            component['addConnectionProfileDeployWaitTime'].should.equal(DEPLOY_TIME);
-            component['addConnectionProfileInvokeWaitTime'].should.equal(WAIT_TIME);
+            component['addConnectionProfileTimeout'].should.equal(TIMEOUT);
             addMock.should.have.been.called;
         }));
 
@@ -447,7 +446,7 @@ describe('AddConnectionProfileComponent', () => {
 
     describe('#setV1Defaults', () => {
 
-        it('should create a new profile and set defaults for a v1 fabric', fakeAsync(() => {
+        it('should create a new profile and set defaults for a v1 fabric 1', fakeAsync(() => {
             let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
             component['connectionProfiles'] = [];
             component.setV1Defaults();
@@ -457,7 +456,7 @@ describe('AddConnectionProfileComponent', () => {
             verifyUnchangeableDefaults();
         }));
 
-        it('should create a new profile and set defaults for a v1 fabric', fakeAsync(() => {
+        it('should create a new profile and set defaults for a v1 fabric 2', fakeAsync(() => {
             let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
             component['connectionProfiles'] = [{name: 'New Connection Profile'}];
             component.setV1Defaults();
@@ -475,7 +474,8 @@ describe('AddConnectionProfileComponent', () => {
                 hostnameOverride: ''
             }]);
 
-            component['addConnectionProfileCertificateAuthority'].should.equal('http://localhost:7054');
+            component['addConnectionProfileCertificateAuthority'].url.should.equal('http://localhost:7054');
+            component['addConnectionProfileCertificateAuthority'].name.should.equal('');
             component['addConnectionProfilePeers'].should.deep.equal([{
                 requestURL: 'grpc://localhost:7051',
                 eventURL: 'grpc://localhost:7053',
@@ -485,8 +485,7 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfileKeyValStore'].should.equal('/tmp/keyValStore');
             component['addConnectionProfileChannel'].should.equal('mychannel');
             component['addConnectionProfileMspId'].should.equal('Org1MSP');
-            component['addConnectionProfileDeployWaitTime'].should.equal(300);
-            component['addConnectionProfileInvokeWaitTime'].should.equal(30);
+            component['addConnectionProfileTimeout'].should.equal(300);
         }
 
     });
@@ -527,6 +526,7 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfilePeers'] = PEERS;
             component['addConnectionProfileChannel'] = CHANNEL;
             component['addConnectionProfileMspId'] = MSPID;
+            component['addConnectionProfileTimeout'] = TIMEOUT;
         }));
 
         it('should deal with the version being 0.6 and a certificate', fakeAsync(() => {
@@ -561,9 +561,8 @@ describe('AddConnectionProfileComponent', () => {
                 profile: {
                     ca: CA,
                     channel: CHANNEL,
-                    deployWaitTime: DEPLOY_TIME,
+                    timeout: TIMEOUT,
                     description: DESC,
-                    invokeWaitTime: WAIT_TIME,
                     keyValStore: KEY_VAL_STORE,
                     mspID: MSPID,
                     orderers: [{url: 'orderers', cert: '', hostnameOverride: ''}],

@@ -19,6 +19,7 @@ const EmbeddedDataService = require('./embeddeddataservice');
 const EmbeddedIdentityService = require('./embeddedidentityservice');
 const EmbeddedEventService = require('./embeddedeventservice');
 const EmbeddedHTTPService = require('./embeddedhttpservice');
+const EmbeddedQueryService = require('./embeddedqueryservice');
 const EmbeddedScriptCompiler = require('./embeddedscriptcompiler');
 
 /**
@@ -80,6 +81,16 @@ class EmbeddedContext extends Context {
     }
 
     /**
+     * Get the event service provided by the chaincode container.
+     * @return {QueryService} The event service provided by the chaincode container.
+     */
+    getQueryService() {
+        if (!this.queryService) {
+            this.queryService = new EmbeddedQueryService();
+        }
+        return this.queryService;
+    }
+    /**
      * Get the script compiler.
      * @return {ScriptCompiler} scriptCompiler The script compiler.
      */
@@ -89,7 +100,6 @@ class EmbeddedContext extends Context {
         }
         return this.scriptCompiler;
     }
-
 }
 
 module.exports = EmbeddedContext;

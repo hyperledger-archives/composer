@@ -29,4 +29,5 @@ module.exports.HTTPService = require('./lib/httpservice');
 module.exports.EventService = require('./lib/eventservice');
 module.exports.IdentityService = require('./lib/identityservice');
 module.exports.LoggingService = require('./lib/loggingservice');
+module.exports.QueryService = require('./lib/queryservice');
 module.exports.ScriptCompiler = require('./lib/scriptcompiler');
