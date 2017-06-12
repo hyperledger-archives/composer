@@ -56,17 +56,17 @@ The development tools you'll need can all be installed with `npm install -g`.
 2. To install `generator-hyperledger-composer` run the following command:
 
         npm install -g generator-hyperledger-composer
-    The `generator-hyperledger-composer` is a yoeman plugin that creates bespoke applications for your business network.
+    The `generator-hyperledger-composer` is a Yeoman plugin that creates bespoke applications for your business network.
 
 3. To install `composer-rest-server` run the following command:
 
         npm install -g composer-rest-server
     The `composer-rest-server` uses the Hyperledger Composer LoopBack Connector to connect to a business network, extract the models and then present a page containing the REST APIs that have been generated for the model.
 
-4. To install `yoeman` run the following command:
+4. To install `Yeoman` run the following command:
 
         npm install -g yo
-    Yoeman is a tool for generating applications. When combined with the `generator-hyperledger-composer` component, it can interpret business networks and generate applications based on them.
+    Yeoman is a tool for generating applications. When combined with the `generator-hyperledger-composer` component, it can interpret business networks and generate applications based on them.
 
 ### Optional development tools
 

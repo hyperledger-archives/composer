@@ -1,5 +1,6 @@
 // Protractor conf file
 var os = require('os');
+var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
 exports.config = {
   allScriptsTimeout: 11000,
@@ -18,5 +19,9 @@ exports.config = {
     require('ts-node').register({
       project: './tsconfig.json'
     });
-  }
+  },
+  onPrepare: function(){
+    jasmine.getEnv().addReporter(new SpecReporter({displayStacktrace: 'all'}));
+ }
 }
+
