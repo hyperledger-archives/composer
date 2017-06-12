@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	duktape "gopkg.in/olebedev/go-duktape.v3"
@@ -68,73 +67,58 @@ func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) 
 	logger.Debug("Entering QueryService.queryNative", vm)
 	defer func() { logger.Debug("Exiting QueryService.queryNative", result) }()
 
-	vm.PushThis()                //[theQueryService]
-	vm.PushString("queryString") //[ theQueryService queryString ]
-	vm.GetProp(-2)               //[ theQueryService theQueryString ]
-
-	queryString := vm.RequireString(-1)
-	logger.Debug("QueryService.queryString", queryString)
-	vm.Pop() // [theQueryService]
+	// Validate the arguments from JavaScript.
+	queryString := vm.RequireString(0)
+	vm.RequireFunction(1) // callback
 
 	logger.Debug("QueryService.queryString is using this:", queryString)
 	resultsIterator, err := queryService.Stub.GetQueryResult(queryString)
 	if err != nil {
-		logger.Error("QueryService failed to get result interator", err)
-		vm.PushString("Error!")
-		return 1
+		vm.Dup(1)
+		vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
+		if vm.Pcall(1) == duktape.ExecError {
+			panic(err)
+		}
+		return 0
 	}
 	defer resultsIterator.Close()
 
 	logger.Debug("QueryService got an iterator", resultsIterator)
 
-	if err != nil {
-		logger.Debug("QueryService got an err?")
-		panic(err)
-	}
-
 	// buffer is a JSON array containing QueryRecords
-	var buffer bytes.Buffer
-	buffer.WriteString("[")
+	buffer := ""
+	buffer += "["
 
 	logger.Debug("QueryService before navigate the result")
-	bArrayMemberAlreadyWritten := false
+	arrIdx := vm.PushArray()
+	arrNum := uint(0)
 	for resultsIterator.HasNext() {
 		logger.Debug("QueryService inside Next()")
-		key, err := resultsIterator.Next()
+		objIdx := vm.PushObject()
+		current, err := resultsIterator.Next()
 		if err != nil {
-			panic(err)
+			vm.Dup(1)
+			vm.PushErrorObjectVa(duktape.ErrError, "%s", err.Error())
+			if vm.Pcall(1) == duktape.ExecError {
+				panic(err)
+			}
+			return 0
 		}
-		// Add a comma before array members, suppress it for the first array member
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
-		}
-		buffer.WriteString("{\"Key\":")
-		buffer.WriteString("\"")
-		buffer.WriteString(key.Key)
-		buffer.WriteString("\"")
-
-		logger.Debug("QueryService inside Next()", key.Key)
-
-		buffer.WriteString(", \"Record\":")
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(key.Value))
-		buffer.WriteString("}")
-		bArrayMemberAlreadyWritten = true
-	}
-	buffer.WriteString("]")
-
-	logger.Debug("QueryService return value ", buffer.String())
-
-	var jsonValue []byte
-	jsonValue, err = json.Marshal(buffer.String())
-	logger.Debug("QueryService return jsonValue", string(jsonValue))
-	if err != nil {
-		panic(err)
+		logger.Debug("returned key.Key = ", current.Key)
+		byteArray := []byte(current.Key)
+		withoutNull := bytes.Replace(byteArray, []byte("\x00"), []byte("|"), -1)
+		vm.PushString(string(withoutNull))
+		vm.PutPropString(objIdx, "Key")
+		vm.PushString(string(current.Value))
+		vm.PutPropString(objIdx, "Record")
+		vm.PutPropIndex(arrIdx, arrNum)
+		arrNum++
 	}
 
-	vm.PushString("Promise.resolve(" + string(jsonValue) + ")")
-	vm.Eval()
-
-	// return the top of the stack to the JS caller
-	return 1
+	// Call the callback.
+	vm.Dup(1)
+	vm.PushNull() // no error
+	vm.Dup(arrIdx)
+	vm.Pcall(2)
+	return 0
 }

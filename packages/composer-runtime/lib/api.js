@@ -251,19 +251,27 @@ class Api {
          * @public
          * @param {string} queryString - The couchdb query string
          * @return {Promise} A promise. The promise is resolved with the result of the query.
+         * @public
          */
         this.queryNative = function queryNative(queryString) {
             const method = 'queryNative';
             LOG.entry(method + 'queryString= ' + queryString);
             return queryService.queryNative(queryString)
-                .then((result) => {
-                    LOG.debug('query result=', result);
+                .then((resultArray) => {
+                    LOG.debug('**** typeof query result: ', typeof resultArray);
+                    LOG.debug('query result: ', resultArray);
+                    // result = JSON.parse(result);
+                    LOG.debug('query result as object: ', resultArray);
+
+                    // TODO (DCS) HACK, HACK -- the record is a string, convert to JS object
+                    for(let n=0;n < resultArray.length; n++) {
+                        const cur = resultArray[n];
+                        cur.Record = JSON.parse(cur.Record);
+                        resultArray[n] = cur;
+                    }
+
                     LOG.exit(method);
-                    return result;
-                })
-                .catch((err) => {
-                    LOG.debug('query caught exception =', err);
-                    LOG.exit(method);
+                    return resultArray;
                 });
         };
         Object.freeze(this);
