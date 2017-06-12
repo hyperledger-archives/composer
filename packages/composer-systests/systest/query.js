@@ -30,6 +30,7 @@ describe('Query system tests', function () {
     let businessNetworkDefinition;
     let admin;
     let client;
+    let scriptManager;
 
     before(function () {
         if(!TestUtil.isHyperledgerFabricV1()){
@@ -47,7 +48,7 @@ describe('Query system tests', function () {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
-            let scriptManager = businessNetworkDefinition.getScriptManager();
+            scriptManager = businessNetworkDefinition.getScriptManager();
             scriptManager.addScript(scriptManager.createScript(scriptFile.identifier, 'JS', scriptFile.contents));
         });
 
@@ -57,24 +58,71 @@ describe('Query system tests', function () {
                 return TestUtil.getClient('systest.query')
                     .then((result) => {
                         client = result;
-                        let factory = client.getBusinessNetwork().getFactory();
-                        let transaction = factory.newTransaction('org.fabric_composer.marbles', 'CreateMarble');
-                        transaction.marbleId = '1';
-                        transaction.email = 'mail1@1234';
-                        transaction.colour ='RED';
-                        transaction.size = 'SMALL';
-                        return client.submitTransaction(transaction);
                     });
             });
     });
 
+    /**
+     *
+     * create a list of marbles
+     * @return a promise to the created marbles
+     */
+    function addMarbles() {
+        let factory = client.getBusinessNetwork().getFactory();
+        let player = factory.newResource('org.fabric_composer.marbles', 'Player', 'fenglian@email.com');
+        player.firstName = 'Fenglian';
+        player.lastName = 'Xu';
 
-    it('should query a valid QueryMarbleByOwner', () => {
+        return client.getParticipantRegistry('org.fabric_composer.marbles.Player')
+        .then((participantRegistry) => {
+            return participantRegistry.add(player);
+        })
+        .then(() => {
+            return client.getAssetRegistry('org.fabric_composer.marbles.Marble');
+        })
+        .then((marbleAssetRegistry) => {
+            let factory = client.getBusinessNetwork().getFactory();
+            let promises = [];
+
+            for(let n=0;n<10;n++) {
+                const marble = factory.newResource('org.fabric_composer.marbles', 'Marble', 'Marble:' + n);
+                if(n % 2 === 0) {
+                    marble.colour ='RED';
+                    marble.size = 'SMALL';
+                }
+                else {
+                    marble.colour ='BLUE';
+                    marble.size = 'LARGE';
+                }
+
+                marble.owner = factory.newRelationship( 'org.fabric_composer.marbles', 'Player', 'fenglian@email.com');
+                promises.push(marbleAssetRegistry.add(marble));
+            }
+
+            return Promise.all(promises);
+        });
+    }
+
+
+    it('should sunmit a QueryMarbleByOwner transaction (TP function checks query results)', () => {
         this.timeout(1000); // Delay to prevent transaction failing
 
         let factory = client.getBusinessNetwork().getFactory();
-        let transaction = factory.newTransaction('org.fabric_composer.marbles', 'QueryMarbleByOwner');
 
-        return client.submitTransaction(transaction);
+        return addMarbles()
+        .then(() => {
+            return client.getParticipantRegistry('org.fabric_composer.marbles.Player');
+        })
+        .then((participantRegistry) => {
+            return participantRegistry.get('fenglian@email.com');
+        })
+        .then((player) => {
+            player.firstName.should.equal('Fenglian');
+            return;
+        })
+        .then(() => {
+            let transaction = factory.newTransaction('org.fabric_composer.marbles', 'QueryMarbleByOwner');
+            return client.submitTransaction(transaction);
+        });
     });
 });

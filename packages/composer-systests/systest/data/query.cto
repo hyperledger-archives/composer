@@ -17,7 +17,7 @@ enum MarbleSize {
 asset Marble identified by marbleId {
   o String marbleId
   o MarbleSize size
-  o MarbleColor color
+  o MarbleColor colour
   --> Player owner
 }
 
@@ -31,16 +31,6 @@ transaction TradeMarble identified by transactionId {
   o String transactionId
   --> Marble marble
   --> Player newOwner
-}
-
-transaction CreateMarble identified by transactionId {
-  o String transactionId
-  o String marbleId
-  o String email
-  o MarbleColor colour
-  o MarbleSize size
-  
-  
 }
 
 transaction QueryMarbleByOwner identified by transactionId {
