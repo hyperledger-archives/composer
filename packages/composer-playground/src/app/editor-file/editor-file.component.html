@@ -1,5 +1,5 @@
-<div class="readme" *ngIf="editorType === 'readme'" [innerHTML]="editorContent">
-</div>
+<perfect-scrollbar class="readme" *ngIf="editorType === 'readme'" [innerHTML]="editorContent">
+</perfect-scrollbar>
 
 <codemirror name="editorCodeMirror" *ngIf="editorType === 'code'" [(ngModel)]="editorContent" [config]="codeConfig"
             (ngModelChange)="onCodeChanged()" width="100%" height="100%" ngDefaultControl>

@@ -36,6 +36,13 @@ class MockEditorFileDirective {
     public editorFile;
 }
 
+@Directive({
+    selector: 'perfect-scrollbar'
+})
+
+class MockPerfectScrollBarDirective {
+}
+
 describe('EditorComponent', () => {
     let component: EditorComponent;
     let fixture: ComponentFixture<EditorComponent>;
@@ -81,7 +88,7 @@ describe('EditorComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditorComponent, MockEditorFileDirective],
+            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective ],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},

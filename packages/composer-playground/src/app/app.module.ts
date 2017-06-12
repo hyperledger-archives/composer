@@ -55,6 +55,7 @@ import { ViewCertificateComponent } from './view-certificate';
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
 import { FocusHereDirective } from './directives/focus-here';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
@@ -160,6 +161,7 @@ type StoreType = {
         HttpModule,
         RouterModule.forRoot(ROUTES, {useHash: false, preloadingStrategy: PreloadAllModules}),
         CodemirrorModule,
+        PerfectScrollbarModule,
         ModalModule.forRoot(),
         TooltipModule.forRoot(),
         NgbModule.forRoot(),
