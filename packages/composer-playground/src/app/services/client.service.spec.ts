@@ -876,4 +876,62 @@ describe('ClientService', () => {
             resetMock.should.have.been.called;
         })));
     });
+
+    describe('issueIdentity', () => {
+
+        it('should generate and return an identity using internally held state information', fakeAsync(inject([ClientService], (service: ClientService) => {
+            connectionProfileMock.getProfile.returns(Promise.resolve('bob'));
+            businessNetworkConMock.issueIdentity.returns(Promise.resolve({
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: undefined}
+            }));
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            service.issueIdentity('userId', 'uniqueName', {issuer: false, affiliation: undefined}).then((identity) => {
+                console.log('CAZ', identity);
+                let expected = {
+                    participant: 'uniqueName',
+                    userID: 'userId',
+                    options: {issuer: false, affiliation: undefined}
+                };
+                identity.should.deep.equal(expected);
+            });
+
+            tick();
+
+            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+            businessNetworkConnectionMock.should.have.been.called;
+        })));
+
+        it('should generate and return an identity, detecting blockchain.ibm.com URLs', fakeAsync(inject([ClientService], (service: ClientService) => {
+            connectionProfileMock.getProfile.returns(Promise.resolve({
+                membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
+                peerURL: 'peerURL\.blockchain\.ibm\.com',
+                eventHubURL: 'eventURL\.blockchain\.ibm\.com'
+            }));
+
+            businessNetworkConMock.issueIdentity.returns(Promise.resolve({
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: 'group1'}
+            }));
+
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            service.issueIdentity('userId', 'uniqueName', {issuer: false, affiliation: undefined}).then((identity) => {
+                let expected = {
+                    participant: 'uniqueName',
+                    userID: 'userId',
+                    options: {issuer: false, affiliation: 'group1'}
+                };
+                identity.should.deep.equal(expected);
+            });
+
+            tick();
+
+            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+            businessNetworkConnectionMock.should.have.been.called;
+        })));
+    });
 });

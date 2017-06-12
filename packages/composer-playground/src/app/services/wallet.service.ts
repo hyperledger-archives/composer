@@ -18,4 +18,8 @@ export class WalletService {
         return this.fileWallets.get(name);
     }
 
+    removeFromWallet(name: string, id: string): Promise<any> {
+        let wallet = this.getWallet(name);
+        return wallet.remove(id);
+    }
 }
