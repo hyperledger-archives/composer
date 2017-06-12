@@ -21,10 +21,11 @@ export class AddFileComponent {
     expandInput: boolean = false;
 
     maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.js', '.cto'];
+    supportedFileTypes: string[] = ['.js', '.cto', '.md'];
 
     addModelNamespace: string = 'org.acme.model';
-    addModelFileName: string = 'lib/org.acme.model';
+    addModelFileName: string = 'models/org.acme.model';
+    addModelPath: string = 'models/';
     addModelFileExtension: string = '.cto';
     addScriptFileName: string = 'lib/script';
     addScriptFileExtension: string = '.js';
@@ -63,6 +64,10 @@ export class AddFileComponent {
                     this.expandInput = true;
                     this.createModel(file, data);
                     break;
+                case 'md':
+                    this.expandInput = true;
+                    this.createReadme(data);
+                    break;
                 default:
                     throw new Error('Unexpected File Type');
             }
@@ -90,15 +95,23 @@ export class AddFileComponent {
     createScript(file: File, dataBuffer) {
         this.fileType = 'js';
         let scriptManager = this.businessNetwork.getScriptManager();
-        this.currentFile = scriptManager.createScript(file.name || this.addScriptFileName, 'JS', dataBuffer.toString());
+        let filename = file.name ? 'lib/' + file.name : this.addScriptFileName;
+        this.currentFile = scriptManager.createScript(filename, 'JS', dataBuffer.toString());
         this.currentFileName = this.currentFile.getIdentifier();
     }
 
     createModel(file: File, dataBuffer) {
         this.fileType = 'cto';
         let modelManager = this.businessNetwork.getModelManager();
-        this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name || this.addModelFileName);
+        let filename = file.name ? 'models/' + file.name : this.addModelFileName;
+        this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), filename);
         this.currentFileName = this.currentFile.getFileName();
+    }
+
+    createReadme(dataBuffer) {
+        this.fileType = 'md';
+        this.currentFile = dataBuffer.toString();
+        this.currentFileName = 'README.md';
     }
 
     fileRejected(reason: string) {
@@ -143,7 +156,7 @@ export class AddFileComponent {
 
 namespace ${newModelNamespace}`;
 
-            this.currentFile = new ModelFile(modelManager, code, newModelNamespace + this.addModelFileExtension);
+            this.currentFile = new ModelFile(modelManager, code, this.addModelPath + newModelNamespace + this.addModelFileExtension);
             this.currentFileName = this.currentFile.getFileName();
         }
     }

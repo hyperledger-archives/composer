@@ -307,8 +307,19 @@ li {
 
 .buttoncontainer  {
   margin-top: 3.5rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem;
   display: flex;
+
+}
+
+.readmore  {
+  margin-bottom: 2rem;
+  color: $white;
+  //display: flex;
+  a {
+    color: $white;
+    text-decoration: underline;
+  }
 
 }
 

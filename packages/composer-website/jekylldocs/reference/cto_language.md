@@ -20,6 +20,15 @@ in this namespace.
 2. Optional import declarations that import resources from other namespaces.
 3. A set of resource definitions (see below).
 
+### Imports
+
+Use the `import` keyword with a fully-qualified type name to import a type from another namespace. Alternatively use the `.*` notation to import all the types from another namespace.
+
+```
+import org.example.MyAsset
+import org.example2.*
+```
+
 ### Declarations of enumerated types
 
 ```
@@ -160,9 +169,9 @@ A relationship in the Composer language is a tuple composed of:
 3. The identifier of the instance being referenced
 
 Hence a relationship could be to:
-    org.acme.Vehicle#123456
+    org.example.Vehicle#123456
 
-This would be a relationship to the Vehicle type declared in the org.acme
+This would be a relationship to the Vehicle type declared in the org.example
 namespace with the identifier 123456.
 
 Relationships are unidirectional and deletes do not cascade, ie. removing the relationship has no impact on the thing that is being pointed to. Removing the thing being pointed to does not invalidate the relationship.

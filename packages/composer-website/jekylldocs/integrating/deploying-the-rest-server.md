@@ -45,7 +45,7 @@ The REST server can be configured using environment variables, instead of supply
               "deployWaitTime": 300,
               "invokeWaitTime": 30,
               "networks": {
-                "org.acme.biznet": "25e9c6abfdc8a081c218e773f2e513ee504ba9acb437d05fac7e08fa5c0d309d"
+                "org.example.biznet": "25e9c6abfdc8a081c218e773f2e513ee504ba9acb437d05fac7e08fa5c0d309d"
               }
             }
           }

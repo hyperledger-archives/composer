@@ -4,6 +4,7 @@ import { LocalStorageService } from 'angular-2-local-storage';
 import { AdminConnection } from 'composer-admin';
 
 import { WalletService } from './wallet.service';
+import { version } from '../../../package.json';
 
 @Injectable()
 export class ConnectionProfileService {
@@ -42,6 +43,7 @@ export class ConnectionProfileService {
 
     createDefaultProfile(): Promise<any> {
         // Check to see if the default connection profile exists.
+        console.log('Currently running version ' + version);
         console.log('Checking for $default connection profile');
         return this.getAdminConnection().getProfile('$default')
         .catch((error) => {

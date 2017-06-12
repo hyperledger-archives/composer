@@ -58,6 +58,9 @@ set-up-ssh --key "$encrypted_17b59ce72ad7_key" \
 # Change from HTTPS to SSH.
 ./.travis/fix_github_https_repo.sh
 
+# Test the GitHub deploy key.
+git ls-remote
+
 # Log in to Docker Hub.
 docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
 

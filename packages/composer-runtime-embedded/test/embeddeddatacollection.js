@@ -15,8 +15,8 @@
 'use strict';
 
 const DataCollection = require('composer-runtime').DataCollection;
-const DataService = require('composer-runtime').DataService;
 const EmbeddedDataCollection = require('..').EmbeddedDataCollection;
+const EmbeddedDataService = require('..').EmbeddedDataService;
 
 const chai = require('chai');
 chai.should();
@@ -31,7 +31,8 @@ describe('EmbeddedDataCollection', () => {
     let dataCollection;
 
     beforeEach(() => {
-        mockDataService = sinon.createStubInstance(DataService);
+        mockDataService = sinon.createStubInstance(EmbeddedDataService);
+        mockDataService.handleAction.resolves();
         mockDB = {
             objects: {
                 where: function () { },
@@ -141,6 +142,12 @@ describe('EmbeddedDataCollection', () => {
             })).resolves();
             return dataCollection.add(thing1.id, thing1.object)
                 .then(() => {
+                    sinon.assert.notCalled(dataCollection.db.objects.add);
+                    sinon.assert.calledOnce(mockDataService.handleAction);
+                    sinon.assert.calledWith(mockDataService.handleAction, sinon.match.func);
+                    return mockDataService.handleAction.args[0][0]();
+                })
+                .then(() => {
                     sinon.assert.calledOnce(dataCollection.db.objects.add);
                     sinon.assert.calledWith(dataCollection.db.objects.add, thing1);
                 });
@@ -162,6 +169,12 @@ describe('EmbeddedDataCollection', () => {
             })).resolves();
             return dataCollection.update(thing1.id, thing1.object)
                 .then(() => {
+                    sinon.assert.notCalled(dataCollection.db.objects.put);
+                    sinon.assert.calledOnce(mockDataService.handleAction);
+                    sinon.assert.calledWith(mockDataService.handleAction, sinon.match.func);
+                    return mockDataService.handleAction.args[0][0]();
+                })
+                .then(() => {
                     sinon.assert.calledOnce(dataCollection.db.objects.put);
                     sinon.assert.calledWith(dataCollection.db.objects.put, thing1);
                 });
@@ -176,6 +189,12 @@ describe('EmbeddedDataCollection', () => {
             let equalsStub = sinon.stub().withArgs(['thing1', 'doge']).returns({ delete: deleteStub });
             sinon.stub(dataCollection.db.objects, 'where').withArgs('[id+collectionId]').returns({ equals: equalsStub });
             return dataCollection.remove('thing1')
+                .then(() => {
+                    sinon.assert.notCalled(deleteStub);
+                    sinon.assert.calledOnce(mockDataService.handleAction);
+                    sinon.assert.calledWith(mockDataService.handleAction, sinon.match.func);
+                    return mockDataService.handleAction.args[0][0]();
+                })
                 .then(() => {
                     sinon.assert.calledOnce(deleteStub);
                 });

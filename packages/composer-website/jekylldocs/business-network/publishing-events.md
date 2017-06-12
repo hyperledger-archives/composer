@@ -42,6 +42,6 @@ This transaction creates and emits an event of the `BasicEvent` type as defined 
 ## What next?
 
 * [Subscribing to events](../applications/subscribing-to-events.html)
-* [Creating an application](../applications/genapp.html)
+* [Developing applications](../applications/applications-index.html)
 
 ---
