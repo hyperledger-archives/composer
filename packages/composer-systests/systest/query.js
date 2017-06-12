@@ -63,9 +63,8 @@ describe('Query system tests', function () {
     });
 
     /**
-     *
      * create a list of marbles
-     * @return a promise to the created marbles
+     * @return {Promise} a promise to the created marbles
      */
     function addMarbles() {
         let factory = client.getBusinessNetwork().getFactory();
