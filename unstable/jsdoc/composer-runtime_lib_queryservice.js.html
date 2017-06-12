@@ -100,6 +100,9 @@
 
 'use strict';
 
+const Logger = require('composer-common').Logger;
+const LOG = Logger.getLog('QueryService');
+
 /**
  * Base class representing the http service provided by a {@link Container}.
  * @protected
@@ -121,23 +124,20 @@ class QueryService {
      * @return {Promise} A promise that will be resolved with a {@link HttpResponse}
      */
     queryNative(queryString) {
-        return new Promise((resolve, reject) => {
-            this._queryNative(queryString, (error, result) => {
-                if (error) {
-                    return reject(error);
-                }
-                return resolve(result);
-            });
-        });
+        const method = 'queryNative';
+        LOG.entry(method, queryString);
+        this.queryString = queryString;
+        LOG.debug(method, queryString);
+
+        return this._queryNative();
     }
 
     /**
-     * Execute CouchDB queryString
+     * Post queryString
      * @abstract
-     * @param {string} queryString - the couchdb query string
-     * @param {callback} callback The callback function to call when complete.
+     * @param {commitCallback} callback The callback function to call when complete.
      */
-    _queryNative(queryString, callback) {
+    _queryNative() {
         throw new Error('abstract function called');
     }
 
