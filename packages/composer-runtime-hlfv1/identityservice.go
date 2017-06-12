@@ -79,8 +79,9 @@ func (identityService *IdentityService) getCurrentUserID(vm *duktape.Context) (r
 	}
 	//var ucert *x509.Certificate
 	logger.Debug("creator", string(creator))
-	//byte array below represents -----BEGIN CERTIFICATE-----
-	certStart := bytes.Index(creator,[]byte("----BEGIN CERTIFICATE----"))
+	//certStart := bytes.Index(creator,[]byte("----BEGIN CERTIFICATE----")) This doesn't work, must do it the way it is done here
+	//byte array below represents -----BEGIN CERTIFICATE-----	
+	certStart := bytes.Index(creator,[]byte{45,45,45,45,45,66,69,71,73,78,32,67,69,82,84,73,70,73,67,65,84,69,45,45,45,45,45})
 	if certStart == -1 {
 		logger.Debug("No certificate found")
 		vm.PushErrorObjectVa(duktape.ErrError, "%s", "No certificate found")
