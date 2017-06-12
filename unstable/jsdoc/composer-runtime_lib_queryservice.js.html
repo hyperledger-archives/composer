@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-runtime/index.js</title>
+	<title>Hyperledger Composer Source: composer-runtime/lib/queryservice.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-runtime/index.js</h1>
+		<h1 class="page-title">Source: composer-runtime/lib/queryservice.js</h1>
     
 <section>
     <article>
@@ -101,22 +101,56 @@
 'use strict';
 
 /**
- * The runtime module provides the API that is made available to transaction
- * processing functions.
- * @module composer-runtime
+ * Base class representing the http service provided by a {@link Container}.
+ * @protected
+ * @abstract
+ * @memberof module:composer-runtime
  */
+class QueryService {
 
-module.exports.Container = require('./lib/container');
-module.exports.Context = require('./lib/context');
-module.exports.DataCollection = require('./lib/datacollection');
-module.exports.DataService = require('./lib/dataservice');
-module.exports.Engine = require('./lib/engine');
-module.exports.HTTPService = require('./lib/httpservice');
-module.exports.EventService = require('./lib/eventservice');
-module.exports.IdentityService = require('./lib/identityservice');
-module.exports.LoggingService = require('./lib/loggingservice');
-module.exports.QueryService = require('./lib/queryservice');
-module.exports.ScriptCompiler = require('./lib/scriptcompiler');</pre>
+    /**
+     * Constructor.
+     */
+    constructor() {
+    }
+
+    /**
+     * HTTP POST of a typed instance to a URL. The instance is serialized to JSON
+     * and the JSON text is in the body of the HTTP POST.
+     * @param {string} queryString - the couchdb query string
+     * @return {Promise} A promise that will be resolved with a {@link HttpResponse}
+     */
+    queryNative(queryString) {
+        return new Promise((resolve, reject) => {
+            this._queryNative(queryString, (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+                return resolve(result);
+            });
+        });
+    }
+
+    /**
+     * Execute CouchDB queryString
+     * @abstract
+     * @param {string} queryString - the couchdb query string
+     * @param {callback} callback The callback function to call when complete.
+     */
+    _queryNative(queryString, callback) {
+        throw new Error('abstract function called');
+    }
+
+    /**
+     * Stop serialization of this object.
+     * @return {Object} An empty object.
+     */
+    toJSON() {
+        return {};
+    }
+}
+
+module.exports = QueryService;</pre>
     </article>
 </section>
 
