@@ -38,6 +38,28 @@ describe('QueryService', () => {
             queryService.queryNative(queryString);
             sinon.assert.calledWith(queryService._queryNative);
         });
+
+        it('should call _queryNative and handle an error', () => {
+            sinon.stub(queryService, '_queryNative').yields(new Error('error'), null);
+            return queryService.queryNative('mock query string' )
+                .then((result) => {
+                    throw new Error('should not get here');
+                })
+                .catch((error) => {
+                    error.should.match(/error/);
+                });
+        });
+
+        it('should call _queryNative and return a result', () => {
+            sinon.stub(queryService, '_queryNative').yields(null, Promise.resolve('dinkum'));
+            return queryService.queryNative('{\'selector\':{\'type\':\'Asset\'}}' )
+                .then((result) => {
+                    result.should.equal('dinkum');
+                })
+                .catch((error) => {
+                    throw new Error('should not get here');
+                });
+        });
     });
 
     describe('#_queryNative', () => {

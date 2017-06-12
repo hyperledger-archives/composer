@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package main
 
 import (
@@ -7,21 +21,11 @@ import (
 	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
 
-//https://github.com/hyperledger/fabric/blob/v1.0.0-alpha/core/chaincode/shim/interfaces.go
-
-// "github.com/hyperledger/fabric/core/chaincode/shim"
-
 // QueryService is a go wrapper around the QueryService JavaScript class
 type QueryService struct {
 	VM   *duktape.Context
 	Stub shim.ChaincodeStubInterface
 }
-
-// HTTPResponse is the response for a HTTP POST
-// type HTTPResponse struct {
-// 	StatusCode int 'json:StatusCode'
-// 	Body       string 'json:"body'
-// }
 
 // NewQueryService creates a Go Wrapper around a new instance of the QueryService JavaScript class
 func NewQueryService(vm *duktape.Context, context *Context, stub shim.ChaincodeStubInterface) (result *QueryService) {
@@ -62,16 +66,18 @@ func NewQueryService(vm *duktape.Context, context *Context, stub shim.ChaincodeS
 	return result
 }
 
-// HTTP POST to a URL and return the response to the caller
+// Execute a CouchDB query and returns the result to the caller
 func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) {
 	logger.Debug("Entering QueryService.queryNative", vm)
 	defer func() { logger.Debug("Exiting QueryService.queryNative", result) }()
 
-	// Validate the arguments from JavaScript.
+	// argument 0 is the CouchDB queryString
 	queryString := vm.RequireString(0)
-	vm.RequireFunction(1) // callback
+	logger.Debug("QueryService.queryNative CouchDB query: ", queryString)
 
-	logger.Debug("QueryService.queryString is using this:", queryString)
+	// argument 1 is the callback function (err,response)
+	vm.RequireFunction(1)
+
 	resultsIterator, err := queryService.Stub.GetQueryResult(queryString)
 	if err != nil {
 		vm.Dup(1)
@@ -83,17 +89,15 @@ func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) 
 	}
 	defer resultsIterator.Close()
 
-	logger.Debug("QueryService got an iterator", resultsIterator)
+	logger.Debug("QueryService.queryNative got an iterator", resultsIterator)
 
 	// buffer is a JSON array containing QueryRecords
 	buffer := ""
 	buffer += "["
 
-	logger.Debug("QueryService before navigate the result")
 	arrIdx := vm.PushArray()
 	arrNum := uint(0)
 	for resultsIterator.HasNext() {
-		logger.Debug("QueryService inside Next()")
 		objIdx := vm.PushObject()
 		current, err := resultsIterator.Next()
 		if err != nil {
@@ -104,12 +108,18 @@ func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) 
 			}
 			return 0
 		}
-		logger.Debug("returned key.Key = ", current.Key)
+
+		logger.Debug("Element index: ", arrNum)
+		logger.Debug("-- key.Key: ", current.Key)
+		logger.Debug("-- key.Value = ", string(current.Value))
+
+		// we have to remove nulls from the key (which delimit a compound key)
 		byteArray := []byte(current.Key)
 		withoutNull := bytes.Replace(byteArray, []byte("\x00"), []byte("|"), -1)
 		vm.PushString(string(withoutNull))
 		vm.PutPropString(objIdx, "Key")
 		vm.PushString(string(current.Value))
+		vm.JsonDecode(-1)
 		vm.PutPropString(objIdx, "Record")
 		vm.PutPropIndex(arrIdx, arrNum)
 		arrNum++
