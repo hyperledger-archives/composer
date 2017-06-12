@@ -12,7 +12,7 @@
   </div>
   <section class="modal-body">
     <span>Upload a file from your computer...</span>
-    <file-importer *ngIf="!expandInput" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
+    <file-importer *ngIf="!currentFile" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
                    [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-CTO_JS_Upload'"></file-importer>
     <div class="chosen-file" *ngIf="expandInput && currentFile">
       <div class="file-info">
