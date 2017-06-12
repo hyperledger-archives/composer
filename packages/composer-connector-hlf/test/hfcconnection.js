@@ -130,17 +130,28 @@ describe('HFCConnection', () => {
         });
 
         it('should enroll against the Hyperledger Fabric', function() {
-
+            const events = {
+                payload: {
+                    toString: () => {
+                        return '{"events": "events"}';
+                    }
+                }
+            };
+            connection.emit = sinon.stub();
             // Login to the Hyperledger Fabric using the mock hfc.
             let enrollmentID = 'doge';
             let enrollmentSecret = 'suchsecret';
             return connection
                 .login('doge', 'suchsecret')
                 .then(function(securityContext) {
+                    mockEventHub.registerChaincodeEvent.withArgs('123', 'composer', sinon.match.func).yield(events);
                     sinon.assert.calledOnce(mockChain.enroll);
                     sinon.assert.calledWith(mockChain.enroll, enrollmentID, enrollmentSecret);
                     sinon.assert.calledOnce(mockChain.setRegistrar);
                     sinon.assert.calledWith(mockChain.setRegistrar, mockMember);
+                    sinon.assert.calledOnce(mockEventHub.registerChaincodeEvent);
+                    sinon.assert.calledOnce(connection.emit);
+                    sinon.assert.calledWith(connection.emit, 'events', {'events':'events'});
                     securityContext.should.be.a.instanceOf(HFCSecurityContext);
                     securityContext.getEnrolledMember().should.equal(mockMember);
                     securityContext.getEventHub().should.equal(mockEventHub);

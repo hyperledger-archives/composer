@@ -33,20 +33,29 @@ class JavaScriptParser {
    * Create a JavaScriptParser.
    *
    * @param {string} fileContents - the text of the JS file to parse
-   * @param {boolean} includePrivates - if true methods tagged as private are also returned
+   * @param {boolean} [includePrivates] - if true methods tagged as private are also returned
+   * @param {number} [ecmaVersion] - the ECMAScript version to use
    */
-    constructor(fileContents, includePrivates) {
-        let comments = [],
-            tokens = [];
+    constructor(fileContents, includePrivates, ecmaVersion) {
+        let comments = [];
+        this.tokens = [];
 
-        let ast = acorn.parse(fileContents, {
+        let options =  {
             // collect ranges for each node
             ranges: true,
             // collect comments in Esprima's format
             onComment: comments,
             // collect token ranges
-            onToken: tokens
-        });
+            onToken: this.tokens,
+            // collect token locations
+            locations: true
+        };
+
+        if (ecmaVersion) {
+            options.ecmaVersion = ecmaVersion;
+        }
+
+        let ast = acorn.parse(fileContents, options);
 
         this.includes = [];
         this.classes = [];
@@ -173,7 +182,7 @@ class JavaScriptParser {
     /**
      * Return the includes that were extracted from the JS file.
      *
-     * @return {Object[]} information about each invlude
+     * @return {Object[]} information about each include
      */
     getIncludes() {
         return this.includes;
@@ -197,6 +206,14 @@ class JavaScriptParser {
         return this.functions;
     }
 
+    /**
+     * Return the tokens that were extracted from the JS file.
+     *
+     * @return {Object[]} information about each tokens
+     */
+    getTokens() {
+        return this.tokens;
+    }
 
     /**
      * Grab the text between a range

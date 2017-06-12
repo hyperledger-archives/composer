@@ -45,7 +45,7 @@ class Script {
             throw new Error('Empty script contents');
         }
 
-        const parser = new JavaScriptParser(this.contents);
+        const parser = new JavaScriptParser(this.contents, false, 5);
 
         const functions = parser.getFunctions();
 
@@ -56,6 +56,8 @@ class Script {
             functionDeclaration.validate();
             this.functions.push( functionDeclaration );
         }
+
+        this.tokens = parser.getTokens();
     }
 
     /**
@@ -109,6 +111,14 @@ class Script {
      */
     getFunctionDeclarations() {
         return this.functions;
+    }
+
+    /**
+     * Returns the tokens of the script
+     * @return {Object[]} the tokens of the script
+     */
+    getTokens() {
+        return this.tokens;
     }
 
     /**

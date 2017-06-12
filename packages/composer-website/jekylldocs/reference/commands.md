@@ -17,6 +17,8 @@ The {{site.data.conrefs.composer_full}} command line application can be installe
 
 `npm install -g composer-cli`
 
+*Please note: When using Ubuntu this command will fail when running in a root user shell.*
+
 ## Business Network Archives
 
 `composer archive create`
@@ -35,7 +37,7 @@ Deploy a Business Network Definition: [composer network deploy](./composer.netwo
 
 `composer network undeploy`
 
-Undeploy a Business Network Definition: [composer network undeploy](./composer.network.undeploy.md)
+Permanently disable a business network definition: [composer network undeploy](./composer.network.undeploy.md)
 
 `composer network list`
 
@@ -68,9 +70,3 @@ Revoke an identity from a participant: [composer identity revoke](./composer.ide
 `composer transaction submit`
 
 Submit a transaction for execution: [composer transaction submit](./composer.transaction.submit.md)
-
-## Development accelerators
-
-`composer generator tests`
-
-Generate tests for a Business Network Definition: [composer generator tests](./composer.generator.tests.md)

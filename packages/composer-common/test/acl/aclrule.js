@@ -45,7 +45,7 @@ describe('AclRule', () => {
             },
             variableName: null
         },
-        verb: 'DELETE',
+        verbs: ['DELETE'],
         participant: {
             type: 'Binding',
             qualifiedName: 'org.acme.Driver',
@@ -136,7 +136,7 @@ describe('AclRule', () => {
                     qualifiedName: 'org.acme.Car',
                     variableName: null
                 },
-                verb: 'ALL',
+                verbs: ['ALL'],
                 participant: 'ANY',
                 transaction: null,
                 predicate: 'true',
@@ -159,7 +159,7 @@ describe('AclRule', () => {
                     qualifiedName: 'org.acme.Car',
                     variableName: null
                 },
-                verb: 'ALL',
+                verbs: ['ALL'],
                 participant: 'ANY',
                 transaction: {
                     binding: {
@@ -188,7 +188,7 @@ describe('AclRule', () => {
                     qualifiedName: 'org.acme.Car',
                     variableName: null
                 },
-                verb: 'ALL',
+                verbs: ['ALL'],
                 participant: 'ANY',
                 transaction: {
                     variableBinding: {

@@ -9,7 +9,7 @@ class BusinessNetworkDefinition {
    + String getVersion() 
    + String getDescription() 
    + Promise fromArchive(Buffer) 
-   + Buffer toArchive() 
+   + Buffer toArchive(Object) 
    + Promise fromDirectory(String,Object,Object,boolean,boolean) 
    + Introspector getIntrospector() 
    + Factory getFactory() 
@@ -31,6 +31,7 @@ class Factory {
    + Resource newConcept(string,string,Object,boolean,string) throws ModelException
    + Relationship newRelationship(string,string,string) throws ModelException
    + Resource newTransaction(string,string,string,Object,string) 
+   + Resource newEvent(string,string,string,Object,string) 
    + Object toJSON() 
 }
 class FileWallet extends Wallet {

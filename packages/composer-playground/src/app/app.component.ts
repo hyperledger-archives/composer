@@ -3,7 +3,6 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AppState } from './app.service';
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
 import { AlertService } from './services/alert.service';
@@ -11,10 +10,8 @@ import { ConnectionProfileService } from './services/connectionprofile.service';
 import { WalletService } from './services/wallet.service';
 import { IdentityService } from './services/identity.service';
 import { InitializationService } from './services/initialization.service';
-import { BusyComponent } from './busy';
-import { ErrorComponent } from './error';
-import { ResetComponent } from './reset';
-import { SuccessComponent } from './success';
+import { BusyComponent } from './basic-modals/busy';
+import { ErrorComponent } from './basic-modals/error';
 import { WelcomeComponent } from './welcome';
 import { VersionCheckComponent } from './version-check/version-check.component.ts';
 import { LocalStorageService } from 'angular-2-local-storage';
@@ -52,8 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private busyModalRef = null;
 
-    constructor(public appState: AppState,
-                private route: ActivatedRoute,
+    constructor(private route: ActivatedRoute,
                 private router: Router,
                 private adminService: AdminService,
                 private clientService: ClientService,
@@ -75,9 +71,6 @@ export class AppComponent implements OnInit, OnDestroy {
             }),
             this.alertService.errorStatus$.subscribe((errorStatus) => {
                 this.onErrorStatus(errorStatus);
-            }),
-            this.adminService.connectionProfileChanged$.subscribe(() => {
-                this.updateConnectionData();
             }),
             this.route.queryParams.subscribe((queryParams) => {
                 this.queryParamsUpdated(queryParams);
@@ -175,15 +168,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    reset(): Promise<any> {
-        return this.modalService.open(ResetComponent).result.then((result) => {
-            if (result) {
-                window.location.reload();
-            }
-        });
-    }
-
-    private updateConnectionData(): Promise<any> {
+    updateConnectionData(): Promise<any> {
         let newConnectionProfiles = [];
         return this.adminService.getAdminConnection().getAllProfiles()
         .then((connectionProfiles) => {
@@ -204,7 +189,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    private onBusyStatus(busyStatus) {
+    onBusyStatus(busyStatus) {
         let currentConnectionProfile = this.connectionProfileService.getCurrentConnectionProfile();
         if (currentConnectionProfile === '$default') {
             // Don't show the modal for the web runtime, as it's too fast to care.
@@ -222,7 +207,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    private onErrorStatus(errorStatus) {
+    onErrorStatus(errorStatus) {
         if (errorStatus) {
             const modalRef = this.modalService.open(ErrorComponent);
             modalRef.componentInstance.error = errorStatus;

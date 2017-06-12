@@ -14,10 +14,13 @@
 
 'use strict';
 
+const Serializer = require('composer-common').Serializer;
 const Context = require('composer-runtime').Context;
 const DataService = require('composer-runtime').DataService;
 const Engine = require('composer-runtime').Engine;
 const IdentityService = require('composer-runtime').IdentityService;
+const EventService = require('composer-runtime').EventService;
+const HTTPService = require('composer-runtime').HTTPService;
 const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
 
@@ -27,15 +30,15 @@ const sinon = require('sinon');
 describe('WebContext', () => {
 
     let mockWebContainer;
-    let mockDataService;
+    let mockSerializer;
     let mockEngine;
 
     beforeEach(() => {
         mockWebContainer = sinon.createStubInstance(WebContainer);
-        mockDataService = sinon.createStubInstance(DataService);
+        mockWebContainer.getUUID.returns('d8f08eba-2746-4801-8318-3a7611aed45e');
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockWebContainer);
-        mockWebContainer.getDataService.returns(mockDataService);
+        mockSerializer = sinon.createStubInstance(Serializer);
     });
 
     describe('#constructor', () => {
@@ -64,6 +67,35 @@ describe('WebContext', () => {
             context.getIdentityService().getCurrentUserID().should.equal('bob1');
         });
 
+    });
+
+    describe('#getEventService', () => {
+
+        it('should return the container event service', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.getSerializer = sinon.stub().returns(mockSerializer);
+            context.getEventService().should.be.an.instanceOf(EventService);
+        });
+
+        it('should return this.eventService if it is set', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.eventService = {};
+            context.getEventService().should.deep.equal({});
+        });
+    });
+
+    describe('#getHTTPService', () => {
+
+        it('should return the container event service', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.getHTTPService().should.be.an.instanceOf(HTTPService);
+        });
+
+        it('should return this.httpService if it is set', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.httpService = {};
+            context.getHTTPService().should.deep.equal({});
+        });
     });
 
 });

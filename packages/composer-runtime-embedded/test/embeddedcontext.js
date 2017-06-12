@@ -14,12 +14,16 @@
 
 'use strict';
 
+const Serializer = require('composer-common').Serializer;
 const Context = require('composer-runtime').Context;
-const DataService = require('composer-runtime').DataService;
 const Engine = require('composer-runtime').Engine;
 const EmbeddedContainer = require('..').EmbeddedContainer;
 const EmbeddedContext = require('..').EmbeddedContext;
-const IdentityService = require('composer-runtime').IdentityService;
+const EmbeddedDataService = require('..').EmbeddedDataService;
+const EmbeddedEventService = require('..').EmbeddedEventService;
+const EmbeddedHTTPService = require('..').EmbeddedHTTPService;
+const EmbeddedIdentityService = require('..').EmbeddedIdentityService;
+const EmbeddedScriptCompiler = require('..').EmbeddedScriptCompiler;
 
 require('chai').should();
 const sinon = require('sinon');
@@ -27,15 +31,15 @@ const sinon = require('sinon');
 describe('EmbeddedContext', () => {
 
     let mockEmbeddedContainer;
-    let mockDataService;
+    let mockSerializer;
     let mockEngine;
 
     beforeEach(() => {
         mockEmbeddedContainer = sinon.createStubInstance(EmbeddedContainer);
-        mockDataService = sinon.createStubInstance(DataService);
+        mockEmbeddedContainer.getUUID.returns('d8f08eba-2746-4801-8318-3a7611aed45e');
         mockEngine = sinon.createStubInstance(Engine);
         mockEngine.getContainer.returns(mockEmbeddedContainer);
-        mockEmbeddedContainer.getDataService.returns(mockDataService);
+        mockSerializer = sinon.createStubInstance(Serializer);
     });
 
     describe('#constructor', () => {
@@ -51,7 +55,7 @@ describe('EmbeddedContext', () => {
 
         it('should return the container data service', () => {
             let context = new EmbeddedContext(mockEngine, 'bob1');
-            context.getDataService().should.be.an.instanceOf(DataService);
+            context.getDataService().should.be.an.instanceOf(EmbeddedDataService);
         });
 
     });
@@ -60,8 +64,55 @@ describe('EmbeddedContext', () => {
 
         it('should return the container identity service', () => {
             let context = new EmbeddedContext(mockEngine, 'bob1');
-            context.getIdentityService().should.be.an.instanceOf(IdentityService);
+            context.getIdentityService().should.be.an.instanceOf(EmbeddedIdentityService);
             context.getIdentityService().getCurrentUserID().should.equal('bob1');
+        });
+
+    });
+
+    describe('#getEventService', () => {
+
+        it('should return the container event service', () => {
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.getSerializer = sinon.stub().returns(mockSerializer);
+            context.getEventService().should.be.an.instanceOf(EmbeddedEventService);
+        });
+
+        it('should return the container event service if it is set', () => {
+            const mockEmbeddedEventService = sinon.createStubInstance(EmbeddedEventService);
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.eventService = mockEmbeddedEventService;
+            context.getEventService().should.equal(mockEmbeddedEventService);
+        });
+    });
+
+    describe('#getHTTPService', () => {
+
+        it('should return the container HTTP service', () => {
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.getHTTPService().should.be.an.instanceOf(EmbeddedHTTPService);
+        });
+
+        it('should return the container HTTP service if it is set', () => {
+            const mockEmbeddedHTTPService = sinon.createStubInstance(EmbeddedHTTPService);
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.httpService = mockEmbeddedHTTPService;
+            context.getHTTPService().should.equal(mockEmbeddedHTTPService);
+        });
+    });
+
+    describe('#getScriptCompiler', () => {
+
+        it('should return the container script compiler', () => {
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.getScriptCompiler().should.be.an.instanceOf(EmbeddedScriptCompiler);
+        });
+
+        it('should return the container script compiler if it is set', () => {
+            const mockEmbeddedScriptCompiler = sinon.createStubInstance(EmbeddedScriptCompiler);
+            const context = new EmbeddedContext(mockEngine, 'bob1');
+            context.scriptCompiler = mockEmbeddedScriptCompiler;
+            context.getScriptCompiler().should.equal(mockEmbeddedScriptCompiler);
         });
 
     });

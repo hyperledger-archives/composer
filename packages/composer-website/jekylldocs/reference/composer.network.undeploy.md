@@ -10,13 +10,15 @@ excerpt: Composer Network Undeploy CLI
 
 ---
 
-The `composer network undeploy` utility is used to undeploy a business network from a Hyperledger Fabric runtime.
+The `composer network undeploy` command **permanently disables a business network**. Once a business network has been undeployed, it cannot be redeployed.
+
+**Please Note**: When using the `undeploy` command with a business network running on {{site.data.conrefs.hlf_full}} v1.0, the business network remains running, but will become unresponsive. The business network **cannot be redeployed or updated once the `undeploy` command has been issued.** This is because the business network is already deployed, but has been set to be unresponsive.
 
 ```
 composer network undeploy -a <business-network-archive> -i <enrollment-id> -s <enrollment-secret>
 ```
 
-Note that after undeploy the business network definition can no longer be used, however the docker container
+Note that **after undeploy the business network definition can no longer be used**, however the docker container
 associated with the business network definition is still running. The docker container for the business network
 definition must be explicitly stopped and removed if no longer needed.
 

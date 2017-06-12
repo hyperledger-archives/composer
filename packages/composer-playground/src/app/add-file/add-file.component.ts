@@ -21,10 +21,11 @@ export class AddFileComponent {
     expandInput: boolean = false;
 
     maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.js', '.cto'];
+    supportedFileTypes: string[] = ['.js', '.cto', '.md'];
 
     addModelNamespace: string = 'org.acme.model';
-    addModelFileName: string = 'lib/org.acme.model';
+    addModelFileName: string = 'models/org.acme.model';
+    addModelPath: string = 'models/';
     addModelFileExtension: string = '.cto';
     addScriptFileName: string = 'lib/script';
     addScriptFileExtension: string = '.js';
@@ -63,6 +64,10 @@ export class AddFileComponent {
                     this.expandInput = true;
                     this.createModel(file, data);
                     break;
+                case 'md':
+                    this.expandInput = true;
+                    this.createReadme(data);
+                    break;
                 default:
                     throw new Error('Unexpected File Type');
             }
@@ -90,15 +95,23 @@ export class AddFileComponent {
     createScript(file: File, dataBuffer) {
         this.fileType = 'js';
         let scriptManager = this.businessNetwork.getScriptManager();
-        this.currentFile = scriptManager.createScript(file.name || this.addScriptFileName, 'JS', dataBuffer.toString());
+        let filename = file.name ? 'lib/' + file.name : this.addScriptFileName;
+        this.currentFile = scriptManager.createScript(filename, 'JS', dataBuffer.toString());
         this.currentFileName = this.currentFile.getIdentifier();
     }
 
     createModel(file: File, dataBuffer) {
         this.fileType = 'cto';
         let modelManager = this.businessNetwork.getModelManager();
-        this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), file.name || this.addModelFileName);
+        let filename = file.name ? 'models/' + file.name : this.addModelFileName;
+        this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), filename);
         this.currentFileName = this.currentFile.getFileName();
+    }
+
+    createReadme(dataBuffer) {
+        this.fileType = 'md';
+        this.currentFile = dataBuffer.toString();
+        this.currentFileName = 'README.md';
     }
 
     fileRejected(reason: string) {
@@ -115,33 +128,35 @@ export class AddFileComponent {
  */`;
             let scriptManager = this.businessNetwork.getScriptManager();
             let existingScripts = scriptManager.getScripts();
-            let filteredScripts = existingScripts.filter((script) => {
-                let pattern = new RegExp(this.addScriptFileName + '\\d*' + this.addScriptFileExtension);
-                return pattern.test(script.getIdentifier());
-            });
+            let increment = 0;
 
-            let numScripts;
-            numScripts = filteredScripts.length === 0 ? '' : filteredScripts.length;
-            this.currentFile = scriptManager.createScript(this.addScriptFileName + numScripts + this.addScriptFileExtension, 'JS', code);
+            let scriptName = this.addScriptFileName + this.addScriptFileExtension;
+
+            while ( existingScripts.findIndex((file) => file.getIdentifier() === scriptName) !== -1 ) {
+                scriptName = this.addScriptFileName + increment + this.addScriptFileExtension;
+                increment++;
+            }
+            this.currentFile = scriptManager.createScript(scriptName, 'JS', code);
             this.currentFileName = this.currentFile.getIdentifier();
         } else {
             let modelManager = this.businessNetwork.getModelManager();
             let existingModels = modelManager.getModelFiles();
-            let filteredModels = existingModels.filter((model) => {
-                let pattern = new RegExp(this.addModelFileName + '\\d*' + this.addModelFileExtension);
-                return pattern.test(model.getName());
-            });
+            let increment = 0;
 
-            let numModels = filteredModels.length === 0 ? '' : filteredModels.length;
+            let newModelNamespace = this.addModelNamespace;
+            while ( existingModels.findIndex((file) => file.getNamespace() === newModelNamespace) !== -1 ) {
+                newModelNamespace = this.addModelNamespace + increment;
+                increment++;
+            }
 
             let code =
                 `/**
  * New model file
  */
 
-namespace ${this.addModelNamespace + numModels}`;
+namespace ${newModelNamespace}`;
 
-            this.currentFile = new ModelFile(modelManager, code, this.addModelFileName + numModels + this.addModelFileExtension);
+            this.currentFile = new ModelFile(modelManager, code, this.addModelPath + newModelNamespace + this.addModelFileExtension);
             this.currentFileName = this.currentFile.getFileName();
         }
     }

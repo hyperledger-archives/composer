@@ -5,9 +5,10 @@ import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../services/alert.service';
+import { ReplaceComponent } from '../basic-modals/replace-confirm';
 
 import { BusinessNetworkDefinition } from 'composer-common';
-import { ErrorComponent } from '../error';
+import { ErrorComponent } from '../basic-modals/error';
 
 const fabricComposerOwner = 'hyperledger';
 const fabricComposerRepository = 'composer-sample-networks';
@@ -40,8 +41,7 @@ export class ImportComponent implements OnInit {
     private DESC = 'Start from scratch with a blank business network';
     private EMPTY_BIZNET = {name: this.NAME, description: this.DESC};
 
-    constructor(private adminService: AdminService,
-                private clientService: ClientService,
+    constructor(private clientService: ClientService,
                 public activeModal: NgbActiveModal,
                 public modalService: NgbModal,
                 private sampleBusinessNetworkService: SampleBusinessNetworkService,
@@ -53,33 +53,30 @@ export class ImportComponent implements OnInit {
         // TODO: try and do this when we close modal
         this.currentBusinessNetwork = null;
 
-        return this.adminService.ensureConnected()
-        .then(() => {
-            return this.clientService.ensureConnected();
-        })
-        .then(() => {
-            return this.sampleBusinessNetworkService.isOAuthEnabled();
-        })
-        .then((result) => {
-            this.oAuthEnabled = result;
-            if (result) {
-                return this.sampleBusinessNetworkService.getGithubClientId()
-                .then((clientId) => {
-                    if (!clientId) {
-                        // shouldn't get here as oauthEnabled should return false
-                        // if client id not set but just incase
-                        return this.activeModal.dismiss(
-                            new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID)
-                        );
-                    }
+        return this.clientService.ensureConnected(false)
+            .then(() => {
+                return this.sampleBusinessNetworkService.isOAuthEnabled();
+            })
+            .then((result) => {
+                this.oAuthEnabled = result;
+                if (result) {
+                    return this.sampleBusinessNetworkService.getGithubClientId()
+                        .then((clientId) => {
+                            if (!clientId) {
+                                // shouldn't get here as oauthEnabled should return false
+                                // if client id not set but just incase
+                                return this.activeModal.dismiss(
+                                    new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID)
+                                );
+                            }
 
-                    this.clientId = clientId;
+                            this.clientId = clientId;
+                            this.onShow();
+                        });
+                } else {
                     this.onShow();
-                });
-            } else {
-                this.onShow();
-            }
-        });
+                }
+            });
     }
 
     onShow() {
@@ -88,21 +85,20 @@ export class ImportComponent implements OnInit {
         if (this.gitHubAuthenticated) {
             return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner,
                 fabricComposerRepository)
-            .then((modelsInfo) => {
-                this.sampleNetworks = this.orderGitHubProjects(modelsInfo);
-                this.gitHubInProgress = false;
-            })
-            .catch((error) => {
+                .then((modelsInfo) => {
+                    this.sampleNetworks = this.orderGitHubProjects(modelsInfo);
+                    this.gitHubInProgress = false;
+                })
+                .catch((error) => {
 
-                if (error.message.includes('API rate limit exceeded')) {
-                    error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
-                }
+                    if (error.message.includes('API rate limit exceeded')) {
+                        error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
+                    }
 
-                this.gitHubInProgress = false;
+                    this.gitHubInProgress = false;
 
-                let modalRef = this.modalService.open(ErrorComponent);
-                modalRef.componentInstance.error = error;
-            });
+                    this.alertService.errorStatus$.next(error);
+                });
         }
     }
 
@@ -135,36 +131,48 @@ export class ImportComponent implements OnInit {
     }
 
     deploy() {
-        this.deployInProgress = true;
-        let deployPromise;
+        const confirmModalRef = this.modalService.open(ReplaceComponent);
+        confirmModalRef.componentInstance.mainMessage = 'Your Business Network Definition currently in the Playground will be removed & replaced.';
+        confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have exported any current model files in the Playground.';
+        confirmModalRef.result.then((result) => {
+            if (result === true) {
+                this.deployInProgress = true;
+                let deployPromise;
+                if (this.currentBusinessNetwork) {
+                    deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
+                } else {
+                    deployPromise = this.deployFromGitHub();
+                }
 
-        if (this.currentBusinessNetwork) {
-            deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
-        } else {
-            deployPromise = this.deployFromGitHub();
-        }
+                deployPromise.then(() => {
+                    this.deployInProgress = false;
+                    this.activeModal.close();
+                })
+                .catch((error) => {
+                    if (error.message.includes('API rate limit exceeded')) {
+                        error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
+                    }
 
-        deployPromise.then(() => {
-            this.deployInProgress = false;
-            this.activeModal.close();
+                    this.deployInProgress = false;
+                    this.alertService.busyStatus$.next(null);
+                    this.alertService.errorStatus$.next(error);
+                });
+
+                return deployPromise;
+            }
         })
         .catch((error) => {
-            if (error.message.includes('API rate limit exceeded')) {
-                error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
-            }
-
             this.deployInProgress = false;
-
-            let modalRef = this.modalService.open(ErrorComponent);
-            modalRef.componentInstance.error = error;
+            if (error && error !== 1) {
+                this.alertService.errorStatus$.next(error);
+            }
         });
-
-        return deployPromise;
     }
 
     deployFromGitHub(): Promise<any> {
 
-        if (this.chosenNetwork === this.NAME) {
+        if (this.chosenNetwork === this.NAME
+        ) {
             let readme = 'This is the readme file for the Business Network Definition created in Playground';
             let packageJson = {
                 name: 'unnamed-network',
@@ -232,17 +240,17 @@ export class ImportComponent implements OnInit {
         let fileReader = new FileReader();
         fileReader.onload = () => {
             let dataBuffer = Buffer.from(fileReader.result);
-            this.sampleBusinessNetworkService.getBusinessNetworkFromArchive(dataBuffer)
-            .then((businessNetwork) => {
-                this.currentBusinessNetwork = businessNetwork;
-                // needed for if browse file
-                this.expandInput = true;
-            })
-            .catch((error) => {
-                let failMessage = 'Cannot import an invalid Business Network Definition. Found ' + error.toString();
-                this.alertService.errorStatus$.next(failMessage);
-                this.expandInput = false;
-            });
+            this.clientService.getBusinessNetworkFromArchive(dataBuffer)
+                .then((businessNetwork) => {
+                    this.currentBusinessNetwork = businessNetwork;
+                    // needed for if browse file
+                    this.expandInput = true;
+                })
+                .catch((error) => {
+                    let failMessage = 'Cannot import an invalid Business Network Definition. Found ' + error.toString();
+                    this.alertService.errorStatus$.next(failMessage);
+                    this.expandInput = false;
+                });
         };
 
         fileReader.readAsArrayBuffer(file);

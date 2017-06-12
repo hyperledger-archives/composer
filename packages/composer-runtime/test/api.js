@@ -17,11 +17,15 @@
 const Api = require('../lib/api');
 const AssetRegistry = require('../lib/api/assetregistry');
 const Factory = require('../lib/api/factory');
+const Serializer = require('composer-common').Serializer;
 const ParticipantRegistry = require('../lib/api/participantregistry');
 const realFactory = require('composer-common').Factory;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
+const EventService = require('../lib/eventservice');
+const HTTPService = require('../lib/httpservice');
+const Context = require('../lib/context');
 
 const chai = require('chai');
 chai.should();
@@ -33,15 +37,32 @@ require('sinon-as-promised');
 describe('Api', () => {
 
     let mockFactory;
+    let mockSerializer;
     let mockParticipant;
     let mockRegistryManager;
+    let mockEventService;
+    let mockHTTPService;
+    let mockContext;
     let api;
 
     beforeEach(() => {
         mockFactory = sinon.createStubInstance(realFactory);
+        mockSerializer = sinon.createStubInstance(Serializer);
         mockParticipant = sinon.createStubInstance(Resource);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
-        api = new Api(mockFactory, mockParticipant, mockRegistryManager);
+        mockEventService = sinon.createStubInstance(EventService);
+        mockHTTPService = sinon.createStubInstance(HTTPService);
+        mockContext = sinon.createStubInstance(Context);
+        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockHTTPService, mockEventService, mockContext);
+    });
+
+    describe('#getMethodNames', () => {
+
+        it('should return a list of method names', () => {
+            const propertyNames = Object.getOwnPropertyNames(api);
+            Api.getMethodNames().should.deep.equal(propertyNames);
+        });
+
     });
 
     describe('#constructor', () => {
@@ -60,6 +81,14 @@ describe('Api', () => {
 
         it('should return the factory', () => {
             api.getFactory().should.be.an.instanceOf(Factory);
+        });
+
+    });
+
+    describe('#getSerializer', () => {
+
+        it('should return the serialzier', () => {
+            api.getSerializer().should.be.an.instanceOf(Serializer);
         });
 
     });
@@ -104,6 +133,62 @@ describe('Api', () => {
             api.getCurrentParticipant().should.equal(mockParticipant);
         });
 
+    });
+
+    describe('#post', () => {
+        let mockTransaction;
+
+        beforeEach(() => {
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockTransaction.getFullyQualifiedType.returns('much.wow');
+            mockHTTPService.post.resolves({foo : 'bar'});
+            mockSerializer.toJSON.withArgs(mockTransaction).onFirstCall().returns({
+                $class: 'org.doge.DogeTransaction',
+                assetId: 'doge1'
+            });
+        });
+
+        it('should make an POST request using the HTTP service', () => {
+            return api.post('url', mockTransaction)
+                .should.eventually.have.property('foo')
+                .then(() => {
+                    sinon.assert.calledOnce(mockSerializer.toJSON);
+                    sinon.assert.calledWith(mockSerializer.toJSON, mockTransaction, { convertResourcesToRelationships: true, permitResourcesForRelationships: true });
+                    sinon.assert.calledOnce(mockHTTPService.post);
+                    sinon.assert.calledWith(mockHTTPService.post, 'url', {
+                        $class: 'org.doge.DogeTransaction',
+                        assetId: 'doge1'
+                    });
+                });
+        });
+    });
+
+    describe('#emit', () => {
+        let mockTransaction;
+        let mockEvent;
+
+        beforeEach(() => {
+            mockTransaction = sinon.createStubInstance(Resource);
+            mockEvent = sinon.createStubInstance(Resource);
+            mockTransaction.getIdentifier.returns('much.wow');
+            mockContext.getTransaction.returns(mockTransaction);
+            mockContext.getEventNumber.returns(0);
+            mockSerializer.toJSON.withArgs(mockEvent).onFirstCall().returns({
+                $class: 'org.doge.DogeEvent',
+                assetId: 'doge1'
+            });
+        });
+
+        it('should emit the event using the event service', () => {
+            api.emit(mockEvent);
+            sinon.assert.calledOnce(mockSerializer.toJSON);
+            sinon.assert.calledWith(mockSerializer.toJSON, mockEvent, { convertResourcesToRelationships: true });
+            sinon.assert.calledOnce(mockEventService.emit);
+            sinon.assert.calledWith(mockEventService.emit, {
+                $class: 'org.doge.DogeEvent',
+                assetId: 'doge1'
+            });
+        });
     });
 
 });

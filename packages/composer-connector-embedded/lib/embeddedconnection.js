@@ -128,7 +128,7 @@ class EmbeddedConnection extends Connection {
      */
     constructor(connectionManager, connectionProfile, businessNetworkIdentifier) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
-        this.fabricDataService = new EmbeddedDataService();
+        this.dataService = new EmbeddedDataService(null, true);
     }
 
     /**
@@ -182,8 +182,8 @@ class EmbeddedConnection extends Connection {
         let engine = EmbeddedConnection.createEngine(container);
         EmbeddedConnection.addBusinessNetwork(businessNetwork.getName(), this.connectionProfile, chaincodeUUID);
         EmbeddedConnection.addChaincode(chaincodeUUID, container, engine);
-        let context = new EmbeddedContext(engine, userID);
-        return businessNetwork.toArchive()
+        let context = new EmbeddedContext(engine, userID, this);
+        return businessNetwork.toArchive({ date: new Date(545184000000) })
             .then((businessNetworkArchive) => {
                 return engine.init(context, 'init', [businessNetworkArchive.toString('base64')]);
             })
@@ -202,7 +202,7 @@ class EmbeddedConnection extends Connection {
      * artifacts have been updated, or rejected with an error.
      */
     update(securityContext, businessNetworkDefinition) {
-        return businessNetworkDefinition.toArchive()
+        return businessNetworkDefinition.toArchive({ date: new Date(545184000000) })
             .then((buffer) => {
                 return this.invokeChainCode(securityContext, 'updateBusinessNetwork', [buffer.toString('base64')]);
             });
@@ -246,7 +246,7 @@ class EmbeddedConnection extends Connection {
         let userID = securityContext.getUserID();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, userID);
+        let context = new EmbeddedContext(chaincode.engine, userID, this);
         return chaincode.engine.query(context, functionName, args)
             .then((data) => {
                 return Buffer.from(JSON.stringify(data));
@@ -265,7 +265,7 @@ class EmbeddedConnection extends Connection {
         let userID = securityContext.getUserID();
         let chaincodeUUID = securityContext.getChaincodeID();
         let chaincode = EmbeddedConnection.getChaincode(chaincodeUUID);
-        let context = new EmbeddedContext(chaincode.engine, userID);
+        let context = new EmbeddedContext(chaincode.engine, userID, this);
         return chaincode.engine.invoke(context, functionName, args)
             .then((data) => {
                 return undefined;
@@ -277,12 +277,12 @@ class EmbeddedConnection extends Connection {
      * @return {DataCollection} The data collection that stores identities.
      */
     getIdentities() {
-        return this.fabricDataService.existsCollection('identities')
+        return this.dataService.existsCollection('identities')
             .then((exists) => {
                 if (exists) {
-                    return this.fabricDataService.getCollection('identities');
+                    return this.dataService.getCollection('identities');
                 } else {
-                    return this.fabricDataService.createCollection('identities');
+                    return this.dataService.createCollection('identities');
                 }
             });
     }

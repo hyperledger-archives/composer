@@ -14,7 +14,7 @@
       </div>
       <div class="transaction-select-item">
         <div ngbDropdown class="d-inline-block">
-          <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle>{{selectedTransactionName}}</button>
+            <button type="button" class="action" id="dropdownMenu1" ngbDropdownToggle><span title="{{selectedTransactionName}}">{{selectedTransactionName}}</span></button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
             <button class="dropdown-item action " *ngFor="let transaction of transactionTypes"
                     (click)="onTransactionSelect(transaction)">{{transaction.getName()}}

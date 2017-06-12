@@ -44,6 +44,10 @@ describe('Factory', () => {
         transaction MyTransaction identified by transactionId {
             o String transactionId
             o String newValue
+        }
+        event MyEvent identified by eventId {
+            o String eventId
+            o String value
         }`);
         factory = new Factory(modelManager);
         sandbox = sinon.sandbox.create();
@@ -215,6 +219,45 @@ describe('Factory', () => {
             sinon.assert.calledWith(spy, 'org.acme.test', 'MyTransaction', '5604bdfe-7b96-45d0-9883-9c05c18fe638', { hello: 'world' });
         });
 
+    });
+
+    describe('#newEvent', () => {
+        it('should throw if ns not specified', () => {
+            (() => {
+                factory.newEvent(null, 'MyEvent');
+            }).should.throw(/ns not specified/);
+        });
+
+        it('should throw if type not specified', () => {
+            (() => {
+                factory.newEvent('org.acme.test', null);
+            }).should.throw(/type not specified/);
+        });
+
+        it('should throw if a non event type was specified', () => {
+            (() => {
+                factory.newEvent('org.acme.test', 'MyTransaction');
+            }).should.throw(/not an event/);
+        });
+
+        it('should create a new instance with a generated ID', () => {
+            let resource = factory.newEvent('org.acme.test', 'MyEvent');
+            resource.eventId.should.equal('valid');
+            resource.timestamp.should.be.an.instanceOf(Date);
+        });
+
+        it('should create a new instance with a specified ID', () => {
+            let resource = factory.newEvent('org.acme.test', 'MyEvent', 'MY_ID_1');
+            resource.eventId.should.equal('MY_ID_1');
+            resource.timestamp.should.be.an.instanceOf(Date);
+        });
+
+        it('should pass options onto newEvent', () => {
+            let spy = sandbox.spy(factory, 'newResource');
+            factory.newEvent('org.acme.test', 'MyEvent', null, { hello: 'world' });
+            sinon.assert.calledOnce(spy);
+            sinon.assert.calledWith(spy, 'org.acme.test', 'MyEvent', 'valid', { hello: 'world' });
+        });
     });
 
     describe('#toJSON', () => {

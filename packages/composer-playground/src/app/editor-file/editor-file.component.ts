@@ -67,6 +67,7 @@ export class EditorFileComponent {
             if (modelFile) {
                 this.editorContent = modelFile.getDefinitions();
                 this.editorType = 'code';
+                this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'model');
             } else {
                 this.editorContent = null;
             }
@@ -75,6 +76,7 @@ export class EditorFileComponent {
             if (script) {
                 this.editorContent = script.getContents();
                 this.editorType = 'code';
+                this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'script');
             } else {
                 this.editorContent = null;
             }
@@ -83,6 +85,7 @@ export class EditorFileComponent {
             if (aclFile) {
                 this.editorContent = aclFile.getDefinitions();
                 this.editorType = 'code';
+                this.currentError = this.clientService.validateFile(this._editorFile.id, this.editorContent, 'acl');
             } else {
                 this.editorContent = null;
             }
@@ -117,7 +120,6 @@ export class EditorFileComponent {
                 this.clientService.setBusinessNetworkPackageJson(packageObject);
                 this.clientService.businessNetworkChanged$.next(true);
             }
-
             this.currentError = this.clientService.updateFile(this._editorFile.id, this.editorContent, type);
         } catch (e) {
             this.currentError = e.toString();

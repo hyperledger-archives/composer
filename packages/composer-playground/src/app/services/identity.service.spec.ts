@@ -15,11 +15,16 @@ describe('IdentityService', () => {
     let mockLocalStorageService;
     let mockConnectionProfileService;
     let mockWalletService;
+    let mockFileWallet;
 
     beforeEach(() => {
         mockLocalStorageService = sinon.createStubInstance(LocalStorageService);
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockWalletService = sinon.createStubInstance(WalletService);
+
+        mockFileWallet = sinon.createStubInstance(FileWallet);
+        mockFileWallet.list.returns(Promise.resolve(['identity2', 'identity1']));
+        mockWalletService.getWallet.returns(mockFileWallet);
 
         TestBed.configureTestingModule({
             providers: [IdentityService,
@@ -47,15 +52,11 @@ describe('IdentityService', () => {
     describe('getIdentities', () => {
         it('should get identities', fakeAsync(inject([IdentityService], (service: IdentityService) => {
 
-            let stubFileWallet = sinon.createStubInstance(FileWallet);
-            stubFileWallet.list.returns(Promise.resolve(['identity2', 'identity1']));
-            mockWalletService.getWallet.returns(stubFileWallet);
-
             service.getIdentities("{'name':'profile','type': 'hlf'}").then((identities) => {
                 tick();
                 identities.should.deep.equal(['identity1', 'identity2']);
                 mockWalletService.getWallet.should.be.calledWith("{'name':'profile','type': 'hlf'}");
-                stubFileWallet.list.should.be.called;
+                mockFileWallet.list.should.be.called;
             });
 
             tick();

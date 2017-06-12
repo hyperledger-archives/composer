@@ -31,7 +31,7 @@ const connectorPackageJSON = require('../package.json');
 const originalVersion = connectorPackageJSON.version;
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
 require('sinon-as-promised');
@@ -92,6 +92,21 @@ describe('HLFConnection', () => {
 
     describe('#constructor', () => {
 
+        it('should subscribe to the eventHub and emit events', () => {
+            const events = {
+                payload: {
+                    toString: () => {
+                        return '"{"event":"event"}"';
+                    }
+                }
+            };
+            connection.emit = sandbox.stub();
+            mockEventHub.registerChaincodeEvent.withArgs('org.acme.biznet', 'composer', sinon.match.func).yield(events);
+            sinon.assert.calledOnce(mockEventHub.registerChaincodeEvent);
+            sinon.assert.calledWith(mockEventHub.registerChaincodeEvent, 'org.acme.biznet', 'composer', sinon.match.func);
+            sinon.assert.calledOnce(connection.emit);
+        });
+
         it('should throw if connectOptions not specified', () => {
             (() => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', null, mockClient, mockChain, mockEventHub, mockCAClient);
@@ -128,7 +143,6 @@ describe('HLFConnection', () => {
                 new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, [mockEventHub], null);
             }).should.throw(/caClient not specified/);
         });
-
     });
 
     describe('#getConnectionOptions', () => {
@@ -967,6 +981,7 @@ describe('HLFConnection', () => {
             mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then((result) => {
+                    should.equal(result, undefined);
                     sinon.assert.calledOnce(mockChain.sendTransactionProposal);
                     sinon.assert.calledWith(mockChain.sendTransactionProposal, {
                         //chaincodeId: 'org-acme-biznet', required for alpha2
@@ -1099,7 +1114,8 @@ describe('HLFConnection', () => {
             sandbox.stub(global, 'setTimeout').yields();
             // mockEventHub.registerTxEvent.yields();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .catch(() => {
+                .should.be.rejected
+                .then(() => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, connectOptions.invokeWaitTime * 1000);
                 });

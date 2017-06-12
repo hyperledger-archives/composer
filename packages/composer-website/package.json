@@ -1,6 +1,6 @@
 {
   "name": "composer-website",
-  "version": "0.7.3",
+  "version": "0.7.6",
   "private": true,
   "description": "Hyperledger Composer is a blockchain development framework for Hyperledger Fabric: a library of assets/functions for creating blockchain-based applications.",
   "engines": {
@@ -8,7 +8,6 @@
     "npm": ">=3"
   },
   "scripts": {
-    "install": "npm run doc",
     "doc": "npm run docpub && ./scripts/generate-uml.sh",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
@@ -29,10 +28,10 @@
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
   "devDependencies": {
-    "composer-admin": "^0.7.3",
-    "composer-client": "^0.7.3",
-    "composer-common": "^0.7.3",
-    "composer-runtime": "^0.7.3",
+    "composer-admin": "^0.7.6",
+    "composer-client": "^0.7.6",
+    "composer-common": "^0.7.6",
+    "composer-runtime": "^0.7.6",
     "jsdoc": "^3.4.3",
     "node-plantuml": "^0.5.0",
     "sanitize-html": "^1.14.1"

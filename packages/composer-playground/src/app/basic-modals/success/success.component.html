@@ -1,0 +1,18 @@
+<section class="container" *ngFor="let message of messages; let messagesIndex = index" @fadeInOut>
+    <button class="icon close" (click)="close(messagesIndex)">
+        <svg class="ibm-icon" aria-hidden="true">
+            <use xlink:href="#icon-close_new"></use>
+        </svg>
+    </button>
+    <div class="message">
+        <div>
+            <svg class="ibm-icon" aria-hidden="true">
+                <use [attr.xlink:href]="message.icon"></use>
+            </svg>
+        </div>
+        <div>
+            <div class="notification-title">{{message.title}}</div>
+            <p class="notification-text" [innerHTML]="message.text"></p>
+        </div>
+    </div>
+</section>

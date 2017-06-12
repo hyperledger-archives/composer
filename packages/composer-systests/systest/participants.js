@@ -32,12 +32,13 @@ describe('Participant system tests', function () {
     let client;
 
     before(function () {
+        // In this systest we are intentionally not fully specifying the model file with a fileName, and supplying undefined as the value
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/participants.cto'), 'utf8')
+            { fileName: undefined, contents: fs.readFileSync(path.resolve(__dirname, 'data/participants.cto'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.participants@0.0.1', 'The network for the participant system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
