@@ -13,8 +13,13 @@ sudo mv docker-compose /usr/local/bin
 echo "Docker-compose version: " 
 docker-compose --version
 
-# Update all packages (including docker)
+# Update docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-trusty main'
 sudo apt-get update
+sudo apt-get purge docker-engine
+sudo apt-get autoremove --purge docker-engine
+sudo apt-get install docker-ce
 echo "Docker version: " 
 docker --version
 
