@@ -13,9 +13,8 @@ sudo mv docker-compose /usr/local/bin
 echo "Docker-compose version: " 
 docker-compose --version
 
-# Update docker
+# Update all packages (including docker)
 sudo apt-get update
-sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 echo "Docker version: " 
 docker --version
 
