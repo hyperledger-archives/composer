@@ -76,7 +76,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.queryParamsUpdated(queryParams);
             }),
             this.router.events.filter((e) => e instanceof NavigationEnd).subscribe((e) => {
-                if (e.url === '/') {
+                if (e['url'] === '/') {
                     this.openWelcomeModal();
                 } else {
                     return this.checkVersion().then((success) => {
