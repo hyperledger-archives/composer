@@ -44,7 +44,7 @@ class WebEventService extends EventService {
     transactionCommit() {
         return super.transactionCommit()
             .then(() => {
-                const jsonEvent = JSON.parse(this.serializeBuffer());
+                const jsonEvent = this.getEvents();
                 this.eventSink.emit('events', jsonEvent);
             });
     }

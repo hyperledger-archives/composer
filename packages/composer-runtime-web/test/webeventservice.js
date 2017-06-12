@@ -50,10 +50,10 @@ describe('WebEventService', () => {
 
     describe('#transactionCommit', () => {
         it ('should emit a list of events', () => {
-            sinon.stub(eventService, 'serializeBuffer').returns('[{"event":"event"}]');
+            sinon.stub(eventService, 'getEvents').returns([{'event':'event'}]);
             return eventService.transactionCommit()
                 .then(() => {
-                    sinon.assert.calledOnce(eventService.serializeBuffer);
+                    sinon.assert.calledOnce(eventService.getEvents);
                     sinon.assert.calledOnce(mockEventEmitter.emit);
                     sinon.assert.calledWith(mockEventEmitter.emit, 'events', [{'event':'event'}]);
                 });

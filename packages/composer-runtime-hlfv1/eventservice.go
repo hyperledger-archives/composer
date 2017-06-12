@@ -71,14 +71,14 @@ func (eventService *EventService) transactionCommit(vm *duktape.Context) (result
 	// Validate the arguments from JavaScript.
 	vm.RequireFunction(0)
 
-	vm.PushThis()                           // [ theEventService ]
-	vm.GetPropString(-1, "serializeBuffer") // [ theEventService, serializeBuffer ]
-	vm.RequireFunction(-1)                  // [ theEventService, serializeBuffer ]
-	vm.Dup(-2)                              // [ theEventService, serializeBuffer, theEventService ]
-	vm.CallMethod(0)                        // [ theEventService, returnValue ]
-	vm.RequireObjectCoercible(-1)           // [ theEventService, returnValue ]
-	vm.JsonEncode(-1)                       // [ theEventService, returnValue ]
-	value := vm.RequireString(-1)           // [ theEventService, returnValue ]
+	vm.PushThis()                     // [ theEventService ]
+	vm.GetPropString(-1, "getEvents") // [ theEventService, getEvents ]
+	vm.RequireFunction(-1)            // [ theEventService, getEvents ]
+	vm.Dup(-2)                        // [ theEventService, getEvents, theEventService ]
+	vm.CallMethod(0)                  // [ theEventService, returnValue ]
+	vm.RequireObjectCoercible(-1)     // [ theEventService, returnValue ]
+	vm.JsonEncode(-1)                 // [ theEventService, returnValue ]
+	value := vm.RequireString(-1)     // [ theEventService, returnValue ]
 
 	if len(value) > 0 {
 		logger.Debug("Emitting event from EventService.transactionCommit", value)

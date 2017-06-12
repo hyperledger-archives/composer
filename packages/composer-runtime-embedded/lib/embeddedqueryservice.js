@@ -37,16 +37,12 @@ class EmbeddedQueryService extends QueryService {
 
     /**
      * Query the underlying world-state store using a store native query string.
+     * @abstract
      * @param {string} queryString - the native query string
      * @return {Promise} A promise that will be resolved with a JS object containing the results of the query
      */
     queryNative(queryString) {
-        const method = 'queryNative';
-        LOG.entry(method, queryString);
-        this.queryString = queryString;
-        LOG.debug(method, queryString);
-        // TODO (DCS) - we need an implementation!
-        return Promise.resolve({data: 'not implemented'});
+        throw new Error('The native query functionality is not available on this Blockchain platform');
     }
 }
 
