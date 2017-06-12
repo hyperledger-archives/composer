@@ -40,7 +40,7 @@ Transaction processor functions may optionally call the `getSerializer().fromJSO
 ```
 /**
  * Handle a POST transaction, calling Node-RED running on Bluemix
- * @param {org.acme.sample.PostTransaction} postTransaction - the transaction to be processed
+ * @param {org.example.sample.PostTransaction} postTransaction - the transaction to be processed
  * @transaction
  * @return {Promise} a promise that resolves when transaction processing is complete
  */
@@ -51,7 +51,7 @@ function handlePost(postTransaction) {
       .then(function (result) {
         // alert(JSON.stringify(result));
           postTransaction.asset.value = 'Count is ' + result.body.sum;
-          return getAssetRegistry('org.acme.sample.SampleAsset')
+          return getAssetRegistry('org.example.sample.SampleAsset')
           .then(function (assetRegistry) {
               return assetRegistry.update(postTransaction.asset);
           });

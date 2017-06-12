@@ -15,6 +15,7 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Container = require('../lib/container');
 const Context = require('../lib/context');
 const DataCollection = require('../lib/datacollection');
@@ -24,6 +25,8 @@ const Logger = require('composer-common').Logger;
 const LoggingService = require('../lib/loggingservice');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
+const ScriptCompiler = require('../lib/scriptcompiler');
+const ScriptManager = require('composer-common').ScriptManager;
 const version = require('../package.json').version;
 
 const chai = require('chai');
@@ -51,6 +54,11 @@ describe('Engine', () => {
         mockContainer.getVersion.returns(version);
         mockContext = sinon.createStubInstance(Context);
         mockContext.initialize.resolves();
+        mockContext.transactionStart.resolves();
+        mockContext.transactionPrepare.resolves();
+        mockContext.transactionCommit.resolves();
+        mockContext.transactionRollback.resolves();
+        mockContext.transactionEnd.resolves();
         mockDataService = sinon.createStubInstance(DataService);
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockContext.initialize.resolves();
@@ -140,8 +148,14 @@ describe('Engine', () => {
             let sysidentities = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').rejects();
             mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.getCollection.withArgs('$sysregistries').rejects();
             mockDataService.createCollection.withArgs('$sysregistries').resolves(sysregistries);
@@ -149,6 +163,8 @@ describe('Engine', () => {
             mockDataService.createCollection.withArgs('$sysidentities').resolves(sysidentities);
             mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
             mockRegistryManager.add.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+            sandbox.stub(Context, 'cacheBusinessNetwork');
+            sandbox.stub(Context, 'cacheCompiledScriptBundle');
             mockRegistryManager.createDefaults.resolves();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
@@ -158,8 +174,14 @@ describe('Engine', () => {
                     sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
                         return archive.compare(Buffer.from('hello world')) === 0;
                     }));
+                    sinon.assert.calledOnce(mockScriptCompiler.compile);
+                    sinon.assert.calledWith(mockScriptCompiler.compile, mockScriptManager);
                     sinon.assert.calledOnce(sysdata.add);
                     sinon.assert.calledWith(sysdata.add, 'businessnetwork', { data: 'aGVsbG8gd29ybGQ=', hash: 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c' });
+                    sinon.assert.calledOnce(Context.cacheBusinessNetwork);
+                    sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
+                    sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
+                    sinon.assert.calledWith(Context.cacheCompiledScriptBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
                     sinon.assert.calledWith(mockDataService.createCollection, '$sysregistries');
                     sinon.assert.calledWith(mockDataService.createCollection, '$sysidentities');
                     sinon.assert.calledOnce(mockRegistryManager.add);
@@ -167,18 +189,31 @@ describe('Engine', () => {
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
-                        businessNetworkDefinition: mockBusinessNetwork,
+                        businessNetworkDefinition: mockBusinessNetworkDefinition,
+                        compiledScriptBundle: mockCompiledScriptBundle,
                         sysregistries: sysregistries,
                         sysidentities: sysidentities
                     });
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
         it('should ignore existing system data collection', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             mockDataService.getCollection.withArgs('$sysregistries').rejects();
             mockDataService.createCollection.withArgs('$sysregistries').resolves();
@@ -189,6 +224,12 @@ describe('Engine', () => {
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysdata');
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -196,8 +237,14 @@ describe('Engine', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').rejects();
             mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             let sysregistries = sinon.createStubInstance(DataCollection);
             let sysidentities = sinon.createStubInstance(DataCollection);
@@ -211,18 +258,31 @@ describe('Engine', () => {
                     sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysregistries');
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
-                        businessNetworkDefinition: mockBusinessNetwork,
+                        businessNetworkDefinition: mockBusinessNetworkDefinition,
+                        compiledScriptBundle: mockCompiledScriptBundle,
                         sysregistries: sysregistries,
                         sysidentities: sysidentities
                     });
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
         it('should ignore existing system identities collection', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
             let sysregistries = sinon.createStubInstance(DataCollection);
             let sysidentities = sinon.createStubInstance(DataCollection);
@@ -236,10 +296,17 @@ describe('Engine', () => {
                     sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysidentities');
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
-                        businessNetworkDefinition: mockBusinessNetwork,
+                        businessNetworkDefinition: mockBusinessNetworkDefinition,
+                        compiledScriptBundle: mockCompiledScriptBundle,
                         sysregistries: sysregistries,
                         sysidentities: sysidentities
                     });
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -247,12 +314,24 @@ describe('Engine', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.rejects();
             mockDataService.createCollection.resolves(mockDataCollection);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
             mockRegistryManager.get.withArgs('Transaction', 'default').resolves();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
                     sinon.assert.neverCalledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -260,12 +339,26 @@ describe('Engine', () => {
             let mockDataCollection = sinon.createStubInstance(DataCollection);
             mockDataService.getCollection.rejects();
             mockDataService.createCollection.resolves(mockDataCollection);
-            let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetwork);
+            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
+            let mockScriptManager = sinon.createStubInstance(ScriptManager);
+            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
+            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
+            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
+            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
+            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
+            mockContext.getScriptCompiler.returns(mockScriptCompiler);
             mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
             mockRegistryManager.add.withArgs('Transaction', 'default').rejects();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
-                .should.be.rejected;
+                .should.be.rejected
+                .then(() => {
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.notCalled(mockContext.transactionPrepare);
+                    sinon.assert.notCalled(mockContext.transactionCommit);
+                    sinon.assert.calledOnce(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
         });
 
     });
@@ -308,11 +401,36 @@ describe('Engine', () => {
             }).should.throw(/Unsupported function "blahblahblah" with arguments "\[\]"/);
         });
 
-        it('should initialize the context', () => {
+        it('should initialize the context and call the function', () => {
             engine.test = sinon.stub().resolves();
             return engine.invoke(mockContext, 'test', [])
                 .then(() => {
                     sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
+        });
+
+        it('should handle an error from calling the function', () => {
+            engine.test = sinon.stub().rejects(new Error('ruhroh'));
+            return engine.invoke(mockContext, 'test', [])
+                .should.be.rejectedWith(/ruhroh/)
+                .then(() => {
+                    sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, false);
+                    sinon.assert.notCalled(mockContext.transactionPrepare);
+                    sinon.assert.notCalled(mockContext.transactionCommit);
+                    sinon.assert.calledOnce(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 
@@ -356,11 +474,36 @@ describe('Engine', () => {
             }).should.throw(/Unsupported function "blahblahblah" with arguments "\[\]"/);
         });
 
-        it('should initialize the context', () => {
+        it('should initialize the context and call the function', () => {
             engine.test = sinon.stub().resolves({});
             return engine.query(mockContext, 'test', [])
                 .then(() => {
                     sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, true);
+                    sinon.assert.calledOnce(mockContext.transactionPrepare);
+                    sinon.assert.calledOnce(mockContext.transactionCommit);
+                    sinon.assert.notCalled(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
+                });
+        });
+
+        it('should handle an error from calling the function', () => {
+            engine.test = sinon.stub().rejects(new Error('ruhroh'));
+            return engine.query(mockContext, 'test', [])
+                .should.be.rejectedWith(/ruhroh/)
+                .then(() => {
+                    sinon.assert.calledOnce(mockContext.initialize);
+                    sinon.assert.calledOnce(engine.test);
+                    sinon.assert.calledWith(engine.test, mockContext, []);
+                    sinon.assert.calledOnce(mockContext.transactionStart);
+                    sinon.assert.calledWith(mockContext.transactionStart, true);
+                    sinon.assert.notCalled(mockContext.transactionPrepare);
+                    sinon.assert.notCalled(mockContext.transactionCommit);
+                    sinon.assert.calledOnce(mockContext.transactionRollback);
+                    sinon.assert.calledOnce(mockContext.transactionEnd);
                 });
         });
 

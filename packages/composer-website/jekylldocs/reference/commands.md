@@ -70,9 +70,3 @@ Revoke an identity from a participant: [composer identity revoke](./composer.ide
 `composer transaction submit`
 
 Submit a transaction for execution: [composer transaction submit](./composer.transaction.submit.md)
-
-## Development accelerators
-
-`composer generator tests`
-
-Generate tests for a Business Network Definition: [composer generator tests](./composer.generator.tests.md)

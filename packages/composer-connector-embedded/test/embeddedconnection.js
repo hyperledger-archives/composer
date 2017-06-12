@@ -75,6 +75,7 @@ describe('EmbeddedConnection', () => {
 
         it('should construct a new connection', () => {
             connection.should.be.an.instanceOf(Connection);
+            connection.dataService.autocommit.should.be.true;
         });
 
     });
@@ -140,9 +141,7 @@ describe('EmbeddedConnection', () => {
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
             mockBusinessNetwork.getName.returns('testnetwork');
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             mockContainer.getUUID.returns('6eeb8858-eced-4a32-b1cd-2491f1e3718f');
             mockSecurityContext.getUserID.returns('bob1');
             sandbox.stub(EmbeddedConnection, 'createContainer').returns(mockContainer);
@@ -178,9 +177,7 @@ describe('EmbeddedConnection', () => {
         it('should update the business network', () => {
             let mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
             mockBusinessNetwork.toArchive.resolves(Buffer.from('aGVsbG8gd29ybGQ=', 'base64'));
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -199,9 +196,7 @@ describe('EmbeddedConnection', () => {
     describe('#undeploy', () => {
 
         it('should remove the business network', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -213,9 +208,7 @@ describe('EmbeddedConnection', () => {
         });
 
         it('should handle a duplicate removal of a business network', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -247,9 +240,7 @@ describe('EmbeddedConnection', () => {
     describe('#queryChainCode', () => {
 
         it('should call the engine query method', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -275,9 +266,7 @@ describe('EmbeddedConnection', () => {
     describe('#invokeChainCode', () => {
 
         it('should call the engine invoke method', () => {
-            let mockDataService = sinon.createStubInstance(DataService);
             let mockContainer = sinon.createStubInstance(EmbeddedContainer);
-            mockContainer.getDataService.returns(mockDataService);
             let mockEngine = sinon.createStubInstance(Engine);
             mockEngine.getContainer.returns(mockContainer);
             EmbeddedConnection.addBusinessNetwork('org.acme.Business', 'devFabric1', '6eeb8858-eced-4a32-b1cd-2491f1e3718f');
@@ -301,18 +290,18 @@ describe('EmbeddedConnection', () => {
 
     describe('#getIdentities', () => {
 
-        let mockFabricDataService;
+        let mockDataService;
         let mockIdentitiesDataCollection;
 
         beforeEach(() => {
-            connection.fabricDataService = mockFabricDataService = sinon.createStubInstance(DataService);
+            connection.dataService = mockDataService = sinon.createStubInstance(DataService);
             mockIdentitiesDataCollection = sinon.createStubInstance(DataCollection);
 
         });
 
         it('should create and return the identities collection if it does not exist', () => {
-            mockFabricDataService.existsCollection.withArgs('identities').resolves(false);
-            mockFabricDataService.createCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
+            mockDataService.existsCollection.withArgs('identities').resolves(false);
+            mockDataService.createCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
             return connection.getIdentities()
                .then((identities) => {
                    identities.should.equal(mockIdentitiesDataCollection);
@@ -320,8 +309,8 @@ describe('EmbeddedConnection', () => {
         });
 
         it('should return the existing identities collection if it already exists', () => {
-            mockFabricDataService.existsCollection.withArgs('identities').resolves(true);
-            mockFabricDataService.getCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
+            mockDataService.existsCollection.withArgs('identities').resolves(true);
+            mockDataService.getCollection.withArgs('identities').resolves(mockIdentitiesDataCollection);
             return connection.getIdentities()
                .then((identities) => {
                    identities.should.equal(mockIdentitiesDataCollection);

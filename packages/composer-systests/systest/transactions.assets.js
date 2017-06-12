@@ -34,14 +34,14 @@ describe('Transaction (asset specific) system tests', () => {
 
     before(function () {
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/transactions.assets.cto'), 'utf8')
+            { fileName: 'models/transactions.assets.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.assets.cto'), 'utf8') }
         ];
         const scriptFiles=  [
             { identifier: 'transactions.assets.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.assets.js'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions.assets@0.0.1', 'The network for the transaction (asset specific) system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();
@@ -556,6 +556,71 @@ describe('Transaction (asset specific) system tests', () => {
             })
             .then((assetRegistry) => {
                 return assetRegistry.get('stringAsset1');
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an asset add is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let transaction = factory.newTransaction('systest.transactions.assets', 'AssetAddIsAtomic');
+        return client
+            .submitTransaction(transaction)
+            .should.be.rejected
+            .then(() => {
+                return client.getAssetRegistry('systest.transactions.assets.SimpleStringAsset');
+            })
+            .then((assetRegistry) => {
+                return assetRegistry.exists('stringAsset1');
+            })
+            .then((exists) => {
+                exists.should.be.false;
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an asset update is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        asset.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.assets', 'AssetUpdateIsAtomic');
+        let assetRegistry;
+        return client
+            .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+            .then((assetRegistry_) => {
+                assetRegistry = assetRegistry_;
+                return assetRegistry.add(asset);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return assetRegistry.get('stringAsset1');
+            })
+            .then((asset) => {
+                asset.stringValue.should.equal('party parrot in hursley');
+            });
+    });
+
+    it('should submit and execute a transaction that validates that an asset remove is only committed if the transaction is', () => {
+        let factory = client.getBusinessNetwork().getFactory();
+        let asset = factory.newResource('systest.transactions.assets', 'SimpleStringAsset', 'stringAsset1');
+        asset.stringValue = 'party parrot in hursley';
+        let transaction = factory.newTransaction('systest.transactions.assets', 'AssetRemoveIsAtomic');
+        let assetRegistry;
+        return client
+            .getAssetRegistry('systest.transactions.assets.SimpleStringAsset')
+            .then((assetRegistry_) => {
+                assetRegistry = assetRegistry_;
+                return assetRegistry.add(asset);
+            })
+            .then(() => {
+                return client.submitTransaction(transaction);
+            })
+            .should.be.rejected
+            .then(() => {
+                return assetRegistry.exists('stringAsset1');
+            })
+            .then((exists) => {
+                exists.should.be.true;
             });
     });
 

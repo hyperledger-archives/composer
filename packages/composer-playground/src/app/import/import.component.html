@@ -38,7 +38,7 @@
           <div class="title">Files:</div>
           <ul>
             <li *ngFor="let modelFile of currentBusinessNetwork.getModelManager().getModelFiles()">
-              {{modelFile.getNamespace()}}.cto
+              {{modelFile.getFileName()}}
             </li>
             <li *ngFor="let scriptFile of currentBusinessNetwork.getScriptManager().getScripts()">
               {{scriptFile.getIdentifier()}}
@@ -90,14 +90,14 @@
             </div>
           </div>
         </div>
-        <div *ngIf="!gitHubInProgress" class="sample-network-list-container">
+        <perfect-scrollbar *ngIf="!gitHubInProgress" class="sample-network-list-container">
           <div class="sample-network-list" *ngFor=" let sampleNetwork of sampleNetworks; let networkIndex=index">
             <input id="sampleNetwork{{networkIndex}}" type="radio" name="sampleNetwork" [(ngModel)]="chosenNetwork"
                    value="{{sampleNetwork.name}}">
             <label class="radio-label" for="sampleNetwork{{networkIndex}}">{{sampleNetwork.name}}</label>
             <div class="description">{{sampleNetwork.description}}</div>
           </div>
-        </div>
+        </perfect-scrollbar>
       </div>
     </div>
   </section>

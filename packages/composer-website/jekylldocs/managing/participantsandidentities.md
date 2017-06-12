@@ -1,18 +1,19 @@
 ---
 layout: default
-title: Hyperledger Composer - Participants and Identities
+title: Participants and identities
 category: concepts
+section: managing
 sidebar: sidebars/managing.md
-excerpt: Business Network
+excerpt: Participants and identities are core concepts of Hyperledger Composer. A participant is a member of business networks and might represent individuals or organizations. Participants have identity documents which can be validated to prove their identity. For more information, see [**participants and identities**](../managing/participantsandidentities.html).
+index-order: 1
 ---
 
 # Participants and Identities
 
 ---
 
-A `Participant` is an actor in a business network. A participant might be an
-individual or an organization. A participant can create assets, and also exchange
-assets with other participants. A participant works with assets by submitting transactions.
+A `Participant` is an actor in a business network. A participant might be an individual or an organization. A participant can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.
+
 
 A participant has a set of `Identity` documents that can be validated to prove the
 identity of that participant. For example, an individual may have one or more of
@@ -53,17 +54,17 @@ function to use.
 
 ## Related Concepts
 
-[Business Network](../introduction/businessnetwork.html)
+[Business Network](../business-network/business-network-index.html)
 
 ## Related Tasks
 
-[Create a Business Domain Model](../business-network/model-define.html)  
-[Add a Participant](../managing/participant-add.html)  
-[Issue an Identity to a Participant](../managing/identity-issue.html)  
-[Revoke an Identity from a Participant](../managing/identity-revoke.html)
+[Create a Business Network Definition](../business-network/bnd-create.html)  
+[Add a Participant](participant-add.html)  
+[Issue an Identity to a Participant](identity-issue.html)  
+[Revoke an Identity from a Participant](identity-revoke.html)
 
 ## Related Reference
 
-[Participant add command](../reference/participant-add.html)  
-[Identity issue command](../reference/identity-issue.html)  
-[Identity revoke command](../reference/identity-revoke.html)  
+[Participant add command](../reference/composer.participant.add.html)  
+[Identity issue command](../reference/composer.identity.issue.html)  
+[Identity revoke command](../reference/composer.identity.revoke.html)  

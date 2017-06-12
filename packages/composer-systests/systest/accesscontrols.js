@@ -38,15 +38,16 @@ describe('Access control system tests', () => {
     let aliceCar, bobCar;
 
     before(function () {
+        // In this systest we are fully specifying the model file with a fileName and content
         const modelFiles = [
-            fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.cto'), 'utf8')
+            { fileName: 'models/accesscontrols.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.cto'), 'utf8')}
         ];
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/accesscontrols.js'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.accesscontrols@0.0.1', 'The network for the access controls system tests');
         modelFiles.forEach((modelFile) => {
-            businessNetworkDefinition.getModelManager().addModelFile(modelFile);
+            businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         scriptFiles.forEach((scriptFile) => {
             let scriptManager = businessNetworkDefinition.getScriptManager();

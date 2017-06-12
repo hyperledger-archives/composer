@@ -1,14 +1,16 @@
 ---
 layout: default
-title: Task - Enable OAuth with GitHub
+title: Enabling Playground OAuth with GitHub
 category: tasks
+section: managing
 sidebar: sidebars/managing.md
-excerpt: How to enable OAuth with GitHub
+excerpt: By [**enabling OAuth with GitHub**](../managing/github-oauth.html), you avoid an error if the GitHub rate limit is hit.
+index-order: 5
 ---
 
-# Enable OAuth with GitHub
+# Enabling Playground OAuth with GitHub
 
-To enable importing of samples without receiving an error when the rate limit is hit follow these steps.
+To enable importing of samples into a local instance of Playground without receiving an error when the rate limit is hit follow these steps.
 
 1. Go to [GitHub OAuth Applications](https://github.com/settings/developers).
 2. Register a new application.
