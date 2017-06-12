@@ -439,6 +439,7 @@ class BusinessNetworkDefinition {
                     },
                     process: function(path,contents) {
                         modelFiles.push(contents);
+                        modelFileNames.push(path);
                         LOG.debug(method, 'Found model file', path);
                     }
                 });
