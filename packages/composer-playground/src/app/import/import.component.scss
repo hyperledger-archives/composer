@@ -83,7 +83,7 @@ import-modal {
 
       .sample-network-list-container {
         max-height: 200px;
-        overflow-y: auto;
+        overflow-y: scroll;
         margin-top: $space-medium;
       }
 
@@ -120,5 +120,10 @@ import-modal {
 
       width: 100%;
     }
+  }
+
+  .ps.ps--active-x>.ps__scrollbar-x-rail,
+  .ps.ps--active-y>.ps__scrollbar-y-rail{
+      opacity: 0.6;
   }
 }

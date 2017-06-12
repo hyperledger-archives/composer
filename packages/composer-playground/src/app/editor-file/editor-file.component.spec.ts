@@ -26,6 +26,13 @@ class MockCodeMirrorDirective {
     public config;
 }
 
+@Directive({
+    selector: 'perfect-scrollbar'
+})
+
+class MockPerfectScrollBarDirective {
+}
+
 describe('EditorFileComponent', () => {
     let component: EditorFileComponent;
     let fixture: ComponentFixture<EditorFileComponent>;
@@ -35,7 +42,7 @@ describe('EditorFileComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditorFileComponent, MockCodeMirrorDirective],
+            declarations: [EditorFileComponent, MockCodeMirrorDirective, MockPerfectScrollBarDirective],
             providers: [
                 {provide: ClientService, useValue: mockClientService}]
         });
