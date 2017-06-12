@@ -4,6 +4,21 @@
 set -ev
 set -o pipefail
 
+# Download specific version of docker-compose
+export DOCKER_COMPOSE_VERSION=1.11.2
+sudo rm /usr/local/bin/docker-compose
+curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+chmod +x docker-compose
+sudo mv docker-compose /usr/local/bin
+echo "Docker-compose version: " 
+docker-compose --version
+
+# Update docker
+sudo apt-get update
+sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+echo "Docker version: " 
+docker --version
+
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
