@@ -95,9 +95,10 @@ describe('EmbeddedContext', () => {
         });
 
         it('should return this.queryService if it is set', () => {
+            const mockEmbeddedQueryService = sinon.createStubInstance(EmbeddedQueryService);
             let context = new EmbeddedContext(mockEngine, 'bob1');
-            context.queryService = {};
-            context.getQueryService().should.deep.equal({});
+            context.queryService = mockEmbeddedQueryService;
+            context.getQueryService().should.equal(mockEmbeddedQueryService);
         });
 
     });
