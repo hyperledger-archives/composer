@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/connectionprofilemanager.js</title>
+	<title>Hyperledger Composer Source: composer-runtime/lib/queryservice.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/connectionprofilemanager.js</h1>
+		<h1 class="page-title">Source: composer-runtime/lib/queryservice.js</h1>
     
 <section>
     <article>
@@ -100,172 +100,44 @@
 
 'use strict';
 
-const Logger = require('./log/logger');
-
-const LOG = Logger.getLog('ConnectionProfileManager');
-
-const connectionManagerLoaders = [];
-const connectionManagerClasses = {};
-const connectionManagers = {};
-
 /**
- * A connection profile manager that manages a set of connection profiles. Each
- * connection profile defines an arbitrary set of configuration data and is associated
- * with a ConnectionManager.
- * @private
- * @class
- * @memberof module:composer-common
+ * Base class representing the query service provided by a {@link Container}.
+ * @protected
+ * @abstract
+ * @memberof module:composer-runtime
  */
-class ConnectionProfileManager {
+class QueryService {
 
     /**
-     * The composer-common module cannot load connector modules from parent modules
-     * when the dependencies are linked together using npm link or lerna. To work
-     * around this, the packages that require the connectors register themselves as
-     * modules that can load connection managers.
-     * @param {Object} module The module that can load connector modules.
+     * Constructor.
      */
-    static registerConnectionManagerLoader(module) {
-        connectionManagerLoaders.push(module);
+    constructor() {
     }
 
     /**
-     * Register a new ConnectionManager class.
-     * @param {string} type - the profile type identifier of the ConnectionManager
-     * @param {function} ctor - the constructor of the ConnectionManager
+     * Query the underlying world-state store using a store native query string.
+     * @param {string} queryString - the native query string
+     * @return {Promise} A promise that will be resolved with a JS object containing the results of the query
      */
-    static registerConnectionManager(type, ctor) {
-        connectionManagerClasses[type] = ctor;
-    }
-
-    /**
-     * Create the ConnectionManager and attach a file system
-     * @param {ConnectionProfileStore} connectionProfileStore - Node.js FS implementation, for example BrowserFS
-     */
-    constructor(connectionProfileStore) {
-        LOG.info('constructor','Created a new ConnectionProfileManager', connectionProfileStore);
-
-        if(!connectionProfileStore) {
-            throw new Error('Must create ConnectionProfileManager with a ConnectionProfileStore implementation.');
-        }
-
-        this.connectionProfileStore = connectionProfileStore;
-    }
-
-    /**
-     * Returns the ConnectionProfileStore associated with this
-     * instance.
-     * @return {ConnectionProfileStore} the associated store.
-     */
-    getConnectionProfileStore() {
-        return this.connectionProfileStore;
-    }
-
-    /**
-     * Adds a ConnectionManager to the mappings of this ConnectionProfileManager
-     * @param {string} type - the profile type identifier of the ConnectionManager
-     * @param {ConnectionManager} connectionManager - the instance
-     */
-    addConnectionManager(type, connectionManager) {
-        LOG.info('addConnectionManager','Adding a new connection manager', type);
-        connectionManagers[type] = connectionManager;
-    }
-
-    /**
-     * Retrieves the ConnectionManager for the given connection profile.
-     *
-     * @param {string} connectionProfile The name of the connection profile
-     * @return {Promise} A promise that is resolved with a {@link ConnectionManager}
-     * object once the connection is established, or rejected with a connection error.
-     */
-    getConnectionManager(connectionProfile) {
-        const METHOD = 'getConnectionManager';
-        LOG.info(METHOD,'Looking up a connection manager for profile', connectionProfile);
-
-        return this.connectionProfileStore.load(connectionProfile)
-        .then((data) => {
-            let connectionManager  = connectionManagers[data.type];
-            if(!connectionManager) {
-                const mod = `composer-connector-${data.type}`;
-                LOG.debug(METHOD,'Looking for module',mod);
-                try {
-                    // Check for the connection manager class registered using
-                    // registerConnectionManager (used by the web connector).
-                    let connectionManagerClass = connectionManagerClasses[data.type];
-                    if (connectionManagerClass) {
-                        connectionManager = new(connectionManagerClass)(this);
-                    } else {
-                        // Not registered using registerConnectionManager, we now
-                        // need to search for the connector module in our module
-                        // and all of the parent modules (the ones who require'd
-                        // us) as we do not depend on any connector modules.
-                        let curmod = module;
-                        while (curmod) {
-                            try {
-                                connectionManager = new(curmod.require(mod))(this);
-                                break;
-                            } catch (e) {
-                                LOG.error(METHOD,'No yet located the module ',e.message);
-                                // Continue to search the parent.
-                            }
-                            curmod = curmod.parent;
-                        }
-
-                        LOG.info(METHOD,'Using this connection manager ',connectionManager);
-                        if (!connectionManager) {
-                            connectionManagerLoaders.some((connectionManagerLoader) => {
-                                try {
-                                    connectionManager = new(connectionManagerLoader.require(mod))(this);
-                                    return true;
-                                } catch (e) {
-                                    // Search the next one.
-                                    return false;
-                                }
-                            });
-                        }
-                        if (!connectionManager) {
-                            LOG.verbose(METHOD,'not located the module - final try ');
-                            // We still didn't find it, so try plain old require
-                            // one last time.
-                            connectionManager = new(require(mod))(this);
-                        }
-                    }
-                } catch (e) {
-                    throw new Error(`Failed to load connector module "${mod}" for connection profile "${connectionProfile}"`);
+    queryNative(queryString) {
+        return new Promise((resolve, reject) => {
+            this._queryNative(queryString, (error, result) => {
+                if (error) {
+                    return reject(error);
                 }
-                connectionManagers[data.type] = connectionManager;
-            }
-            return connectionManager;
+                return resolve(result);
+            });
         });
     }
 
     /**
-     * Establish a connection to the business network, using connection information
-     * from the connection profile.
-     *
-     * @param {string} connectionProfile The name of the connection profile
-     * @param {string} businessNetworkIdentifier The identifier of the business network, or null if this is an admin connection
-     * @param {Object} [additionalConnectOptions] Additional configuration options supplied
-     * at runtime that override options set in the connection profile.
-     * @return {Promise} A promise that is resolved with a {@link Connection}
-     * object once the connection is established, or rejected with a connection error.
+     * Execute CouchDB queryString
      * @abstract
+     * @param {string} queryString - the couchdb query string
+     * @param {callback} callback The callback function to call when complete.
      */
-    connect(connectionProfile, businessNetworkIdentifier, additionalConnectOptions) {
-        LOG.info('connect','Connecting using ' + connectionProfile, businessNetworkIdentifier);
-
-        let connectOptions;
-        return this.connectionProfileStore.load(connectionProfile)
-            .then((connectOptions_) => {
-                connectOptions = connectOptions_;
-                if (additionalConnectOptions) {
-                    connectOptions = Object.assign(connectOptions, additionalConnectOptions);
-                }
-                return this.getConnectionManager(connectionProfile);
-            })
-            .then((connectionManager) => {
-                return connectionManager.connect(connectionProfile, businessNetworkIdentifier, connectOptions);
-            });
+    _queryNative(queryString, callback) {
+        throw new Error('abstract function called');
     }
 
     /**
@@ -275,22 +147,9 @@ class ConnectionProfileManager {
     toJSON() {
         return {};
     }
-
-    /**
-     * Clear the static object containing all the connection managers
-     */
-    static removeAllConnectionManagers() {
-        connectionManagerLoaders.length = 0;
-        Object.keys(connectionManagerClasses).forEach((key) => {
-            connectionManagerClasses[key] = null;
-        });
-        Object.keys(connectionManagers).forEach((key) => {
-            connectionManagers[key] = null;
-        });
-    }
 }
 
-module.exports = ConnectionProfileManager;
+module.exports = QueryService;
 </pre>
     </article>
 </section>
