@@ -198,7 +198,7 @@ describe('HLFConnection', () => {
             const events = {
                 payload: {
                     toString: () => {
-                        return '"{"event":"event"}"';
+                        return '{"event":"event"}';
                     }
                 }
             };
@@ -207,6 +207,7 @@ describe('HLFConnection', () => {
             sinon.assert.calledOnce(mockEventHub.registerChaincodeEvent);
             sinon.assert.calledWith(mockEventHub.registerChaincodeEvent, 'org-acme-biznet', 'composer', sinon.match.func);
             sinon.assert.calledOnce(connection.emit);
+            sinon.assert.calledWith(connection.emit, 'events', {'event':'event'});
         });
 
         it('should not register any listeners for chaincode events if no business network is specified', () => {

@@ -12,20 +12,13 @@
  * limitations under the License.
  */
 
-'use strict';
+package main
 
-module.exports = function () {
+import "testing"
 
-    this.Given(/I have an empty asset registry/, function () {
-
-    });
-
-    this.When(/I add the following asset(|s) to the asset registry/, function (uri, data) {
-
-    });
-
-    this.Then(/the asset registry contains the following asset(|s)/, function (uri, data) {
-
-    });
-
-};
+func TestNewComposer(t *testing.T) {
+	composer := NewComposer()
+	if composer == nil {
+		t.Fatal("NewComposer returned nil")
+	}
+}

@@ -233,11 +233,7 @@ class HLFConnection extends Connection {
             let ccid = HLFConnection.generateCcid(this.businessNetworkIdentifier);
             LOG.debug(method, 'registerChaincodeEvent', ccid, 'composer');
             let ccEvent  = this.eventHubs[0].registerChaincodeEvent(ccid, 'composer', (event) => {
-                //let evt = Buffer.from(event.payload, 'hex').toString('utf8');
-                // Remove the first set of "" around the event so it can be parsed first time
                 let evt = event.payload.toString('utf8');
-                evt = evt.replace(/^"(.*)"$/, '$1'); // Remove end quotes
-                evt = evt.replace(/\\/g, '');
                 evt = JSON.parse(evt);
                 this.emit('events', evt);
             });

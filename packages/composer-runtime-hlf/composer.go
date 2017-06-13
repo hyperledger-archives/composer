@@ -175,3 +175,35 @@ func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function stri
 	}
 	return data.Result, data.Error
 }
+
+// Query is called by the Hyperledger Fabric when the chaincode is queried.
+// Query can read from the world state.
+func (composer *Composer) Query(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
+	logger.Debug("Entering Composer.Query", &stub, function, arguments)
+	defer func() { logger.Debug("Exiting Composer.Query", string(result), err) }()
+
+	// Start a scope for locking the JavaScript virtual machine.
+	var channel chan EngineCallback
+	func() {
+
+		// Lock the JavaScript virtual machine.
+		vm := composer.VM
+		vm.Lock()
+		defer vm.Unlock()
+
+		// Create all required objects.
+		context := NewContext(composer.VM, composer.Engine, stub)
+
+		// Defer to the JavaScript function.
+		channel = composer.Engine.Query(context, function, arguments)
+
+	}()
+
+	// Now read from the channel. This will be triggered when the JavaScript
+	// code calls the callback function.
+	data, ok := <-channel
+	if !ok {
+		return nil, errors.New("Failed to receive callback from JavaScript function")
+	}
+	return data.Result, data.Error
+}
