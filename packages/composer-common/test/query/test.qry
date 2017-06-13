@@ -84,24 +84,24 @@ query Q16 {
     description: "Select all drivers aged older than or equal to PARAM" 
     statement: 
         SELECT org.acme.Driver 
-            WHERE (age>= $ageParam)
+            WHERE (age>= _$ageParam)
 }
 
 query Q17 {
     description: "Select all drivers aged older than PARAM" 
     statement: 
         SELECT org.acme.Driver 
-            WHERE ($ageParam < age)
+            WHERE (_$ageParam < age)
 }
 
 query Q18 {
     description: "Select all drivers aged older than PARAM" 
     statement: 
         SELECT org.acme.Driver 
-            WHERE ($ageParam < age)
+            WHERE (_$ageParam < age)
                 ORDER BY [lastName ASC, firstName DESC]
-                    LIMIT $limitParam
-                        SKIP $skipParam
+                    LIMIT _$limitParam
+                        SKIP _$skipParam
 
 }
 

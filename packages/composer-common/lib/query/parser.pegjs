@@ -1505,7 +1505,7 @@ Operator
   / GTEToken { return ">="; }
 
 Placeholder 
-  = _ "$" name:Identifier {
+  = _ "_$" name:Identifier {
   return {
     type: "Placeholder",
     index: name,

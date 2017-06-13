@@ -83,6 +83,7 @@ class Query {
      * @private
      */
     validate() {
+        this.select.validate();
     }
 
     /**

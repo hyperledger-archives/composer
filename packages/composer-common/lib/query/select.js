@@ -59,7 +59,7 @@ class Select {
     /**
      * Returns the QueryFile that owns this Query.
      *
-     * @return {AclFile} the owning QueryFile
+     * @return {Query} the owning QueryFile
      */
     getQuery() {
         return this.query;
@@ -72,7 +72,12 @@ class Select {
      * @private
      */
     process() {
-        this.resource = this.ast.resource;
+
+        this.resource = null;
+
+        if(this.ast.resource) {
+            this.resource = this.ast.resource;
+        }
 
         this.where = null;
         if(this.ast.where) {
@@ -102,14 +107,17 @@ class Select {
      * @private
      */
     validate() {
-        const mm = this.getQuery().getQueryFile().getModelManager();
 
-        // checks the resource type exists
-        const resourceClassDeclaration = mm.getType(this.resource);
+        if(this.resource) {
+            const mm = this.getQuery().getQueryFile().getModelManager();
 
-        // check that it is not an enum or concept
-        if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
-            throw new Error('Can only select assets, participants and transactions.');
+            // checks the resource type exists
+            const resourceClassDeclaration = mm.getType(this.resource);
+
+            // check that it is not an enum or concept
+            if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
+                throw new Error('Can only select assets, participants and transactions.');
+            }
         }
 
         if(this.where) {
@@ -122,12 +130,48 @@ class Select {
     }
 
     /**
-     * Returns the FQN of the resource of this select.
+     * Returns the FQN of the resource of this select or null if it does not have a resource.
      *
      * @return {string} the fully qualified name of the select
      */
     getResource() {
         return this.resource;
+    }
+
+    /**
+     * Returns the Where clause for this query or null if it does not have a WHERE clause.
+     *
+     * @return {Where} the Where or null
+     */
+    getWhere() {
+        return this.where;
+    }
+
+    /**
+     * Returns the OrderBy clause for this query or null if it does not have an ORDER BY clause.
+     *
+     * @return {OrderBy} the OrderBy or null
+     */
+    getOrderBy() {
+        return this.orderBy;
+    }
+
+    /**
+     * Returns the LIMIT count for this query or null if it does not have a LIMIT
+     *
+     * @return {integer} the LIMIT count or null
+     */
+    getLimit() {
+        return this.limit;
+    }
+
+    /**
+     * Returns the SKIP count for this query or null if it does not have a SKIP
+     *
+     * @return {integer} the SKIP count or null
+     */
+    getSkip() {
+        return this.skip;
     }
 
     /**

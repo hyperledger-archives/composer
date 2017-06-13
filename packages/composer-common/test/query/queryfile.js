@@ -87,6 +87,7 @@ describe('QueryFile', () => {
                 statement: SELECT org.acme.Car
             }`;
             const queryFile = new QueryFile('test.qry', modelManager, queryContents);
+            queryFile.getIdentifier().should.equal('test.qry');
             queryFile.getQueries().length.should.equal(1);
             queryFile.getDefinitions().should.equal(queryContents);
             const q1 = queryFile.getQueries()[0];
