@@ -22,6 +22,7 @@ const EmbeddedContext = require('..').EmbeddedContext;
 const EmbeddedDataService = require('..').EmbeddedDataService;
 const EmbeddedEventService = require('..').EmbeddedEventService;
 const EmbeddedHTTPService = require('..').EmbeddedHTTPService;
+const EmbeddedQueryService = require('..').EmbeddedQueryService;
 const EmbeddedIdentityService = require('..').EmbeddedIdentityService;
 const EmbeddedScriptCompiler = require('..').EmbeddedScriptCompiler;
 
@@ -84,6 +85,21 @@ describe('EmbeddedContext', () => {
             context.eventService = mockEmbeddedEventService;
             context.getEventService().should.equal(mockEmbeddedEventService);
         });
+    });
+
+    describe('#getQueryService', () => {
+
+        it('should return the container query service', () => {
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.getQueryService().should.be.an.instanceOf(EmbeddedQueryService);
+        });
+
+        it('should return this.queryService if it is set', () => {
+            let context = new EmbeddedContext(mockEngine, 'bob1');
+            context.queryService = {};
+            context.getQueryService().should.deep.equal({});
+        });
+
     });
 
     describe('#getHTTPService', () => {

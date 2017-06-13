@@ -22,3 +22,4 @@ module.exports.WebHTTPService = require('./lib/webhttpservice');
 module.exports.WebEventService = require('./lib/webeventservice');
 module.exports.WebIdentityService = require('./lib/webidentityservice');
 module.exports.WebLoggingService = require('./lib/webloggingservice');
+module.exports.WebQueryService = require('./lib/webqueryservice');

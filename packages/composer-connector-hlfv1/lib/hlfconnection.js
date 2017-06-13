@@ -23,7 +23,7 @@ const semver = require('semver');
 const temp = require('temp').track();
 const thenifyAll = require('thenify-all');
 const User = require('fabric-client/lib/User.js');
-const utils = require('fabric-client/lib/utils.js');
+const EventHub = require('fabric-client/lib/EventHub');
 
 const LOG = Logger.getLog('HLFConnection');
 
@@ -49,7 +49,19 @@ class HLFConnection extends Connection {
      * @return {User} A new user.
      */
     static createUser(enrollmentID, client) {
-        return new User(enrollmentID, client);
+        let user = new User(enrollmentID);
+        user.setCryptoSuite(client.getCryptoSuite());
+        return user;
+    }
+
+  /**
+     * Create a new event hub.
+     *
+     * @param {hfc} clientContext client context
+     * @return {EventHub} A new event hub.
+     */
+    static createEventHub(clientContext) {
+        return new EventHub(clientContext);
     }
 
     /**
@@ -62,8 +74,7 @@ class HLFConnection extends Connection {
      * @memberOf HLFConnection
      */
     static generateCcid(input) {
-        //return input.replace(/\./g, '-').replace(/[|&;$%@"<>()+,]/g, ''); New Required for alpha2
-        return input;
+        return input.replace(/\./g, '-').replace(/[|&;$%@"<>()+,]/g, '').toLowerCase();
     }
 
     /**
@@ -74,23 +85,24 @@ class HLFConnection extends Connection {
      * or null if this connection if an admin connection
      * @param {object} connectOptions The connection options in use by this connection.
      * @param {Client} client A configured and connected {@link Client} object.
-     * @param {Chain} chain A configured and connected {@link Chain} object.
-     * @param {array} eventHubs A configured and connected {@link EventHub} object.
+     * @param {Chain} channel A configured and connected {@link Chain} object.
+     * @param {array} eventHubDefs An array of event hub definitions
      * @param {FabricCAClientImpl} caClient A configured and connected {@link FabricCAClientImpl} object.
      */
-    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHubs, caClient) {
+    constructor(connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient) {
         super(connectionManager, connectionProfile, businessNetworkIdentifier);
         const method = 'constructor';
-        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, chain, eventHubs, caClient);
+        LOG.entry(method, connectionManager, connectionProfile, businessNetworkIdentifier, connectOptions, client, channel, eventHubDefs, caClient);
+
         // Validate all the arguments.
         if (!connectOptions) {
             throw new Error('connectOptions not specified');
         } else if (!client) {
             throw new Error('client not specified');
-        } else if (!chain) {
-            throw new Error('chain not specified');
-        } else if (!eventHubs || !Array.isArray(eventHubs)) {
-            throw new Error('eventHubs not specified or not an array');
+        } else if (!channel) {
+            throw new Error('channel not specified');
+        } else if (!eventHubDefs || !Array.isArray(eventHubDefs)) {
+            throw new Error('eventHubDefs not specified or not an array');
         } else if (!caClient) {
             throw new Error('caClient not specified');
         }
@@ -98,30 +110,16 @@ class HLFConnection extends Connection {
         // Save all the arguments away for later.
         this.connectOptions = connectOptions;
         this.client = client;
-        this.chain = chain;
-        this.businessNetworkIdentifier = businessNetworkIdentifier;
-
-        this.eventHubs = eventHubs;
-
-        if (businessNetworkIdentifier) {
-            LOG.entry(method, 'registerChaincodeEvent', businessNetworkIdentifier, 'composer');
-            eventHubs[0].registerChaincodeEvent(businessNetworkIdentifier, 'composer', (event) => {
-
-                // Remove the first set of "" around the event so it can be parsed first time
-                let evt = event.payload.toString('utf8');
-                evt = evt.replace(/^"(.*)"$/, '$1'); // Remove end quotes
-                evt = evt.replace(/\\/g, '');
-                evt = JSON.parse(evt);
-                this.emit('events', evt);
-            });
-        }
-
+        this.channel = channel;
+        this.eventHubDefs = eventHubDefs;
+        this.eventHubs = [];
+        this.ccEvents = [];
         this.caClient = caClient;
+        this.initialized = false;
 
         // We create promisified versions of these APIs.
         this.fs = thenifyAll(fs);
         this.temp = thenifyAll(temp);
-
         LOG.exit(method);
     }
 
@@ -145,17 +143,23 @@ class HLFConnection extends Connection {
         // Disconnect from the business network.
         return Promise.resolve()
             .then(() => {
-                this.eventHubs.forEach((eventHub) => {
+                this.eventHubs.forEach((eventHub, index) => {
                     if (eventHub.isconnected()) {
                         eventHub.disconnect();
                     }
-                    this.eventHubs[0].unregisterChaincodeEvent(this.businessNetworkIdentifier);
+
+                    // unregister any eventhub chaincode event registrations
+                    if (this.ccEvents[index]) {
+                        this.eventHubs[index].unregisterChaincodeEvent(this.ccEvents[index]);
+                    }
+
                 });
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying disconnect. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
     }
 
@@ -183,7 +187,6 @@ class HLFConnection extends Connection {
         let user;
         return this.caClient.enroll(options)
             .then((enrollment) => {
-
                 // Store the certificate data in a new user object.
                 LOG.debug(method, 'Successfully enrolled, creating user object');
                 user = HLFConnection.createUser(enrollmentID, this.client);
@@ -197,16 +200,64 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-                return this.chain.initialize();
+                return this._initializeChannel();
             })
             .then(() => {
                 LOG.exit(method, user);
                 return user;
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying to enroll user. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
+    }
+
+    /**
+     * process the event hub defs to create event hubs and connect
+     * to them
+     */
+    _connectToEventHubs() {
+        const method = '_connectToEventHubs';
+        LOG.entry(method);
+        this.eventHubDefs.forEach((eventHubDef) => {
+            const eventHub = HLFConnection.createEventHub(this.client);  //TODO: Change this.
+            eventHub.setPeerAddr(eventHubDef.eventURL, eventHubDef.opts);
+            eventHub.connect();
+            this.eventHubs.push(eventHub);
+        });
+
+        if (this.businessNetworkIdentifier) {
+
+            // register a chaincode event listener on the first peer only.
+            let ccid = HLFConnection.generateCcid(this.businessNetworkIdentifier);
+            LOG.debug(method, 'registerChaincodeEvent', ccid, 'composer');
+            let ccEvent  = this.eventHubs[0].registerChaincodeEvent(ccid, 'composer', (event) => {
+                //let evt = Buffer.from(event.payload, 'hex').toString('utf8');
+                // Remove the first set of "" around the event so it can be parsed first time
+                let evt = event.payload.toString('utf8');
+                evt = evt.replace(/^"(.*)"$/, '$1'); // Remove end quotes
+                evt = evt.replace(/\\/g, '');
+                evt = JSON.parse(evt);
+                this.emit('events', evt);
+            });
+            this.ccEvents[0] = ccEvent;
+        }
+
+        process.on('exit', () => {
+            this.eventHubs.forEach((eventHub, index) => {
+                if (eventHub.isconnected()) {
+                    eventHub.disconnect();
+                }
+
+                // unregister any eventhub chaincode event registrations
+                if (this.ccEvents[index]) {
+                    this.eventHubs[index].unregisterChaincodeEvent(this.ccEvents[index]);
+                }
+            });
+        });
+
+        LOG.exit(method);
     }
 
     /**
@@ -228,7 +279,7 @@ class HLFConnection extends Connection {
         }
 
         // Get the user context (certificate) from the state store.
-        return this.client.getUserContext(enrollmentID)
+        return this.client.getUserContext(enrollmentID, true)
             .then((user) => {
 
                 // If the user exists and is enrolled, we use the data from the state store.
@@ -248,13 +299,17 @@ class HLFConnection extends Connection {
                 let result = new HLFSecurityContext(this);
                 result.setUser(enrollmentID);
                 this.user = user;
+
+                // now we can connect to the eventhubs
+                this._connectToEventHubs();
                 LOG.exit(method, result);
                 return result;
 
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying login and get user Context. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
     }
 
@@ -272,21 +327,11 @@ class HLFConnection extends Connection {
         const method = '_install';
         LOG.entry(method, securityContext, businessNetwork);
 
-        // Check that a valid security context has been specified.
-        HLFUtil.securityCheck(securityContext);
-
-        // Validate all the arguments.
-        if (!businessNetwork) {
-            throw new Error('businessNetwork not specified');
-        }
-
-
         // Because hfc needs to write a Dockerfile to the chaincode directory, we
         // must copy the chaincode to a temporary directory. We need to do this
         // to handle the case where Composer is installed into the global directory
         // (npm install -g) and is therefore owned by the root user.
         let tempDirectoryPath;
-        let nonce = utils.getNonce();
         return this.temp.mkdir('composer')
             .then((tempDirectoryPath_) => {
 
@@ -309,89 +354,105 @@ class HLFConnection extends Connection {
 
             })
             .then(() => {
-                //let txId = Hfc.buildTransactionID(nonce, this._getLoggedInUser()); New version coming
-                let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
-
+                let txId = this.client.newTransactionID();
                 // This is evil! I shouldn't need to set GOPATH in a node.js program.
                 process.env.GOPATH = tempDirectoryPath;
 
                 // Submit the install request to the peer
                 const request = {
                     chaincodePath: chaincodePath,
-                    chaincodeVersion: connectorPackageJSON.version,
+                    chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: HLFConnection.generateCcid(businessNetwork.getName()),
-                    chainId: this.connectOptions.channel,  // alpha2 will remove this line
                     txId: txId,
-                    nonce: nonce//,
-                    //targets: this.chain.getPeers() alpha2 will add this line
+                    targets: this.channel.getPeers()
                 };
-                return this.chain.sendInstallProposal(request);
-                //return this.client.installChaincode(request); New version coming
+
+                return this.client.installChaincode(request);
             })
-            .catch((error) => {
-                LOG.error(method, error);
-                throw error;
-            });
-    }
-
-    //TODO: Do we want to separate out instantiate ?
-
-    /**
-     * Deploy all business network artifacts.
-     * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts. Not used by this connector.
-     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
-     * @return {Promise} A promise that is resolved once the business network
-     * artifacts have been deployed, or rejected with an error.
-     */
-    deploy(securityContext, force, businessNetwork) {
-        const method = 'deploy';
-        LOG.entry(method, securityContext, force, businessNetwork);
-        let businessNetworkArchive;
-        let nonce;
-        let finalTxId;
-        return this._install(securityContext, businessNetwork)
             .then((results) => {
                 LOG.debug(method, `Received ${results.length} results(s) from installing the chaincode`, results);
 
                 // Validate the proposal results, ignore chaincode exists messages
-                this._validateResponses(results[0], /chaincode .+ exists/);
+                this._validateResponses(results[0], false, /chaincode .+ exists/);
 
                 LOG.debug(method, 'chaincode installed, or already installed');
-                // initialize the chain ready for instantiation
-                return this.chain.initialize();
             })
+            .then(() => {
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                const newError = new Error('error trying install chaincode. ' + error);
+                LOG.error(method, newError);
+                throw newError;
+            });
+    }
+
+    /**
+     * initialize the channel if it hasn't been done
+     *
+     * @returns {Promise} a promise that the channel is initialized
+     *
+     * @memberOf HLFConnection
+     */
+    _initializeChannel() {
+        if (!this.initialized) {
+            return this.channel.initialize()
+                .then(() => {
+                    this.initialized = true;
+                });
+        }
+        return Promise.resolve();
+    }
+
+    /**
+     * instantiate the chaincode
+     *
+     *
+     * @param {any} securityContext the security context
+     * @param {any} businessNetwork the business network
+     * @private
+     * @returns {Promise} a promise for instantiation completion
+     *
+     * @memberOf HLFConnection
+     */
+    _instantiate(securityContext, businessNetwork) {
+        const method = '_instantiate';
+        LOG.entry(method, securityContext, businessNetwork);
+
+        let businessNetworkArchive;
+        let finalTxId;
+
+        // initialize the channel ready for instantiation
+        return this._initializeChannel()
             .then(() => {
                 // serialise the business network
                 return businessNetwork.toArchive();
             })
             .then((bna) => {
                 businessNetworkArchive = bna;
-                nonce = utils.getNonce();
                 // prepare and send the instantiate proposal
-                finalTxId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
+                finalTxId = this.client.newTransactionID();
+
                 const request = {
                     chaincodePath: chaincodePath,
-                    chaincodeVersion: connectorPackageJSON.version,
+                    chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: HLFConnection.generateCcid(businessNetwork.getName()),
-                    chainId: this.connectOptions.channel,
                     txId: finalTxId,
-                    nonce: nonce,
                     fcn: 'init',
                     args: [businessNetworkArchive.toString('base64')]
                 };
-                return this.chain.sendInstantiateProposal(request);
+                return this.channel.sendInstantiateProposal(request);
             })
             .then((results) => {
                 // Validate the instantiate proposal results
                 LOG.debug(method, `Received ${results.length} results(s) from deploying the chaincode`, results);
                 let proposalResponses = results[0];
-                this._validateResponses(proposalResponses);
+                this._validateResponses(proposalResponses, true);
 
-                // Submit the endorsed transaction to the orderers.
+                // Submit the endorsed transaction to the primary orderer.
                 const proposal = results[1];
                 const header = results[2];
-                return this.chain.sendTransaction({
+                return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
                     header: header
@@ -405,41 +466,107 @@ class HLFConnection extends Connection {
                 if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${finalTxId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(finalTxId, this.connectOptions.deployWaitTime);
+                return this._waitForEvents(finalTxId, this.connectOptions.timeout);
 
             })
             .then(() => {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying instantiate chaincode. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
+    }
+
+    /**
+     * Deploy all business network artifacts.
+     * @param {HFCSecurityContext} securityContext The participant's security context.
+     * @param {boolean} [force] Force the deployment of the business network artifacts. Not used by this connector.
+     * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @return {Promise} A promise that is resolved once the business network
+     * artifacts have been deployed, or rejected with an error.
+     */
+    deploy(securityContext, force, businessNetwork) {
+        const method = 'deploy';
+        LOG.entry(method, securityContext, force, businessNetwork);
+
+        // Check that a valid security context has been specified.
+        HLFUtil.securityCheck(securityContext);
+
+        // Validate all the arguments.
+        if (!businessNetwork) {
+            throw new Error('businessNetwork not specified');
+        }
+
+        return this._install(securityContext, businessNetwork)
+            .then(() => {
+                // check to see if the chaincode is already instantiated
+                return this.channel.queryInstantiatedChaincodes();
+            })
+            .then((queryResults) => {
+                LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
+                let alreadyInstantiated = queryResults.chaincodes.some((chaincode) => {
+                    return chaincode.path === 'composer' && chaincode.name === HLFConnection.generateCcid(businessNetwork.getName());
+                });
+                if (alreadyInstantiated) {
+                    LOG.debug(method, 'chaincode already instantiated');
+                    return Promise.resolve();
+                }
+                return this._instantiate(securityContext, businessNetwork);
+            })
+            .then(() => {
+                LOG.exit(method);
+            })
+            .catch((error) => {
+                const newError = new Error('error trying deploy. ' + error);
+                LOG.error(method, newError);
+                throw newError;
+            });
+
     }
 
     /**
      * Check for proposal response errors.
      * @private
-     * @param {any} proposalResponses the proposal responses
-     * @param {regexp} pattern regular expression for message which isn't an error
+     * @param {any} responses the responses from the install, instantiate or invoke
+     * @param {boolean} isProposal true is the responses are from a proposal
+     * @param {regexp} pattern optional regular expression for message which isn't an error
      * @throws if not valid
      */
-    _validateResponses(proposalResponses, pattern) {
-        if (!proposalResponses.length) {
+    _validateResponses(responses, isProposal, pattern) {
+        const method = '_validateResponses';
+        LOG.entry(method, responses, pattern, isProposal);
+
+        if (!responses.length) {
             throw new Error('No results were returned from the request');
         }
 
-        proposalResponses.forEach((proposalResponse) => {
-            if (proposalResponse instanceof Error) {
-                if (pattern && pattern.test(proposalResponse.message)) {
-                    return true;
+        responses.forEach((responseContent) => {
+            if (responseContent instanceof Error) {
+                // check to see if we should ignore the error, this also means we cannot verify the proposal
+                // or check the proposals across peers
+                if (!pattern || !pattern.test(responseContent.message)) {
+                    throw responseContent;
                 }
-                throw proposalResponse;
-            } else if (proposalResponse.response.status === 200) {
-                return true;
+            } else {
+
+                // not an error, if it is from a proposal, verify the response
+                if (isProposal && !this.channel.verifyProposalResponse(responseContent)) {
+                    throw new Error('Response from peer was not valid');
+                }
+                if (responseContent.response.status !== 200) {
+                    throw new Error('Unexpected response of ' + responseContent.response.status + '. payload was :' +responseContent.response.payload);
+                }
             }
-            throw new Error(proposalResponse.response.payload);
+
         });
+
+        // if it was a proposal and all the responses were good, check that they compare
+        if (isProposal && !this.channel.compareProposalResponseResults(responses)) {
+            throw new Error('Peers do not agree, RW sets differ');
+        }
+        LOG.exit(method);
     }
 
     /**
@@ -471,8 +598,9 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying undeploy. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
     }
 
@@ -508,8 +636,9 @@ class HLFConnection extends Connection {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying to update business network. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
     }
 
@@ -551,8 +680,9 @@ class HLFConnection extends Connection {
 
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying to ping. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
     }
 
@@ -583,20 +713,18 @@ class HLFConnection extends Connection {
             }
         });
 
-        let nonce = utils.getNonce();
-        let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
+        let txId = this.client.newTransactionID();
+
 
         // Submit the query request.
         const request = {
             chaincodeId: HLFConnection.generateCcid(this.businessNetworkIdentifier),
-            chainId: this.connectOptions.channel,
+            chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
-            nonce: nonce,
             fcn: functionName,
-            args: args,
-            attrs: ['userID']
+            args: args
         };
-        return this.chain.queryByChaincode(request)
+        return this.channel.queryByChaincode(request)
             .then((payloads) => {
                 LOG.debug(method, `Received ${payloads.length} payloads(s) from querying the chaincode`, payloads);
                 if (!payloads.length) {
@@ -611,8 +739,9 @@ class HLFConnection extends Connection {
                 return payload;
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying to query chaincode. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
 
     }
@@ -644,31 +773,34 @@ class HLFConnection extends Connection {
             }
         });
 
-        let nonce = utils.getNonce();
-        let txId = this.chain.buildTransactionID(nonce, this._getLoggedInUser());
-        // Submit the transaction to the endorsers.
-        const request = {
-            chaincodeId: HLFConnection.generateCcid(this.businessNetworkIdentifier),
-            chainId: this.connectOptions.channel,
-            txId: txId,
-            nonce: nonce,
-            fcn: functionName,
-            args: args,
-            attrs: ['userID']
-        };
-        return this.chain.sendTransactionProposal(request)
-            .then((results) => {
+        let txId = this.client.newTransactionID();
 
+        // initialize the channel if it hasn't been initialized already otherwise verification will fail.
+        return this._initializeChannel()
+            .then(() => {
+
+
+                // Submit the transaction to the endorsers.
+                const request = {
+                    chaincodeId: HLFConnection.generateCcid(this.businessNetworkIdentifier),
+                    chaincodeVersion: runtimePackageJSON.version,
+                    txId: txId,
+                    fcn: functionName,
+                    args: args
+                };
+                return this.channel.sendTransactionProposal(request);
+            })
+            .then((results) => {
                 // Validate the endorsement results.
                 LOG.debug(method, `Received ${results.length} results(s) from invoking the chaincode`, results);
                 const proposalResponses = results[0];
-                this._validateResponses(proposalResponses);
+                this._validateResponses(proposalResponses, true);
 
-                // Submit the endorsed transaction to the orderers.
+                // Submit the endorsed transaction to the primary orderers.
                 const proposal = results[1];
                 const header = results[2];
 
-                return this.chain.sendTransaction({
+                return this.channel.sendTransaction({
                     proposalResponses: proposalResponses,
                     proposal: proposal,
                     header: header
@@ -682,14 +814,15 @@ class HLFConnection extends Connection {
                 if (response.status !== 'SUCCESS') {
                     throw new Error(`Failed to commit transaction '${txId}' with response status '${response.status}'`);
                 }
-                return this._waitForEvents(txId, this.connectOptions.invokeWaitTime);
+                return this._waitForEvents(txId, this.connectOptions.timeout);
             })
             .then(() => {
                 LOG.exit(method);
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying invoke chaincode. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
     }
 
@@ -757,7 +890,7 @@ class HLFConnection extends Connection {
                     });
                 })
                 .catch((error) => {
-                    LOG.error(method, 'Register request failed', error);
+                    LOG.error(method, 'Register request failed trying to create identity', error);
                     return reject(error);
                 });
         });
@@ -778,7 +911,7 @@ class HLFConnection extends Connection {
         HLFUtil.securityCheck(securityContext);
 
         // Query all instantiated chaincodes.
-        return this.chain.queryInstantiatedChaincodes()
+        return this.channel.queryInstantiatedChaincodes()
             .then((queryResults) => {
                 LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
                 const result = queryResults.chaincodes.filter((chaincode) => {
@@ -790,28 +923,32 @@ class HLFConnection extends Connection {
                 return result;
             })
             .catch((error) => {
-                LOG.error(method, error);
-                throw error;
+                const newError = new Error('error trying to list instantiated chaincodes. ' + error);
+                LOG.error(method, newError);
+                throw newError;
             });
 
     }
 
-    /**
+  /**
      * wait for events from the peers associated with the provided transaction id.
-     * @param {string} txId the transaction id to listen for events on
+     * @param {string} txObj the transaction id to listen for events on
      * @param {number} waitTime the time to wait in seconds for an event response
      * @returns {Promise} A promise which resolves when all the events are received or rejected
      * if an event is not received within the given timeout period
      * @memberOf HLFConnection
      */
-    _waitForEvents(txId, waitTime) {
+    _waitForEvents(txObj, waitTime) {
+        const txId = txObj.getTransactionID().toString();
+        const method = '_waitForEvents';
+        LOG.entry(method, txId, waitTime);
         let eventPromises = [];
         this.eventHubs.forEach((eh) => {
             let txPromise = new Promise((resolve, reject) => {
                 const handle = setTimeout(() => {
                     reject(new Error(`Failed to receive commit notification for transaction '${txId}' within the timeout period`));
                 }, waitTime * 1000);
-                eh.registerTxEvent(txId.toString(), (tx, code) => {
+                eh.registerTxEvent(txId, (tx, code) => {
                     clearTimeout(handle);
                     eh.unregisterTxEvent(txId);
                     if (code !== 'VALID') {
@@ -821,10 +958,12 @@ class HLFConnection extends Connection {
                     }
                 });
             });
-
             eventPromises.push(txPromise);
         });
-        return Promise.all(eventPromises);
+        return Promise.all(eventPromises)
+            .then(() => {
+                LOG.exit(method);
+            });
     }
 
     /**
