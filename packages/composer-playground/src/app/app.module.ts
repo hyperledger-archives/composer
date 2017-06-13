@@ -1,5 +1,6 @@
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, PreloadAllModules } from '@angular/router';
@@ -54,6 +55,7 @@ import { ViewCertificateComponent } from './view-certificate';
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
 import { FocusHereDirective } from './directives/focus-here';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
@@ -152,12 +154,14 @@ type StoreType = {
         FocusHereDirective
     ],
     imports: [ // import Angular's modules
+        BrowserAnimationsModule,
         BrowserModule,
         FormsModule,
         ReactiveFormsModule,
         HttpModule,
         RouterModule.forRoot(ROUTES, {useHash: false, preloadingStrategy: PreloadAllModules}),
         CodemirrorModule,
+        PerfectScrollbarModule,
         ModalModule.forRoot(),
         TooltipModule.forRoot(),
         NgbModule.forRoot(),
