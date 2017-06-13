@@ -186,7 +186,11 @@ export class ConnectionProfileDataComponent {
             } else {
                 connectionName = this.connectionProfileData.name;
             }
-            this.alertService.successStatus$.next({title: 'Connection Successful', text : 'Successfully connected with profile ' + connectionName, icon : '#icon-world_24'});
+            this.alertService.successStatus$.next({
+                title: 'Connection Successful',
+                text: 'Successfully connected with profile ' + connectionName,
+                icon: '#icon-world_24'
+            });
             this.profileUpdated.emit({updated: true});
 
         }, (reason) => {
@@ -433,7 +437,11 @@ export class ConnectionProfileDataComponent {
         }
     }
 
-    onSubmit() {
+    onSubmit(event) {
+        if (event && event.keyCode !== 13) {
+            return;
+        }
+
         let connectionProfile;
         if (!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')) {
             throw new Error('Unknown profile type');
@@ -521,31 +529,31 @@ export class ConnectionProfileDataComponent {
         }
 
         return this.modalService.open(AddCertificateComponent).result
-        .then((result) => {
-            if (type === 'orderers') {
-                if (result.hostnameOverride === '') {
-                    result.hostnameOverride = 'orderer' + index;
+            .then((result) => {
+                if (type === 'orderers') {
+                    if (result.hostnameOverride === '') {
+                        result.hostnameOverride = 'orderer' + index;
+                    }
+                    this.v1Form.controls['orderers']['controls'][index].patchValue({
+                        cert: result.cert,
+                        hostnameOverride: result.hostnameOverride
+                    });
+                } else if (type === 'peers') {
+                    if (result.hostnameOverride === '') {
+                        result.hostnameOverride = 'peer' + index;
+                    }
+                    this.v1Form.controls['peers']['controls'][index].patchValue({
+                        cert: result.cert,
+                        hostnameOverride: result.hostnameOverride
+                    });
+                } else {
+                    throw new Error('Unrecognized type ' + type);
                 }
-                this.v1Form.controls['orderers']['controls'][index].patchValue({
-                    cert: result.cert,
-                    hostnameOverride: result.hostnameOverride
-                });
-            } else if (type === 'peers') {
-                if (result.hostnameOverride === '') {
-                    result.hostnameOverride = 'peer' + index;
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
                 }
-                this.v1Form.controls['peers']['controls'][index].patchValue({
-                    cert: result.cert,
-                    hostnameOverride: result.hostnameOverride
-                });
-            } else {
-                throw new Error('Unrecognized type ' + type);
-            }
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.errorStatus$.next(reason);
-            }
-        });
+            });
     }
 
     showCertificate(cert: string, hostname: string) {

@@ -292,8 +292,6 @@
     </div>
   </div>
 
-
-
   <button *ngIf="!editing" class="button primary" type="button" (click)="useProfile()">Use this profile</button>
   <button *ngIf="!editing && connectionProfileData.name !== '$default'" class="button secondary" type="button" (click)="exportProfile()">
     <svg class="standard-icon" aria-hidden="true">
@@ -307,7 +305,7 @@
   <!-- EDIT V0.6 CONNECTION PROFILE -->
 
   <div *ngIf="connectionProfileData.profile.type === 'hlf' && editing" class="edit-data">
-    <form [formGroup]="v06Form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="v06Form" (ngSubmit)="onSubmit()" (keydown)="onSubmit($event)">
       <section>
         <div class="section-title">Basic Configuration</div>
         <div class="profile-row">
@@ -431,7 +429,7 @@
   <!-- EDIT V1 CONNECTION PROFILE -->
 
   <div *ngIf="connectionProfileData.profile.type === 'hlfv1' && editing" class="edit-data">
-    <form [formGroup]="v1Form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="v1Form" (ngSubmit)="onSubmit()" (keydown)="onSubmit($event)">
       <section>
         <div class="section-title">Basic Configuration</div>
          <div class="profile-row">
