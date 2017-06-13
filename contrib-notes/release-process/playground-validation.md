@@ -136,12 +136,20 @@ Following from reset to basic sample network by import of the basic sample netwo
  - Add a ReadMe file via the "AddFile" option and browsing to a ReadMe file on disc
     - On selection the modal should indicate that a Readme file is to be imported
     - On confirmation a warning modal should inform that the current readme will be overwritten
-    - On confirm, the existing readme should be replaced with that selected
+    - On confirm, the existing readme should be replaced with that selected (only one readme should ever be present)
  - Add a ReadMe file via the "AddFile" option and drag/drop action of a ReadMe file on disc
     - On selection the modal should indicate that a Readme file is to be imported
     - On confirmation a warning modal should inform that the current readme will be overwritten
-    - On confirm, the existing readme should be replaced with that selected
- - On export, exported BNA should contain the newly added files (2 script, 2 model)
+    - On confirm, the existing readme should be replaced with that selected (only one readme should ever be present)
+ - Add an ACL rule file via the "AddFile" option and browsing to a rule file on disc
+    - On selection the modal should indicate that an ACL file is to be imported
+    - On confirmation a warning modal should inform that the current rule file will be overwritten
+    - On confirm, the existing rule file should be replaced with that selected (only one rule file should ever be present)
+ - Add an ACL rule file via the "AddFile" option and drag/drop action of a rule file on disc
+    - On selection the modal should indicate that a rule file is to be imported
+    - On confirmation a warning modal should inform that the current rule file will be overwritten
+    - On confirm, the existing rule file should be replaced with that selected (only one rule file should ever be present)
+ - On export, exported BNA should contain the newly added files (2 script, 2 model, new readme, new rules)
 
 ### Define Page (File-Editor)
 This page is the main file editor page, where it is possible to edit resources. We need to ensure that the linking between the side navigation menu and the file editor is consistent, that validation errors report correctly for each file type and that file specific edit options are enabled. 
