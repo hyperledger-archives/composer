@@ -166,6 +166,7 @@ class ConnectionProfileManager {
      * @abstract
      */
     connect(connectionProfile, businessNetworkIdentifier, additionalConnectOptions) {
+
         LOG.info('connect','Connecting using ' + connectionProfile, businessNetworkIdentifier);
 
         let connectOptions;

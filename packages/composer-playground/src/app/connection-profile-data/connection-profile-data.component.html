@@ -222,16 +222,7 @@
             Certificate Authority (CA)
           </div>
           <div class="profile-value">
-              <div class="nested-section">
-                  <div class="nested-row">
-                      <div class="nested-property">URL</div>
-                      <div class="nested-value">{{connectionProfileData.profile.ca.url}}</div>
-                  </div>
-                  <div class="nested-row">
-                      <div class="nested-property">Name</div>
-                      <div class="nested-value">{{connectionProfileData.profile.ca.name}}</div>
-                  </div>
-              </div>
+            {{connectionProfileData.profile.ca}}
           </div>
         </div>
         <div class="profile-row">
@@ -282,10 +273,18 @@
       <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Advanced') > -1}">
         <div class="profile-row">
           <div class="profile-property">
-            Timeout (seconds)
+            Deploy Wait Time (seconds)
           </div>
           <div class="profile-value">
-            {{connectionProfileData.profile.timeout}}
+            {{connectionProfileData.profile.deployWaitTime}}
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-property">
+            Invoke Wait Time (seconds)
+          </div>
+          <div class="profile-value">
+            {{connectionProfileData.profile.invokeWaitTime}}
           </div>
         </div>
       </div>
@@ -517,27 +516,10 @@
             Certificate Authority (CA)*
           </div>
           <div class="profile-value">
-              <div class="nested-section" formGroupName="ca">
-                  <div class="nested-row">
-                        <div class="nested-property">
-                            CA URL*
-                        </div>
-                        <div class="nested-value margin-right">
-                            <input [ngClass]="{'error-underline': v1FormErrors.ca.url}" type="text" formControlName="url">
-                            <div *ngIf="v1FormErrors.ca.url" class="error-message">
-                            {{ v1FormErrors.ca.url}}
-                            </div>
-                        </div>
-                  </div>
-                  <div class="nested-row">
-                        <div class="nested-property">
-                            CA Name
-                        </div>
-                        <div class="nested-value margin-right">
-                            <input type="text" formControlName="name">
-                        </div>
-                  </div>
-              </div>
+            <input [ngClass]="{'error-underline': v1FormErrors.ca}" type="text" formControlName="ca">
+            <div *ngIf="v1FormErrors.ca" class="error-message">
+              {{ v1FormErrors.ca }}
+            </div>
           </div>
         </div>
         <div class="profile-row">
@@ -552,7 +534,7 @@
                     Peer Request URL*
                   </div>
                   <div class="nested-value margin-right">
-                    <input [ngClass]="{'error-underline': v1FormErrors.peers.requestURL}" type="text" formControlName="requestURL">
+                    <input [ngClass]="{'error-underline': v1FormErrors.requestURL}" type="text" formControlName="requestURL">
                     <div *ngIf="v1FormErrors.peers.requestURL" class="error-message">
                       {{ v1FormErrors.peers.requestURL }}
                     </div>
@@ -607,15 +589,28 @@
         <div class="section-title">Advanced</div>
         <div class="profile-row">
           <div class="profile-property">
-            Time out (seconds)
+            Deploy Wait Time (seconds)
           </div>
           <div class="profile-value">
-            <input [ngClass]="{'error-underline': v1FormErrors.timeout}" type="text" formControlName="timeout">
-            <div *ngIf="v1FormErrors.timeout" class="error-message">
-              {{ v1FormErrors.timeout }}
+            <input [ngClass]="{'error-underline': v1FormErrors.deployWaitTime}" type="text" formControlName="deployWaitTime">
+            <div *ngIf="v1FormErrors.deployWaitTime" class="error-message">
+              {{ v1FormErrors.deployWaitTime }}
             </div>
           </div>
         </div>
+
+        <div class="profile-row">
+          <div class="profile-property">
+            Invoke Wait Time (seconds)
+          </div>
+          <div class="profile-value">
+            <input [ngClass]="{'error-underline': v1FormErrors.invokeWaitTime}" type="text" formControlName="invokeWaitTime">
+            <div *ngIf="v1FormErrors.invokeWaitTime" class="error-message">
+              {{ v1FormErrors.invokeWaitTime }}
+            </div>
+          </div>
+        </div>
+
       </section>
       <footer>
         <div class="info"></div>

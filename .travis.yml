@@ -7,7 +7,7 @@ matrix:
         - env: DOCS=full FC_TASK=docs
         - env: SYSTEST=embedded FC_TASK=systest
         - env: SYSTEST=hlf FC_TASK=systest
-        - env: SYSTEST=hlfv1_tls FC_TASK=systest
+        - env: SYSTEST=hlfv1 FC_TASK=systest
         - env: SYSTEST=proxy FC_TASK=systest
         - env: SYSTEST=web FC_TASK=systest
 dist: trusty

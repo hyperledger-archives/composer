@@ -40,9 +40,10 @@ export class ConnectionProfileDataComponent {
         orderers: {},
         channel: '',
         mspID: '',
-        ca: {},
+        ca: '',
         keyValStore: '',
-        timeout: ''
+        deployWaitTime: '',
+        invokeWaitTime: ''
     };
 
     public v06ValidationMessages = {
@@ -99,15 +100,16 @@ export class ConnectionProfileDataComponent {
             required: 'A MSP ID is required.',
         },
         ca: {
-            url: {
-                required: 'A Certificate Authority URL is required.'
-            }
+            required: 'A Certificate Authority URL is required.',
         },
         keyValStore: {
             required: 'A Key Value Store Directory Path is required.',
         },
-        timeout: {
-            pattern: 'The Timeout (seconds) must be an integer.'
+        deployWaitTime: {
+            pattern: 'The Deploy Wait Time (seconds) must be an integer.'
+        },
+        invokeWaitTime: {
+            pattern: 'The Invoke Wait Time (seconds) must be an integer.'
         }
     };
 
@@ -261,7 +263,10 @@ export class ConnectionProfileDataComponent {
                     this.connectionProfileData ? this.connectionProfileData.profile.mspID : 'Org1MSP',
                     [Validators.required]
                 ],
-                ca: this.initCa(),
+                ca: [
+                    this.connectionProfileData ? this.connectionProfileData.profile.ca : 'http://localhost:7054',
+                    [Validators.required]
+                ],
                 peers: this.fb.array(
                     this.initPeers()
                 ),
@@ -270,8 +275,13 @@ export class ConnectionProfileDataComponent {
                     [Validators.required]
                 ],
                 // Is required and must be a number
-                timeout: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.timeout : 300,
+                deployWaitTime: [
+                    this.connectionProfileData ? this.connectionProfileData.profile.deployWaitTime : 300,
+                    [Validators.pattern('[0-9]+')]
+                ],
+                // Is required and must be a number
+                invokeWaitTime: [
+                    this.connectionProfileData ? this.connectionProfileData.profile.invokeWaitTime : 30,
                     [Validators.pattern('[0-9]+')]
                 ]
             });
@@ -285,21 +295,6 @@ export class ConnectionProfileDataComponent {
         }
 
         this.editing = true;
-    }
-    initCa() {
-        let caFormGroup;
-        if (this.connectionProfileData && this.connectionProfileData.profile && this.connectionProfileData.profile.ca) {
-            caFormGroup = this.fb.group({
-                url: [this.connectionProfileData.profile.ca.url, Validators.required],
-                name: [this.connectionProfileData.profile.ca.name]
-            });
-        } else {
-            caFormGroup = this.fb.group({
-                url: ['http://localhost:7054', Validators.required],
-                name: ['']
-            });
-        }
-        return caFormGroup;
     }
 
     initOrderers() {
@@ -412,14 +407,6 @@ export class ConnectionProfileDataComponent {
                         formErrors[field] = {};
                         for (let attribute in control.controls[0].controls) {
                             for (const key in control.controls[0].controls[attribute].errors) {
-                                formErrors[field][attribute] = messages[attribute][key];
-                            }
-                        }
-                    } else if (control.constructor.name === 'FormGroup') {
-                        formErrors[field] = {};
-                        // only used for ca currently so expects a single child to be invalid
-                        for (const attribute in control.controls) {
-                            for (const key in control.controls[attribute].errors) {
                                 formErrors[field][attribute] = messages[attribute][key];
                             }
                         }

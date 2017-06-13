@@ -46,9 +46,6 @@ jspm_packages
 .DS_Store
 *.swp
 
-# vscode folder
-.vscode
-
 #generated jsdoc
 packages/composer-website/jekylldocs/jsdoc/
 
