@@ -14,8 +14,6 @@ excerpt: Developer Guide
 
 This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.
 
-Here are the steps to get this running:
-
 ## Install {{site.data.conrefs.composer_full}}
 
 First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow this [Development Environment Install guide](../installing/development-tools.html) - As well as installing Composer, it has instructions to quickly build your {{site.data.conrefs.hlf_full}} blockchain environment (using Docker containers) which we will use later on in this guide. It includes the installation of the Yeoman app generator and some pre-requisite Angular 2 packages.
@@ -24,13 +22,11 @@ First, make sure you have installed {{site.data.conrefs.composer_full}}. Follow 
 
 If you have not already installed this, install the [VSCode editor](https://code.visualstudio.com/) an Open Source code editor for your dev environment. For Linux, download the package and install using the installation manager (eg. Ubuntu use dpkg  `dpkg -i file.deb` ).
 
-![dpkg install](../assets/img/tutorials/developer/vscode_editor_linux.png)
-
 After installation, launch VSCode and select `View > Command Palette...` then type `extensions` and select the `Extensions: Install Extensions` option. In the "Search Extensions in Marketplace" text field type `Composer` and install the {{site.data.conrefs.composer_full}} extension. You may have to 'Reload' the extension (if prompted) to activate it.
 
-![VSCode extensions](../assets/img/tutorials/developer/vscode_extensions.png)
-
-![VSCode reload](../assets/img/tutorials/developer/vscode_reload.png)
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/developer/vs_code_install.mp4" type="video/mp4" />
+</video>
 
 ## Create a Business Network Definition
 
@@ -41,15 +37,18 @@ The easiest way to get started is to clone an **existing sample business network
 ```
 git clone https://github.com/hyperledger/composer-sample-networks.git
 ```
+
 Then, make a copy of this directory in your project, called 'my-network'.
+
 ```
 cp -r ./composer-sample-networks/packages/basic-sample-network/  ./my-network
 ```
-You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder using Explorer, click OK to open the folder. You should see the file layout in the explorer pane.
 
-![Explorer](../assets/img/tutorials/developer/vscode_explorer.png)
+You should now have a folder called `my-network` (as the basis for our project) that we can start to modify. Using VSCode,  open the `my-network` folder using Explorer in VSCode, click OK to open the folder. You should see the file layout in the explorer pane.
 
-![VSCode project](../assets/img/tutorials/developer/vscode_project.png)
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/developer/open_my_network.mp4" type="video/mp4" />
+</video>
 
 ### Update your package.json file
 
@@ -59,25 +58,28 @@ Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added
 
 The start of the `package.json` file should now look like this:
 
-```
+```JavaScript
 {
-    "name": "my-network",
-    "version": "0.0.1",
-    "description": "My very first Hyperledger Composer Network",
-    "scripts": {
-        "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna",
-        "pretest": "npm run lint",
-        "lint": "eslint .",
-        "postlint": "npm run licchk",
-        "licchk": "license-check",
-        "postlicchk": "npm run doc",
-        "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
-        "test": "mocha --recursive -t 4000"
+  "name": "my-network",
+  "version": "0.0.1",
+  "description": "My very first Hyperledger Composer Network",
+  "scripts": {
+      "prepublish": "mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna",
+      "pretest": "npm run lint",
+      "lint": "eslint .",
+      "postlint": "npm run licchk",
+      "licchk": "license-check",
+      "postlicchk": "npm run doc",
+      "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
+      "test-inner": "mocha --recursive && cucumber-js",
+      "test-cover": "nyc npm run test-inner",
+      "test": "mocha --recursive -t 4000"
     },
 ...
 }
 ```
 
+Save your changes to `package.json`
 
 ## Define your Domain Model
 
@@ -109,15 +111,17 @@ transaction Trade identified by transactionId {
 }
 ```
 
+Save your changes to `models/sample.cto`
+
 The domain model defines a single asset (Commodity) and single participant (Trader) and a single transaction (Trade) that is used to modify the owner of a commodity.
 
 ## Write Transaction Processor Functions
 
 Now that the domain model has been defined, we can write the business logic for the business network definition. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.
 
-Open the file `lib/logic.js` in the left-hand pane and inspect the contents (note that you can create an many JavaScript files as convenient for your business network definition). If a JavaScript function has the `@transaction` annotation, it will be automatically invoked when a transaction of the type defined by the `@param` annotation is submitted.
+Open the file `lib/sample.js` in the left-hand pane and inspect the contents (note that you can create an many JavaScript files as convenient for your business network definition). If a JavaScript function has the `@transaction` annotation, it will be automatically invoked when a transaction of the type defined by the `@param` annotation is submitted.
 
-Now replace the entire contents of `logic.js` with the function below (including the license header info)
+Now replace the entire contents of `sample.js` with the function below (including the license header info)
 
 
 ```
@@ -151,6 +155,8 @@ function tradeCommodity(trade) {
 
 This function simply changes the `owner` property on a commodity based on the `newOwner` property on an incoming `Trade` transaction. It then persists the modified `Commodity` back into the asset registry, used to store `Commodity` instances.
 
+Save your changes to `lib/sample.js`
+
 ## Update your Access Control Rules
 
 The file `permissions.acl` defines the access control rules for the business network definition. Update the 'Default' rule to use the new namespace for the network (just cut and paste the entire contents from below if you prefer):
@@ -168,6 +174,8 @@ rule Default {
 }
 ```
 
+Save your changes to `permissions.acl`
+
 ## Generate the Business Network Archive
 
 To check that the structure of the files is valid, you can now generate a Business Network Archive (BNA) file for your business network definition. The BNA file is the deployable unit -- a file that can be deployed to the Composer runtime for execution.
@@ -175,19 +183,20 @@ To check that the structure of the files is valid, you can now generate a Busine
 Switch back to the terminal and type:
 
 ```
+cd my-network
 npm install
 ```
 
 You should see the following output:
 
 ```
-> my-network@0.0.1 prepublish /home/joe/my-network
+> my-network@0.0.1 prepublish /home/user/my-network
 > mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
 
 Creating Business Network Archive
 
-Looking for package.json of Business Network Definition in /home/joe/my-network
+Looking for package.json of Business Network Definition in /home/user/my-network
 
 Found:
 Description:My very first Hyperledger Composer Network
@@ -208,7 +217,7 @@ All code should have unit tests - even your business network logic!
 
 We are now going to add a simple unit test for the business network definition. The unit test will run against the **embedded** {{site.data.conrefs.hlf_short}} runtime. The embedded runtime actually stores the state of 'the blockchain' in-memory in a Node.js process. This embedded runtime is very useful for unit testing, as it allows you to focus on testing the business logic rather than configuring an entire Fabric. The latter is more suited to running a system test (which is also possible of course, but is out of scope for this guide).
 
-From your project working directory (my-network), open the file `test/Sample.js` and inspect the contents.
+From your project working directory (my-network), open the file `test/sample.js` and inspect the contents.
 
 The test code below will replace the namespace, types and logic of the unit test pertaining to 'my-network' as shown below. For convenience, you can copy the entire script contents below and replace the current Sample.js file contents entirely:
 
@@ -329,8 +338,9 @@ describe('Commodity Trading', () => {
 });
 ```
 
+Save your changes to `sample.js`
 
-Check that the unit tests pass by typing:
+Check that the unit tests pass by switching back to the terminal and typing:
 
 ```
 npm test
@@ -339,33 +349,33 @@ npm test
 You should see output similar to the following:
 
 ```
-~joe@ubuntu $ npm test
+~user@ubuntu $ npm test
 
-> my-network@0.0.1 pretest /home/joe/my-network
+> my-network@0.0.1 pretest /home/user/my-network
 > npm run lint
 
 
-> my-network@0.0.1 lint /home/joe/my-network
+> my-network@0.0.1 lint /home/user/my-network
 > eslint .
 
 
-> my-network@0.0.1 postlint /home/joe/my-network
+> my-network@0.0.1 postlint /home/user/my-network
 > npm run licchk
 
 
-> my-network@0.0.1 licchk /home/joe/my-network
+> my-network@0.0.1 licchk /home/user/my-network
 > license-check
 
 
-> my-network@0.0.1 postlicchk /home/joe/my-network
+> my-network@0.0.1 postlicchk /home/user/my-network
 > npm run doc
 
 
-> my-network@0.0.1 doc /home/joe/my-network
+> my-network@0.0.1 doc /home/user/my-network
 > jsdoc --pedantic --recurse -c jsdoc.conf
 
 
-> my-network@0.0.1 test /home/joe/my-network
+> my-network@0.0.1 test /home/user/my-network
 > mocha --recursive -t 4000
 
 
@@ -383,10 +393,10 @@ Commodity Trading
 Change directory to your toplevel project folder (my-network) for example:
 
 ```
-`cd $HOME/my-network`
+cd my-network
 ```
 
-Now re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the command (including the trailing '.' please note):
+Re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the following command (including the trailing '.' please note):
 
 ```
 composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
@@ -394,35 +404,70 @@ composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 
 Next, in a browser, navigate to the online Bluemix Composer Playground [https://composer-playground.mybluemix.net](https://composer-playground.mybluemix.net) and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your 'my-network' folder and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
 
-![Confirm Replace](../assets/img/tutorials/developer/import_replace_confirm.png)
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />
+</video>
 
 You can browse the structure of the Trade Commodity business network by pressing the link on the left, check the contents of the model, script files and access control.
 
-Next, press the "Test" tab at the top and create two 'Trader' participants (TRADER1 and TRADER2) by pressing the Trader link on the left and then the "Create New Participant" button.
+Next, navigate to the "Test" tab at the top and create two 'Trader' participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the "Create New Participant" button.
 
-![Create Trader](../assets/img/tutorials/developer/create_trader.png)
+```
+{
+  "$class": "org.example.mynetwork.Trader",
+  "tradeId": "TRADER1",
+  "firstName": "Jenny",
+  "lastName": "Jones"
+}
+```
 
-The trader registry (with two entries) should look like this:
+```
+{
+  "$class": "org.example.mynetwork.Trader",
+  "tradeId": "TRADER2",
+  "firstName": "Amy",
+  "lastName": "Williams"
+}
+```
+
+The Participant registry with the two entries should look like this:
 
 ![Trader Participant Registry](../assets/img/tutorials/developer/trader_registry.png)
 
-Create a new instance of a Commodity (asset) by pressing the Commodity link on the left and then the "Create New Asset" button. Create the commodity and assign the owner to be 'TRADER1'.
+Create a new instance of a Commodity (asset) by navigating to the Commodity registry on the left and then click the "Create New Asset" button. Create the commodity and assign the owner to be 'TRADER1'.
 
-![Create Commodity](../assets/img/tutorials/developer/create_commodity.png)
+```
+{
+  "$class": "org.example.mynetwork.Commodity",
+  "tradingSymbol": "ABC",
+  "description": "Test commodity",
+  "mainExchange": "Euronext",
+  "quantity": 72.297,
+  "owner": "resource:org.example.mynetwork.Trader#TRADER1"
+}
+```
 
-The commodity registry should look like this:
+The Asset registry should look like this:
 
 ![Commodity Registry](../assets/img/tutorials/developer/commodity_registry.png)
 
 Next, submit a `Trade` transaction (click the button, below left) to move the commodity from TRADER1 to TRADER2.
 
-![Submit transaction](../assets/img/tutorials/developer/submit_tx.png)
+```
+{
+  "$class": "org.example.mynetwork.Trade",
+  "commodity": "resource:org.example.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.example.mynetwork.Trader#TRADER2"
+}
+```
+
+<!-- ![Submit transaction](../assets/img/tutorials/developer/submit_tx.png) -->
 
 After processing, you should now see the transaction in the transaction registry.
 
 ![Transaction registry](../assets/img/tutorials/developer/tx_registry.png)
 
-As a result, the owner of the ABC commodity should now be TRADER2.
+As a result, the owner of the commodity ABC should now be owned TRADER2.
 
 ![Commodity registry](../assets/img/tutorials/developer/commodity_registry_after.png)
 
@@ -432,9 +477,12 @@ So far, we've created our business network definition, written a unit test and i
 
 Now it is time to deploy to a **real** blockchain! We are going to deploy the BNA (suffix .bna) file to {{site.data.conrefs.hlf_full}} v1.0; this blockchain environment was set up earlier in this guide.
 
-Switch to the terminal  and change directory to the `dist` folder containing the `my-network.bna` file and type:
+Switch to the terminal, change directory to the `dist` folder containing the `my-network.bna` file and type:
 
-    composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+```
+cd dist
+composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+```
 
 
 _Note: You'll notice that the flag '-p' specifies that we should use a v1 connection profile  to connect to the running v1.0 Fabric._
@@ -442,7 +490,7 @@ _Note: You'll notice that the flag '-p' specifies that we should use a v1 connec
 After approximately 30 seconds or so, the business network should have been deployed to your local {{site.data.conrefs.hlf_full}}. You should see output as follows:
 
 ```
-joe@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+user@ubuntu $ composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
 
 Deploying business network from archive: my-network.bna
 Business network definition:
@@ -464,7 +512,7 @@ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 Which should give the following output:
 
 ```
-joe@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
+user@ubuntu $ composer network ping -n my-network -p hlfv1 -i admin -s adminpw
 
 The connection to the network was successfully tested: my-network
 version: 0.7.2
@@ -483,9 +531,10 @@ To create the REST API we need to launch the `composer-rest-server` and tell it 
 
 Note that the module composer-rest-server would have been installed when you installed the Development environment.
 
-Now launch the server from your my-network folder with the command:
+Now launch the server by changing directory to the `my-network` folder and type:
 
 ```
+cd ..
 composer-rest-server
 ```
 
@@ -502,7 +551,7 @@ Web server listening at: http://localhost:3000
 Browse your REST API at http://localhost:3000/explorer
 ```
 
-Open a web browser and navigate to [http://localhost:3000/explorer]()
+Open a web browser and navigate to <a href="http://localhost:3000/explorer" target="blank">http://<span></span>localhost:3000/explorer</a>
 
 You should see the LoopBack API Explorer, allowing you to inspect and test the generated REST API.
 
@@ -511,6 +560,15 @@ You should see the LoopBack API Explorer, allowing you to inspect and test the g
 First, use the `POST` method on Trader to create a new instance of a Trader - first select 'List Operations' alongside the Trader to see the operations available.
 
 ![Create trader](../assets/img/tutorials/developer/lb_create_trader.png)
+
+```
+{
+  "$class": "org.example.mynetwork.Trader",
+  "tradeId": "TRADER1",
+  "firstName": "Jenny",
+  "lastName": "Jones"
+}
+```
 
 Enter the values and then press the "Try it Out" button to submit. You should see an HTTP 200 response indicating that the Trader was successfully created and stored on the blockchain.
 
@@ -524,7 +582,7 @@ Similarly you can create/read/update/delete Commodities by using the appropriate
 
 You are now ready to create a skeleton Angular web application to interact with your business network.
 
-Shut the `composer-rest-server` process down by pressing CTRL-C in the terminal window).
+Shut the `composer-rest-server` process down by pressing CTRL-C in the terminal window.
 
 Run the {{site.data.conrefs.composer_full}} generator, selecting the options below to generate an Angular application and to also generate a new REST API when prompted:
 
@@ -546,31 +604,24 @@ create src/app/Commodity/Commodity.component.css
 
 Wait a couple of minutes for the install of the application dependencies to complete.
 
-Next, change directory to your new Angular application directory (eg. my-app) located in your homw directory (eg. /home/joe):
+Next, change directory to your new Angular application directory (eg. my-app) located in your home directory (eg. /home/joe):
 
 ```
-cd $HOME/my-app
-```
-
-Run:
-
-```
+cd my-app
 npm start
 ```
 
-Your application is running. You should see the `composer-rest-server` start, and then Angular webpacks the web application - it serves the content at URL: [http://localhost:4200]()
+Your application is running. You should see the `composer-rest-server` start, and then Angular webpacks the web application - it serves the content at URL: <a href="http://localhost:4200" target="blank">http://<span></span>localhost:4200</a>
 
 If you navigate to this URL and press the "Assets" drop down (at the top-right of the page) you can see any existing instances of Commodity stored on the {{site.data.conrefs.hlf_full}} in the table (we have not stored them on blockchain yet!). You can create new instances using the "Add Asset" button. Note that the Angular skeleton does not yet allow you to create Participants, so you would need to create a test Trader instance to act as the owner of the Commodity (being added here), using the Loopback Swagger UI ( (ie using Playground) before you can create a Commodity.
 
-![Add commodity](../assets/img/tutorials/developer/skeleton_add_asset.png)
-
-![Asset listing refreshed](../assets/img/tutorials/developer/commodity_app.png)
-
-
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="{{ site.baseurl }}/assets/img/tutorials/developer/my_app.mp4" type="video/mp4" />
+</video>
 
 # Congratulations!
 
-Well done, you've now completed this tutorial and I hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!
+Well done, you've now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!
 
 
 ## Related Concepts
