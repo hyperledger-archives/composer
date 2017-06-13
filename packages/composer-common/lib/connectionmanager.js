@@ -66,6 +66,20 @@ class ConnectionManager {
     }
 
     /**
+     * Import an identity into a profile wallet or keystore
+     *
+     * @param {object} profileDefinition the profile definition
+     * @param {string} id the id to associate with the identity
+     * @param {string} publicKey the public key
+     * @param {string} privateKey the private key
+     * @returns {Promise} a promise which resolves when the identity is imported
+     *
+     * @memberOf HLFConnectionManager
+     */
+    importIdentity(profileDefinition, id, publicKey, privateKey) {
+        return Promise.reject(new Error('Import identity not supported by this connection profile'));
+    }
+    /**
      * Stop serialization of this object.
      * @return {Object} An empty object.
      */

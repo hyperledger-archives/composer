@@ -5,7 +5,7 @@ import { BusinessNetworkDefinition, ModelFile } from 'composer-common';
 import { AlertService } from '../services/alert.service';
 
 @Component({
-    selector: 'add-file-model',
+    selector: 'add-file-modal',
     templateUrl: './add-file.component.html',
     styleUrls: ['./add-file.component.scss'.toString()]
 })

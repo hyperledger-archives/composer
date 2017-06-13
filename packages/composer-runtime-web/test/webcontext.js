@@ -21,6 +21,8 @@ const Engine = require('composer-runtime').Engine;
 const IdentityService = require('composer-runtime').IdentityService;
 const EventService = require('composer-runtime').EventService;
 const HTTPService = require('composer-runtime').HTTPService;
+const QueryService = require('composer-runtime').QueryService;
+
 const WebContainer = require('..').WebContainer;
 const WebContext = require('..').WebContext;
 
@@ -86,7 +88,7 @@ describe('WebContext', () => {
 
     describe('#getHTTPService', () => {
 
-        it('should return the container event service', () => {
+        it('should return the container http service', () => {
             let context = new WebContext(mockEngine, 'bob1');
             context.getHTTPService().should.be.an.instanceOf(HTTPService);
         });
@@ -95,6 +97,23 @@ describe('WebContext', () => {
             let context = new WebContext(mockEngine, 'bob1');
             context.httpService = {};
             context.getHTTPService().should.deep.equal({});
+        });
+    });
+
+    describe('#getQueryService', () => {
+
+        it('should return the container query service', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.getQueryService().should.be.an.instanceOf(QueryService);
+
+            // and again, to test caching
+            context.getQueryService().should.be.an.instanceOf(QueryService);
+        });
+
+        it('should return this.queryService if it is set', () => {
+            let context = new WebContext(mockEngine, 'bob1');
+            context.httpService = {};
+            context.getQueryService().should.deep.equal({});
         });
     });
 
