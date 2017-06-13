@@ -26,7 +26,7 @@ func EnableLogging(stub shim.ChaincodeStubInterface) {
 	levelBytes, err := stub.GetState("ComposerLogLevel")
 	if err != nil || levelBytes == nil {
 		var isSet bool
-		levelStr, isSet = os.LookupEnv("CORE_CHAINCODE_LOGLEVEL")
+		levelStr, isSet = os.LookupEnv("CORE_CHAINCODE_LOGGING_LEVEL")
 		if !isSet {
 			levelStr = "INFO"
 		}
