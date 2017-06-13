@@ -33,8 +33,9 @@ describe('Asset system tests', function () {
     let client;
 
     before(function () {
+        // In this systest we are intentionally not fully specifying the model file with a fileName, but supplying "UNKNOWN"
         const modelFiles = [
-            { fileName: 'models/assets.cto', contents:fs.readFileSync(path.resolve(__dirname, 'data/assets.cto'), 'utf8') }
+            { fileName: 'UNKNOWN', contents:fs.readFileSync(path.resolve(__dirname, 'data/assets.cto'), 'utf8') }
         ];
         businessNetworkDefinition = new BusinessNetworkDefinition('systest.assets@0.0.1', 'The network for the asset system tests');
         modelFiles.forEach((modelFile) => {

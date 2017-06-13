@@ -40,6 +40,19 @@ const compiledScriptBundleCache = LRU(8);
 class Context {
 
     /**
+     * Get a business network from the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @return {BusinessNetworkDefinition} The business network definition.
+     */
+    static getCachedBusinessNetwork(businessNetworkHash) {
+        const method = 'getCachedBusinessNetwork';
+        LOG.entry(method, businessNetworkHash);
+        const result = businessNetworkCache.get(businessNetworkHash);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
      * Store a business network in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
@@ -49,6 +62,19 @@ class Context {
         LOG.entry(method, businessNetworkHash, businessNetworkDefinition);
         businessNetworkCache.set(businessNetworkHash, businessNetworkDefinition);
         LOG.exit(method);
+    }
+
+    /**
+     * Store a compiled script bundle in the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @return {CompiledScriptBundle} The compiled script bundle.
+     */
+    static getCachedCompiledScriptBundle(businessNetworkHash) {
+        const method = 'getCachedCompiledScriptBundle';
+        LOG.entry(method, businessNetworkHash);
+        const result = compiledScriptBundleCache.get(businessNetworkHash);
+        LOG.exit(method, result);
+        return result;
     }
 
     /**

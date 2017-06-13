@@ -340,24 +340,6 @@ module.exports = function (options) {
        */
       new LoaderOptionsPlugin({}),
 
-      // Fix Angular 2
-      new NormalModuleReplacementPlugin(
-        /facade(\\|\/)async/,
-        require.resolve('@angular/core/src/facade/async.js')
-      ),
-      new NormalModuleReplacementPlugin(
-        /facade(\\|\/)collection/,
-        require.resolve('@angular/core/src/facade/collection.js')
-      ),
-      new NormalModuleReplacementPlugin(
-        /facade(\\|\/)errors/,
-        require.resolve('@angular/core/src/facade/errors.js')
-      ),
-      new NormalModuleReplacementPlugin(
-        /facade(\\|\/)lang/,
-        require.resolve('@angular/core/src/facade/lang.js')
-      ),
-
       new webpack.ProvidePlugin({
         jQuery: 'jquery',
         $: 'jquery',

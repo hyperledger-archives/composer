@@ -30,7 +30,7 @@ editor-file {
     padding: $space-large;
     min-height: 63vh;
     max-height: 63vh;
-    overflow-y: auto;
+    overflow-y: scroll;
   }
 }
 
@@ -42,4 +42,9 @@ editor-file {
 .CodeMirror, .CodeMirror-scroll {
   min-height: 63vh;
   max-height: 63vh;
+}
+
+.ps.ps--active-x>.ps__scrollbar-x-rail,
+.ps.ps--active-y>.ps__scrollbar-y-rail{
+    opacity: 0.6;
 }

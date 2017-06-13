@@ -9,7 +9,7 @@ class BusinessNetworkDefinition {
    + String getVersion() 
    + String getDescription() 
    + Promise fromArchive(Buffer) 
-   + Buffer toArchive() 
+   + Buffer toArchive(Object) 
    + Promise fromDirectory(String,Object,Object,boolean,boolean) 
    + Introspector getIntrospector() 
    + Factory getFactory() 

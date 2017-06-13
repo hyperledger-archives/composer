@@ -35,6 +35,7 @@ let should = chai.should();
 class MockCheckOverFlowDirective {
     @Output() public hasOverFlow: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Input() public changed: boolean;
+    @Input() public expanded: boolean;
 }
 
 describe(`RegistryComponent`, () => {
