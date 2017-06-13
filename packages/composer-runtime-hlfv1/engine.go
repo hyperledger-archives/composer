@@ -96,12 +96,8 @@ func (engine *Engine) Init(context *Context, function string, arguments []string
 	logger.Debug("Entering Engine.Init", context, function, arguments)
 	defer func() { logger.Debug("Exiting Engine.Init", channel) }()
 
-	// Lock the JavaScript virtual machine.
-	vm := context.VM
-	vm.Lock()
-	defer vm.Unlock()
-
 	// Ensure the JavaScript stack is reset.
+	vm := context.VM
 	defer vm.SetTop(vm.GetTop())
 
 	// Create a channel to receieve the response from JavaScript.
@@ -133,17 +129,13 @@ func (engine *Engine) Init(context *Context, function string, arguments []string
 	return channel
 }
 
-// Invoke executes the Engine.query(context, function, arguments, callback) JavaScript function.
+// Invoke executes the Engine.invoke(context, function, arguments, callback) JavaScript function.
 func (engine *Engine) Invoke(context *Context, function string, arguments []string) (channel chan EngineCallback) {
 	logger.Debug("Entering Engine.Invoke", context, function, arguments)
 	defer func() { logger.Debug("Exiting Engine.Invoke", channel) }()
 
-	// Lock the JavaScript virtual machine.
-	vm := context.VM
-	vm.Lock()
-	defer vm.Unlock()
-
 	// Ensure the JavaScript stack is reset.
+	vm := context.VM
 	defer vm.SetTop(vm.GetTop())
 
 	// Create a channel to receieve the response from JavaScript.

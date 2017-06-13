@@ -15,59 +15,68 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/robertkrimen/otto"
+	duktape "gopkg.in/olebedev/go-duktape.v3"
 )
 
 // QueryService is a go wrapper around the QueryService JavaScript class
 type QueryService struct {
-	This *otto.Object
+	VM   *duktape.Context
 	Stub shim.ChaincodeStubInterface
 }
 
-// NewQueryService creates a Go wrapper around a new instance of the QueryService JavaScript class.
-func NewQueryService(vm *otto.Otto, context *Context, stub shim.ChaincodeStubInterface) (result *QueryService) {
-	logger.Debug("Entering NewQueryService", vm, context, &stub)
-	defer func() { logger.Debug("Exiting NewQueryService", result) }()
+// NewQueryService creates a Go Wrapper around a new instance of the QueryService JavaScript class
+func NewQueryService(vm *duktape.Context, context *Context, stub shim.ChaincodeStubInterface) (result *QueryService) {
+	logger.Debug("Entering QueryService", vm, context, &stub)
+	defer func() { logger.Debug("Exiting QueryService", result) }()
 
-	// Create a new instance of the JavaScript chaincode class.
-	temp, err := vm.Call("new concerto.QueryService", nil, context.This)
+	// Ensure the JavaScript stack is reset
+	defer vm.SetTop(vm.GetTop())
+
+	// Create a new Query service
+	result = &QueryService{VM: vm, Stub: stub}
+
+	// Create a new instance of the JavaScript QueryService class
+	vm.PushGlobalObject()                // [ global ]
+	vm.GetPropString(-1, "composer")     // [ global composer ]
+	vm.GetPropString(-1, "QueryService") //[ global composer QueryService ]
+	err := vm.Pnew(0)                    // [ global composer theQueryService ]
 	if err != nil {
-		panic(fmt.Sprintf("Failed to create new instance of QueryService JavaScript class: %v", err))
-	} else if !temp.IsObject() {
-		panic("New instance of QueryService JavaScript class is not an object")
-	}
-	object := temp.Object()
-
-	// Add a pointer to the Go object into the JavaScript object.
-	result = &QueryService{This: temp.Object(), Stub: stub}
-	err = object.Set("$this", result)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to store Go object in QueryService JavaScript object: %v", err))
+		logger.Debug("Error received on vm.Pnew(0)", err)
+		panic(err)
 	}
 
-	// Bind the methods into the JavaScript object.
-	result.This.Set("_queryNative", result.queryNative)
+	// Store the Query service into the global stash
+	vm.PushGlobalStash()                 // [ global composer theQueryService stash]
+	vm.Dup(-2)                           // [ global composer theQueryService stash theQueryService ]
+	vm.PutPropString(-2, "queryService") // [ global composer theQueryService stash ]
+	vm.Pop()                             // [ global composer theQueryService]
+
+	//Bind the methods into the JavaScript object.
+	vm.PushGoFunction(result.queryNative) // [global composer theQueryService query]
+	vm.PushString("bind")                 // [global composer theQueryService query "bind"]
+	vm.Dup(-3)                            // [global composer theQueryService query "bind" theQueryService]
+	vm.PcallProp(-3, 1)                   // [global composer theQueryService query boundCommit ]
+	vm.PutPropString(-3, "_queryNative")  // [global composer theQueryService ]
+
+	// return a new query service
+
 	return result
 }
 
-// queryNative ...
-func (queryService *QueryService) queryNative(call otto.FunctionCall) (result otto.Value) {
-	logger.Debug("Entering QueryService.queryNative", call)
+// Execute a CouchDB query and returns the result to the caller
+func (queryService *QueryService) queryNative(vm *duktape.Context) (result int) {
+	logger.Debug("Entering QueryService.queryNative", vm)
 	defer func() { logger.Debug("Exiting QueryService.queryNative", result) }()
 
-	callback := call.Argument(0)
-	if !callback.IsFunction() {
-		panic(fmt.Errorf("callback not specified or is not a string"))
-	}
+	// argument 0 is the CouchDB queryString
+	queryString := vm.RequireString(0)
+	logger.Debug("QueryService.queryNative CouchDB query: ", queryString)
 
-	object, _ := call.Otto.Object(`({data: "Not implemented"})`)
-	_, err := callback.Call(callback, nil, object)
+	// argument 1 is the callback function (err,response)
+	vm.RequireFunction(1)
 
-	if err != nil {
-		panic(err)
-	}
-	return otto.UndefinedValue()
+	vm.PushErrorObjectVa(duktape.ErrError, "%s", "The native query functionality is not available on this Blockchain platform")
+	vm.Throw()
+	return 0
 }
