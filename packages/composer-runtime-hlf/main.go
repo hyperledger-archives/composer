@@ -25,7 +25,7 @@ import (
 var bigUglyMutex = &sync.Mutex{}
 
 // The logger for all code in this chaincode.
-var logger = shim.NewLogger("Concerto")
+var logger = shim.NewLogger("Composer")
 
 // main starts the shim, which establishes the connection to the Hyperledger
 // Fabric and registers the chaincode for deploys, queries, and invokes.

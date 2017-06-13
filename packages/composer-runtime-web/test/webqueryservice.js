@@ -38,11 +38,10 @@ describe('WebQueryService', () => {
 
 
     describe('#queryNative', () => {
-        it ('should return the query string', () => {
-            return queryService.queryNative('dummyString')
-                .then((result) => {
-                    result.should.deep.equal({data: 'not implemented'});
-                });
+        it ('should throw as not supported on this runtime', () => {
+            (() => {
+                queryService.queryNative('dummyString');
+            }).should.throw(/not available on this Blockchain platform/);
         });
     });
 });
