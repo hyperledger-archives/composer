@@ -19,6 +19,7 @@ const WebDataService = require('./webdataservice');
 const WebIdentityService = require('./webidentityservice');
 const WebHTTPService = require('./webhttpservice');
 const WebEventService = require('./webeventservice');
+const WebQueryService = require('./webqueryservice');
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -75,6 +76,17 @@ class WebContext extends Context {
             this.httpService = new WebHTTPService();
         }
         return this.httpService;
+    }
+
+    /**
+     * Get the query service provided by the chaincode container.
+     * @return {QueryService} The query service provided by the chaincode container.
+     */
+    getQueryService() {
+        if (!this.queryService) {
+            this.queryService = new WebQueryService();
+        }
+        return this.queryService;
     }
 
 }
