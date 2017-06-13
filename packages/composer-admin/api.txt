@@ -11,5 +11,4 @@ class AdminConnection {
    + Promise update(BusinessNetworkDefinition) 
    + Promise ping() 
    + Promise list() 
-   + Promise importIdentity(string,string,string,string) 
 }

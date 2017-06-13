@@ -25,7 +25,6 @@ const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
 const EventService = require('../lib/eventservice');
 const HTTPService = require('../lib/httpservice');
-const QueryService = require('../lib/queryservice');
 const Context = require('../lib/context');
 
 const chai = require('chai');
@@ -43,7 +42,6 @@ describe('Api', () => {
     let mockRegistryManager;
     let mockEventService;
     let mockHTTPService;
-    let mockQueryService;
     let mockContext;
     let api;
 
@@ -54,9 +52,8 @@ describe('Api', () => {
         mockRegistryManager = sinon.createStubInstance(RegistryManager);
         mockEventService = sinon.createStubInstance(EventService);
         mockHTTPService = sinon.createStubInstance(HTTPService);
-        mockQueryService = sinon.createStubInstance(QueryService);
         mockContext = sinon.createStubInstance(Context);
-        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockHTTPService, mockEventService, mockQueryService, mockContext);
+        api = new Api(mockFactory, mockSerializer, mockParticipant, mockRegistryManager, mockHTTPService, mockEventService, mockContext);
     });
 
     describe('#getMethodNames', () => {
@@ -191,24 +188,6 @@ describe('Api', () => {
                 $class: 'org.doge.DogeEvent',
                 assetId: 'doge1'
             });
-        });
-    });
-
-    describe('#queryNative', () => {
-        let queryString;
-
-        it('should call queryNative using the query service', () => {
-            mockQueryService.queryNative.returns(Promise.resolve());
-            api.queryNative(queryString);
-            sinon.assert.calledOnce(mockQueryService.queryNative);
-
-        });
-
-        it('should reject the queryNative using the query service', () => {
-            mockQueryService.queryNative.returns(Promise.reject());
-            api.queryNative(queryString);
-            sinon.assert.calledOnce(mockQueryService.queryNative);
-
         });
     });
 

@@ -76,7 +76,7 @@ export class InitializationService {
                 const connectionProfileNames = Object.keys(connectionProfiles).sort();
                 return connectionProfileNames.reduce((result, connectionProfileName) => {
                     return result.then(() => {
-                        console.log('Checking for connection profile', connectionProfileName);
+                        console.log('Checking for connection profile...', connectionProfileName);
                         return this.connectionProfileService.getProfile(connectionProfileName)
                             .catch((error) => {
                                 console.log('Connection profile does not exist, creating');

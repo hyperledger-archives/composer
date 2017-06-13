@@ -37,9 +37,8 @@ let results = yargs
     .version(function() {
         return getInfo('composer-cli')+
           getInfo('composer-admin')+getInfo('composer-client')+
-          getInfo('composer-common')+getInfo('composer-runtime-hlf')+
-          getInfo('composer-connector-hlf')+getInfo('composer-runtime-hlfv1')+
-          getInfo('composer-connector-hlfv1');
+          getInfo('composer-common')+getInfo('composer-runtime')+
+          getInfo('composer-connector-hlfv1')+getInfo('composer-runtime-hlfv1');
     })
     .describe('v', 'show version information')
     .command(

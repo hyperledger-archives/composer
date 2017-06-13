@@ -36,14 +36,13 @@ export class AddConnectionProfileComponent {
     private addConnectionProfileKeyValStore: string = null;
     private addConnectionProfileDeployWaitTime: number = null;
     private addConnectionProfileInvokeWaitTime: number = null;
-    private addConnectionProfileTimeout: number = null;
     private addConnectionProfileCertificate: string = null;
     private addConnectionProfileCertificatePath: string = null;
 
     // V1 attributes
     private addConnectionProfileOrderers: any[] = null;
     private addConnectionProfilePeers: any[] = null;
-    private addConnectionProfileCertificateAuthority: any = null;
+    private addConnectionProfileCertificateAuthority: string = null;
     private addConnectionProfileChannel: string = null;
     private addConnectionProfileMspId: string = null;
 
@@ -133,7 +132,8 @@ export class AddConnectionProfileComponent {
                 this.addConnectionProfileKeyValStore = profileData.keyValStore;
                 this.addConnectionProfileChannel = profileData.channel;
                 this.addConnectionProfileMspId = profileData.mspID;
-                this.addConnectionProfileTimeout = profileData.timeout;
+                this.addConnectionProfileDeployWaitTime = profileData.deployWaitTime;
+                this.addConnectionProfileInvokeWaitTime = profileData.invokeWaitTime;
                 this.addConnectionProfile();
             });
         } else {
@@ -176,7 +176,8 @@ export class AddConnectionProfileComponent {
                     keyValStore: this.addConnectionProfileKeyValStore,
                     channel: this.addConnectionProfileChannel,
                     mspID: this.addConnectionProfileMspId,
-                    timeout: this.addConnectionProfileTimeout,
+                    deployWaitTime: this.addConnectionProfileDeployWaitTime,
+                    invokeWaitTime: this.addConnectionProfileInvokeWaitTime
                 };
             });
         } else {
@@ -232,7 +233,8 @@ export class AddConnectionProfileComponent {
                 keyValStore: this.addConnectionProfileKeyValStore,
                 channel: this.addConnectionProfileChannel,
                 mspID: this.addConnectionProfileMspId,
-                timeout: this.addConnectionProfileTimeout
+                deployWaitTime: this.addConnectionProfileDeployWaitTime,
+                invokeWaitTime: this.addConnectionProfileInvokeWaitTime
             };
         } else {
             throw new Error('Unknown connection profile version selected');
@@ -296,10 +298,7 @@ export class AddConnectionProfileComponent {
                 hostnameOverride: ''
             }];
 
-            this.addConnectionProfileCertificateAuthority = {
-                url: 'http://localhost:7054',
-                name: ''
-            };
+            this.addConnectionProfileCertificateAuthority = 'http://localhost:7054';
             this.addConnectionProfilePeers = [{
                 requestURL: 'grpc://localhost:7051',
                 eventURL: 'grpc://localhost:7053',
@@ -309,7 +308,8 @@ export class AddConnectionProfileComponent {
             this.addConnectionProfileKeyValStore = '/tmp/keyValStore';
             this.addConnectionProfileChannel = 'mychannel';
             this.addConnectionProfileMspId = 'Org1MSP';
-            this.addConnectionProfileTimeout = 5 * 60;
+            this.addConnectionProfileDeployWaitTime = 5 * 60;
+            this.addConnectionProfileInvokeWaitTime = 30;
         });
 
     }
