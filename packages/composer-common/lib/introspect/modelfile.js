@@ -26,6 +26,8 @@ const ParseException = require('./parseexception');
 const ModelUtil = require('../modelutil');
 const Globalize = require('../globalize');
 
+// const util = require('util');
+
 /**
  * Class representing a Model File. A Model File contains a single namespace
  * and a set of model elements: assets, transactions etc.
@@ -79,15 +81,26 @@ class ModelFile {
             this.imports = this.ast.imports;
         }
 
+        let decorate = false;
         let systemNamespace = ModelUtil.getSystemNamespace();
         if(this.namespace !== systemNamespace) {
-            this.imports.unshift(systemNamespace + '.*');
+            this.imports.unshift(systemNamespace + '.Asset');
+            decorate = true;
         }
+        // console.log('\n========\n Parsed AST for the model file ');
+        // console.log(util.inspect(this.ast,{ depth: 7, colors: true, }));
 
         for(let n=0; n < this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
 
+            if (thing.classExtension === null && decorate){
+                // all good keep decorating
+            } else {
+                decorate=false;
+            }
+
             if(thing.type === 'AssetDeclaration') {
+                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: 'Asset' } }; }
                 this.declarations.push( new AssetDeclaration(this, thing) );
             }
             else if(thing.type === 'TransactionDeclaration') {
@@ -161,8 +174,6 @@ class ModelFile {
      * @private
      */
     validate() {
-
-        console.log(this.imports, 'IMPORTS');
 
         // Validate all of the imports to check that they reference
         // namespaces or types that actually exist.
@@ -265,19 +276,16 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-        //console.log('resolveImport ' + this.getNamespace() + ' ' + type );
-
-        console.log(type, 'RESOLVETYPE');
         for(let n=0; n < this.imports.length; n++) {
             let importName = this.imports[n];
-            console.log(importName, 'IMPORTNAME');
+            //console.log('>>>>> importName');
             if( ModelUtil.getShortName(importName) === type ) {
                 return importName;
             } else if (ModelUtil.isWildcardName(importName)) {
                 const wildcardNamespace = ModelUtil.getNamespace(importName);
-                console.log(wildcardNamespace,'WILDNAME');
+
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
-                console.log(modelFile, 'MODELFILE');
+
                 if (modelFile && modelFile.isLocalType(type)) {
                     return wildcardNamespace + '.' + type;
                 }

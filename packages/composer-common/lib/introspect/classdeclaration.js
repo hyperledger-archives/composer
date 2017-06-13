@@ -148,11 +148,14 @@ class ClassDeclaration {
         // if we have a super type make sure it exists
         if(this.superType!==null) {
             let classDecl = null;
+            // console.log('>>>>'+this.superType);
             if(this.getModelFile().isImportedType(this.superType)) {
                 let fqnSuper = this.getModelFile().resolveImport(this.superType);
                 classDecl = this.modelFile.getModelManager().getType(fqnSuper);
+                // console.log('>>>>imported');
             }
             else {
+                // console.log('>>>>local');
                 classDecl = this.getModelFile().getType(this.superType);
             }
 
@@ -173,7 +176,7 @@ class ClassDeclaration {
             if(!field) {
                 let formatter = Globalize('en').messageFormatter('classdeclaration-validate-identifiernotproperty');
                 throw new IllegalModelException(formatter({
-                    'class': this.name,
+                    'class': this.namie,
                     'idField': this.idField
                 }), this.modelFile, this.ast.location);
             }

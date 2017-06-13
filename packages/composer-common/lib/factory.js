@@ -106,6 +106,7 @@ class Factory {
         }
 
         let modelFile = this.modelManager.getModelFile(ns);
+        console.log(modelFile);
         if(!modelFile) {
             let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
             throw new Error(formatter({

@@ -1,4 +1,4 @@
-/*
+/*;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,9 @@ const ModelFile = require('./introspect/modelfile');
 
 const ENCODING = 'utf8';
 
+const LOG = require('./log/logger').getLog('common/ModelManager');
+
+// const util = require('util');
 /**
  * <p>
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled
@@ -54,12 +57,12 @@ class ModelManager {
     constructor() {
         this.modelFiles = {};
 
-        console.log(path.dirname(__filename));
         let systemModelPath = path.join(path.dirname(__filename), '../models/system.cto');
         // console.log(systemModelPath);
         let systemModelContents = fs.readFileSync(systemModelPath, ENCODING);
         // console.log(systemModelContents);
         this.addModelFile(systemModelContents);
+        LOG.info('constructor','Loaded the core types');
     }
 
     /**
@@ -107,6 +110,9 @@ class ModelManager {
      * @return {Object} The newly added model file (internal).
      */
     addModelFile(modelFile, fileName) {
+        const NAME = 'addModelFile';
+        LOG.info(NAME,'addModelFile',modelFile,fileName);
+
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             m.validate();
@@ -132,6 +138,8 @@ class ModelManager {
      * @returns {Object} The newly added model file (internal).
      */
     updateModelFile(modelFile, fileName) {
+        const NAME = 'updateModelFile';
+        LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             if (!this.modelFiles[m.getNamespace()]) {
@@ -173,6 +181,8 @@ class ModelManager {
      * @returns {Object[]} The newly added model files (internal).
      */
     addModelFiles(modelFiles, fileNames) {
+        const NAME = 'addModelFiles';
+        LOG.info(NAME,'addModelFiles',modelFiles,fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -196,6 +206,9 @@ class ModelManager {
                     newModelFiles.push(modelFile);
                 }
             }
+            // console.log('===== Model files');
+            // console.log(util.inspect(this.modelFiles,{ depth: 7 , colors: true, }));
+
 
             // re-validate all the model files
             for (let ns in this.modelFiles) {
@@ -250,7 +263,6 @@ class ModelManager {
         // is the type a primitive?
         if (!ModelUtil.isPrimitiveType(type)) {
 
-            console.log(type, 'TYPE');
             let ns = ModelUtil.getNamespace(type);
             let modelFile = this.getModelFile(ns);
 

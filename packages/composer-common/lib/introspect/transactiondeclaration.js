@@ -48,7 +48,7 @@ class TransactionDeclaration extends ClassDeclaration {
         //     this.superType = 'Transaction';
         // }
 
-        console.log(this.superType);
+
 
         // we add the timestamp property that all transactions must have
         // if(this.getProperty('timestamp') === null) {

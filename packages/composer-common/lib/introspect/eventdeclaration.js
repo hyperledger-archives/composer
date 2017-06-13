@@ -48,7 +48,6 @@ class EventDeclaration extends ClassDeclaration {
         //     this.superType = 'Event';
         // }
 
-        console.log(this.superType);
 
         // we add the timestamp property that all events must have
         // if(this.getProperty('timestamp') === null) {

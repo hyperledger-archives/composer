@@ -21,14 +21,14 @@ namespace org.hyperledger.composer.system
  * Implicit super-type for all Assets
  */
 abstract asset Asset {
-
+   o String superNotes
 }
 
 /**
  * Implicit super-type for all Participants
  */
 abstract participant Participant {
-
+   o String superNotes
 }
 
 /**
@@ -37,12 +37,15 @@ abstract participant Participant {
 abstract transaction Transaction identified by transactionID {
   o String transactionID
   o DateTime timestamp
+  o String superNotes
 }
 
 /**
  * Implicit super-type for all Events
+
+   --> Transaction transaction
  */
 abstract event Event identified by eventID {
   o String eventID
-  --> Transaction transaction
+
 }
