@@ -90,7 +90,7 @@ module.exports = generators.Base.extend({
                 type: 'input',
                 name: 'license',
                 message: 'License:',
-                default: 'apache-2',
+                default: 'Apache-2.0',
                 store: true,
                 validate: function(input) {
                     if(input !== null && input !== undefined && input !== '') {
