@@ -66,7 +66,7 @@ class ModelFile {
         }
         catch(err) {
             if(err.location && err.location.start) {
-                throw new ParseException( 'Syntax error in file ' + this.fileName + '. ' + err.message +  ' Line ' + err.location.start.line + ' column ' + err.location.start.column );
+                throw new ParseException(err.message, err.location);
             }
             else {
                 throw err;
