@@ -89,7 +89,7 @@ module.exports = yeoman.Base.extend({
                         type: 'input',
                         name: 'appDescription',
                         message: 'Description:',
-                        default: 'Skeleton Hyperledger Composer Angular2 project',
+                        default: 'Hyperledger Composer Angular project',
                         store: true,
                         validate: function(input) {
                             if(input !== null && input !== undefined && input !== '') {
@@ -247,7 +247,7 @@ module.exports = yeoman.Base.extend({
                             type: 'input',
                             name: 'appDescription',
                             message: 'Description:',
-                            default: 'Skeleton Hyperledger Composer Angular2 project',
+                            default: 'Hyperledger Composer Angular project',
                             store: true,
                             validate: function(input) {
                                 if(input !== null && input !== undefined && input !== '') {
@@ -285,7 +285,22 @@ module.exports = yeoman.Base.extend({
                                     return 'Author email cannot be null or empty.';
                                 }
                             }
-                        },{
+                        },
+                        {
+                            type: 'input',
+                            name: 'license',
+                            message: 'License:',
+                            default: 'apache-2',
+                            store: true,
+                            validate: function(input) {
+                                if(input !== null && input !== undefined && input !== '') {
+                                    return true;
+                                } else {
+                                    return 'Licence cannot be null or empty.';
+                                }
+                            }
+                        },
+                        {
                             type: 'input',
                             name: 'fileName',
                             message: 'Business network archive file (Path from the current working directory):',
@@ -368,7 +383,7 @@ module.exports = yeoman.Base.extend({
                             {
                                 type: 'list',
                                 name: 'apiNamespace',
-                                message: 'Are namespaces used in the generated REST API?',
+                                message: 'Should namespaces be used in the generated REST API?',
                                 default: 'never',
                                 store: true,
                                 choices: [
@@ -453,10 +468,8 @@ module.exports = yeoman.Base.extend({
         let completedApp = new Promise((resolve, reject) => {
 
             if(liveNetwork){
-                console.log('About to connect to a running business network');
                 return businessNetworkConnection.connect(connectionProfileName, networkIdentifier, enrollmentId, enrollmentSecret)
                     .then((result) => {
-                        console.log('Connected to:',networkIdentifier);
                         businessNetworkDefinition = result;
                         return businessNetworkConnection.disconnect();
                     })
@@ -467,9 +480,7 @@ module.exports = yeoman.Base.extend({
                     });
             }
             else{
-                console.log('About to read a business network archive file');
                 fs.readFile(fileName,(err,buffer) => {
-                    console.log('Reading file:',fileName);
                     return BusinessNetworkDefinition.fromArchive(buffer)
                         .then((result) => {
                             businessNetworkDefinition = result;

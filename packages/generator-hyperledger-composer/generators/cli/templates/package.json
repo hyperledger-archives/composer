@@ -22,7 +22,7 @@
     "Hyperledger Composer"
   ],
   "author": "<%= authorName %>",
-  "license": "Apache2",
+  "license": "<%= license %>",
   "dependencies": {
     "<%= npmNetworkDependancy %>": "latest",
     "composer-client": "latest",
