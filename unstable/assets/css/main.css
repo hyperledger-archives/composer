@@ -154,7 +154,6 @@ blockquote p {
 
 .SiteWrapper {
   overflow: hidden;
-
 }
 
 /* Page header and nav
@@ -324,6 +323,7 @@ Navigation
 
 .content-chunk {
   margin-bottom: 4em;
+  min-height: 100vh;
 }
 
 .content-chunk p:first-child {
