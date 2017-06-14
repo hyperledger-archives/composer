@@ -23,7 +23,7 @@ $callout: #FFD640;
 html {
     font-family: $font-stack;
     font-size: 16px;
-    min-height: 100vh;
+    height: 100%;
     -webkit-font-smoothing: antialiased;
 	  -moz-osx-font-smoothing: grayscale;
 }
