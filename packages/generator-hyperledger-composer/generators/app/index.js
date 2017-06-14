@@ -23,23 +23,23 @@ module.exports = generators.Base.extend({
         this.options = this.env.options;
     },
 
-  /**
+    /**
    * @returns {Object} List of questins to ask
    */
     prompting: function() {
-        console.log('Welcome to the Hyperledger Composer Skeleton Application Generator');
+        console.log('Welcome to the Hyperledger Composer project generator');
         const questions = [{
             type: 'list',
             name: 'generatorType',
-            message: 'Please select the type of Application:',
+            message: 'Please select the type of project:',
             choices: [{
                 name: 'CLI Application',
                 value: 'CLI'
             },{
-                name: 'Angular 2 Application',
-                value: 'Angular2'
+                name: 'Angular Application',
+                value: 'Angular'
             }, {
-                name: 'Skeleton Business Network',
+                name: 'Business Network',
                 value: 'businessnetwork'
             }
             ],
@@ -62,7 +62,7 @@ module.exports = generators.Base.extend({
             console.log('You can run this generator using: \'yo hyperledger-composer:cli\'');
             this.composeWith(require.resolve('../cli'));
         }
-        else if(this.generatorType === 'Angular2'){
+        else if(this.generatorType === 'Angular'){
             console.log('You can run this generator using: \'yo hyperledger-composer:angular\'');
             this.composeWith(require.resolve('../angular'));
         } else if (this.generatorType === 'businessnetwork') {
