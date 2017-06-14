@@ -29,7 +29,7 @@ describe('composer-rest-server CLI unit tests', () => {
         sandbox = sinon.sandbox.create();
         sandbox.stub(Util, 'getConnectionSettings').resolves({
             profilename: 'defaultProfile',
-            businessNetworkId: 'org.acme.biznet',
+            businessNetworkId: 'org-acme-biznet',
             userid: 'admin',
             secret: 'adminpw',
             namespaces: 'always',
@@ -65,7 +65,7 @@ describe('composer-rest-server CLI unit tests', () => {
         }).then(() => {
             sinon.assert.calledOnce(Util.getConnectionSettings);
             const settings = {
-                businessNetworkIdentifier: 'org.acme.biznet',
+                businessNetworkIdentifier: 'org-acme-biznet',
                 connectionProfileName: 'defaultProfile',
                 namespaces: 'always',
                 participantId: 'admin',
@@ -79,7 +79,7 @@ describe('composer-rest-server CLI unit tests', () => {
 
     it('should throw an error if command line arguments specified but some are missing', () => {
         let listen = sinon.stub();
-        process.argv = [ process.argv0, 'cli.js', '-n', 'org.acme.biznet' ];
+        process.argv = [ process.argv0, 'cli.js', '-n', 'org-acme-biznet' ];
         delete require.cache[require.resolve('yargs')];
         return proxyquire('../cli', {
             clear: () => { },
@@ -104,7 +104,7 @@ describe('composer-rest-server CLI unit tests', () => {
         process.argv = [
             process.argv0, 'cli.js',
             '-p', 'defaultProfile',
-            '-n', 'org.acme.biznet',
+            '-n', 'org-acme-biznet',
             '-i', 'admin',
             '-s', 'adminpw'
         ];
@@ -122,7 +122,7 @@ describe('composer-rest-server CLI unit tests', () => {
         }).then(() => {
             sinon.assert.notCalled(Util.getConnectionSettings);
             const settings = {
-                businessNetworkIdentifier: 'org.acme.biznet',
+                businessNetworkIdentifier: 'org-acme-biznet',
                 connectionProfileName: 'defaultProfile',
                 namespaces: 'always',
                 participantId: 'admin',
@@ -144,7 +144,7 @@ describe('composer-rest-server CLI unit tests', () => {
         process.argv = [
             process.argv0, 'cli.js',
             '-p', 'defaultProfile',
-            '-n', 'org.acme.biznet',
+            '-n', 'org-acme-biznet',
             '-i', 'admin',
             '-s', 'adminpw'
         ];
@@ -179,7 +179,7 @@ describe('composer-rest-server CLI unit tests', () => {
         process.argv = [
             process.argv0, 'cli.js',
             '-p', 'defaultProfile',
-            '-n', 'org.acme.biznet',
+            '-n', 'org-acme-biznet',
             '-i', 'admin',
             '-s', 'adminpw'
         ];

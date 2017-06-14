@@ -26,7 +26,7 @@ const sinon = require('sinon');
 describe('ProxyConnectionManager', () => {
 
     const connectionProfile = 'defaultProfile';
-    const businessNetworkIdentifier = 'org.acme.biznet';
+    const businessNetworkIdentifier = 'org-acme-biznet';
     const connectionOptions = {
         type: 'embedded'
     };

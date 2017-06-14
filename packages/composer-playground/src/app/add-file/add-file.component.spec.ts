@@ -38,18 +38,18 @@ class MockAdminService {
 
     deploy(): Promise<any> {
         return new Promise((resolve, reject) => {
-            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+            resolve(new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network'));
         });
     }
 
     update(): Promise<any> {
         return new Promise((resolve, reject) => {
-            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+            resolve(new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network'));
         });
     }
 
     generateDefaultBusinessNetwork(): BusinessNetworkDefinition {
-        return new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
+        return new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network');
     }
 
     isInitialDeploy(): boolean {

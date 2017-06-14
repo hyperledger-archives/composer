@@ -36,7 +36,8 @@ services:
           },
           "credentials": {
             "hlfabric": {
-              "PeerAdmin": "NOTUSED"
+              "PeerAdmin": "NOTUSED",
+              "admin": "adminpw"
             }
           }
         }
