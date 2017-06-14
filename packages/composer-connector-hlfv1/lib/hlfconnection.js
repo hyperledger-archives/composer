@@ -65,19 +65,6 @@ class HLFConnection extends Connection {
     }
 
     /**
-     * generate a valid Ccid
-     *
-     * @static
-     * @param {string} input the name used to define the CCid
-     * @returns {string} a valid ccid
-     *
-     * @memberOf HLFConnection
-     */
-    static generateCcid(input) {
-        return input.replace(/\./g, '-').replace(/[|&;$%@"<>()+,]/g, '').toLowerCase();
-    }
-
-    /**
      * Constructor.
      * @param {ConnectionManager} connectionManager The owning connection manager.
      * @param {string} connectionProfile The name of the connection profile associated with this connection
@@ -230,7 +217,7 @@ class HLFConnection extends Connection {
         if (this.businessNetworkIdentifier) {
 
             // register a chaincode event listener on the first peer only.
-            let ccid = HLFConnection.generateCcid(this.businessNetworkIdentifier);
+            let ccid = this.businessNetworkIdentifier;
             LOG.debug(method, 'registerChaincodeEvent', ccid, 'composer');
             let ccEvent  = this.eventHubs[0].registerChaincodeEvent(ccid, 'composer', (event) => {
                 let evt = event.payload.toString('utf8');
@@ -358,7 +345,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: HLFConnection.generateCcid(businessNetwork.getName()),
+                    chaincodeId: businessNetwork.getName(),
                     txId: txId,
                     targets: this.channel.getPeers()
                 };
@@ -432,7 +419,7 @@ class HLFConnection extends Connection {
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
-                    chaincodeId: HLFConnection.generateCcid(businessNetwork.getName()),
+                    chaincodeId: businessNetwork.getName(),
                     txId: finalTxId,
                     fcn: 'init',
                     args: [businessNetworkArchive.toString('base64')]
@@ -503,7 +490,7 @@ class HLFConnection extends Connection {
             .then((queryResults) => {
                 LOG.debug(method, 'Queried instantiated chaincodes', queryResults);
                 let alreadyInstantiated = queryResults.chaincodes.some((chaincode) => {
-                    return chaincode.path === 'composer' && chaincode.name === HLFConnection.generateCcid(businessNetwork.getName());
+                    return chaincode.path === 'composer' && chaincode.name === businessNetwork.getName();
                 });
                 if (alreadyInstantiated) {
                     LOG.debug(method, 'chaincode already instantiated');
@@ -714,7 +701,7 @@ class HLFConnection extends Connection {
 
         // Submit the query request.
         const request = {
-            chaincodeId: HLFConnection.generateCcid(this.businessNetworkIdentifier),
+            chaincodeId: this.businessNetworkIdentifier,
             chaincodeVersion: runtimePackageJSON.version,
             txId: txId,
             fcn: functionName,
@@ -778,7 +765,7 @@ class HLFConnection extends Connection {
 
                 // Submit the transaction to the endorsers.
                 const request = {
-                    chaincodeId: HLFConnection.generateCcid(this.businessNetworkIdentifier),
+                    chaincodeId: this.businessNetworkIdentifier,
                     chaincodeVersion: runtimePackageJSON.version,
                     txId: txId,
                     fcn: functionName,

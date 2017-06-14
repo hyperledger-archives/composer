@@ -282,7 +282,7 @@ export class ClientService {
                 return this.identityService.getUserSecret();
             })
             .then((userSecret) => {
-                return this.getBusinessNetworkConnection().connect(connectionProfile, 'org.acme.biznet', userID, userSecret);
+                return this.getBusinessNetworkConnection().connect(connectionProfile, 'org-acme-biznet', userID, userSecret);
             });
     }
 
