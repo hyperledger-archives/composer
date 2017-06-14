@@ -2,7 +2,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
 import {
 
     ReactiveFormsModule,
@@ -25,7 +25,7 @@ describe('ConnectionProfileDataComponent', () => {
     let mockNgbModal;
     let mockAlertService;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
         mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
         mockNgbModal = sinon.createStubInstance(NgbModal);
         mockAlertService = sinon.createStubInstance(AlertService);
@@ -48,7 +48,7 @@ describe('ConnectionProfileDataComponent', () => {
         });
         fixture = TestBed.createComponent(ConnectionProfileDataComponent);
         component = fixture.componentInstance;
-    });
+    }));
 
     it('should create ConnectionProfileDataComponent', () => {
         component.should.be.ok;
@@ -772,9 +772,9 @@ describe('ConnectionProfileDataComponent', () => {
     });
 
     describe('stopEditing', () => {
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockConnectionProfileService.deleteProfile.reset();
-        });
+        }));
 
         it('should delete new profile if cancelled', fakeAsync(() => {
             component['connectionProfileData'] = {name: 'New Connection Profile'};
