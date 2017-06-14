@@ -12,8 +12,8 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.7.5 {6bfca35e65b8feb42cf3a3143f714db1} 2017-06-14
-- Added IllegalModelException.getShortMessage to return only error, without location
+Version 0.7.5 {f8f86ee73c0bb2292b7d49d2997af8e1} 2017-06-14
+- Added BaseModelException to keep error messages consistent
 
 Version 0.7.5 {6bfca35e65b8feb42cf3a3143f714db1} 2017-06-07
 - Added optional JSZip options parameter to toArchive
