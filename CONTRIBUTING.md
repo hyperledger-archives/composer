@@ -42,10 +42,12 @@ To ensure consistency and quality through the project, we enforce rules detailed
  - All public API methods must be documented.
  - Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
+These guidelines also include the Composer preferred way of working within git. These are to ensure that we keep the commits per pull request to a sensible  level.
 
 ## Submitting a Pull Request
 
 To enable us to quickly review and accept your pull requests, always create one pull request per issue and link the issue in the pull request. Never merge multiple requests in one unless they have the same root cause. Be sure to follow our [Coding Guidelines](./contrib-notes/coding-guidelines.md) before following our [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md).
+
 
 
 ## The Release
