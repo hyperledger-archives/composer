@@ -1,4 +1,19 @@
+# Contriburting to Composer
+* [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
+* [Suggested IDE setup](./contrib-notes/ide-setup.md)
+* Currently reading ->  [Coding Guidelines](./contrib-notes/coding-guidelines.md)
+* [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
+* [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+
 # Coding Guidelines
+
+As a summary:
+
+ - All changes should be developed in a fork of the relevant Hyperldger Composer repository, and the changes submitted for approval in the form of pull requests.
+ - All delivered code must follow the linting rules
+ - All features or bug fixes must be tested.
+ - All public API methods must be documented.
+ - Travis-ci is used to build and test all repositories and a build is triggered when a pull request is made. Any pull request that is not 100% clean will be closed.
 
 ## Github usage
 
@@ -15,7 +30,7 @@ $ git clone git@github.com:MyGitName/composer.git
 ```
 $ git remote add upstream git@github.com:hyperledger/composer.git
 ```  
-- As this is just forked it will be up-to-date. But if you did this previously and now starting on something new, the the next step is to update your master branch. 
+- As this is just forked it will be up-to-date. But if you did this previously and now starting on something new, the the next step is to update your master branch.
 
   *This is the point you would come to generally when starting anything new, a new clone/fork everytime is not necassary*
 
@@ -102,3 +117,6 @@ Hyperledger Composer tests use an assertion library called [chai](http://chaijs.
 ### Code Coverage Using Istanbul
 
 The Hyperledger Composer project uses a code coverage tool called [Istanbul](https://gotwarlost.github.io/istanbul/) to ensure that all the code is tested, including statements, branches, and functions. This helps to improve the quality of the Hyperledger Composer tests. The output of Istanbul can be used to see where any specific tests need to be added to ensure complete code coverage.
+
+# Next step
+Move on to read [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
