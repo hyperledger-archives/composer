@@ -12,7 +12,7 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.7.7 {82ae5c840e281ac341b2a843d84c55c7} 2017-06-14
+Version 0.7.6 {82ae5c840e281ac341b2a843d84c55c7} 2017-06-14
 - Added TypeNotFoundException
 - COrrected JSDoc for IllegalModelException.constructor
 
