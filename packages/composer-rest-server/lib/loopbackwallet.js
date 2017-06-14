@@ -26,11 +26,13 @@ class LoopBackWallet extends Wallet {
      * Constructor.
      * @param {*} app The LoopBack application.
      * @param {*} wallet The wallet instance.
+     * @param {string} enrollmentID The enrollment ID.
      */
-    constructor(app, wallet) {
+    constructor(app, wallet, enrollmentID) {
         super();
         this.app = app;
         this.wallet = wallet;
+        this.enrollmentID = enrollmentID;
     }
 
     /**
@@ -41,11 +43,9 @@ class LoopBackWallet extends Wallet {
      * error.
      */
     list() {
-        return this.app.models.WalletIdentity.find({ where: { walletId: this.wallet.id } })
-            .then((identities) => {
-                return identities.map((identity) => {
-                    return identity.enrollmentID;
-                });
+        return this.app.models.WalletIdentity.findOne({ walletId: this.wallet.id, enrollmentID: this.enrollmentID })
+            .then((identity) => {
+                return Object.keys(identity.data).sort();
             });
     }
 
@@ -59,9 +59,9 @@ class LoopBackWallet extends Wallet {
      * wallet, false otherwise.
      */
     contains(name) {
-        return this.app.models.WalletIdentity.count({ walletId: this.wallet.id, enrollmentID: name })
-            .then((count) => {
-                return count !== 0;
+        return this.app.models.WalletIdentity.findOne({ walletId: this.wallet.id, enrollmentID: this.enrollmentID })
+            .then((identity) => {
+                return identity.data.hasOwnProperty(name);
             });
     }
 
@@ -73,9 +73,9 @@ class LoopBackWallet extends Wallet {
      * the named credentials, or rejected with an error.
      */
     get(name) {
-        return this.app.models.WalletIdentity.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
+        return this.app.models.WalletIdentity.findOne({ where: { walletId: this.wallet.id, enrollmentID: this.enrollmentID } })
             .then((identity) => {
-                return identity.certificate;
+                return identity.data[name];
             });
     }
 
@@ -88,9 +88,10 @@ class LoopBackWallet extends Wallet {
      * complete, or rejected with an error.
      */
     add(name, value) {
-        return this.app.models.WalletIdentity.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
+        return this.app.models.WalletIdentity.findOne({ where: { walletId: this.wallet.id, enrollmentID: this.enrollmentID } })
             .then((identity) => {
-                return identity.updateAttribute('certificate', value);
+                identity.data[name] = value;
+                return identity.save();
             });
     }
 
@@ -103,9 +104,10 @@ class LoopBackWallet extends Wallet {
      * complete, or rejected with an error.
      */
     update(name, value) {
-        return this.app.models.WalletIdentity.findOne({ where: { walletId: this.wallet.id, enrollmentID: name } })
+        return this.app.models.WalletIdentity.findOne({ where: { walletId: this.wallet.id, enrollmentID: this.enrollmentID } })
             .then((identity) => {
-                return identity.updateAttribute('certificate', value);
+                identity.data[name] = value;
+                return identity.save();
             });
     }
 
@@ -117,7 +119,11 @@ class LoopBackWallet extends Wallet {
      * complete, or rejected with an error.
      */
     remove(name) {
-        return this.app.models.WalletIdentity.destroyAll({ walletId: this.wallet.id, enrollmentID: name });
+        return this.app.models.WalletIdentity.findOne({ walletId: this.wallet.id, enrollmentID: this.enrollmentID })
+            .then((identity) => {
+                delete identity.data[name];
+                return identity.save();
+            });
     }
 
 }

@@ -50,6 +50,7 @@ module.exports = function (app) {
 
             // Extract the current user ID, and find the current user.
             const userId = ctx.args.options.accessToken.userId;
+            let wallet;
             return userModel.findById(userId)
                 .then((user) => {
 
@@ -61,15 +62,13 @@ module.exports = function (app) {
                     // Find the default wallet for the current user.
                     return WalletModel.findById(user.defaultWallet);
                 })
-                .then((wallet) => {
+                .then((wallet_) => {
 
                     // If there is no default wallet, bail.
+                    wallet = wallet_;
                     if (!wallet) {
                         return;
                     }
-
-                    // Create a wallet for the LoopBack connector to use.
-                    ctx.args.options.wallet = new LoopBackWallet(app, wallet);
 
                     // If the wallet does not have a default identity, bail.
                     if (!wallet.defaultIdentity) {
@@ -86,6 +85,9 @@ module.exports = function (app) {
                     if (!identity) {
                         return;
                     }
+
+                    // Create a wallet for the LoopBack connector to use.
+                    ctx.args.options.wallet = new LoopBackWallet(app, wallet, identity.enrollmentID);
 
                     // Store the enrollment ID and secret for the LoopBack
                     // connector to use.

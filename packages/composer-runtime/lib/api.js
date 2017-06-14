@@ -45,7 +45,8 @@ class Api {
             'getParticipantRegistry',
             'getCurrentParticipant',
             'post',
-            'emit'
+            'emit',
+            'queryNative',
         ];
     }
 
@@ -57,13 +58,13 @@ class Api {
      * @param {RegistryManager} registryManager The registry manager to use.
      * @param {HTTPService} httpService The http service to use.
      * @param {EventService} eventService The event service to use.
+     * @param {QueryService} queryService The query service to use.
      * @param {Context} context The transaction context.
      * @private
      */
-    constructor(factory, serializer, participant, registryManager, httpService, eventService, context) {
+    constructor(factory, serializer, participant, registryManager, httpService, eventService, queryService, context) {
         const method = 'constructor';
-        LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, context);
-
+        LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, queryService, context);
         /**
          * Get the factory. The factory can be used to create new instances of
          * assets, participants, and transactions for storing in registries. The
@@ -210,7 +211,7 @@ class Api {
          * that represents the result of the HTTP POST.
          * @public
          */
-        this.post = function post(url,typed) {
+        this.post = function post(url, typed) {
             const method = 'post';
             LOG.entry(method);
             const options = {};
@@ -219,7 +220,7 @@ class Api {
             const data = serializer.toJSON(typed, options);
             LOG.debug(method, typed.getFullyQualifiedType(), data);
 
-            return httpService.post(url,data)
+            return httpService.post(url, data)
                 .then((response) => {
                     LOG.exit(method);
                     return Promise.resolve(response);
@@ -236,13 +237,52 @@ class Api {
             const method = 'emit';
             LOG.entry(method);
             event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
-            let serializedEvent = serializer.toJSON(event, { convertResourcesToRelationships: true });
+            let serializedEvent = serializer.toJSON(event, {
+                convertResourcesToRelationships: true
+            });
             context.incrementEventNumber();
             LOG.debug(method, event.getFullyQualifiedIdentifier(), serializedEvent);
             eventService.emit(serializedEvent);
             LOG.exit(method);
         };
 
+        /**
+         * <p>
+         * Status: EXPERIMENTAL. API subject to change based on feedback.
+         * </p>
+         * <p>
+         * Execute a query against the world-state using a persistence provider
+         * specific query string. For example, when running against Hyperledger Fabric v1
+         * using CouchDB for world-state persistence, the query string can be a CouchDB
+         * selector.
+         * </p>
+         * <p>
+         * CouchDB queries are JS objects. The query below will select all documents in the
+         * database with a property `size` whose value is `SMALL`.
+         * <pre>
+         * var q = {
+         *   selector : {
+         *     size : 'SMALL'
+         * };
+         * </pre>
+         * <p>
+         *  Note that the query must be passed as a string.
+         * </p>
+         * @method module:composer-runtime#queryNative
+         * @param {string} queryString - The couchdb query string
+         * @return {Promise} A promise. The promise is resolved with the result of the query.
+         * @public
+         */
+        this.queryNative = function queryNative(queryString) {
+            const method = 'queryNative';
+            LOG.entry(method + ' queryString: ' + queryString);
+            return queryService.queryNative(queryString)
+                .then((resultArray) => {
+                    LOG.debug(method + ' results', JSON.stringify(resultArray));
+                    LOG.exit(method);
+                    return resultArray;
+                });
+        };
         Object.freeze(this);
         LOG.exit(method);
     }

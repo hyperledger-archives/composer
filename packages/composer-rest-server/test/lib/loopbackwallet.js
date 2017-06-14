@@ -21,7 +21,7 @@ const LoopBackWallet = require('../../lib/loopbackwallet');
 const path = require('path');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 chai.use(require('chai-as-promised'));
 
 describe('LoopBackWallet', () => {
@@ -60,8 +60,15 @@ describe('LoopBackWallet', () => {
             wallet = wallet_;
             return new Promise((resolve, reject) => {
                 WalletIdentityModel.create([
-                    { walletId: wallet.id, enrollmentID: 'test1', enrollmentSecret: 'testpass' },
-                    { walletId: wallet.id, enrollmentID: 'test2', enrollmentSecret: 'testpass', certificate: 'hello this is a cert' }
+                    {
+                        walletId: wallet.id,
+                        enrollmentID: 'testuser',
+                        enrollmentSecret: 'testpass',
+                        data: {
+                            test1: 'hello this is a cert',
+                            test2: 'hello this is another cert'
+                        }
+                    }
                 ], (err) => {
                     if (err) {
                         return reject(err);
@@ -71,21 +78,25 @@ describe('LoopBackWallet', () => {
             });
         })
         .then(() => {
-            lbWallet = new LoopBackWallet(app, wallet);
+            lbWallet = new LoopBackWallet(app, wallet, 'testuser');
         });
     });
 
     describe('#list', () => {
 
-        it('should return an empty array for an empty wallet', () => {
-            return WalletIdentityModel.destroyAll()
+        it('should return an empty array when no keys exist', () => {
+            return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } })
+                .then((identity) => {
+                    identity.data = {};
+                    return identity.save();
+                })
                 .then(() => {
                     return lbWallet.list();
                 })
                 .should.eventually.be.deep.equal([]);
         });
 
-        it('should return a list of enrollment IDs for a non-empty wallet', () => {
+        it('should return a list of keys', () => {
             return lbWallet.list()
                 .should.eventually.be.deep.equal(['test1', 'test2']);
         });
@@ -94,12 +105,12 @@ describe('LoopBackWallet', () => {
 
     describe('#contains', () => {
 
-        it('should return false for an identity that does not exist', () => {
+        it('should return false for a key that does not exist', () => {
             return lbWallet.contains('test0')
                 .should.eventually.be.false;
         });
 
-        it('should return true for an identity that does exist', () => {
+        it('should return true for a key that does exist', () => {
             return lbWallet.contains('test2')
                 .should.eventually.be.true;
         });
@@ -108,13 +119,13 @@ describe('LoopBackWallet', () => {
 
     describe('#get', () => {
 
-        it('should return null for an identity without a certificate', () => {
-            return lbWallet.get('test1')
+        it('should return undefined for a key that does not exist', () => {
+            return lbWallet.get('testA')
                 .should.eventually.be.undefined;
         });
 
-        it('should return the certificate for an identity with a certificate', () => {
-            return lbWallet.get('test2')
+        it('should return the value for a key that does exist', () => {
+            return lbWallet.get('test1')
                 .should.eventually.be.equal('hello this is a cert');
         });
 
@@ -122,13 +133,13 @@ describe('LoopBackWallet', () => {
 
     describe('#add', () => {
 
-        it('should set the certificate for an identity', () => {
-            return lbWallet.add('test1', 'hello this is a test set cert')
+        it('should set the value for a key', () => {
+            return lbWallet.add('testA', 'hello this is a test set cert')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'test1' } });
+                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } });
                 })
                 .then((identity) => {
-                    identity.certificate.should.equal('hello this is a test set cert');
+                    identity.data.testA.should.equal('hello this is a test set cert');
                 });
         });
 
@@ -136,13 +147,13 @@ describe('LoopBackWallet', () => {
 
     describe('#update', () => {
 
-        it('should update the certificate for an identity', () => {
+        it('should update the value for a key', () => {
             return lbWallet.update('test2', 'hello this is a test set cert')
                 .then(() => {
-                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'test2' } });
+                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } });
                 })
                 .then((identity) => {
-                    identity.certificate.should.equal('hello this is a test set cert');
+                    identity.data.test2.should.equal('hello this is a test set cert');
                 });
         });
 
@@ -150,14 +161,13 @@ describe('LoopBackWallet', () => {
 
     describe('#remove', () => {
 
-        it('should remove the identity', () => {
+        it('should remove the key', () => {
             return lbWallet.remove('test2')
                 .then(() => {
-                    return WalletIdentityModel.find();
+                    return WalletIdentityModel.findOne({ where: { enrollmentID: 'testuser' } });
                 })
-                .then((identities) => {
-                    identities.length.should.equal(1);
-                    identities[0].enrollmentID.should.equal('test1');
+                .then((identity) => {
+                    should.equal(identity.data.test2, undefined);
                 });
         });
 

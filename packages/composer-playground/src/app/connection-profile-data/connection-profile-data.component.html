@@ -222,7 +222,16 @@
             Certificate Authority (CA)
           </div>
           <div class="profile-value">
-            {{connectionProfileData.profile.ca}}
+              <div class="nested-section">
+                  <div class="nested-row">
+                      <div class="nested-property">URL</div>
+                      <div class="nested-value">{{connectionProfileData.profile.ca.url}}</div>
+                  </div>
+                  <div class="nested-row">
+                      <div class="nested-property">Name</div>
+                      <div class="nested-value">{{connectionProfileData.profile.ca.name}}</div>
+                  </div>
+              </div>
           </div>
         </div>
         <div class="profile-row">
@@ -273,25 +282,15 @@
       <div class="data-section" [ngClass]="{'expanded' : expandedSection.indexOf('Advanced') > -1}">
         <div class="profile-row">
           <div class="profile-property">
-            Deploy Wait Time (seconds)
+            Timeout (seconds)
           </div>
           <div class="profile-value">
-            {{connectionProfileData.profile.deployWaitTime}}
-          </div>
-        </div>
-        <div class="profile-row">
-          <div class="profile-property">
-            Invoke Wait Time (seconds)
-          </div>
-          <div class="profile-value">
-            {{connectionProfileData.profile.invokeWaitTime}}
+            {{connectionProfileData.profile.timeout}}
           </div>
         </div>
       </div>
     </div>
   </div>
-
-
 
   <button *ngIf="!editing" class="button primary" type="button" (click)="useProfile()">Use this profile</button>
   <button *ngIf="!editing && connectionProfileData.name !== '$default'" class="button secondary" type="button" (click)="exportProfile()">
@@ -306,7 +305,7 @@
   <!-- EDIT V0.6 CONNECTION PROFILE -->
 
   <div *ngIf="connectionProfileData.profile.type === 'hlf' && editing" class="edit-data">
-    <form [formGroup]="v06Form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="v06Form" (ngSubmit)="onSubmit()" (keydown)="onSubmit($event)">
       <section>
         <div class="section-title">Basic Configuration</div>
         <div class="profile-row">
@@ -430,7 +429,7 @@
   <!-- EDIT V1 CONNECTION PROFILE -->
 
   <div *ngIf="connectionProfileData.profile.type === 'hlfv1' && editing" class="edit-data">
-    <form [formGroup]="v1Form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="v1Form" (ngSubmit)="onSubmit()" (keydown)="onSubmit($event)">
       <section>
         <div class="section-title">Basic Configuration</div>
          <div class="profile-row">
@@ -516,10 +515,27 @@
             Certificate Authority (CA)*
           </div>
           <div class="profile-value">
-            <input [ngClass]="{'error-underline': v1FormErrors.ca}" type="text" formControlName="ca">
-            <div *ngIf="v1FormErrors.ca" class="error-message">
-              {{ v1FormErrors.ca }}
-            </div>
+              <div class="nested-section" formGroupName="ca">
+                  <div class="nested-row">
+                        <div class="nested-property">
+                            CA URL*
+                        </div>
+                        <div class="nested-value margin-right">
+                            <input [ngClass]="{'error-underline': v1FormErrors.ca.url}" type="text" formControlName="url">
+                            <div *ngIf="v1FormErrors.ca.url" class="error-message">
+                            {{ v1FormErrors.ca.url}}
+                            </div>
+                        </div>
+                  </div>
+                  <div class="nested-row">
+                        <div class="nested-property">
+                            CA Name
+                        </div>
+                        <div class="nested-value margin-right">
+                            <input type="text" formControlName="name">
+                        </div>
+                  </div>
+              </div>
           </div>
         </div>
         <div class="profile-row">
@@ -534,7 +550,7 @@
                     Peer Request URL*
                   </div>
                   <div class="nested-value margin-right">
-                    <input [ngClass]="{'error-underline': v1FormErrors.requestURL}" type="text" formControlName="requestURL">
+                    <input [ngClass]="{'error-underline': v1FormErrors.peers.requestURL}" type="text" formControlName="requestURL">
                     <div *ngIf="v1FormErrors.peers.requestURL" class="error-message">
                       {{ v1FormErrors.peers.requestURL }}
                     </div>
@@ -589,28 +605,15 @@
         <div class="section-title">Advanced</div>
         <div class="profile-row">
           <div class="profile-property">
-            Deploy Wait Time (seconds)
+            Time out (seconds)
           </div>
           <div class="profile-value">
-            <input [ngClass]="{'error-underline': v1FormErrors.deployWaitTime}" type="text" formControlName="deployWaitTime">
-            <div *ngIf="v1FormErrors.deployWaitTime" class="error-message">
-              {{ v1FormErrors.deployWaitTime }}
+            <input [ngClass]="{'error-underline': v1FormErrors.timeout}" type="text" formControlName="timeout">
+            <div *ngIf="v1FormErrors.timeout" class="error-message">
+              {{ v1FormErrors.timeout }}
             </div>
           </div>
         </div>
-
-        <div class="profile-row">
-          <div class="profile-property">
-            Invoke Wait Time (seconds)
-          </div>
-          <div class="profile-value">
-            <input [ngClass]="{'error-underline': v1FormErrors.invokeWaitTime}" type="text" formControlName="invokeWaitTime">
-            <div *ngIf="v1FormErrors.invokeWaitTime" class="error-message">
-              {{ v1FormErrors.invokeWaitTime }}
-            </div>
-          </div>
-        </div>
-
       </section>
       <footer>
         <div class="info"></div>
