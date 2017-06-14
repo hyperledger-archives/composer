@@ -50,7 +50,7 @@ describe('Transaction (asset specific) system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.transactions.assets')
+                return TestUtil.getClient('systest-transactions-assets')
                     .then((result) => {
                         client = result;
                     });

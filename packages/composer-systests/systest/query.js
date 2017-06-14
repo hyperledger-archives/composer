@@ -55,7 +55,7 @@ describe('Query system tests', function () {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.query')
+                return TestUtil.getClient('systest-query')
                     .then((result) => {
                         client = result;
                     });

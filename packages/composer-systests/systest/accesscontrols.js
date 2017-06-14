@@ -58,7 +58,7 @@ describe('Access control system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.accesscontrols')
+                return TestUtil.getClient('systest-accesscontrols')
                     .then((result) => {
                         client = result;
                     });
@@ -88,14 +88,14 @@ describe('Access control system tests', () => {
                 return client.issueIdentity(alice, aliceIdentity);
             })
             .then((identity) => {
-                return TestUtil.getClient('systest.accesscontrols', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-accesscontrols', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 aliceClient = result;
                 return client.issueIdentity(bob, bobIdentity);
             })
             .then((identity) => {
-                return TestUtil.getClient('systest.accesscontrols', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-accesscontrols', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 bobClient = result;
@@ -125,7 +125,7 @@ describe('Access control system tests', () => {
     });
 
     afterEach(() => {
-        return TestUtil.getClient('systest.accesscontrols')
+        return TestUtil.getClient('systest-accesscontrols')
             .then((result) => {
                 client = result;
             });

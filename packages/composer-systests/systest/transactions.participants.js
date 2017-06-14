@@ -50,7 +50,7 @@ describe('Transaction (participant specific) system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.transactions.participants')
+                return TestUtil.getClient('systest-transactions-participants')
                     .then((result) => {
                         client = result;
                     });

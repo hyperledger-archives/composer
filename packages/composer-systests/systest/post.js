@@ -49,7 +49,7 @@ describe('HTTP POST system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.post')
+                return TestUtil.getClient('systest-post')
                     .then((result) => {
                         client = result;
                     });

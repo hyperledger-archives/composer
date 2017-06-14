@@ -51,7 +51,7 @@ describe('Event system tests', function () {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.events')
+                return TestUtil.getClient('systest-events')
                     .then((result) => {
                         client = result;
                     });

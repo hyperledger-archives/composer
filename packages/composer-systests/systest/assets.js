@@ -44,7 +44,7 @@ describe('Asset system tests', function () {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.assets')
+                return TestUtil.getClient('systest-assets')
                     .then((result) => {
                         client = result;
                     });

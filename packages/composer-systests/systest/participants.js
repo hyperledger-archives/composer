@@ -43,7 +43,7 @@ describe('Participant system tests', function () {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.participants')
+                return TestUtil.getClient('systest-participants')
                     .then((result) => {
                         client = result;
                     });
