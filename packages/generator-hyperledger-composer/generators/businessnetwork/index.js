@@ -124,6 +124,7 @@ module.exports = yeoman.Base.extend({
     _generateTemplateModel: function() {
         return {
             appname: this.appname,
+            appemail: this.appemail,
             namespace: this.namespace,
             appdescription: this.appdescription,
             appauthor: this.appauthor,
