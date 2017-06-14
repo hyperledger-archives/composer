@@ -33,20 +33,24 @@ class IllegalModelException extends BaseException {
      */
     constructor(message, modelFile, fileLocation) {
 
-        let messagePrefix = '';
+        let messageSuffix = '';
         if(modelFile && modelFile.getFileName()) {
-            messagePrefix = 'File \'' + modelFile.getFileName() + '\': ' ;
+            messageSuffix = 'File \'' + modelFile.getFileName() + '\': ' ;
         }
 
         if(fileLocation) {
-            messagePrefix = messagePrefix + 'line ' + fileLocation.start.line + ' column ' +
+            messageSuffix = messageSuffix + 'line ' + fileLocation.start.line + ' column ' +
                 fileLocation.start.column + ', to line ' + fileLocation.end.line + ' column ' +
                 fileLocation.end.column + '. ';
         }
 
-        super(messagePrefix + message);
+        // First character to be uppercase
+        messageSuffix = messageSuffix.charAt(0).toUpperCase() + messageSuffix.slice(1);
+
+        super(message + ' ' + messageSuffix);
         this.modelFile = modelFile;
         this.fileLocation = fileLocation;
+        this.shortMessage = message;
     }
 
     /**
@@ -63,6 +67,14 @@ class IllegalModelException extends BaseException {
      */
     getFileLocation() {
         return this.fileLocation;
+    }
+
+    /**
+     * Returns the error message without the location of the error
+     * @returns {string} the error message
+     */
+    getShortMessage() {
+        return this.shortMessage;
     }
 }
 
