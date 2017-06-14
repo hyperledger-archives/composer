@@ -232,7 +232,7 @@ class ModelManager {
      * @param {string} context - error reporting context
      * @param {string} type - fully qualified type name
      * @return {string} - the resolved type name (fully qualified)
-     * @throws {TypeNotFoundException} - if the type is not defined
+     * @throws {IllegalModelException} - if the type is not defined
      * @private
      */
     resolveType(context, type) {
