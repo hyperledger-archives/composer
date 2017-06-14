@@ -27,8 +27,8 @@ class BusinessNetworkMetadata {
 class Factory {
    + void constructor(ModelManager) 
    + Resource newInstance(string,string,string,Object,boolean,string) throws ModelException
-   + Resource newResource(string,string,string,Object,boolean,string) throws ModelException
-   + Resource newConcept(string,string,Object,boolean,string) throws ModelException
+   + Resource newResource(string,string,string,Object,boolean,string) throws TypeNotFoundException
+   + Resource newConcept(string,string,Object,boolean,string) throws TypeNotFoundException
    + Relationship newRelationship(string,string,string) throws ModelException
    + Resource newTransaction(string,string,string,Object,string) 
    + Resource newEvent(string,string,string,Object,string) 
@@ -45,7 +45,7 @@ class FileWallet extends Wallet {
    + Promise remove(string) 
 }
 class IllegalModelException extends BaseException {
-   + void constructor(string,string,string) 
+   + void constructor(string,ModelFile,Object,string,string,string,string) 
    + string getModelFile() 
    + string getFileLocation() 
 }
@@ -116,6 +116,10 @@ class Serializer {
 }
 class ValidationException extends BaseException {
    + void constructor(string) 
+}
+class TypeNotFoundException extends BaseException {
+   + void constructor(string,string) 
+   + string getTypeName() 
 }
 class Wallet {
    + Wallet getWallet() 

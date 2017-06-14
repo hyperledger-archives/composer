@@ -164,9 +164,9 @@ class ModelFile {
             const modelFile = this.getModelManager().getModelFile(importNamespace);
             if (!modelFile) {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
-                throw new Error(formatter({
-                    type: importName
-                }));
+                throw new IllegalModelException(formatter({
+                    namespace: importNamespace
+                }), this);
             }
             if (ModelUtil.isWildcardName(importName)) {
                 // This is a wildcard import, org.acme.*

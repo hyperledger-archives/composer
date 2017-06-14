@@ -18,6 +18,7 @@ const Factory = require('../../lib/factory');
 const ModelManager = require('../../lib/modelmanager');
 const RelationshipDeclaration = require('../../lib/introspect/relationshipdeclaration');
 const Serializer = require('../../lib/serializer');
+const TypeNotFoundException = require('../../lib/typenotfoundexception');
 const fs = require('fs');
 
 require('chai').should();
@@ -249,7 +250,7 @@ describe('Test Model', function(){
             let vehicleDecl = modelManager.getType('org.acme.Vehicle');
             vehicleDecl.should.not.be.null;
             vehicleDecl.getFullyQualifiedName().should.equal('org.acme.Vehicle');
-            (modelManager.getType('String') === null).should.be.true;
+            (() => { modelManager.getType('String'); }).should.throw(TypeNotFoundException);
             modelManager.getType('org.acme.Base').getFullyQualifiedName().should.equal('org.acme.Base');
             modelManager.getType('concerto.Participant').getName().should.equal('Participant');
 

@@ -196,7 +196,7 @@ describe('Globalization', function() {
         });
     });
 
-    describe('#check Factory messages are correct', function() {
+    describe.skip('#check Factory messages are correct', function() {
         describe('check messages in newInstance()', function() {
             it('where namespace hasn\'t been registered in the model manager', function() {
                 let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
@@ -334,7 +334,7 @@ describe('Globalization', function() {
             });
         });
 
-        describe('check messages in getType()', function() {
+        describe.skip('check messages in getType()', function() {
             it('check no type in namespace', function() {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
                 formatter({

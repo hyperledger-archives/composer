@@ -18,6 +18,7 @@ const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const EventDeclaration = require('../../lib/introspect/eventdeclaration');
+const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const ParseException = require('../../lib/introspect/parseexception');
@@ -178,7 +179,7 @@ describe('ModelFile', () => {
             let modelFile = new ModelFile(mockModelManager, model);
             (() => {
                 modelFile.validate();
-            }).should.throw(/No registered namespace for type org.acme.ext.MyAsset2/);
+            }).should.throw(IllegalModelException, /org.acme.ext/);
         });
 
         it('should throw if a wildcard import exists for an invalid namespace', () => {
@@ -191,7 +192,7 @@ describe('ModelFile', () => {
             let modelFile = new ModelFile(mockModelManager, model);
             (() => {
                 modelFile.validate();
-            }).should.throw(/No registered namespace for type org.acme.ext.\*/);
+            }).should.throw(IllegalModelException, /org.acme.ext/);
         });
 
         it('should throw if an import exists for a type that does not exist in a valid namespace', () => {

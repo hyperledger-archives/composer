@@ -34,8 +34,6 @@
         "concerto-login-noenrollmentsecret": "enrollmentSecret not specified",
         "concerto-deploy-nosecuritycontext": "securityContext not specified",
 
-        "factory-newinstance-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
-        "factory-newinstance-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
         "factory-newinstance-missingidentifier": "Missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-invalididentifier": "Invalid or missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-abstracttype": "Cannot instantiate Abstract Type {type} in namespace {namespace}",
@@ -48,8 +46,8 @@
         "modelmanager-resolvetype-nonsfortype": "No registered namespace for type {type} in {context}",
         "modelmanager-resolvetype-notypeinnsforcontext": "No type {type} in namespace {namespace} for {context}",
 
-        "modelmanager-gettype-noregisteredns": "No registered namespace for type {type}",
-        "modelmanager-gettype-notypeinns": "No type {type} in namespace {namespace}",
+        "modelmanager-gettype-noregisteredns": "Namespace {namespace} is not defined",
+        "modelmanager-gettype-notypeinns": "Type {type} is not defined in namespace {namespace}",
 
         "serializer-constructor-factorynull": "Factory cannot be null",
         "serializer-constructor-modelmanagernull": "ModelManager cannot be null",
@@ -68,6 +66,8 @@
         "resourcevalidator-abstractclass": "The class {className} is abstract. Should not have an instance!",
         "resourcevalidator-undeclaredfield": "Instance {resourceId} has a property named {propertyName} which is not declared in {fullyQualifiedTypeName}",
         "resourcevalidator-invalidfieldassignment": "Instance {resourceId} has property {propertyName} with type {objectType} that is not derived from {fieldType}",
-        "resourcevalidator-emptyidentifier": "Instance {resourceId} has an empty identifier."
+        "resourcevalidator-emptyidentifier": "Instance {resourceId} has an empty identifier.",
+
+        "typenotfounderror-defaultmessage": "Type not found: {typeName}"
     }
 }

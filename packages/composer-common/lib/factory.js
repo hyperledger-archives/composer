@@ -17,6 +17,8 @@
 const debug = require('debug')('ibm-concerto');
 const Globalize = require('./globalize');
 
+const ModelUtil = require('./modelutil');
+
 const InstanceGenerator = require('./serializer/instancegenerator');
 const ValueGeneratorFactory = require('./serializer/valuegenerator');
 const ResourceValidator = require('./serializer/resourcevalidator');
@@ -86,7 +88,7 @@ class Factory {
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
+     * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
         if(!id || typeof(id) !== 'string') {
@@ -105,24 +107,9 @@ class Factory {
             }));
         }
 
-        let modelFile = this.modelManager.getModelFile(ns);
-        if(!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
-            throw new Error(formatter({
-                namespace: ns
-            }));
-        }
+        const qualifiedName = ModelUtil.getFullyQualifiedName(ns, type);
+        const classDecl = this.modelManager.getType(qualifiedName);
 
-        if(!modelFile.isDefined(type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        let classDecl = modelFile.getType(type);
         if(classDecl.isAbstract()) {
             let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
             throw new Error(formatter({
@@ -176,27 +163,11 @@ class Factory {
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
+     * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newConcept(ns, type, options) {
-        let modelFile = this.modelManager.getModelFile(ns);
-        if(!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
-            throw new Error(formatter({
-                namespace: ns
-            }));
-        }
-
-        if(!modelFile.isDefined(type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        let classDecl = modelFile.getType(type);
+        const qualifiedName = ModelUtil.getFullyQualifiedName(ns, type);
+        const classDecl = this.modelManager.getType(qualifiedName);
 
         if(classDecl.isAbstract()) {
             let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');

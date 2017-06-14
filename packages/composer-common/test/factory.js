@@ -16,6 +16,7 @@
 
 const Factory = require('../lib/factory');
 const ModelManager = require('../lib/modelmanager');
+const TypeNotFoundException = require('../lib/typenotfoundexception');
 const uuid = require('uuid');
 
 const should = require('chai').should();
@@ -143,13 +144,13 @@ describe('Factory', () => {
         it('should throw if namespace missing', () => {
             (() => {
                 factory.newConcept('org.acme.missing', 'MyConcept');
-            }).should.throw(/ModelFile for namespace org.acme.missing has not been registered with the ModelManager/);
+            }).should.throw(TypeNotFoundException);
         });
 
         it('should throw if Concept missing', () => {
             (() => {
                 factory.newConcept('org.acme.test', 'MissingConcept');
-            }).should.throw(/Type MissingConcept is not declared in namespace org.acme.test/);
+            }).should.throw(TypeNotFoundException);
         });
 
         it('should throw if concept is abstract', () => {
