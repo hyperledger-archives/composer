@@ -16,10 +16,22 @@ Once the BNA file has been created it can be deployed to a runtime using the `co
 
 For example:
 
-        composer network deploy -p connectionProfileName -a <BusinessNetworkDefinition>.bna 
+        composer network deploy -p connectionProfileName -a <BusinessNetworkDefinition>.bna
            -i <Your EnrollmentID> -s <Your EnrollmentSecret>
 
 To update the definition of an already deployed business network use the `composer network update` CLI command.
+
+## Deploying business networks to {{site.data.conrefs.hlf_full}} Beta
+
+In {{site.data.conrefs.hlf_full}} Beta peers now enforce the concepts of admins and members. Admin user's identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local `keyValStore` directory before deploying the business network. To import the identity, use the [`composere identity import` command](../reference/composer.identity.import.html). When importing an identity, you do not assign it a secret, however the `composer network deploy` command requires a secret. If you are using an imported identity, you can enter any value for the secret.
+
+When connecting to the peer you must specify an identity which contains the userID `admin`, for example, `PeerAdmin`, `myadmin`, or `AdminPeer` are all valid userID's. Peers in different organizations may have different admin users. Only an admin user of peer's organization will be able to deploy a business network to their peers.
+
+Once a user has deployed a business network to one or more peers, they must also be the user to instantiate the business network. Any subsequent deploys requests will only install the business network on those peers.
+
+These security changes mean that {{site.data.conrefs.hlf_full}} Beta is not compatible with any fabric that is running an older version.
+
+
 
 ## References
 

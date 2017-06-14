@@ -51,6 +51,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             ],
             "ca": {
                     "url:" "https://",
+                    "name": "",
                     "trustedRoots": "",
                     "verify": true
             },
