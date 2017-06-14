@@ -14,7 +14,7 @@ import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.
 import { AlertService } from '../services/alert.service';
 import { EditorService } from '../services/editor.service';
 
-import { ModelFile, Script, ScriptManager, ModelManager } from 'composer-common';
+import { ModelFile, Script, ScriptManager, ModelManager, AclManager, AclFile } from 'composer-common';
 
 import 'rxjs/add/operator/takeWhile';
 import { saveAs } from 'file-saver';
@@ -133,7 +133,9 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     setCurrentFile(file) {
-        if (this.currentFile === null || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID  || file.readme) {
+        let always = (this.currentFile === null || file.readme || file.acl);
+        let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
+        if ( always || conditional ) {
             if (this.editingPackage) {
                 this.updatePackageInfo();
                 this.editingPackage = false;
@@ -204,7 +206,7 @@ export class EditorComponent implements OnInit, OnDestroy {
         });
         newFiles.push.apply(newFiles, newScriptFiles);
 
-        // deal with acl files
+        // deal with acl file
         let aclFile = this.clientService.getAclFile();
         if (aclFile) {
             newFiles.push({
@@ -291,7 +293,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     addReadme(readme) {
         if (this.files[0].readme) {
             const confirmModalRef = this.modalService.open(ReplaceComponent);
-
             confirmModalRef.componentInstance.mainMessage = 'Your current README file will be replaced.';
             confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your README file to disc.';
             confirmModalRef.result.then((result) => {
@@ -310,6 +311,34 @@ export class EditorComponent implements OnInit, OnDestroy {
             this.setCurrentFile(this.files[0]);
             this.dirty = true;
         }
+    }
+
+    addRuleFile(rules) {
+        if (this.files.findIndex((file) => file.acl === true) !== -1) {
+            const confirmModalRef = this.modalService.open(ReplaceComponent);
+            confirmModalRef.componentInstance.mainMessage = 'Your current ACL file will be replaced.';
+            confirmModalRef.componentInstance.supplementaryMessage = 'Please ensure that you have saved a copy of your ACL file to disc.';
+            confirmModalRef.result.then((result) => {
+                this.processRuleFileAddition(rules);
+        }, (reason) => {
+            if (reason && reason !== 1) {
+                this.alertService.errorStatus$.next(reason);
+            }
+        });
+        } else {
+            // Set straight away
+            this.processRuleFileAddition(rules);
+        }
+    }
+
+    processRuleFileAddition(rules) {
+        let businessNetworkDefinition = this.clientService.getBusinessNetwork();
+        let aclManager: AclManager = businessNetworkDefinition.getAclManager();
+        aclManager.setAclFile(rules);
+        this.updateFiles();
+        let index = this.findFileIndex(true, rules.getIdentifier());
+        this.setCurrentFile(this.files[index]);
+        this.dirty = true;
     }
 
     openImportModal() {
@@ -343,15 +372,15 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     openAddFileModal() {
-        let modalRef = this.modalService.open(AddFileComponent);
-        modalRef.componentInstance.businessNetwork = this.clientService.getBusinessNetwork();
-        modalRef.result
+        this.modalService.open(AddFileComponent).result
         .then((result) => {
             if (result !== 0) {
                 if (result instanceof ModelFile) {
                     this.addModelFile(result);
                 } else if (result instanceof Script) {
                     this.addScriptFile(result);
+                } else if (result instanceof AclFile) {
+                    this.addRuleFile(result);
                 } else {
                     this.addReadme(result);
                 }

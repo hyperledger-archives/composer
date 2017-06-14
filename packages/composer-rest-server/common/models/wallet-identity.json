@@ -14,9 +14,10 @@
             "type": "String",
             "description": "The enrollment secret for the identity"
         },
-        "certificate": {
-            "type": "String",
-            "description": "The enrollment certificate for the identity"
+        "data": {
+            "type": "Object",
+            "description": "The data for the identity",
+            "default": {}
         }
     },
     "validations": [],
@@ -36,6 +37,6 @@
     "methods": [],
     "hidden": [
         "walletId",
-        "certificate"
+        "data"
     ]
 }

@@ -17,8 +17,7 @@ services:
               "description": "Hyperledger Fabric v1.0",
               "type": "hlfv1",
               "keyValStore": "/home/composer/.hfc-key-store",
-              "deployWaitTime": 300,
-              "invokeWaitTime": 30,
+              "timeout": 300,
               "orderers": [
                   {
                       "url": "grpc://orderer.example.com:7050"
@@ -37,7 +36,8 @@ services:
           },
           "credentials": {
             "hlfabric": {
-              "PeerAdmin": "NOTUSED"
+              "PeerAdmin": "NOTUSED",
+              "admin": "adminpw"
             }
           }
         }

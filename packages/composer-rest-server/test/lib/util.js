@@ -70,7 +70,7 @@ describe('Util', () => {
                         return question.name === 'businessNetworkId';
                     });
                     question.validate('').should.match(/Please enter/);
-                    question.validate('org.acme.biznet').should.be.true;
+                    question.validate('org-acme-biznet').should.be.true;
                 });
         });
 

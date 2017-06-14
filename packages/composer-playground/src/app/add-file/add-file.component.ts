@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { BusinessNetworkDefinition, ModelFile } from 'composer-common';
+import { BusinessNetworkDefinition, ModelFile, AclFile } from 'composer-common';
 import { AlertService } from '../services/alert.service';
+import { ClientService } from '../services/client.service';
 
 @Component({
     selector: 'add-file-modal',
@@ -10,8 +11,6 @@ import { AlertService } from '../services/alert.service';
     styleUrls: ['./add-file.component.scss'.toString()]
 })
 export class AddFileComponent {
-
-    @Input() businessNetwork: BusinessNetworkDefinition;
 
     currentFile = null;
     currentFileName = null;
@@ -21,7 +20,7 @@ export class AddFileComponent {
     expandInput: boolean = false;
 
     maxFileSize: number = 5242880;
-    supportedFileTypes: string[] = ['.js', '.cto', '.md'];
+    supportedFileTypes: string[] = ['.js', '.cto', '.md', '.acl'];
 
     addModelNamespace: string = 'org.acme.model';
     addModelFileName: string = 'models/org.acme.model';
@@ -33,7 +32,8 @@ export class AddFileComponent {
     error = null;
 
     constructor(private alertService: AlertService,
-                private activeModal: NgbActiveModal) {
+                private activeModal: NgbActiveModal,
+                private clientService: ClientService) {
     }
 
     removeFile() {
@@ -68,8 +68,12 @@ export class AddFileComponent {
                     this.expandInput = true;
                     this.createReadme(data);
                     break;
+                case 'acl':
+                    this.expandInput = true;
+                    this.createRules(data);
+                    break;
                 default:
-                    throw new Error('Unexpected File Type');
+                    throw new Error('Unexpected File Type: ' + type);
             }
         })
         .catch((err) => {
@@ -94,17 +98,15 @@ export class AddFileComponent {
 
     createScript(file: File, dataBuffer) {
         this.fileType = 'js';
-        let scriptManager = this.businessNetwork.getScriptManager();
-        let filename = file.name ? 'lib/' + file.name : this.addScriptFileName;
-        this.currentFile = scriptManager.createScript(filename, 'JS', dataBuffer.toString());
+        let filename = (file && file.name) ? 'lib/' + file.name : this.addScriptFileName;
+        this.currentFile = this.clientService.createScriptFile(filename, 'JS', dataBuffer.toString());
         this.currentFileName = this.currentFile.getIdentifier();
     }
 
     createModel(file: File, dataBuffer) {
         this.fileType = 'cto';
-        let modelManager = this.businessNetwork.getModelManager();
-        let filename = file.name ? 'models/' + file.name : this.addModelFileName;
-        this.currentFile = new ModelFile(modelManager, dataBuffer.toString(), filename);
+        let filename = (file && file.name) ? 'models/' + file.name : this.addModelFileName;
+        this.currentFile = this.clientService.createModelFile(dataBuffer.toString(), filename);
         this.currentFileName = this.currentFile.getFileName();
     }
 
@@ -112,6 +114,13 @@ export class AddFileComponent {
         this.fileType = 'md';
         this.currentFile = dataBuffer.toString();
         this.currentFileName = 'README.md';
+    }
+
+    createRules(dataBuffer) {
+        this.fileType = 'acl';
+        let filename = 'permissions.acl';
+        this.currentFile = this.clientService.createAclFile(filename, dataBuffer.toString());
+        this.currentFileName = filename;
     }
 
     fileRejected(reason: string) {
@@ -126,8 +135,7 @@ export class AddFileComponent {
                 `/**
  * New script file
  */`;
-            let scriptManager = this.businessNetwork.getScriptManager();
-            let existingScripts = scriptManager.getScripts();
+            let existingScripts = this.clientService.getScripts();
             let increment = 0;
 
             let scriptName = this.addScriptFileName + this.addScriptFileExtension;
@@ -136,11 +144,10 @@ export class AddFileComponent {
                 scriptName = this.addScriptFileName + increment + this.addScriptFileExtension;
                 increment++;
             }
-            this.currentFile = scriptManager.createScript(scriptName, 'JS', code);
-            this.currentFileName = this.currentFile.getIdentifier();
+            this.currentFile = this.clientService.createScriptFile(scriptName, 'JS', code);
+            this.currentFileName = scriptName;
         } else {
-            let modelManager = this.businessNetwork.getModelManager();
-            let existingModels = modelManager.getModelFiles();
+            let existingModels = this.clientService.getModelFiles();
             let increment = 0;
 
             let newModelNamespace = this.addModelNamespace;
@@ -156,8 +163,9 @@ export class AddFileComponent {
 
 namespace ${newModelNamespace}`;
 
-            this.currentFile = new ModelFile(modelManager, code, this.addModelPath + newModelNamespace + this.addModelFileExtension);
-            this.currentFileName = this.currentFile.getFileName();
+            let fileName = this.addModelPath + newModelNamespace + this.addModelFileExtension;
+            this.currentFile = this.clientService.createModelFile(code, fileName);
+            this.currentFileName = fileName;
         }
     }
 }
