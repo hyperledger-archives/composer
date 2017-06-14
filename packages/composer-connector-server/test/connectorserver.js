@@ -29,7 +29,7 @@ require('sinon-as-promised');
 describe('ConnectorServer', () => {
 
     const connectionProfile = 'defaultProfile';
-    const businessNetworkIdentifier = 'org.acme.biznet';
+    const businessNetworkIdentifier = 'org-acme-biznet';
     const connectionOptions = {
         type: 'embedded',
         prop1: 'value1',
@@ -742,14 +742,14 @@ describe('ConnectorServer', () => {
         });
 
         it('should list', () => {
-            mockConnection.list.withArgs(mockSecurityContext).resolves(['org.acme.biznet1', 'org.acme.biznet2']);
+            mockConnection.list.withArgs(mockSecurityContext).resolves(['org-acme-biznet1', 'org-acme-biznet2']);
             const cb = sinon.stub();
             return connectorServer.connectionList(connectionID, securityContextID, cb)
                 .then(() => {
                     sinon.assert.calledOnce(mockConnection.list);
                     sinon.assert.calledWith(mockConnection.list, mockSecurityContext);
                     sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null, ['org.acme.biznet1', 'org.acme.biznet2']);
+                    sinon.assert.calledWith(cb, null, ['org-acme-biznet1', 'org-acme-biznet2']);
                 });
         });
 

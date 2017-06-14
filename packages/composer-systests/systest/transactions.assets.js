@@ -39,7 +39,7 @@ describe('Transaction (asset specific) system tests', () => {
         const scriptFiles=  [
             { identifier: 'transactions.assets.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.assets.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions.assets@0.0.1', 'The network for the transaction (asset specific) system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-transactions-assets@0.0.1', 'The network for the transaction (asset specific) system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });

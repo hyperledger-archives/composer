@@ -39,7 +39,7 @@ describe('Transaction system tests', () => {
             { identifier: 'transactions.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.js'), 'utf8') },
             { identifier: 'transactions.utility.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.utility.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions@0.0.1', 'The network for the transaction system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-transactions@0.0.1', 'The network for the transaction system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });

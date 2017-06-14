@@ -29,7 +29,7 @@ require('sinon-as-promised');
 describe('ProxyConnection', () => {
 
     const connectionProfile = 'defaultProfile';
-    const businessNetworkIdentifier = 'org.acme.biznet';
+    const businessNetworkIdentifier = 'org-acme-biznet';
     const connectionID = '3d382385-47a5-4be9-99b0-6b10166b9497';
     const enrollmentID = 'alice1';
     const enrollmentSecret = 'suchs3cret';
@@ -274,12 +274,12 @@ describe('ProxyConnection', () => {
     describe('#list', () => {
 
         it('should send a list call to the connector server', () => {
-            mockSocket.emit.withArgs('/api/connectionList', connectionID, securityContextID, sinon.match.func).yields(null, ['org.acme.biznet1', 'org.acme.biznet2']);
+            mockSocket.emit.withArgs('/api/connectionList', connectionID, securityContextID, sinon.match.func).yields(null, ['org-acme-biznet1', 'org-acme-biznet2']);
             return connection.list(mockSecurityContext)
                 .then((result) => {
                     sinon.assert.calledOnce(mockSocket.emit);
                     sinon.assert.calledWith(mockSocket.emit, '/api/connectionList', connectionID, securityContextID, sinon.match.func);
-                    result.should.deep.equal(['org.acme.biznet1', 'org.acme.biznet2']);
+                    result.should.deep.equal(['org-acme-biznet1', 'org-acme-biznet2']);
                 });
         });
 

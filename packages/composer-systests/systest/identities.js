@@ -42,7 +42,7 @@ describe('Identity system tests', () => {
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.identities@0.0.1', 'The network for the identities system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-identities@0.0.1', 'The network for the identities system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });

@@ -47,6 +47,11 @@ class BusinessNetworkMetadata {
             throw new Error('package.json is required and must be an object');
         }
 
+        const regex = /^[a-z0-9_-]+$/;
+        if (!packageJson.name || !regex.test(packageJson.name)) {
+            throw new Error ('business network name can only contain lowercase alphanumerics, _ or -');
+        }
+
         this.packageJson = packageJson;
 
         if(readme && typeof(readme) !== 'string') {

@@ -43,7 +43,7 @@ describe('Query system tests', function () {
         const scriptFiles =  [
             { identifier: 'query.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/query.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.query@0.0.1', 'The network for the query system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-query@0.0.1', 'The network for the query system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });

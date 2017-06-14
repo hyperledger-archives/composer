@@ -38,7 +38,7 @@ describe('HTTP POST system tests', () => {
         const scriptFiles=  [
             { identifier: 'post.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/post.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.post@0.0.1', 'The network for the HTTP POST system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-post@0.0.1', 'The network for the HTTP POST system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });

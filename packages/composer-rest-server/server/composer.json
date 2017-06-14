@@ -1,6 +1,6 @@
 {
     "connectionProfileName": "defaultProfile",
-    "businessNetworkIdentifier": "org.acme.biznet",
+    "businessNetworkIdentifier": "org-acme-biznet",
     "participantId": "admin",
     "participantPwd": "adminpw",
     "namespaces": "always",
