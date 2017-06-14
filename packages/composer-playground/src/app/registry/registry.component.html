@@ -14,11 +14,11 @@
         <div class="data">Data</div>
     </div>
     <div *ngFor="let resource of resources" class="resource-container">
-        <div checkOverFlow [changed]="resource.getIdentifier()" [expanded]="resource.getIdentifier() === expandedResource" (hasOverFlow)=hasOverFlow($event)
+        <div checkOverFlow [changed]="resource.getIdentifier()" [expanded]="resource.getIdentifier() === expandedResource" (hasOverFlow)="hasOverFlow($event, resource)"
              class="resource-content" [ngClass]="{'expanded' : resource.getIdentifier() === expandedResource}">
             <div class="id">{{resource.getIdentifier()}}</div>
             <pre #resourcedata
-                [ngClass]="{'gradient' : resource.getIdentifier() !== expandedResource && showExpand, 'tiny-gradient' : resource.getIdentifier() === expandedResource || !showExpand}"
+                [ngClass]="{'gradient' : resource.getIdentifier() !== expandedResource && overFlowedResources[resource.getIdentifier()], 'tiny-gradient' : resource.getIdentifier() === expandedResource || !overFlowedResources[resource.getIdentifier()]}"
                 class="data">{{serialize(resource)}}</pre>
             <div *ngIf="!isTransactionRegistry()" class="resource-icon">
                 <button type="button" class="icon" (click)="editResource(resource)">
@@ -35,7 +35,7 @@
                 </button>
             </div>
         </div>
-        <button *ngIf="showExpand" class="expand" type="button" (click)="expandResource(resource)">
+        <button *ngIf="overFlowedResources[resource.getIdentifier()]" class="expand" type="button" (click)="expandResource(resource)">
             {{resource.getIdentifier() === expandedResource ? 'Collapse' : 'Show All'}}
         </button>
     </div>
