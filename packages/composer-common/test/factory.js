@@ -179,6 +179,23 @@ describe('Factory', () => {
 
     });
 
+    describe('#newRelationship', function() {
+        it('should throw if namespace missing', function() {
+            (() => factory.newRelationship('org.acme.missing', 'MyAsset', 'id')).
+                should.throw(TypeNotFoundException, /org.acme.missing/);
+        });
+
+        it('should throw if type missing', function() {
+            (() => factory.newRelationship('org.acme.test', 'MissingType', 'id')).
+                should.throw(TypeNotFoundException, /MissingType/);
+        });
+
+        it('should succeed for a valid type', function() {
+            const relationship = factory.newRelationship('org.acme.test', 'MyAsset', 'id');
+            relationship.isRelationship().should.be.true;
+        });
+    });
+
     describe('#newTransaction', () => {
 
         it('should throw if ns not specified', () => {

@@ -38,9 +38,6 @@
         "factory-newinstance-invalididentifier": "Invalid or missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-abstracttype": "Cannot instantiate Abstract Type {type} in namespace {namespace}",
 
-        "factory-newrelationship-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
-        "factory-newrelationship-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
-
         "instancegenerator-newinstance-noconcreteclass": "No concrete extending type for {type}",
 
         "modelmanager-resolvetype-nonsfortype": "No registered namespace for type {type} in {context}",

@@ -218,29 +218,14 @@ class Factory {
      * @param {string} type - the type of the Resource
      * @param {string} id - the identifier
      * @return {Relationship} - the new relationship instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
+     * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newRelationship(ns, type, id) {
-        let modelFile = this.modelManager.getModelFile(ns);
-        if(!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newrelationship-notregisteredwithmm');
+        // Load the type declaration to force an error if it doesn't exist
+        const fqn = ModelUtil.getFullyQualifiedName(ns, type);
+        this.modelManager.getType(fqn);
 
-            throw new Error(formatter({
-                namespace: ns
-            }));
-        }
-
-        if(!modelFile.isDefined(type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        let relationship = new Relationship(this.modelManager,ns,type,id);
-        return relationship;
+        return new Relationship(this.modelManager, ns, type, id);
     }
 
     /**

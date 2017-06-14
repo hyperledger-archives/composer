@@ -29,7 +29,7 @@ class Factory {
    + Resource newInstance(string,string,string,Object,boolean,string) throws ModelException
    + Resource newResource(string,string,string,Object,boolean,string) throws TypeNotFoundException
    + Resource newConcept(string,string,Object,boolean,string) throws TypeNotFoundException
-   + Relationship newRelationship(string,string,string) throws ModelException
+   + Relationship newRelationship(string,string,string) throws TypeNotFoundException
    + Resource newTransaction(string,string,string,Object,string) 
    + Resource newEvent(string,string,string,Object,string) 
    + Object toJSON() 
