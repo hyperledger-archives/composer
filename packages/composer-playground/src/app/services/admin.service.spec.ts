@@ -184,7 +184,7 @@ describe('AdminService', () => {
             service['userID'].should.equal('myId');
             service['madeItToConnect'].should.equal(true);
 
-            adminConnectionMock.connect.should.have.been.calledWith('my profile', 'myId', 'myPassword', 'org.acme.biznet');
+            adminConnectionMock.connect.should.have.been.calledWith('my profile', 'myId', 'myPassword', 'org-acme-biznet');
 
         })));
     });
@@ -215,12 +215,12 @@ describe('AdminService', () => {
             service['initialDeploy'].should.equal(true);
 
             adminConnectionMock.disconnect.should.have.been.called;
-            adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org.acme.biznet');
+            adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org-acme-biznet');
         })));
 
         it('should connect without an id but not deploy as already deployed', fakeAsync(inject([AdminService], (service: AdminService) => {
             adminConnectionMock.connect.returns(Promise.resolve());
-            adminConnectionMock.list.returns(Promise.resolve(['org.acme.biznet']));
+            adminConnectionMock.list.returns(Promise.resolve(['org-acme-biznet']));
 
             let mockGetAdminConnection = sinon.stub(service, 'getAdminConnection').returns(adminConnectionMock);
 
@@ -241,7 +241,7 @@ describe('AdminService', () => {
             mockGenerateBusinessNetwork.should.not.have.been.called;
 
             adminConnectionMock.disconnect.should.have.been.called;
-            adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org.acme.biznet');
+            adminConnectionMock.connect.should.have.been.calledWith('myProfile', 'myUser', 'mySecret', 'org-acme-biznet');
         })));
     });
 
