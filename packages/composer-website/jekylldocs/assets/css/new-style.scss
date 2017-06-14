@@ -446,6 +446,7 @@ li {
   display: flex;
   background-color: $first-highlight;
   width: 100vw;
+  height: auto;
 }
 
 .footer-container {
@@ -455,77 +456,6 @@ li {
   margin: auto;
   padding-top: 3rem;
   margin-bottom: 4rem;
-
-.footer-left {
-  display: flex;
-
-  flex-grow: 1;
-  flex-shrink: 1;
-
-  p {
-  color: $white;
-    }
-  .icon2 {
-    font-size: 20px;
-    height: 100%;
-    width: 100%;
-    transition: 0.4s cubic-bezier(0.075, 0.820, 0.165, 1.000);
-    color: $primary-text;
-    &:hover {
-      color: $first-highlight;
-    }
-  }
-}
-
-  .footer-right {
-    display: flex;
-
-    justify-content: flex-end;
-    flex-basis: auto;
-    flex-shrink: 1;
-    height: 100%;
-    ul {
-      display: flex;
-
-      flex-grow: 2;
-      flex-direction: row;
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-    li {
-      margin-left: 2rem;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
-      display: flex;
-
-      a {
-        color: $white;
-        text-decoration: none;
-        font-size: 0.9rem;
-        &:hover {
-          border-bottom: 1px solid $white;
-      }
-    }
-
-      p {
-        opacity: 0.6;
-        color: $white;
-      }
-
-    }
-  }
-
-}
-
-.footer-container-docs {
-  display: flex;
-
-  width: 70vw;
-  margin: auto;
-  padding-top: 1rem;
-  margin-bottom: 1rem;
 
 .footer-left {
   display: flex;
