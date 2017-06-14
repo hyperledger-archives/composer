@@ -2,7 +2,7 @@
 /* tslint:disable:no-unused-expression */
 /* tslint:disable:no-var-requires */
 /* tslint:disable:max-classes-per-file */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, async } from '@angular/core/testing';
 import {
 
     ReactiveFormsModule,
@@ -21,11 +21,23 @@ describe('ConnectionProfileDataComponent', () => {
     let component: ConnectionProfileDataComponent;
     let fixture: ComponentFixture<ConnectionProfileDataComponent>;
 
-    let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
-    let mockNgbModal = sinon.createStubInstance(NgbModal);
-    let mockAlertService = sinon.createStubInstance(AlertService);
+    let mockConnectionProfileService;
+    let mockNgbModal;
+    let mockAlertService;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+        mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
+        mockNgbModal = sinon.createStubInstance(NgbModal);
+        mockAlertService = sinon.createStubInstance(AlertService);
+
+        mockAlertService.successStatus$ = {
+            next: sinon.stub()
+        };
+
+        mockAlertService.errorStatus$ = {
+            next: sinon.stub()
+        };
+
         TestBed.configureTestingModule({
             declarations: [ConnectionProfileDataComponent],
             providers: [{provide: NgbModal, useValue: mockNgbModal},
@@ -36,7 +48,7 @@ describe('ConnectionProfileDataComponent', () => {
         });
         fixture = TestBed.createComponent(ConnectionProfileDataComponent);
         component = fixture.componentInstance;
-    });
+    }));
 
     it('should create ConnectionProfileDataComponent', () => {
         component.should.be.ok;
@@ -135,10 +147,6 @@ describe('ConnectionProfileDataComponent', () => {
 
             let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
 
-            mockAlertService.successStatus$ = {
-                next: sinon.stub()
-            };
-
             let mockModalRef = {
                 componentInstance: {
                     connectionProfileName: ''
@@ -169,10 +177,6 @@ describe('ConnectionProfileDataComponent', () => {
 
             let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
 
-            mockAlertService.successStatus$ = {
-                next: sinon.stub()
-            };
-
             let mockModalRef = {
                 componentInstance: {
                     connectionProfileName: ''
@@ -196,10 +200,6 @@ describe('ConnectionProfileDataComponent', () => {
         it('should handle error', fakeAsync(() => {
             component['connectionProfileData'] = {name: 'testprofile'};
 
-            mockAlertService.errorStatus$ = {
-                next: sinon.stub()
-            };
-
             let mockModalRef = {
                 componentInstance: {
                     connectionProfileName: ''
@@ -217,10 +217,6 @@ describe('ConnectionProfileDataComponent', () => {
 
         it('should handle cancel', fakeAsync(() => {
             component['connectionProfileData'] = {name: 'testprofile'};
-
-            mockAlertService.errorStatus$ = {
-                next: sinon.stub()
-            };
 
             let mockModalRef = {
                 componentInstance: {
@@ -553,7 +549,7 @@ describe('ConnectionProfileDataComponent', () => {
                 invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
             });
 
-            component.onSubmit();
+            component.onSubmit(null);
             tick();
             mockConnectionProfileService.createProfile.should.have.been.calledWith('new v06 Profile', profileOne);
             mockConnectionProfileService.deleteProfile.should.have.been.calledWith('v06 Profile');
@@ -639,7 +635,7 @@ describe('ConnectionProfileDataComponent', () => {
                 timeout: [300, [Validators.pattern('[0-9]+')]],
             });
 
-            component.onSubmit();
+            component.onSubmit(null);
             tick();
             mockConnectionProfileService.createProfile.should.have.been.calledWith('new v1 Profile', profileOne);
             mockConnectionProfileService.deleteProfile.should.have.been.calledWith('v1 Profile');
@@ -673,16 +669,112 @@ describe('ConnectionProfileDataComponent', () => {
             });
 
             (() => {
-                component.onSubmit();
+                component.onSubmit(null);
             }).should.throw('Unknown profile type');
             tick();
+        }));
+
+        it('should submit v06 profile form with enter key', fakeAsync(() => {
+            let profileOne = {
+                deployWaitTime: 300,
+                eventHubURL: 'grpc://localhost:7053',
+                invokeWaitTime: 30,
+                keyValStore: '/tmp/keyValStore',
+                membershipServicesURL: 'grpc://localhost:7054',
+                name: 'new v06 Profile',
+                peerURL: 'grpc://localhost:7051',
+                type: 'hlf'
+            };
+
+            let profileTwo = {
+                deployWaitTime: 300,
+                eventHubURL: 'grpc://localhost:7053',
+                invokeWaitTime: 30,
+                keyValStore: '/tmp/keyValStore',
+                membershipServicesURL: 'grpc://localhost:7054',
+                name: 'v06 Profile',
+                peerURL: 'grpc://localhost:7051',
+                type: 'hlf'
+            };
+
+            mockConnectionProfileService.createProfile.returns(Promise.resolve());
+            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
+
+            component['connectionProfileData'] = {name: 'v06 Profile', profile: {type: 'hlf'}};
+
+            component['v06Form'] = component['fb'].group({
+                name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
+                peerURL: ['grpc://localhost:7051', [Validators.required]],
+                membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
+                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
+                keyValStore: ['/tmp/keyValStore', [Validators.required]],
+                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
+                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
+            });
+
+            let event = {
+                keyCode: 13
+            };
+
+            component.onSubmit(event);
+            tick();
+            mockConnectionProfileService.createProfile.should.have.been.calledWith('new v06 Profile', profileOne);
+            mockConnectionProfileService.deleteProfile.should.have.been.calledWith('v06 Profile');
+        }));
+
+        it('should not submit v06 profile form with any other key', fakeAsync(() => {
+            let profileOne = {
+                deployWaitTime: 300,
+                eventHubURL: 'grpc://localhost:7053',
+                invokeWaitTime: 30,
+                keyValStore: '/tmp/keyValStore',
+                membershipServicesURL: 'grpc://localhost:7054',
+                name: 'new v06 Profile',
+                peerURL: 'grpc://localhost:7051',
+                type: 'hlf'
+            };
+
+            let profileTwo = {
+                deployWaitTime: 300,
+                eventHubURL: 'grpc://localhost:7053',
+                invokeWaitTime: 30,
+                keyValStore: '/tmp/keyValStore',
+                membershipServicesURL: 'grpc://localhost:7054',
+                name: 'v06 Profile',
+                peerURL: 'grpc://localhost:7051',
+                type: 'hlf'
+            };
+
+            mockConnectionProfileService.createProfile.returns(Promise.resolve());
+            mockConnectionProfileService.getAllProfiles.returns(Promise.resolve([profileOne, profileTwo]));
+
+            component['connectionProfileData'] = {name: 'v06 Profile', profile: {type: 'hlf'}};
+
+            component['v06Form'] = component['fb'].group({
+                name: ['new v06 Profile', [Validators.required, Validators.pattern('^(?!New Connection Profile$).*$')]],
+                peerURL: ['grpc://localhost:7051', [Validators.required]],
+                membershipServicesURL: ['grpc://localhost:7054', [Validators.required]],
+                eventHubURL: ['grpc://localhost:7053', [Validators.required]],
+                keyValStore: ['/tmp/keyValStore', [Validators.required]],
+                deployWaitTime: [300, [Validators.pattern('[0-9]+')]],
+                invokeWaitTime: [30, [Validators.pattern('[0-9]+')]]
+            });
+
+            let event = {
+                keyCode: 15
+            };
+
+            component.onSubmit(event);
+            tick();
+            mockConnectionProfileService.createProfile.should.not.have.been.called;
+            mockConnectionProfileService.deleteProfile.should.not.have.been.called;
         }));
     });
 
     describe('stopEditing', () => {
-        beforeEach(() => {
+        beforeEach(async(() => {
             mockConnectionProfileService.deleteProfile.reset();
-        });
+        }));
 
         it('should delete new profile if cancelled', fakeAsync(() => {
             component['connectionProfileData'] = {name: 'New Connection Profile'};
@@ -733,10 +825,6 @@ describe('ConnectionProfileDataComponent', () => {
         }));
 
         it('should handle error', fakeAsync(() => {
-            mockAlertService.errorStatus$ = {
-                next: sinon.stub()
-            };
-
             let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
             component['connectionProfileData'] = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
             mockNgbModal.open.returns({result: Promise.reject('some error'), componentInstance: {profileName: 'bob'}});
@@ -748,10 +836,6 @@ describe('ConnectionProfileDataComponent', () => {
         }));
 
         it('should handle pressing escape', fakeAsync(() => {
-            mockAlertService.errorStatus$ = {
-                next: sinon.stub()
-            };
-
             let profileUpdatedSpy = sinon.spy(component['profileUpdated'], 'emit');
             component['connectionProfileData'] = {name: 'v1 Profile', profile: {type: 'hlfv1'}};
             mockNgbModal.open.returns({result: Promise.reject(1), componentInstance: {profileName: 'bob'}});
@@ -931,9 +1015,9 @@ describe('ConnectionProfileDataComponent', () => {
             component.openAddCertificateModal(0, 'test').then(() => {
                 throw new Error('should not get here');
             })
-            .catch((error) => {
-                error.message.should.equal('Unrecognized type test');
-            });
+                .catch((error) => {
+                    error.message.should.equal('Unrecognized type test');
+                });
 
             tick();
 
@@ -941,8 +1025,6 @@ describe('ConnectionProfileDataComponent', () => {
         }));
 
         it('should open orderers certificate modal and handle error', fakeAsync(() => {
-            mockAlertService.errorStatus$ = {next: sinon.stub()};
-
             component['v1Form'] = component['fb'].group({
                 orderers: component['fb'].array([component['fb'].group({
                     url: 'ordererURL_2',
@@ -972,8 +1054,6 @@ describe('ConnectionProfileDataComponent', () => {
         }));
 
         it('should open orderers certificate modal and handle cancel', fakeAsync(() => {
-            mockAlertService.errorStatus$ = {next: sinon.stub()};
-
             component['v1Form'] = component['fb'].group({
                 orderers: component['fb'].array([component['fb'].group({
                     url: 'ordererURL_2',
