@@ -14,23 +14,27 @@
 
 'use strict';
 
-const BaseException = require('../baseexception');
+const BaseModelException = require('./basemodelexception');
 
 /**
  * Exception throws when a Composer file is syntactically invalid
- * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @extends BaseModelException
+ * @see See [BaseModelException]{@link module:composer-common.BaseModelException}
  * @class
  * @memberof module:composer-common
  */
-class ParseException extends BaseException {
+class ParseException extends BaseModelException {
 
     /**
      * Create an ParseException
      * @param {string} message - the message for the exception
+     * @param {string} fileLocation - the optional file location associated with the exception
      */
-    constructor(message) {
-        super(message);
+    constructor(message, fileLocation) {
+
+        let fullMessage = message +  ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
+
+        super(message, fileLocation, fullMessage);
     }
 }
 
