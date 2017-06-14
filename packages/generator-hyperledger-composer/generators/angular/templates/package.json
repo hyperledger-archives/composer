@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "author": "<%= authorName %>",
   "email": "<%= authorEmail %>",
-  "license": "Apache-2.0",
+  "license": "<%= license %>",
   "scripts": {
     "ng": "ng",
 <% if(apiServer == 'generate'){ %>
