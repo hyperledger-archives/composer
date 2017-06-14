@@ -8,16 +8,13 @@ import { FormsModule } from '@angular/forms';
 import * as sinon from 'sinon';
 
 import { Observable } from 'rxjs';
-import { BehaviorSubject, Subject } from 'rxjs/Rx';
+import { BehaviorSubject } from 'rxjs/Rx';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { AdminConnection } from 'composer-admin';
 
 import { IssueIdentityComponent } from './issue-identity.component';
 import { AlertService } from '../services/alert.service';
-import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
-import { ConnectionProfileService } from '../services/connectionprofile.service';
 import { BusinessNetworkConnection, ParticipantRegisty } from 'composer-client';
 import { Resource } from 'composer-common';
 
@@ -33,27 +30,16 @@ class MockTypeaheadDirective {
     public resultTemplate: any;
 }
 
-class MockBusinessNetworkConnection {
-
-    // tslint:disable-next-line:no-empty
-    getAllParticipantRegistries() {
-    }
-
-    issueIdentity(participant, userID, options) {
-        return Promise.resolve({participant: participant, userID: userID, options: options});
-    }
-}
-
 describe('IssueIdentityComponent', () => {
     let component: IssueIdentityComponent;
     let fixture: ComponentFixture<IssueIdentityComponent>;
     let mockClientService;
     let mockBusinessNetworkConnection;
     let mockAlertService;
-    let mockAdminService;
     let mockActiveModal;
 
     beforeEach(() => {
+        mockBusinessNetworkConnection = sinon.createStubInstance(BusinessNetworkConnection);
         mockActiveModal = sinon.createStubInstance(NgbActiveModal);
         let mockBehaviourSubject = sinon.createStubInstance(BehaviorSubject);
         mockBehaviourSubject.next = sinon.stub();
@@ -62,9 +48,7 @@ describe('IssueIdentityComponent', () => {
         mockAlertService.busyStatus$ = mockBehaviourSubject;
         mockAlertService.successStatus$ = mockBehaviourSubject;
 
-        mockAdminService = sinon.createStubInstance(AdminService);
         mockClientService = sinon.createStubInstance(ClientService);
-        let mockConnectionProfileService = sinon.createStubInstance(ConnectionProfileService);
 
         TestBed.configureTestingModule({
             // TODO mock imports?
@@ -76,12 +60,10 @@ describe('IssueIdentityComponent', () => {
             providers: [
                 {provide: NgbActiveModal, useValue: mockActiveModal},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: AdminService, useValue: mockAdminService},
-                {provide: ClientService, useValue: mockClientService},
-                {provide: ConnectionProfileService, useValue: mockConnectionProfileService},
+                {provide: ClientService, useValue: mockClientService}
             ]
         })
-        .compileComponents();
+            .compileComponents();
 
         fixture = TestBed.createComponent(IssueIdentityComponent);
         component = fixture.componentInstance;
@@ -140,7 +122,6 @@ describe('IssueIdentityComponent', () => {
         it('should alert if there is an error', fakeAsync(() => {
 
             // Force error
-            mockBusinessNetworkConnection = sinon.createStubInstance(MockBusinessNetworkConnection);
             mockBusinessNetworkConnection.getAllParticipantRegistries.returns(Promise.reject('some error'));
             mockClientService.getBusinessNetworkConnection.returns(mockBusinessNetworkConnection);
 
@@ -212,33 +193,11 @@ describe('IssueIdentityComponent', () => {
 
         it('should generate and return an identity using internally held state information', fakeAsync(() => {
 
-            let mockAdminConnection = sinon.createStubInstance(AdminConnection);
-            mockAdminConnection.getProfile.returns(Promise.resolve('bob'));
-            mockAdminService.getAdminConnection.returns(mockAdminConnection);
-            mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
-
-            component['participantFQI'] = 'uniqueName';
-            component['userID'] = 'userId';
-
-            component['issueIdentity']();
-
-            tick();
-
-            let expected = {participant: 'uniqueName', userID: 'userId', options: {issuer: false, affiliation: undefined}};
-            mockActiveModal.close.should.be.calledWith(expected);
-
-        }));
-
-        it('should generate and return an identity, detecting blockchain.ibm.com URLs', fakeAsync(() => {
-
-            let mockAdminConnection = sinon.createStubInstance(AdminConnection);
-            mockAdminConnection.getProfile.returns(Promise.resolve({
-                membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
-                peerURL: 'peerURL\.blockchain\.ibm\.com',
-                eventHubURL: 'eventURL\.blockchain\.ibm\.com'
+            mockClientService.issueIdentity.returns(Promise.resolve({
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: undefined}
             }));
-            mockAdminService.getAdminConnection.returns(mockAdminConnection);
-            mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
 
             component['participantFQI'] = 'uniqueName';
             component['userID'] = 'userId';
@@ -247,26 +206,24 @@ describe('IssueIdentityComponent', () => {
 
             tick();
 
-            let expected = {participant: 'uniqueName', userID: 'userId', options: {issuer: false, affiliation: 'group1'}};
+            let expected = {
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: undefined}
+            };
             mockActiveModal.close.should.be.calledWith(expected);
 
         }));
 
         it('should dismiss modal and pass error on failure', fakeAsync(() => {
-
-            let mockAdminConnection = sinon.createStubInstance(AdminConnection);
-            mockAdminConnection.getProfile.returns(Promise.reject('some error'));
-            mockAdminService.getAdminConnection.returns(mockAdminConnection);
-            mockClientService.getBusinessNetworkConnection.returns(new MockBusinessNetworkConnection());
+            mockClientService.issueIdentity.returns(Promise.reject('some error'));
             component['issueIdentity']();
 
             tick();
 
             // Check we error
             mockActiveModal.dismiss.should.be.calledWith('some error');
-
         }));
-
     });
 
     describe('#getParticipant', () => {

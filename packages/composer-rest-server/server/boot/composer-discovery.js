@@ -526,7 +526,7 @@ module.exports = function (app, callback) {
     return Promise.resolve()
     .then(() => {
 
-        // If this isn't the memory connector, then we want to persist the enrollment certificate.
+        // If this isn't the memory connector, then we want to persist the enrollment certificates.
         // This means that the Composer APIs will fall back to using the default filesystem wallet.
         const isMemory = app.datasources.db.name === 'Memory';
         if (isMemory) {

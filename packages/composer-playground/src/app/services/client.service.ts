@@ -312,6 +312,26 @@ export class ClientService {
             });
     }
 
+    issueIdentity(userID, participantFQI, options): Promise<string> {
+        let connectionProfileName = this.connectionProfileService.getCurrentConnectionProfile();
+
+        return this.connectionProfileService.getProfile(connectionProfileName)
+            .then((connectionProfile) => {
+                ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
+                    if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {
+                        // Smells like Bluemix with their non-default affiliations.
+                        options.affiliation = 'group1';
+                    }
+                });
+
+                return this.getBusinessNetworkConnection().issueIdentity(participantFQI, userID, options);
+            });
+    }
+
+    revokeIdentity(userID: string) {
+        return this.getBusinessNetworkConnection().revokeIdentity(userID);
+    }
+
     private createNewBusinessNetwork(name, version, description, packageJson, readme) {
         let oldBusinessNetwork = this.getBusinessNetwork();
 

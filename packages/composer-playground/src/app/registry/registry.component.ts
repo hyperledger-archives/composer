@@ -21,8 +21,9 @@ export class RegistryComponent {
     private resources = [];
 
     private expandedResource = null;
-    private showExpand: boolean = true;
     private registryType: string = null;
+
+    private overFlowedResources = {};
 
     @Input()
     set registry(registry: any) {
@@ -47,21 +48,22 @@ export class RegistryComponent {
     }
 
     loadResources() {
+        this.overFlowedResources = {};
         this._registry.getAll()
-        .then((resources) => {
-            if (this.isTransactionRegistry()) {
-                this.resources = resources.sort((a, b) => {
-                    return b.timestamp - a.timestamp;
-                });
-            } else {
-                this.resources = resources.sort((a, b) => {
-                    return a.getIdentifier().localeCompare(b.getIdentifier());
-                });
-            }
-        })
-        .catch((error) => {
-            this.alertService.errorStatus$.next(error);
-        });
+            .then((resources) => {
+                if (this.isTransactionRegistry()) {
+                    this.resources = resources.sort((a, b) => {
+                        return b.timestamp - a.timestamp;
+                    });
+                } else {
+                    this.resources = resources.sort((a, b) => {
+                        return a.getIdentifier().localeCompare(b.getIdentifier());
+                    });
+                }
+            })
+            .catch((error) => {
+                this.alertService.errorStatus$.next(error);
+            });
     }
 
     serialize(resource: any): string {
@@ -86,8 +88,10 @@ export class RegistryComponent {
         });
     }
 
-    hasOverFlow(overflow: boolean) {
-        this.showExpand = overflow;
+    hasOverFlow(overflow: boolean, resource: any) {
+        if (overflow) {
+            this.overFlowedResources[resource.getIdentifier()] = resource;
+        }
     }
 
     editResource(resource: any) {
@@ -107,14 +111,14 @@ export class RegistryComponent {
         confirmModalRef.result.then((result) => {
             if (result) {
                 this._registry.remove(resource)
-                .then(() => {
-                    this.loadResources();
-                })
-                .catch((error) => {
-                    this.alertService.errorStatus$.next(
-                        'Removing the selected item from the registry failed:' + error
-                    );
-                });
+                    .then(() => {
+                        this.loadResources();
+                    })
+                    .catch((error) => {
+                        this.alertService.errorStatus$.next(
+                            'Removing the selected item from the registry failed:' + error
+                        );
+                    });
             } else {
                 // TODO: we should always get called with a code for this usage of the
                 // modal but will that always be true
