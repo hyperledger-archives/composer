@@ -1,8 +1,19 @@
+# Contriburting to Composer 
+
+* Currently reading -> [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
+* [Suggested IDE setup](./contrib-notes/ide-setup.md)
+* [Coding Guidelines](./contrib-notes/coding-guidelines.md)
+* [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
+* [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+
+
 # Getting Started Developing Hyperledger Composer
 
 This guide will help you start to contribute to the Hyperledger Composer project. It will show you how to set up your local environment and walk through the development, code, test and deploy process. You will do this by creating a small change of your own.
 
 Please note that this is the **Getting Started** for developing Hyperledger Composer itself, and not a guide to developing applications **using** Hyperledger Composer.  (Though a lot of the tool chain will be useful for that purpose as well).
+
+After reading this guide, move on to reading the [coding-guidelines](./coding-guidelines.md) that will explain in more detail the process to follow to make changes.
 
 ## Setup Scripts
 
@@ -38,8 +49,8 @@ different Hyperledger Composer repositories.
 If this is your first Git project then you might like to spend a few moments creating a specific directory for all your local git repositories, e.g. ``~/github/`` on unix file systems, which will put the project under your home directory, which is good default location. Windows note: this will all be done in the git bash shell that was installed for you.
 
 ```bash
-mkdir -p ~/github
-cd ~/github
+$ mkdir -p ~/github
+$ cd ~/github
 ```
 
 _IMPORTANT_ Do NOT have any directory in the path to the git repository directory you just created, start with a _  (underscore). This is due to the way that the JavaScript documentation tool handles filtering path names. If you do this, then the tool reports there are no source files to produce documentation for.
@@ -47,20 +58,9 @@ _IMPORTANT_ Do NOT have any directory in the path to the git repository director
 The final step is to issue the clone command. This format is assuming that you have setup the ssh keys for GitHub.
 
 ```bash
-git clone git@github.ibm.com:<your-username>/hyperledger/composer.git
-cd composer
+$ git clone git@github.com:<your-username>/hyperledger/composer.git
+$ cd composer
 ```
-
-### Hyperledger Code Dependencies
-
-There is a temporary requirement for Hyperledger Composer to include the Hyperledger source code in its project directory. The following commands will pull the code from the Hyperledger code repository, as defined in the `.gitmodules` file in the Hyperledger Composer project directory.
-
-```bash
-git submodule init
-git submodule update
-```
-
-You can see where the Hyperledger source code is pulled from; it is saved in the `.git` directory of the Hyperledger Composer project.
 
 ## Installing Hyperledger Composer Prerequisites
 
@@ -70,7 +70,7 @@ Hyperledger Composer has a number of prerequisites - for its runtime, code hygie
 
 You must install [Lerna](https://lernajs.io) to build this multi-package repository:
 
-    $ npm install -g lerna@2.0.0-rc.4
+    $ npm install -g lerna@2.0.0-rc.5
 
 You must bootstrap the repository so that all of the dependencies are installed and all of the packages are linked together:
 
@@ -100,3 +100,9 @@ To verify that your local environment is ready for development and to confirm la
     $ lerna run test
 
 This will run the unit tests that are associated with all the modules.
+
+## Next step
+Moving on to read
+
+* [Suggested IDE setup](./contrib-notes/ide-setup.md)
+* [Coding Guidelines](./contrib-notes/coding-guidelines.md)

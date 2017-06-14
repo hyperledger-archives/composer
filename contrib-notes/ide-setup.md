@@ -1,3 +1,10 @@
+# Contriburting to Composer
+* [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
+* Currently reading ->  [Suggested IDE setup](./contrib-notes/ide-setup.md)
+* [Coding Guidelines](./contrib-notes/coding-guidelines.md)
+* [Pull Request Guidelines](./contrib-notes/submitting-pull-request.md)
+* [Release process](./contrib-notes/release-process/weekly-qa-validation.md)
+
 # IDE setup for Hyperledger Composer development
 
 Both Atom.io and VS Code are popular editors amongst the Hyperledger Composer contributors.
@@ -32,3 +39,7 @@ Use the [file-icons plugin](https://atom.io/packages/file-icons) to assign visua
 
 # Using VSCode
 _to do_
+
+# Next step
+
+Move on to read  [Coding Guidelines](./contrib-notes/coding-guidelines.md)
