@@ -2,27 +2,58 @@
 @import '../../assets/styles/base/_variables.scss';
 
 identity {
-  display: flex;
-  width: 100%;
+    display: flex;
+    width: 100%;
 
-  .main-view {
-    overflow-y: auto;
+    .main-view {
+        overflow-y: auto;
 
-    i {
-      color: $secondary-text;
-    }
+        .identity-title {
+            display: flex;
+            padding: $space-smedium;
 
-    table {
-      margin: $space-large 0;
+            & > * {
+                font-weight: bold;
+            }
+        }
+
+        .id {
+            flex-basis: 48%;
+        }
+
+        .identity {
+            background-color: $white;
+            box-shadow: 0 2px 5px -1px $fifth-highlight;
+            margin-bottom: $space-medium;
+            display: flex;
+            padding: 8px;
+            height:45px;
+            cursor: pointer;
+
+            &:hover {
+                .actions {
+                    display: block;
+                }
+            }
+
+            .actions {
+                display: none;
+            }
+        }
+
+        i {
+            color: $secondary-text;
+        }
     }
 
     // TODO This should be a common style (see also .registry button)
     button {
-      box-shadow: 0 2px 5px -1px $fifth-highlight;
+        box-shadow: 0 2px 5px -1px $fifth-highlight;
 
-      &.secondary {
-        border-color: $white;
-      }
+        &.secondary {
+            border-color: $white;
+        }
     }
-  }
 }
+
+

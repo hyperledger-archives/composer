@@ -43,7 +43,7 @@ describe('Query system tests', function () {
         const scriptFiles =  [
             { identifier: 'query.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/query.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.query@0.0.1', 'The network for the query system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-query@0.0.1', 'The network for the query system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
@@ -55,7 +55,7 @@ describe('Query system tests', function () {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.query')
+                return TestUtil.getClient('systest-query')
                     .then((result) => {
                         client = result;
                     });
@@ -81,7 +81,7 @@ describe('Query system tests', function () {
         })
         .then((marbleAssetRegistry) => {
             let factory = client.getBusinessNetwork().getFactory();
-            let promises = [];
+            let marbles = [];
 
             for(let n=0;n<10;n++) {
                 const marble = factory.newResource('org.fabric_composer.marbles', 'Marble', 'Marble:' + n);
@@ -95,30 +95,18 @@ describe('Query system tests', function () {
                 }
 
                 marble.owner = factory.newRelationship( 'org.fabric_composer.marbles', 'Player', 'fenglian@email.com');
-                promises.push(marbleAssetRegistry.add(marble));
+                marbles.push(marble);
             }
 
-            return Promise.all(promises);
+            return marbleAssetRegistry.addAll(marbles);
         });
     }
 
 
     it('should sunmit a QueryMarbleByOwner transaction (TP function checks query results)', () => {
-        this.timeout(1000); // Delay to prevent transaction failing
-
         let factory = client.getBusinessNetwork().getFactory();
 
         return addMarbles()
-        .then(() => {
-            return client.getParticipantRegistry('org.fabric_composer.marbles.Player');
-        })
-        .then((participantRegistry) => {
-            return participantRegistry.get('fenglian@email.com');
-        })
-        .then((player) => {
-            player.firstName.should.equal('Fenglian');
-            return;
-        })
         .then(() => {
             let transaction = factory.newTransaction('org.fabric_composer.marbles', 'QueryMarbleByOwner');
             return client.submitTransaction(transaction);

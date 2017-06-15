@@ -66,7 +66,7 @@ describe('HLFConnection', () => {
         mockClient.newTransactionID.returns(mockTransactionID);
         mockSecurityContext = sinon.createStubInstance(HLFSecurityContext);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetwork.getName.returns('org.acme.biznet');
+        mockBusinessNetwork.getName.returns('org-acme-biznet');
         mockBusinessNetwork.toArchive.resolves(Buffer.from('hello world'));
         connectOptions = {
             channel: 'testchainid',
@@ -77,20 +77,12 @@ describe('HLFConnection', () => {
         mockEventHubDef = {
             'eventURL': 'http://localhost:7053'
         };
-        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
     });
 
     afterEach(() => {
         sandbox.restore();
         connectorPackageJSON.version = originalVersion;
-    });
-
-    describe('#generateCcid', () => {
-        it('should create a valid ccid', () => {
-            HLFConnection.generateCcid('my.domain.biznet').should.equal('my-domain-biznet');
-            HLFConnection.generateCcid('My.Domain.BIZnet').should.equal('my-domain-biznet');
-        });
-
     });
 
     describe('#createUser', () => {
@@ -125,38 +117,38 @@ describe('HLFConnection', () => {
 
         it('should throw if connectOptions not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', null, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', null, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
             }).should.throw(/connectOptions not specified/);
         });
 
         it('should throw if client not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, null, mockChannel, [mockEventHubDef], mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, null, mockChannel, [mockEventHubDef], mockCAClient);
             }).should.throw(/client not specified/);
         });
 
         it('should throw if channel not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, null, [mockEventHubDef], mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, null, [mockEventHubDef], mockCAClient);
             }).should.throw(/channel not specified/);
         });
 
         it('should throw if eventHubDefs not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChannel, null, mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, null, mockCAClient);
             }).should.throw(/eventHubDefs not specified or not an array/);
         });
 
         it('should throw if eventHubDefs not an array', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChannel, mockEventHubDef, mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, mockEventHubDef, mockCAClient);
             }).should.throw(/eventHubDefs not specified or not an array/);
         });
 
 
         it('should throw if caClient not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChannel, [mockEventHubDef], null);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, [mockEventHubDef], null);
             }).should.throw(/caClient not specified/);
         });
     });
@@ -193,7 +185,6 @@ describe('HLFConnection', () => {
         });
 
         it('should subscribe to the eventHub and emit events', () => {
-            //sandbox.stub(Buffer, 'from').returns('"{"event":"event"}"');
             connection._connectToEventHubs();
             const events = {
                 payload: {
@@ -592,7 +583,7 @@ describe('HLFConnection', () => {
                 mspID: 'suchmsp',
                 timeout: 22
             };
-            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
             sandbox.stub(connection, '_validateResponses').returns();
             sandbox.stub(connection, '_initializeChannel').resolves();
             connection._connectToEventHubs();
@@ -891,7 +882,7 @@ describe('HLFConnection', () => {
 
         it('should invoke the chaincode', () => {
             sandbox.stub(connection, 'invokeChainCode').resolves();
-            return connection.undeploy(mockSecurityContext, 'org.acme.biznet')
+            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
                 .then(() => {
                     sinon.assert.calledOnce(connection.invokeChainCode);
                     sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'undeployBusinessNetwork', []);
@@ -900,7 +891,7 @@ describe('HLFConnection', () => {
 
         it('should handle errors invoking the chaincode', () => {
             sandbox.stub(connection, 'invokeChainCode').rejects('such error');
-            return connection.undeploy(mockSecurityContext, 'org.acme.biznet')
+            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
                 .should.be.rejectedWith(/such error/);
         });
 
@@ -1180,7 +1171,7 @@ describe('HLFConnection', () => {
                 mspID: 'suchmsp',
                 timeout: 38
             };
-            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
             sandbox.stub(connection, '_validateResponses').returns();
             sandbox.stub(connection, '_initializeChannel').resolves();
             connection._connectToEventHubs();
@@ -1405,33 +1396,33 @@ describe('HLFConnection', () => {
         it('should return an array of chaincode names for all instantiated chaincodes', () => {
             mockChannel.queryInstantiatedChaincodes.resolves({
                 chaincodes: [{
-                    name: 'org.acme.biznet1',
+                    name: 'org-acme-biznet1',
                     version: '1.0.0',
                     path: 'composer'
                 }, {
-                    name: 'org.acme.biznet2',
+                    name: 'org-acme-biznet2',
                     version: '1.2.0',
                     path: 'composer'
                 }]
             });
             return connection.list(mockSecurityContext)
-                .should.eventually.be.deep.equal(['org.acme.biznet1', 'org.acme.biznet2']);
+                .should.eventually.be.deep.equal(['org-acme-biznet1', 'org-acme-biznet2']);
         });
 
         it('should filter out any non-composer instantiated chaincodes', () => {
             mockChannel.queryInstantiatedChaincodes.resolves({
                 chaincodes: [{
-                    name: 'org.acme.biznet1',
+                    name: 'org-acme-biznet1',
                     version: '1.0.0',
                     path: 'composer'
                 }, {
-                    name: 'org.acme.biznet2',
+                    name: 'org-acme-biznet2',
                     version: '1.2.0',
                     path: 'dogecc'
                 }]
             });
             return connection.list(mockSecurityContext)
-                .should.eventually.be.deep.equal(['org.acme.biznet1']);
+                .should.eventually.be.deep.equal(['org-acme-biznet1']);
         });
 
         it('should handle any errors querying instantiated chaincodes', () => {
