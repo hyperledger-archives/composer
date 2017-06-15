@@ -51,6 +51,33 @@ echo "->- Build cfg being used"
 cat ${DIR}/build.cfg
 echo "-<-"
 
+
+######
+# checking the changes that are in this file
+echo $TRAVIS_COMMIT_RANGE
+echo $TRAVIS_COMMIT
+echo $TRAVIS_EVENT_TYPE
+
+
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    git show --pretty=format: --name-only "$COMMIT_RANGE"|sort|uniq  > changedfiles.log
+elif [ -n "$TRAVIS_PULL_REQUEST" ]; then
+    git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  > changedfiles.log
+fi
+
+cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { exit 1 }'
+if [ $? -eq 0 ]
+then
+  echo "Only docs changes"
+else
+  echo "More than docs changes"
+fi
+rm changedfiles.log
+######
+
+
+
+
 # Check of the task current executing
 if [ "${FC_TASK}" = "docs" ]; then
   echo Doing Docs - no requirement for installations of other software
