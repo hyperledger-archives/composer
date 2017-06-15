@@ -19,7 +19,7 @@ All the options are required. The `userId` doesn't have to match any information
 ## Syntax example
 
 ```
-node cli.js identity import -p hlfv1 -u PeerAdmin -c ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts/Admin@org1.example.com-cert.pem -k ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
+composer identity import -p hlfv1 -u PeerAdmin -c ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts/Admin@org1.example.com-cert.pem -k ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
 ```
 
 ## Options

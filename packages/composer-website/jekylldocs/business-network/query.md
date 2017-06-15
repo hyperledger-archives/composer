@@ -34,6 +34,7 @@ The JS Object returned is composed of an array of objects, each with a `Key` and
 ### Example
 
 The example below runs a content-based query to select all `SMALL` marbles, verifies the number of marbles returned, and that they are indeed all `SMALL`.
+
 ```
 /**
  * Executes a CouchDB query and checks the results.
