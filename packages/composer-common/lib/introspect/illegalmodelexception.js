@@ -27,13 +27,13 @@ class IllegalModelException extends BaseException {
 
     /**
      * Create an IllegalModelException.
-     * @param {string} message - the message for the exception
+     * @param {String} message - the message for the exception
      * @param {ModelFile} [modelFile] - the optional modelfile associated with the exception
      * @param {Object} [fileLocation] - location details of the error within the model file.
-     * @param {string} fileLocation.start.line - start line of the error location.
-     * @param {string} fileLocation.start.column - start column of the error location.
-     * @param {string} fileLocation.end.line - end line of the error location.
-     * @param {string} fileLocation.end.column - end column of the error location.
+     * @param {String} fileLocation.start.line - start line of the error location.
+     * @param {String} fileLocation.start.column - start column of the error location.
+     * @param {String} fileLocation.end.line - end line of the error location.
+     * @param {String} fileLocation.end.column - end column of the error location.
      */
     constructor(message, modelFile, fileLocation) {
 

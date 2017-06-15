@@ -12,7 +12,7 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.7.6 {e50bdb7d41585a168ed2038709b14528} 2017-06-14
+Version 0.7.6 {1dbfded54f54b7861b8eadb64d95f82a} 2017-06-14
 - Added TypeNotFoundException
 - Corrected JSDoc for IllegalModelException.constructor
 - Corrected JSDoc for Factory.newRelationship

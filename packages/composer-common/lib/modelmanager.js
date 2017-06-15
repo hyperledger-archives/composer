@@ -303,7 +303,7 @@ class ModelManager {
         if (!modelFile) {
             const formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
             throw new TypeNotFoundException(qualifiedName, formatter({
-                namespace: namespace
+                type: qualifiedName
             }));
         }
 

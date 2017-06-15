@@ -165,7 +165,7 @@ class ModelFile {
             if (!modelFile) {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
                 throw new IllegalModelException(formatter({
-                    namespace: importNamespace
+                    type: importName
                 }), this);
             }
             if (ModelUtil.isWildcardName(importName)) {
@@ -175,7 +175,11 @@ class ModelFile {
             }
             const importShortName = ModelUtil.getShortName(importName);
             if (!modelFile.isLocalType(importShortName)) {
-                throw new Error('No type ' + importShortName + ' in namespace ' + importNamespace);
+                let formatter = Globalize.messageFormatter('modelmanager-gettype-notypeinns');
+                throw new IllegalModelException(formatter({
+                    type: importShortName,
+                    namespace: importNamespace
+                }), this);
             }
         });
 

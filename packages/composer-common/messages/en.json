@@ -8,8 +8,10 @@
             "  other {You and # others liked this}",
             "}"
         ],
-        "hello": "Hello, {0} {1} {2}",
-        "hey": "Hey, {first} {middle} {last}",
+        "test-hello-array": "Hello, {0} {1} {2}",
+        "test-hello-object": "Hello, {first} {middle} {last}",
+        "test-repeat-array": "{0} {0} {0}",
+        "test-repeat-object": "{value} {value} {value}",
 
         "classdeclaration-constructor-modelastreq": "ModelFile and AST are required to create a ClassDecl.",
         "classdeclaration-process-unrecmodelelem": "Unrecognised model element {type}",
@@ -43,7 +45,7 @@
         "modelmanager-resolvetype-nonsfortype": "No registered namespace for type {type} in {context}",
         "modelmanager-resolvetype-notypeinnsforcontext": "No type {type} in namespace {namespace} for {context}",
 
-        "modelmanager-gettype-noregisteredns": "Namespace {namespace} is not defined",
+        "modelmanager-gettype-noregisteredns": "Namespace is not defined for type {type}",
         "modelmanager-gettype-notypeinns": "Type {type} is not defined in namespace {namespace}",
 
         "serializer-constructor-factorynull": "Factory cannot be null",

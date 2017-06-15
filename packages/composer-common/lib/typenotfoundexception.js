@@ -19,13 +19,17 @@ const Globalize = require('./globalize');
 
 /**
  * Error thrown when a Composer type does not exist.
+ * @extends BaseException
+ * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @class
+ * @memberof module:composer-common
  */
 class TypeNotFoundException extends BaseException {
     /**
      * Constructor. If the optional 'message' argument is not supplied, it will be set to a default value that
      * includes the type name.
-     * @param {string} typeName - fully qualified type name.
-     * @param {string} [message] - error message.
+     * @param {String} typeName - fully qualified type name.
+     * @param {String} [message] - error message.
      */
     constructor(typeName, message) {
         if (!message) {

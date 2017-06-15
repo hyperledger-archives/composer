@@ -384,6 +384,13 @@ describe('ModelManager', () => {
             }).should.throw(TypeNotFoundException, /org.acme.nosuchns/);
         });
 
+        it('should throw an error for an empty namespace', function() {
+            modelManager.addModelFile(modelBase);
+            (function() {
+                modelManager.getType('NoSuchAsset');
+            }).should.throw(TypeNotFoundException, /NoSuchAsset/);
+        });
+
         it('should throw an error for a type that does not exist', function() {
             modelManager.addModelFile(modelBase);
             (function() {
