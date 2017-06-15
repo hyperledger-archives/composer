@@ -78,6 +78,8 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
 
     If you are connecting to {{site.data.conrefs.hlf_full}} v1.0 and are not using TLS or if you don't need the trustedRoots and verify options of the Certificate Authority definition you can use the following simplified connection profile:
 
+    _Please note: The simplified version of the connection profile will only work if the relevant certificate authority has no name defined. If the certificate authority has a defined name, it must be specified._
+
         {
         "type": "hlfv1",
         "orderers": [
@@ -116,5 +118,3 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
   - `timeout` is an optional property which controls the timeout for each request made to peers and orderers. Please note, some commands may make several sequential requests and the timeout will be applied individually to each request.
   - `maxSendSize` is an optional property which defines the size limit of outbound grpc messages being send to orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
   - `maxRecvSize` is an optional property which defines the size limit of inbound grpc messages being received from orderers and peers. The value is defined in megabytes. If this is not set, grpc sets a default. Setting this property to `-1` results in no size restriction.
-
-  *Please note: If you are connecting to an instance of {{site.data.conrefs.hlf_full}} v1.0 the `keyValStore` property must be `home/.hfc-key-store`*
