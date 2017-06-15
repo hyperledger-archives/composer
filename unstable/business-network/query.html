@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Identity Import Command | Hyperledger Composer</title>
+    <title>Querying Business Network Data | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -103,23 +103,17 @@ ga('send', 'pageview');
 <strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
 <strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
+<a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
+<a href="../business-network/bnd-create.html">Creating a business network definition</a>
+<a href="../business-network/bnd-deploy.html">Deploying and updating</a>
+<a href="../business-network/publishing-events.html">Emitting events</a>
+<a href="../business-network/testing.html">Testing</a>
+<a href="../business-network/bnd-publish.html">Publishing to npm</a>
 <strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
-<a href="../reference/MeetTheModules.html">npm Modules</a>
-<a href="../reference/cto_language.html">Modeling Language</a>
-<a href="../reference/acl_language.html">Access Control Language</a>
-<a href="../reference/connectionprofile.html">Connection Profile</a>
-<a href="../reference/js_scripts.html">Transaction Processor Functions</a>
-<a href="../reference/commands.html">Command Line Interface</a>
-<a href="../reference/composer.participant.add.html">CLI Add Participant</a>
-<a href="../reference/composer.identity.issue.html">CLI Issue Identity </a>
-<a href="../reference/composer.identity.revoke.html">CLI Revoke Identity</a>
-<a href="../reference/composer.identity.import.html">CLI Import Identity</a>
-<a href="../jsdoc/index.html">API Documentation</a>
-<a href="../reference/glossary.html">Glossary</a>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
             
@@ -128,59 +122,71 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="composer-identity-import">Composer Identity Import</h1>
+              <h1 id="querying-business-network-data">Querying business network data</h1>
 
-<hr>
+<blockquote>
+<p>Warning
+The status of this feature is experimental. You <strong>must</strong> use Hyperledger Composer v0.8+ with the the HLFv1 runtime to use queries. We welcome feedback and comments while we continue to iterate upon query functionality. The API may change based on the feedback received. In future releases we plan to extend this feature with a Composer specific query language, and data-binding to assets, participants and transactions.</p>
+</blockquote>
 
-<p>The <code>composer identity import</code> command imports peer admin identities from a running instance of Hyperledger Fabric into a defined <code>keyValStore</code>. These admin identities can then be used to deploy business networks to that peer.</p>
+<p>Hyperledger Fabric v1.0 can be configured to store the world-state in a CouchDB database. CouchDB is a JSON document store, so all data in the world-state is persisted as JSON documents, including Composer assets, participants and transactions.</p>
 
-<p>All the options are required. The <code>userId</code> doesn&#39;t have to match any information defined in the signer certificate of the admin identity for the peer, it is purely a label for your own convenience.</p>
+<p>When Hyperledger Fabric is used in CouchDB mode chaincode can execute complex (content-based) queries against the world-state data. The queries are written in the Mango query language, the native CouchDB query language.</p>
 
-<h2 id="syntax-example">Syntax example</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">node cli.js identity import -p hlfv1 -u PeerAdmin -c ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts/Admin@org1.example.com-cert.pem -k ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
-</code></pre></div>
-<h2 id="options">Options</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">composer identity import [options]
+<p>An example Mango <em>selector</em> query:
+        var q = {
+            selector: {
+                size: &#39;SMALL&#39;
+            }
+        };</p>
 
-Options:
-  --help                       Show help  [boolean]
-  -v, --version                Show version number  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string] [required]
-  --userId, -u                 The user ID for the new identity  [string] [required]
-  --publicKeyFile, -c          File containing the public key  [string] [required]
-  --privateKeyFile, -k         File containing the private key  [string] [required]
-</code></pre></div>
-<h4 id="define-connection-profile-name">Define connection profile name</h4>
+<p>This query will select all JSON documents in the document store that contain the property <code>size</code> that has the value <code>SMALL</code>. Please refer to the CouchDB documentation for the <a href="http://docs.couchdb.org/en/2.0.0/api/database/find.html">query syntax for Mango queries</a>. Note that CouchDB ships with a powerful web interface called <a href="http://couchdb.apache.org/fauxton-visual-guide/">Fauxton</a>. You can use Fauxton to inspect the documents in the document store, run queries, view results etc.</p>
 
-<p><code>-p</code> or <code>--connectionProfileName</code></p>
+<h3 id="running-native-couchdb-mango-queries-from-transaction-processor-functions">Running Native CouchDB Mango Queries from Transaction Processor Functions</h3>
 
-<p>Example: <code>-p hlfv1</code></p>
+<p>The Composer runtime API includes the <code>queryNative(queryString)</code> method, allowing transaction processor functions to submit native Mango queries to CouchDB. Composer will execute the query against CouchDB, returning a promise to a JS Object that captures the results of running the query.</p>
 
-<hr>
+<p>The JS Object returned is composed of an array of objects, each with a <code>Key</code> and <code>Record</code> property. <code>Key</code> is a string that represents the key of the document in the document store. <code>Record</code> is a JS Object that captures the data for the document itself.</p>
 
-<h4 id="define-user-id-for-new-identity">Define user ID for new identity</h4>
+<h3 id="example">Example</h3>
 
-<p><code>-u</code> or <code>--userId</code></p>
+<p>The example below runs a content-based query to select all <code>SMALL</code> marbles, verifies the number of marbles returned, and that they are indeed all <code>SMALL</code>.
+<code>
+/**
+ * Executes a CouchDB query and checks the results.
+ * @param {org.fabric_composer.marbles.QueryMarbleByOwner} transaction
+ * @transaction
+ * @return {Promise} a promise to the results of transaction processing
+ */
+function onQueryMarbleByOwner(transaction) {
+    var factory = getFactory();
+    // create the query
+    var q = {
+        selector: {
+            size: &#39;SMALL&#39;
+        }
+    };
+    return queryNative(JSON.stringify(q))
+        .then(function (resultArray) {
+            print(&#39;TP function received query result: &#39;, JSON.stringify(resultArray));
+            if (resultArray.length !== 5) {
+                throw new Error(&#39;The incorrect number of marbles found: &#39;, resultArray.length);
+            }
+            for (var x = 0; x &lt; resultArray.length; x++) {
+                var currentResult = resultArray[x];
+                if (currentResult.Record.size !== &#39;SMALL&#39;) {
+                    throw new Error(&#39;Query returned a marble that is not SMALL!&#39;, currentResult.Record);
+                }
+            }
+        });
+}
+</code></p>
 
-<p>Example: <code>-u Org1PeerAdmin</code></p>
+<p>Using a selector it is possible to query all assets of a given type, with a given set of properties, and then to convert them back into Composer resources using <code>getSerializer().fromJSON(jsObject)</code>. Once the JS object returned by a query have been converted back into a Composer object it can be updated and persisted back into an asset registry.</p>
 
-<hr>
-
-<h4 id="define-signers-public-certificate">Define signers public certificate</h4>
-
-<p><code>-c</code> or <code>--publicKeyFile</code></p>
-
-<p>Example: <code>-c admin.pem</code></p>
-
-<hr>
-
-<h4 id="define-signers-private-key-file">Define signers private key file</h4>
-
-<p><code>-k</code> or <code>--privateKeyFile</code></p>
-
-<p>Example: <code>-k 9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk</code></p>
-
-<hr>
+<blockquote>
+<p>Note that in the future Composer will define a query language expressed in terms of assets, participants and transactions and automatically marshall the JS objects returned by CouchDB to the corresponding Composer modelled types.</p>
+</blockquote>
 
             
           </section>

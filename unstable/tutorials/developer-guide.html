@@ -118,11 +118,11 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="create-an-end-to-end-hyperledger-composer-solution-from-scratch">Create an end-to-end Hyperledger Composer solution from scratch</h1>
+              <h1 id="developer-tutorial-for-creating-a-hyperledger-composer-solution">Developer Tutorial for creating a Hyperledger Composer solution</h1>
 
 <hr>
 
-<p><em>Note:</em> this tutorial was written against Hyperledger Composer v0.7.2 on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a Hyperledger Fabric v0.6 setup are shown in <em>italics</em>).</p>
+<p><em>Note:</em> this tutorial was written against Hyperledger Composer v0.8 on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a Hyperledger Fabric v0.6 setup are shown in <em>italics</em>).</p>
 
 <p>This tutorial will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real Hyperledger Fabric blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.</p>
 
@@ -183,6 +183,13 @@ ga('send', 'pageview');
 }
 </code></pre></div>
 <p>Save your changes to <code>package.json</code></p>
+
+<h3 id="update-your-readme-md-file">Update your README.md file</h3>
+
+<p>Open the <code>README.md</code> file and update the markdown with a short decription of the business network.</p>
+<div class="highlight"><pre><code class="language-" data-lang=""># My very first Hyperledger Composer Network
+</code></pre></div>
+<p>Save your changes to <code>README.md</code></p>
 
 <h2 id="define-your-domain-model">Define your Domain Model</h2>
 
@@ -255,7 +262,7 @@ function tradeCommodity(trade) {
 
 <h2 id="update-your-access-control-rules">Update your Access Control Rules</h2>
 
-<p>The file <code>permissions.acl</code> defines the access control rules for the business network definition. Update the &#39;Default&#39; rule to use the new namespace for the network (just cut and paste the entire contents from below if you prefer):</p>
+<p>The file <code>permissions.acl</code> defines the access control rules for the business network definition. Replace the entire contents of <code>permissions.acl</code> with the rule below.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
  * Access control rules for mynetwork
  */
@@ -468,13 +475,10 @@ Commodity Trading
 </code></pre></div>
 <h2 id="import-into-playground-and-test">Import into Playground and Test</h2>
 
-<p>Change directory to your toplevel project folder (my-network) for example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd my-network
-</code></pre></div>
-<p>Re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the following command (including the trailing &#39;.&#39; please note):</p>
+<p>Change directory to your toplevel project folder (my-network). Re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the following command (including the trailing &#39;.&#39; please note):</p>
 <div class="highlight"><pre><code class="language-" data-lang="">composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 </code></pre></div>
-<p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net">https://composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your &#39;my-network&#39; folder and upload it, then press the &quot;Deploy&quot; button. Confirm to replace the current sample definition in Playground.</p>
+<p>Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the &quot;Import/Replace&quot; button at the bottom left of the screen. Locate the <code>dist/my-network.bna</code> file under your &#39;my-network&#39; folder and upload it, then press the &quot;Deploy&quot; button. Confirm to replace the current sample definition in Playground.</p>
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="/composer/unstable/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />
@@ -514,15 +518,13 @@ Commodity Trading
 
 <p><img src="../assets/img/tutorials/developer/commodity_registry.png" alt="Commodity Registry"></p>
 
-<p>Next, submit a <code>Trade</code> transaction (click the button, below left) to move the commodity from TRADER1 to TRADER2.</p>
+<p>Next, submit a <code>Trade</code> transaction by clicking the &quot;Submit Transaction&quot; button, bottom left, to move the commodity from TRADER1 to TRADER2.</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
   </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.example.mynetwork.Trade"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"commodity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.example.mynetwork.Commodity#ABC"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"newOwner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.example.mynetwork.Trader#TRADER2"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
-<!-- ![Submit transaction](../assets/img/tutorials/developer/submit_tx.png) -->
-
 <p>After processing, you should now see the transaction in the transaction registry.</p>
 
 <p><img src="../assets/img/tutorials/developer/tx_registry.png" alt="Transaction registry"></p>
@@ -652,17 +654,11 @@ npm start
 
 <p>Well done, you&#39;ve now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!</p>
 
-<h2 id="related-concepts">Related Concepts</h2>
+<h2 id="related-links">Related Links</h2>
 
-<p><a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a></p>
-
-<h2 id="related-tasks">Related Tasks</h2>
-
-<p><a href="../business-network/bnd-deploy.html">Deploying a business network</a></p>
-
-<h2 id="related-reference">Related Reference</h2>
-
-<p><a href="../reference/composer.network.deploy.html">Network deploy command</a></p>
+<p><a href="../business-network/businessnetworkdefinition.html">Business Network Definition</a>
+<a href="../business-network/bnd-deploy.html">Deploying a business network</a>
+<a href="../reference/composer.network.deploy.html">Network deploy command</a></p>
 
             
           </section>

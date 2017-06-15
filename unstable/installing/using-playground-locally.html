@@ -153,6 +153,18 @@ docker images -aq | xargs docker rmi -f
 <p>By default, the Web Browser connection profile is in use (for developing and testing in browser memory).  To connect instead to the Hyperledger Fabric instance created in the previous step, click the globe icon in the top right of the UI to visit the Connection Profiles panel and change your active profile to &#39;hlfabric&#39;.</p></li>
 </ol>
 
+<h2 id="deploying-business-networks-to-hyperledger-fabric-beta">Deploying business networks to Hyperledger Fabric Beta</h2>
+
+<p>In Hyperledger Fabric Beta peers now enforce the concepts of admins and members. Admin user&#39;s identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local <code>keyValStore</code> directory before deploying the business network. To import the identity, use the <a href="../reference/composer.identity.import.html"><code>composer identity import</code> command</a>. When importing an identity, you do not assign it a secret, however the <code>composer network deploy</code> command requires a secret. If you are using an imported identity, you can enter any value for the secret.</p>
+
+<p>When connecting to the peer you must specify an identity where the userID contains the text <code>admin</code>, for example, <code>PeerAdmin</code>, <code>myadmin</code>, or <code>AdminPeer</code> are all valid userID&#39;s. Peers in different organizations may have different admin users. Only an admin user of peer&#39;s organization will be able to deploy a business network to their peers.</p>
+
+<p>These security changes mean that Hyperledger Composer cannot support older versions of Hyperledger Fabric v1.0 (e.g. alpha 1).</p>
+
+<h3 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h3>
+
+<p>When deploying a business network to Hyperledger Fabric Beta using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.</p>
+
 <hr>
 
 <!--
