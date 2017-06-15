@@ -19,7 +19,7 @@ All the options are required. The `userId` doesn't have to match any information
 ## Syntax example
 
 ```
-composer identity import -p hlfv1 -u Org1PeerAdmin -c admin.pem -k 9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
+composer identity import -p hlfv1 -u PeerAdmin -c ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/signcerts/Admin@org1.example.com-cert.pem -k ./peerOrganizations/org1.example.com/users/Admin@org1.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
 ```
 
 ## Options
@@ -32,8 +32,8 @@ Options:
   -v, --version                Show version number  [boolean]
   --connectionProfileName, -p  The connection profile name  [string] [required]
   --userId, -u                 The user ID for the new identity  [string] [required]
-  --signerCertFile, -c         signerCert path  [string] [required]
-  --keyFile, -k                key file  [string] [required]
+  --publicKeyFile, -c          File containing the public key  [string] [required]
+  --privateKeyFile, -k         File containing the private key  [string] [required]
 ```
 
 #### Define connection profile name
@@ -54,7 +54,7 @@ Example: `-u Org1PeerAdmin`
 
 #### Define signers public certificate
 
-`-c` or `--signerCertFile`
+`-c` or `--publicKeyFile`
 
 Example: `-c admin.pem`
 
@@ -62,7 +62,7 @@ Example: `-c admin.pem`
 
 #### Define signers private key file
 
-`-k` or `--keyFile`
+`-k` or `--privateKeyFile`
 
 Example: `-k 9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk`
 
