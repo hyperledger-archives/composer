@@ -228,12 +228,13 @@ describe('ConnectionProfileComponent', () => {
             component['previousConnectionProfile'] = {name : 'New Connection Profile'};
             mockConnectionProfileService.getCurrentConnectionProfile.returns('bob');
 
-            component['connectionProfiles'] = [{name : 'bob'}];
+            component['connectionProfiles'] = [{name : 'fred'}, {name : 'bob'}];
             let mockUpdateConnectionProfiles = sinon.stub(component, 'updateConnectionProfiles');
             let mockSetCurrentProfile = sinon.stub(component, 'setCurrentProfile');
-            component.profileUpdated({updated: true, connectionProfile: {name : 'bob'}});
+            component.profileUpdated(null);
 
             mockUpdateConnectionProfiles.should.not.have.been.called;
+            mockSetCurrentProfile.should.have.been.calledOnce;
             mockSetCurrentProfile.should.have.been.calledWith({name : 'bob'});
         });
     });
