@@ -138,9 +138,9 @@ ga('send', 'pageview');
 <h2 id="lets-get-started-importing-the-car-auction-sample">Let&#39;s get started - Importing the Car Auction sample</h2>
 
 <ol>
-<li><p>Open the <a href="https://composer-playground.mybluemix.net">Composer Playground</a>. On the left are three file types: a script file, <code>lib/logic.js</code> which represents transaction logic, a model file, <code>lib/org.example.biznet.cto</code> which defines the participants assets and transactions of the business network, and an access control file, <code>permissions.acl</code> which defines the access different participants have.</p></li>
+<li><p>Open the <a href="https://composer-playground.mybluemix.net">Composer Playground</a>. On the left are three file types: a script file, <code>lib/sample.js</code> which represents transaction logic, a model file, <code>lib/org.example.biznet.cto</code> which defines the participants assets and transactions of the business network, and an access control file, <code>permissions.acl</code> which defines the access different participants have.</p></li>
 <li><p>To get switch out the sample business network click <strong>Import/Replace</strong>. This dialog allows you to import your own business network archive <code>.bna</code> files, or to import our premade business network samples. For now we&#39;ll use a pre-built sample from the Composer GitHub repository. Click <strong>Authenticate with GitHub</strong> then log into your GitHub account and click <strong>Authorize application</strong>.</p></li>
-<li><p>From the menu, select <strong>carauction-network</strong> and click <strong>Deploy</strong>. This imports the car auction sample business network into your Playground instance. In the model file <code>lib/org.example.vehicle.auction.cto</code> there are the definitions of asset types, participant types, and transactions. The entries in the <code>.cto</code> file define the expected format of each asset, participant, and transaction. The script file <code>lib/logic.js</code> contains JavaScript
+<li><p>From the menu, select <strong>carauction-network</strong> and click <strong>Deploy</strong>. This imports the car auction sample business network into your Playground instance. In the model file <code>lib/org.example.vehicle.auction.cto</code> there are the definitions of asset types, participant types, and transactions. The entries in the <code>.cto</code> file define the expected format of each asset, participant, and transaction. The script file <code>lib/sample.js</code> contains JavaScript
 which controls the transactions, in this script file, there is JavaScript logic controlling the <code>Close Bidding</code> and <code>Make Offer</code> transactions.</p></li>
 </ol>
 
@@ -193,7 +193,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
 <li><p>Now that you&#39;ve submitted an <em>Offer</em> transaction, we can check that it has been successfully applied to the <em>VehicleListing</em> asset. Click <strong>VehicleListing</strong> and then click <strong>Show All</strong> in your listing entry. You should see that there is now an entry for the <em>Offer</em> transaction in the <code>offers</code> property of the listing asset. Congratulations, you&#39;ve just made your first bid!</p></li>
 <li><p>To represent a counter-offer or raise from another member, repeat step 10, increasing the <code>bidPrice</code> property and changing the <code>member</code> who is placing the bid. After you have submitted a second <em>Offer</em> transaction, the <em>VehicleListing</em> asset should update to show that both bids have been placed.</p></li>
 <li><p>When you&#39;ve placed as many bids as you like, the next step is to submit the <em>CloseBidding</em> transaction to close the auction. The <em>CloseBidding</em> transaction pays the previous owner of the <em>Vehicle</em> asset listed in the <em>VehicleListing</em> the current highest offer, changes the <code>state</code> of the listing to <code>SOLD</code>, and transfers ownership of the <em>Vehicle</em> asset, as listed in the <code>owner</code> property, to the highest bidder. To submit the <em>CloseBidding</em> transaction, click <strong>Submit Transaction</strong> and enter the <code>listingId</code> which corresponds to the <em>VehicleListing</em>. Click <strong>Submit</strong> to submit the transaction. Once the transaction has been submitted, you can check the <em>Vehicle</em> asset&#39;s <code>owner</code> property to ensure that it has changed, as well as checking the <code>balance</code> of the previous and new owner of the car, and the <em>VehicleListing</em> <code>state</code>.</p></li>
-<li><p>You&#39;ve successfully run the <code>carauction-network</code> Composer sample! If you want to continue to use this business network in future tutorials or for testing, click <strong>Export</strong> in the <strong>Define</strong> tab to download a Business Network Archive <code>.bna</code> file. A <code>.bna</code> file contains all files listed in the business network, in this example, <code>README.md</code>, <code>lib/logic.js</code>, <code>lib/org.example.vehicle.auction.cto</code>, and <code>permissions.acl</code>.</p></li>
+<li><p>You&#39;ve successfully run the <code>carauction-network</code> Composer sample! If you want to continue to use this business network in future tutorials or for testing, click <strong>Export</strong> in the <strong>Define</strong> tab to download a Business Network Archive <code>.bna</code> file. A <code>.bna</code> file contains all files listed in the business network, in this example, <code>README.md</code>, <code>lib/sample.js</code>, <code>lib/org.example.vehicle.auction.cto</code>, and <code>permissions.acl</code>.</p></li>
 </ol>
 
 <p>If you want to continue to modify your business network, you could add some new fields to asset types in the business network definition, for example, make or model for <em>Vehicle</em> assets.</p>
@@ -214,6 +214,27 @@ which controls the transactions, in this script file, there is JavaScript logic 
 </div>
 
     
+
+    
+      <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+
 
   </div>
 </body>

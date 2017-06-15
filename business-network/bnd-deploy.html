@@ -109,6 +109,7 @@ ga('send', 'pageview');
 <a href="../business-network/publishing-events.html">Emitting events</a>
 <a href="../business-network/testing.html">Testing</a>
 <a href="../business-network/bnd-publish.html">Publishing to npm</a>
+<a href="../business-network/query.html">Querying Assets</a>
 <strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
@@ -131,10 +132,22 @@ ga('send', 'pageview');
 <p>Once the BNA file has been created it can be deployed to a runtime using the <code>composer network deploy</code> command using a suitable <a href="../reference/connectionprofile.html">Connection Profile</a></p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">    composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna 
+<div class="highlight"><pre><code class="language-" data-lang="">    composer network deploy -p connectionProfileName -a &lt;BusinessNetworkDefinition&gt;.bna
        -i &lt;Your EnrollmentID&gt; -s &lt;Your EnrollmentSecret&gt;
 </code></pre></div>
 <p>To update the definition of an already deployed business network use the <code>composer network update</code> CLI command.</p>
+
+<h2 id="deploying-business-networks-to-hyperledger-fabric-beta">Deploying business networks to Hyperledger Fabric Beta</h2>
+
+<p>In Hyperledger Fabric Beta peers now enforce the concepts of admins and members. Admin user&#39;s identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local <code>keyValStore</code> directory before deploying the business network. To import the identity, use the <a href="../reference/composer.identity.import.html"><code>composer identity import</code> command</a>. When importing an identity, you do not assign it a secret, however the <code>composer network deploy</code> command requires a secret. If you are using an imported identity, you can enter any value for the secret.</p>
+
+<p>When connecting to the peer you must specify an identity where the userID contains the text <code>admin</code>, for example, <code>PeerAdmin</code>, <code>myadmin</code>, or <code>AdminPeer</code> are all valid userID&#39;s. Peers in different organizations may have different admin users. Only an admin user of peer&#39;s organization will be able to deploy a business network to their peers.</p>
+
+<p>These security changes mean that Hyperledger Composer cannot support older versions of Hyperledger Fabric v1.0 (e.g. alpha 1).</p>
+
+<h3 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h3>
+
+<p>When deploying a business network to Hyperledger Fabric Beta using the Playground locally, you must follow the process above to connect using the peer admin identity. However, in order to create identities and interact with your business network in the Playground, you must use the certificate authority admin identity.</p>
 
 <h2 id="references">References</h2>
 
@@ -156,6 +169,27 @@ ga('send', 'pageview');
 </div>
 
     
+
+    
+      <div class="footer-bg docs-footer">
+<div class="footer-container">
+    <div class="footer-left">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+    
+
 
   </div>
 </body>
