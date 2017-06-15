@@ -1,8 +1,10 @@
 ---
 layout: default
-title: Tutorials
+title: Tutorials Index
 category: tutorials
+section: tutorials
 sidebar: sidebars/tutorials.md
+index-order: 0
 excerpt: Tutorials
 ---
 
@@ -14,15 +16,15 @@ We have two basic tutorial options. For developers, we recommend reading the [**
 
 ---
 
-### Developer Guide
+{% assign sorted = (site.pages | sort: 'index-order') %}
+{% for page in sorted %}
+{% if page.section == 'tutorials' and page.title != "Tutorials Index" %}
+### {{ page.title }}
+{{ page.excerpt }}
+{% endif %}
+{% endfor %}
 
-The developer guide will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on {{site.data.conrefs.hlf_full}}.
 
-### Playground Guide
-
-The Playground guide runs through importing the car auction sample business network. In this guide, you'll create participants, assets, and transactions; set up and run the auction, and verify that the transactions worked correctly.
-
-If you want to run the playground guide locally [install the Playground locally](../installing/using-playground-locally.html) first, then use the playground guide.
 
 ---
 

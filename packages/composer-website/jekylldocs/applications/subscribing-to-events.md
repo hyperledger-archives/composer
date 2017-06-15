@@ -2,8 +2,10 @@
 layout: default
 title: Subscribing to events
 category: tasks
+section: applications
+index-order: 3
 sidebar: sidebars/applications.md
-excerpt: Subscribing to events
+excerpt: Node.js applications can subscribe to events from a business network by using the `composer-client.BusinessNetworkConnection.on` API call. Events are defined in the business network model file and are emitted by specified transactions in the transaction processor function file. 
 ---
 
 # Subscribing to events
