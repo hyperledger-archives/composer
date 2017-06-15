@@ -29,13 +29,31 @@ describe('BusinessNetworkMetadata', () => {
 
         it('should throw if readme not specified', () => {
             (() => {
-                new BusinessNetworkMetadata({}, {});
+                const packageJson = {name: 'foo'};
+                new BusinessNetworkMetadata(packageJson, {});
             }).should.throw(/README must be a string/);
         });
 
+        it('should throw if business network connection name contains upper case', () => {
+            (() => {
+                const readme = 'TEST README';
+                const packageJson = {name: 'fOo'};
+                new BusinessNetworkMetadata(packageJson,readme);
+            }).should.throw(/business network name can only contain/);
+        });
+
+        it('should throw if business network connection name contains dots', () => {
+            (() => {
+                const readme = 'TEST README';
+                const packageJson = {name: 'foo.bar'};
+                new BusinessNetworkMetadata(packageJson,readme);
+            }).should.throw(/business network name can only contain/);
+        });
+
+
         it('should store package.json and README', () => {
             const readme = 'TEST README';
-            const packageJson = {name: 'Foo'};
+            const packageJson = {name: 'foo_bar-v1'};
             let metadata = new BusinessNetworkMetadata(packageJson,readme);
             metadata.getREADME().should.equal(readme);
             metadata.getPackageJson().should.equal(packageJson);

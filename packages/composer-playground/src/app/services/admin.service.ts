@@ -94,7 +94,7 @@ export class AdminService {
             .then((userSecret) => {
                 this.userSecret = userSecret;
                 this.madeItToConnect = true;
-                return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org.acme.biznet');
+                return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org-acme-biznet');
             });
     }
 
@@ -107,12 +107,12 @@ export class AdminService {
             .then((businessNetworks) => {
                 console.log('Got business networks', businessNetworks);
                 this.deployed = businessNetworks.some((businessNetwork) => {
-                    return businessNetwork === 'org.acme.biznet';
+                    return businessNetwork === 'org-acme-biznet';
                 });
                 if (!this.deployed) {
                     this.alertService.busyStatus$.next({
                         title: 'Creating Business Network',
-                        text: 'creating business network org.acme.biznet'
+                        text: 'creating business network org-acme-biznet'
                     });
                     let businessNetworkDefinition = this.generateDefaultBusinessNetwork();
                     return this.getAdminConnection().deploy(businessNetworkDefinition)
@@ -126,7 +126,7 @@ export class AdminService {
             })
             .then(() => {
                 console.log('Connecting to connection profile (w/ business network ID)', this.connectionProfile);
-                return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org.acme.biznet');
+                return this.getAdminConnection().connect(this.connectionProfile, this.userID, this.userSecret, 'org-acme-biznet');
             });
     }
 
@@ -145,7 +145,7 @@ export class AdminService {
     }
 
     generateDefaultBusinessNetwork(): BusinessNetworkDefinition {
-        let businessNetworkDefinition = new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
+        let businessNetworkDefinition = new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network');
         return businessNetworkDefinition;
     }
 
