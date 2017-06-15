@@ -942,7 +942,7 @@ describe('ConnectionProfileDataComponent', () => {
             mockConnectionProfileService.setHostname.should.be.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2', hostnameOverride: 'orderer0'});
+            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2', hostnameOverride: ''});
         }));
 
         it('should open peers certificate modal if hostname set', fakeAsync(() => {
@@ -1006,7 +1006,7 @@ describe('ConnectionProfileDataComponent', () => {
             mockConnectionProfileService.setHostname.should.be.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'peerCert_1', hostnameOverride: 'peer0'});
+            patchSpy.should.have.been.calledWith({cert: 'peerCert_1', hostnameOverride: ''});
         }));
 
         it('should error on unrecognized type', fakeAsync(() => {
