@@ -33,7 +33,7 @@ class ParseException extends BaseModelException {
     constructor(message, fileLocation) {
 
         let fullMessage = message +  ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
-
+        // fullMessage = JSON.stringify(file)
         super(message, fileLocation, fullMessage);
     }
 }
