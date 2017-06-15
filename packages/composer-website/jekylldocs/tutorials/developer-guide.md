@@ -101,7 +101,7 @@ As an example, we're going to replace the entire contents of the file 'sample.ct
 /**
  * My commodity trading network
  */
-namespace org.example.mynetwork
+namespace org.acme.mynetwork
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
@@ -151,12 +151,12 @@ Now replace the entire contents of `sample.js` with the function below (includin
 
 /**
  * Track the trade of a commodity from one trader to another
- * @param {org.example.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
  * @transaction
  */
 function tradeCommodity(trade) {
     trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.example.mynetwork.Commodity')
+    return getAssetRegistry('org.acme.mynetwork.Commodity')
         .then(function (assetRegistry) {
             return assetRegistry.update(trade.commodity);
         });
@@ -179,7 +179,7 @@ rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.example.mynetwork"
+    resource: "org.acme.mynetwork"
     action: ALLOW
 }
 ```
@@ -257,7 +257,7 @@ const path = require('path');
 require('chai').should();
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
-const NS = 'org.example.mynetwork';
+const NS = 'org.acme.mynetwork';
 
 describe('Commodity Trading', () => {
 
@@ -418,7 +418,7 @@ Next, navigate to the "Test" tab at the top and create two 'Trader' participants
 
 ```
 {
-  "$class": "org.example.mynetwork.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
@@ -427,7 +427,7 @@ Next, navigate to the "Test" tab at the top and create two 'Trader' participants
 
 ```
 {
-  "$class": "org.example.mynetwork.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER2",
   "firstName": "Amy",
   "lastName": "Williams"
@@ -442,12 +442,12 @@ Create a new instance of a Commodity (asset) by navigating to the Commodity regi
 
 ```
 {
-  "$class": "org.example.mynetwork.Commodity",
+  "$class": "org.acme.mynetwork.Commodity",
   "tradingSymbol": "ABC",
   "description": "Test commodity",
   "mainExchange": "Euronext",
   "quantity": 72.297,
-  "owner": "resource:org.example.mynetwork.Trader#TRADER1"
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
 }
 ```
 
@@ -459,9 +459,9 @@ Next, submit a `Trade` transaction by clicking the "Submit Transaction" button, 
 
 ```
 {
-  "$class": "org.example.mynetwork.Trade",
-  "commodity": "resource:org.example.mynetwork.Commodity#ABC",
-  "newOwner": "resource:org.example.mynetwork.Trader#TRADER2"
+  "$class": "org.acme.mynetwork.Trade",
+  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
 }
 ```
 
@@ -483,7 +483,7 @@ Switch to the terminal, change directory to the `dist` folder containing the `my
 
 ```
 cd dist
-composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
 ```
 
 
@@ -565,7 +565,7 @@ First, use the `POST` method on Trader to create a new instance of a Trader - fi
 
 ```
 {
-  "$class": "org.example.mynetwork.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
