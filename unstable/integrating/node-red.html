@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Querying Business Network Data | Hyperledger Composer</title>
+    <title>Integrating with Node-RED | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -103,15 +103,13 @@ ga('send', 'pageview');
 <strong><a href="../installing/installing-index.html">Installing</a></strong>
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
 <strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
-<a href="../business-network/businessnetworkdefinition.html">What is a business network definition?</a>
-<a href="../business-network/bnd-create.html">Creating a business network definition</a>
-<a href="../business-network/bnd-deploy.html">Deploying and updating</a>
-<a href="../business-network/publishing-events.html">Emitting events</a>
-<a href="../business-network/testing.html">Testing</a>
-<a href="../business-network/bnd-publish.html">Publishing to npm</a>
-<a href="../business-network/query.html">Querying Assets</a>
 <strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
+<a href="../integrating/getting-started-rest-api.html">Exposing your business network as a REST API</a>
+<a href="../integrating/enabling-rest-authentication.html">Enabling REST API authentication for a business network</a>
+<a href="../integrating/deploying-the-rest-server.html">Deploying the REST server for a business network</a>
+<a href="../integrating/call-out.html">Calling external REST services</a>
+<a href="../integrating/node-red.html">Integrating using Node-RED</a>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
@@ -123,69 +121,20 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="querying-business-network-data">Querying business network data</h1>
+              <h1 id="integrating-with-node-red">Integrating with Node-RED</h1>
 
-<blockquote>
-<p>Warning
-The status of this feature is experimental. You <strong>must</strong> use Hyperledger Composer v0.8+ with the the HLFv1 runtime to use queries. We welcome feedback and comments while we continue to iterate upon query functionality. The API may change based on the feedback received. In future releases we plan to extend this feature with a Composer specific query language, and data-binding to assets, participants and transactions.</p>
-</blockquote>
+<p><a href="http://nodered.org">Node-RED</a> is a lightweight Open Source integration technology, written in JavaScript. It uses a graphical flow to integrate different <em>nodes</em>, where nodes can receive data, transform data and output data.</p>
 
-<p>Hyperledger Fabric v1.0 can be configured to store the world-state in a CouchDB database. CouchDB is a JSON document store, so all data in the world-state is persisted as JSON documents, including Composer assets, participants and transactions.</p>
+<p>Node-RED is commonly used to rapidly prototype Internet of Things style applications, or to wire existing Internet services together.
+You can use the Hyperledger Composer Node-RED contribution to:
+- Submit transactions
+- Read and update assets and participants
+- Subscribe to events</p>
 
-<p>When Hyperledger Fabric is used in CouchDB mode chaincode can execute complex (content-based) queries against the world-state data. The queries are written in the Mango query language, the native CouchDB query language.</p>
+<p><em>Note: delete operations on assets and participants are not yet supported.</em></p>
 
-<p>An example Mango <em>selector</em> query:
-        var q = {
-            selector: {
-                size: &#39;SMALL&#39;
-            }
-        };</p>
-
-<p>This query will select all JSON documents in the document store that contain the property <code>size</code> that has the value <code>SMALL</code>. Please refer to the CouchDB documentation for the <a href="http://docs.couchdb.org/en/2.0.0/api/database/find.html">query syntax for Mango queries</a>. Note that CouchDB ships with a powerful web interface called <a href="http://couchdb.apache.org/fauxton-visual-guide/">Fauxton</a>. You can use Fauxton to inspect the documents in the document store, run queries, view results etc.</p>
-
-<h3 id="running-native-couchdb-mango-queries-from-transaction-processor-functions">Running Native CouchDB Mango Queries from Transaction Processor Functions</h3>
-
-<p>The Composer runtime API includes the <code>queryNative(queryString)</code> method, allowing transaction processor functions to submit native Mango queries to CouchDB. Composer will execute the query against CouchDB, returning a promise to a JS Object that captures the results of running the query.</p>
-
-<p>The JS Object returned is composed of an array of objects, each with a <code>Key</code> and <code>Record</code> property. <code>Key</code> is a string that represents the key of the document in the document store. <code>Record</code> is a JS Object that captures the data for the document itself.</p>
-
-<h3 id="example">Example</h3>
-
-<p>The example below runs a content-based query to select all <code>SMALL</code> marbles, verifies the number of marbles returned, and that they are indeed all <code>SMALL</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * Executes a CouchDB query and checks the results.
- * @param {org.fabric_composer.marbles.QueryMarbleByOwner} transaction
- * @transaction
- * @return {Promise} a promise to the results of transaction processing
- */
-function onQueryMarbleByOwner(transaction) {
-    var factory = getFactory();
-    // create the query
-    var q = {
-        selector: {
-            size: 'SMALL'
-        }
-    };
-    return queryNative(JSON.stringify(q))
-        .then(function (resultArray) {
-            print('TP function received query result: ', JSON.stringify(resultArray));
-            if (resultArray.length !== 5) {
-                throw new Error('The incorrect number of marbles found: ', resultArray.length);
-            }
-            for (var x = 0; x &lt; resultArray.length; x++) {
-                var currentResult = resultArray[x];
-                if (currentResult.Record.size !== 'SMALL') {
-                    throw new Error('Query returned a marble that is not SMALL!', currentResult.Record);
-                }
-            }
-        });
-}
-</code></pre></div>
-<p>Using a selector it is possible to query all assets of a given type, with a given set of properties, and then to convert them back into Composer resources using <code>getSerializer().fromJSON(jsObject)</code>. Once the JS object returned by a query have been converted back into a Composer object it can be updated and persisted back into an asset registry.</p>
-
-<blockquote>
-<p>Note that in the future Composer will define a query language expressed in terms of assets, participants and transactions and automatically marshall the JS objects returned by CouchDB to the corresponding Composer modelled types.</p>
-</blockquote>
+<p>The Hyperledger Composer Node-RED nodes are distributed as a standalone npm package, published here:
+- <a href="https://www.npmjs.com/package/node-red-contrib-hyperledger-composer">https://www.npmjs.com/package/node-red-contrib-hyperledger-composer</a></p>
 
             
           </section>
