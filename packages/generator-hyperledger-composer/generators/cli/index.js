@@ -34,7 +34,7 @@ module.exports = generators.Base.extend({
                 when: !this.options.appName,
                 type: 'input',
                 name: 'appName',
-                message: 'Your NPM library name:',
+                message: 'Project name:',
                 default: 'cli-app',
                 store: false,
                 validate: function(input) {
