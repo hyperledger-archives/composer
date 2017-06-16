@@ -43,12 +43,12 @@ describe('EventService', () => {
         });
     });
 
-    describe('#serializeBuffer', () => {
+    describe('#getEvents', () => {
         it('should return the list of events that are to be comitted', () => {
             let event = {'$class': 'much.wow'};
             eventService.eventBuffer = [ event ];
 
-            eventService.serializeBuffer().should.equal('[{"$class":"much.wow"}]');
+            eventService.getEvents().should.deep.equal([{'$class':'much.wow'}]);
         });
     });
 

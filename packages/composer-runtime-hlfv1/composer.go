@@ -118,11 +118,22 @@ func (composer *Composer) Init(stub shim.ChaincodeStubInterface, function string
 	logger.Debug("Entering Composer.Init", &stub, function, arguments)
 	defer func() { logger.Debug("Exiting Composer.Init", string(result), err) }()
 
-	// Create all required objects.
-	context := NewContext(composer.VM, composer.Engine, stub)
+	// Start a scope for locking the JavaScript virtual machine.
+	var channel chan EngineCallback
+	func() {
 
-	// Defer to the JavaScript function.
-	channel := composer.Engine.Init(context, function, arguments)
+		// Lock the JavaScript virtual machine.
+		vm := composer.VM
+		vm.Lock()
+		defer vm.Unlock()
+
+		// Create all required objects.
+		context := NewContext(composer.VM, composer.Engine, stub)
+
+		// Defer to the JavaScript function.
+		channel = composer.Engine.Init(context, function, arguments)
+
+	}()
 
 	// Now read from the channel. This will be triggered when the JavaScript
 	// code calls the callback function.
@@ -139,11 +150,22 @@ func (composer *Composer) Invoke(stub shim.ChaincodeStubInterface, function stri
 	logger.Debug("Entering Composer.Invoke", &stub, function, arguments)
 	defer func() { logger.Debug("Exiting Composer.Invoke", string(result), err) }()
 
-	// Create all required objects.
-	context := NewContext(composer.VM, composer.Engine, stub)
+	// Start a scope for locking the JavaScript virtual machine.
+	var channel chan EngineCallback
+	func() {
 
-	// Defer to the JavaScript function.
-	channel := composer.Engine.Invoke(context, function, arguments)
+		// Lock the JavaScript virtual machine.
+		vm := composer.VM
+		vm.Lock()
+		defer vm.Unlock()
+
+		// Create all required objects.
+		context := NewContext(composer.VM, composer.Engine, stub)
+
+		// Defer to the JavaScript function.
+		channel = composer.Engine.Invoke(context, function, arguments)
+
+	}()
 
 	// Now read from the channel. This will be triggered when the JavaScript
 	// code calls the callback function.
