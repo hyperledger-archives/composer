@@ -39,7 +39,7 @@ describe('Transaction (participant specific) system tests', () => {
         const scriptFiles=  [
             { identifier: 'transactions.participants.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.participants.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.transactions.participants@0.0.1', 'The network for the transaction (participant specific) system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-transactions-participants@0.0.1', 'The network for the transaction (participant specific) system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
@@ -50,7 +50,7 @@ describe('Transaction (participant specific) system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.transactions.participants')
+                return TestUtil.getClient('systest-transactions-participants')
                     .then((result) => {
                         client = result;
                     });

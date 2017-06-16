@@ -9,7 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
-import { ModelFile, ModelManager, ScriptManager, Script } from 'composer-common';
+import { ModelFile, ModelManager, ScriptManager, Script, AclFile } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
 import { FileImporterComponent } from './../file-importer';
@@ -17,6 +17,7 @@ import { FileDragDropDirective } from './../directives/file-drag-drop';
 
 import { AdminService } from '../services/admin.service';
 import { AlertService } from '../services/alert.service';
+import { ClientService } from '../services/client.service';
 
 import * as sinon from 'sinon';
 
@@ -37,18 +38,18 @@ class MockAdminService {
 
     deploy(): Promise<any> {
         return new Promise((resolve, reject) => {
-            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+            resolve(new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network'));
         });
     }
 
     update(): Promise<any> {
         return new Promise((resolve, reject) => {
-            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+            resolve(new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network'));
         });
     }
 
     generateDefaultBusinessNetwork(): BusinessNetworkDefinition {
-        return new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
+        return new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network');
     }
 
     isInitialDeploy(): boolean {
@@ -68,8 +69,12 @@ describe('AddFileComponent', () => {
     let mockBusinessNetwork;
     let mockModelManager;
     let mockScriptManager;
+    let mockClientService;
 
     beforeEach(() => {
+
+        mockClientService = sinon.createStubInstance(ClientService);
+
         TestBed.configureTestingModule({
             declarations: [
                 FileImporterComponent,
@@ -82,6 +87,7 @@ describe('AddFileComponent', () => {
             providers: [
                 {provide: AdminService, useClass: MockAdminService},
                 {provide: AlertService, useClass: MockAlertService},
+                {provide: ClientService, useValue: mockClientService},
                 NgbActiveModal
             ]
         });
@@ -125,8 +131,11 @@ describe('AddFileComponent', () => {
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
             .returns(Promise.resolve('some data'));
 
+            // Run method
             component.fileAccepted(file);
             tick();
+
+            // Assertions
             createMock.should.have.been.called;
         }));
 
@@ -139,8 +148,28 @@ describe('AddFileComponent', () => {
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
             .returns(Promise.resolve('some data'));
 
+            // Run method
             component.fileAccepted(file);
             tick();
+
+            // Assertions
+            createMock.should.have.been.called;
+        }));
+
+        it('should call this.createRules if ACL file detected', fakeAsync(() => {
+
+            let b = new Blob(['/**ACL File*/'], {type: 'text/plain'});
+            let file = new File([b], 'newfile.acl');
+
+            let createMock = sandbox.stub(component, 'createRules');
+            let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
+            .returns(Promise.resolve('some data'));
+
+            // Run method
+            component.fileAccepted(file);
+            tick();
+
+            // Assertions
             createMock.should.have.been.called;
         }));
 
@@ -153,8 +182,11 @@ describe('AddFileComponent', () => {
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
             .returns(Promise.resolve('some data'));
 
+            // Run method
             component.fileAccepted(file);
             tick();
+
+            // Assertions
             createMock.should.have.been.called;
         }));
 
@@ -167,8 +199,11 @@ describe('AddFileComponent', () => {
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
             .returns(Promise.reject('some data'));
 
+            // Run method
             component.fileAccepted(file);
             tick();
+
+            // Assertions
             createMock.called;
         }));
 
@@ -181,9 +216,12 @@ describe('AddFileComponent', () => {
             let dataBufferMock = sandbox.stub(component, 'getDataBuffer')
             .returns(Promise.resolve('some data'));
 
+            // Run method
             component.fileAccepted(file);
             tick();
-            createMock.called;
+
+            // Assertions
+            createMock.calledWith('Unexpected File Type: png');
         }));
     });
 
@@ -201,33 +239,39 @@ describe('AddFileComponent', () => {
 
     describe('#createScript', () => {
         it('should create a new script file', async(() => {
-            component.businessNetwork = mockBusinessNetwork;
             let mockScript = sinon.createStubInstance(Script);
             mockScript.getIdentifier.returns('newfile.js');
-            mockScriptManager.createScript.returns(mockScript);
+            mockClientService.createScriptFile.returns(mockScript);
 
             let b = new Blob(['/**JS File*/'], {type: 'text/plain'});
             let file = new File([b], 'newfile.js');
 
+            // Run method
             component.createScript(file, file);
+
+            // Assertions
             component.fileType.should.equal('js');
+            mockClientService.createScriptFile.calledWith(file.name, 'JS', file.toString());
             component.currentFile.should.deep.equal(mockScript);
             component.currentFileName.should.equal(mockScript.getIdentifier());
         }));
 
-        it('should use the addScriptFileName variable as the file name', () => {
+        it('should use the addScriptFileName variable as the file name if none passed in', () => {
             let fileName = 'testFileName.js';
             component.addScriptFileName = fileName;
-            component.businessNetwork = mockBusinessNetwork;
             let mockScript = sinon.createStubInstance(Script);
             mockScript.getIdentifier.returns(fileName);
-            mockScriptManager.createScript.returns(mockScript);
+            mockClientService.createScriptFile.returns(mockScript);
 
             let b = new Blob(['/**JS File*/'], {type: 'text/plain'});
             let file = new File([b], '');
 
-            component.createScript(file, file);
+            // Run method
+            component.createScript(null, file);
+
+            // Assertions
             component.fileType.should.equal('js');
+            mockClientService.createScriptFile.calledWith(fileName, 'JS', file.toString());
             component.currentFile.should.deep.equal(mockScript);
             component.currentFileName.should.equal(mockScript.getIdentifier());
             component.currentFileName.should.equal(fileName);
@@ -236,7 +280,6 @@ describe('AddFileComponent', () => {
 
     describe('#createModel', () => {
         it('should create a new model file', async(() => {
-            component.businessNetwork = mockBusinessNetwork;
             let b = new Blob(
                 [`/**CTO File**/ namespace test`],
                 {type: 'text/plain'}
@@ -244,16 +287,21 @@ describe('AddFileComponent', () => {
             let file = new File([b], 'newfile.cto');
             let dataBuffer = new Buffer('/**CTO File**/ namespace test');
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), 'models/' + file.name);
+            mockClientService.createModelFile.returns(mockModel);
+
+            // Run method
             component.createModel(file, dataBuffer);
+
+            // Assertions
             component.fileType.should.equal('cto');
+            mockClientService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), 'models/' + file.name);
             component.currentFile.should.deep.equal(mockModel);
             component.currentFileName.should.equal(mockModel.getFileName());
         }));
 
-        it('should use the addModelFileName variable as the file name', async(() => {
+        it('should use the addModelFileName variable as the file name if none passed in', async(() => {
             let fileName = 'models/testFileName.cto';
             component.addModelFileName = fileName;
-            component.businessNetwork = mockBusinessNetwork;
             let b = new Blob(
                 [`/**CTO File**/ namespace test`],
                 {type: 'text/plain'}
@@ -261,21 +309,46 @@ describe('AddFileComponent', () => {
             let file = new File([b], '');
             let dataBuffer = new Buffer('/**CTO File**/ namespace test');
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), fileName);
-            component.createModel(file, dataBuffer);
+            mockClientService.createModelFile.returns(mockModel);
+
+            // Run method
+            component.createModel(null, dataBuffer);
+
+            // Assertions
             component.fileType.should.equal('cto');
+            mockClientService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), fileName);
             component.currentFile.should.deep.equal(mockModel);
             component.currentFileName.should.equal(mockModel.getFileName());
             component.currentFileName.should.equal(fileName);
         }));
     });
 
-    describe('#createModel', () => {
+    describe('#createRules', () => {
+        it('should create a new ACL file named permissions.acl', async(() => {
+            let dataBuffer = new Buffer('/**RULE File**/ all the rules');
+            let filename = 'permissions.acl';
+            let mockRuleFile = sinon.createStubInstance(AclFile);
+            mockClientService.createAclFile.returns(mockRuleFile);
+
+            // Run method
+            component.createRules(dataBuffer);
+
+            // Assertions
+            component.fileType.should.equal('acl');
+            mockClientService.createAclFile.should.have.been.calledWith(filename, dataBuffer.toString());
+            component.currentFile.should.deep.equal(mockRuleFile);
+            component.currentFileName.should.equal(filename);
+        }));
+    });
+
+    describe('#createReadme', () => {
         it('should establish a readme file', async(() => {
-            component.businessNetwork = mockBusinessNetwork;
             let dataBuffer = new Buffer('/**README File**/ read all the things');
 
+            // Run method
             component.createReadme(dataBuffer);
 
+            // Assertions
             component.fileType.should.equal('md');
             component.currentFileName.should.equal('README.md');
             component.currentFile.should.equal(dataBuffer.toString());
@@ -287,16 +360,15 @@ describe('AddFileComponent', () => {
         it('should set current file to a script file, created by calling createScript with correct parameters', async(() => {
             let mockScript = sinon.createStubInstance(Script);
             mockScript.getIdentifier.returns('lib/script.js');
-            mockScriptManager.getScripts.returns([]);
-            mockScriptManager.createScript.returns(mockScript);
-
+            mockClientService.getScripts.returns([]);
+            mockClientService.createScriptFile.returns(mockScript);
             component.fileType = 'js';
-            component.businessNetwork = mockBusinessNetwork;
 
+            // Run method
             component.changeCurrentFileType();
 
-            let arg = mockScriptManager.createScript.getCall(0).args[0];
-            arg.should.equal('lib/script.js');
+            // Assertions
+            mockClientService.createScriptFile.getCall(0).args[0].should.equal('lib/script.js');
         }));
 
         it('should increment a script file name if one already exists', async(() => {
@@ -306,20 +378,20 @@ describe('AddFileComponent', () => {
             mockScript.getIdentifier.returns('lib/script.js');
             mockScript0.getIdentifier.returns('lib/script0.js');
             mockScript1.getIdentifier.returns('lib/script1.js');
-            mockScriptManager.getScripts.returns([mockScript, mockScript0, mockScript1]);
-            mockScriptManager.createScript.returns(mockScript);
+            mockClientService.getScripts.returns([mockScript, mockScript0, mockScript1]);
+            mockClientService.createScriptFile.returns(mockScript);
 
             component.fileType = 'js';
-            component.businessNetwork = mockBusinessNetwork;
 
+            // Run method
             component.changeCurrentFileType();
 
-            let arg = mockScriptManager.createScript.getCall(0).args[0];
-            arg.should.equal('lib/script2.js');
+            // Assertions
+            mockClientService.createScriptFile.getCall(0).args[0].should.equal('lib/script2.js');
         }));
 
         it('should change this.currentFileType to a cto file', async(() => {
-            mockModelManager.getModelFiles.returns([]);
+            mockClientService.getModelFiles.returns([]);
             let b = new Blob(
                 [`/**
  * New model file
@@ -335,14 +407,15 @@ namespace org.acme.model`],
 
 namespace org.acme.model`);
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
-
+            mockClientService.createModelFile.returns(mockModel);
             component.fileType = 'cto';
-            component.businessNetwork = mockBusinessNetwork;
 
+            // Run method
             component.changeCurrentFileType();
+
+            // Assertions
             component.currentFileName.should.equal('models/org.acme.model.cto');
             component.currentFile.should.deep.equal(mockModel);
-
         }));
 
         it('should append the file number to the cto file name', () => {
@@ -363,13 +436,16 @@ namespace org.acme.model`],
 namespace org.acme.model`);
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
 
-            // One element, so the number 1 should be appended
-            mockModelManager.getModelFiles.returns([mockModel]);
+            // One element, so the number 0 should be appended
+            mockClientService.getModelFiles.returns([mockModel]);
 
             component.fileType = 'cto';
-            component.businessNetwork = mockBusinessNetwork;
 
+            // Run method
             component.changeCurrentFileType();
+
+            // Assertions
+            mockClientService.createModelFile.getCall(0).args[1].should.be.equal('models/org.acme.model0.cto');
             component.currentFileName.should.equal('models/org.acme.model0.cto');
         });
 
@@ -384,7 +460,7 @@ namespace org.acme.model`);
             mockFile3.getNamespace.returns('org.acme.model3');
             let mockFile4 = sinon.createStubInstance(ModelFile);
             mockFile4.getNamespace.returns('org.acme.model4');
-            mockModelManager.getModelFiles.returns([mockFile, mockFile0, mockFile1, mockFile3, mockFile4]);
+            mockClientService.getModelFiles.returns([mockFile, mockFile0, mockFile1, mockFile3, mockFile4]);
 
             let b = new Blob(
                 [`/**
@@ -402,11 +478,13 @@ namespace org.acme.model`],
 namespace org.acme.model`);
 
             let mockModel = new ModelFile(mockModelManager, dataBuffer.toString(), file.name);
-
+            mockClientService.createModelFile.returns(mockModel);
             component.fileType = 'cto';
-            component.businessNetwork = mockBusinessNetwork;
 
+            // Run method
             component.changeCurrentFileType();
+
+            // Assertions
             component.currentFileName.should.equal('models/org.acme.model2.cto');
         }));
     });
@@ -418,7 +496,10 @@ namespace org.acme.model`);
             component.currentFileName = true;
             component.fileType = 'js';
 
+            // Run method
             component.removeFile();
+
+            // Assertions
             component.expandInput.should.not.be.true;
             expect(component.currentFile).to.be.null;
             expect(component.currentFileName).to.be.null;
@@ -458,6 +539,7 @@ namespace org.acme.model`);
             mockFileReadObj.onload();
             return promise
             .then((data) => {
+                // Assertions
                 data.toString().should.equal(content);
             });
         });
@@ -467,9 +549,11 @@ namespace org.acme.model`);
             mockFileReadObj.onerror('error');
             return promise
             .then((data) => {
+                // Assertions
                 data.should.be.null;
             })
             .catch((err) => {
+                // Assertions
                 err.should.equal('error');
             });
         });

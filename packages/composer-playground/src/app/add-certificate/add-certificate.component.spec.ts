@@ -35,18 +35,18 @@ class MockAdminService {
 
     deploy(): Promise<any> {
         return new Promise((resolve, reject) => {
-            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+            resolve(new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network'));
         });
     }
 
     update(): Promise<any> {
         return new Promise((resolve, reject) => {
-            resolve(new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network'));
+            resolve(new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network'));
         });
     }
 
     generateDefaultBusinessNetwork(): BusinessNetworkDefinition {
-        return new BusinessNetworkDefinition('org.acme.biznet@0.0.1', 'Acme Business Network');
+        return new BusinessNetworkDefinition('org-acme-biznet@0.0.1', 'Acme Business Network');
     }
 
     isInitialDeploy(): boolean {
@@ -210,7 +210,7 @@ describe('AddCertificateComponent', () => {
             component['fileType'].should.equal(type);
         });
 
-        it('should set the cetificate string to the dataBuffer string content', async(() => {
+        it('should set the certificate string to the dataBuffer string content', async(() => {
             let data = 'someData';
             component.createCertificate('', data);
             component['addedCertificate'].should.equal(data);
@@ -242,13 +242,58 @@ describe('AddCertificateComponent', () => {
             mockModalSpy.should.have.been.called;
         }));
 
+        it('should handle strings with encoded newlines (windows format 1) in certs correctly', async(() => {
+
+            component['addedCertificate'] = 'MuchCertificate\\r\\nFollowon\\r\\nFinal';
+            component['addedHostname'] = 'suchHost';
+
+            let additionalData = {};
+            additionalData['cert'] = 'MuchCertificate\nFollowon\nFinal';
+            additionalData['hostnameOverride'] = 'suchHost';
+
+            // call the method
+            component.addCertificate();
+
+            mockModalSpy.should.have.been.calledWith(additionalData);
+        }));
+
+        it('should handle strings with encoded newlines (windows format 2) in certs correctly', async(() => {
+
+            component['addedCertificate'] = 'MuchCertificate\\n\\rFollowon\\n\\rFinal';
+            component['addedHostname'] = 'suchHost';
+
+            let additionalData = {};
+            additionalData['cert'] = 'MuchCertificate\nFollowon\nFinal';
+            additionalData['hostnameOverride'] = 'suchHost';
+
+            // call the method
+            component.addCertificate();
+
+            mockModalSpy.should.have.been.calledWith(additionalData);
+        }));
+
+        it('should handle strings with encoded newlines (unix format) in certs correctly', async(() => {
+
+            component['addedCertificate'] = 'MuchCertificate\\nFollowon\\nFinal';
+            component['addedHostname'] = 'suchHost';
+
+            let additionalData = {};
+            additionalData['cert'] = 'MuchCertificate\nFollowon\nFinal';
+            additionalData['hostnameOverride'] = 'suchHost';
+
+            // call the method
+            component.addCertificate();
+
+            mockModalSpy.should.have.been.calledWith(additionalData);
+        }));
+
         it('should return a constructed json object', async(() => {
 
             component['addedCertificate'] = 'MuchCertificate';
             component['addedHostname'] = 'suchHost';
 
             let additionalData = {};
-            additionalData['cert'] = 'MuchCertificate'.replace(/[\\n\\r]/g, '');
+            additionalData['cert'] = 'MuchCertificate';
             additionalData['hostnameOverride'] = 'suchHost';
 
             // call the method

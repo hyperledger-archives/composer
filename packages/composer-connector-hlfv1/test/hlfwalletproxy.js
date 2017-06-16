@@ -30,7 +30,10 @@ describe('HLFWalletProxy', () => {
 
     beforeEach(() => {
         mockWallet = sinon.createStubInstance(Wallet);
-        walletProxy = new HLFWalletProxy(mockWallet);
+        return new HLFWalletProxy(mockWallet)
+            .then((proxy) => {
+                walletProxy = proxy;
+            });
     });
 
     describe('#extractEnrollmentID', () => {

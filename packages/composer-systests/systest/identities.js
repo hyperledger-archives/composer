@@ -42,7 +42,7 @@ describe('Identity system tests', () => {
         const scriptFiles = [
             { identifier: 'identities.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/identities.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.identities@0.0.1', 'The network for the identities system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-identities@0.0.1', 'The network for the identities system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
@@ -53,7 +53,7 @@ describe('Identity system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.identities')
+                return TestUtil.getClient('systest-identities')
                     .then((result) => {
                         client = result;
                     });
@@ -72,7 +72,7 @@ describe('Identity system tests', () => {
     });
 
     afterEach(() => {
-        return TestUtil.getClient('systest.identities')
+        return TestUtil.getClient('systest-identities')
             .then((result) => {
                 client = result;
             });
@@ -82,7 +82,7 @@ describe('Identity system tests', () => {
         let identity = uuid.v4();
         return client.issueIdentity(participant, identity)
             .then((identity) => {
-                return TestUtil.getClient('systest.identities', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
@@ -97,7 +97,7 @@ describe('Identity system tests', () => {
         let identity = uuid.v4();
         return client.issueIdentity(participant, identity)
             .then((identity) => {
-                return TestUtil.getClient('systest.identities', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
@@ -118,7 +118,7 @@ describe('Identity system tests', () => {
                         return participantRegistry.remove(participant);
                     })
                     .then(() => {
-                        return TestUtil.getClient('systest.identities', identity.userID, identity.userSecret);
+                        return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
                     });
             })
             .then((result) => {
@@ -132,7 +132,7 @@ describe('Identity system tests', () => {
         let identity = uuid.v4();
         return client.issueIdentity(participant, identity)
             .then((identity) => {
-                return TestUtil.getClient('systest.identities', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
@@ -146,7 +146,7 @@ describe('Identity system tests', () => {
         let identity = uuid.v4();
         return client.issueIdentity(participant, identity)
             .then((identity) => {
-                return TestUtil.getClient('systest.identities', identity.userID, identity.userSecret);
+                return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
             })
             .then((result) => {
                 client = result;
@@ -169,7 +169,7 @@ describe('Identity system tests', () => {
                         return participantRegistry.remove(participant);
                     })
                     .then(() => {
-                        return TestUtil.getClient('systest.identities', identity.userID, identity.userSecret);
+                        return TestUtil.getClient('systest-identities', identity.userID, identity.userSecret);
                     });
             })
             .then((result) => {
