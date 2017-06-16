@@ -52,6 +52,7 @@ module.exports.AclFile = require('./lib/acl/aclfile');
 module.exports.AclManager = require('./lib/aclmanager');
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
+module.exports.BaseModelException = require('./lib/introspect/basemodelexception');
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
 module.exports.ComboConnectionProfileStore = require('./lib/comboconnectionprofilestore');
