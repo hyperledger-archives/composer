@@ -24,7 +24,7 @@ const ModelFile = require('./introspect/modelfile');
 
 const ENCODING = 'utf8';
 
-const LOG = require('./log/logger').getLog('common/ModelManager');
+const LOG = require('./log/logger').getLog('ModelManager');
 
 // const util = require('util');
 /**
@@ -55,6 +55,7 @@ class ModelManager {
      * </p>
      */
     constructor() {
+        LOG.entry('constructor');
         this.modelFiles = {};
 
         let systemModelPath = path.join(path.dirname(__filename), '../models/system.cto');
@@ -62,7 +63,7 @@ class ModelManager {
         let systemModelContents = fs.readFileSync(systemModelPath, ENCODING);
         // console.log(systemModelContents);
         this.addModelFile(systemModelContents);
-        LOG.info('constructor','Loaded the core types');
+        LOG.exit('constructor');
     }
 
     /**
@@ -182,7 +183,7 @@ class ModelManager {
      */
     addModelFiles(modelFiles, fileNames) {
         const NAME = 'addModelFiles';
-        LOG.info(NAME,'addModelFiles',modelFiles,fileNames);
+        LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -206,7 +207,7 @@ class ModelManager {
                     newModelFiles.push(modelFile);
                 }
             }
-            // console.log('===== Model files');
+
             // console.log(util.inspect(this.modelFiles,{ depth: 7 , colors: true, }));
 
 
@@ -218,6 +219,8 @@ class ModelManager {
             // let's go and retrofit the model to make sure all is good
             // make sure that models are all correctly/
             // temp workaround until system models in place
+            LOG.info(NAME,'retofitting the model files now');
+
             for (let ns in this.modelFiles) {
                 if (! this.modelFiles[ns] === undefined) {
                     this.modelFiles[ns].retrofit();
@@ -232,6 +235,8 @@ class ModelManager {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
+        } finally{
+            LOG.exit(NAME,newModelFiles);
         }
     }
 

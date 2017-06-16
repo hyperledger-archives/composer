@@ -84,12 +84,15 @@ class ModelFile {
         let decorate = false;
         let systemNamespace = ModelUtil.getSystemNamespace();
         if(this.namespace !== systemNamespace) {
-            this.imports.unshift(systemNamespace + '.Asset');
+            this.imports.unshift(systemNamespace + '._cst_Asset');
+            this.imports.unshift(systemNamespace + '._cst_Participant');
+            this.imports.unshift(systemNamespace + '._cst_Event');
+            this.imports.unshift(systemNamespace + '._cst_Transaction');
             decorate = true;
         }
         // console.log('\n========\n Parsed AST for the model file ');
         // console.log(util.inspect(this.ast,{ depth: 7, colors: true, }));
-
+        // console.log('\n========\n');
         for(let n=0; n < this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
 
@@ -100,16 +103,19 @@ class ModelFile {
             }
 
             if(thing.type === 'AssetDeclaration') {
-                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: 'Asset' } }; }
+                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Asset' } }; }
                 this.declarations.push( new AssetDeclaration(this, thing) );
             }
             else if(thing.type === 'TransactionDeclaration') {
+                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Transaction' } }; }
                 this.declarations.push( new TransactionDeclaration(this, thing) );
             }
             else if(thing.type === 'EventDeclaration') {
+                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Event' } }; }
                 this.declarations.push( new EventDeclaration(this, thing) );
             }
             else if(thing.type === 'ParticipantDeclaration') {
+                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Participant' } }; }
                 this.declarations.push( new ParticipantDeclaration(this, thing) );
             }
             else if(thing.type === 'EnumDeclaration') {

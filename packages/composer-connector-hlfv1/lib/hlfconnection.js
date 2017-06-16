@@ -503,7 +503,7 @@ class HLFConnection extends Connection {
             })
             .catch((error) => {
                 const newError = new Error('error trying deploy. ' + error);
-                LOG.error(method, newError);
+                LOG.error(method, error);
                 throw newError;
             });
 

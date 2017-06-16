@@ -20,24 +20,24 @@ namespace org.hyperledger.composer.system
 /**
  * Implicit super-type for all Assets
  */
-abstract asset Asset {
-   o String superNotes
+abstract asset _cst_Asset {
+   o String superNotes optional
 }
 
 /**
  * Implicit super-type for all Participants
  */
-abstract participant Participant {
-   o String superNotes
+abstract participant _cst_Participant {
+   o String superNotes optional
 }
 
 /**
  * Implicit super-type for all Transactions
  */
-abstract transaction Transaction identified by transactionID {
+abstract transaction _cst_Transaction identified by transactionID {
   o String transactionID
   o DateTime timestamp
-  o String superNotes
+  o String superNotes optional
 }
 
 /**
@@ -45,7 +45,6 @@ abstract transaction Transaction identified by transactionID {
 
    --> Transaction transaction
  */
-abstract event Event identified by eventID {
+abstract event _cst_Event identified by eventID {
   o String eventID
-
 }
