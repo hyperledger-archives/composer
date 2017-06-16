@@ -24,7 +24,8 @@ app-editor {
 
       .side-bar-nav {
         padding: 0;
-
+        max-height: 25rem;
+        overflow-y: scroll;
         .error {
             color: $first-warning;
         }
@@ -121,4 +122,10 @@ app-editor {
       min-height:63vh;
       max-height:63vh;
     }
+
+  .ps.ps--active-x>.ps__scrollbar-x-rail,
+  .ps.ps--active-y>.ps__scrollbar-y-rail{
+      opacity: 0.6;
+  }
+
 }

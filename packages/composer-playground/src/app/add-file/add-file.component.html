@@ -12,14 +12,15 @@
   </div>
   <section class="modal-body">
     <span>Upload a file from your computer...</span>
-    <file-importer *ngIf="!expandInput" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
+    <file-importer *ngIf="!currentFile" (dragFileAccepted)="fileAccepted($event)" [expandInput]="expandInput"
                    [ngClass]="{'expandFile': expandInput}" [svgName]="'#icon-CTO_JS_Upload'"></file-importer>
     <div class="chosen-file" *ngIf="expandInput && currentFile">
       <div class="file-info">
         <div class="flex-container">
           <svg class="ibm-icon" aria-hidden="true">
-            <use xlink:href="#icon-JS_File" *ngIf="fileType==='js'"></use>
+            <use xlink:href="#icon-ACL_File" *ngIf="fileType==='acl'"></use>
             <use xlink:href="#icon-CTO_File" *ngIf="fileType==='cto'"></use>
+            <use xlink:href="#icon-JS_File" *ngIf="fileType==='js'"></use>
             <use xlink:href="#icon-MD_File" *ngIf="fileType==='md'"></use>
           </svg>
           <div class="file-title">

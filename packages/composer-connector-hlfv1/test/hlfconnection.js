@@ -15,17 +15,22 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const Chain = require('fabric-client/lib/Chain');
+
+const Channel = require('fabric-client/lib/Channel');
+const Peer = require('fabric-client/lib/Peer');
 const Client = require('fabric-client');
 const EventHub = require('fabric-client/lib/EventHub');
+const TransactionID = require('fabric-client/lib/TransactionID.js');
+const User = require('fabric-client/lib/User.js');
+
 const FabricCAClientImpl = require('fabric-ca-client');
+
 const HLFConnection = require('../lib/hlfconnection');
 const HLFConnectionManager = require('../lib/hlfconnectionmanager');
 const HLFSecurityContext = require('../lib/hlfsecuritycontext');
+
 const path = require('path');
 const semver = require('semver');
-const User = require('fabric-client/lib/User.js');
-const utils = require('fabric-client/lib/utils.js');
 
 const connectorPackageJSON = require('../package.json');
 const originalVersion = connectorPackageJSON.version;
@@ -41,39 +46,38 @@ const runtimeModulePath = path.dirname(require.resolve('composer-runtime-hlfv1')
 describe('HLFConnection', () => {
 
     let sandbox;
-    let mockConnectionManager, mockChain, mockClient, mockEventHub, mockCAClient, mockUser, mockSecurityContext, mockBusinessNetwork;
+    let mockConnectionManager, mockChannel, mockClient, mockEventHub, mockCAClient, mockUser, mockSecurityContext, mockBusinessNetwork, mockPeer;
     let connectOptions;
     let connection;
+    let mockEventHubDef, mockTransactionID;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         mockConnectionManager = sinon.createStubInstance(HLFConnectionManager);
-        mockChain = sinon.createStubInstance(Chain);
+        mockPeer = sinon.createStubInstance(Peer);
+        mockChannel = sinon.createStubInstance(Channel);
         mockClient = sinon.createStubInstance(Client);
         mockEventHub = sinon.createStubInstance(EventHub);
         mockCAClient = sinon.createStubInstance(FabricCAClientImpl);
         mockUser = sinon.createStubInstance(User);
-
+        mockChannel.getPeers.returns([mockPeer]);
+        mockTransactionID = sinon.createStubInstance(TransactionID);
+        mockTransactionID.getTransactionID.returns('00000000-0000-0000-0000-000000000000');
+        mockClient.newTransactionID.returns(mockTransactionID);
         mockSecurityContext = sinon.createStubInstance(HLFSecurityContext);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
-        mockBusinessNetwork.getName.returns('org.acme.biznet');
+        mockBusinessNetwork.getName.returns('org-acme-biznet');
         mockBusinessNetwork.toArchive.resolves(Buffer.from('hello world'));
         connectOptions = {
-            orderers: [
-                'grpc://localhost:7050'
-            ],
-            peers: [
-                'grpc://localhost:7051'
-            ],
-            events: [
-                'grpc://localhost:7053'
-            ],
-            ca: 'http://localhost:7054',
-            keyValStore: '/tmp/hlfabric1',
             channel: 'testchainid',
-            mspID: 'suchmsp'
+            mspID: 'suchmsp',
+            deployWaitTime: 30,
+            invokeWaitTime: 30
         };
-        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
+        mockEventHubDef = {
+            'eventURL': 'http://localhost:7053'
+        };
+        connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
     });
 
     afterEach(() => {
@@ -90,57 +94,61 @@ describe('HLFConnection', () => {
 
     });
 
-    describe('#constructor', () => {
+    describe('#_getLoggedInUser', () => {
 
-        it('should subscribe to the eventHub and emit events', () => {
-            const events = {
-                payload: {
-                    toString: () => {
-                        return '"{"event":"event"}"';
-                    }
-                }
-            };
-            connection.emit = sandbox.stub();
-            mockEventHub.registerChaincodeEvent.withArgs('org.acme.biznet', 'composer', sinon.match.func).yield(events);
-            sinon.assert.calledOnce(mockEventHub.registerChaincodeEvent);
-            sinon.assert.calledWith(mockEventHub.registerChaincodeEvent, 'org.acme.biznet', 'composer', sinon.match.func);
-            sinon.assert.calledOnce(connection.emit);
+        it('should return the current user', () => {
+            connection.user = 'CurrentUser';
+            connection._getLoggedInUser().should.equal('CurrentUser');
         });
+
+    });
+
+    describe('#createEventHub', () => {
+
+        it('should call new event hub', () => {
+            (() => {
+                HLFConnection.createEventHub(mockClient);
+            }).should.throw(/The clientContext has not been properly initialized, missing userContext/);
+        });
+
+    });
+
+    describe('#constructor', () => {
 
         it('should throw if connectOptions not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', null, mockClient, mockChain, mockEventHub, mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', null, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
             }).should.throw(/connectOptions not specified/);
         });
 
         it('should throw if client not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, null, mockChain, mockEventHub, mockCAClient);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, null, mockChannel, [mockEventHubDef], mockCAClient);
             }).should.throw(/client not specified/);
         });
 
-        it('should throw if chain not specified', () => {
+        it('should throw if channel not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, null, mockEventHub, mockCAClient);
-            }).should.throw(/chain not specified/);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, null, [mockEventHubDef], mockCAClient);
+            }).should.throw(/channel not specified/);
         });
 
-        it('should throw if eventHubs not specified', () => {
+        it('should throw if eventHubDefs not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, null, mockCAClient);
-            }).should.throw(/eventHubs not specified or not an array/);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, null, mockCAClient);
+            }).should.throw(/eventHubDefs not specified or not an array/);
         });
 
-        it('should throw if eventHubs not an array', () => {
+        it('should throw if eventHubDefs not an array', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, mockEventHub, mockCAClient);
-            }).should.throw(/eventHubs not specified or not an array/);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, mockEventHubDef, mockCAClient);
+            }).should.throw(/eventHubDefs not specified or not an array/);
         });
 
 
         it('should throw if caClient not specified', () => {
             (() => {
-                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', { type: 'hlfv1' }, mockClient, mockChain, [mockEventHub], null);
+                new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', { type: 'hlfv1' }, mockClient, mockChannel, [mockEventHubDef], null);
             }).should.throw(/caClient not specified/);
         });
     });
@@ -153,10 +161,84 @@ describe('HLFConnection', () => {
 
     });
 
+    describe('#_connectToEventHubs', () => {
+        beforeEach(() => {
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+        });
+
+        it('should ignore a disconnected event hub on process exit', () => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            mockEventHub.isconnected.returns(false);
+            connection._connectToEventHubs();
+            sinon.assert.calledOnce(process.on);
+            sinon.assert.calledWith(process.on, 'exit');
+            sinon.assert.notCalled(mockEventHub.disconnect);
+        });
+
+        it('should disconnect a connected event hub on process exit', () => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            mockEventHub.isconnected.returns(true);
+            connection._connectToEventHubs();
+            sinon.assert.calledOnce(process.on);
+            sinon.assert.calledWith(process.on, 'exit');
+            sinon.assert.calledOnce(mockEventHub.disconnect);
+        });
+
+        it('should subscribe to the eventHub and emit events', () => {
+            connection._connectToEventHubs();
+            const events = {
+                payload: {
+                    toString: () => {
+                        return '{"event":"event"}';
+                    }
+                }
+            };
+            connection.emit = sandbox.stub();
+            mockEventHub.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).yield(events);
+            sinon.assert.calledOnce(mockEventHub.registerChaincodeEvent);
+            sinon.assert.calledWith(mockEventHub.registerChaincodeEvent, 'org-acme-biznet', 'composer', sinon.match.func);
+            sinon.assert.calledOnce(connection.emit);
+            sinon.assert.calledWith(connection.emit, 'events', {'event':'event'});
+        });
+
+        it('should not register any listeners for chaincode events if no business network is specified', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, connectOptions, mockClient, mockChannel, [mockEventHub], mockCAClient);
+            connection._connectToEventHubs();
+            sinon.assert.notCalled(mockEventHub.registerChaincodeEvent);
+            connection.ccEvents.length.should.equal(0);
+
+        });
+
+    });
+
     describe('#disconnect', () => {
+        beforeEach(() => {
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            mockEventHub.registerChaincodeEvent.withArgs('org-acme-biznet', 'composer', sinon.match.func).returns('events');
+        });
+
+        it('should not unregister any chaincode listeners if non were setup', () => {
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', null, connectOptions, mockClient, mockChannel, [mockEventHub], mockCAClient);
+            connection._connectToEventHubs();
+            return connection.disconnect()
+                .then(() => {
+                    sinon.assert.notCalled(mockEventHub.unregisterChaincodeEvent);
+                });
+        });
+
+        it('should unregister a registered chaincode listener', () => {
+            mockEventHub.unregisterChaincodeEvent.returns(true);
+            connection._connectToEventHubs();
+            return connection.disconnect()
+                .then(() => {
+                    sinon.assert.calledOnce(mockEventHub.unregisterChaincodeEvent);
+                    sinon.assert.calledWith(mockEventHub.unregisterChaincodeEvent, 'events');
+                });
+        });
 
         it('should disconnect from the event hub if connected', () => {
             mockEventHub.isconnected.returns(true);
+            connection._connectToEventHubs();
             return connection.disconnect()
                 .then(() => {
                     sinon.assert.calledOnce(mockEventHub.disconnect);
@@ -165,6 +247,7 @@ describe('HLFConnection', () => {
 
         it('should not disconnect from the event hub if not connected', () => {
             mockEventHub.isconnected.returns(false);
+            connection._connectToEventHubs();
             return connection.disconnect()
                 .then(() => {
                     sinon.assert.notCalled(mockEventHub.disconnect);
@@ -172,6 +255,8 @@ describe('HLFConnection', () => {
         });
 
         it('should handle an error disconnecting from the event hub', () => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            connection._connectToEventHubs();
             mockEventHub.isconnected.throws(new Error('such error'));
             return connection.disconnect()
                 .should.be.rejectedWith(/such error/);
@@ -183,6 +268,7 @@ describe('HLFConnection', () => {
 
         beforeEach(() => {
             sandbox.stub(HLFConnection, 'createUser').returns(mockUser);
+            sandbox.stub(connection, '_initializeChannel').resolves();
         });
 
         it('should throw if enrollmentID not specified', () => {
@@ -220,6 +306,11 @@ describe('HLFConnection', () => {
     });
 
     describe('#login', () => {
+
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+        });
 
         it('should throw if enrollmentID not specified', () => {
             (() => {
@@ -262,9 +353,13 @@ describe('HLFConnection', () => {
     });
 
     describe('#_install', () => {
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            connection._connectToEventHubs();
+        });
+
         const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
-        //const targetDirectoryPath = path.resolve(tempDirectoryPath, 'src', 'composer');
-        //const versionFilePath = path.resolve(targetDirectoryPath, 'version.go');
         it('should rethrow error if unable to create temp dir', () => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').rejects(new Error('some error 1'));
             connection._install(mockSecurityContext, mockBusinessNetwork)
@@ -288,6 +383,167 @@ describe('HLFConnection', () => {
 
     });
 
+    describe('#_validateResponses', () => {
+        it('should not throw if all is ok', () => {
+            const responses = [
+                {
+                    response: {
+                        status: 200,
+                        payload: 'no error'
+                    }
+                },
+
+                {
+                    response: {
+                        status: 200,
+                        payload: 'good here'
+                    }
+                }
+            ];
+
+            mockChannel.verifyProposalResponse.returns(true);
+            mockChannel.compareProposalResponseResults.returns(true);
+
+            (function() {
+                connection._validateResponses(responses, true);
+            }).should.not.throw();
+        });
+
+        it('should not throw if pattern is found in message of Error object', () => {
+            const err = new Error('the chaincode exists somewhere');
+            const responses = [
+                err
+            ];
+
+            mockChannel.verifyProposalResponse.returns(true);
+            mockChannel.compareProposalResponseResults.returns(true);
+
+            (function() {
+                connection._validateResponses(responses, false, /chaincode exists/);
+            }).should.not.throw();
+        });
+
+
+        it('should throw if no responses', () => {
+            (function() {
+                connection._validateResponses([], false);
+            }).should.throw(/No results were returned/);
+        });
+
+        it('should throw if no proposal responses', () => {
+            (function() {
+                connection._validateResponses([], true);
+            }).should.throw(/No results were returned/);
+        });
+
+        it('should throw if any responses that have a non-200 status code', () => {
+            const responses = [
+                {
+                    response: {
+                        status: 200,
+                        payload: 'no error'
+                    }
+                },
+
+                {
+                    response: {
+                        status: 500,
+                        payload: 'such error'
+                    }
+                }
+            ];
+
+            mockChannel.verifyProposalResponse.returns(true);
+            mockChannel.compareProposalResponseResults.returns(true);
+
+            (function() {
+                connection._validateResponses(responses, true);
+            }).should.throw(/such error/);
+        });
+
+        it('should throw the error if any of the responses contains an error', () => {
+            const responses = [
+                {
+                    response: {
+                        status: 200,
+                        payload: 'no error'
+                    }
+                },
+                new Error('had a problem'),
+                {
+                    response: {
+                        status: 500,
+                        payload: 'such error'
+                    }
+                }
+            ];
+
+            mockChannel.verifyProposalResponse.returns(true);
+            mockChannel.compareProposalResponseResults.returns(true);
+
+            (function() {
+                connection._validateResponses(responses, true);
+            }).should.throw(/had a problem/);
+
+        });
+
+        it('should throw if verifyProposal returns false', () => {
+            const responses = [
+                {
+                    response: {
+                        status: 200,
+                        payload: 'no error'
+                    }
+                }
+            ];
+
+            mockChannel.verifyProposalResponse.returns(false);
+            mockChannel.compareProposalResponseResults.returns(true);
+
+            (function() {
+                connection._validateResponses(responses, true);
+            }).should.throw(/Response from peer was not valid/);
+        });
+
+        it('should throw if compareProposals returns false', () => {
+            const responses = [
+                {
+                    response: {
+                        status: 200,
+                        payload: 'no error'
+                    }
+                }
+            ];
+
+            mockChannel.verifyProposalResponse.returns(true);
+            mockChannel.compareProposalResponseResults.returns(false);
+
+            (function() {
+                connection._validateResponses(responses, true);
+            }).should.throw(/Peers do not agree/);
+        });
+
+        it('should not try to check proposal responses if not a response from a proposal', () => {
+            const responses = [
+                {
+                    response: {
+                        status: 200,
+                        payload: 'no error'
+                    }
+                }
+            ];
+
+            mockChannel.verifyProposalResponse.returns(false);
+            mockChannel.compareProposalResponseResults.returns(false);
+
+            (function() {
+                connection._validateResponses(responses, false);
+            }).should.not.throw();
+        });
+
+
+    });
+
     describe('#deploy', () => {
 
         const tempDirectoryPath = path.resolve('tmp', 'composer1234567890');
@@ -298,6 +554,11 @@ describe('HLFConnection', () => {
             sandbox.stub(connection.temp, 'mkdir').withArgs('composer').resolves(tempDirectoryPath);
             sandbox.stub(connection.fs, 'copy').resolves();
             sandbox.stub(connection.fs, 'outputFile').resolves();
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            sandbox.stub(connection, '_validateResponses').returns();
+            sandbox.stub(connection, '_initializeChannel').resolves();
+            connection._connectToEventHubs();
         });
 
         it('should throw if businessNetwork not specified', () => {
@@ -306,27 +567,26 @@ describe('HLFConnection', () => {
             }).should.throw(/businessNetwork not specified/);
         });
 
+        // TODO: should extract out _waitForEvents
         it('should request an event timeout based on connection settings', () => {
             connectOptions = {
                 orderers: [
                     'grpc://localhost:7050'
                 ],
-                peers: [
-                    'grpc://localhost:7051'
-                ],
-                events: [
-                    'grpc://localhost:7053'
-                ],
+                peers: [ {
+                    requestURL: 'grpc://localhost:7051',
+                    eventURL: 'grpc://localhost:7053'
+                }],
                 ca: 'http://localhost:7054',
                 keyValStore: '/tmp/hlfabric1',
                 channel: 'testchainid',
                 mspID: 'suchmsp',
-                deployWaitTime: 39,
-                invokeWaitTime: 63,
+                timeout: 22
             };
-            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+            sandbox.stub(connection, '_validateResponses').returns();
+            sandbox.stub(connection, '_initializeChannel').resolves();
+            connection._connectToEventHubs();
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -338,26 +598,22 @@ describe('HLFConnection', () => {
             const response = {
                 status: 'SUCCESS'
             };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             sandbox.stub(global, 'setTimeout').yields();
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .catch(() => {
+                .should.be.rejectedWith(/Failed to receive commit notification/)
+                .then(() => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
-                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, connectOptions.deployWaitTime * 1000);
+                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, 22 * 1000);
                 });
         });
 
         it('should deploy the business network', () => {
             sandbox.stub(global, 'setTimeout');
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -366,19 +622,16 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
@@ -389,39 +642,31 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
                     sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledOnce(mockChain.sendInstallProposal);
-                    sinon.assert.calledOnce(mockChain.initialize);
-                    sinon.assert.calledOnce(mockChain.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockChain.sendInstallProposal, {
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
-                        //chaincodeId: 'org-acme-biznet', required for alpha2
-                        chaincodeId: 'org.acme.biznet',
-                        chainId: connectOptions.channel,
-                        txId: '00000000-0000-0000-0000-000000000000',
-                        nonce: '11111111-1111-1111-1111-111111111111',
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
                     });
-                    sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
-                        //chaincodeId: 'org-acme-biznet', required for alpha2
-                        chaincodeId: 'org.acme.biznet',
-                        chainId: connectOptions.channel,
-                        txId: '00000000-0000-0000-0000-000000000000',
-                        nonce: '11111111-1111-1111-1111-111111111111',
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
                         fcn: 'init',
                         args: ['aGVsbG8gd29ybGQ=']
                     });
 
-                    sinon.assert.calledOnce(mockChain.sendTransaction);
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
                 });
         });
 
         it('should instantiate the business network if it responds already installed', () => {
             sandbox.stub(global, 'setTimeout');
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
             const errorResp = new Error('Error installing chaincode code systest-participants:0.5.11(chaincode /var/hyperledger/production/chaincodes/systest-participants.0.5.11 exists)');
             const installResponses = [errorResp];
             const instantiateResponses = [{
@@ -432,19 +677,16 @@ describe('HLFConnection', () => {
 
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
+            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: instantiateResponses, proposal: proposal, header: header }).resolves(response);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: instantiateResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID.toString(), 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
@@ -455,51 +697,65 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
                     sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledOnce(mockChain.sendInstallProposal);
-                    sinon.assert.calledOnce(mockChain.initialize);
-                    sinon.assert.calledOnce(mockChain.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockChain.sendInstallProposal, {
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledOnce(connection._initializeChannel);
+                    sinon.assert.calledOnce(mockChannel.sendInstantiateProposal);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
-                        //chaincodeId: 'org-acme-biznet', required for alpha2
-                        chaincodeId: 'org.acme.biznet',
-                        chainId: connectOptions.channel,
-                        txId: '00000000-0000-0000-0000-000000000000',
-                        nonce: '11111111-1111-1111-1111-111111111111',
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
                     });
-                    sinon.assert.calledWith(mockChain.sendInstantiateProposal, {
+                    sinon.assert.calledWith(mockChannel.sendInstantiateProposal, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
-                        //chaincodeId: 'org-acme-biznet', required for alpha2
-                        chaincodeId: 'org.acme.biznet',
-                        chainId: connectOptions.channel,
-                        txId: '00000000-0000-0000-0000-000000000000',
-                        nonce: '11111111-1111-1111-1111-111111111111',
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
                         fcn: 'init',
                         args: ['aGVsbG8gd29ybGQ=']
                     });
 
-                    sinon.assert.calledOnce(mockChain.sendTransaction);
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
                 });
         });
 
-        it('should throw if install fails for unexpected reason', () => {
+        it('should install and exit cleanly if business network already instantiated', () => {
             sandbox.stub(global, 'setTimeout');
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
-            const errorResp = new Error('Error something went completely wrong');
-            const installResponses = [errorResp];
+            // This is reponse from an install and instantiate
+            const installInstantiateResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
+            mockClient.installChaincode.resolves([ installInstantiateResponses ]);
+
+            // query instantiate response shows chaincode already instantiated
+            const queryInstantiatedResponse = {
+                chaincodes: [
+                    {
+                        path: 'composer',
+                        name: 'org-acme-biznet'
+                    }
+                ]
+            };
+            mockChannel.queryInstantiatedChaincodes.resolves(queryInstantiatedResponse);
+
+            // What would be a valid instantiate proposal response, should not be used.
+            mockChannel.sendInstantiateProposal.resolves([ installInstantiateResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: installInstantiateResponses, proposal: proposal, header: header }).resolves(response);
+
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
+
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .catch((error) => {
-                    error.message.should.equal(errorResp.message);
+                .then(() => {
                     sinon.assert.calledOnce(connection.fs.copy);
                     sinon.assert.calledWith(connection.fs.copy, runtimeModulePath, targetDirectoryPath, sinon.match.object);
                     // Check the filter ignores any relevant node modules files.
@@ -508,179 +764,56 @@ describe('HLFConnection', () => {
                     connection.fs.copy.firstCall.args[2].filter('composer-runtime-hlfv1/node_modules/here').should.be.false;
                     sinon.assert.calledOnce(connection.fs.outputFile);
                     sinon.assert.calledWith(connection.fs.outputFile, versionFilePath, sinon.match(/const version = /));
-                    sinon.assert.calledOnce(mockChain.sendInstallProposal);
-                    sinon.assert.notCalled(mockChain.initialize);
-                    sinon.assert.notCalled(mockChain.sendInstantiateProposal);
-                    sinon.assert.calledWith(mockChain.sendInstallProposal, {
+                    sinon.assert.calledOnce(mockClient.installChaincode);
+                    sinon.assert.calledWith(mockClient.installChaincode, {
                         chaincodePath: 'composer',
                         chaincodeVersion: connectorPackageJSON.version,
-                        //chaincodeId: 'org-acme-biznet', required for alpha2
-                        chaincodeId: 'org.acme.biznet',
-                        chainId: connectOptions.channel,
-                        txId: '00000000-0000-0000-0000-000000000000',
-                        nonce: '11111111-1111-1111-1111-111111111111',
+                        chaincodeId: 'org-acme-biznet',
+                        txId: mockTransactionID,
+                        targets: [mockPeer]
                     });
+                    sinon.assert.notCalled(connection._initializeChannel);
+                    sinon.assert.notCalled(mockChannel.sendInstantiateProposal);
+                    sinon.assert.notCalled(mockChannel.sendTransaction);
                 });
         });
 
-        it('should throw if no install responses are returned', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
+        it('should throw if install fails to validate', () => {
+            sandbox.stub(global, 'setTimeout');
             // This is the deployment proposal and response (from the peers).
-            const installResponses = [];
+            const errorResp = new Error('Error something went completely wrong');
+            const installResponses = [errorResp];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
+            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
+            connection._validateResponses.withArgs(installResponses).throws(errorResp);
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .should.be.rejectedWith(/No results were returned/);
+                .should.be.rejectedWith(/Error something went completely wrong/);
         });
 
-        it('should throw if no instantiate responses are returned', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
+        it('should throw any instantiate fails to validate', () => {
             const installResponses = [{
                 response: {
                     status: 200
                 }
             }];
-            const proposalResponses = [];
+            const errorResp = new Error('such error');
+            const instantiateResponses = [ errorResp ];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockClient.installChaincode.resolves([ installResponses, proposal, header ]);
+            connection._validateResponses.withArgs(installResponses).returns();
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
+            connection._validateResponses.withArgs(instantiateResponses).throws(errorResp);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
-            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .should.be.rejectedWith(/No results were returned/);
-        });
-
-
-        it('should throw any instantiate responses that are errors', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            const installResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const instantiateResponses = [ new Error('such error') ];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ installResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ instantiateResponses, proposal, header ]);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'VALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .should.be.rejectedWith(/such error/);
         });
 
-        it('should throw any endorsement responses that have a non-200 status code', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 500,
-                    payload: 'such error'
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
-            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .should.be.rejectedWith(/such error/);
-        });
-
-        it('should throw an error if peer says transaction not valid', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'INVALID');
-            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
-        });
-
-        it('should throw an error if the commit of the transaction times out', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the deployment proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 200
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            sandbox.stub(global, 'setTimeout').yields();
-            // mockEventHub.registerTxEvent.yields();
-            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
-                .should.be.rejectedWith(/Failed to receive commit notification/);
-        });
-
+        // TODO: should extract out _waitForEvents
         it('should throw an error if the commit throws an error', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
             // This is the deployment proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -689,26 +822,51 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            mockChain.sendInstallProposal.resolves([ proposalResponses, proposal, header ]);
-            mockChain.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'FAILURE'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'INVALID');
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
             return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
                 .should.be.rejectedWith(/Failed to commit transaction/);
+        });
+
+        it('should throw an error if peer says transaction not valid', () => {
+            // This is the deployment proposal and response (from the peers).
+            const proposalResponses = [{
+                response: {
+                    status: 200
+                }
+            }];
+            const proposal = { proposal: 'i do' };
+            const header = { header: 'gooooal' };
+            mockClient.installChaincode.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.queryInstantiatedChaincodes.resolves({chaincodes: []});
+            mockChannel.sendInstantiateProposal.resolves([ proposalResponses, proposal, header ]);
+            // This is the commit proposal and response (from the orderer).
+            const response = {
+                status: 'SUCCESS'
+            };
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            // This is the event hub response.
+            mockEventHub.registerTxEvent.yields(mockTransactionID.getTransactionID().toString(), 'INVALID');
+            return connection.deploy(mockSecurityContext, false, mockBusinessNetwork)
+                .should.be.rejectedWith(/Peer has rejected transaction '00000000-0000-0000-0000-000000000000'/);
         });
 
     });
 
     describe('#undeploy', () => {
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            connection._connectToEventHubs();
+        });
 
         it('should throw if businessNetworkIdentifier not specified', () => {
             (() => {
@@ -724,7 +882,7 @@ describe('HLFConnection', () => {
 
         it('should invoke the chaincode', () => {
             sandbox.stub(connection, 'invokeChainCode').resolves();
-            return connection.undeploy(mockSecurityContext, 'org.acme.biznet')
+            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
                 .then(() => {
                     sinon.assert.calledOnce(connection.invokeChainCode);
                     sinon.assert.calledWith(connection.invokeChainCode, mockSecurityContext, 'undeployBusinessNetwork', []);
@@ -733,13 +891,18 @@ describe('HLFConnection', () => {
 
         it('should handle errors invoking the chaincode', () => {
             sandbox.stub(connection, 'invokeChainCode').rejects('such error');
-            return connection.undeploy(mockSecurityContext, 'org.acme.biznet')
+            return connection.undeploy(mockSecurityContext, 'org-acme-biznet')
                 .should.be.rejectedWith(/such error/);
         });
 
     });
 
     describe('#update', () => {
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            connection._connectToEventHubs();
+        });
 
         it('should throw if businessNetworkDefinition not specified', () => {
             (() => {
@@ -765,6 +928,11 @@ describe('HLFConnection', () => {
     });
 
     describe('#ping', () => {
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            connection._connectToEventHubs();
+        });
 
         it('should handle a chaincode with the same version as the connector', () => {
             const response = {
@@ -859,6 +1027,11 @@ describe('HLFConnection', () => {
     });
 
     describe('#queryChainCode', () => {
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            connection._connectToEventHubs();
+        });
 
         it('should throw if functionName not specified', () => {
             (() => {
@@ -879,56 +1052,33 @@ describe('HLFConnection', () => {
         });
 
         it('should submit a query request to the chaincode', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            // This is the response from the chaincode.
             const response = Buffer.from('hello world');
-            mockChain.queryByChaincode.resolves([response]);
+            mockChannel.queryByChaincode.resolves([response]);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then((result) => {
-                    sinon.assert.calledOnce(mockChain.queryByChaincode);
-                    sinon.assert.calledWith(mockChain.queryByChaincode, {
-                        //chaincodeId: 'org-acme-biznet', required for alpha2
-                        chaincodeId: 'org.acme.biznet',
-                        chainId: 'testchainid',
-                        txId: '00000000-0000-0000-0000-000000000000',
-                        nonce: '11111111-1111-1111-1111-111111111111',
+                    sinon.assert.calledOnce(mockChannel.queryByChaincode);
+                    sinon.assert.calledWith(mockChannel.queryByChaincode, {
+                        chaincodeId: 'org-acme-biznet',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        txId: mockTransactionID,
                         fcn: 'myfunc',
-                        args: ['arg1', 'arg2'],
-                        attrs: ['userID']
+                        args: ['arg1', 'arg2']
                     });
                     result.equals(response).should.be.true;
                 });
         });
 
         it('should throw if no responses are returned', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            // This is the response from the chaincode.
-            mockChain.queryByChaincode.resolves([]);
+            mockChannel.queryByChaincode.resolves([]);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/No payloads were returned from the query request/);
         });
 
         it('should throw any responses that are errors', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const response = [ new Error('such error') ];
             // This is the response from the chaincode.
-            mockChain.queryByChaincode.resolves(response);
+            mockChannel.queryByChaincode.resolves(response);
             return connection.queryChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejectedWith(/such error/);
 
@@ -937,6 +1087,13 @@ describe('HLFConnection', () => {
     });
 
     describe('#invokeChainCode', () => {
+        beforeEach(() => {
+            sandbox.stub(process, 'on').withArgs('exit').yields();
+            sandbox.stub(HLFConnection, 'createEventHub').returns(mockEventHub);
+            sandbox.stub(connection, '_validateResponses').returns();
+            sandbox.stub(connection, '_initializeChannel').resolves();
+            connection._connectToEventHubs();
+        });
 
         it('should throw if functionName not specified', () => {
             (() => {
@@ -957,13 +1114,6 @@ describe('HLFConnection', () => {
         });
 
         it('should submit an invoke request to the chaincode', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
                     status: 200
@@ -971,131 +1121,60 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .then((result) => {
                     should.equal(result, undefined);
-                    sinon.assert.calledOnce(mockChain.sendTransactionProposal);
-                    sinon.assert.calledWith(mockChain.sendTransactionProposal, {
-                        //chaincodeId: 'org-acme-biznet', required for alpha2
-                        chaincodeId: 'org.acme.biznet',
-                        chainId: 'testchainid',
-                        txId: '00000000-0000-0000-0000-000000000000',
-                        nonce: '11111111-1111-1111-1111-111111111111',
+                    sinon.assert.calledOnce(mockChannel.sendTransactionProposal);
+                    sinon.assert.calledWith(mockChannel.sendTransactionProposal, {
+                        chaincodeId: 'org-acme-biznet',
+                        chaincodeVersion: connectorPackageJSON.version,
+                        txId: mockTransactionID,
                         fcn: 'myfunc',
-                        args: ['arg1', 'arg2'],
-                        attrs: ['userID']
+                        args: ['arg1', 'arg2']
                     });
-                    sinon.assert.calledOnce(mockChain.sendTransaction);
+                    sinon.assert.calledOnce(mockChannel.sendTransaction);
                 });
         });
 
-        it('should throw if no endorsement responses are returned', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            // This is the transaction proposal and response (from the peers).
+        it('should throw if transaction proposals were not valid', () => {
             const proposalResponses = [];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
+            const errorResp = new Error('an error');
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            connection._validateResponses.withArgs(proposalResponses).throws(errorResp);
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .should.be.rejectedWith(/No results were returned/);
+                .should.be.rejectedWith(/an error/);
         });
 
-        it('should throw any endorsement responses that are errors', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            // This is the transaction proposal and response (from the peers).
-            const proposalResponses = [ new Error('such error') ];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
-            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .should.be.rejectedWith(/such error/);
-        });
-
-        it('should throw any endorsement responses that have a non-200 status code', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            // This is the transaction proposal and response (from the peers).
-            const proposalResponses = [{
-                response: {
-                    status: 500,
-                    payload: 'such error'
-                }
-            }];
-            const proposal = { proposal: 'i do' };
-            const header = { header: 'gooooal' };
-            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
-            // This is the commit proposal and response (from the orderer).
-            const response = {
-                status: 'SUCCESS'
-            };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
-            // This is the event hub response.
-            mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
-            return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
-                .should.be.rejectedWith(/such error/);
-        });
-
+        //TODO: Should extract out _waitForEvents
         it('should set the timeout to value specified in connection profile', () => {
             connectOptions = {
                 orderers: [
                     'grpc://localhost:7050'
                 ],
-                peers: [
-                    'grpc://localhost:7051'
-                ],
-                events: [
-                    'grpc://localhost:7053'
-                ],
+                peers: [ {
+                    requestURL: 'grpc://localhost:7051',
+                    eventURL: 'grpc://localhost:7053'
+                }],
                 ca: 'http://localhost:7054',
                 keyValStore: '/tmp/hlfabric1',
                 channel: 'testchainid',
                 mspID: 'suchmsp',
-                deployWaitTime: 39,
-                invokeWaitTime: 63,
+                timeout: 38
             };
-            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org.acme.biznet', connectOptions, mockClient, mockChain, [mockEventHub], mockCAClient);
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
+            connection = new HLFConnection(mockConnectionManager, 'hlfabric1', 'org-acme-biznet', connectOptions, mockClient, mockChannel, [mockEventHubDef], mockCAClient);
+            sandbox.stub(connection, '_validateResponses').returns();
+            sandbox.stub(connection, '_initializeChannel').resolves();
+            connection._connectToEventHubs();
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1104,31 +1183,23 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             sandbox.stub(global, 'setTimeout').yields();
-            // mockEventHub.registerTxEvent.yields();
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
                 .should.be.rejected
                 .then(() => {
                     sinon.assert.calledWith(global.setTimeout, sinon.match.func, sinon.match.number);
-                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, connectOptions.invokeWaitTime * 1000);
+                    sinon.assert.calledWith(global.setTimeout, sinon.match.func, 38 * 1000);
                 });
         });
 
-
         it('should throw an error if the commit of the transaction times out', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
             // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
@@ -1137,12 +1208,12 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'SUCCESS'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             sandbox.stub(global, 'setTimeout').yields();
             // mockEventHub.registerTxEvent.yields();
@@ -1151,13 +1222,6 @@ describe('HLFConnection', () => {
         });
 
         it('should throw an error if the commit throws an error', () => {
-            // This is the generated nonce.
-            sandbox.stub(utils, 'getNonce').returns('11111111-1111-1111-1111-111111111111');
-            // This is the generated transaction
-            mockChain.buildTransactionID.returns('00000000-0000-0000-0000-000000000000');
-            // mock out getUserContext version in case we need to return to using this one
-            mockChain.buildTransactionID_getUserContext.resolves('00000000-0000-0000-0000-000000000000');
-            // This is the transaction proposal and response (from the peers).
             const proposalResponses = [{
                 response: {
                     status: 200
@@ -1165,12 +1229,12 @@ describe('HLFConnection', () => {
             }];
             const proposal = { proposal: 'i do' };
             const header = { header: 'gooooal' };
-            mockChain.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
+            mockChannel.sendTransactionProposal.resolves([ proposalResponses, proposal, header ]);
             // This is the commit proposal and response (from the orderer).
             const response = {
                 status: 'FAILURE'
             };
-            mockChain.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
+            mockChannel.sendTransaction.withArgs({ proposalResponses: proposalResponses, proposal: proposal, header: header }).resolves(response);
             // This is the event hub response.
             mockEventHub.registerTxEvent.yields('00000000-0000-0000-0000-000000000000', 'VALID');
             return connection.invokeChainCode(mockSecurityContext, 'myfunc', ['arg1', 'arg2'])
@@ -1227,8 +1291,7 @@ describe('HLFConnection', () => {
                         enrollmentID: 'auser',
                         affiliation: 'org1',
                         attrs: [
-                            {name: 'hf.Registrar.Roles', value: 'client'}//,
-//                            {name: 'hf.Registrar.DelegateRoles', value: 'client'},
+                            {name: 'hf.Registrar.Roles', value: 'client'}
                         ],
                         maxEnrollments: 0,
                         role: 'client'
@@ -1323,7 +1386,7 @@ describe('HLFConnection', () => {
     describe('#list', () => {
 
         it('should return an empty array if no instantiated chaincodes', () => {
-            mockChain.queryInstantiatedChaincodes.resolves({
+            mockChannel.queryInstantiatedChaincodes.resolves({
                 chaincodes: []
             });
             return connection.list(mockSecurityContext)
@@ -1331,43 +1394,66 @@ describe('HLFConnection', () => {
         });
 
         it('should return an array of chaincode names for all instantiated chaincodes', () => {
-            mockChain.queryInstantiatedChaincodes.resolves({
+            mockChannel.queryInstantiatedChaincodes.resolves({
                 chaincodes: [{
-                    name: 'org.acme.biznet1',
+                    name: 'org-acme-biznet1',
                     version: '1.0.0',
                     path: 'composer'
                 }, {
-                    name: 'org.acme.biznet2',
+                    name: 'org-acme-biznet2',
                     version: '1.2.0',
                     path: 'composer'
                 }]
             });
             return connection.list(mockSecurityContext)
-                .should.eventually.be.deep.equal(['org.acme.biznet1', 'org.acme.biznet2']);
+                .should.eventually.be.deep.equal(['org-acme-biznet1', 'org-acme-biznet2']);
         });
 
         it('should filter out any non-composer instantiated chaincodes', () => {
-            mockChain.queryInstantiatedChaincodes.resolves({
+            mockChannel.queryInstantiatedChaincodes.resolves({
                 chaincodes: [{
-                    name: 'org.acme.biznet1',
+                    name: 'org-acme-biznet1',
                     version: '1.0.0',
                     path: 'composer'
                 }, {
-                    name: 'org.acme.biznet2',
+                    name: 'org-acme-biznet2',
                     version: '1.2.0',
                     path: 'dogecc'
                 }]
             });
             return connection.list(mockSecurityContext)
-                .should.eventually.be.deep.equal(['org.acme.biznet1']);
+                .should.eventually.be.deep.equal(['org-acme-biznet1']);
         });
 
         it('should handle any errors querying instantiated chaincodes', () => {
-            mockChain.queryInstantiatedChaincodes.rejects(new Error('such error'));
+            mockChannel.queryInstantiatedChaincodes.rejects(new Error('such error'));
             return connection.list(mockSecurityContext)
                 .should.be.rejectedWith(/such error/);
         });
 
+    });
+
+    describe('#_initializeChannel', () => {
+        beforeEach(() => {
+            mockChannel.initialize.resolves();
+        });
+
+        it('should initialize the channel if not initialized', () => {
+            connection.initialized.should.be.false;
+            return connection._initializeChannel()
+                .then(() => {
+                    sinon.assert.calledOnce(mockChannel.initialize);
+                    connection.initialized.should.be.true;
+                });
+        });
+
+        it('should not initialize the channel if initialized', () => {
+            connection.initialized = true;
+            return connection._initializeChannel()
+                .then(() => {
+                    sinon.assert.notCalled(mockChannel.initialize);
+                });
+        });
     });
 
 });

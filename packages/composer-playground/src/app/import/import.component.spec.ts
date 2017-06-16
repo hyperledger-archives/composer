@@ -53,6 +53,12 @@ class MockFileImporterDirective {
     public svgName: string = '#icon-BNA_Upload';
 }
 
+@Directive({
+    selector: 'perfect-scrollbar'
+})
+class MockPerfectScrollBarDirective {
+}
+
 describe('ImportComponent', () => {
     let sandbox;
     let component: ImportComponent;
@@ -90,7 +96,7 @@ describe('ImportComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [ImportComponent, MockDragDropDirective, MockFileImporterDirective],
+            declarations: [ImportComponent, MockDragDropDirective, MockFileImporterDirective, MockPerfectScrollBarDirective],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},

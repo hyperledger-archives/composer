@@ -21,6 +21,12 @@ fi
 # Set default timeouts
 export COMPOSER_PORT_WAIT_SECS=30
 export COMPOSER_DEPLOY_WAIT_SECS=500
+export COMPOSER_TIMEOUT_SECS=500
+
+# Delete any existing configuration.
+rm -rf ${HOME}/.composer-connection-profiles/composer-systests
+rm -rf ${HOME}/.composer-credentials/composer-systests
+rm -rf ${HOME}/.hfc-key-store
 
 # Pull any required Docker images.
 if [ "${SYSTEST}" = "hlf"  ]; then
@@ -37,11 +43,16 @@ elif [[ ${SYSTEST} == hlfv1* ]]; then
     else
         DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
     fi
-    docker pull hyperledger/fabric-peer:x86_64-1.0.0-alpha
-    docker pull hyperledger/fabric-ca:x86_64-1.0.0-alpha
-    docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-alpha
-    docker pull hyperledger/fabric-orderer:x86_64-1.0.0-alpha
-    docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-alpha
+    docker pull hyperledger/fabric-peer:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-ca:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-orderer:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-beta
+    if [ ! -d ./hlfv1/crypto-config ]; then
+        cd hlfv1
+        tar -xvf crypto-config.tar.gz
+        cd ..
+    fi
 fi
 
 # Start any required Docker images.
@@ -52,19 +63,20 @@ if [ "${DOCKER_FILE}" != "" ]; then
     docker-compose -f ${DOCKER_FILE} up -d
 fi
 
-# Delete any existing configuration.
-rm -rf ${HOME}/.composer-connection-profiles/composer-systests
-rm -rf ${HOME}/.composer-credentials/composer-systests
-rm -rf ${HOME}/.hfc-key-store
-
 # configure v1 to run the tests
 if [[ ${SYSTEST} == hlfv1* ]]; then
     sleep 10
-    npm install
-    cd hlfv1
-    node create-channel.js
-    node join-channel.js
-    cd ..
+    if [[ ${SYSTEST} == *tls ]]; then
+        # Create the channel
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx --tls true --cafile /etc/hyperledger/orderer/example.com-cert.pem
+        # Join peer0 to the channel.
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel join -b mychannel.block --tls true --cafile /etc/hyperledger/orderer/example.com-cert.pem
+    else
+        # Create the channel
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx
+        # Join peer0 to the channel.
+        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel join -b mychannel.block
+    fi
 fi
 
 # Run the system tests.
@@ -81,3 +93,8 @@ fi
 rm -rf ${HOME}/.composer-connection-profiles/composer-systests
 rm -rf ${HOME}/.composer-credentials/composer-systests
 rm -rf ${HOME}/.hfc-key-store
+
+# Delete any crypto-config material
+if [ -d ./hlfv1/crypto-config ]; then
+    rm -rf ./hlfv1/crypto-config
+fi

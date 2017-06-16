@@ -35,6 +35,7 @@ let should = chai.should();
 class MockCheckOverFlowDirective {
     @Output() public hasOverFlow: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Input() public changed: boolean;
+    @Input() public expanded: boolean;
 }
 
 describe(`RegistryComponent`, () => {
@@ -241,11 +242,24 @@ describe(`RegistryComponent`, () => {
     });
 
     describe('#hasOverflow', () => {
-        it('should take the value of the prameter passed in', () => {
-            component.hasOverFlow(true);
-            component['showExpand'].should.be.true;
-            component.hasOverFlow(false);
-            component['showExpand'].should.be.false;
+        it('should add resource to list if has over flow', () => {
+            let resource = {
+                getIdentifier: sinon.stub().returns('myId'),
+                id: 'myId'
+            };
+            component.hasOverFlow(true, resource);
+
+            component['overFlowedResources']['myId'].should.not.be.null;
+        });
+
+        it('should not add resource to list if hasn\'t got over flow', () => {
+            let resource = {
+                getIdentifier: sinon.stub().returns('myId'),
+                id: 'myId'
+            };
+            component.hasOverFlow(false, resource);
+
+            should.not.exist(component['overFlowedResources']['myId']);
         });
     });
 
@@ -313,7 +327,7 @@ describe(`RegistryComponent`, () => {
             mockNgbModalRef.componentInstance.confirmMessage.should.equal('Please confirm that you want to delete Asset: ' + mockResource.getIdentifier());
             mockAlertService.errorStatus$.next.should.be.called;
             mockAlertService.errorStatus$.next.should.be
-            .calledWith('Removing the selected item from the registry failed:error message');
+                .calledWith('Removing the selected item from the registry failed:error message');
         }));
 
         it('should do nothing', fakeAsync(() => {

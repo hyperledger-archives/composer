@@ -2,12 +2,9 @@
 	path = packages/composer-runtime-hlf/vendor/github.com/hyperledger/fabric
 	url = https://github.com/hyperledger/fabric.git
 	branch = v0.6
-[submodule "packages/composer-runtime-hlf/vendor/gopkg.in/sourcemap.v1"]
-	path = packages/composer-runtime-hlf/vendor/gopkg.in/sourcemap.v1
-	url = https://gopkg.in/sourcemap.v1.git
-[submodule "packages/composer-runtime-hlf/vendor/github.com/robertkrimen/otto"]
-	path = packages/composer-runtime-hlf/vendor/github.com/robertkrimen/otto
-	url = https://github.com/robertkrimen/otto.git
 [submodule "packages/composer-runtime-hlfv1/vendor/gopkg.in/olebedev/go-duktape.v3"]
 	path = packages/composer-runtime-hlfv1/vendor/gopkg.in/olebedev/go-duktape.v3
+	url = https://gopkg.in/olebedev/go-duktape.v3.git
+[submodule "packages/composer-runtime-hlf/vendor/gopkg.in/olebedev/go-duktape.v3"]
+	path = packages/composer-runtime-hlf/vendor/gopkg.in/olebedev/go-duktape.v3
 	url = https://gopkg.in/olebedev/go-duktape.v3.git
