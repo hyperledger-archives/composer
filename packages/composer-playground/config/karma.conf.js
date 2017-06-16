@@ -80,7 +80,7 @@ module.exports = function(config) {
       'Chrome'
     ],
 
-    browserNoActivityTimeout: 120000,
+    browserNoActivityTimeout: 30000,
 
     client : {
         captureConsole : true

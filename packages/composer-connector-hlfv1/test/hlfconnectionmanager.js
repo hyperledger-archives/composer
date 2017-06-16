@@ -545,48 +545,48 @@ describe('HLFConnectionManager', () => {
 
         it('should throw if connectionProfile not specified', () => {
             (() => {
-                connectionManager.connect(null, 'org.acme.biznet', connectOptions);
+                connectionManager.connect(null, 'org-acme-biznet', connectOptions);
             }).should.throw(/connectionProfile not specified/);
         });
 
         it('should throw if connectOptions not specified', () => {
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', null);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', null);
             }).should.throw(/connectOptions not specified/);
         });
 
         it('should throw if msp id is not specified', () => {
             delete connectOptions.mspID;
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/No msp id defined/);
         });
 
         it('should throw if orderers are not specified', () => {
             delete connectOptions.orderers;
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/orderers array has not been specified/);
         });
 
         it('should throw if orderers is an empty array', () => {
             connectOptions.orderers = [];
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/No orderer URLs have been specified/);
         });
 
         it('should throw if peers are not specified', () => {
             delete connectOptions.peers;
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/peers array has not been specified/);
         });
 
         it('should throw if peers is an empty array', () => {
             connectOptions.peers = [];
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/No peer URLs have been specified/);
         });
 
@@ -595,35 +595,35 @@ describe('HLFConnectionManager', () => {
                 requestURL: 'grpc://localhost:7051'
             }];
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw('The peer at requestURL grpc://localhost:7051 has no eventURL defined');
 
             connectOptions.peers = [{
                 eventURL: 'grpc://localhost:7053'
             }];
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw('The peer at eventURL grpc://localhost:7053 has no requestURL defined');
             connectOptions.peers = [{
                 rurl: 'grpc://localhost:7051',
                 eURL: 'grpc://localhost:7051'
             }];
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw('peer incorrectly defined');
         });
 
         it('should throw if ca is not specified', () => {
             delete connectOptions.ca;
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/The certificate authority URL has not been specified/);
         });
 
         it('should throw if keyValStore and wallet are not specified', () => {
             delete connectOptions.keyValStore;
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/No key value store directory or wallet has been specified/);
         });
 
@@ -632,15 +632,15 @@ describe('HLFConnectionManager', () => {
         it('should throw if channel is not specified', () => {
             delete connectOptions.channel;
             (() => {
-                connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions);
+                connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions);
             }).should.throw(/No channel has been specified/);
         });
 
         it('should create a new connection with a business network identifier', () => {
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     connection.getConnectionManager().should.equal(connectionManager);
-                    connection.getIdentifier().should.equal('org.acme.biznet@hlfabric1');
+                    connection.getIdentifier().should.equal('org-acme-biznet@hlfabric1');
                     connection.should.be.an.instanceOf(HLFConnection);
                     connection.getConnectionOptions().should.deep.equal(connectOptions);
                     connection.client.should.deep.equal(mockClient);
@@ -691,7 +691,7 @@ describe('HLFConnectionManager', () => {
         it('should set message sizes to value specified', () => {
             connectOptions.maxSendSize = 7;
             connectOptions.maxRecvSize = 3;
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledTwice(configSettingStub);
                     sinon.assert.calledWith(configSettingStub, 'grpc-max-send-message-length', 7 * 1024 * 1024);
@@ -702,7 +702,7 @@ describe('HLFConnectionManager', () => {
         it('should set message sizes to -1 if -1 specified', () => {
             connectOptions.maxSendSize = -1;
             connectOptions.maxRecvSize = -1;
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledTwice(configSettingStub);
                     sinon.assert.calledWith(configSettingStub, 'grpc-max-send-message-length', -1);
@@ -713,7 +713,7 @@ describe('HLFConnectionManager', () => {
         it('should ignore a value of 0 for message size limits to leave as default', () => {
             connectOptions.maxSendSize = 0;
             connectOptions.maxRecvSize = 0;
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     configSettingStub.called.should.be.false;
                 });
@@ -722,14 +722,14 @@ describe('HLFConnectionManager', () => {
         it('should ignore string values for message size limits', () => {
             connectOptions.maxSendSize = '1';
             connectOptions.maxRecvSize = '2';
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     configSettingStub.called.should.be.false;
                 });
         });
 
         it('should add a single orderer to the chain', () => {
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(HLFConnectionManager.createOrderer);
                     sinon.assert.calledWith(HLFConnectionManager.createOrderer, 'grpc://localhost:7050');
@@ -743,7 +743,7 @@ describe('HLFConnectionManager', () => {
                 'grpc://localhost:8050',
                 'grpc://localhost:9050'
             ];
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledThrice(HLFConnectionManager.createOrderer);
                     sinon.assert.calledWith(HLFConnectionManager.createOrderer, 'grpc://localhost:7050');
@@ -754,7 +754,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should add a single peer to the chain', () => {
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(HLFConnectionManager.createPeer);
                     sinon.assert.calledWith(HLFConnectionManager.createPeer, 'grpc://localhost:7051');
@@ -768,7 +768,7 @@ describe('HLFConnectionManager', () => {
                 {requestURL: 'grpc://localhost:8051', eventURL: 'grpc://localhost:8054'},
                 {requestURL: 'grpc://localhost:9051', eventURL: 'grpc://localhost:9054'}
             ];
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledThrice(HLFConnectionManager.createPeer);
                     sinon.assert.calledWith(HLFConnectionManager.createPeer, 'grpc://localhost:7051');
@@ -779,7 +779,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should connect a single certificate authority', () => {
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(HLFConnectionManager.createCAClient);
                     sinon.assert.calledWith(HLFConnectionManager.createCAClient, 'http://localhost:7054', null, null);
@@ -799,10 +799,10 @@ describe('HLFConnectionManager', () => {
                 'trustedRoots' : ['trusted'],
                 'verify': false
             };
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     connection.getConnectionManager().should.equal(connectionManager);
-                    connection.getIdentifier().should.equal('org.acme.biznet@hlfabric1');
+                    connection.getIdentifier().should.equal('org-acme-biznet@hlfabric1');
                     connection.should.be.an.instanceOf(HLFConnection);
                     connection.getConnectionOptions().should.deep.equal(connectOptions);
                     connection.client.should.deep.equal(mockClient);
@@ -839,7 +839,7 @@ describe('HLFConnectionManager', () => {
         });
 
         it('should configure a default key value store', () => {
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledOnce(Client.newDefaultKeyValueStore);
                     sinon.assert.calledWith(Client.newDefaultKeyValueStore, { path: '/tmp/hlfabric1' });
@@ -849,7 +849,7 @@ describe('HLFConnectionManager', () => {
 
         it('should handle an error creating a store using keyValStore', () => {
             Client.newDefaultKeyValueStore.rejects('wow such fail');
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .should.be.rejectedWith(/wow such fail/);
         });
 
@@ -858,13 +858,13 @@ describe('HLFConnectionManager', () => {
             connectOptions.wallet = {};
             sandbox.stub(Client, 'newCryptoKeyStore').throws('wow such fail');
 
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .should.be.rejectedWith(/wow such fail/);
         });
 
         it('should configure a wallet proxy using the specified wallet if provided', () => {
             connectOptions = Object.assign(connectOptions, { wallet: mockWallet });
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
                 });
@@ -872,7 +872,7 @@ describe('HLFConnectionManager', () => {
 
         it('should configure a wallet proxy if a singleton wallet is provided', () => {
             Wallet.setWallet(mockWallet);
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     sinon.assert.calledWith(mockClient.setStateStore, sinon.match.instanceOf(HLFWalletProxy));
                 });
@@ -880,7 +880,7 @@ describe('HLFConnectionManager', () => {
 
         it('should set a default timeout', () => {
             delete connectOptions.timeout;
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     connection.getConnectionOptions().timeout.should.equal(180);
                 });
@@ -888,7 +888,7 @@ describe('HLFConnectionManager', () => {
 
         it('should use a supplied timeout', () => {
             connectOptions.timeout = 30;
-            return connectionManager.connect('hlfabric1', 'org.acme.biznet', connectOptions)
+            return connectionManager.connect('hlfabric1', 'org-acme-biznet', connectOptions)
                 .then((connection) => {
                     connection.getConnectionOptions().timeout.should.equal(30);
                 });

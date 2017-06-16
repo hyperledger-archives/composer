@@ -49,11 +49,9 @@ class BaseModelException extends BaseException {
    + string getFileLocation() 
    + string getShortMessage() 
 }
-class IllegalModelException extends BaseException {
-   + void constructor(string,string,string) 
+class IllegalModelException extends BaseModelException {
+   + void constructor(String,ModelFile,Object,String,String,String,String) 
    + string getModelFile() 
-   + string getFileLocation() 
-   + string getShortMessage() 
 }
 class Introspector {
    + void constructor(ModelManager) 

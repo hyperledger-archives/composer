@@ -39,7 +39,7 @@ describe('Event system tests', function () {
         const scriptFiles =  [
             { identifier: 'events.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/events.js'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.events@0.0.1', 'The network for the event system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-events@0.0.1', 'The network for the event system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents);
         });
@@ -51,7 +51,7 @@ describe('Event system tests', function () {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.events')
+                return TestUtil.getClient('systest-events')
                     .then((result) => {
                         client = result;
                     });

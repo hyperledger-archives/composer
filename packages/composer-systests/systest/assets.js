@@ -37,14 +37,14 @@ describe('Asset system tests', function () {
         const modelFiles = [
             { fileName: 'UNKNOWN', contents:fs.readFileSync(path.resolve(__dirname, 'data/assets.cto'), 'utf8') }
         ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest.assets@0.0.1', 'The network for the asset system tests');
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-assets@0.0.1', 'The network for the asset system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest.assets')
+                return TestUtil.getClient('systest-assets')
                     .then((result) => {
                         client = result;
                     });

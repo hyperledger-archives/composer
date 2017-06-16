@@ -6,11 +6,11 @@ sidebar: sidebars/tutorials.md
 excerpt: Developer Guide
 ---
 
-# Create an end-to-end {{site.data.conrefs.composer_full}} solution from scratch
+# Developer Tutorial for creating a {{site.data.conrefs.composer_full}} solution
 
 ---
 
-*Note:* this tutorial was written against {{site.data.conrefs.composer_full}} v0.7.2 on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
+*Note:* this tutorial was written against {{site.data.conrefs.composer_full}} v0.8 on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
 
 This tutorial will walk you through the steps required to build a {{site.data.conrefs.composer_full}} blockchain solution from scratch. In the space of a day or probably less, you will be able to go from an idea for a disruptive blockchain innovation, to executing transactions against a real {{site.data.conrefs.hlf_full}} blockchain network, and generating/running a sample Angular 2 based application for Commodity Trading that interacts with a blockchain network.
 
@@ -81,6 +81,16 @@ The start of the `package.json` file should now look like this:
 
 Save your changes to `package.json`
 
+### Update your README.md file
+
+Open the `README.md` file and update the markdown with a short decription of the business network.
+
+```
+# My very first Hyperledger Composer Network
+```
+
+Save your changes to `README.md`
+
 ## Define your Domain Model
 
 Open the file `models/sample.cto` and inspect the contents. This is the domain model for the business network definition. It defines the structure (schema) for the assets, transaction and participants in the business network. You can add as many model files as convenient under the `models` folder, however each model file must have a unique namespace; do note that you can import types from one namespace into other namespaces.
@@ -91,7 +101,7 @@ As an example, we're going to replace the entire contents of the file 'sample.ct
 /**
  * My commodity trading network
  */
-namespace org.example.mynetwork
+namespace org.acme.mynetwork
 asset Commodity identified by tradingSymbol {
     o String tradingSymbol
     o String description
@@ -141,12 +151,12 @@ Now replace the entire contents of `sample.js` with the function below (includin
 
 /**
  * Track the trade of a commodity from one trader to another
- * @param {org.example.mynetwork.Trade} trade - the trade to be processed
+ * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
  * @transaction
  */
 function tradeCommodity(trade) {
     trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.example.mynetwork.Commodity')
+    return getAssetRegistry('org.acme.mynetwork.Commodity')
         .then(function (assetRegistry) {
             return assetRegistry.update(trade.commodity);
         });
@@ -159,7 +169,7 @@ Save your changes to `lib/sample.js`
 
 ## Update your Access Control Rules
 
-The file `permissions.acl` defines the access control rules for the business network definition. Update the 'Default' rule to use the new namespace for the network (just cut and paste the entire contents from below if you prefer):
+The file `permissions.acl` defines the access control rules for the business network definition. Replace the entire contents of `permissions.acl` with the rule below.
 
 ```
 /**
@@ -169,7 +179,7 @@ rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.example.mynetwork"
+    resource: "org.acme.mynetwork"
     action: ALLOW
 }
 ```
@@ -247,7 +257,7 @@ const path = require('path');
 require('chai').should();
 
 const bfs_fs = BrowserFS.BFSRequire('fs');
-const NS = 'org.example.mynetwork';
+const NS = 'org.acme.mynetwork';
 
 describe('Commodity Trading', () => {
 
@@ -390,19 +400,13 @@ Commodity Trading
 
 ## Import into Playground and Test
 
-Change directory to your toplevel project folder (my-network) for example:
-
-```
-cd my-network
-```
-
-Re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the following command (including the trailing '.' please note):
+Change directory to your toplevel project folder (my-network). Re-generate the BNA file (overwriting the existing dist/my-network.bna file created earlier) using the following command (including the trailing '.' please note):
 
 ```
 composer archive create -a dist/my-network.bna --sourceType dir --sourceName .
 ```
 
-Next, in a browser, navigate to the online Bluemix Composer Playground [https://composer-playground.mybluemix.net](https://composer-playground.mybluemix.net) and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your 'my-network' folder and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
+Next, in a browser, navigate to the online Bluemix Composer Playground <a href="https://composer-playground.mybluemix.net" target="blank">http://<span></span>composer-playground.mybluemix.net</a> and import the newly-generated BNA file into the Playground using the "Import/Replace" button at the bottom left of the screen. Locate the `dist/my-network.bna` file under your 'my-network' folder and upload it, then press the "Deploy" button. Confirm to replace the current sample definition in Playground.
 
 <video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
 <source src="{{ site.baseurl }}/assets/img/tutorials/developer/import_replace.mp4" type="video/mp4" />
@@ -414,7 +418,7 @@ Next, navigate to the "Test" tab at the top and create two 'Trader' participants
 
 ```
 {
-  "$class": "org.example.mynetwork.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
@@ -423,7 +427,7 @@ Next, navigate to the "Test" tab at the top and create two 'Trader' participants
 
 ```
 {
-  "$class": "org.example.mynetwork.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER2",
   "firstName": "Amy",
   "lastName": "Williams"
@@ -438,12 +442,12 @@ Create a new instance of a Commodity (asset) by navigating to the Commodity regi
 
 ```
 {
-  "$class": "org.example.mynetwork.Commodity",
+  "$class": "org.acme.mynetwork.Commodity",
   "tradingSymbol": "ABC",
   "description": "Test commodity",
   "mainExchange": "Euronext",
   "quantity": 72.297,
-  "owner": "resource:org.example.mynetwork.Trader#TRADER1"
+  "owner": "resource:org.acme.mynetwork.Trader#TRADER1"
 }
 ```
 
@@ -451,17 +455,15 @@ The Asset registry should look like this:
 
 ![Commodity Registry](../assets/img/tutorials/developer/commodity_registry.png)
 
-Next, submit a `Trade` transaction (click the button, below left) to move the commodity from TRADER1 to TRADER2.
+Next, submit a `Trade` transaction by clicking the "Submit Transaction" button, bottom left, to move the commodity from TRADER1 to TRADER2.
 
 ```
 {
-  "$class": "org.example.mynetwork.Trade",
-  "commodity": "resource:org.example.mynetwork.Commodity#ABC",
-  "newOwner": "resource:org.example.mynetwork.Trader#TRADER2"
+  "$class": "org.acme.mynetwork.Trade",
+  "commodity": "resource:org.acme.mynetwork.Commodity#ABC",
+  "newOwner": "resource:org.acme.mynetwork.Trader#TRADER2"
 }
 ```
-
-<!-- ![Submit transaction](../assets/img/tutorials/developer/submit_tx.png) -->
 
 After processing, you should now see the transaction in the transaction registry.
 
@@ -481,7 +483,7 @@ Switch to the terminal, change directory to the `dist` folder containing the `my
 
 ```
 cd dist
-composer network deploy -a my-network.bna -p hlfv1 -i admin -s adminpw
+composer network deploy -a my-network.bna -p hlfv1 -i PeerAdmin -s randomString
 ```
 
 
@@ -563,7 +565,7 @@ First, use the `POST` method on Trader to create a new instance of a Trader - fi
 
 ```
 {
-  "$class": "org.example.mynetwork.Trader",
+  "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER1",
   "firstName": "Jenny",
   "lastName": "Jones"
@@ -624,14 +626,8 @@ If you navigate to this URL and press the "Assets" drop down (at the top-right o
 Well done, you've now completed this tutorial and we hope you now have a much better idea how the capabilities fit together. You can start hacking on the skeleton Angular application to create the next industry defining blockchain-based application!
 
 
-## Related Concepts
+## Related Links
 
 [Business Network Definition](../business-network/businessnetworkdefinition.html)
-
-## Related Tasks
-
 [Deploying a business network](../business-network/bnd-deploy.html)
-
-## Related Reference
-
 [Network deploy command](../reference/composer.network.deploy.html)
