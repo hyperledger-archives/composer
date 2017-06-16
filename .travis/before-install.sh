@@ -54,10 +54,24 @@ echo "-<-"
 
 ######
 # checking the changes that are in this file
-echo $TRAVIS_COMMIT_RANGE
-echo $TRAVIS_COMMIT
-echo $TRAVIS_EVENT_TYPE
+echo "Travis commit range $TRAVIS_COMMIT_RANGE"
+echo "Travis commit $TRAVIS_COMMIT"
+echo "Travis event type $TRAVIS_EVENT_TYPE"
 
+
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+  echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" == "" ]; then
+  echo -e 'Build Branch with Snapshot => Branch ['$TRAVIS_BRANCH']'
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
+  echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']'
+else
+  echo -e 'WARN: Should not be here => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']  Pull Request ['$TRAVIS_PULL_REQUEST']'
+fi
+
+
+cd $TRAVIS_BUILD_DIR
+git diff --name-only $(echo $TRAVIS_COMMIT_RANGE | sed 's/\.//')
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
     git show --pretty=format: --name-only "$TRAVIS_COMMIT_RANGE"|sort|uniq  > changedfiles.log
@@ -73,6 +87,8 @@ else
   echo "More than docs changes"
 fi
 rm changedfiles.log
+
+cd - > /dev/null
 ######
 
 
