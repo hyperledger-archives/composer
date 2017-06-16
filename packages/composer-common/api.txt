@@ -44,18 +44,22 @@ class FileWallet extends Wallet {
    + Promise update(string,string) 
    + Promise remove(string) 
 }
-class IllegalModelException extends BaseException {
+class BaseModelException extends BaseException {
+   + void constructor(string,string,string) 
+   + string getFileLocation() 
+   + string getShortMessage() 
+}
+class IllegalModelException extends BaseModelException {
    + void constructor(string,string,string) 
    + string getModelFile() 
-   + string getFileLocation() 
 }
 class Introspector {
    + void constructor(ModelManager) 
    + ClassDeclaration[] getClassDeclarations() 
    + ClassDeclaration getClassDeclaration(String) throws Error
 }
-class ParseException extends BaseException {
-   + void constructor(string) 
+class ParseException extends BaseModelException {
+   + void constructor(string,string) 
 }
 class ConsoleLogger {
    + string format(string,string,undefined) 

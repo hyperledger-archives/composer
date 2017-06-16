@@ -9,13 +9,13 @@ module.exports = yeoman.Base.extend({
     },
 
     prompting: function() {
-        console.log('Welcome to the business network generator');
+        console.log('Welcome to the model generator');
 
         let questions = [
             {
                 type: 'input',
                 name: 'appname',
-                message: 'Business network name:',
+                message: 'Model project name:',
                 store: true,
                 validate: function(input) {
                     if(input !== null && input !== undefined && input !== '' && input.indexOf(' ') === -1 && input === input.toLowerCase()) {
@@ -112,13 +112,8 @@ module.exports = yeoman.Base.extend({
 
     writing: function() {
         let model = this._generateTemplateModel();
-        this.fs.copyTpl(this.templatePath('**!(models|lib|test)*'), this.destinationPath(), model);
+        this.fs.copyTpl(this.templatePath('**!(models)*'), this.destinationPath(), model);
         this.fs.copyTpl(this.templatePath('models/namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
-        this.fs.move(this.destinationPath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
-        if (!this.ismodel) {
-            this.fs.copyTpl(this.templatePath('./test'), this.destinationPath('./test'), model);
-            this.fs.copyTpl(this.templatePath('./lib'), this.destinationPath('./lib'), model);
-        }
     },
 
     _generateTemplateModel: function() {

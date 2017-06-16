@@ -1267,7 +1267,7 @@ NamespaceToken    = "namespace"   !IdentifierPart
 AbstractToken     = "abstract"    !IdentifierPart
 ConceptToken      = "concept"     !IdentifierPart
 AssetToken        = "asset"       !IdentifierPart
-TransactionToken  = "transaction" !IdentifierPart
+TransactionToken  = "transaction" !IdentifierPart 
 EventToken        = "event"       !IdentifierPart
 ParticipantToken  = "participant" !IdentifierPart
 
