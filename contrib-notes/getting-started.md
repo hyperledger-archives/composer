@@ -1,4 +1,4 @@
-# Contriburting to Composer 
+# Contributing to Composer
 
 * Currently reading -> [Step-by-step developement environment setup](./contrib-notes/getting-started.md)
 * [Suggested IDE setup](./contrib-notes/ide-setup.md)
