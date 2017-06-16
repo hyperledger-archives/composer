@@ -16,6 +16,11 @@
       {{ content }}
     {% endif %}
 
+    {% if page.category != 404 %}
+      {% include docsfooter.html %}
+    {% endif %}
+
+
   </div>
 </body>
 

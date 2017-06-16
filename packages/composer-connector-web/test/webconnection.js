@@ -419,12 +419,12 @@ describe('WebConnection', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
                 type: 'web',
                 networks: {
-                    'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838',
-                    'org.acme.biznet2': '6eeb8858-eced-4a32-b1cd-2491f1e3718f'
+                    'org-acme-business': '133c00a3-8555-4aa5-9165-9de9a8f8a838',
+                    'org-acme-biznet2': '6eeb8858-eced-4a32-b1cd-2491f1e3718f'
                 }
             });
             return connection.list()
-                .should.eventually.be.deep.equal(['org.acme.biznet2', 'org.acme.business']);
+                .should.eventually.be.deep.equal(['org-acme-biznet2', 'org-acme-business']);
         });
 
         it('should cope with missing business networks', () => {
@@ -453,7 +453,7 @@ describe('WebConnection', () => {
                 type: 'web',
                 networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
             });
-            return connection.getChaincodeID('org.acme.biznet2')
+            return connection.getChaincodeID('org-acme-biznet2')
                 .should.eventually.be.undefined;
         });
 
@@ -461,7 +461,7 @@ describe('WebConnection', () => {
             mockConnectionProfileStore.load.withArgs('devFabric1').resolves({
                 type: 'web'
             });
-            return connection.getChaincodeID('org.acme.biznet2')
+            return connection.getChaincodeID('org-acme-biznet2')
                 .should.eventually.be.undefined;
         });
 
@@ -522,7 +522,7 @@ describe('WebConnection', () => {
                 type: 'web',
                 networks: { 'org.acme.business': '133c00a3-8555-4aa5-9165-9de9a8f8a838' }
             });
-            return connection.deleteChaincodeID('org.acme.biznet2')
+            return connection.deleteChaincodeID('org-acme-biznet2')
                 .then(() => {
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
                     sinon.assert.calledWith(mockConnectionProfileStore.save, 'devFabric1', {

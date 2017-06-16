@@ -10,9 +10,9 @@
   <section class="modal-body">
     <p>Issue a new ID to a participant in your business network</p>
 
-    <template #participantTypeaheadResult let-r="result" let-t="term">
+    <ng-template #participantTypeaheadResult let-r="result" let-t="term">
       <span class="participant-id">{{getParticipant(r).getIdentifier()}}</span> <span class="participant-type">{{getParticipant(r).getType()}}</span>
-    </template>
+    </ng-template>
 
     <form #issueIdentityForm="ngForm" id="issue-identity-form" (ngSubmit)="issueIdentity()">
 
@@ -36,7 +36,7 @@
         </label>
       </div>
     </form>
-    
+
     <p>Issuing an identity generates a one-time secret. You can choose to send this to somebody or use it yourself when it has been issued.</p>
   </section>
   <footer>
