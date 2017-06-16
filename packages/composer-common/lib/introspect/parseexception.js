@@ -33,9 +33,23 @@ class ParseException extends BaseModelException {
     constructor(message, fileLocation) {
 
         let fullMessage = message +  ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
-        // fullMessage = JSON.stringify(file)
+
+        // The parser does not give us back the end location of an invalid token.
+        // Making the end column equal to the end column makes use of
+        // vscodes default behaviour of selecting an entire word
+        if (fileLocation) {
+            if (fileLocation.end && fileLocation.start) {
+                if (fileLocation.end.offset && fileLocation.start.offset) {
+                    if (fileLocation.end.offset - fileLocation.start.offset === 1) {
+                        fileLocation.end.column = fileLocation.start.column;
+                        fileLocation.end.offset = fileLocation.start.offset;
+                    }
+                }
+            }
+        }
         super(message, fileLocation, fullMessage);
     }
+
 }
 
 module.exports = ParseException;
