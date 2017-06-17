@@ -90,9 +90,9 @@ func (chaincode *Chaincode) Init(stub shim.ChaincodeStubInterface) (response pb.
 		if value == "-d" && (i+1) < len(arguments) {
 			loglevel = arguments[i+1]
 			arguments = append(arguments[:i], arguments[i+2:]...)
+			SetLogging(stub, loglevel)
 		}
 	}
-	SetLogging(stub, loglevel)
 	payload, err := composer.Init(stub, function, arguments)
 	if err != nil {
 		return shim.Error(err.Error())
