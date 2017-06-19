@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/relationshipdeclaration.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/query/queryfile.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/relationshipdeclaration.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/query/queryfile.js</h1>
     
 <section>
     <article>
@@ -100,79 +100,119 @@
 
 'use strict';
 
-const Property = require('./property');
-const IllegalModelException = require('./illegalmodelexception');
-const ModelUtil = require('../modelutil');
+const parser = require('./parser');
+const Query = require('./query');
+const ParseException = require('../introspect/parseexception');
 
 /**
- * Class representing a relationship between model elements
- * @extends Property
- * @see See [Property]{@link module:composer-common.Property}
+ * Class representing a Query File
  * @private
  * @class
  * @memberof module:composer-common
  */
-class RelationshipDeclaration extends Property {
+class QueryFile {
 
     /**
-     * Create a Relationship.
-     * @param {ClassDeclaration} parent - The owner of this property
-     * @param {Object} ast - The AST created by the parser
+     * Create an QueryFile. This should only be called by framework code.
+     * @param {string} id - The identifier of this Query File (may be a filename for example)
+     * @param {ModelManager} modelManager - the ModelManager that manages this
+     * ModelFile and that will be used to validate the queries in the QueryFile
+     * @param {string} definitions - The queries as a string.
      * @throws {IllegalModelException}
      */
-    constructor(parent, ast) {
-        super(parent, ast);
-    }
+    constructor(id, modelManager, definitions) {
+        this.modelManager = modelManager;
+        this.queries = [];
+        this.identifier = id;
 
-    /**
-     * Validate the property
-     * @param {ClassDeclaration} classDecl the class declaration of the property
-     * @throws {IllegalModelException}
-     * @private
-     */
-    validate(classDecl) {
-        super.validate(classDecl);
-        // relationship cannot point to primitive types
-        if(!this.getType()) {
-            throw new IllegalModelException('Relationship must have a type', classDecl.getModelFile(), this.ast.location);
+        if(!definitions || typeof definitions !== 'string') {
+            throw new Error('QueryFile expects an QueryFile as a string as input.');
         }
+        this.definitions = definitions;
 
-        let classDeclaration = null;
-
-        // you can't have a relationship with a primitive...
-        if(ModelUtil.isPrimitiveType(this.getType())) {
-            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
+        try {
+            this.ast = parser.parse(definitions);
         }
-        else {
-            // we first try to get the type from our own model file
-            // because during validate we have not yet been added to the model manager
-            if(this.getParent().getModelFile().getNamespace() === ModelUtil.getNamespace(this.getFullyQualifiedTypeName())) {
-                classDeclaration = this.getParent().getModelFile().getType(this.getType());
+        catch(err) {
+            if(err.location &amp;&amp; err.location.start) {
+                throw new ParseException( err.message +  ' Line ' + err.location.start.line + ' column ' + err.location.start.column, err.location );
             }
             else {
-              // otherwise we have to use the modelmanager to try to load
-                classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
+                throw err;
             }
+        }
 
-            if(classDeclaration === null) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
-
-            if(classDeclaration.isRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
+        for(let n=0; n &lt; this.ast.queries.length; n++ ) {
+            let thing = this.ast.queries[n];
+            this.queries.push(new Query(this, thing));
         }
     }
 
     /**
-     * Returns a string representation of this property§
-     * @return {String} the string version of the property.
+     * Returns the identifier of this Query File.
+     * @return {string} the identifier of this Query File
      */
-    toString() {
-        return 'RelationshipDeclaration {name=' + this.name + ', type=' + this.getFullyQualifiedTypeName() + ', array=' + this.array + ', optional=' + this.optional +'}';
-    }}
+    getIdentifier() {
+        return this.identifier;
+    }
 
-module.exports = RelationshipDeclaration;
+    /**
+     * Visitor design pattern
+     * @param {Object} visitor - the visitor
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    accept(visitor,parameters) {
+        return visitor.visit(this, parameters);
+    }
+
+    /**
+     * Returns the ModelManager associated with this QueryFile
+     *
+     * @return {ModelManager} The ModelManager for this QueryFile
+     */
+    getModelManager() {
+        return this.modelManager;
+    }
+
+    /**
+     * Validates the QueryFile.
+     *
+     * @throws {IllegalModelException} if the query file is invalid
+     * @private
+     */
+    validate() {
+        const queries = {};
+        this.queries.forEach((query) => {
+            query.validate();
+            let name = query.getName();
+            if (queries[name]){
+                throw new Error(`Found two or more queries with the name '${name}'`);
+            }
+            queries[name] = query;
+        });
+    }
+
+    /**
+     * Get all declarations in this Query file
+     * @return {Query[]} the Queries defined in the Query file
+     */
+    getQueries() {
+        return this.queries;
+    }
+
+    /**
+     * Get the definitions for this Query file.
+     * @return {string} The definitions for this Query file.
+     */
+    getDefinitions() {
+        return this.definitions;
+    }
+
+}
+
+module.exports = QueryFile;
 </pre>
     </article>
 </section>

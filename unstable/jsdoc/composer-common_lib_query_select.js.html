@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/relationshipdeclaration.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/query/select.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/relationshipdeclaration.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/query/select.js</h1>
     
 <section>
     <article>
@@ -100,79 +100,184 @@
 
 'use strict';
 
-const Property = require('./property');
-const IllegalModelException = require('./illegalmodelexception');
-const ModelUtil = require('../modelutil');
+const Where = require('./where');
+const OrderBy = require('./orderby');
+const IllegalModelException = require('../introspect/illegalmodelexception');
 
 /**
- * Class representing a relationship between model elements
- * @extends Property
- * @see See [Property]{@link module:composer-common.Property}
+ * Select defines a SELECT query over a resource (asset, transaction or participant)
+ *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class RelationshipDeclaration extends Property {
+class Select {
 
     /**
-     * Create a Relationship.
-     * @param {ClassDeclaration} parent - The owner of this property
-     * @param {Object} ast - The AST created by the parser
+     * Create an Select from an Abstract Syntax Tree. The AST is the
+     * result of parsing.
+     *
+     * @param {Query} query - the Query for this select
+     * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(parent, ast) {
-        super(parent, ast);
+    constructor(query, ast) {
+        if(!query || !ast) {
+            throw new IllegalModelException('Invalid Query or AST');
+        }
+
+        this.ast = ast;
+        this.query = query;
+        this.process();
     }
 
     /**
-     * Validate the property
-     * @param {ClassDeclaration} classDecl the class declaration of the property
+     * Visitor design pattern
+     * @param {Object} visitor - the visitor
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    accept(visitor,parameters) {
+        return visitor.visit(this, parameters);
+    }
+
+    /**
+     * Returns the QueryFile that owns this Query.
+     *
+     * @return {Query} the owning QueryFile
+     */
+    getQuery() {
+        return this.query;
+    }
+
+    /**
+     * Process the AST and build the model
+     *
      * @throws {IllegalModelException}
      * @private
      */
-    validate(classDecl) {
-        super.validate(classDecl);
-        // relationship cannot point to primitive types
-        if(!this.getType()) {
-            throw new IllegalModelException('Relationship must have a type', classDecl.getModelFile(), this.ast.location);
+    process() {
+
+        this.resource = null;
+
+        if(this.ast.resource) {
+            this.resource = this.ast.resource;
         }
 
-        let classDeclaration = null;
-
-        // you can't have a relationship with a primitive...
-        if(ModelUtil.isPrimitiveType(this.getType())) {
-            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
+        this.where = null;
+        if(this.ast.where) {
+            this.where = new Where(this, this.ast.where);
         }
-        else {
-            // we first try to get the type from our own model file
-            // because during validate we have not yet been added to the model manager
-            if(this.getParent().getModelFile().getNamespace() === ModelUtil.getNamespace(this.getFullyQualifiedTypeName())) {
-                classDeclaration = this.getParent().getModelFile().getType(this.getType());
-            }
-            else {
-              // otherwise we have to use the modelmanager to try to load
-                classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
-            }
 
-            if(classDeclaration === null) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
+        this.limit = null;
+        if(this.ast.limit) {
+            this.limit = parseInt(this.ast.limit);
+        }
 
-            if(classDeclaration.isRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
+        this.skip = null;
+        if(this.ast.skip) {
+            this.skip = parseInt(this.ast.skip);
+        }
+
+        this.orderBy = null;
+        if(this.ast.orderBy) {
+            this.orderBy = new OrderBy(this, this.ast.orderBy);
         }
     }
 
     /**
-     * Returns a string representation of this property§
-     * @return {String} the string version of the property.
+     * Semantic validation of the structure of this select.
+     *
+     * @throws {IllegalModelException}
+     * @private
      */
-    toString() {
-        return 'RelationshipDeclaration {name=' + this.name + ', type=' + this.getFullyQualifiedTypeName() + ', array=' + this.array + ', optional=' + this.optional +'}';
-    }}
+    validate() {
 
-module.exports = RelationshipDeclaration;
+        if(this.resource) {
+            const mm = this.getQuery().getQueryFile().getModelManager();
+
+            // checks the resource type exists
+            const resourceClassDeclaration = mm.getType(this.resource);
+
+            // check that it is not an enum or concept
+            if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
+                throw new Error('Can only select assets, participants and transactions.');
+            }
+        }
+
+        if(this.where) {
+            this.where.validate();
+        }
+
+        if(this.orderBy) {
+            this.orderBy.validate();
+        }
+    }
+
+    /**
+     * Returns the FQN of the resource of this select or null if it does not have a resource.
+     *
+     * @return {string} the fully qualified name of the select
+     */
+    getResource() {
+        return this.resource;
+    }
+
+    /**
+     * Returns the Where clause for this query or null if it does not have a WHERE clause.
+     *
+     * @return {Where} the Where or null
+     */
+    getWhere() {
+        return this.where;
+    }
+
+    /**
+     * Returns the OrderBy clause for this query or null if it does not have an ORDER BY clause.
+     *
+     * @return {OrderBy} the OrderBy or null
+     */
+    getOrderBy() {
+        return this.orderBy;
+    }
+
+    /**
+     * Returns the LIMIT count for this query or null if it does not have a LIMIT
+     *
+     * @return {integer} the LIMIT count or null
+     */
+    getLimit() {
+        return this.limit;
+    }
+
+    /**
+     * Returns the SKIP count for this query or null if it does not have a SKIP
+     *
+     * @return {integer} the SKIP count or null
+     */
+    getSkip() {
+        return this.skip;
+    }
+
+    /**
+     * Returns a new object representing this Query that is
+     * suitable for serializing as JSON.
+     * @return {Object} A new object suitable for serializing as JSON.
+     */
+    toJSON() {
+        let result = {
+            resouce: this.resource,
+            where: this.where ? this.where.toJSON() : null,
+            limit: this.limit ? this.limit : null,
+            skip: this.skip ? this.skip : null,
+            orderBy: this.orderBy ? this.orderBy.toJSON() : null
+        };
+        return result;
+    }
+}
+
+module.exports = Select;
 </pre>
     </article>
 </section>
