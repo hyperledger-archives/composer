@@ -22,11 +22,11 @@ Before beginning, you will need:
 ---
 ## Let's get started - Importing the Car Auction sample
 
-1. Open the [{{site.data.conrefs.composer_short}} Playground](https://composer-playground.mybluemix.net). On the left are three file types: a script file, `lib/logic.js` which represents transaction logic, a model file, `lib/org.example.biznet.cto` which defines the participants assets and transactions of the business network, and an access control file, `permissions.acl` which defines the access different participants have.
+1. Open the [{{site.data.conrefs.composer_short}} Playground](https://composer-playground.mybluemix.net). On the left are three file types: a script file, `lib/sample.js` which represents transaction logic, a model file, `lib/org.example.biznet.cto` which defines the participants assets and transactions of the business network, and an access control file, `permissions.acl` which defines the access different participants have.
 
 2. To get switch out the sample business network click **Import/Replace**. This dialog allows you to import your own business network archive `.bna` files, or to import our premade business network samples. For now we'll use a pre-built sample from the {{site.data.conrefs.composer_short}} GitHub repository. Click **Authenticate with GitHub** then log into your GitHub account and click **Authorize application**.
 
-3. From the menu, select **carauction-network** and click **Deploy**. This imports the car auction sample business network into your Playground instance. In the model file `lib/org.example.vehicle.auction.cto` there are the definitions of asset types, participant types, and transactions. The entries in the `.cto` file define the expected format of each asset, participant, and transaction. The script file `lib/logic.js` contains JavaScript
+3. From the menu, select **carauction-network** and click **Deploy**. This imports the car auction sample business network into your Playground instance. In the model file `lib/org.example.vehicle.auction.cto` there are the definitions of asset types, participant types, and transactions. The entries in the `.cto` file define the expected format of each asset, participant, and transaction. The script file `lib/sample.js` contains JavaScript
 which controls the transactions, in this script file, there is JavaScript logic controlling the `Close Bidding` and `Make Offer` transactions.
 
 ### Setting up the auction
@@ -84,7 +84,7 @@ which controls the transactions, in this script file, there is JavaScript logic 
 
 4. When you've placed as many bids as you like, the next step is to submit the *CloseBidding* transaction to close the auction. The *CloseBidding* transaction pays the previous owner of the *Vehicle* asset listed in the *VehicleListing* the current highest offer, changes the `state` of the listing to `SOLD`, and transfers ownership of the *Vehicle* asset, as listed in the `owner` property, to the highest bidder. To submit the *CloseBidding* transaction, click **Submit Transaction** and enter the `listingId` which corresponds to the *VehicleListing*. Click **Submit** to submit the transaction. Once the transaction has been submitted, you can check the *Vehicle* asset's `owner` property to ensure that it has changed, as well as checking the `balance` of the previous and new owner of the car, and the *VehicleListing* `state`.
 
-5. You've successfully run the `carauction-network` {{site.data.conrefs.composer_short}} sample! If you want to continue to use this business network in future tutorials or for testing, click **Export** in the **Define** tab to download a Business Network Archive `.bna` file. A `.bna` file contains all files listed in the business network, in this example, `README.md`, `lib/logic.js`, `lib/org.example.vehicle.auction.cto`, and `permissions.acl`.
+5. You've successfully run the `carauction-network` {{site.data.conrefs.composer_short}} sample! If you want to continue to use this business network in future tutorials or for testing, click **Export** in the **Define** tab to download a Business Network Archive `.bna` file. A `.bna` file contains all files listed in the business network, in this example, `README.md`, `lib/sample.js`, `lib/org.example.vehicle.auction.cto`, and `permissions.acl`.
 
 If you want to continue to modify your business network, you could add some new fields to asset types in the business network definition, for example, make or model for *Vehicle* assets.
 
