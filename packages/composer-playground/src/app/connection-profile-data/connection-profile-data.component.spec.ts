@@ -257,6 +257,8 @@ describe('ConnectionProfileDataComponent', () => {
             (() => {
                 component.startEditing();
             }).should.throw('Unknown connection profile type');
+
+            mockOnValueChanged.should.not.have.been.called;
         });
     });
 
