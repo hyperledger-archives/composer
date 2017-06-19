@@ -517,8 +517,6 @@ describe('LoopbackVisitor', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
                     transaction MyTransaction{
-
-
                     }
                     `);
                     const schemas = modelFile.accept(visitor, { fileWriter: mockFileWriter });
@@ -571,9 +569,7 @@ describe('LoopbackVisitor', () => {
                 it('should generate two schemas for a transaction that extends another transaction', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
-                    transaction MyBaseTransaction identified by transactionId {
-                        o String transactionId
-
+                    transaction MyBaseTransaction {
                     }
                     transaction MyTransaction extends MyBaseTransaction {
                         o String theValue
@@ -672,9 +668,7 @@ describe('LoopbackVisitor', () => {
                 it('should generate one schema for a transaction that extends an abstract transaction', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
-                    abstract transaction MyBaseTransaction identified by transactionId {
-                        o String transactionId
-
+                    abstract transaction MyBaseTransaction {
                     }
                     transaction MyTransaction extends MyBaseTransaction {
                         o String theValue

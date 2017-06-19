@@ -75,8 +75,8 @@ class RelationshipDeclaration extends Property {
 
             // console.log('>>RelationshipDeclaration');
             // console.log(this);
-            if (namespace === ModelUtil.getSystemNamespace() && classDecl.isEvent()) {
-                // Special case, allow relationship to Transaction in system Event
+            if ((namespace === ModelUtil.getSystemNamespace()) && classDecl.isEvent()) {
+                // Transaction relationship in event, continue
             } else if((namespace === ModelUtil.getSystemNamespace()) && classDeclaration.isSystemRelationshipTarget() === false) {
                 throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset, participant or transaction, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             } else if(classDeclaration.isRelationshipTarget() === false) {

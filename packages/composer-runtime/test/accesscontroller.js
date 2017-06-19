@@ -69,14 +69,12 @@ describe('AccessController', () => {
         participant TestParticipant3 identified by participantId extends BaseParticipant {
             o String participantId
         }
-        transaction TestTransaction identified by transactionId extends BaseTransaction {
-            o String transactionId
+        transaction TestTransaction extends BaseTransaction {
         }
         transaction TestTransaction2 extends TestTransaction {
 
         }
-        transaction TestTransaction3 identified by transactionId extends BaseTransaction {
-            o String transactionId
+        transaction TestTransaction3 extends BaseTransaction {
         }`);
         modelManager.addModelFile(`
         namespace org.acme.test2
@@ -88,8 +86,7 @@ describe('AccessController', () => {
         participant TestParticipant2 identified by participantId extends BaseParticipant {
             o String participantId
         }
-        transaction TestTransaction2 identified by transactionId extends BaseParticipant {
-            o String transactionId
+        transaction TestTransaction2 extends BaseParticipant {
         }`);
         aclManager = new AclManager(modelManager);
         factory = new Factory(modelManager);

@@ -264,6 +264,15 @@ class ClassDeclaration {
         return false;
     }
 
+     /**
+     * Returns true if this class is the definition of an event.
+     *
+     * @return {boolean} true if the class is an event
+     */
+    isEvent() {
+        return false;
+    }
+
     /**
      * Returns true if this class is the definition of an event
      *

@@ -61,35 +61,19 @@ describe('RelationshipDeclaration', function () {
             }).should.throw(/Relationship must have a type/);
         });
 
-        it('should validate an event with a relationship to a transaction if it is in the system namespace', () => {
-            let model = `namespace ${ModelUtil.getSystemNamespace()}
-            transaction MyTransaction identified by transactionId {
-              o String transactionId
+        it('should allow a relationship to a transaction in an event', () => {
+            const model = `namespace ${ModelUtil.getSystemNamespace()}
+            transaction MyTransaction identified by transactionId{
+                o String transactionId
             }
+            
             event MyEvent identified by eventId {
-              o String eventId
-              --> MyTransaction Transaction
+                o String eventId
+                --> MyTransaction Transaction
             }`;
-            modelManager.addModelFile(model);
-            const declaration = modelManager.getType(ModelUtil.getSystemNamespace() +'.MyEvent');
-            const field = declaration.getProperty('Transaction');
-            (function () {
-                field.validate(declaration);
-            }).should.not.throw();
-        });
-
-        it('should not validate an event with a relationship to a transaction if it is not in the system namespace', () => {
-            let model = `namespace some.namespace
-            transaction MyTransaction identified by transactionId {
-              o String transactionId
-            }
-            event MyEvent identified by eventId {
-              o String eventId
-              --> MyTransaction Transaction
-            }`;
-            (function () {
+            (function() {
                 modelManager.addModelFile(model);
-            }).should.throw(/must be to an asset or participant/);
+            }).should.not.throw();
         });
     });
 });
