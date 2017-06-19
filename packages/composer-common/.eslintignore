@@ -3,4 +3,5 @@ node_modules
 out
 lib/introspect/parser.js
 lib/acl/parser.js
+lib/query/parser.js
 test/data
