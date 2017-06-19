@@ -194,7 +194,6 @@ export class ConnectionProfileDataComponent {
             this.profileUpdated.emit({updated: true});
 
         }, (reason) => {
-            console.log(reason);
             if (reason && reason !== 1) { // someone hasn't pressed escape
                 this.alertService.errorStatus$.next(reason);
             }
@@ -531,17 +530,11 @@ export class ConnectionProfileDataComponent {
         return this.modalService.open(AddCertificateComponent).result
             .then((result) => {
                 if (type === 'orderers') {
-                    if (result.hostnameOverride === '') {
-                        result.hostnameOverride = 'orderer' + index;
-                    }
                     this.v1Form.controls['orderers']['controls'][index].patchValue({
                         cert: result.cert,
                         hostnameOverride: result.hostnameOverride
                     });
                 } else if (type === 'peers') {
-                    if (result.hostnameOverride === '') {
-                        result.hostnameOverride = 'peer' + index;
-                    }
                     this.v1Form.controls['peers']['controls'][index].patchValue({
                         cert: result.cert,
                         hostnameOverride: result.hostnameOverride
