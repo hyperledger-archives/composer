@@ -25,14 +25,8 @@ const messages = require('../messages/en.json');
 function messageFormatter(message) {
     return function (inserts) {
         let result = messages.en[message];
-        if (Array.isArray(inserts)) {
-            for (let i = 0; i < inserts.length; i++) {
-                result = result.replace(new RegExp(`{${i}}`), inserts[i]);
-            }
-        } else {
-            for (let key in inserts) {
-                result = result.replace(new RegExp(`{${key}}`, 'g'), inserts[key]);
-            }
+        for (let key in inserts) {
+            result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), inserts[key]);
         }
         return result;
     };
