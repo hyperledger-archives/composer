@@ -56,8 +56,8 @@ asset BondAsset identified by ISINCode {
     o Bond bond
 }
 
-transaction PublishBond identified by transactionId {
-  o String transactionId
+transaction PublishBond  {
+  
   o String ISINCode
   o Bond bond
 }
