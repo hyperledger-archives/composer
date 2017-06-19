@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/relationshipdeclaration.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/introspect/eventdeclaration.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/relationshipdeclaration.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/introspect/eventdeclaration.js</h1>
     
 <section>
     <article>
@@ -100,86 +100,62 @@
 
 'use strict';
 
-const Property = require('./property');
-const IllegalModelException = require('./illegalmodelexception');
-const ModelUtil = require('../modelutil');
+const ClassDeclaration = require('./classdeclaration');
+// const Field = require('./field');
 
-/**
- * Class representing a relationship between model elements
- * @extends Property
- * @see See [Property]{@link module:composer-common.Property}
+/** Class representing the definition of an Event.
+ * @extends ClassDeclaration
+ * @see See [ClassDeclaration]{@link module:composer-common.ClassDeclaration}
  * @private
  * @class
  * @memberof module:composer-common
  */
-class RelationshipDeclaration extends Property {
-
+class EventDeclaration extends ClassDeclaration {
     /**
-     * Create a Relationship.
-     * @param {ClassDeclaration} parent - The owner of this property
+     * Create an EventDeclaration.
+     * @param {ModelFile} modelFile the ModelFile for this class
      * @param {Object} ast - The AST created by the parser
-     * @throws {IllegalModelException}
+     * @throws {InvalidModelException}
      */
-    constructor(parent, ast) {
-        super(parent, ast);
+    constructor(modelFile, ast) {
+        super(modelFile, ast);
     }
 
     /**
-     * Validate the property
-     * @param {ClassDeclaration} classDecl the class declaration of the property
-     * @throws {IllegalModelException}
+     * Process the AST and build the model
+     *
+     * @throws {InvalidModelException}
      * @private
      */
-    validate(classDecl) {
-        super.validate(classDecl);
-        // relationship cannot point to primitive types
-        if(!this.getType()) {
-            throw new IllegalModelException('Relationship must have a type', classDecl.getModelFile(), this.ast.location);
-        }
+    process() {
+        super.process();
 
-        let classDeclaration = null;
+        // if(!this.ast.classExtension) {
+        //     this.superType = 'Event';
+        // }
 
-        // you can't have a relationship with a primitive...
-        if(ModelUtil.isPrimitiveType(this.getType())) {
-            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
-        } else {
-            let namespace = this.getParent().getModelFile().getNamespace();
 
-            // we first try to get the type from our own model file
-            // because during validate we have not yet been added to the model manager
-            if(namespace === ModelUtil.getNamespace(this.getFullyQualifiedTypeName())) {
-                classDeclaration = this.getParent().getModelFile().getType(this.getType());
-            }
-            else {
-              // otherwise we have to use the modelmanager to try to load
-                classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
-            }
-
-            if(classDeclaration === null) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
-
-            // console.log('>>RelationshipDeclaration');
-            // console.log(this);
-            if (namespace === ModelUtil.getSystemNamespace() &amp;&amp; classDecl.isEvent()) {
-                // Special case, allow relationship to Transaction in system Event
-            } else if((namespace === ModelUtil.getSystemNamespace()) &amp;&amp; classDeclaration.isSystemRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset, participant or transaction, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            } else if(classDeclaration.isRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
-        }
+        // we add the timestamp property that all events must have
+        // if(this.getProperty('timestamp') === null) {
+        //     const ast = {
+        //         id : {name: 'timestamp'},
+        //         propertyType: {name: 'DateTime'}
+        //     };
+        //     this.properties.push(new Field(this, ast));
+        // }
     }
 
-    /**
-     * Returns a string representation of this property
-     * @return {String} the string version of the property.
+     /**
+     * Returns true if this class is the definition of an event
+     *
+     * @return {boolean} true if the class is an event
      */
-    toString() {
-        return 'RelationshipDeclaration {name=' + this.name + ', type=' + this.getFullyQualifiedTypeName() + ', array=' + this.array + ', optional=' + this.optional +'}';
-    }}
+    isEvent() {
+        return true;
+    }
+}
 
-module.exports = RelationshipDeclaration;
+module.exports = EventDeclaration;
 </pre>
     </article>
 </section>

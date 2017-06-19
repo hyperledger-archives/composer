@@ -405,6 +405,9 @@ class ModelManager {
      */
     clearModelFiles() {
         this.modelFiles = {};
+        let systemModelPath = path.join(path.dirname(__filename), '../models/system.cto');
+        let systemModelContents = fs.readFileSync(systemModelPath, ENCODING);
+        this.addModelFile(systemModelContents);
     }
 
     /**

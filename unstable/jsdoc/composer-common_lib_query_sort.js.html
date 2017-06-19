@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/introspect/relationshipdeclaration.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/query/sort.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/introspect/relationshipdeclaration.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/query/sort.js</h1>
     
 <section>
     <article>
@@ -100,86 +100,115 @@
 
 'use strict';
 
-const Property = require('./property');
-const IllegalModelException = require('./illegalmodelexception');
-const ModelUtil = require('../modelutil');
+const IllegalModelException = require('../introspect/illegalmodelexception');
 
 /**
- * Class representing a relationship between model elements
- * @extends Property
- * @see See [Property]{@link module:composer-common.Property}
+ * Defines a sort on a field for an ORDER BY clause
+ *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class RelationshipDeclaration extends Property {
+class Sort {
 
     /**
-     * Create a Relationship.
-     * @param {ClassDeclaration} parent - The owner of this property
-     * @param {Object} ast - The AST created by the parser
+     * Create a Sort from an Abstract Syntax Tree. The AST is the
+     * result of parsing.
+     *
+     * @param {OrderBy} orderBy - the OrderBy for this sort by
+     * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(parent, ast) {
-        super(parent, ast);
+    constructor(orderBy, ast) {
+        if(!orderBy || !ast) {
+            throw new IllegalModelException('Invalid OrderBy or AST');
+        }
+
+        this.ast = ast;
+        this.orderBy = orderBy;
+        this.process();
     }
 
     /**
-     * Validate the property
-     * @param {ClassDeclaration} classDecl the class declaration of the property
+     * Visitor design pattern
+     * @param {Object} visitor - the visitor
+     * @param {Object} parameters  - the parameter
+     * @return {Object} the result of visiting or null
+     * @private
+     */
+    accept(visitor,parameters) {
+        return visitor.visit(this, parameters);
+    }
+
+    /**
+     * Returns the OrderBy that owns this Sort.
+     *
+     * @return {OrderBy} the owning OrderBy
+     */
+    getOrderBy() {
+        return this.orderBy;
+    }
+
+    /**
+     * Process the AST and build the model
+     *
      * @throws {IllegalModelException}
      * @private
      */
-    validate(classDecl) {
-        super.validate(classDecl);
-        // relationship cannot point to primitive types
-        if(!this.getType()) {
-            throw new IllegalModelException('Relationship must have a type', classDecl.getModelFile(), this.ast.location);
+    process() {
+        this.propertyPath = this.ast.fieldName.name;
+
+        this.direction = 'ASC';
+
+        if(this.ast.direction) {
+            this.direction = this.ast.direction;
         }
-
-        let classDeclaration = null;
-
-        // you can't have a relationship with a primitive...
-        if(ModelUtil.isPrimitiveType(this.getType())) {
-            throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
-        } else {
-            let namespace = this.getParent().getModelFile().getNamespace();
-
-            // we first try to get the type from our own model file
-            // because during validate we have not yet been added to the model manager
-            if(namespace === ModelUtil.getNamespace(this.getFullyQualifiedTypeName())) {
-                classDeclaration = this.getParent().getModelFile().getType(this.getType());
-            }
-            else {
-              // otherwise we have to use the modelmanager to try to load
-                classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
-            }
-
-            if(classDeclaration === null) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' points to a missing type ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
-
-            // console.log('>>RelationshipDeclaration');
-            // console.log(this);
-            if (namespace === ModelUtil.getSystemNamespace() &amp;&amp; classDecl.isEvent()) {
-                // Special case, allow relationship to Transaction in system Event
-            } else if((namespace === ModelUtil.getSystemNamespace()) &amp;&amp; classDeclaration.isSystemRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset, participant or transaction, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            } else if(classDeclaration.isRelationshipTarget() === false) {
-                throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
-            }
-        }
+        this.direction = this.ast.direction;
     }
 
     /**
-     * Returns a string representation of this property
-     * @return {String} the string version of the property.
+     * Semantic validation of the structure of this select.
+     *
+     * @throws {IllegalModelException}
+     * @private
      */
-    toString() {
-        return 'RelationshipDeclaration {name=' + this.name + ', type=' + this.getFullyQualifiedTypeName() + ', array=' + this.array + ', optional=' + this.optional +'}';
-    }}
+    validate() {
+    }
 
-module.exports = RelationshipDeclaration;
+    /**
+     * Returns the name of the property of the owning resource. This may be an dotted expression
+     * to navigate to sub-properties of the owning resource. E.g. x.y.z.
+     *
+     * @return {string} the navigation property
+     */
+    getPropertyPath() {
+        return this.propertyPath;
+    }
+
+    /**
+     * Returns the name of the property of the owning resource. This may be an dotted expression
+     * to navigate to sub-properties of the owning resource. E.g. x.y.z.
+     *
+     * @return {string} the navigation property
+     */
+    getDirection() {
+        return this.direction;
+    }
+
+    /**
+     * Returns a new object representing this Query that is
+     * suitable for serializing as JSON.
+     * @return {Object} A new object suitable for serializing as JSON.
+     */
+    toJSON() {
+        let result = {
+            resouce: this.resource
+        };
+        return result;
+    }
+}
+
+module.exports = Sort;
 </pre>
     </article>
 </section>
