@@ -18,6 +18,7 @@ const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const EventDeclaration = require('../../lib/introspect/eventdeclaration');
+const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const ParseException = require('../../lib/introspect/parseexception');
@@ -178,7 +179,7 @@ describe('ModelFile', () => {
             let modelFile = new ModelFile(mockModelManager, model);
             (() => {
                 modelFile.validate();
-            }).should.throw(/No registered namespace for type org.acme.ext.MyAsset2/);
+            }).should.throw(IllegalModelException, /org.acme.ext/);
         });
 
         it('should throw if a wildcard import exists for an invalid namespace', () => {
@@ -191,7 +192,7 @@ describe('ModelFile', () => {
             let modelFile = new ModelFile(mockModelManager, model);
             (() => {
                 modelFile.validate();
-            }).should.throw(/No registered namespace for type org.acme.ext.\*/);
+            }).should.throw(IllegalModelException, /org.acme.ext/);
         });
 
         it('should throw if an import exists for a type that does not exist in a valid namespace', () => {
@@ -211,7 +212,7 @@ describe('ModelFile', () => {
             let modelFile2 = new ModelFile(mockModelManager, model2);
             (() => {
                 modelFile2.validate();
-            }).should.throw(/No type MyAsset3 in namespace org.acme.ext/);
+            }).should.throw(IllegalModelException, /MyAsset3/);
         });
 
         it('should not throw if an import exists for a type that exists in a valid namespace', () => {
@@ -229,7 +230,7 @@ describe('ModelFile', () => {
             let modelFile1 = new ModelFile(mockModelManager, model1);
             mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
             let modelFile2 = new ModelFile(mockModelManager, model2);
-            modelFile2.validate();
+            (() => modelFile2.validate()).should.not.throw();
         });
 
         it('should not throw if a wildcard import exists for a valid namespace', () => {
@@ -247,7 +248,7 @@ describe('ModelFile', () => {
             let modelFile1 = new ModelFile(mockModelManager, model1);
             mockModelManager.getModelFile.withArgs('org.acme.ext').returns(modelFile1);
             let modelFile2 = new ModelFile(mockModelManager, model2);
-            modelFile2.validate();
+            (() => modelFile2.validate()).should.not.throw();
         });
 
     });

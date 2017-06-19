@@ -128,7 +128,7 @@ describe('FunctionDeclaration', () => {
             (() => {
                 let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.missingtx.js');
                 func.validate();
-            }).should.throw(/No type org.acme.TestTransactionLulz/);
+            }).should.throw(/TestTransactionLulz/);
         });
 
         it('should throw if the function refers to a transaction that is not a transaction', () => {
