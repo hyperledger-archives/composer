@@ -1,0 +1,4 @@
+/**
+ * Sample business network definition.
+ */
+namespace org.mport.sample
