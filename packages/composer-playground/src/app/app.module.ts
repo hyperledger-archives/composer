@@ -1,5 +1,6 @@
 import { NgModule, ApplicationRef } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, PreloadAllModules } from '@angular/router';
@@ -54,6 +55,7 @@ import { ViewCertificateComponent } from './view-certificate';
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
 import { FocusHereDirective } from './directives/focus-here';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
@@ -93,93 +95,95 @@ type StoreType = {
 @NgModule({
     bootstrap: [AppComponent],
     entryComponents: [
-        ImportComponent,
-        ErrorComponent,
-        SuccessComponent,
+        AddCertificateComponent,
+        AddConnectionProfileComponent,
+        AddFileComponent,
+        AddIdentityComponent,
+        BusyComponent,
         ConfirmComponent,
         DeleteComponent,
+        DeleteConnectionProfileComponent,
+        ErrorComponent,
+        IdentityIssuedComponent,
+        ImportComponent,
+        IssueIdentityComponent,
         ReplaceComponent,
         ResourceComponent,
+        SuccessComponent,
+        SwitchIdentityComponent,
         TransactionComponent,
-        AddFileComponent,
-        AddConnectionProfileComponent,
-        AddCertificateComponent,
-        DeleteConnectionProfileComponent,
-        ViewCertificateComponent,
-        AddIdentityComponent,
-        IssueIdentityComponent,
-        IdentityIssuedComponent,
-        WelcomeComponent,
         VersionCheckComponent,
-        BusyComponent,
-        SwitchIdentityComponent
+        ViewCertificateComponent,
+        WelcomeComponent
     ],
     declarations: [
-        AppComponent,
-        FileImporterComponent,
-        EditorComponent,
-        EditorFileComponent,
-        TestComponent,
-        RegistryComponent,
-        AddIdentityComponent,
-        IssueIdentityComponent,
-        IdentityIssuedComponent,
-        SwitchIdentityComponent,
-        BusyComponent,
-        ErrorComponent,
-        SuccessComponent,
-        ConfirmComponent,
-        DeleteComponent,
-        ReplaceComponent,
-        ImportComponent,
-        GithubComponent,
-        NoContentComponent,
         AboutComponent,
-        FileDragDropDirective,
+        AddCertificateComponent,
+        AddConnectionProfileComponent,
+        AddFileComponent,
+        AddIdentityComponent,
+        AppComponent,
+        BusyComponent,
+        CheckOverFlowDirective,
+        ConfirmComponent,
         ConnectionProfileComponent,
         ConnectionProfileDataComponent,
-        AddConnectionProfileComponent,
+        DeleteComponent,
         DeleteConnectionProfileComponent,
-        AddCertificateComponent,
-        ViewCertificateComponent,
+        EditorComponent,
+        EditorFileComponent,
+        ErrorComponent,
+        FileDragDropDirective,
+        FileImporterComponent,
+        FocusHereDirective,
+        GithubComponent,
         IdentityComponent,
+        IdentityIssuedComponent,
+        ImportComponent,
+        IssueIdentityComponent,
+        NoContentComponent,
+        RegistryComponent,
+        ReplaceComponent,
         ResourceComponent,
+        SuccessComponent,
+        SwitchIdentityComponent,
+        TestComponent,
         TransactionComponent,
-        CheckOverFlowDirective,
-        AddFileComponent,
-        WelcomeComponent,
         VersionCheckComponent,
-        FocusHereDirective
+        ViewCertificateComponent,
+        WelcomeComponent
     ],
     imports: [ // import Angular's modules
+        BrowserAnimationsModule,
         BrowserModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpModule,
-        RouterModule.forRoot(ROUTES, {useHash: false, preloadingStrategy: PreloadAllModules}),
         CodemirrorModule,
-        ModalModule.forRoot(),
-        TooltipModule.forRoot(),
-        NgbModule.forRoot(),
+        FormsModule,
+        HttpModule,
         LocalStorageModule.withConfig({
             prefix: '',
             storageType: 'localStorage'
-        })
+        }),
+        ModalModule.forRoot(),
+        NgbModule.forRoot(),
+        PerfectScrollbarModule,
+        ReactiveFormsModule,
+        RouterModule.forRoot(ROUTES, {useHash: false, preloadingStrategy: PreloadAllModules}),
+        TooltipModule.forRoot()
     ],
     providers: [ // expose our Services and Providers into Angular's dependency injection
         ENV_PROVIDERS,
         APP_PROVIDERS,
         {provide: APP_BASE_HREF, useValue: '/'},
+        AboutService,
         AdminService,
+        AlertService,
         ClientService,
         ConnectionProfileService,
-        WalletService,
+        EditorService,
         IdentityService,
         InitializationService,
         SampleBusinessNetworkService,
-        AboutService,
-        AlertService,
-        EditorService
+        WalletService
     ]
 })
 export class AppModule {

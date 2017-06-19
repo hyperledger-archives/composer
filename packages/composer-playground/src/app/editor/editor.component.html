@@ -1,7 +1,7 @@
 <section class="side-bar">
   <div class="files">
     <span>Files</span>
-    <div class="side-bar-nav">
+    <perfect-scrollbar class="side-bar-nav">
       <ul>
         <li *ngFor="let file of files" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
             <div class="flex-container">
@@ -21,7 +21,7 @@
           </div>
         </li>
       </ul>
-    </div>
+    </perfect-scrollbar>
     <div class="add-file">
       <button class="action" type="button" (click)="openAddFileModal()">+ Add a file...</button>
     </div>

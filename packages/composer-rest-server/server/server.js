@@ -75,6 +75,7 @@ module.exports = function (composer) {
         // Set the port if one was specified.
         if (composer.port) {
             app.set('port', composer.port);
+            app.set('url', 'http://localhost:' + composer.port + '/');
         }
 
         // Support JSON encoded bodies.

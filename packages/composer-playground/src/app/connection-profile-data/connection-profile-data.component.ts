@@ -40,10 +40,9 @@ export class ConnectionProfileDataComponent {
         orderers: {},
         channel: '',
         mspID: '',
-        ca: '',
+        ca: {},
         keyValStore: '',
-        deployWaitTime: '',
-        invokeWaitTime: ''
+        timeout: ''
     };
 
     public v06ValidationMessages = {
@@ -100,16 +99,15 @@ export class ConnectionProfileDataComponent {
             required: 'A MSP ID is required.',
         },
         ca: {
-            required: 'A Certificate Authority URL is required.',
+            url: {
+                required: 'A Certificate Authority URL is required.'
+            }
         },
         keyValStore: {
             required: 'A Key Value Store Directory Path is required.',
         },
-        deployWaitTime: {
-            pattern: 'The Deploy Wait Time (seconds) must be an integer.'
-        },
-        invokeWaitTime: {
-            pattern: 'The Invoke Wait Time (seconds) must be an integer.'
+        timeout: {
+            pattern: 'The Timeout (seconds) must be an integer.'
         }
     };
 
@@ -188,7 +186,11 @@ export class ConnectionProfileDataComponent {
             } else {
                 connectionName = this.connectionProfileData.name;
             }
-            this.alertService.successStatus$.next({title: 'Connection Successful', text : 'Successfully connected with profile ' + connectionName, icon : '#icon-world_24'});
+            this.alertService.successStatus$.next({
+                title: 'Connection Successful',
+                text: 'Successfully connected with profile ' + connectionName,
+                icon: '#icon-world_24'
+            });
             this.profileUpdated.emit({updated: true});
 
         }, (reason) => {
@@ -263,10 +265,7 @@ export class ConnectionProfileDataComponent {
                     this.connectionProfileData ? this.connectionProfileData.profile.mspID : 'Org1MSP',
                     [Validators.required]
                 ],
-                ca: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.ca : 'http://localhost:7054',
-                    [Validators.required]
-                ],
+                ca: this.initCa(),
                 peers: this.fb.array(
                     this.initPeers()
                 ),
@@ -275,13 +274,8 @@ export class ConnectionProfileDataComponent {
                     [Validators.required]
                 ],
                 // Is required and must be a number
-                deployWaitTime: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.deployWaitTime : 300,
-                    [Validators.pattern('[0-9]+')]
-                ],
-                // Is required and must be a number
-                invokeWaitTime: [
-                    this.connectionProfileData ? this.connectionProfileData.profile.invokeWaitTime : 30,
+                timeout: [
+                    this.connectionProfileData ? this.connectionProfileData.profile.timeout : 300,
                     [Validators.pattern('[0-9]+')]
                 ]
             });
@@ -295,6 +289,21 @@ export class ConnectionProfileDataComponent {
         }
 
         this.editing = true;
+    }
+    initCa() {
+        let caFormGroup;
+        if (this.connectionProfileData && this.connectionProfileData.profile && this.connectionProfileData.profile.ca) {
+            caFormGroup = this.fb.group({
+                url: [this.connectionProfileData.profile.ca.url, Validators.required],
+                name: [this.connectionProfileData.profile.ca.name]
+            });
+        } else {
+            caFormGroup = this.fb.group({
+                url: ['http://localhost:7054', Validators.required],
+                name: ['']
+            });
+        }
+        return caFormGroup;
     }
 
     initOrderers() {
@@ -410,6 +419,14 @@ export class ConnectionProfileDataComponent {
                                 formErrors[field][attribute] = messages[attribute][key];
                             }
                         }
+                    } else if (control.constructor.name === 'FormGroup') {
+                        formErrors[field] = {};
+                        // only used for ca currently so expects a single child to be invalid
+                        for (const attribute in control.controls) {
+                            for (const key in control.controls[attribute].errors) {
+                                formErrors[field][attribute] = messages[attribute][key];
+                            }
+                        }
                     } else {
                         for (const key in control.errors) {
                             formErrors[field] += messages[key] + ' ';
@@ -420,7 +437,11 @@ export class ConnectionProfileDataComponent {
         }
     }
 
-    onSubmit() {
+    onSubmit(event) {
+        if (event && event.keyCode !== 13) {
+            return;
+        }
+
         let connectionProfile;
         if (!(this.connectionProfileData.profile.type === 'hlf' || this.connectionProfileData.profile.type === 'hlfv1')) {
             throw new Error('Unknown profile type');
@@ -508,31 +529,25 @@ export class ConnectionProfileDataComponent {
         }
 
         return this.modalService.open(AddCertificateComponent).result
-        .then((result) => {
-            if (type === 'orderers') {
-                if (result.hostnameOverride === '') {
-                    result.hostnameOverride = 'orderer' + index;
+            .then((result) => {
+                if (type === 'orderers') {
+                    this.v1Form.controls['orderers']['controls'][index].patchValue({
+                        cert: result.cert,
+                        hostnameOverride: result.hostnameOverride
+                    });
+                } else if (type === 'peers') {
+                    this.v1Form.controls['peers']['controls'][index].patchValue({
+                        cert: result.cert,
+                        hostnameOverride: result.hostnameOverride
+                    });
+                } else {
+                    throw new Error('Unrecognized type ' + type);
                 }
-                this.v1Form.controls['orderers']['controls'][index].patchValue({
-                    cert: result.cert,
-                    hostnameOverride: result.hostnameOverride
-                });
-            } else if (type === 'peers') {
-                if (result.hostnameOverride === '') {
-                    result.hostnameOverride = 'peer' + index;
+            }, (reason) => {
+                if (reason && reason !== 1) {
+                    this.alertService.errorStatus$.next(reason);
                 }
-                this.v1Form.controls['peers']['controls'][index].patchValue({
-                    cert: result.cert,
-                    hostnameOverride: result.hostnameOverride
-                });
-            } else {
-                throw new Error('Unrecognized type ' + type);
-            }
-        }, (reason) => {
-            if (reason && reason !== 1) {
-                this.alertService.errorStatus$.next(reason);
-            }
-        });
+            });
     }
 
     showCertificate(cert: string, hostname: string) {

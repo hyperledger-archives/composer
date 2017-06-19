@@ -17,7 +17,7 @@ import { InitializationService } from '../services/initialization.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../services/alert.service';
-import { ModelFile, Script } from 'composer-common';
+import { ModelFile, Script, AclManager, AclFile } from 'composer-common';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -36,6 +36,13 @@ class MockEditorFileDirective {
     public editorFile;
 }
 
+@Directive({
+    selector: 'perfect-scrollbar'
+})
+
+class MockPerfectScrollBarDirective {
+}
+
 describe('EditorComponent', () => {
     let component: EditorComponent;
     let fixture: ComponentFixture<EditorComponent>;
@@ -48,6 +55,7 @@ describe('EditorComponent', () => {
     let mockInitializationService;
     let mockModelFile;
     let mockScriptFile;
+    let mockRuleFile;
     let editorService;
 
     let mockRouterParams;
@@ -63,6 +71,7 @@ describe('EditorComponent', () => {
         mockInitializationService = sinon.createStubInstance(InitializationService);
         mockModelFile = sinon.createStubInstance(ModelFile);
         mockScriptFile = sinon.createStubInstance(Script);
+        mockRuleFile = sinon.createStubInstance(AclFile);
         editorService = new EditorService();
 
         mockRouterParams = {
@@ -81,7 +90,7 @@ describe('EditorComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditorComponent, MockEditorFileDirective],
+            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective ],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},
@@ -359,6 +368,16 @@ describe('EditorComponent', () => {
             component['currentFile'] = {displayID: 'readme', readme: true};
             let serviceSpy = sinon.spy(editorService, 'setCurrentFile');
             let file = {displayID: 'readme', readme: true};
+
+            component.setCurrentFile(file);
+
+            serviceSpy.should.have.been.called;
+        });
+
+        it('should always set current file, if same file selected and is acl file', () => {
+            component['currentFile'] = {displayID: 'acl', acl: true};
+            let serviceSpy = sinon.spy(editorService, 'setCurrentFile');
+            let file = {displayID: 'acl', acl: true};
 
             component.setCurrentFile(file);
 
@@ -650,7 +669,7 @@ describe('EditorComponent', () => {
             component['files'] = [{id: 'random'}, {id: 'script'}];
 
             let b = new Blob(['/**README File*/'], {type: 'text/plain'});
-            let mockReadmeFile = new File([b], 'redme.md');
+            let mockReadmeFile = new File([b], 'readme.md');
 
             component.addReadme(mockReadmeFile);
             tick();
@@ -683,7 +702,7 @@ describe('EditorComponent', () => {
             component['files'] = [{readme: true}, {id: 'script'}];
 
             let b = new Blob(['/**README File*/'], {type: 'text/plain'});
-            let mockReadmeFile = new File([b], 'redme.md');
+            let mockReadmeFile = new File([b], 'readme.md');
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
@@ -706,7 +725,7 @@ describe('EditorComponent', () => {
             component['files'] = [{readme: true}, {id: 'script'}];
 
             let b = new Blob(['/**README File*/'], {type: 'text/plain'});
-            let mockReadmeFile = new File([b], 'redme.md');
+            let mockReadmeFile = new File([b], 'readme.md');
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
@@ -729,7 +748,7 @@ describe('EditorComponent', () => {
             component['files'] = [{readme: true}, {id: 'script'}];
 
             let b = new Blob(['/**README File*/'], {type: 'text/plain'});
-            let mockReadmeFile = new File([b], 'redme.md');
+            let mockReadmeFile = new File([b], 'readme.md');
 
             mockModal.open = sinon.stub().returns({
                 componentInstance: {},
@@ -746,6 +765,124 @@ describe('EditorComponent', () => {
             mockSetCurrentFile.should.have.been.calledWith({readme: true});
         }));
 
+    });
+
+    describe('addRuleFile', () => {
+        it('should not open confirm modal if no ACL file present', fakeAsync(() => {
+            let mockProcessRules = sinon.stub(component, 'processRuleFileAddition');
+            component['files'] = [{id: 'random'}, {id: 'script'}];
+
+            component.addRuleFile(mockRuleFile);
+            tick();
+
+            mockModal.open.should.not.have.been.called;
+        }));
+
+        it('should call processRuleFileAddition if no existing rules present', fakeAsync(() => {
+            let mockProcessRules = sinon.stub(component, 'processRuleFileAddition');
+            component['files'] = [{id: 'zero-index'}, {id: 'script'}];
+
+            component.addRuleFile(mockRuleFile);
+            tick();
+
+            mockModal.open.should.not.have.been.called;
+            mockProcessRules.should.have.been.calledWith(mockRuleFile);
+        }));
+
+        it('should open confirm modal if rule file present and handle error', fakeAsync(() => {
+            let mockProcessRules = sinon.stub(component, 'processRuleFileAddition');
+            component['files'] = [{acl: true}, {id: 'permissions.acl'}];
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject('some error')
+            });
+
+            component.addRuleFile(mockRuleFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.calledWith('some error');
+            mockProcessRules.should.not.have.been.called;
+        }));
+
+        it('should handle confirm modal cancel', fakeAsync(() => {
+            let mockProcessRules = sinon.stub(component, 'processRuleFileAddition');
+            component['files'] = [{acl: true}, {id: 'permissions.acl'}];
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.reject(1)
+            });
+
+            component.addRuleFile(mockRuleFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockProcessRules.should.not.have.been.called;
+        }));
+
+        it('should call processRuleFileAddition on modal confirm', fakeAsync(() => {
+            let mockProcessRules = sinon.stub(component, 'processRuleFileAddition');
+            component['files'] = [{acl: true}, {id: 'permissions.acl'}];
+
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {},
+                result: Promise.resolve()
+            });
+
+            component.addRuleFile(mockRuleFile);
+            tick();
+
+            mockModal.open.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.not.have.been.called;
+            mockProcessRules.should.have.been.calledWith(mockRuleFile);
+        }));
+    });
+
+    describe('processRuleFileAddition', () => {
+
+        it('should set the aclFile as that passed in', () => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockFindIndex = sinon.stub(component, 'findFileIndex');
+            mockFindIndex.returns(7);
+
+            let aclManagerMock = {
+                setAclFile: sinon.stub()
+            };
+
+            mockClientService.getBusinessNetwork.returns({
+                getAclManager: sinon.stub().returns(aclManagerMock)
+            });
+
+            component.processRuleFileAddition(mockRuleFile);
+
+            aclManagerMock.setAclFile.should.have.been.calledWith(mockRuleFile);
+        });
+
+        it('should call updateFiles, setCurrentFile and set editor dirty', () => {
+            let mockUpdateFiles = sinon.stub(component, 'updateFiles');
+            let mockSetCurrentFile = sinon.stub(component, 'setCurrentFile');
+            let mockFindIndex = sinon.stub(component, 'findFileIndex');
+            mockFindIndex.returns(0);
+            component['files'] = [{acl: true}];
+
+            let aclManagerMock = {
+                setAclFile: sinon.stub()
+            };
+
+            mockClientService.getBusinessNetwork.returns({
+                getAclManager: sinon.stub().returns(aclManagerMock)
+            });
+
+            component.processRuleFileAddition(mockRuleFile);
+
+            mockUpdateFiles.should.have.been.called;
+            mockSetCurrentFile.should.have.been.calledWith({acl: true});
+            component['dirty'].should.be.equal(true);
+        });
     });
 
     describe('openImportModal', () => {
@@ -899,6 +1036,7 @@ describe('EditorComponent', () => {
         let mockAddModel;
         let mockAddScript;
         let mockAddReadme;
+        let mockAddRule;
 
         beforeEach(() => {
             mockModal.open = sinon.stub().returns({
@@ -915,6 +1053,7 @@ describe('EditorComponent', () => {
             mockAddModel = sinon.stub(component, 'addModelFile');
             mockAddScript = sinon.stub(component, 'addScriptFile');
             mockAddReadme = sinon.stub(component, 'addReadme');
+            mockAddRule = sinon.stub(component, 'addRuleFile');
         });
 
         it('should open add file modal', fakeAsync(() => {
@@ -971,6 +1110,22 @@ describe('EditorComponent', () => {
             tick();
 
             mockAddReadme.should.have.been.called;
+            mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
+        }));
+
+        it('should open AddFileComponent modal and call addRuleFile if acl file returned', fakeAsync(() => {
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {
+                    businessNetwork: {}
+                },
+                result: Promise.resolve(mockRuleFile)
+            });
+
+            component.openAddFileModal();
+
+            tick();
+
+            mockAddRule.should.have.been.called;
             mockClientService.businessNetworkChanged$.next.should.have.been.calledWith(true);
         }));
 

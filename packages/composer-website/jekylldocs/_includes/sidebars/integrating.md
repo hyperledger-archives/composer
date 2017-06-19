@@ -8,6 +8,7 @@
 [Enabling REST API authentication for a business network](../integrating/enabling-rest-authentication.html)
 [Deploying the REST server for a business network](../integrating/deploying-the-rest-server.html)
 [Calling external REST services](../integrating/call-out.html)
+[Integrating using Node-RED](../integrating/node-red.html)
 **[Managing and Operating](../managing/managingindex.html)**
 **[Diagnosing Problems](../problems/diagnostics.html)**
 **[Reference](../reference/MeetTheModules.html)**

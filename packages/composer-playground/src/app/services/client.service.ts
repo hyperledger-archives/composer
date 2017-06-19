@@ -29,14 +29,19 @@ export class ClientService {
                 private alertService: AlertService) {
     }
 
-    // horrible hack for testing
-    createModelFile(modelManager, content, fileName) {
-        return new ModelFile(modelManager, content, fileName);
+    // horrible hack for tests
+    createModelFile(content, fileName) {
+        return new ModelFile(this.getBusinessNetwork().getModelManager(), content, fileName);
     }
 
-    // horrible hack for testing
-    createAclFile(id, modelManager, content) {
-        return new AclFile(id, modelManager, content);
+    // horrible hack for tests
+    createAclFile(id, content) {
+        return new AclFile(id, this.getBusinessNetwork().getModelManager(), content);
+    }
+
+    // horrible hack for tests
+    createScriptFile(id, type, content) {
+        return this.getBusinessNetwork().getScriptManager().createScript(id, type, content);
     }
 
     // horrible hack for tests
@@ -75,15 +80,12 @@ export class ClientService {
     validateFile(id: string, content: any, type: string): string {
         try {
             if (type === 'model') {
-                let modelManager = this.getBusinessNetwork().getModelManager();
-                let modelFile = this.createModelFile(modelManager, content, null);
-                modelManager.validateModelFile(modelFile);
+                let modelFile = this.createModelFile(content, null);
+                this.getBusinessNetwork().getModelManager().validateModelFile(modelFile);
             } else if (type === 'script') {
-                let scriptManager = this.getBusinessNetwork().getScriptManager();
-                scriptManager.createScript(id, 'JS', content);
+                this.createScriptFile(id, 'JS', content);
             } else if (type === 'acl') {
-                let modelManager = this.getBusinessNetwork().getModelManager();
-                let aclFile = this.createAclFile(id, modelManager, content);
+                let aclFile = this.createAclFile(id, content);
                 aclFile.validate();
             }
             return null;
@@ -97,7 +99,7 @@ export class ClientService {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let original: ModelFile = modelManager.getModelFile(id);
-                let modelFile = this.createModelFile(modelManager, content, original.getFileName());
+                let modelFile = this.createModelFile(content, original.getFileName());
                 if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                     throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }
@@ -110,14 +112,11 @@ export class ClientService {
                     modelManager.updateModelFile(modelFile);
                 }
             } else if (type === 'script') {
-                let scriptManager = this.getBusinessNetwork().getScriptManager();
-                let script = scriptManager.createScript(id, 'JS', content);
-                scriptManager.addScript(script);
+                let script = this.createScriptFile(id, 'JS', content);
+                this.getBusinessNetwork().getScriptManager().addScript(script);
             } else if (type === 'acl') {
-                let aclManager = this.getBusinessNetwork().getAclManager();
-                let modelManager = this.getBusinessNetwork().getModelManager();
-                let aclFile = this.createAclFile(id, modelManager, content);
-                aclManager.setAclFile(aclFile);
+                let aclFile = this.createAclFile(id, content);
+                this.getBusinessNetwork().getAclManager().setAclFile(aclFile);
             }
 
             this.businessNetworkChanged$.next(true);
@@ -131,15 +130,13 @@ export class ClientService {
     replaceFile(oldId: string, newId: string, content: any, type: string): string {
         try {
             if (type === 'model') {
-                let modelManager = this.getBusinessNetwork().getModelManager();
-                let modelFile = this.createModelFile(modelManager, content, newId);
-                modelManager.updateModelFile(modelFile, newId);
+                let modelFile = this.createModelFile(content, newId);
+                this.getBusinessNetwork().getModelManager().updateModelFile(modelFile, newId);
                 this.businessNetworkChanged$.next(true);
             } else if (type === 'script') {
-                let scriptManager = this.getBusinessNetwork().getScriptManager();
-                let script = scriptManager.createScript(newId, 'JS', content);
-                scriptManager.addScript(script);
-                scriptManager.deleteScript(oldId);
+                let script = this.createScriptFile(newId, 'JS', content);
+                this.getBusinessNetwork().getScriptManager().addScript(script);
+                this.getBusinessNetwork().getScriptManager().deleteScript(oldId);
                 this.businessNetworkChanged$.next(true);
             }
             return null;
@@ -285,7 +282,7 @@ export class ClientService {
                 return this.identityService.getUserSecret();
             })
             .then((userSecret) => {
-                return this.getBusinessNetworkConnection().connect(connectionProfile, 'org.acme.biznet', userID, userSecret);
+                return this.getBusinessNetworkConnection().connect(connectionProfile, 'org-acme-biznet', userID, userSecret);
             });
     }
 
@@ -313,6 +310,26 @@ export class ClientService {
                 this.alertService.busyStatus$.next(null);
                 throw error;
             });
+    }
+
+    issueIdentity(userID, participantFQI, options): Promise<string> {
+        let connectionProfileName = this.connectionProfileService.getCurrentConnectionProfile();
+
+        return this.connectionProfileService.getProfile(connectionProfileName)
+            .then((connectionProfile) => {
+                ['membershipServicesURL', 'peerURL', 'eventHubURL'].forEach((url) => {
+                    if (connectionProfile[url] && connectionProfile[url].match(/\.blockchain\.ibm\.com/)) {
+                        // Smells like Bluemix with their non-default affiliations.
+                        options.affiliation = 'group1';
+                    }
+                });
+
+                return this.getBusinessNetworkConnection().issueIdentity(participantFQI, userID, options);
+            });
+    }
+
+    revokeIdentity(userID: string) {
+        return this.getBusinessNetworkConnection().revokeIdentity(userID);
     }
 
     private createNewBusinessNetwork(name, version, description, packageJson, readme) {

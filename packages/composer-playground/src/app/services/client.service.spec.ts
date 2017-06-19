@@ -238,7 +238,7 @@ describe('ClientService', () => {
 
             let result = service.updateFile('model-ns', 'my-model-content', 'model');
 
-            result.should.equal('Error');
+            result.should.equal('invalid');
             businessNetworkChangedSpy.should.have.been.calledWith(false);
         }));
 
@@ -258,7 +258,7 @@ describe('ClientService', () => {
 
             let result = service.updateFile('model', 'my-model', 'model');
 
-            result.should.equal('Error');
+            result.should.equal('invalid');
             businessNetworkChangedSpy.should.have.been.calledWith(false);
         }));
 
@@ -272,7 +272,7 @@ describe('ClientService', () => {
 
             let result = service.updateFile('script', 'my-script', 'script');
 
-            result.should.equal('Error');
+            result.should.equal('invalid');
             businessNetworkChangedSpy.should.have.been.calledWith(false);
         }));
 
@@ -287,7 +287,7 @@ describe('ClientService', () => {
             let result = service.updateFile('acl', 'my-acl', 'acl');
 
             businessNetworkChangedSpy.should.have.been.calledWith(false);
-            result.should.equal('Error');
+            result.should.equal('invalid');
         }));
 
         it('should not update a model file if namespace collision detected', inject([ClientService], (service: ClientService) => {
@@ -382,7 +382,7 @@ describe('ClientService', () => {
             let result = service.validateFile('model', 'my-model', 'model');
 
             modelManagerMock.validateModelFile.should.have.been.calledWith(modelFileMock);
-            result.should.equal('Error');
+            result.should.equal('invalid');
 
         }));
 
@@ -398,7 +398,7 @@ describe('ClientService', () => {
 
             scriptManagerMock.createScript.should.have.been.calledWith('script', 'JS', 'my-script');
             scriptManagerMock.addScript.should.not.have.been.called;
-            result.should.equal('Error');
+            result.should.equal('invalid');
         }));
 
         it('should return error message if an acl file is invalid', inject([ClientService], (service: ClientService) => {
@@ -417,7 +417,7 @@ describe('ClientService', () => {
             let result = service.validateFile('acl', 'my-acl', 'acl');
 
             aclFileMock.validate.should.have.been.called;
-            result.should.equal('Error');
+            result.should.equal('invalid');
         }));
 
     });
@@ -874,6 +874,64 @@ describe('ClientService', () => {
             adminMock.update.should.have.been.calledWith({name: 'bob'});
             refreshMock.should.have.been.called;
             resetMock.should.have.been.called;
+        })));
+    });
+
+    describe('issueIdentity', () => {
+
+        it('should generate and return an identity using internally held state information', fakeAsync(inject([ClientService], (service: ClientService) => {
+            connectionProfileMock.getProfile.returns(Promise.resolve('bob'));
+            businessNetworkConMock.issueIdentity.returns(Promise.resolve({
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: undefined}
+            }));
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            service.issueIdentity('userId', 'uniqueName', {issuer: false, affiliation: undefined}).then((identity) => {
+                console.log('CAZ', identity);
+                let expected = {
+                    participant: 'uniqueName',
+                    userID: 'userId',
+                    options: {issuer: false, affiliation: undefined}
+                };
+                identity.should.deep.equal(expected);
+            });
+
+            tick();
+
+            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+            businessNetworkConnectionMock.should.have.been.called;
+        })));
+
+        it('should generate and return an identity, detecting blockchain.ibm.com URLs', fakeAsync(inject([ClientService], (service: ClientService) => {
+            connectionProfileMock.getProfile.returns(Promise.resolve({
+                membershipServicesURL: 'memberURL\.blockchain\.ibm\.com',
+                peerURL: 'peerURL\.blockchain\.ibm\.com',
+                eventHubURL: 'eventURL\.blockchain\.ibm\.com'
+            }));
+
+            businessNetworkConMock.issueIdentity.returns(Promise.resolve({
+                participant: 'uniqueName',
+                userID: 'userId',
+                options: {issuer: false, affiliation: 'group1'}
+            }));
+
+            let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
+
+            service.issueIdentity('userId', 'uniqueName', {issuer: false, affiliation: undefined}).then((identity) => {
+                let expected = {
+                    participant: 'uniqueName',
+                    userID: 'userId',
+                    options: {issuer: false, affiliation: 'group1'}
+                };
+                identity.should.deep.equal(expected);
+            });
+
+            tick();
+
+            connectionProfileMock.getCurrentConnectionProfile.should.have.been.called;
+            businessNetworkConnectionMock.should.have.been.called;
         })));
     });
 });
