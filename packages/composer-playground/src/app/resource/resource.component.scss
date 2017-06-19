@@ -2,54 +2,47 @@
 @import '../../assets/styles/base/_variables.scss';
 
 resource-modal {
-
-  .resource-container {
-    position: relative;
-    flex: 1 1 auto;
-    padding: $space-small;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    min-height: 415px;
-  }
-
-  .resource-component {
-
-    padding: $space-medium;
-
-    .resource-bound {
-      max-height: 40px;
-      min-width: 100%;
-     // min-width: 410px;
-     // max-width: 410px;
-      margin-top: $space-medium;
+    .resource-container {
+        position: relative;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        height: 450px;
     }
 
-    .resource-preview-text{
-      color:$secondary-text;
+    .resource-component {
+        .resource-preview-text {
+            color: $secondary-text;
+        }
+
+        .resource-error-text {
+            min-height: 30px;
+            color: $error-colour-1;
+            max-width: 625px;
+            margin: 0 auto;
+            word-wrap: break-word;
+        }
     }
 
-    .resource-error-text{
-      min-height: 30px;
-      color: $error-colour-1;
-      max-width: 600px;
+    footer {
+        justify-content: flex-start;
+
+        .footer-text {
+            flex: 1;
+        }
     }
-  }
 
-  footer {
-    justify-content: flex-start;
+    .CodeMirror {
+        font-family: Source Code Pro
 
-    .footer-text{
-      flex:1;
     }
-  }
 
-  .CodeMirror,
-  .CodeMirror-scroll {
-    min-height: 250px;
-    max-height: 450px;
-    min-width: 600px;
-    max-width: 600px;
-  }
-
+    .CodeMirror, .CodeMirror-scroll {
+        min-height: 40vh;
+        max-height: 40vh;
+        // needed to get rid of the duplicate scroll bars, not sure why this works????
+        min-width: 640px;
+        max-width: 650px;
+    }
 }

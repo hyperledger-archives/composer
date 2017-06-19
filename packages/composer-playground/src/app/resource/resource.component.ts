@@ -40,7 +40,7 @@ export class ResourceComponent implements OnInit {
 
     private codeConfig = {
         lineNumbers: true,
-        lineWrapping: false,
+        lineWrapping: true,
         readOnly: false,
         mode: 'javascript',
         autofocus: true,
