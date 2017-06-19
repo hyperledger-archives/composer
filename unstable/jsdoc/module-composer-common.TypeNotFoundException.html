@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Class: ValidatedResource</title>
+	<title>Hyperledger Composer Class: TypeNotFoundException</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: ValidatedResource</h1>
+	<h1 class="page-title">Class: TypeNotFoundException</h1>
 <section>
 
 <header>
@@ -87,10 +87,10 @@
         <h2>
             <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
         
-        ValidatedResource
+        TypeNotFoundException
         </h2>
         
-            <div class="class-description"><p>ValidatedResource is a Resource that can validate that property<br>changes (or the whole instance) do not violate the structure of<br>the type information associated with the instance.</p></div>
+            <div class="class-description"><p>Error thrown when a Composer type does not exist.</p></div>
         
     
 </header>
@@ -102,7 +102,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="ValidatedResource"><span class="type-signature"></span>new ValidatedResource(modelManager, ns, type, id, resourceValidator)</h4>
+    <h4 class="name" id="TypeNotFoundException"><span class="type-signature"></span>new TypeNotFoundException(typeName [, message])</h4>
     
     
 </dt>
@@ -110,8 +110,7 @@
 
     
     <div class="description">
-        <p>This constructor should not be called directly.<br>Use the Factory class to create instances.</p>
-<p><br><strong>Note: Only to be called by framework code. Applications should<br>retrieve instances from Factory</strong><br></p>
+        <p>Constructor. If the optional 'message' argument is not supplied, it will be set to a default value that<br>includes the type name.</p>
     </div>
     
 
@@ -134,6 +133,8 @@
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -146,13 +147,13 @@
 
         <tr>
             
-                <td class="name"><code>modelManager</code></td>
+                <td class="name"><code>typeName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">ModelManager</span>
+<span class="param-type">String</span>
 
 
 
@@ -160,23 +161,31 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>The ModelManager for this instance</p></td>
+            <td class="description last"><p>fully qualified type name.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>ns</code></td>
+                <td class="name"><code>message</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
 
 
@@ -184,82 +193,20 @@
             </td>
 
             
-
-            
-
-            <td class="description last"><p>The namespace this instance.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
+                <td class="attributes">
                 
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The type this instance.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
+                    &lt;optional><br>
                 
-<span class="param-type">string</span>
 
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The identifier of this instance.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>resourceValidator</code></td>
-            
-
-            <td class="type">
-            
                 
-<span class="param-type">ResourceValidator</span>
 
-
-
-            
-            </td>
-
+                
+                </td>
             
 
             
 
-            <td class="description last"><p>The validator to use for this instance</p></td>
+            <td class="description last"><p>error message.</p></td>
         </tr>
 
     
@@ -303,8 +250,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_validatedresource.js.html">composer-common/lib/model/validatedresource.js</a>,
-				 <a href="composer-common_lib_model_validatedresource.js.html#sunlight-1-line-29">line 29</a>
+				<a href="composer-common_lib_typenotfoundexception.js.html">composer-common/lib/typenotfoundexception.js</a>,
+				 <a href="composer-common_lib_typenotfoundexception.js.html#sunlight-1-line-27">line 27</a>
 			</li>
 		</ul>
 	</dd>
@@ -316,7 +263,7 @@
 	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
 	<dd class="tag-see">
 		<ul>
-			<li><p>See <a href="module-composer-common.Resource.html">Resource</a></p></li>
+			<li><p>See <a href="module-composer-common.BaseException.html">BaseException</a></p></li>
 			</ul>
 	</dd>
 	
@@ -350,7 +297,7 @@
 
 
     <ul>
-        <li>Resource</li>
+        <li>BaseException</li>
     </ul>
 
 
@@ -373,7 +320,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="addArrayValue"><span class="type-signature"></span>addArrayValue(propName, value)</h4>
+    <h4 class="name" id="getTypeName"><span class="type-signature"></span>getTypeName()</h4>
     
     
 </dt>
@@ -381,387 +328,7 @@
 
     
     <div class="description">
-        <p>Adds an array property value, validating that it does not violate the model</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>propName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the name of the field</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the value of the property</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_validatedresource.js.html">composer-common/lib/model/validatedresource.js</a>,
-				 <a href="composer-common_lib_model_validatedresource.js.html#sunlight-1-line-83">line 83</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Throws:</h5>
-    
-            
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>if the value is not compatible with the model definition for the field</p>
-        </div>
-    </dt>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-
-            </dd>
-        </dl>
-    </dt>
-</dl>
-
-
-        
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="setPropertyValue"><span class="type-signature"></span>setPropertyValue(propName, value)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Sets a property, validating that it does not violate the model</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>propName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the name of the field</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>the value of the property</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-common_lib_model_validatedresource.js.html">composer-common/lib/model/validatedresource.js</a>,
-				 <a href="composer-common_lib_model_validatedresource.js.html#sunlight-1-line-56">line 56</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Throws:</h5>
-    
-            
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        <p>if the value is not compatible with the model definition for the field</p>
-        </div>
-    </dt>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
-
-
-
-            </dd>
-        </dl>
-    </dt>
-</dl>
-
-
-        
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="validate"><span class="type-signature"></span>validate()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Validates the instance against its model.</p>
+        <p>Get the name of the type that was not found.</p>
     </div>
     
 
@@ -807,8 +374,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-common_lib_model_validatedresource.js.html">composer-common/lib/model/validatedresource.js</a>,
-				 <a href="composer-common_lib_model_validatedresource.js.html#sunlight-1-line-117">line 117</a>
+				<a href="composer-common_lib_typenotfoundexception.js.html">composer-common/lib/typenotfoundexception.js</a>,
+				 <a href="composer-common_lib_typenotfoundexception.js.html#sunlight-1-line-50">line 50</a>
 			</li>
 		</ul>
 	</dd>
@@ -831,38 +398,32 @@
     
 
     
-    <h5>Throws:</h5>
+
+    
+    <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>fully qualified type name.</p>
+</div>
+
+
 
 <dl>
     <dt>
-        <div class="param-desc">
-        <ul>
-<li>if the instance if invalid with respect to the model</li>
-</ul>
-        </div>
+        Type
     </dt>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">Error</span>
+    <dd>
+        
+<span class="param-type">string</span>
 
 
 
-            </dd>
-        </dl>
-    </dt>
+    </dd>
 </dl>
 
 
         
-
-    
 
     
 </dd>

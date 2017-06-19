@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
 				</ul>
 			</li>
 			
@@ -112,7 +112,6 @@ const ParseException = require('./parseexception');
 const ModelUtil = require('../modelutil');
 const Globalize = require('../globalize');
 
-
 /**
  * Class representing a Model File. A Model File contains a single namespace
  * and a set of model elements: assets, transactions etc.
@@ -166,36 +165,19 @@ class ModelFile {
             this.imports = this.ast.imports;
         }
 
-        let decorate = false;
-        let systemNamespace = ModelUtil.getSystemNamespace();
-        if(this.namespace !== systemNamespace) {
-            this.imports.unshift(systemNamespace + '._cst_Asset');
-            this.imports.unshift(systemNamespace + '._cst_Participant');
-            this.imports.unshift(systemNamespace + '._cst_Event');
-            this.imports.unshift(systemNamespace + '._cst_Transaction');
-            decorate = true;
-        }
-        // console.log('\n========\n Parsed AST for the model file ');
-        // console.log(util.inspect(this.ast,{ depth: 7, colors: true, }));
-        // console.log('\n========\n');
         for(let n=0; n &lt; this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
-            let doDecorate = (thing.classExtension === null &amp;&amp; decorate);
 
             if(thing.type === 'AssetDeclaration') {
-                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Asset' } }; }
                 this.declarations.push( new AssetDeclaration(this, thing) );
             }
             else if(thing.type === 'TransactionDeclaration') {
-                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Transaction' } }; }
                 this.declarations.push( new TransactionDeclaration(this, thing) );
             }
             else if(thing.type === 'EventDeclaration') {
-                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Event' } }; }
                 this.declarations.push( new EventDeclaration(this, thing) );
             }
             else if(thing.type === 'ParticipantDeclaration') {
-                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Participant' } }; }
                 this.declarations.push( new ParticipantDeclaration(this, thing) );
             }
             else if(thing.type === 'EnumDeclaration') {
@@ -212,8 +194,6 @@ class ModelFile {
                 }),this.modelFile);
             }
         }
-
-
     }
 
     /**
@@ -270,9 +250,9 @@ class ModelFile {
             const modelFile = this.getModelManager().getModelFile(importNamespace);
             if (!modelFile) {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
-                throw new Error(formatter({
+                throw new IllegalModelException(formatter({
                     type: importName
-                }));
+                }), this);
             }
             if (ModelUtil.isWildcardName(importName)) {
                 // This is a wildcard import, org.acme.*
@@ -281,7 +261,11 @@ class ModelFile {
             }
             const importShortName = ModelUtil.getShortName(importName);
             if (!modelFile.isLocalType(importShortName)) {
-                throw new Error('No type ' + importShortName + ' in namespace ' + importNamespace);
+                let formatter = Globalize.messageFormatter('modelmanager-gettype-notypeinns');
+                throw new IllegalModelException(formatter({
+                    type: importShortName,
+                    namespace: importNamespace
+                }), this);
             }
         });
 
@@ -364,16 +348,15 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
+        //console.log('resolveImport ' + this.getNamespace() + ' ' + type );
+
         for(let n=0; n &lt; this.imports.length; n++) {
             let importName = this.imports[n];
-            //console.log('>>>>> importName');
             if( ModelUtil.getShortName(importName) === type ) {
                 return importName;
             } else if (ModelUtil.isWildcardName(importName)) {
                 const wildcardNamespace = ModelUtil.getNamespace(importName);
-
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
-
                 if (modelFile &amp;&amp; modelFile.isLocalType(type)) {
                     return wildcardNamespace + '.' + type;
                 }
