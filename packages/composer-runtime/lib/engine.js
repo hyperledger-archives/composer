@@ -239,11 +239,6 @@ class Engine {
 
             })
             .then(() => {
-<<<<<<< HEAD
-
-=======
-                // print('init:14');
->>>>>>> 06f519cbc07adc9cf1ab46fb203ce67cd3f282bc
                 // Create all the default registries for each asset and participant type.
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = context.getRegistryManager();
