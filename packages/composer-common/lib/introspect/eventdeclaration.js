@@ -58,6 +58,15 @@ class EventDeclaration extends ClassDeclaration {
         //     this.properties.push(new Field(this, ast));
         // }
     }
+
+     /**
+     * Returns true if this class is the definition of an event
+     *
+     * @return {boolean} true if the class is an event
+     */
+    isEvent() {
+        return true;
+    }
 }
 
 module.exports = EventDeclaration;
