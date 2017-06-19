@@ -98,7 +98,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getDescription().should.equal('A test business network.');
                 businessNetwork.getMetadata().getREADME().should.equal('This is a test');
                 businessNetwork.getMetadata().getPackageJson().customKey.should.equal('custom value');
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(4);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
                 businessNetwork.aclManager.getAclRules().should.have.length(5);
 
@@ -113,7 +113,7 @@ describe('BusinessNetworkDefinition', () => {
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive-dotfolders').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(4);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
@@ -139,7 +139,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getDescription().should.equal('A test business network using npm model dependencies.');
 
 
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(2);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
 
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 

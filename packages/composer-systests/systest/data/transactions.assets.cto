@@ -28,7 +28,6 @@ asset SimpleRelationshipsAsset identified by assetId {
 }
 
 transaction SimpleTransactionWithPrimitiveTypes {
-
     o String stringValue
     o Double doubleValue
     o Integer integerValue
