@@ -29,11 +29,13 @@ const SYSTEM_MODEL_CONTENTS = [
     'namespace org.hyperledger.composer.system',
     'abstract asset _cst_Asset { o String superNotes optional  }',
     'abstract participant _cst_Participant {       o String superNotes optional    }',
-    'abstract transaction _cst_Transaction {',
+    'abstract transaction _cst_Transaction identified by transactionId {',
+    '  o String transactionId',
     '  o DateTime timestamp',
     '  o String superNotes optional',
     '}',
-    'abstract event _cst_Event {',
+    'abstract event _cst_Event identified by eventId {',
+    '  o String eventId',
     '}'
 ];
 // const util = require('util');
@@ -70,13 +72,8 @@ class ModelManager {
         this.modelFiles = {};
         LOG.info('info',__filename);
         LOG.info('info',path.dirname(__filename));
-        // let systemModelPath = path.join(path.dirname(__filename), '../models/system.cto');
-        // let systemModelPath = SYSTEM_MODEL_CONTENTS.join('\n');
-        // console.log(systemModelPath);
         LOG.info('info',fs);
-        // let systemModelContents = fs.readFileSync(systemModelPath, ENCODING);
         let systemModelContents = SYSTEM_MODEL_CONTENTS.join('\n');
-        // console.log(systemModelContents);
         LOG.info('info',systemModelContents);
         this.addModelFile(systemModelContents);
         LOG.exit('constructor');

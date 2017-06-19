@@ -34,8 +34,8 @@ abstract participant _cst_Participant {
 /**
  * Implicit super-type for all Transactions
  */
-abstract transaction _cst_Transaction identified by transactionID {
-  o String transactionID
+abstract transaction _cst_Transaction identified by transactionId {
+  o String transactionId
   o DateTime timestamp
   o String superNotes optional
 }
@@ -45,6 +45,6 @@ abstract transaction _cst_Transaction identified by transactionID {
 
    --> Transaction transaction
  */
-abstract event _cst_Event identified by eventID {
-  o String eventID
+abstract event _cst_Event identified by eventId {
+  o String eventId
 }
