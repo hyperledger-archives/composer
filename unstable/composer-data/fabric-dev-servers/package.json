@@ -1,0 +1,26 @@
+{
+  "name": "fabric-dev-servers",
+  "version": "0.0.3",
+  "description": "Helper Scripts to start Hyperledger Fabric v0.6 and v1.0 for development/test purposes",
+  "private": true,
+  "author": "Hyperledger",
+  "license": "Apache-2",
+  "keywords": [
+    "Blockchain",
+    "Solutions"
+  ],
+  "dependencies": {
+    "fabric-ca-client": "1.0.0-alpha.1",
+    "fabric-client": "1.0.0-alpha.1",
+    "homedir": "^0.6.0"
+  },
+  "scripts": {
+    "build-archives": "gulp --gulpfile .travis/gulp.js"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-gzip": "^1.4.0",
+    "gulp-tar": "^1.9.0",
+    "gulp-zip": "^4.0.0"
+  }
+}

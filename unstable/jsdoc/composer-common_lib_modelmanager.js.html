@@ -84,7 +84,7 @@
 <section>
     <article>
         <pre
-            class="sunlight-highlight-javascript linenums">/*
+            class="sunlight-highlight-javascript linenums">/*;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -100,11 +100,19 @@
 
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 const Globalize = require('./globalize');
 const IllegalModelException = require('./introspect/illegalmodelexception');
 const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 
+const ENCODING = 'utf8';
+
+const LOG = require('./log/logger').getLog('ModelManager');
+
+// const util = require('util');
 /**
  * &lt;p>
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled
@@ -133,7 +141,15 @@ class ModelManager {
      * &lt;/p>
      */
     constructor() {
+        LOG.entry('constructor');
         this.modelFiles = {};
+
+        let systemModelPath = path.join(path.dirname(__filename), '../models/system.cto');
+        // console.log(systemModelPath);
+        let systemModelContents = fs.readFileSync(systemModelPath, ENCODING);
+        // console.log(systemModelContents);
+        this.addModelFile(systemModelContents);
+        LOG.exit('constructor');
     }
 
     /**
@@ -181,6 +197,9 @@ class ModelManager {
      * @return {Object} The newly added model file (internal).
      */
     addModelFile(modelFile, fileName) {
+        const NAME = 'addModelFile';
+        LOG.info(NAME,'addModelFile',modelFile,fileName);
+
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             m.validate();
@@ -206,6 +225,8 @@ class ModelManager {
      * @returns {Object} The newly added model file (internal).
      */
     updateModelFile(modelFile, fileName) {
+        const NAME = 'updateModelFile';
+        LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             if (!this.modelFiles[m.getNamespace()]) {
@@ -247,6 +268,8 @@ class ModelManager {
      * @returns {Object[]} The newly added model files (internal).
      */
     addModelFiles(modelFiles, fileNames) {
+        const NAME = 'addModelFiles';
+        LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -271,6 +294,9 @@ class ModelManager {
                 }
             }
 
+            // console.log(util.inspect(this.modelFiles,{ depth: 7 , colors: true, }));
+
+
             // re-validate all the model files
             for (let ns in this.modelFiles) {
                 this.modelFiles[ns].validate();
@@ -279,6 +305,8 @@ class ModelManager {
             // let's go and retrofit the model to make sure all is good
             // make sure that models are all correctly/
             // temp workaround until system models in place
+            LOG.info(NAME,'retofitting the model files now');
+
             for (let ns in this.modelFiles) {
                 if (! this.modelFiles[ns] === undefined) {
                     this.modelFiles[ns].retrofit();
@@ -293,6 +321,8 @@ class ModelManager {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
+        } finally{
+            LOG.exit(NAME,newModelFiles);
         }
     }
 
