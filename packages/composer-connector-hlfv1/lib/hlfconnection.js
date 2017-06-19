@@ -261,10 +261,11 @@ class HLFConnection extends Connection {
             throw new Error('enrollmentSecret not specified');
         }
 
+        console.log(enrollmentID);
         // Get the user context (certificate) from the state store.
         return this.client.getUserContext(enrollmentID, true)
             .then((user) => {
-
+                console.log('User Content' + user);
                 // If the user exists and is enrolled, we use the data from the state store.
                 // Otherwise we need to enroll against the CA to download the certificate.
                 if (user && user.isEnrolled()) {
@@ -276,6 +277,8 @@ class HLFConnection extends Connection {
                 }
             })
             .then((user) => {
+
+                console.log('===> '+enrollmentID);
 
                 // Now we can create a security context.
                 LOG.debug(method, 'Creating new security context');
@@ -291,7 +294,7 @@ class HLFConnection extends Connection {
             })
             .catch((error) => {
                 const newError = new Error('error trying login and get user Context. ' + error);
-                LOG.error(method, newError);
+                LOG.error(method, error);
                 throw newError;
             });
     }

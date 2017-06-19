@@ -26,7 +26,6 @@ const ParseException = require('./parseexception');
 const ModelUtil = require('../modelutil');
 const Globalize = require('../globalize');
 
-// const util = require('util');
 
 /**
  * Class representing a Model File. A Model File contains a single namespace
@@ -95,27 +94,22 @@ class ModelFile {
         // console.log('\n========\n');
         for(let n=0; n < this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
-
-            if (thing.classExtension === null && decorate){
-                // all good keep decorating
-            } else {
-                decorate=false;
-            }
+            let doDecorate = (thing.classExtension === null && decorate);
 
             if(thing.type === 'AssetDeclaration') {
-                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Asset' } }; }
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Asset' } }; }
                 this.declarations.push( new AssetDeclaration(this, thing) );
             }
             else if(thing.type === 'TransactionDeclaration') {
-                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Transaction' } }; }
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Transaction' } }; }
                 this.declarations.push( new TransactionDeclaration(this, thing) );
             }
             else if(thing.type === 'EventDeclaration') {
-                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Event' } }; }
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Event' } }; }
                 this.declarations.push( new EventDeclaration(this, thing) );
             }
             else if(thing.type === 'ParticipantDeclaration') {
-                if (decorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Participant' } }; }
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '_cst_Participant' } }; }
                 this.declarations.push( new ParticipantDeclaration(this, thing) );
             }
             else if(thing.type === 'EnumDeclaration') {
@@ -132,6 +126,8 @@ class ModelFile {
                 }),this.modelFile);
             }
         }
+
+
     }
 
     /**
