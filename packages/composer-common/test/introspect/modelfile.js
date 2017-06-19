@@ -369,7 +369,7 @@ describe('ModelFile', () => {
 
     describe('#resolveImport', () => {
 
-        it.only('should find the fully qualified name of a type in the system namespace', () => {
+        it('should find the fully qualified name of a type in the system namespace', () => {
             const model = `
             namespace org.acme`;
             let modelFile = new ModelFile(mockModelManager, model);

@@ -101,7 +101,7 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
-
+        // print('init');
         LOG.entry(method);
         LOG.entry(method, context, fcn, args);
         if (fcn !== 'init') {
@@ -242,7 +242,7 @@ class Engine {
 
             })
             .then(() => {
-
+                // print('init:14');
                 // Create all the default registries for each asset and participant type.
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = context.getRegistryManager();
