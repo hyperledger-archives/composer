@@ -8,20 +8,20 @@ asset SampleAsset identified by assetId {
   o String value
 }
 
-transaction SampleTransaction identified by transactionId {
-  o String transactionId
+transaction SampleTransaction  {
+
   --> SampleAsset asset
   o String newValue
 }
 
-transaction PostTransaction identified by transactionId {
-  o String transactionId
+transaction PostTransactioni {
+
   o Integer a
   o Integer b
   --> SampleAsset asset
 }
 
-transaction CreateAsset identified by transactionId {
-  o String transactionId
+transaction CreateAsset {
+
   o String assetId
 }

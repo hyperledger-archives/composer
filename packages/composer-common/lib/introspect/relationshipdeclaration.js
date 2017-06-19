@@ -56,8 +56,7 @@ class RelationshipDeclaration extends Property {
         // you can't have a relationship with a primitive...
         if(ModelUtil.isPrimitiveType(this.getType())) {
             throw new IllegalModelException('Relationship ' + this.getName() + ' cannot be to the primitive type ' + this.getType(), classDecl.getModelFile(), this.ast.location );
-        }
-        else {
+        } else {
             let namespace = this.getParent().getModelFile().getNamespace();
 
             // we first try to get the type from our own model file
@@ -76,7 +75,9 @@ class RelationshipDeclaration extends Property {
 
             // console.log('>>RelationshipDeclaration');
             // console.log(this);
-            if((namespace === ModelUtil.getSystemNamespace()) && classDeclaration.isSystemRelationshipTarget() === false) {
+            if (namespace === ModelUtil.getSystemNamespace() && classDecl.isEvent()) {
+                // Special case, allow relationship to Transaction in system Event
+            } else if((namespace === ModelUtil.getSystemNamespace()) && classDeclaration.isSystemRelationshipTarget() === false) {
                 throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset, participant or transaction, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
             } else if(classDeclaration.isRelationshipTarget() === false) {
                 throw new IllegalModelException('Relationship ' + this.getName() + ' must be to an asset or participant, but is to ' + this.getFullyQualifiedTypeName(), classDecl.getModelFile(), this.ast.location);
@@ -85,7 +86,7 @@ class RelationshipDeclaration extends Property {
     }
 
     /**
-     * Returns a string representation of this property§
+     * Returns a string representation of this property
      * @return {String} the string version of the property.
      */
     toString() {

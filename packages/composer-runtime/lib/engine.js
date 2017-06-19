@@ -39,8 +39,6 @@ class Engine {
         const method = 'constructor-b';
         LOG.entry(method);
 
-//        print('@JS ==  Extra information - rid:005');
-//        print('@JS == '+JSON.stringify(LOG));
 
         LOG.exit(method);
     }
@@ -101,7 +99,6 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
-
         LOG.entry(method);
         LOG.entry(method, context, fcn, args);
         if (fcn !== 'init') {
@@ -242,7 +239,11 @@ class Engine {
 
             })
             .then(() => {
+<<<<<<< HEAD
 
+=======
+                // print('init:14');
+>>>>>>> 06f519cbc07adc9cf1ab46fb203ce67cd3f282bc
                 // Create all the default registries for each asset and participant type.
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = context.getRegistryManager();
