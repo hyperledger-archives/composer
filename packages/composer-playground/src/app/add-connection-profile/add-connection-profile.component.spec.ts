@@ -504,8 +504,6 @@ describe('AddConnectionProfileComponent', () => {
     });
 
     describe('#addConnectionProfile', () => {
-
-        let mockModal;
         let mockModalSpy;
 
         beforeEach(inject([NgbActiveModal], (activeModal: NgbActiveModal) => {
@@ -529,8 +527,7 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfileTimeout'] = TIMEOUT;
         }));
 
-        it('should deal with the version being 0.6 and a certificate', fakeAsync(() => {
-            let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
+        it('should deal with the version being 0.6 and a certificate', () => {
             let EXP = {
                 default: false,
                 name: 'New Profile',
@@ -551,10 +548,34 @@ describe('AddConnectionProfileComponent', () => {
             component['version'] = 'v06';
             component.addConnectionProfile();
             mockModalSpy.should.have.been.calledWith(EXP);
-        }));
+        });
 
-        it('should deal with the version being 1', fakeAsync(() => {
-            let mockUpdate = sandbox.stub(component, 'updateConnectionProfiles').returns(Promise.resolve());
+        it('should deal with the version being 0.6 and without a certificate', () => {
+            component['addConnectionProfileCertificate'] = null;
+
+            let EXP = {
+                default: false,
+                name: 'New Profile',
+                profile: {
+                    certificate: null,
+                    certificatePath: CERT_PATH,
+                    deployWaitTime: DEPLOY_TIME,
+                    description: DESC,
+                    eventHubURL: EH_URL,
+                    invokeWaitTime: WAIT_TIME,
+                    keyValStore: KEY_VAL_STORE,
+                    membershipServicesURL: MS_URL,
+                    peerURL: PEER_URL,
+                    type: 'hlf'
+                }
+            };
+
+            component['version'] = 'v06';
+            component.addConnectionProfile();
+            mockModalSpy.should.have.been.calledWith(EXP);
+        });
+
+        it('should deal with the version being 1', () => {
             let EXP = {
                 default: false,
                 name: 'New Profile',
@@ -574,15 +595,89 @@ describe('AddConnectionProfileComponent', () => {
             component['version'] = 'v1';
             component.addConnectionProfile();
             mockModalSpy.should.have.been.calledWith(EXP);
-        }));
+        });
 
-        it('should deal with an invalid version', fakeAsync(() => {
+        it('should deal with the version being 0.6 and with a certificate just whitespace', () => {
+            component['addConnectionProfileCertificate'] = ' ';
+
+            let EXP = {
+                default: false,
+                name: 'New Profile',
+                profile: {
+                    certificate: ' ',
+                    certificatePath: CERT_PATH,
+                    deployWaitTime: DEPLOY_TIME,
+                    description: DESC,
+                    eventHubURL: EH_URL,
+                    invokeWaitTime: WAIT_TIME,
+                    keyValStore: KEY_VAL_STORE,
+                    membershipServicesURL: MS_URL,
+                    peerURL: PEER_URL,
+                    type: 'hlf'
+                }
+            };
+
+            component['version'] = 'v06';
+            component.addConnectionProfile();
+            mockModalSpy.should.have.been.calledWith(EXP);
+        });
+
+        it('should deal with the version being 0.6 and with a certificate with new line char', () => {
+            component['addConnectionProfileCertificate'] = 'bob \n';
+
+            let EXP = {
+                default: false,
+                name: 'New Profile',
+                profile: {
+                    certificate: 'bob \n',
+                    certificatePath: CERT_PATH,
+                    deployWaitTime: DEPLOY_TIME,
+                    description: DESC,
+                    eventHubURL: EH_URL,
+                    invokeWaitTime: WAIT_TIME,
+                    keyValStore: KEY_VAL_STORE,
+                    membershipServicesURL: MS_URL,
+                    peerURL: PEER_URL,
+                    type: 'hlf'
+                }
+            };
+
+            component['version'] = 'v06';
+            component.addConnectionProfile();
+            mockModalSpy.should.have.been.calledWith(EXP);
+        });
+
+        it('should deal with the version being 1 with object orderers', () => {
+            component['addConnectionProfileOrderers'] = [{url: 'http://localhost', cert: 'bob', hostnameOverride: ''}];
+
+            let EXP = {
+                default: false,
+                name: 'New Profile',
+                profile: {
+                    ca: CA,
+                    channel: CHANNEL,
+                    timeout: TIMEOUT,
+                    description: DESC,
+                    keyValStore: KEY_VAL_STORE,
+                    mspID: MSPID,
+                    orderers: [{url: 'http://localhost', cert: 'bob', hostnameOverride: ''}],
+                    peers: PEERS,
+                    type: 'hlfv1'
+                }
+            };
+
+            component['version'] = 'v1';
+            component.addConnectionProfile();
+            mockModalSpy.should.have.been.calledWith(EXP);
+        });
+
+        it('should deal with an invalid version', () => {
             try {
                 component['version'] = 'badversion';
                 component.addConnectionProfile();
             } catch (e) {
                 e.message.should.contain('Unknown connection profile version selected');
             }
-        }));
+        });
     });
 });
