@@ -34,6 +34,7 @@ describe('ModelManager', () => {
     let farm2fork = fs.readFileSync('./test/data/model/farm2fork.cto', 'utf8');
     let concertoModel = fs.readFileSync('./test/data/model/concerto.cto', 'utf8');
     let invalidModel = fs.readFileSync('./test/data/model/invalid.cto', 'utf8');
+    let invalidModel2 = fs.readFileSync('./test/data/model/invalid2.cto', 'utf8');
     let modelManager;
 
     beforeEach(() => {
@@ -70,6 +71,16 @@ describe('ModelManager', () => {
             (() => {
                 modelManager.validateModelFile(invalidModel);
             }).should.throw();
+        });
+
+        it('should fail and set end column to start column and end offset to start offset', () => {
+            invalidModel2.should.not.be.null;
+            try {
+                modelManager.validateModelFile(invalidModel2);
+            } catch (err) {
+                err.getFileLocation().start.column.should.equal(err.getFileLocation().end.column);
+                err.getFileLocation().start.offset.should.equal(err.getFileLocation().start.offset);
+            }
         });
     });
 
