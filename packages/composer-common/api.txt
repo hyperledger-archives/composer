@@ -44,9 +44,8 @@ class FileWallet extends Wallet {
    + Promise update(string,string) 
    + Promise remove(string) 
 }
-class IllegalModelException extends BaseException {
-   + void constructor(String,ModelFile,Object,String,String,String,String) 
-   + string getModelFile() 
+class BaseModelException extends BaseException {
+   + void constructor(string,string,string) 
    + string getFileLocation() 
    + string getShortMessage() 
 }
