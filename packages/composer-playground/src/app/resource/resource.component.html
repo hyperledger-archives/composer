@@ -1,46 +1,48 @@
 <div class="resource-modal">
-  <div class="modal-header">
-    <h1>{{resourceAction}} {{resourceType}}</h1>
-    <button class="icon modal-exit" (click)="activeModal.close()">
-      <svg class="ibm-icon" aria-hidden="true">
-       <use xlink:href="#icon-close_new"></use>
-      </svg>
-    </button>
-  </div>
-  <section class="modal-body">
-    <h2>In registry: <b>{{registryID}}</b></h2>
-    <section class="resource-container">
-      <section class="resource-component">
-      <div>
-        <p class="resource-preview-text">JSON Data Preview</p>
-      </div>
-       <div class="resource-bound">
-        <codemirror name="codeMirror" [(ngModel)]="resourceDefinition" [config]="codeConfig" (ngModelChange)="onDefinitionChanged()"
-                    width="100%" height="100%" ngDefaultControl>
-        </codemirror>
-        <div class="resource-error-text" ng-if="definitionError!=null">
-          <p>{{definitionError}}</p>
-        </div>
-      </div>
-      </section>
+    <div class="modal-header">
+        <h1>{{resourceAction}} {{resourceType}}</h1>
+        <button class="icon modal-exit" (click)="activeModal.close()">
+            <svg class="ibm-icon" aria-hidden="true">
+                <use xlink:href="#icon-close_new"></use>
+            </svg>
+        </button>
+    </div>
+    <section class="modal-body">
+        <h2>In registry: <b>{{registryID}}</b></h2>
+        <section class="resource-container">
+            <section class="resource-component">
+                <div>
+                    <p class="resource-preview-text">JSON Data Preview</p>
+                </div>
+                <codemirror name="codeMirror" [(ngModel)]="resourceDefinition" [config]="codeConfig"
+                            (ngModelChange)="onDefinitionChanged()"
+                            width="100%" height="100%" ngDefaultControl>
+                </codemirror>
+                <div class="resource-error-text" ng-if="definitionError!=null">
+                    <p>{{definitionError}}</p>
+                </div>
+            </section>
+        </section>
     </section>
-  </section>
-  <footer>
-    <p class="footer-text" *ngIf="!editMode()">Just need quick test data? <button type="button" class="icon" (click)="generateResource(true)"><u>Generate Random Data</u></button></p>
-    <button type="button" class="secondary" (click)="activeModal.close();">
-      <span>Cancel</span>
-    </button>
-    <button id="createResourceButton" type="button" class="primary" (click)="addOrUpdateResource()" [disabled]="definitionError!=null || actionInProgress ">
-      <div *ngIf="!actionInProgress">
-        <span>{{resourceAction}}</span>
-      </div>
-      <div *ngIf="actionInProgress" class="ibm-spinner-indeterminate small loop">
-        <div class="loader">
-          <svg class="circular" viewBox="25 25 50 50">
-            <circle class="circle-path" cx="50" cy="50" r="20"/>
-          </svg>
-        </div>
-      </div>
-    </button>
-  </footer>
+    <footer>
+        <p class="footer-text" *ngIf="!editMode()">Just need quick test data?
+            <button type="button" class="icon" (click)="generateResource(true)"><u>Generate Random Data</u></button>
+        </p>
+        <button type="button" class="secondary" (click)="activeModal.close();">
+            <span>Cancel</span>
+        </button>
+        <button id="createResourceButton" type="button" class="primary" (click)="addOrUpdateResource()"
+                [disabled]="definitionError!=null || actionInProgress ">
+            <div *ngIf="!actionInProgress">
+                <span>{{resourceAction}}</span>
+            </div>
+            <div *ngIf="actionInProgress" class="ibm-spinner-indeterminate small loop">
+                <div class="loader">
+                    <svg class="circular" viewBox="25 25 50 50">
+                        <circle class="circle-path" cx="50" cy="50" r="20"/>
+                    </svg>
+                </div>
+            </div>
+        </button>
+    </footer>
 </div>

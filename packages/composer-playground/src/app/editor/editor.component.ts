@@ -56,6 +56,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     private inputFileNameArray: string[] = null ; // This is the input 'FileName' before the currentFile is updated
     private fileNameError: string = null;
 
+    private listItem; // Used in html passage for auto scroll action
+
     constructor(private adminService: AdminService,
                 private clientService: ClientService,
                 private initializationService: InitializationService,
@@ -133,6 +135,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
 
     setCurrentFile(file) {
+        this.listItem = 'editorFileList' + this.findFileIndex(true, file.id);
         let always = (this.currentFile === null || file.readme || file.acl);
         let conditional = (always || this.currentFile.id !== file.id || this.currentFile.displayID !== file.displayID);
         if ( always || conditional ) {

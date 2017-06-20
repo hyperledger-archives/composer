@@ -4,6 +4,7 @@ const Util = require('./../util');
 
 let yeoman = require('yeoman-generator');
 
+
 module.exports = yeoman.Base.extend({
     constructor: function() {
         yeoman.Base.apply(this, arguments);
