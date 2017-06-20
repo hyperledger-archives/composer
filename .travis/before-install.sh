@@ -79,8 +79,8 @@ elif [ -n "$TRAVIS_PULL_REQUEST" ]; then
     git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  > changedfiles.log
 fi
 
-cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { exit 1 }'
-if [ $? -eq 0 ]
+RESULT=$(cat changedfiles | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }')
+if [ "${RESULT}" == "" ];
 then
   echo "Only docs changes"
 else
