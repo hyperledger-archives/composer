@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Util = require('./../util');
 let generators = require('yeoman-generator');
 
 
@@ -37,14 +38,7 @@ module.exports = generators.Base.extend({
                 message: 'Project name:',
                 default: 'cli-app',
                 store: false,
-                validate: function(input) {
-                    if(input !== null && input !== undefined &&
-          input.match(/^[\w-]+$/)) {
-                        return true;
-                    } else {
-                        return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
-                    }
-                }
+                validate: Util.validateAppName
             },
             {
                 type: 'input',
@@ -52,39 +46,21 @@ module.exports = generators.Base.extend({
                 message: 'Description:',
                 default: 'Hyperledger Composer CLI project',
                 store: false,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Description cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateDescription
             },
             {
                 type: 'input',
                 name: 'authorName',
                 message: 'Author name:',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Author name cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateAuthorName
             },
             {
                 type: 'input',
                 name: 'authorEmail',
                 message: 'Author email:',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Author email cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateAuthorEmail
             },
             {
                 type: 'input',
@@ -92,13 +68,7 @@ module.exports = generators.Base.extend({
                 message: 'License:',
                 default: 'Apache-2.0',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Licence cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateLicense
             },
             {
                 type: 'input',
@@ -117,7 +87,7 @@ module.exports = generators.Base.extend({
             {
                 type: 'confirm',
                 name: 'isNpmSameAsNetworkIdentifier',
-                message: 'Is the name in NPM registry the same as the Business Network Identifier?:',
+                message: 'Is the name in NPM registry the same as the Business Network Identifier?',
                 default: true,
                 store: false
             },
@@ -129,14 +99,7 @@ module.exports = generators.Base.extend({
                 when: function(answers) {
                     return !answers.isNpmSameAsNetworkIdentifier;
                 },
-                validate: function(input) {
-                    if(input !== null && input !== undefined &&
-          input.match(/^[\/\@\w-]+$/)) {
-                        return true;
-                    } else {
-                        return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
-                    }
-                }
+                validate: Util.validateBusinessNetworkName
             },
             {
                 type: 'input',
@@ -144,13 +107,7 @@ module.exports = generators.Base.extend({
                 message: 'Connection profile:',
                 default: 'defaultProfile',
                 store: false,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Connection Profile cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateConnectionProfileName
             },
             {
                 type: 'input',
@@ -158,26 +115,14 @@ module.exports = generators.Base.extend({
                 message: 'Enrollment ID:',
                 store: true,
                 default: 'WebAppAdmin',
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Enrollment id name cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateEnrollmentId
             },
             {
                 type: 'input',
                 name: 'enrollmentSecret',
                 message: 'Enrollment Secret:',
                 default: 'DJY27pEnl16d',
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Enrollment Secret email cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateEnrollmentSecret
             }
         ]
         ;
