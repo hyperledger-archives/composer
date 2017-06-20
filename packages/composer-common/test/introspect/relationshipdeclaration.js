@@ -63,10 +63,9 @@ describe('RelationshipDeclaration', function () {
 
         it('should allow a relationship to a transaction in an event', () => {
             const model = `namespace ${ModelUtil.getSystemNamespace()}
-            transaction MyTransaction identified by transactionId{
-                o String transactionId
+            transaction MyTransaction{
             }
-            
+
             event MyEvent identified by eventId {
                 o String eventId
                 --> MyTransaction Transaction

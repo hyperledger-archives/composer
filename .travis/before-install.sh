@@ -10,7 +10,7 @@ sudo rm /usr/local/bin/docker-compose
 curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
 chmod +x docker-compose
 sudo mv docker-compose /usr/local/bin
-echo "Docker-compose version: " 
+echo "Docker-compose version: "
 docker-compose --version
 
 # Update docker
@@ -22,7 +22,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt-get update
 sudo apt-get install docker-ce
-echo "Docker version: " 
+echo "Docker version: "
 docker --version
 
 # Grab the parent (root) directory.
@@ -50,6 +50,49 @@ fi
 echo "->- Build cfg being used"
 cat ${DIR}/build.cfg
 echo "-<-"
+
+
+######
+# checking the changes that are in this file
+echo "Travis commit range $TRAVIS_COMMIT_RANGE"
+echo "Travis commit $TRAVIS_COMMIT"
+echo "Travis event type $TRAVIS_EVENT_TYPE"
+
+
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+  echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" == "" ]; then
+  echo -e 'Build Branch with Snapshot => Branch ['$TRAVIS_BRANCH']'
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
+  echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']'
+else
+  echo -e 'WARN: Should not be here => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']  Pull Request ['$TRAVIS_PULL_REQUEST']'
+fi
+
+
+cd $TRAVIS_BUILD_DIR
+git diff --name-only $(echo $TRAVIS_COMMIT_RANGE | sed 's/\.//')
+
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    git show --pretty=format: --name-only "$TRAVIS_COMMIT_RANGE"|sort|uniq  > changedfiles.log
+elif [ -n "$TRAVIS_PULL_REQUEST" ]; then
+    git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  > changedfiles.log
+fi
+
+RESULT=$(cat changedfiles | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }')
+if [ "${RESULT}" == "" ];
+then
+  echo "Only docs changes"
+else
+  echo "More than docs changes"
+fi
+rm changedfiles.log
+
+cd - > /dev/null
+######
+
+
+
 
 # Check of the task current executing
 if [ "${FC_TASK}" = "docs" ]; then

@@ -59,8 +59,13 @@ stop
 ./fabric-dev-servers/startFabric.sh
 ./fabric-dev-servers/createComposerProfile.sh
 
+# pull and tage the correct image for the installer
+docker pull hyperledger/composer-playground:{{ENV_VER}}
+docker tag hyperledger/composer-playground:{{ENV_VER}} hyperledger/composer-playground:latest
+
+
 # Start all composer
-docker-compose -p composer -f docker-compose-playground{{ENV}}.yml up -d
+docker-compose -p composer -f docker-compose-playground.yml up -d
 # copy over pre-imported admin credentials
 cd fabric-dev-servers/fabric-scripts/hlfv1/composer/creds
 docker exec composer mkdir /home/composer/.hfc-key-store
@@ -98,10 +103,7 @@ esac
 echo
 echo "--------------------------------------------------------------------------------------"
 echo "Hyperledger Fabric and Hyperledger Composer installed, and Composer Playground launched"
-echo "Please use 'composer.sh' to re-start"
-
-# removing instalation image
-rm "${DIR}"/install-hlfv1{{ENV}}.sh
+echo "Please use 'composer.sh' to re-start, and 'composer.sh stop' to shutdown all the Fabric and Composer docker images"
 
 # Exit; this is required as the payload immediately follows.
 exit 0

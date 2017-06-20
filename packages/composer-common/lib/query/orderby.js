@@ -99,7 +99,11 @@ class OrderBy {
      */
     toJSON() {
         let result = {
-            sortCriteria: this.sortCriteria.toJSON()
+
+            sortCriteria: this.sortCriteria.map((sortCriteria) => {
+                return sortCriteria.toJSON();
+            })
+
         };
         return result;
     }

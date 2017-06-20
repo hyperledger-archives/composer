@@ -570,10 +570,6 @@ describe('LoopbackVisitor', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
                     transaction MyBaseTransaction {
-<<<<<<< HEAD
-                     
-=======
->>>>>>> eb4143c0b619ffef099f1e12c400a279a16a3ecc
                     }
                     transaction MyTransaction extends MyBaseTransaction {
                         o String theValue
@@ -673,10 +669,6 @@ describe('LoopbackVisitor', () => {
                     const modelFile = new ModelFile(modelManager, `
                     namespace org.acme
                     abstract transaction MyBaseTransaction {
-<<<<<<< HEAD
-                        
-=======
->>>>>>> eb4143c0b619ffef099f1e12c400a279a16a3ecc
                     }
                     transaction MyTransaction extends MyBaseTransaction {
                         o String theValue
