@@ -64,6 +64,25 @@ class IllegalModelException extends BaseModelException {
     getModelFile() {
         return this.modelFile;
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Returns the file location associated with the exception or null
+     * @return {string} the optional location associated with the exception
+     */
+    getFileLocation() {
+        return this.fileLocation;
+    }
+
+    /**
+     * Returns the error message without the location of the error
+     * @returns {string} the error message
+     */
+    getShortMessage() {
+        return this.shortMessage;
+    }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
 }
 
 module.exports = IllegalModelException;

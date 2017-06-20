@@ -1,6 +1,10 @@
 {
   "name": "generator-hyperledger-composer",
+<<<<<<< HEAD
   "version": "0.8.0",
+=======
+  "version": "0.8.1",
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
   "description": "Generate projects from Hyperledger Composer business network definitions",
   "engines": {
     "node": ">=6",

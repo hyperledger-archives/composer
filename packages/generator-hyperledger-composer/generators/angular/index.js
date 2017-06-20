@@ -80,7 +80,15 @@ module.exports = yeoman.Base.extend({
                         message: 'Project name:',
                         default: 'angular-app',
                         store: true,
+<<<<<<< HEAD
                         validate: Util.validateAppName
+=======
+                        validate: function(input) {
+                            if(input !== null && input !== undefined && input.match(/^[\w-]+$/)) {
+                                return true;
+                            }
+                        }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                     },
                     {
                         type: 'input',
@@ -102,7 +110,18 @@ module.exports = yeoman.Base.extend({
                         name: 'authorEmail',
                         message: 'Author email:',
                         store: true,
+<<<<<<< HEAD
                         validate: Util.validateAuthorEmail
+=======
+                        validate: function(input) {
+                            if(input !== null && input !== undefined && input !== '') {
+                                return true;
+                            }
+                            else {
+                                return 'Author email cannot be null or empty.';
+                            }
+                        }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                     },
                     {
                         type: 'input',
@@ -110,7 +129,17 @@ module.exports = yeoman.Base.extend({
                         message: 'License:',
                         default: 'Apache-2.0',
                         store: true,
+<<<<<<< HEAD
                         validate: Util.validateLicense
+=======
+                        validate: function(input) {
+                            if(input !== null && input !== undefined && input !== '') {
+                                return true;
+                            } else {
+                                return 'Licence cannot be null or empty.';
+                            }
+                        }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                     },
                     {
                         type: 'input',
@@ -121,7 +150,18 @@ module.exports = yeoman.Base.extend({
                         when: function(answers) {
                             return !answers.isNpmSameAsNetworkIdentifier;
                         },
+<<<<<<< HEAD
                         validate: Util.validateBusinessNetworkName
+=======
+                        validate: function(input) {
+                            if(input !== null && input !== undefined) {
+                                return true;
+                            }
+                            else {
+                                return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
+                            }
+                        }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                     },
                     {
                         type: 'input',
@@ -158,6 +198,55 @@ module.exports = yeoman.Base.extend({
                             {name: 'Connect to an existing REST API', value: 'connect'}
                         ],
                         validate: function(input) {
+                            if(input !== null && input !== undefined && input !== '') {
+                                return true;
+                            }
+                            else {
+                                return 'Connection Profile cannot be null or empty.';
+                            }
+                        }
+                    },
+                    {
+                        type: 'input',
+                        name: 'enrollmentId',
+                        message: 'Enrollment ID:',
+                        store: true,
+                        default: 'WebAppAdmin',
+                        validate: function(input) {
+                            if(input !== null && input !== undefined && input !== '') {
+                                return true;
+                            }
+                            else {
+                                return 'Enrollment id name cannot be null or empty.';
+                            }
+                        }
+                    },
+                    {
+                        type: 'input',
+                        name: 'enrollmentSecret',
+                        message: 'Enrollment secret:',
+                        store: true,
+                        default: 'DJY27pEnl16d',
+                        validate: function(input) {
+                            if(input !== null && input !== undefined && input !== '') {
+                                return true;
+                            }
+                            else {
+                                return 'Enrollment Secret email cannot be null or empty.';
+                            }
+                        }
+                    },
+                    {
+                        type: 'list',
+                        name: 'apiServer',
+                        message: 'Do you want to generate a new REST API or connect to an existing REST API?: ',
+                        default: 'generate',
+                        store: true,
+                        choices: [
+                            {name: 'Generate a new REST API', value: 'generate'},
+                            {name: 'Connect to an existing REST API', value: 'connect'}
+                        ],
+                        validate: function(input) {
                             if(input !== null && input !== undefined) {
                                 return true;
                             }
@@ -171,6 +260,7 @@ module.exports = yeoman.Base.extend({
                     questions = [
                         {
                             when: !this.options.appName,
+<<<<<<< HEAD
                             type: 'input',
                             name: 'appName',
                             message: 'Project name:',
@@ -216,6 +306,93 @@ module.exports = yeoman.Base.extend({
                             default: 'digitalproperty-network.bna',
                             store: true,
                             validate: Util.validateBnaName
+=======
+                            type: 'input',
+                            name: 'appName',
+                            message: 'Project name:',
+                            default: 'angular-app',
+                            store: true,
+                            validate: function(input) {
+                                if(input !== null && input !== undefined && input.match(/^[\w-]+$/)) {
+                                    return true;
+                                }
+                                else {
+                                    return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
+                                }
+                            }
+                        },
+                        {
+                            type: 'input',
+                            name: 'appDescription',
+                            message: 'Description:',
+                            default: 'Hyperledger Composer Angular project',
+                            store: true,
+                            validate: function(input) {
+                                if(input !== null && input !== undefined && input !== '') {
+                                    return true;
+                                }
+                                else {
+                                    return 'Description cannot be null or empty.';
+                                }
+                            }
+                        },
+                        {
+                            type: 'input',
+                            name: 'authorName',
+                            message: 'Author name:',
+                            store: true,
+                            validate: function(input) {
+                                if(input !== null && input !== undefined && input !== '') {
+                                    return true;
+                                }
+                                else {
+                                    return 'Author name cannot be null or empty.';
+                                }
+                            }
+                        },
+                        {
+                            type: 'input',
+                            name: 'authorEmail',
+                            message: 'Author email:',
+                            store: true,
+                            validate: function(input) {
+                                if(input !== null && input !== undefined && input !== '') {
+                                    return true;
+                                }
+                                else {
+                                    return 'Author email cannot be null or empty.';
+                                }
+                            }
+                        },
+                        {
+                            type: 'input',
+                            name: 'license',
+                            message: 'License:',
+                            default: 'Apache-2.0',
+                            store: true,
+                            validate: function(input) {
+                                if(input !== null && input !== undefined && input !== '') {
+                                    return true;
+                                } else {
+                                    return 'Licence cannot be null or empty.';
+                                }
+                            }
+                        },
+                        {
+                            type: 'input',
+                            name: 'fileName',
+                            message: 'Business network archive file (Path from the current working directory):',
+                            default: 'digitalproperty-network.bna',
+                            store: true,
+                            validate: function(input) {
+                                if(input !== null && input !== undefined) {
+                                    return true;
+                                }
+                                else {
+                                    return 'File name cannot be null or empty.';
+                                }
+                            }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                         }];
                 }
 
@@ -258,7 +435,17 @@ module.exports = yeoman.Base.extend({
                                     {name: 'Always use namespaces',value: 'always'},
                                     {name: 'Never use namespaces',value: 'never'}
                                 ],
+<<<<<<< HEAD
                                 validate: Util.validateNamespace
+=======
+                                validate: function(input) {
+                                    if(input !== null && input !== undefined) {
+                                        return true;
+                                    } else {
+                                        return 'Namespace option must be selected';
+                                    }
+                                }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                             }];
                         }
                         else if(apiServer === 'connect'){
@@ -286,7 +473,17 @@ module.exports = yeoman.Base.extend({
                                     {name: 'Namespaces are used', value: 'always'},
                                     {name: 'Namespaces are not used', value: 'never'}
                                 ],
+<<<<<<< HEAD
                                 validate: Util.validateNamespace
+=======
+                                validate: function(input) {
+                                    if(input !== null && input !== undefined) {
+                                        return true;
+                                    } else {
+                                        return 'Namespace option must be selected';
+                                    }
+                                }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                             }];
                         }
                         else{
@@ -331,6 +528,17 @@ module.exports = yeoman.Base.extend({
                             {
                                 name: 'Namespaces are not used',
                                 value: 'never'
+<<<<<<< HEAD
+=======
+                            }
+                            ],
+                            validate: function(input) {
+                                if(input !== null && input !== undefined) {
+                                    return true;
+                                } else {
+                                    return 'Namespace option must be selected';
+                                }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                             }
                             ],
                             validate: Util.validateNamespace

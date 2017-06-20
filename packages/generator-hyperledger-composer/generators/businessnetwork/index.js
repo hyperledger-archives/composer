@@ -3,7 +3,10 @@
 const Util = require('./../util');
 
 let yeoman = require('yeoman-generator');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
 
 module.exports = yeoman.Base.extend({
     constructor: function() {
@@ -16,6 +19,7 @@ module.exports = yeoman.Base.extend({
 
         let questions = [
             {
+<<<<<<< HEAD
                 type: 'input',
                 name: 'appname',
                 message: 'Business network name:',
@@ -26,11 +30,17 @@ module.exports = yeoman.Base.extend({
                 type: 'input',
                 name: 'appdescription',
                 message: 'Description:',
+=======
+                type: 'input',
+                name: 'appname',
+                message: 'Business network name:',
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                 store: true,
                 validate: Util.validateDescription
             },
             {
                 type: 'input',
+<<<<<<< HEAD
                 name: 'appauthor',
                 message: 'Author name: ',
                 store: true,
@@ -58,6 +68,73 @@ module.exports = yeoman.Base.extend({
                 default: 'org.acme.biznet',
                 store: true,
                 validate: Util.validateNamespace
+=======
+                name: 'appdescription',
+                message: 'Description:',
+                store: true,
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    } else {
+                        return 'Description cannot be null or empty.';
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'appauthor',
+                message: 'Author name: ',
+                store: true,
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    } else {
+                        return 'Author name cannot be null or empty.';
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'appemail',
+                message: 'Author email:',
+                store: true,
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    }
+                    else {
+                        return 'Author email cannot be null or empty.';
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'applicense',
+                message: 'License:',
+                default: 'Apache-2.0',
+                store: true,
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    } else {
+                        return 'Licence cannot be null or empty.';
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'namespace',
+                message: 'Namespace:',
+                default: 'org.acme.biznet',
+                store: true,
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input.match(/^(?:[a-z]\d*(?:\.[a-z])?)+$/)) {
+                        return true;
+                    } else {
+                        return 'Name must mactch: ^(?:[a-z]\d*(?:\.[a-z])?)+$';
+                    }
+                }
+>>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
             }
         ];
 
