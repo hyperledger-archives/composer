@@ -98,10 +98,7 @@ esac
 echo
 echo "--------------------------------------------------------------------------------------"
 echo "Hyperledger Fabric and Hyperledger Composer installed, and Composer Playground launched"
-echo "Please use 'composer.sh' to re-start"
-
-# removing instalation image
-rm "${DIR}"/install-hlfv1{{ENV}}.sh
+echo "Please use 'composer.sh' to re-start, and 'composer.sh stop' to shutdown all the Fabric and Composer docker images"
 
 # Exit; this is required as the payload immediately follows.
 exit 0

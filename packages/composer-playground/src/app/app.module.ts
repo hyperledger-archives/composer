@@ -67,6 +67,7 @@ import { SampleBusinessNetworkService } from './services/samplebusinessnetwork.s
 import { AboutService } from './services/about.service';
 import { AlertService } from './services/alert.service';
 import { EditorService } from './services/editor.service';
+import { ScrollToElementDirective } from './directives/scroll';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -145,6 +146,7 @@ type StoreType = {
         RegistryComponent,
         ReplaceComponent,
         ResourceComponent,
+        ScrollToElementDirective,
         SuccessComponent,
         SwitchIdentityComponent,
         TestComponent,
