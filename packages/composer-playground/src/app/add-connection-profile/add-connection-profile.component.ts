@@ -217,7 +217,7 @@ export class AddConnectionProfileComponent {
             let newOrderersList = [];
             for (let x = 0; x < this.addConnectionProfileOrderers.length; x++) {
                 if (typeof this.addConnectionProfileOrderers[x] === 'string') {
-                    newOrderersList.push({url: this.addConnectionProfileOrderers[x], cert: '', hostnameOverride: ''});
+                    newOrderersList.push({url: this.addConnectionProfileOrderers[x], cert: ''});
                 } else {
                     newOrderersList.push(this.addConnectionProfileOrderers[x]);
                 }
@@ -292,8 +292,7 @@ export class AddConnectionProfileComponent {
             this.addConnectionProfileType = 'hlfv1';
             this.addConnectionProfileOrderers = [{
                 url: 'grpc://localhost:7050',
-                cert: '',
-                hostnameOverride: ''
+                cert: ''
             }];
 
             this.addConnectionProfileCertificateAuthority = {
@@ -303,8 +302,7 @@ export class AddConnectionProfileComponent {
             this.addConnectionProfilePeers = [{
                 requestURL: 'grpc://localhost:7051',
                 eventURL: 'grpc://localhost:7053',
-                cert: '',
-                hostnameOverride: ''
+                cert: ''
             }];
             this.addConnectionProfileKeyValStore = '/tmp/keyValStore';
             this.addConnectionProfileChannel = 'mychannel';
