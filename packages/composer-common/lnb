@@ -1,0 +1,4 @@
+#!/bin/bash
+CMD=./node_modules/.bin/$@
+echo ${CMD}
+${CMD}

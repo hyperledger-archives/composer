@@ -17,7 +17,7 @@
 const ModelManager = require('../../lib/modelmanager');
 const sinon = require('sinon');
 const RelationshipDeclaration = require('../../lib/introspect/relationshipdeclaration');
-const ModelUtil = require('../../lib/modelutil');
+// const ModelUtil = require('../../lib/modelutil');
 
 const chai = require('chai');
 chai.should();
@@ -61,18 +61,7 @@ describe('RelationshipDeclaration', function () {
             }).should.throw(/Relationship must have a type/);
         });
 
-        it('should allow a relationship to a transaction in an event', () => {
-            const model = `namespace ${ModelUtil.getSystemNamespace()}
-            transaction MyTransaction{
-            }
 
-            event MyEvent identified by eventId {
-                o String eventId
-                --> MyTransaction Transaction
-            }`;
-            (function() {
-                modelManager.addModelFile(model);
-            }).should.not.throw();
-        });
+        // relationship to transaction not currently part of the spec
     });
 });

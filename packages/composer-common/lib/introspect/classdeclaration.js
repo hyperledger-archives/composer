@@ -176,7 +176,7 @@ class ClassDeclaration {
             if(!field) {
                 let formatter = Globalize('en').messageFormatter('classdeclaration-validate-identifiernotproperty');
                 throw new IllegalModelException(formatter({
-                    'class': this.namie,
+                    'class': this.name,
                     'idField': this.idField
                 }), this.modelFile, this.ast.location);
             }

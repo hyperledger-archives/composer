@@ -55,7 +55,7 @@ describe('Serializer', () => {
         o String newValue
         }
 
-        transaction SampleEvent{
+        event SampleEvent{
         --> SampleAsset asset
         o String newValue
         }

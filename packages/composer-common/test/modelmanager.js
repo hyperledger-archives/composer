@@ -160,7 +160,7 @@ describe('ModelManager', () => {
             }
 
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.getModelFiles().length.should.equal(1);
+            modelManager.getModelFiles().length.should.equal(2);
         });
 
         it('should restore existing model files on validation error', () => {
