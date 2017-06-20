@@ -15,32 +15,32 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
+const Select = require('./select');
 
 /**
- * Predicate captures a conditional Javascript expression:
- * anything that can legally appear within a if statement.
+ * Query defines a SELECT query over a resource (asset, transaction or participant)
  *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class Predicate {
+class Query {
 
     /**
-     * Create an Predicate from an Abstract Syntax Tree. The AST is the
+     * Create an Query from an Abstract Syntax Tree. The AST is the
      * result of parsing.
      *
-     * @param {AclRule} aclRule - the AclRule for this Predicate
-     * @param {Object} ast - the AST created by the parser
+     * @param {QueryFile} queryFile - the QueryFile for this query
+     * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
-    constructor(aclRule, ast) {
-        if(!aclRule || !ast) {
-            throw new IllegalModelException('Invalid AclRule or AST');
+    constructor(queryFile, ast) {
+        if(!queryFile || !ast) {
+            throw new IllegalModelException('Invalid QueryFile or AST');
         }
 
-        this.expression = ast;
-        this.aclRule = aclRule;
+        this.ast = ast;
+        this.queryFile = queryFile;
         this.process();
     }
 
@@ -56,21 +56,12 @@ class Predicate {
     }
 
     /**
-     * Returns the AclRule that owns this ModelBinding.
+     * Returns the QueryFile that owns this Query.
      *
-     * @return {AclRule} the owning AclRule
+     * @return {AclFile} the owning QueryFile
      */
-    getAclRule() {
-        return this.aclRule;
-    }
-
-    /**
-     * Returns the expression as a text string.
-     *
-     * @return {string} the operator for the predicate
-     */
-    getExpression() {
-        return this.expression;
+    getQueryFile() {
+        return this.queryFile;
     }
 
     /**
@@ -80,30 +71,60 @@ class Predicate {
      * @private
      */
     process() {
+        this.name = this.ast.identifier.name;
+        this.description = this.ast.description;
+        this.select = new Select(this, this.ast.select);
     }
 
     /**
-     * Semantic validation of the structure of this ModelBinding.
+     * Semantic validation of the structure of this Query.
      *
      * @throws {IllegalModelException}
      * @private
      */
     validate() {
+        this.select.validate();
     }
 
     /**
-     * Returns a new object representing this function declaration that is
+     * Returns the name of this Query.
+     *
+     * @return {string} the name of the Query
+     */
+    getName() {
+        return this.name;
+    }
+
+    /**
+     * Returns the description associated with this Query.
+     *
+     * @return {string} the description
+     */
+    getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Returns the select statement associated with this Query.
+     * @return {Select} The select statement.
+     */
+    getSelect() {
+        return this.select;
+    }
+
+    /**
+     * Returns a new object representing this Query that is
      * suitable for serializing as JSON.
      * @return {Object} A new object suitable for serializing as JSON.
      */
     toJSON() {
         let result = {
-            sortCriteria: this.sortCriteria.map((sortCriteria) => {
-                return sortCriteria.toJSON();
-            })
+            name: this.name,
+            description: this.description,
+            select: this.select.toJSON()
         };
         return result;
     }
 }
 
-module.exports = Predicate;
+module.exports = Query;
