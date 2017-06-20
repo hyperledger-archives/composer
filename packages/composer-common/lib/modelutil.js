@@ -134,6 +134,20 @@ class ModelUtil {
         return (typeDeclaration !== null && typeDeclaration.isEnum());
     }
 
+    /**
+     * Get the fully qualified name of a type.
+     * @param {string} namespace - namespace of the type.
+     * @param {string} type - short name of the type.
+     * @returns {string} the fully qualified type name.
+     */
+    static getFullyQualifiedName(namespace, type) {
+        if (namespace) {
+            return namespace + '.' + type;
+        } else {
+            return type;
+        }
+    }
+
 }
 
 module.exports = ModelUtil;

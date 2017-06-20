@@ -230,9 +230,6 @@ class JSONPopulator {
                     }
 
                     const classDeclaration = parameters.modelManager.getType(jsonItem.$class);
-                    if(!classDeclaration) {
-                        throw new Error( 'Failed to find type ' + jsonItem.$class + ' in ModelManager.' );
-                    }
 
                     // create a new instance, using the identifier field name as the ID.
                     let subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
@@ -258,9 +255,6 @@ class JSONPopulator {
                 }
 
                 const classDeclaration = parameters.modelManager.getType(jsonObj.$class);
-                if(!classDeclaration) {
-                    throw new Error( 'Failed to find type ' + jsonObj.$class + ' in ModelManager.' );
-                }
 
                 // create a new instance, using the identifier field name as the ID.
                 let subResource = parameters.factory.newResource(classDeclaration.getModelFile().getNamespace(),
