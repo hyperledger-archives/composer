@@ -64,8 +64,12 @@ class RelationshipDeclaration extends Property {
                 classDeclaration = this.getParent().getModelFile().getType(this.getType());
             }
             else {
-              // otherwise we have to use the modelmanager to try to load
-                classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
+                // otherwise we have to use the modelmanager to try to load
+                try {
+                    classDeclaration = this.getParent().getModelFile().getModelManager().getType(this.getFullyQualifiedTypeName());
+                } catch (err) {
+                    // Let classDeclaration remain null and get handled below
+                }
             }
 
             if(classDeclaration === null) {
