@@ -98,7 +98,9 @@ class Predicate {
      */
     toJSON() {
         let result = {
-            expression: this.expression,
+            sortCriteria: this.sortCriteria.map((sortCriteria) => {
+                return sortCriteria.toJSON();
+            })
         };
         return result;
     }
