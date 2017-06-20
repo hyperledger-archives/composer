@@ -12,8 +12,13 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+<<<<<<< HEAD
 Version 0.8.1 {5ac120d6a9f42683dfcd729fea3ea1c9} 2017-06-14
 - Added BaseModelException to keep error messages consistent
+=======
+Version 0.8.1 {5ac120d6a9f42683dfcd729fea3ea1c9} 2017-06-20
+- Added BaseModelException to standardise model errors
+>>>>>>> 9cb27110e440a83fec99f6d1e8ef342d3de49394
 
 Version 0.8.0 {1dbfded54f54b7861b8eadb64d95f82a} 2017-06-14
 - Added TypeNotFoundException
