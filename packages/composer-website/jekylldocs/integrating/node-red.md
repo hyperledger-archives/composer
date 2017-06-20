@@ -13,6 +13,7 @@ excerpt: Deploying the REST server for a business network
 
 Node-RED is commonly used to rapidly prototype Internet of Things style applications, or to wire existing Internet services together.
 You can use the {{site.data.conrefs.composer_full}} Node-RED contribution to:
+
 - Submit transactions
 - Read and update assets and participants
 - Subscribe to events
