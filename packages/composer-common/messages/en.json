@@ -8,8 +8,10 @@
             "  other {You and # others liked this}",
             "}"
         ],
-        "hello": "Hello, {0} {1} {2}",
-        "hey": "Hey, {first} {middle} {last}",
+        "test-hello-array": "Hello, {0} {1} {2}",
+        "test-hello-object": "Hello, {first} {middle} {last}",
+        "test-repeat-array": "{0} {0} {0}",
+        "test-repeat-object": "{value} {value} {value}",
 
         "classdeclaration-constructor-modelastreq": "ModelFile and AST are required to create a ClassDecl.",
         "classdeclaration-process-unrecmodelelem": "Unrecognised model element {type}",
@@ -34,22 +36,17 @@
         "concerto-login-noenrollmentsecret": "enrollmentSecret not specified",
         "concerto-deploy-nosecuritycontext": "securityContext not specified",
 
-        "factory-newinstance-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
-        "factory-newinstance-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
         "factory-newinstance-missingidentifier": "Missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-invalididentifier": "Invalid or missing identifier for Type {type} in namespace {namespace}",
         "factory-newinstance-abstracttype": "Cannot instantiate Abstract Type {type} in namespace {namespace}",
-
-        "factory-newrelationship-notregisteredwithmm": "ModelFile for namespace {namespace} has not been registered with the ModelManager",
-        "factory-newrelationship-typenotdeclaredinns": "Type {type} is not declared in namespace {namespace}",
 
         "instancegenerator-newinstance-noconcreteclass": "No concrete extending type for {type}",
 
         "modelmanager-resolvetype-nonsfortype": "No registered namespace for type {type} in {context}",
         "modelmanager-resolvetype-notypeinnsforcontext": "No type {type} in namespace {namespace} for {context}",
 
-        "modelmanager-gettype-noregisteredns": "No registered namespace for type {type}",
-        "modelmanager-gettype-notypeinns": "No type {type} in namespace {namespace}",
+        "modelmanager-gettype-noregisteredns": "Namespace is not defined for type {type}",
+        "modelmanager-gettype-notypeinns": "Type {type} is not defined in namespace {namespace}",
 
         "serializer-constructor-factorynull": "Factory cannot be null",
         "serializer-constructor-modelmanagernull": "ModelManager cannot be null",
@@ -68,6 +65,8 @@
         "resourcevalidator-abstractclass": "The class {className} is abstract. Should not have an instance!",
         "resourcevalidator-undeclaredfield": "Instance {resourceId} has a property named {propertyName} which is not declared in {fullyQualifiedTypeName}",
         "resourcevalidator-invalidfieldassignment": "Instance {resourceId} has property {propertyName} with type {objectType} that is not derived from {fieldType}",
-        "resourcevalidator-emptyidentifier": "Instance {resourceId} has an empty identifier."
+        "resourcevalidator-emptyidentifier": "Instance {resourceId} has an empty identifier.",
+
+        "typenotfounderror-defaultmessage": "Type not found: {typeName}"
     }
 }

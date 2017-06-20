@@ -19,6 +19,7 @@ const ModelManager = require('../lib/modelmanager');
 const Relationship = require('../lib/model/relationship');
 const Resource = require('../lib/model/resource');
 const Serializer = require('../lib/serializer');
+const TypeNotFoundException = require('../lib/typenotfoundexception');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -99,7 +100,7 @@ describe('Serializer', () => {
             mockResource.getFullyQualifiedType.returns('org.acme.sample.NoSuchAsset');
             (() => {
                 serializer.toJSON(mockResource);
-            }).should.throw(/No type/);
+            }).should.throw(TypeNotFoundException, /NoSuchAsset/);
         });
 
         it('should validate if the validate flag is set to false', () => {
@@ -164,7 +165,7 @@ describe('Serializer', () => {
             let serializer = new Serializer(factory, modelManager);
             (() => {
                 serializer.fromJSON(mockResource);
-            }).should.throw(/No type/);
+            }).should.throw(TypeNotFoundException, /NoSuchAsset/);
         });
 
         it('should deserialize a valid asset', () => {
