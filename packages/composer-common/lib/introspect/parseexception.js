@@ -34,7 +34,6 @@ class ParseException extends BaseModelException {
 
         let fullMessage = message +  ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
 
-<<<<<<< HEAD
         // The parser does not give us back the end location of an invalid token.
         // Making the end column equal to the end column makes use of
         // vscodes default behaviour of selecting an entire word
@@ -48,8 +47,6 @@ class ParseException extends BaseModelException {
                 }
             }
         }
-=======
->>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
         super(message, fileLocation, fullMessage);
     }
 
