@@ -333,6 +333,7 @@ class ModelManager {
      * @private
      */
     getType(qualifiedName) {
+
         const namespace = ModelUtil.getNamespace(qualifiedName);
 
         const modelFile = this.getModelFile(namespace);

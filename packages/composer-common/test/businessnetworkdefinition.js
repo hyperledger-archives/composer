@@ -162,7 +162,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getIdentifier().should.equal('test-archive@0.0.1');
                 businessNetwork.getDescription().should.equal('A test business network.');
                 businessNetwork.getMetadata().getREADME().should.equal('This is a test');
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(4);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 return businessNetwork.toArchive().then(buffer => {
