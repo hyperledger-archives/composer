@@ -35,7 +35,6 @@ module.exports = generators.Base.extend({
                 when: !this.options.appName,
                 type: 'input',
                 name: 'appName',
-<<<<<<< HEAD
                 message: 'Project name:',
                 default: 'cli-app',
                 store: false,
@@ -77,154 +76,11 @@ module.exports = generators.Base.extend({
                 message: 'NPM business network module:',
                 default: 'digitalproperty-network',
                 store: false,
-=======
-                message: 'Your NPM library name:',
-                default: 'cli-app',
-                store: false,
-                validate: function(input) {
-                    if(input !== null && input !== undefined &&
-          input.match(/^[\w-]+$/)) {
-                        return true;
-                    } else {
-                        return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'appDescription',
-                message: 'Description:',
-                default: 'Hyperledger Composer CLI project',
-                store: false,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Description cannot be null or empty.';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'authorName',
-                message: 'Author name:',
-                store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Author name cannot be null or empty.';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'authorEmail',
-                message: 'Author email:',
-                store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Author email cannot be null or empty.';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'license',
-                message: 'License:',
-                default: 'Apache-2.0',
-                store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Licence cannot be null or empty.';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'npmNetworkDependancy',
-                message: 'NPM business network module:',
-                default: 'digitalproperty-network',
-                store: false,
                 validate: function(input) {
                     if(input !== null && input !== undefined && input !== '') {
                         return true;
                     } else {
                         return 'Network cannot be null or empty.';
-                    }
-                }
-            },
-            {
-                type: 'confirm',
-                name: 'isNpmSameAsNetworkIdentifier',
-                message: 'Is the name in NPM registry the same as the Business Network Identifier?:',
-                default: true,
-                store: false
-            },
-            {
-                type: 'input',
-                name: 'networkIdentifier',
-                message: 'Business network identifier:',
-                store: false,
-                when: function(answers) {
-                    return !answers.isNpmSameAsNetworkIdentifier;
-                },
-                validate: function(input) {
-                    if(input !== null && input !== undefined &&
-          input.match(/^[\/\@\w-]+$/)) {
-                        return true;
-                    } else {
-                        return 'Name must only use lowercase letters, numbers and dashes: ^[a-z\-\d]+$';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'connectionProfileName',
-                message: 'Connection profile:',
-                default: 'defaultProfile',
-                store: false,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Connection Profile cannot be null or empty.';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'enrollmentId',
-                message: 'Enrollment ID:',
-                store: true,
-                default: 'WebAppAdmin',
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Enrollment id name cannot be null or empty.';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'enrollmentSecret',
-                message: 'Enrollment Secret:',
-                default: 'DJY27pEnl16d',
->>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-<<<<<<< HEAD
-                        return 'Network cannot be null or empty.';
-=======
-                        return 'Enrollment Secret email cannot be null or empty.';
->>>>>>> 02fe1e7ba5580e6ec3e040d03ca7c2627adb24de
                     }
                 }
             },
