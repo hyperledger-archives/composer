@@ -54,6 +54,7 @@ module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
 module.exports.BaseModelException = require('./lib/introspect/basemodelexception');
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
+module.exports.BusinessNetworkMetadata = require('./lib/businessnetworkmetadata');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
 module.exports.CodeGen = require('./lib/codegen/codegen.js');
 module.exports.ComboConnectionProfileStore = require('./lib/comboconnectionprofilestore');
