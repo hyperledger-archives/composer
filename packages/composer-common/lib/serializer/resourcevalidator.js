@@ -318,13 +318,13 @@ class ResourceValidator {
             // a field that points to a transaction, asset, participant...
             let classDeclaration = parameters.modelManager.getType(field.getFullyQualifiedTypeName());
             if(obj instanceof Identifiable) {
-                classDeclaration = parameters.modelManager.getType(obj.getFullyQualifiedType());
-
-                if(!classDeclaration) {
+                try {
+                    classDeclaration = parameters.modelManager.getType(obj.getFullyQualifiedType());
+                } catch (err) {
                     ResourceValidator.reportFieldTypeViolation(parameters.rootResourceIdentifier, propName, obj, field);
                 }
 
-              // is it compatible?
+                // is it compatible?
                 if(!ModelUtil.isAssignableTo(classDeclaration.getModelFile(), classDeclaration.getFullyQualifiedName(), field)) {
                     ResourceValidator.reportInvalidFieldAssignment(parameters.rootResourceIdentifier, propName, obj, field);
                 }

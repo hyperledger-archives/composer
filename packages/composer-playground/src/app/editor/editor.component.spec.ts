@@ -18,6 +18,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SampleBusinessNetworkService } from '../services/samplebusinessnetwork.service';
 import { AlertService } from '../services/alert.service';
 import { ModelFile, Script, AclManager, AclFile } from 'composer-common';
+import { ScrollToElementDirective } from '../directives/scroll/scroll-to-element.directive';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
@@ -90,7 +91,7 @@ describe('EditorComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective ],
+            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective ],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},

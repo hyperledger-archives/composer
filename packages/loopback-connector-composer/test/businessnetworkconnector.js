@@ -30,6 +30,7 @@ const Resource = require('composer-common/lib/model/resource');
 const Serializer = require('composer-common').Serializer;
 const TransactionDeclaration = require('composer-common/lib/introspect/transactiondeclaration');
 const TransactionRegistry = require('composer-client/lib/transactionregistry');
+const TypeNotFoundException = require('composer-common/lib/typenotfoundexception');
 
 const chai = require('chai');
 const should = chai.should();
@@ -434,7 +435,7 @@ describe('BusinessNetworkConnector', () => {
         it('should throw for a ClassDeclaration that does not exist', () => {
             (() => {
                 testConnector.getRegistryForModel(mockBusinessNetworkConnection, 'org.acme.base.Thing');
-            }).should.throw(/No type org.acme.base.Thing in namespace org.acme.base/);
+            }).should.throw(TypeNotFoundException);
         });
 
     });
@@ -509,7 +510,7 @@ describe('BusinessNetworkConnector', () => {
                     }
                     resolve(result);
                 });
-            }).should.be.rejectedWith(/No type org.acme.base.WrongBaseAsset in namespace org.acme.base/);
+            }).should.be.rejectedWith(TypeNotFoundException);
         });
 
         it('should handle an error when trying to retrieve a specific Asset for a given id in a where clause', () => {
@@ -948,7 +949,7 @@ describe('BusinessNetworkConnector', () => {
                     resolve();
                 });
             })
-            .should.be.rejectedWith(/No type org.acme.base.WrongBaseAsset in namespace org.acme.base/)
+            .should.be.rejectedWith(TypeNotFoundException)
             .then(() => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });
@@ -1071,7 +1072,7 @@ describe('BusinessNetworkConnector', () => {
                     resolve();
                 });
             })
-            .should.be.rejectedWith(/No type org.acme.base.WrongBaseAsset in namespace org.acme.base/)
+            .should.be.rejectedWith(TypeNotFoundException)
             .then(() => {
                 sinon.assert.calledOnce(testConnector.ensureConnected);
                 sinon.assert.calledWith(testConnector.ensureConnected, { test: 'options' });

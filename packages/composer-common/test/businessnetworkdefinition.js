@@ -103,7 +103,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.aclManager.getAclRules().should.have.length(5);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(25);
+                intro.getClassDeclarations().length.should.equal(29);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
@@ -117,7 +117,7 @@ describe('BusinessNetworkDefinition', () => {
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(25);
+                intro.getClassDeclarations().length.should.equal(29);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
@@ -144,8 +144,8 @@ describe('BusinessNetworkDefinition', () => {
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(13);
-                businessNetwork.getModelManager().getModelFiles().length.should.equal(2);
+                intro.getClassDeclarations().length.should.equal(17);
+                businessNetwork.getModelManager().getModelFiles().length.should.equal(3);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });

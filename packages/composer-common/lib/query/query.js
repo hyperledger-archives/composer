@@ -96,12 +96,20 @@ class Query {
     }
 
     /**
-     * Returns the description associated with this ACL Rule.
+     * Returns the description associated with this Query.
      *
      * @return {string} the description
      */
     getDescription() {
         return this.description;
+    }
+
+    /**
+     * Returns the select statement associated with this Query.
+     * @return {Select} The select statement.
+     */
+    getSelect() {
+        return this.select;
     }
 
     /**

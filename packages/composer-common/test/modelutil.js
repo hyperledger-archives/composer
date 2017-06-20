@@ -156,4 +156,17 @@ describe('ModelUtil', function () {
 
     });
 
+    describe('#getFullyQualifiedName', function() {
+        it('valid inputs', function() {
+            const result = ModelUtil.getFullyQualifiedName('a.namespace', 'type');
+            result.should.equal('a.namespace.type');
+        });
+
+        it('empty namespace should return the type with no leading dot', function() {
+            const result = ModelUtil.getFullyQualifiedName('', 'type');
+            result.should.equal('type');
+        });
+
+    });
+
 });

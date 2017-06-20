@@ -16,6 +16,7 @@
 
 const Factory = require('../lib/factory');
 const ModelManager = require('../lib/modelmanager');
+const TypeNotFoundException = require('../lib/typenotfoundexception');
 const uuid = require('uuid');
 
 const should = require('chai').should();
@@ -141,13 +142,13 @@ describe('Factory', () => {
         it('should throw if namespace missing', () => {
             (() => {
                 factory.newConcept('org.acme.missing', 'MyConcept');
-            }).should.throw(/ModelFile for namespace org.acme.missing has not been registered with the ModelManager/);
+            }).should.throw(TypeNotFoundException);
         });
 
         it('should throw if Concept missing', () => {
             (() => {
                 factory.newConcept('org.acme.test', 'MissingConcept');
-            }).should.throw(/Type MissingConcept is not declared in namespace org.acme.test/);
+            }).should.throw(TypeNotFoundException);
         });
 
         it('should throw if concept is abstract', () => {
@@ -174,6 +175,23 @@ describe('Factory', () => {
             should.not.equal(resource.validate, undefined);
         });
 
+    });
+
+    describe('#newRelationship', function() {
+        it('should throw if namespace missing', function() {
+            (() => factory.newRelationship('org.acme.missing', 'MyAsset', 'id')).
+                should.throw(TypeNotFoundException, /org.acme.missing/);
+        });
+
+        it('should throw if type missing', function() {
+            (() => factory.newRelationship('org.acme.test', 'MissingType', 'id')).
+                should.throw(TypeNotFoundException, /MissingType/);
+        });
+
+        it('should succeed for a valid type', function() {
+            const relationship = factory.newRelationship('org.acme.test', 'MyAsset', 'id');
+            relationship.isRelationship().should.be.true;
+        });
     });
 
     describe('#newTransaction', () => {

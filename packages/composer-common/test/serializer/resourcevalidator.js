@@ -17,6 +17,7 @@
 const ModelManager = require('../../lib/modelmanager');
 const Factory = require('../../lib/factory');
 const TypedStack = require('../../lib/serializer/typedstack');
+const TypeNotFoundException = require('../../lib/typenotfoundexception');
 const ResourceValidator = require('../../lib/serializer/resourcevalidator');
 
 const chai = require('chai');
@@ -311,8 +312,8 @@ describe('ResourceValidator', function () {
             modelManager.deleteModelFile('org.acme.l1');
 
             (function () {
-                assetDeclaration.accept(resourceValidator,parameters );
-            }).should.throw(/No registered namespace for type org.acme.l1.Base/);
+                assetDeclaration.accept(resourceValidator, parameters);
+            }).should.throw(TypeNotFoundException, /org.acme.l1/);
         });
 
         it('should detect assigning to a missing type', function () {
@@ -325,8 +326,8 @@ describe('ResourceValidator', function () {
             modelManager.deleteModelFile('org.acme.l3');
 
             (function () {
-                assetDeclaration.accept(resourceValidator,parameters );
-            }).should.throw(/No registered namespace for type org.acme.l3.Car/);
+                assetDeclaration.accept(resourceValidator, parameters);
+            }).should.throw(TypeNotFoundException, /org.acme.l3/);
         });
 
         it('should detect assigning to an abstract type', function () {
