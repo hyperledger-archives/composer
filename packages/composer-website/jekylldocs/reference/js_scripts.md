@@ -1,19 +1,17 @@
 ---
 layout: default
-title: Hyperledger Composer - Transaction Processor Functions
-category: reference
+title: Transaction Processor Functions
+section: reference
+index-order: 5
 sidebar: sidebars/reference.md
-excerpt: Creating transaction processor functions in JavaScript
+excerpt: A Hyperledger Composer Business Network Definition is composed of a set of model files and scripts. The scripts contain transaction processor functions that implement the transactions defined in the Business Network Definition's model files.
 ---
 
 # JavaScript Functions
 
 ---
 
-A {{site.data.conrefs.composer_full}} Business Network Definition is composed of a set of model files
-and a set of scripts. The scripts may contain transaction processor
-functions that implement the transactions defined in the Business
-Network Definition's model files.
+A {{site.data.conrefs.composer_full}} Business Network Definition is composed of a set of model files and a set of scripts. The scripts may contain transaction processor functions that implement the transactions defined in the Business Network Definition's model files.
 
 Transaction processor functions are automatically invoked by the runtime when transactions are submitted using the BusinessNetworkConnection API.
 

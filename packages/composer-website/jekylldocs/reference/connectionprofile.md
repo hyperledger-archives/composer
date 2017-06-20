@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer - Connection Profile
-category: reference
+title: Connection Profiles
+section: reference
+index-order: 4
 sidebar: sidebars/reference.md
-excerpt: Using Connection Profiles
+excerpt: Use connection profiles to define the fabric to deploy your business network to. This topic contains example connection profiles for Hyperledger Fabric v0.6 and 1.0-beta.
 ---
 
 # Connection Profiles
@@ -35,7 +36,7 @@ A Connection Profile is used by {{site.data.conrefs.composer_full}} to connect t
             "peerURL": <your-peer-url>,
             "eventHubURL": <your-event-hub-url>
         }
-  If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v1.0, use the following format:
+  If you are creating a connection profile for {{site.data.conrefs.hlf_full}} v1.0 beta, use the following format:
 
         {
             "type": "hlfv1",

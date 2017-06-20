@@ -6,17 +6,13 @@
 **[Integrating Existing Systems](../integrating/integrating-index.html)**
 **[Managing and Operating](../managing/managingindex.html)**
 **[Diagnosing Problems](../problems/diagnostics.html)**
-**[Reference](../reference/MeetTheModules.html)**
+**[Reference](../reference/reference-index.html)**
 [npm Modules](../reference/MeetTheModules.html )
 [Modeling Language](../reference/cto_language.html )
 [Access Control Language](../reference/acl_language.html )
 [Connection Profile](../reference/connectionprofile.html )
 [Transaction Processor Functions](../reference/js_scripts.html )
-[Command Line Interface](../reference/commands.html )
-[CLI Add Participant](../reference/composer.participant.add.html )
-[CLI Issue Identity ](../reference/composer.identity.issue.html )
-[CLI Revoke Identity](../reference/composer.identity.revoke.html )
-[CLI Import Identity](../reference/composer.identity.import.html)
+[CLI Commands](../reference/commands.html )
 [API Documentation](../jsdoc/index.html )
 [Glossary](../reference/glossary.html )
 **[Support](../support/index.html)**
