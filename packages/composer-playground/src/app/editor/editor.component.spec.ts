@@ -12,7 +12,6 @@ import { EditorComponent } from './editor.component';
 import { AdminService } from '../services/admin.service';
 import { ClientService } from '../services/client.service';
 import { EditorService } from './editor.service';
-import { InitializationService } from '../services/initialization.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../basic-modals/alert.service';
 import { ModelFile, Script, AclFile } from 'composer-common';
@@ -50,7 +49,6 @@ describe('EditorComponent', () => {
     let mockAlertService;
     let mockClientService;
     let mockModal;
-    let mockInitializationService;
     let mockModelFile;
     let mockScriptFile;
     let mockRuleFile;
@@ -61,7 +59,6 @@ describe('EditorComponent', () => {
         mockAlertService = sinon.createStubInstance(AlertService);
         mockClientService = sinon.createStubInstance(ClientService);
         mockModal = sinon.createStubInstance(NgbModal);
-        mockInitializationService = sinon.createStubInstance(InitializationService);
         mockModelFile = sinon.createStubInstance(ModelFile);
         mockScriptFile = sinon.createStubInstance(Script);
         mockRuleFile = sinon.createStubInstance(AclFile);
@@ -79,7 +76,6 @@ describe('EditorComponent', () => {
                 {provide: ClientService, useValue: mockClientService},
                 {provide: NgbModal, useValue: mockModal},
                 {provide: AlertService, useValue: mockAlertService},
-                {provide: InitializationService, useValue: mockInitializationService},
                 {provide: EditorService, useValue: editorService}]
         });
 
@@ -91,7 +87,7 @@ describe('EditorComponent', () => {
         let mockEditorFilesValidate;
 
         beforeEach(() => {
-            mockInitializationService.initialize.returns(Promise.resolve());
+            mockClientService.ensureConnected.returns(Promise.resolve());
             mockClientService.businessNetworkChanged$ = {
                 takeWhile: sinon.stub().returns({
                     subscribe: (callback) => {
@@ -867,6 +863,7 @@ describe('EditorComponent', () => {
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             mockModal.open = sinon.stub().returns({
+                componentInstance: {},
                 result: Promise.resolve()
             });
 
@@ -886,6 +883,7 @@ describe('EditorComponent', () => {
             component['files'] = [{readme: true}, {model: true}];
 
             mockModal.open = sinon.stub().returns({
+                componentInstance: {},
                 result: Promise.resolve()
             });
 
@@ -907,6 +905,7 @@ describe('EditorComponent', () => {
             component['files'] = [{model: true}, {script: true}];
 
             mockModal.open = sinon.stub().returns({
+                componentInstance: {},
                 result: Promise.resolve()
             });
 
@@ -925,6 +924,7 @@ describe('EditorComponent', () => {
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             mockModal.open = sinon.stub().returns({
+                componentInstance: {},
                 result: Promise.reject('some error')
             });
 
@@ -943,6 +943,7 @@ describe('EditorComponent', () => {
             let mockUpdateFiles = sinon.stub(component, 'updateFiles');
 
             mockModal.open = sinon.stub().returns({
+                componentInstance: {},
                 result: Promise.reject(1)
             });
 
@@ -1145,7 +1146,6 @@ describe('EditorComponent', () => {
         it('should open add file modal and handle cancel', fakeAsync(() => {
             mockModal.open = sinon.stub().returns({
                 componentInstance: {
-                    businessNetwork: {}
                 },
                 result: Promise.reject(1)
             });
@@ -1163,9 +1163,7 @@ describe('EditorComponent', () => {
 
             mockAddModel.throws('some error');
             mockModal.open = sinon.stub().returns({
-                componentInstance: {
-                    businessNetwork: {}
-                },
+                componentInstance: {},
                 result: Promise.resolve(mockModelFile)
             });
 

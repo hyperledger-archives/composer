@@ -5,6 +5,7 @@ import { ClientService } from './client.service';
 import { AlertService } from '../basic-modals/alert.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
+import { IdentityService } from './identity.service';
 
 @Injectable()
 export class InitializationService {
@@ -18,6 +19,7 @@ export class InitializationService {
                 private alertService: AlertService,
                 private connectionProfileService: ConnectionProfileService,
                 private walletService: WalletService,
+                private identityService: IdentityService,
                 private http: Http) {
     }
 
@@ -40,10 +42,12 @@ export class InitializationService {
                 return this.createInitialIdentities();
             })
             .then(() => {
-                if (this.config && this.config.defaultConnectionProfile) {
-                    this.connectionProfileService.setCurrentConnectionProfile(this.config.defaultConnectionProfile);
+                // only need to check about initial sample if not logged in
+                if (!this.identityService.getLoggedIn()) {
+                    this.connectionProfileService.setCurrentConnectionProfile('$default');
+                    this.identityService.setCurrentIdentity('admin');
+                    return this.deployInitialSample();
                 }
-                return this.clientService.ensureConnected();
             })
             .then(() => {
                 this.initialized = true;
@@ -110,6 +114,10 @@ export class InitializationService {
                     }, Promise.resolve());
                 });
         }, Promise.resolve());
+    }
+
+    deployInitialSample() {
+        return this.clientService.deployInitialSample();
     }
 
     isWebOnly(): boolean {

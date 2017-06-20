@@ -20,6 +20,7 @@ import { AppState, InternalStateType } from './app.service';
 import { AboutComponent } from './about';
 import { BasicModalsModule } from './basic-modals/basic-models.module';
 import { WelcomeComponent } from './welcome';
+import { LoginComponent } from './login';
 import { NoContentComponent } from './no-content';
 import { VersionCheckComponent } from './version-check';
 import { ServicesModule } from './services/services.module';
@@ -57,6 +58,7 @@ type StoreType = {
     declarations: [
         AboutComponent,
         AppComponent,
+        LoginComponent,
         NoContentComponent,
         VersionCheckComponent,
         WelcomeComponent
@@ -77,7 +79,7 @@ type StoreType = {
     providers: [ // expose our Services and Providers into Angular's dependency injection
         ENV_PROVIDERS,
         APP_PROVIDERS,
-        {provide: APP_BASE_HREF, useValue: '/'},
+        {provide: APP_BASE_HREF, useValue: '/'}
     ]
 })
 export class AppModule {

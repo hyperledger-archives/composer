@@ -266,7 +266,7 @@ describe(`IdentityComponent`, () => {
 
             component['currentIdentity'].should.equal('bob');
             mockIdentityService.setCurrentIdentity.should.have.been.calledWith('bob');
-            mockClientService.ensureConnected.should.have.been.calledWith(true);
+            mockClientService.ensureConnected.should.have.been.calledWith(null, true);
             mockAlertService.busyStatus$.next.should.have.been.calledTwice;
         }));
 
