@@ -118,85 +118,187 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="using-the-playground-to-run-a-car-auction">Using the Playground to run a Car Auction</h1>
+              <h1 id="playground-tutorial">Playground Tutorial</h1>
 
 <hr>
 
-<h2 id="before-you-begin">Before you begin</h2>
+<p>In this step by step tutorial we are going to walk-through setting up a business network definition, testing that business network definition by creating a couple of participants, an asset and submitting a transaction to transfer that asset to a different participant.</p>
 
-<p>Before beginning, you will need:</p>
+<h2 id="step-1-open-the-hyperledger-composer-playground">Step 1: Open the Hyperledger Composer Playground</h2>
 
-<ul>
-<li>A GitHub account (if you want to import sample business network from GitHub)</li>
-<li>A supported browser i.e. any modern version of Chrome, Firefox or Safari</li>
-</ul>
+<p>Open <a href="http://composer-playground.mybluemix.net" target="blank">Composer Playground</a>, by default the Basic Sample Network is imported.</p>
 
-<p><strong>OPTIONAL</strong> You can follow this tutorial using a local install of Playground: <a href="../installing/using-playground-locally.html">Install Local Playground</a></p>
+<p>If you have previously used Playground, be sure to clear your browser local storage by running <code>localStorage.clear()</code> in your browser Console.</p>
 
-<hr>
+<h2 id="step-2-define-your-domain-model">Step 2: Define your Domain Model</h2>
 
-<h2 id="lets-get-started-importing-the-car-auction-sample">Let&#39;s get started - Importing the Car Auction sample</h2>
+<p>Open the file <strong>Model File</strong> from the left hand side navigation in Playground. This is the domain model for the business network definition. It defines the structure (schema) for the assets, transaction and participants in the business network.</p>
 
-<ol>
-<li><p>Open the <a href="https://composer-playground.mybluemix.net">Composer Playground</a>. On the left are three file types: a script file, <code>lib/sample.js</code> which represents transaction logic, a model file, <code>lib/org.example.biznet.cto</code> which defines the participants assets and transactions of the business network, and an access control file, <code>permissions.acl</code> which defines the access different participants have.</p></li>
-<li><p>To get switch out the sample business network click <strong>Import/Replace</strong>. This dialog allows you to import your own business network archive <code>.bna</code> files, or to import our premade business network samples. For now we&#39;ll use a pre-built sample from the Composer GitHub repository. Click <strong>Authenticate with GitHub</strong> then log into your GitHub account and click <strong>Authorize application</strong>.</p></li>
-<li><p>From the menu, select <strong>carauction-network</strong> and click <strong>Deploy</strong>. This imports the car auction sample business network into your Playground instance. In the model file <code>lib/org.example.vehicle.auction.cto</code> there are the definitions of asset types, participant types, and transactions. The entries in the <code>.cto</code> file define the expected format of each asset, participant, and transaction. The script file <code>lib/sample.js</code> contains JavaScript
-which controls the transactions, in this script file, there is JavaScript logic controlling the <code>Close Bidding</code> and <code>Make Offer</code> transactions.</p></li>
-</ol>
+<p>As an example, we&#39;re going to replace the entire contents of the <strong>Model File</strong> with a simplistic model below to track the ownership of commodities on the blockchain.</p>
 
-<h3 id="setting-up-the-auction">Setting up the auction</h3>
+<p>This will create errors with other files, don&#39;t worry as we&#39;ll fix that! 😉</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * My commodity trading network
+ */
+namespace org.acme.mynetwork
+asset Commodity identified by tradingSymbol {
+    o String tradingSymbol
+    o String description
+    o String mainExchange
+    o Double quantity
+    --&gt; Trader owner
+}
+participant Trader identified by tradeId {
+    o String tradeId
+    o String firstName
+    o String lastName
+}
+transaction Trade identified by transactionId {
+    o String transactionId
+    --&gt; Commodity commodity
+    --&gt; Trader newOwner
+}
+</code></pre></div>
+<p>This domain model defines a single asset <code>Commodity</code> and single participant <code>Trader</code> and a single transaction <code>Trade</code> that is used to modify the owner of a commodity.</p>
 
-<ol>
-<li><p>To get a better understanding of how business network definitions work in practise, click the <strong>Test</strong> tab at the top. From this screen, we can create assets and participants, and submit transactions.</p></li>
-<li><p>To start with, add a <em>Member</em> participant by clicking <strong>Member</strong> then clicking <strong>Create New Participant</strong>. Enter the balance, email, and name credentials for the new participant in the following format, then click <strong>Create New</strong>. The credentials which are required for each participant are defined in the <code>.cto</code> file viewable in the <strong>Define</strong> tab.</p>
+<p><em>Note: You can add as many model files as convenient under the <code>models</code> folder, however each model file must have a unique namespace and you can import types from one namespace into other namespaces.</em></p>
+
+<h2 id="step-3-define-transaction-processor-functions">Step 3: Define Transaction Processor Functions</h2>
+
+<p>Now that the domain model has been defined, we can define the business logic for the business network. Composer expresses the logic for a business network using JavaScript functions. These functions are automatically executed when a transaction is submitted for processing.</p>
+
+<p>Open the file <strong>Script File</strong> from the left-hand side navigation and replace the entire contents of this with the function below.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Track the trade of a commodity from one trader to another
+ * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
+ * @transaction
+ */
+function tradeCommodity(trade) {
+    trade.commodity.owner = trade.newOwner;
+    return getAssetRegistry('org.acme.mynetwork.Commodity')
+        .then(function (assetRegistry) {
+            return assetRegistry.update(trade.commodity);
+        });
+}
+</code></pre></div>
+<p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p>
+
+<p><em>Note: You can create as many JavaScript files as convenient for your business network definition. If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</em></p>
+
+<h2 id="step-4-define-your-access-control-rules">Step 4: Define your Access Control Rules</h2>
+
+<p>Open the <strong>Access Control</strong> file that defines the access control rules for the business network definition and replace the entire contents with the rule below.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">/**
+ * Access control rules for mynetwork
+ */
+rule Default {
+    description: "Allow all participants access to all resources"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.mynetwork"
+    action: ALLOW
+}
+</code></pre></div>
+<p>This access control simply allows all participants access to all resources.</p>
+
+<h2 id="step-5-deploy-changes">Step 5: Deploy changes</h2>
+
+<p>Using the <strong>Deploy</strong> button in the left hand navigation we need to deploy our changes to the web browser.</p>
+
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/unstable/assets/img/tutorials/playground/deploy_updates_render.mp4" type="video/mp4" />
+</video>
+
+<h2 id="step-6-testing-our-business-network-definition">Step 6: Testing our Business Network Definition</h2>
+
+<p>Navigate to the <strong>Test</strong> tab at the top to test our Business Network Definition</p>
+
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/unstable/assets/img/tutorials/playground/test_tab_render.mp4" type="video/mp4" />
+</video>
+
+<h2 id="step-7-creating-two-traders">Step 7: Creating two Traders</h2>
+
+<p>Create two &#39;Trader&#39; participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the <strong>Create New Participant</strong> button.</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.example.vehicle.auction.Member"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"balance"</span><span class="p">:</span><span class="w"> </span><span class="s2">"100"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice@biznet.org"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Alice"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Smith"</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jenny"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jones"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
-<li><p>Create two more <em>Members</em> in the same way as the previous step, with different balance, email, and name credentials. Then, click the <strong>Auctioneer</strong> participant type on the left, and then create an Auctioneer participant by click <strong>Create New Participant</strong>.</p></li>
-<li><p>Now that there are three <em>Members</em>; two to bid against each other and another to be the initial owner of the <em>Vehicle</em> asset. We also have an <em>Auctioneer</em> to close the bidding. Next we need an assets, in this case a <em>Vehicle</em> asset, for them to bid over, and a <em>Vehicle Listing</em> asset to control the reserve price and record the current highest offer.</p></li>
-<li><p>To create a <em>Vehicle</em> asset, click <strong>Vehicle</strong>, then <strong>Create New Asset</strong>. Enter the VIN (Vehicle Identification Number) and the email address of the owner. In this case, enter the email address of one of the <em>Members</em> created in step 5 or 6, then click <strong>Create New</strong> to finish creating the asset. Now, the asset exists and has a set owner. The <em>Vehicle</em> asset credentials must be in the following format, as defined in the <code>.cto</code> file.</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.example.vehicle.auction.Vehicle"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"vin"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dave@biznet.org"</span><span class="w">
+</span></code></pre></div><div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER2"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amy"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Williams"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
-<li><p>Next, to sell the car at auction, an auction listing asset must be created. Assets can be any tangible or intangible goods or services, in this case, the auction listing itself. To create the auction listing, click <strong>VehicleListing</strong> then click <strong>Create New Asset</strong>. The <em>VehicleListing</em> requires several properties, and should have the following format:</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.example.vehicle.auction.VehicleListing"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"listingId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"listing_1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"reservePrice"</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dave's car"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FOR_SALE"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"offers"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
-  </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1234"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
-</ol>
+</span></code></pre></div>
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/unstable/assets/img/tutorials/playground/create_new_participant_render.mp4" type="video/mp4" />
+</video>
 
-<h3 id="running-the-auction">Running the auction</h3>
+<p>After creating these two participants, you should now see them in the participant registry.</p>
 
-<ol>
-<li><p>Now that you have <em>Members</em> to own and bid on an asset, an <em>Auctioneer</em>, a <em>Vehicle</em> asset with registered ownership, and a <em>VehicleListing</em> asset to track the bids, reserve price, and state of the auction. The next step is to begin using transactions to interact with assets. This sample includes the <em>Offer</em> and <em>CloseBidding</em> transactions. Transactions, combined with assets and participants, make up the economic model of a business network. Transactions can modify, transfer, or otherwise alter assets, as in this sample, where transactions allow participants to place bids or allow the auctioneer to close the auction. Placing a bid uses the <em>Offer</em> transaction. To submit a transaction, click the <strong>Submit Transaction</strong> button. In the dialog box, use the dropdown to select the <em>Offer</em> transaction type. The <em>Offer</em> transaction requires a number of properties and should have the following format:</p>
+<h2 id="step-8-creating-a-commodity">Step 8: Creating a commodity</h2>
+
+<p>Create a new instance of a Commodity by navigating to the Commodity registry on the left and then click the <strong>Create New Asset</strong> button.</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.example.vehicle.auction.Offer"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"bidPrice"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1000"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"listing"</span><span class="p">:</span><span class="w"> </span><span class="s2">"listing_1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"member"</span><span class="p">:</span><span class="w"> </span><span class="s2">"alice@biznet.org"</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Commodity"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tradingSymbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ABC"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test commodity"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"mainExchange"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Euronext"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">72.297</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER1"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div></li>
-<li><p>Now that you&#39;ve submitted an <em>Offer</em> transaction, we can check that it has been successfully applied to the <em>VehicleListing</em> asset. Click <strong>VehicleListing</strong> and then click <strong>Show All</strong> in your listing entry. You should see that there is now an entry for the <em>Offer</em> transaction in the <code>offers</code> property of the listing asset. Congratulations, you&#39;ve just made your first bid!</p></li>
-<li><p>To represent a counter-offer or raise from another member, repeat step 10, increasing the <code>bidPrice</code> property and changing the <code>member</code> who is placing the bid. After you have submitted a second <em>Offer</em> transaction, the <em>VehicleListing</em> asset should update to show that both bids have been placed.</p></li>
-<li><p>When you&#39;ve placed as many bids as you like, the next step is to submit the <em>CloseBidding</em> transaction to close the auction. The <em>CloseBidding</em> transaction pays the previous owner of the <em>Vehicle</em> asset listed in the <em>VehicleListing</em> the current highest offer, changes the <code>state</code> of the listing to <code>SOLD</code>, and transfers ownership of the <em>Vehicle</em> asset, as listed in the <code>owner</code> property, to the highest bidder. To submit the <em>CloseBidding</em> transaction, click <strong>Submit Transaction</strong> and enter the <code>listingId</code> which corresponds to the <em>VehicleListing</em>. Click <strong>Submit</strong> to submit the transaction. Once the transaction has been submitted, you can check the <em>Vehicle</em> asset&#39;s <code>owner</code> property to ensure that it has changed, as well as checking the <code>balance</code> of the previous and new owner of the car, and the <em>VehicleListing</em> <code>state</code>.</p></li>
-<li><p>You&#39;ve successfully run the <code>carauction-network</code> Composer sample! If you want to continue to use this business network in future tutorials or for testing, click <strong>Export</strong> in the <strong>Define</strong> tab to download a Business Network Archive <code>.bna</code> file. A <code>.bna</code> file contains all files listed in the business network, in this example, <code>README.md</code>, <code>lib/sample.js</code>, <code>lib/org.example.vehicle.auction.cto</code>, and <code>permissions.acl</code>.</p></li>
-</ol>
+</span></code></pre></div>
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/unstable/assets/img/tutorials/playground/create_new_asset_render.mp4" type="video/mp4" />
+</video>
 
-<p>If you want to continue to modify your business network, you could add some new fields to asset types in the business network definition, for example, make or model for <em>Vehicle</em> assets.</p>
+<p>After creating this asset, you should now see them in the asset registry.</p>
+
+<h2 id="step-9-transferring-that-commodity-between-the-traders">Step 9: Transferring that commodity between the traders</h2>
+
+<p>Next, submit a <code>Trade</code> transaction by clicking the <strong>Submit Transaction</strong> button, bottom left of the left hand navigation panel, to move the commodity from TRADER1 to TRADER2.</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trade"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"commodity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Commodity#ABC"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"newOwner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.mynetwork.Trader#TRADER2"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<video autoplay "autoplay=autoplay" style="display:block; width:100%; height:auto;" loop="loop">
+<source src="/composer/unstable/assets/img/tutorials/playground/submit_transaction_render.mp4" type="video/mp4" />
+</video>
+
+<p>After submitting this transaction, you should now see the transaction in the transaction registry.</p>
+
+<p><img src="../assets/img/tutorials/developer/tx_registry.png" alt="Transaction registry"></p>
+
+<p>As a result, the owner of the commodity ABC should now be owned TRADER2 in the Asset Registry.</p>
+
+<p><img src="../assets/img/tutorials/developer/commodity_registry_after.png" alt="Commodity registry"></p>
+
+<!-- ## Recap!
+
+We defined the business network definition in the **Model File**, **Script File**, **Access Controls**, tested that business network definition by creating a couple of participants `TRADER1` `TRADER2`, an asset `ABC` and submitting a transaction  `Trade` to transfer that asset to a different participant. -->
+
+<h2 id="congratulations-youve-completed-the-playground-tutorial">Congratulations you&#39;ve completed the Playground tutorial!</h2>
+
+<p>Next, you might want to try the <a href="../tutorials/developer-guide.html"><strong>Developer Tutorial</strong></a>, to get your local development environment setup, generate a REST API and a skeleton web application.</p>
 
 <hr>
 
