@@ -138,7 +138,7 @@ rule Default {
 description: "Allow all participants access to all resources"
 participant: "ANY"
 operation: ALL
-resource: "org.example.mynetwork.*"
+resource: "org.example.mynetwork"
 action: ALLOW
 }
 ```
