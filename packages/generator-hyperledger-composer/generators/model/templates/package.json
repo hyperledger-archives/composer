@@ -7,5 +7,5 @@
   },
   "author": "<%= appauthor %>",
   "email": "<%= appemail %>",
-  "license": "<%= applicense %>",
+  "license": "<%= applicense %>"
 }
