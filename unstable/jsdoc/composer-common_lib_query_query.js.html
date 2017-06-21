@@ -101,6 +101,8 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
+const ParseException = require('../introspect/parseexception');
+const parser = require('./parser');
 const Select = require('./select');
 
 /**
@@ -111,6 +113,37 @@ const Select = require('./select');
  * @memberof module:composer-common
  */
 class Query {
+
+    /**
+     * Create a query programmatically without supplying an AST.
+     * @param {QueryFile} queryFile The owning query file.
+     * @param {string} name The name of the query.
+     * @param {string} description A description of the query.
+     * @param {string} select The select statement.
+     * @return {Query} The created query.
+     */
+    static buildQuery(queryFile, name, description, select) {
+        let selectAst;
+        try {
+            // We must tell the PEG.js parser to use an alternate start rule,
+            // so that we can parse just the statement rather than the full query.
+            selectAst = parser.parse(select, { startRule: 'SelectStatement' });
+        } catch (err) {
+            if(err.location &amp;&amp; err.location.start) {
+                throw new ParseException( err.message +  ' Line ' + err.location.start.line + ' column ' + err.location.start.column, err.location );
+            } else {
+                throw err;
+            }
+        }
+        const ast = {
+            identifier: {
+                name: name
+            },
+            description: description,
+            select: selectAst
+        };
+        return new Query(queryFile, ast);
+    }
 
     /**
      * Create an Query from an Abstract Syntax Tree. The AST is the
