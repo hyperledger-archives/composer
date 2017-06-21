@@ -15,14 +15,12 @@ export class AddCertificateComponent {
     maxFileSize: number = 5242880;
     supportedFileTypes: string[] = ['.pem'];
     addedCertificate: string = '';
-    addedHostname: string = '';
 
     constructor(private alertService: AlertService,
                 public activeModal: NgbActiveModal,
                 private connectionProfileService: ConnectionProfileService) {
 
         this.addedCertificate = this.connectionProfileService.getCertificate();
-        this.addedHostname = this.connectionProfileService.getHostname();
     }
 
     fileDetected() {
@@ -78,7 +76,6 @@ export class AddCertificateComponent {
 
     addCertificate(): void {
       let additionalData = {};
-      additionalData['hostnameOverride'] = this.addedHostname;
       additionalData['cert'] = this.addedCertificate.replace(/\\r\\n|\\n\\r|\\n/g, '\n');
       this.activeModal.close(additionalData);
     }

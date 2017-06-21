@@ -27,12 +27,6 @@ describe('ViewCertificateComponent', () => {
         },
         setCertificate: (input) => {
             this.mockCert = input;
-        },
-        getHostname: () => {
-            return this.mockHostname;
-        },
-        setHostname: (input) => {
-            this.mockHostname = input;
         }
     };
 
