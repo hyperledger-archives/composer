@@ -3,25 +3,25 @@
  * Write the unit tests for your transction processor functions here
  */
 
-let AdminConnection = require('composer-admin').AdminConnection;
-let BrowserFS = require('browserfs/dist/node/index');
-let BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-let BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-let path = require('path');
-let fs = require('fs');
+var AdminConnection = require('composer-admin').AdminConnection;
+var BrowserFS = require('browserfs/dist/node/index');
+var BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
+var BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+var path = require('path');
+var fs = require('fs');
 
 require('chai').should();
 
-let bfs_fs = BrowserFS.BFSRequire('fs');
-let NS = '<%= namespace%>';
+var bfs_fs = BrowserFS.BFSRequire('fs');
+var NS = '<%= namespace%>';
 
 describe('#'+NS, function() {
 
-    let businessNetworkConnection;
+    var businessNetworkConnection;
 
     before(function() {
         BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        let adminConnection = new AdminConnection({ fs: bfs_fs });
+        var adminConnection = new AdminConnection({ fs: bfs_fs });
         return adminConnection.createProfile('defaultProfile', {
             type: 'embedded'
         })
@@ -44,16 +44,16 @@ describe('#'+NS, function() {
 
         it('should change the value property of Asset to newValue', () => {
 
-            let factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+            var factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
             // create a user
-            let user = factory.newResource(NS, 'User', '<%= appauthor%>');
+            var user = factory.newResource(NS, 'User', '<%= appauthor%>');
 
             // create the asset
-            let asset = factory.newResource(NS, 'Asset', 'ASSET_001');
+            var asset = factory.newResource(NS, 'Asset', 'ASSET_001');
             asset.value = 'old-value';
 
-            let changeAssetValue = factory.newTransaction(NS, 'ChangeAssetValue');
+            var changeAssetValue = factory.newTransaction(NS, 'ChangeAssetValue');
             changeAssetValue.relatedAsset = factory.newRelationship(NS, 'Asset', asset.$identifier);
             changeAssetValue.newValue = 'new-value';
 

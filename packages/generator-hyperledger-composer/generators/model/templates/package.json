@@ -1,0 +1,11 @@
+{
+  "name": "<%= appname %>",
+  "version": "0.0.1",
+  "description": "<%= appdescription %>",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "author": "<%= appauthor %>",
+  "email": "<%= appemail %>",
+  "license": "<%= applicense %>"
+}

@@ -6,6 +6,7 @@
     "test": "mocha --recursive"
   },
   "author": "<%= appauthor %>",
+  "email": "<%= appemail %>",
   "license": "<%= applicense %>",
   "devDependencies": {
     "composer-admin": "latest",

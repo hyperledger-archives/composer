@@ -1,0 +1,6 @@
+coverage
+node_modules
+out
+chaincode/src/**
+lib/parser/parser.js
+generators/**/templates/**
