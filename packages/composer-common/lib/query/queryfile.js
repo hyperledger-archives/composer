@@ -39,7 +39,7 @@ class QueryFile {
         this.queries = [];
         this.identifier = id;
 
-        if(!definitions || typeof definitions !== 'string') {
+        if(typeof definitions !== 'string') {
             throw new Error('QueryFile expects an QueryFile as a string as input.');
         }
         this.definitions = definitions;
@@ -122,6 +122,20 @@ class QueryFile {
      */
     getDefinitions() {
         return this.definitions;
+    }
+
+    /**
+     * Create a query programmatically without supplying an AST,
+     * and add it into this query file.
+     * @param {string} name The name of the query.
+     * @param {string} description A description of the query.
+     * @param {string} select The select statement.
+     * @return {Query} The created query.
+     */
+    buildQuery(name, description, select) {
+        const query = Query.buildQuery(this, name, description, select);
+        this.queries.push(query);
+        return query;
     }
 
 }

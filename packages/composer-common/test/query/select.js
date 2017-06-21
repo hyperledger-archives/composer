@@ -15,6 +15,7 @@
 'use strict';
 
 const Query = require('../../lib/query/query');
+const parser = require('../../lib/query/parser');
 const Select = require('../../lib/query/select');
 const ModelManager = require('../../lib/modelmanager');
 const fs = require('fs');
@@ -31,25 +32,15 @@ describe('Select', () => {
     let sandbox;
     let mockQuery;
 
-    const select = {
-        resource: 'org.acme.Driver'
-    };
+    const select = parser.parse('SELECT org.acme.Driver', { startRule: 'SelectStatement' });
 
-    const selectWhere = {
-        resource: 'org.acme.Driver', where: 'WHERE'
-    };
+    const selectWhere = parser.parse('SELECT org.acme.Driver WHERE (prop = "value")', { startRule: 'SelectStatement' });
 
-    const selectWhereOrderBy = {
-        resource: 'org.acme.Driver', where: 'WHERE', orderBy: 'ORDER BY'
-    };
+    const selectWhereOrderBy = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") ORDER BY [id ASC]', { startRule: 'SelectStatement' });
 
-    const selectWhereLimit = {
-        resource: 'org.acme.Driver', where: 'WHERE', limit: 10
-    };
+    const selectWhereLimit = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") LIMIT 10', { startRule: 'SelectStatement' });
 
-    const selectWhereLimitSkip = {
-        resource: 'org.acme.Driver', where: 'WHERE', limit: 10, skip: 5
-    };
+    const selectWhereLimitSkip = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") LIMIT 10 SKIP 5', { startRule: 'SelectStatement' });
 
     beforeEach(() => {
         modelManager = new ModelManager();
@@ -126,4 +117,14 @@ describe('Select', () => {
             sinon.assert.calledWith(visitor.visit, s, ['some', 'args']);
         });
     });
+
+    describe('#getText', () => {
+
+        it('should return the statement text', () => {
+            const s = new Select(mockQuery, select);
+            s.getText().should.equal('SELECT org.acme.Driver');
+        });
+
+    });
+
 });
