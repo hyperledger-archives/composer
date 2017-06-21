@@ -82,15 +82,13 @@ export class ConnectionProfileDataComponent {
             eventURL: {
                 required: 'Every Peer Event URL is required.'
             },
-            cert: {},
-            hostnameOverride: {}
+            cert: {}
         },
         orderers: {
             url: {
                 required: 'Every Orderer URL is required.'
             },
-            cert: {},
-            hostnameOverride: {}
+            cert: {}
         },
         channel: {
             required: 'A Channel name is required.',
@@ -309,19 +307,26 @@ export class ConnectionProfileDataComponent {
         let someList = [];
         if (this.connectionProfileData) {
             for (let orderer in this.connectionProfileData.profile.orderers) {
-                let ordererFormGroup = this.fb.group({
-                    url: [this.connectionProfileData.profile.orderers[orderer].url, Validators.required],
-                    cert: [this.connectionProfileData.profile.orderers[orderer].cert],
-                    hostnameOverride: [this.connectionProfileData.profile.orderers[orderer].hostnameOverride],
-                });
+                let ordererFormGroup;
+                if (this.connectionProfileData.profile.orderers[orderer].hostnameOverride) {
+                    ordererFormGroup = this.fb.group({
+                        url: [this.connectionProfileData.profile.orderers[orderer].url, Validators.required],
+                        cert: [this.connectionProfileData.profile.orderers[orderer].cert],
+                        hostnameOverride: [this.connectionProfileData.profile.orderers[orderer].hostnameOverride],
+                    });
+                } else {
+                    ordererFormGroup = this.fb.group({
+                        url: [this.connectionProfileData.profile.orderers[orderer].url, Validators.required],
+                        cert: [this.connectionProfileData.profile.orderers[orderer].cert]
+                    });
+                }
                 someList.push(ordererFormGroup);
             }
             return someList;
         } else {
             someList.push(this.fb.group({
                 url: ['grpc://localhost:7050', Validators.required],
-                cert: [''],
-                hostnameOverride: ['']
+                cert: ['']
             }));
             return someList;
         }
@@ -332,8 +337,7 @@ export class ConnectionProfileDataComponent {
         const control = <FormArray> this.v1Form.controls['orderers'];
         control.push(this.fb.group({
             url: ['grpc://localhost:7050', Validators.required],
-            cert: [''],
-            hostnameOverride: ['']
+            cert: ['']
         }));
     }
 
@@ -347,20 +351,29 @@ export class ConnectionProfileDataComponent {
         let someList = [];
         if (this.connectionProfileData) {
             for (let peer in this.connectionProfileData.profile.peers) {
-                someList.push(this.fb.group({
-                    requestURL: [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
-                    eventURL: [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
-                    cert: [this.connectionProfileData.profile.peers[peer].cert],
-                    hostnameOverride: [this.connectionProfileData.profile.peers[peer].hostnameOverride]
-                }));
+                let peerFormGroup;
+                if (this.connectionProfileData.profile.peers[peer].hostnameOverride) {
+                    peerFormGroup = this.fb.group({
+                        requestURL: [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
+                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
+                        cert: [this.connectionProfileData.profile.peers[peer].cert],
+                        hostnameOverride: [this.connectionProfileData.profile.peers[peer].hostnameOverride]
+                    });
+                } else {
+                    peerFormGroup = this.fb.group({
+                        requestURL: [this.connectionProfileData.profile.peers[peer].requestURL, Validators.required],
+                        eventURL: [this.connectionProfileData.profile.peers[peer].eventURL, Validators.required],
+                        cert: [this.connectionProfileData.profile.peers[peer].cert]
+                    });
+                }
+                someList.push(peerFormGroup);
             }
             return someList;
         } else {
             someList.push(this.fb.group({
                 requestURL: ['grpc://localhost:7051', Validators.required],
                 eventURL: ['grpc://localhost:7053', Validators.required],
-                cert: [''],
-                hostnameOverride: ['']
+                cert: ['']
             }));
             return someList;
         }
@@ -371,8 +384,7 @@ export class ConnectionProfileDataComponent {
         control.push(this.fb.group({
             requestURL: ['grpc://localhost:7051', Validators.required],
             eventURL: ['grpc://localhost:7053', Validators.required],
-            cert: [''],
-            hostnameOverride: ['']
+            cert: ['']
         }));
     }
 
@@ -521,23 +533,19 @@ export class ConnectionProfileDataComponent {
     openAddCertificateModal(index, type) {
         if (type === 'orderers') {
             this.connectionProfileService.setCertificate(this.v1Form.controls['orderers']['controls'][index]['value']['cert']);
-            this.connectionProfileService.setHostname(this.v1Form.controls['orderers']['controls'][index]['value']['hostnameOverride']);
         } else if (type === 'peers') {
             this.connectionProfileService.setCertificate(this.v1Form.controls['peers']['controls'][index]['value']['cert']);
-            this.connectionProfileService.setHostname(this.v1Form.controls['peers']['controls'][index]['value']['hostnameOverride']);
         }
 
         return this.modalService.open(AddCertificateComponent).result
             .then((result) => {
                 if (type === 'orderers') {
                     this.v1Form.controls['orderers']['controls'][index].patchValue({
-                        cert: result.cert,
-                        hostnameOverride: result.hostnameOverride
+                        cert: result.cert
                     });
                 } else if (type === 'peers') {
                     this.v1Form.controls['peers']['controls'][index].patchValue({
-                        cert: result.cert,
-                        hostnameOverride: result.hostnameOverride
+                        cert: result.cert
                     });
                 } else {
                     throw new Error('Unrecognized type ' + type);
@@ -549,9 +557,8 @@ export class ConnectionProfileDataComponent {
             });
     }
 
-    showCertificate(cert: string, hostname: string) {
+    showCertificate(cert: string) {
         this.connectionProfileService.setCertificate(cert);
-        this.connectionProfileService.setHostname(hostname);
         this.modalService.open(ViewCertificateComponent);
     }
 }
