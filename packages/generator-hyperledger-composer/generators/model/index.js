@@ -1,9 +1,6 @@
 'use strict';
 
-const Util = require('./../util');
-
 let yeoman = require('yeoman-generator');
-
 
 module.exports = yeoman.Base.extend({
     constructor: function() {
@@ -12,36 +9,61 @@ module.exports = yeoman.Base.extend({
     },
 
     prompting: function() {
-        console.log('Welcome to the business network generator');
+        console.log('Welcome to the model generator');
 
         let questions = [
             {
                 type: 'input',
                 name: 'appname',
-                message: 'Business network name:',
+                message: 'Model project name:',
                 store: true,
-                validate: Util.validateBusinessNetworkName
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '' && input.indexOf(' ') === -1 && input === input.toLowerCase()) {
+                        return true;
+                    } else {
+                        return 'Name cannot be null, empty or contain a space or uppercase character.';
+                    }
+                }
             },
             {
                 type: 'input',
                 name: 'appdescription',
                 message: 'Description:',
                 store: true,
-                validate: Util.validateDescription
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    } else {
+                        return 'Description cannot be null or empty.';
+                    }
+                }
             },
             {
                 type: 'input',
                 name: 'appauthor',
                 message: 'Author name: ',
                 store: true,
-                validate: Util.validateAuthorName
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    } else {
+                        return 'Author name cannot be null or empty.';
+                    }
+                }
             },
             {
                 type: 'input',
                 name: 'appemail',
                 message: 'Author email:',
                 store: true,
-                validate: Util.validateAuthorEmail
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    }
+                    else {
+                        return 'Author email cannot be null or empty.';
+                    }
+                }
             },
             {
                 type: 'input',
@@ -49,7 +71,13 @@ module.exports = yeoman.Base.extend({
                 message: 'License:',
                 default: 'Apache-2.0',
                 store: true,
-                validate: Util.validateLicense
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input !== '') {
+                        return true;
+                    } else {
+                        return 'Licence cannot be null or empty.';
+                    }
+                }
             },
             {
                 type: 'input',
@@ -57,7 +85,13 @@ module.exports = yeoman.Base.extend({
                 message: 'Namespace:',
                 default: 'org.acme.biznet',
                 store: true,
-                validate: Util.validateNamespace
+                validate: function(input) {
+                    if(input !== null && input !== undefined && input.match(/^(?:[a-z]\d*(?:\.[a-z])?)+$/)) {
+                        return true;
+                    } else {
+                        return 'Name must mactch: ^(?:[a-z]\d*(?:\.[a-z])?)+$';
+                    }
+                }
             }
         ];
 
@@ -78,13 +112,8 @@ module.exports = yeoman.Base.extend({
 
     writing: function() {
         let model = this._generateTemplateModel();
-        this.fs.copyTpl(this.templatePath('**!(models|lib|test)*'), this.destinationPath(), model);
+        this.fs.copyTpl(this.templatePath('**!(models)*'), this.destinationPath(), model);
         this.fs.copyTpl(this.templatePath('models/namespace.cto'), this.destinationPath('models/'+this.namespace+'.cto'), model);
-        this.fs.move(this.destinationPath('_dot_eslintrc.yml'), this.destinationPath('.eslintrc.yml'), model);
-        if (!this.ismodel) {
-            this.fs.copyTpl(this.templatePath('./test'), this.destinationPath('./test'), model);
-            this.fs.copyTpl(this.templatePath('./lib'), this.destinationPath('./lib'), model);
-        }
     },
 
     _generateTemplateModel: function() {

@@ -1,7 +1,7 @@
 {
   "name": "generator-hyperledger-composer",
   "version": "0.8.1",
-  "description": "Generates skeleton projects from Hyperledger Composer business network definitions",
+  "description": "Generate projects from Hyperledger Composer business network definitions",
   "engines": {
     "node": ">=6",
     "npm": ">=3"
