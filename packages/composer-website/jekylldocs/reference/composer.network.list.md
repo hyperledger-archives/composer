@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Network List CLI
-category: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Composer Network List CLI
 ---

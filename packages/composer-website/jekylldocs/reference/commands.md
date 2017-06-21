@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer Command Line
-category: reference
+title: Hyperledger Composer CLI Commands
+section: reference
+index-order: 6
 sidebar: sidebars/reference.md
-excerpt: Hyperledger Composer Command Line
+excerpt: Hyperledger Composer CLI commands can perform multiple administrative, operational, and development tasks.
 ---
 
 # {{site.data.conrefs.composer_full}} Command Line
@@ -64,6 +65,10 @@ Issue an identity to a participant: [composer identity issue](./composer.identit
 `composer identity revoke`
 
 Revoke an identity from a participant: [composer identity revoke](./composer.identity.revoke.md)
+
+`composer identity import`
+
+Import an identity to your local identity wallet: [composer identity import](./composer,identity.import.md)
 
 ## Transaction execution
 

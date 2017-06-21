@@ -1,8 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Identity Import Command
-category: reference
-section: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Hyperledger Composer Identity Import Command
 ---

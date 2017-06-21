@@ -2,6 +2,8 @@
 layout: default
 title: Deploying the REST server for a business network
 category: start
+section: integrating
+index-order: 3
 sidebar: sidebars/integrating.md
 excerpt: Deploying the REST server for a business network
 ---
@@ -10,7 +12,7 @@ excerpt: Deploying the REST server for a business network
 
 ---
 
-When deploying the Hyperledger Composer REST server in a production environment, for example using Docker Swarm or Kubernetes, the REST server should be configured to be highly available. This means that you must deploy multiple instances of the REST server, and those instances should be configured to share data. For example, data such as connection profiles, Blockchain identities, and REST API authentication settings should be shared so that a REST API client can make a request to any of the instances without having to reauthenticate.
+When deploying the {{site.data.conrefs.composer_full}} REST server in a production environment, for example using Docker Swarm or Kubernetes, the REST server should be configured to be highly available. This means that you must deploy multiple instances of the REST server, and those instances should be configured to share data. For example, data such as connection profiles, Blockchain identities, and REST API authentication settings should be shared so that a REST API client can make a request to any of the instances without having to reauthenticate.
 
 ## Configuring the REST server with a persistent data store
 

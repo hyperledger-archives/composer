@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer - Modeling Language
-category: reference
+title: Modeling Language
+section: reference
+index-order: 2
 sidebar: sidebars/reference.md
-excerpt: Guide to the Hyperledger Composer modeling language
+excerpt: Hyperledger Composer includes an Object-Oriented modeling language that is used to define the domain model for a business network definition.
 ---
 
 # {{site.data.conrefs.composer_full}} Modeling Language

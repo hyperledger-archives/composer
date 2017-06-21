@@ -2,6 +2,8 @@
 layout: default
 title: Calling REST APIs
 category: start
+section: integrating
+index-order: 4
 sidebar: sidebars/integrating.md
 excerpt: How to call a REST API from a transaction processor function
 ---
@@ -33,7 +35,7 @@ Note that HTTP response codes from 200 to 300 are returned as a resolved Promise
 
 The `body` property of the response is automatically converted to a JS Object if possible, otherwise it is returned as a `string`.
 
-Transaction processor functions may optionally call the `getSerializer().fromJSON(object)` function to convert a reponse body JS Object back into a Composer asset/participant/transaction. 
+Transaction processor functions may optionally call the `getSerializer().fromJSON(object)` function to convert a reponse body JS Object back into a Composer asset/participant/transaction.
 
 ## Examples
 

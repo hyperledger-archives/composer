@@ -3,6 +3,7 @@ layout: default
 title: Integrating with Node-RED
 category: integrating
 section: integrating
+index-order: 5
 sidebar: sidebars/integrating.md
 excerpt: Deploying the REST server for a business network
 ---
