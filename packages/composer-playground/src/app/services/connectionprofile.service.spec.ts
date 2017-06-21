@@ -80,28 +80,6 @@ describe('ConnectionProfileService', () => {
             ));
     });
 
-    describe('getHostName', () => {
-        it('should have no hostname if not set',
-            inject([ConnectionProfileService],
-                (connectionProfileService) => {
-                    connectionProfileService.should.be.ok;
-                    expect(connectionProfileService.getHostname()).to.not.exist;
-                }
-            ));
-    });
-
-    describe('setHostName', () => {
-        it('should set hostname',
-            inject([ConnectionProfileService],
-                (connectionProfileService) => {
-                    connectionProfileService.should.be.ok;
-                    const hostname: string = 'HOSTNAME_STRING';
-                    connectionProfileService.setHostname(hostname);
-                    connectionProfileService['currentHostname'].should.equal(hostname);
-                }
-            ));
-    });
-
     describe('should getAdminConnection', () => {
         it('should return admin connection if set',
             inject([ConnectionProfileService],

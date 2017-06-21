@@ -470,8 +470,7 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfileType'].should.equal('hlfv1');
             component['addConnectionProfileOrderers'].should.deep.equal([{
                 url: 'grpc://localhost:7050',
-                cert: '',
-                hostnameOverride: ''
+                cert: ''
             }]);
 
             component['addConnectionProfileCertificateAuthority'].url.should.equal('http://localhost:7054');
@@ -479,8 +478,7 @@ describe('AddConnectionProfileComponent', () => {
             component['addConnectionProfilePeers'].should.deep.equal([{
                 requestURL: 'grpc://localhost:7051',
                 eventURL: 'grpc://localhost:7053',
-                cert: '',
-                hostnameOverride: ''
+                cert: ''
             }]);
             component['addConnectionProfileKeyValStore'].should.equal('/tmp/keyValStore');
             component['addConnectionProfileChannel'].should.equal('mychannel');
@@ -586,7 +584,7 @@ describe('AddConnectionProfileComponent', () => {
                     description: DESC,
                     keyValStore: KEY_VAL_STORE,
                     mspID: MSPID,
-                    orderers: [{url: 'orderers', cert: '', hostnameOverride: ''}],
+                    orderers: [{url: 'orderers', cert: ''}],
                     peers: PEERS,
                     type: 'hlfv1'
                 }
@@ -648,7 +646,7 @@ describe('AddConnectionProfileComponent', () => {
         });
 
         it('should deal with the version being 1 with object orderers', () => {
-            component['addConnectionProfileOrderers'] = [{url: 'http://localhost', cert: 'bob', hostnameOverride: ''}];
+            component['addConnectionProfileOrderers'] = [{url: 'http://localhost', cert: 'bob'}];
 
             let EXP = {
                 default: false,
@@ -660,7 +658,7 @@ describe('AddConnectionProfileComponent', () => {
                     description: DESC,
                     keyValStore: KEY_VAL_STORE,
                     mspID: MSPID,
-                    orderers: [{url: 'http://localhost', cert: 'bob', hostnameOverride: ''}],
+                    orderers: [{url: 'http://localhost', cert: 'bob'}],
                     peers: PEERS,
                     type: 'hlfv1'
                 }
