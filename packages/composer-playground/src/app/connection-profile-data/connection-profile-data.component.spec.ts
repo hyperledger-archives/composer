@@ -268,7 +268,7 @@ describe('ConnectionProfileDataComponent', () => {
                 profile: {
                     orderers: [
                         {url: 'ordererURL_1', cert: 'ordererCert_1', hostnameOverride: 'ordererHostname_1'},
-                        {url: 'ordererURL_2', cert: 'ordererCert_2', hostnameOverride: 'ordererHostname_2'}]
+                        {url: 'ordererURL_2', cert: 'ordererCert_2'}]
                 }
             };
 
@@ -287,8 +287,7 @@ describe('ConnectionProfileDataComponent', () => {
             groupSpy.secondCall.should.have.been.calledWith(
                 {
                     url: ['ordererURL_2', Validators.required],
-                    cert: ['ordererCert_2'],
-                    hostnameOverride: ['ordererHostname_2'],
+                    cert: ['ordererCert_2']
                 }
             );
         });
@@ -303,8 +302,7 @@ describe('ConnectionProfileDataComponent', () => {
             groupSpy.firstCall.should.have.been.calledWith(
                 {
                     url: ['grpc://localhost:7050', Validators.required],
-                    cert: [''],
-                    hostnameOverride: [''],
+                    cert: ['']
                 }
             );
         });
@@ -316,8 +314,7 @@ describe('ConnectionProfileDataComponent', () => {
                 {
                     orderers: component['fb'].array([component['fb'].group({
                         url: 'ordererURL_2',
-                        cert: 'ordererCert_2',
-                        hostnameOverride: 'ordererHostname_2'
+                        cert: 'ordererCert_2'
                     })])
                 });
 
@@ -333,8 +330,7 @@ describe('ConnectionProfileDataComponent', () => {
                 {
                     orderers: component['fb'].array([component['fb'].group({
                         url: 'ordererURL_2',
-                        cert: 'ordererCert_2',
-                        hostnameOverride: 'ordererHostname_2'
+                        cert: 'ordererCert_2'
                     })])
                 });
 
@@ -357,8 +353,7 @@ describe('ConnectionProfileDataComponent', () => {
                         {
                             requestURL: 'requestURL_2',
                             eventURL: 'eventURL_2',
-                            cert: 'peerCert_2',
-                            hostnameOverride: 'peerHostname_2'
+                            cert: 'peerCert_2'
                         }]
                 }
             };
@@ -372,7 +367,7 @@ describe('ConnectionProfileDataComponent', () => {
                     requestURL: ['requestURL_1', Validators.required],
                     eventURL: ['eventURL_1', Validators.required],
                     cert: ['peerCert_1'],
-                    hostnameOverride: ['peerHostname_1'],
+                    hostnameOverride: ['peerHostname_1']
                 }
             );
 
@@ -380,15 +375,12 @@ describe('ConnectionProfileDataComponent', () => {
                 {
                     requestURL: ['requestURL_2', Validators.required],
                     eventURL: ['eventURL_2', Validators.required],
-                    cert: ['peerCert_2'],
-                    hostnameOverride: ['peerHostname_2'],
+                    cert: ['peerCert_2']
                 }
             );
         });
 
         it('should initialize orderers if there is no connection profile data', () => {
-            // component['connectionProfileData'] = undefined;
-
             let groupSpy = sinon.spy(component['fb'], 'group');
 
             let result = component.initPeers();
@@ -397,8 +389,7 @@ describe('ConnectionProfileDataComponent', () => {
                 {
                     requestURL: ['grpc://localhost:7051', Validators.required],
                     eventURL: ['grpc://localhost:7053', Validators.required],
-                    cert: [''],
-                    hostnameOverride: [''],
+                    cert: ['']
                 }
             );
         });
@@ -412,8 +403,7 @@ describe('ConnectionProfileDataComponent', () => {
                     peers: component['fb'].array([component['fb'].group({
                         requestURL: 'requestURL_1',
                         eventURL: 'eventURL_1',
-                        cert: 'peerCert_1',
-                        hostnameOverride: 'peerHostname_1'
+                        cert: 'peerCert_1'
                     })])
                 });
 
@@ -431,8 +421,7 @@ describe('ConnectionProfileDataComponent', () => {
                     peers: component['fb'].array([component['fb'].group({
                         requestURL: 'requestURL_1',
                         eventURL: 'eventURL_1',
-                        cert: 'peerCert_1',
-                        hostnameOverride: 'peerHostname_1'
+                        cert: 'peerCert_1'
                     })])
                 });
 
@@ -490,13 +479,11 @@ describe('ConnectionProfileDataComponent', () => {
                 peers: component['fb'].array([component['fb'].group({
                     requestURL: ['grpc://localhost:7051', Validators.required],
                     eventURL: ['', Validators.required],
-                    cert: [''],
-                    hostnameOverride: ['']
+                    cert: ['']
                 })]),
                 orderers: component['fb'].array([component['fb'].group({
                     url: ['grpc://localhost:7050', Validators.required],
-                    cert: [''],
-                    hostnameOverride: ['']
+                    cert: ['']
                 })]),
                 channel: ['mychannel', [Validators.required]],
                 mspID: ['Org1MSP', [Validators.required]],
@@ -564,8 +551,7 @@ describe('ConnectionProfileDataComponent', () => {
                 type: 'hlfv1',
                 orderers: [{
                     url: 'grpc://localhost:7050',
-                    cert: '',
-                    hostnameOverride: ''
+                    cert: ''
                 }],
                 channel: 'mychannel',
                 mspID: 'Org1MSP',
@@ -576,8 +562,7 @@ describe('ConnectionProfileDataComponent', () => {
                 peers: [{
                     requestURL: 'grpc://localhost:7051',
                     eventURL: 'grpc://localhost:7053',
-                    cert: '',
-                    hostnameOverride: ''
+                    cert: ''
                 }],
                 keyValStore: '/tmp/keyValStore',
                 timeout: 300
@@ -589,8 +574,7 @@ describe('ConnectionProfileDataComponent', () => {
                 type: 'hlfv1',
                 orderers: [{
                     url: 'grpc://localhost:7050',
-                    cert: '',
-                    hostnameOverride: ''
+                    cert: ''
                 }],
                 channel: 'mychannel',
                 mspID: 'Org1MSP',
@@ -601,8 +585,7 @@ describe('ConnectionProfileDataComponent', () => {
                 peers: [{
                     requestURL: 'grpc://localhost:7051',
                     eventURL: 'grpc://localhost:7053',
-                    cert: '',
-                    hostnameOverride: ''
+                    cert: ''
                 }],
                 keyValStore: '/tmp/keyValStore',
                 timeout: 300
@@ -619,13 +602,11 @@ describe('ConnectionProfileDataComponent', () => {
                 peers: component['fb'].array([component['fb'].group({
                     requestURL: ['grpc://localhost:7051', Validators.required],
                     eventURL: ['grpc://localhost:7053', Validators.required],
-                    cert: [''],
-                    hostnameOverride: ['']
+                    cert: ['']
                 })]),
                 orderers: component['fb'].array([component['fb'].group({
                     url: ['grpc://localhost:7050', Validators.required],
-                    cert: [''],
-                    hostnameOverride: ['']
+                    cert: ['']
                 })]),
                 channel: ['mychannel', [Validators.required]],
                 mspID: ['Org1MSP', [Validators.required]],
@@ -891,8 +872,7 @@ describe('ConnectionProfileDataComponent', () => {
             component['v1Form'] = component['fb'].group({
                 orderers: component['fb'].array([component['fb'].group({
                     url: 'ordererURL_2',
-                    cert: 'ordererCert_2',
-                    hostnameOverride: ''
+                    cert: 'ordererCert_2'
                 })])
             });
 
@@ -901,8 +881,7 @@ describe('ConnectionProfileDataComponent', () => {
             mockNgbModal.open.returns({
                 result: Promise.resolve({
                     url: 'ordererURL_2',
-                    cert: 'ordererCert_2',
-                    hostnameOverride: 'hostname_2'
+                    cert: 'ordererCert_2'
                 })
             });
 
@@ -911,18 +890,16 @@ describe('ConnectionProfileDataComponent', () => {
             tick();
 
             mockConnectionProfileService.setCertificate.should.have.been.called;
-            mockConnectionProfileService.setHostname.should.have.been.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2', hostnameOverride: 'hostname_2'});
+            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2'});
         }));
 
         it('should open orderers certificate modal if hostname not set', fakeAsync(() => {
             component['v1Form'] = component['fb'].group({
                 orderers: component['fb'].array([component['fb'].group({
                     url: 'ordererURL_2',
-                    cert: 'ordererCert_2',
-                    hostnameOverride: ''
+                    cert: 'ordererCert_2'
                 })])
             });
 
@@ -931,8 +908,7 @@ describe('ConnectionProfileDataComponent', () => {
             mockNgbModal.open.returns({
                 result: Promise.resolve({
                     url: 'ordererURL_2',
-                    cert: 'ordererCert_2',
-                    hostnameOverride: ''
+                    cert: 'ordererCert_2'
                 })
             });
 
@@ -941,10 +917,9 @@ describe('ConnectionProfileDataComponent', () => {
             tick();
 
             mockConnectionProfileService.setCertificate.should.be.called;
-            mockConnectionProfileService.setHostname.should.be.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2', hostnameOverride: ''});
+            patchSpy.should.have.been.calledWith({cert: 'ordererCert_2'});
         }));
 
         it('should open peers certificate modal if hostname set', fakeAsync(() => {
@@ -952,8 +927,7 @@ describe('ConnectionProfileDataComponent', () => {
                 peers: component['fb'].array([component['fb'].group({
                     requestURL: 'requestURL_1',
                     eventURL: 'eventURL_1',
-                    cert: 'peerCert_1',
-                    hostnameOverride: 'peerHostname_1'
+                    cert: 'peerCert_1'
                 })])
             });
 
@@ -963,8 +937,7 @@ describe('ConnectionProfileDataComponent', () => {
                 result: Promise.resolve({
                     requestURL: 'requestURL_1',
                     eventURL: 'eventURL_1',
-                    cert: 'peerCert_1',
-                    hostnameOverride: 'hostname_1'
+                    cert: 'peerCert_1'
                 })
             });
 
@@ -973,10 +946,9 @@ describe('ConnectionProfileDataComponent', () => {
             tick();
 
             mockConnectionProfileService.setCertificate.should.be.called;
-            mockConnectionProfileService.setHostname.should.be.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'peerCert_1', hostnameOverride: 'hostname_1'});
+            patchSpy.should.have.been.calledWith({cert: 'peerCert_1'});
         }));
 
         it('should open peers certificate modal if hostname not set', fakeAsync(() => {
@@ -984,8 +956,7 @@ describe('ConnectionProfileDataComponent', () => {
                 peers: component['fb'].array([component['fb'].group({
                     requestURL: 'requestURL_1',
                     eventURL: 'eventURL_1',
-                    cert: 'peerCert_1',
-                    hostnameOverride: 'peerHostname_1'
+                    cert: 'peerCert_1'
                 })])
             });
 
@@ -995,8 +966,7 @@ describe('ConnectionProfileDataComponent', () => {
                 result: Promise.resolve({
                     requestURL: 'requestURL_1',
                     eventURL: 'eventURL_1',
-                    cert: 'peerCert_1',
-                    hostnameOverride: ''
+                    cert: 'peerCert_1'
                 })
             });
 
@@ -1005,10 +975,9 @@ describe('ConnectionProfileDataComponent', () => {
             tick();
 
             mockConnectionProfileService.setCertificate.should.be.called;
-            mockConnectionProfileService.setHostname.should.be.called;
             mockNgbModal.open.should.have.been.called;
 
-            patchSpy.should.have.been.calledWith({cert: 'peerCert_1', hostnameOverride: ''});
+            patchSpy.should.have.been.calledWith({cert: 'peerCert_1'});
         }));
 
         it('should error on unrecognized type', fakeAsync(() => {
@@ -1030,8 +999,7 @@ describe('ConnectionProfileDataComponent', () => {
             component['v1Form'] = component['fb'].group({
                 orderers: component['fb'].array([component['fb'].group({
                     url: 'ordererURL_2',
-                    cert: 'ordererCert_2',
-                    hostnameOverride: ''
+                    cert: 'ordererCert_2'
                 })])
             });
 
@@ -1046,7 +1014,6 @@ describe('ConnectionProfileDataComponent', () => {
             tick();
 
             mockConnectionProfileService.setCertificate.should.have.been.called;
-            mockConnectionProfileService.setHostname.should.have.been.called;
             mockNgbModal.open.should.have.been.called;
 
             patchSpy.should.not.have.been.called;
@@ -1059,8 +1026,7 @@ describe('ConnectionProfileDataComponent', () => {
             component['v1Form'] = component['fb'].group({
                 orderers: component['fb'].array([component['fb'].group({
                     url: 'ordererURL_2',
-                    cert: 'ordererCert_2',
-                    hostnameOverride: ''
+                    cert: 'ordererCert_2'
                 })])
             });
 
@@ -1075,7 +1041,6 @@ describe('ConnectionProfileDataComponent', () => {
             tick();
 
             mockConnectionProfileService.setCertificate.should.have.been.called;
-            mockConnectionProfileService.setHostname.should.have.been.called;
             mockNgbModal.open.should.have.been.called;
 
             patchSpy.should.not.have.been.called;
@@ -1087,9 +1052,8 @@ describe('ConnectionProfileDataComponent', () => {
 
     describe('showCertificate', () => {
         it('should show certificate', () => {
-            component.showCertificate('certdata', 'hostname');
+            component.showCertificate('certdata');
             mockConnectionProfileService.setCertificate.should.be.calledWith('certdata');
-            mockConnectionProfileService.setHostname.should.be.calledWith('hostname');
             mockNgbModal.open.should.be.called;
         });
     });
