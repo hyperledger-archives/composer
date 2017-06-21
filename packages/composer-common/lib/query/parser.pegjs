@@ -1432,9 +1432,7 @@ LimitPlaceholder
 
 LimitLiteral
  = LimitToken _ limit:$DecimalIntegerLiteral {
-    return {
-      limit: limit
-    };
+    return limit;
   }
 
 Skip
@@ -1450,9 +1448,7 @@ SkipPlaceholder
 
 SkipLiteral
  = SkipToken _ skip:$DecimalIntegerLiteral {
-    return {
-      skip: skip
-    };
+    return skip;
   }
 
 SortDirection
