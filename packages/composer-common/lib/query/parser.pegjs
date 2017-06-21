@@ -1352,7 +1352,7 @@ GTEToken        = ">="
 
 /* ROOT OF GRAMMAR */
 Program
-  = queries:Query+
+  = queries:Query*
   {
     return {
       type: "Queries",
@@ -1361,9 +1361,9 @@ Program
   }
 
 Query
-  = "query" _ id:Identifier __ "{" __ 
+  = "query" _ id:Identifier __ "{" __
     "description:" __ "\"" description:StringSequence "\"" __
-    "statement:" __ select:SelectStatement __ 
+    "statement:" __ select:SelectStatement __
   "}" __
   {
     return {
@@ -1395,14 +1395,15 @@ FromSelectStatement
       limit: limit,
       skip: skip,
       orderBy: orderBy,
-      location: location()
+      location: location(),
+      text: text()
     };
   }
 
 SimpleSelectStatement
   = __ SelectToken
     __ resource:QualifiedName
-    __ where:Predicate? 
+    __ where:Predicate?
     __ orderBy:OrderBy?
     __ limit:Limit?
     __ skip:Skip? {
@@ -1413,7 +1414,8 @@ SimpleSelectStatement
       limit: limit,
       skip: skip,
       orderBy: orderBy,
-      location: location()
+      location: location(),
+      text: text()
     };
   }
 
@@ -1430,9 +1432,7 @@ LimitPlaceholder
 
 LimitLiteral
  = LimitToken _ limit:$DecimalIntegerLiteral {
-    return {
-      limit: limit
-    };
+    return limit;
   }
 
 Skip
@@ -1448,9 +1448,7 @@ SkipPlaceholder
 
 SkipLiteral
  = SkipToken _ skip:$DecimalIntegerLiteral {
-    return {
-      skip: skip
-    };
+    return skip;
   }
 
 SortDirection
@@ -1491,7 +1489,7 @@ Predicate
    {
      return test;
    }
-  
+
 Joiner
   = OrToken { return "OR"; }
   / AndToken { return "AND"; }
@@ -1504,7 +1502,7 @@ Operator
   / GTToken { return ">"; }
   / GTEToken { return ">="; }
 
-Placeholder 
+Placeholder
   = _ "_$" name:Identifier {
   return {
     type: "Placeholder",
