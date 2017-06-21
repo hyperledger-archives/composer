@@ -71,12 +71,13 @@ fi
 
 
 cd $TRAVIS_BUILD_DIR
+touch changefiles.log
 git diff --name-only $(echo $TRAVIS_COMMIT_RANGE | sed 's/\.//')
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    git show --pretty=format: --name-only "$TRAVIS_COMMIT_RANGE"|sort|uniq  > changedfiles.log  || echo Fail
+    git show --pretty=format: --name-only "$TRAVIS_COMMIT_RANGE"|sort|uniq  >> changedfiles.log  || echo Fail
 elif [ -n "$TRAVIS_PULL_REQUEST" ]; then
-    git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  > changedfiles.log   || echo Fail
+    git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  >> changedfiles.log   || echo Fail
 fi
 
 RESULT=$(cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }') 
