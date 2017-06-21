@@ -98,6 +98,11 @@ class Select {
         if(this.ast.orderBy) {
             this.orderBy = new OrderBy(this, this.ast.orderBy);
         }
+
+        this.text = null;
+        if(this.ast.text) {
+            this.text = this.ast.text;
+        }
     }
 
     /**
@@ -172,6 +177,14 @@ class Select {
      */
     getSkip() {
         return this.skip;
+    }
+
+    /**
+     * Returns the text of this select statement.
+     * @return {string} the text of this select statement.
+     */
+    getText() {
+        return this.text;
     }
 
     /**

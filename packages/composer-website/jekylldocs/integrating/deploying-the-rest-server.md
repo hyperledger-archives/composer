@@ -38,17 +38,29 @@ The REST server can be configured using environment variables, instead of supply
 
         COMPOSER_CONFIG='{
           "connectionProfiles": {
-            "hlfabric": {
-              "type": "hlf",
-              "keyValStore": "/home/composer/.composer-credentials",
-              "membershipServicesURL": "grpc://membersrvc:7054",
-              "peerURL": "grpc://vp0:7051",
-              "eventHubURL": "grpc://vp0:7053",
-              "deployWaitTime": 300,
-              "invokeWaitTime": 30,
-              "networks": {
-                "org.example.biznet": "25e9c6abfdc8a081c218e773f2e513ee504ba9acb437d05fac7e08fa5c0d309d"
-              }
+            "hlfv1": {
+              "name": "hlfv1",
+              "description": "Hyperledger Fabric v1.0",
+              "type": "hlfv1",
+              "keyValStore": "/home/composer/.hfc-key-store",
+              "timeout": 300,
+              "orderers": [
+                {
+                  "url": "grpc://orderer.example.com:7050"
+                }
+              ],
+              "channel": "mychannel",
+              "mspID": "Org1MSP",
+              "ca": {
+                "url": "http://ca.example.com:7054",
+                "name": "ca.example.com"
+              },
+              "peers": [
+                {
+                  "requestURL": "grpc://peer0.org1.example.com:7051",
+                  "eventURL": "grpc://peer0.org1.example.com:7053"
+                }
+              ]
             }
           }
         }'
@@ -59,7 +71,7 @@ The REST server can be configured using environment variables, instead of supply
 
     For example:
 
-        COMPOSER_CONNECTION_PROFILE=hlfabric
+        COMPOSER_CONNECTION_PROFILE=hlfv1
 
 3. `COMPOSER_BUSINESS_NETWORK`
 
@@ -67,7 +79,7 @@ The REST server can be configured using environment variables, instead of supply
 
     For example:
 
-        COMPOSER_BUSINESS_NETWORK=digitalproperty-network
+        COMPOSER_BUSINESS_NETWORK=my-network
 
 4. `COMPOSER_ENROLLMENT_ID`
 
@@ -157,11 +169,11 @@ You may need to publish this Docker image to a Docker image repository, for exam
 
 The following example will demonstrate how to deploy the REST server using Docker. The deployed REST server will persist data using MongoDB, and will be secured using GitHub authentication.
 
-The examples are based on the Getting Started guide for Hyperledger Fabric v1.0, and may need adjusting for your configuration, for example if the Docker network name does not match.
+The examples are based on the business network that is deployed to Hyperledger Fabric v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.
 
 1. Start an instance of MongoDB:
 
-        docker run -d --name mongo --network hlfv1_default -p 27017:27017 mongo
+        docker run -d --name mongo --network composer_default -p 27017:27017 mongo
 
 2. Create a new, empty directory. Create a new file named `Dockerfile` in the new directory, with the following contents:
 
@@ -176,35 +188,37 @@ The examples are based on the Getting Started guide for Hyperledger Fabric v1.0,
 
 4. Create a new file named `envvars.txt`, with the following contents:
 
-        COMPOSER_CONNECTION_PROFILE=hlfabric
-        COMPOSER_BUSINESS_NETWORK=digitalproperty-network
+        COMPOSER_CONNECTION_PROFILE=hlfv1
+        COMPOSER_BUSINESS_NETWORK=my-network
         COMPOSER_ENROLLMENT_ID=admin
         COMPOSER_ENROLLMENT_SECRET=adminpw
         COMPOSER_NAMESPACES=never
         COMPOSER_SECURITY=true
         COMPOSER_CONFIG='{
           "connectionProfiles": {
-            "hlfabric": {
+            "hlfv1": {
+              "name": "hlfv1",
+              "description": "Hyperledger Fabric v1.0",
               "type": "hlfv1",
+              "keyValStore": "/home/composer/.hfc-key-store",
+              "timeout": 300,
               "orderers": [
-                "grpc://orderer0:7050"
-              ],
-              "ca": "http://ca0:7054",
-              "peers": [
                 {
-                  "requestURL": "grpc://peer0:7051",
-                  "eventURL": "grpc://peer0:7053"
-                },
-                {
-                  "requestURL": "grpc://peer1:7051",
-                  "eventURL": "grpc://peer1:7053"
+                  "url": "grpc://orderer.example.com:7050"
                 }
               ],
-              "keyValStore": "/home/composer/.hfc-key-store",
               "channel": "mychannel",
               "mspID": "Org1MSP",
-              "deployWaitTime": "300",
-              "invokeWaitTime": "100"
+              "ca": {
+                "url": "http://ca.example.com:7054",
+                "name": "ca.example.com"
+              },
+              "peers": [
+                {
+                  "requestURL": "grpc://peer0.org1.example.com:7051",
+                  "eventURL": "grpc://peer0.org1.example.com:7053"
+                }
+              ]
             }
           }
         }'
@@ -246,7 +260,7 @@ The examples are based on the Getting Started guide for Hyperledger Fabric v1.0,
             -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
             -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
             --name rest \
-            --network hlfv1_default \
+            --network composer_default \
             -p 3000:3000 \
             myorg/my-composer-rest-server
 

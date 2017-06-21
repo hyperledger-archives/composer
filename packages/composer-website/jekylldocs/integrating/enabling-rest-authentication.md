@@ -14,7 +14,7 @@ excerpt: By default, the Hyperledger Composer REST server services all requests 
 
 By default, the {{site.data.conrefs.composer_full}} REST server services all requests by using the Blockchain identity specified on the command line at startup. For example, when using the following command, all requests made to the REST server will be serviced by using the Blockchain identity **alice1** to digitally sign all transactions:
 
-    composer-rest-server -p hlfv1 -n digitalproperty-network -i alice1 -s suchs3cret
+    composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
 
 This means that the business network cannot distinguish between different clients of the REST server. This may be acceptable in certain use cases, for example if the Blockchain identity only has read-only access and the REST server is secured using an API management gateway.
 
@@ -67,9 +67,9 @@ The configuration for the REST server should be specified using the environment 
 
 Once the environment variable `COMPOSER_PROVIDERS` has been set, you can use the `-S true` argument to start the REST server with security enabled. Once security is enabled, clients will have to authenticate before they can make any requests to the business network.
 
-For example, here is the command for the getting started guide, however you may need to modify the command for your business network:
+For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:
 
-    composer-rest-server -p hlfv1 -n digitalproperty-network -i admin -s adminpw -S true
+    composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -S true
 
 Now, navigate to the REST API explorer at [http://localhost:3000/explorer/](http://localhost:3000/explorer/). If security has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an `HTTP 401 Authorization Required` message.
 
@@ -85,7 +85,7 @@ Now, navigate to the REST API explorer at http://localhost:3000/explorer/. Attem
 
 ## Adding a Blockchain identity to the default wallet
 
-First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.example.sample.SampleParticipant#alice@email.com`, and the secret is `suchs3cret`.
+First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity `alice1` to the participant `org.acme.mynetwork.Trader#alice@email.com`, and the secret is `suchs3cret`.
 
 Follow these steps to add a Blockchain identity to the default wallet:
 
@@ -145,8 +145,8 @@ Now, navigate to the REST API explorer at http://localhost:3000/explorer/. Attem
 You can test that the Blockchain identity is being used by calling the `GET /system/ping` operation. This operation returns the fully qualified identifier for the participant that the Blockchain identity was issued to:
 
     {
-      "version": "0.7.3",
-      "participant": "org.example.sample.SampleParticipant#alice@email.com"
+      "version": "0.8.0",
+      "participant": "org.acme.mynetwork.Trader#alice@email.com"
     }
 
 ## Final notes
