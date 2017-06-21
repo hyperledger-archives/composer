@@ -5,7 +5,7 @@ section: applications
 category: start
 index-order: 1
 sidebar: sidebars/applications.md
-excerpt: Application developers use the `composer-client` npm module to programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions.
+excerpt: "[**Developing Node.js applications to work with Hyperledger Composer**](./node.html) allows you to  programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions."
 ---
 
 # Writing Node.js Applications
@@ -50,7 +50,7 @@ this.bizNetworkConnection.connect(this.CONNECTION_PROFILE_NAME, this.businessNet
 
 For a client application this is all the essential setup that is required, from this point on it's up to what the application wants to do as to what APIs are called.
 
-##Adding assets to a regsitry
+## Adding assets to a registry
 
 The {{site.data.conrefs.composer_full}} runtime will create a default registry for each type of modeled asset. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. The `getAssetRegistry()` method takes the fully qualified asset name as defined in the CTO model file (that is the namespace plus the name of the asset type). It returns a promise that is resolved with the asset registry:
 
@@ -63,7 +63,7 @@ this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandT
 
 Next step is to create some assets (look for the method `_bootstrapTitles` in the code )
 
-A factory style pattern is used to create assets. A factory is obtained from the businessNetworkDefinition and used to create instances of all the types defined in the business network.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The indentifiers here (firstName lastName) matches with the properties defined in the model.
+A factory style pattern is used to create assets. A factory is obtained from the businessNetworkDefinition and used to create instances of all the types defined in the business network.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The identifiers here (firstName lastName) matches with the properties defined in the model.
 
 ```javascript
 let factory = this.businessNetworkDefinition.getFactory();
@@ -160,7 +160,7 @@ this.bizNetworkConnection.getAssetRegistry('net.biz.digitalPropertyNetwork.LandT
   return registry.get('LID:1148');
 })
 ```
-The getAssetRegistry call should now be looking a bit familar, the get API is used to get a specific land title.
+The getAssetRegistry call should now be looking a bit familiar, the get API is used to get a specific land title.
 The next step is to create the transaction we want to submit.
 
 ```javascript

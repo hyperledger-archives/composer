@@ -1,22 +1,23 @@
 ---
 layout: default
-title: Calling REST APIs
+title: "Calling external REST services"
 category: start
 section: integrating
+status: experimental
 index-order: 4
 sidebar: sidebars/integrating.md
-excerpt: How to call a REST API from a transaction processor function
+excerpt: "[**Transaction processor functions can be used to call external REST services**](./call-out.html). This allows you to move complex computation off the blockchain."
 ---
 
 # Calling a REST API from Transaction Processor Functions
 
 ---
 
-> The status of this feature is experimental. We welcome your feedback on the utility of this feature. We may evolve the feature in the future to make it more generally useful. While we will strive to ensure backwards compatability this cannot be guaranteed.
+> The status of this feature is experimental. We welcome your feedback on the utility of this feature. We may evolve the feature in the future to make it more generally useful. While we will strive to ensure backwards compatibility this cannot be guaranteed.
 
 ## Scenario
 
-In some cases it is desireable to be able to call REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. This allows the TP functions to off-board complex or expensive computation to a centrally or peer hosted service.
+In some cases it is desirable to be able to call REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. This allows the transaction processor functions to off-board complex or expensive computation to a centrally or peer hosted service.
 
 ## Calling an External REST Service
 
