@@ -33,6 +33,13 @@ class MockCodeMirrorDirective {
 class MockPerfectScrollBarDirective {
 }
 
+@Directive({
+    selector: '[debounce]'
+})
+class MockDebounceDirective {
+    @Input() value;
+}
+
 describe('EditorFileComponent', () => {
     let component: EditorFileComponent;
     let fixture: ComponentFixture<EditorFileComponent>;
@@ -42,7 +49,7 @@ describe('EditorFileComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditorFileComponent, MockCodeMirrorDirective, MockPerfectScrollBarDirective],
+            declarations: [EditorFileComponent, MockCodeMirrorDirective, MockPerfectScrollBarDirective, MockDebounceDirective],
             providers: [
                 {provide: ClientService, useValue: mockClientService}]
         });
