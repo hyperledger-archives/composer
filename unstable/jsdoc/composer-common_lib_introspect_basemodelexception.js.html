@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/codegen/filewriter.js</title>
+	<title>Hyperledger Composer Source: composer-common/lib/introspect/basemodelexception.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/codegen/filewriter.js</h1>
+		<h1 class="page-title">Source: composer-common/lib/introspect/basemodelexception.js</h1>
     
 <section>
     <article>
@@ -100,112 +100,47 @@
 
 'use strict';
 
-const fs = require('fs');
-const mkdirp = require('mkdirp');
-const path = require('path');
-const Writer = require('./writer');
+const BaseException = require('../baseexception');
 
 /**
- * FileWriter creates text files under a directory tree. It can be used
- * by code generators to create source files for example.
- * Basic usage is: openFile(fileName), writeLine(...), closeFile().
- *
- * @private
- * @extends Writer
- * @see See [Writer]{@link module:composer-common.Writer}
+ * Exception throws when a composer file is semantically invalid
+ * @extends BaseException
+ * @see See [BaseException]{@link module:composer-common.BaseException}
  * @class
  * @memberof module:composer-common
  */
-class FileWriter extends Writer {
+class BaseModelException extends BaseException {
 
     /**
-     * Create a FileWriter.
-     *
-     * @param {string} outputDirectory - the path to an output directory
-     * that will be used to store generated files.
+     * Create an IllegalModelException
+     * @param {string} message - the message for the exception
+     * @param {string} fileLocation - the optional file location associated with the exception
+     * @param {string} fullMessage - the optional full message text
      */
-    constructor(outputDirectory) {
-        super();
-        this.outputDirectory = outputDirectory;
-        this.relativeDir = null;
-        this.fileName = null;
-        mkdirp.sync(outputDirectory);
+    constructor(message, fileLocation, fullMessage) {
+        super(fullMessage ? fullMessage : message);
+        this.fileLocation = fileLocation;
+        this.shortMessage = message;
     }
 
     /**
-     * Opens a file for writing. The file will be created in the
-     * root directory of this FileWriter.
-     *
-     * @param {string} fileName - the name of the file to open
+     * Returns the file location associated with the exception or null
+     * @return {string} the optional location associated with the exception
      */
-    openFile(fileName) {
-        this.fileName = fileName;
-        this.relativeDir = null;
+    getFileLocation() {
+        return this.fileLocation;
     }
 
     /**
-     * Opens a file for writing, with a location relative to the
-     * root directory of this FileWriter.
-     *
-     * @param {string} relativeDir - the relative directory to use
-     * @param {string} fileName - the name of the file to open
+     * Returns the error message without the location of the error
+     * @returns {string} the error message
      */
-    openRelativeFile(relativeDir, fileName) {
-        this.relativeDir = relativeDir;
-        this.fileName = fileName;
-    }
-
-    /**
-     * Writes text to the current open file
-     * @param {int} tabs - the number of tabs to use
-     * @param {string} text - the text to write
-     */
-    writeLine(tabs,text) {
-        if (this.fileName) {
-            super.writeLine(tabs,text);
-        } else {
-            throw Error('File has not been opened!');
-        }
-    }
-
-    /**
-     * Writes text to the start of the current open file
-     * @param {int} tabs - the number of tabs to use
-     * @param {string} text - the text to write
-     */
-    writeBeforeLine(tabs,text) {
-        if (this.fileName) {
-            super.writeBeforeLine(tabs,text);
-        } else {
-            throw Error('File has not been opened!');
-        }
-    }
-
-    /**
-     * Closes the current open file
-     */
-    closeFile() {
-        if (!this.fileName) {
-            throw new Error('No file open');
-        }
-
-        let filePath = this.outputDirectory;
-        if (this.relativeDir) {
-            filePath = path.resolve(filePath, this.relativeDir);
-        }
-        filePath = path.resolve(filePath, this.fileName);
-
-        //console.log('Writing to ' + filePath );
-        mkdirp.sync(path.dirname(filePath));
-        fs.writeFileSync(filePath, this.getBuffer());
-
-        this.fileName = null;
-        this.relativeDir = null;
-        this.clearBuffer();
+    getShortMessage() {
+        return this.shortMessage;
     }
 }
 
-module.exports = FileWriter;
+module.exports = BaseModelException;
 </pre>
     </article>
 </section>

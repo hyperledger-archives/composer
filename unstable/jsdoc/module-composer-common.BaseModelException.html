@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/codegen/filewriter.js</title>
+	<title>Hyperledger Composer Class: BaseModelException</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -74,142 +74,485 @@
 <div class="row">
 
 	
-	<div class="col-md-12">
+	<div class="col-md-8">
 	
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/codegen/filewriter.js</h1>
-    
+	<h1 class="page-title">Class: BaseModelException</h1>
 <section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript linenums">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-'use strict';
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-composer-common.html">composer-common</a>.</span>
+        
+        BaseModelException
+        </h2>
+        
+            <div class="class-description"><p>Exception throws when a composer file is semantically invalid</p></div>
+        
+    
+</header>
 
-const fs = require('fs');
-const mkdirp = require('mkdirp');
-const path = require('path');
-const Writer = require('./writer');
 
-/**
- * FileWriter creates text files under a directory tree. It can be used
- * by code generators to create source files for example.
- * Basic usage is: openFile(fileName), writeLine(...), closeFile().
- *
- * @private
- * @extends Writer
- * @see See [Writer]{@link module:composer-common.Writer}
- * @class
- * @memberof module:composer-common
- */
-class FileWriter extends Writer {
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="BaseModelException"><span class="type-signature"></span>new BaseModelException(message, fileLocation, fullMessage)</h4>
+    
+    
+</dt>
+<dd>
 
-    /**
-     * Create a FileWriter.
-     *
-     * @param {string} outputDirectory - the path to an output directory
-     * that will be used to store generated files.
-     */
-    constructor(outputDirectory) {
-        super();
-        this.outputDirectory = outputDirectory;
-        this.relativeDir = null;
-        this.fileName = null;
-        mkdirp.sync(outputDirectory);
-    }
+    
+    <div class="description">
+        <p>Create an IllegalModelException</p>
+    </div>
+    
 
-    /**
-     * Opens a file for writing. The file will be created in the
-     * root directory of this FileWriter.
-     *
-     * @param {string} fileName - the name of the file to open
-     */
-    openFile(fileName) {
-        this.fileName = fileName;
-        this.relativeDir = null;
-    }
+    
 
-    /**
-     * Opens a file for writing, with a location relative to the
-     * root directory of this FileWriter.
-     *
-     * @param {string} relativeDir - the relative directory to use
-     * @param {string} fileName - the name of the file to open
-     */
-    openRelativeFile(relativeDir, fileName) {
-        this.relativeDir = relativeDir;
-        this.fileName = fileName;
-    }
+    
 
-    /**
-     * Writes text to the current open file
-     * @param {int} tabs - the number of tabs to use
-     * @param {string} text - the text to write
-     */
-    writeLine(tabs,text) {
-        if (this.fileName) {
-            super.writeLine(tabs,text);
-        } else {
-            throw Error('File has not been opened!');
-        }
-    }
+    
+    
+        <h5>Parameters:</h5>
+        
 
-    /**
-     * Writes text to the start of the current open file
-     * @param {int} tabs - the number of tabs to use
-     * @param {string} text - the text to write
-     */
-    writeBeforeLine(tabs,text) {
-        if (this.fileName) {
-            super.writeBeforeLine(tabs,text);
-        } else {
-            throw Error('File has not been opened!');
-        }
-    }
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-    /**
-     * Closes the current open file
-     */
-    closeFile() {
-        if (!this.fileName) {
-            throw new Error('No file open');
-        }
+        <th>Type</th>
 
-        let filePath = this.outputDirectory;
-        if (this.relativeDir) {
-            filePath = path.resolve(filePath, this.relativeDir);
-        }
-        filePath = path.resolve(filePath, this.fileName);
+        
 
-        //console.log('Writing to ' + filePath );
-        mkdirp.sync(path.dirname(filePath));
-        fs.writeFileSync(filePath, this.getBuffer());
+        
 
-        this.fileName = null;
-        this.relativeDir = null;
-        this.clearBuffer();
-    }
-}
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-module.exports = FileWriter;
-</pre>
-    </article>
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the message for the exception</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fileLocation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the optional file location associated with the exception</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fullMessage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the optional full message text</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_introspect_basemodelexception.js.html">composer-common/lib/introspect/basemodelexception.js</a>,
+				 <a href="composer-common_lib_introspect_basemodelexception.js.html#sunlight-1-line-26">line 26</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><p>See <a href="module-composer-common.BaseException.html">BaseException</a></p></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>BaseException</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="getFileLocation"><span class="type-signature"></span>getFileLocation()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the file location associated with the exception or null</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_introspect_basemodelexception.js.html">composer-common/lib/introspect/basemodelexception.js</a>,
+				 <a href="composer-common_lib_introspect_basemodelexception.js.html#sunlight-1-line-44">line 44</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the optional location associated with the exception</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getShortMessage"><span class="type-signature"></span>getShortMessage()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns the error message without the location of the error</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-common_lib_introspect_basemodelexception.js.html">composer-common/lib/introspect/basemodelexception.js</a>,
+				 <a href="composer-common_lib_introspect_basemodelexception.js.html#sunlight-1-line-52">line 52</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the error message</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
 </section>
-
 
 
 
@@ -219,6 +562,10 @@ module.exports = FileWriter;
 
 	<div class="clearfix"></div>
 
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
 	
 
 </div>
