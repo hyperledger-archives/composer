@@ -14,16 +14,16 @@
 
 'use strict';
 
-const BaseException = require('../baseexception');
+const BaseModelException = require('./basemodelexception');
 
 /**
  * Exception throws when a composer file is semantically invalid
- * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @extends BaseModelException
+ * @see See [BaseModelException]{@link module:composer-common.BaseModelException}
  * @class
  * @memberof module:composer-common
  */
-class IllegalModelException extends BaseException {
+class IllegalModelException extends BaseModelException {
 
     /**
      * Create an IllegalModelException.
@@ -37,20 +37,24 @@ class IllegalModelException extends BaseException {
      */
     constructor(message, modelFile, fileLocation) {
 
-        let messagePrefix = '';
+        let messageSuffix = '';
         if(modelFile && modelFile.getFileName()) {
-            messagePrefix = 'File \'' + modelFile.getFileName() + '\': ' ;
+            messageSuffix = 'File \'' + modelFile.getFileName() + '\': ' ;
         }
 
         if(fileLocation) {
-            messagePrefix = messagePrefix + 'line ' + fileLocation.start.line + ' column ' +
+            messageSuffix = messageSuffix + 'line ' + fileLocation.start.line + ' column ' +
                 fileLocation.start.column + ', to line ' + fileLocation.end.line + ' column ' +
                 fileLocation.end.column + '. ';
         }
 
-        super(messagePrefix + message);
+        // First character to be uppercase
+        messageSuffix = messageSuffix.charAt(0).toUpperCase() + messageSuffix.slice(1);
+
+        super(message + ' ' + messageSuffix);
         this.modelFile = modelFile;
         this.fileLocation = fileLocation;
+        this.shortMessage = message;
     }
 
     /**
@@ -59,14 +63,6 @@ class IllegalModelException extends BaseException {
      */
     getModelFile() {
         return this.modelFile;
-    }
-
-    /**
-     * Returns the file location associated with the exception or null
-     * @return {string} the optional location associated with the exception
-     */
-    getFileLocation() {
-        return this.fileLocation;
     }
 }
 

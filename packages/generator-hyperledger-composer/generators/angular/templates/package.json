@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "author": "<%= authorName %>",
   "email": "<%= authorEmail %>",
-  "license": "Apache-2.0",
+  "license": "<%= license %>",
   "scripts": {
     "ng": "ng",
 <% if(apiServer == 'generate'){ %>
@@ -29,8 +29,8 @@
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
     "bootstrap": "^3.3.7",
-    "composer-client": "^0.7.0",
-    "composer-rest-server": "^0.7.0",
+    "composer-client": "latest",
+    "composer-rest-server": "latest",
     "concurrently": "^3.1.0",
     "config": "^1.21.0",
     "core-js": "^2.4.1",
