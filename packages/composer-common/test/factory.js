@@ -42,12 +42,10 @@ describe('Factory', () => {
             o String assetId
             o String newValue
         }
-        transaction MyTransaction identified by transactionId {
-            o String transactionId
+        transaction MyTransaction {
             o String newValue
         }
-        event MyEvent identified by eventId {
-            o String eventId
+        event MyEvent {
             o String value
         }`);
         factory = new Factory(modelManager);

@@ -36,8 +36,10 @@ class Engine {
     constructor(container) {
         this.container = container;
         this.installLogger();
-        const method = 'constructor';
+        const method = 'constructor-b';
         LOG.entry(method);
+
+
         LOG.exit(method);
     }
 
@@ -84,7 +86,7 @@ class Engine {
             }
         };
         Logger.setFunctionalLogger(loggingProxy);
-        Logger._envDebug = 'concerto:*';
+        Logger._envDebug = 'composer:*';
     }
 
     /**
@@ -97,6 +99,7 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
+        LOG.entry(method);
         LOG.entry(method, context, fcn, args);
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
@@ -106,6 +109,9 @@ class Engine {
         let dataService = context.getDataService();
         let businessNetworkBase64, businessNetworkHash, businessNetworkRecord, businessNetworkDefinition, compiledScriptBundle;
         let sysregistries, sysidentities;
+  //      print('init:1');
+  //      print('@JS == '+LOG);
+  //      LOG.info(method,'1');
         return Promise.resolve()
             .then(() => {
 
@@ -116,6 +122,8 @@ class Engine {
             .then(() => {
 
                 // Load, validate, and hash the business network definition.
+  //              print('init:2');
+   //             print('@JS == '+LOG);
                 LOG.debug(method, 'Loading business network definition');
                 businessNetworkBase64 = args[0];
                 let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
@@ -129,23 +137,29 @@ class Engine {
                     hash: businessNetworkHash
                 };
 
+     //           print('init:3');
                 // Load the business network.
                 businessNetworkDefinition = Context.getCachedBusinessNetwork(businessNetworkHash);
                 if (!businessNetworkDefinition) {
+       //             print('init:4');
+         //           print('@JS == '+JSON.stringify(LOG));
+           //         print('init - '+BusinessNetworkDefinition);
+
                     return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
                         .then((businessNetworkDefinition_) => {
-
+             //               print('init:5');
                             // Cache the business network.
                             businessNetworkDefinition = businessNetworkDefinition_;
                             LOG.debug(method, 'Loaded business network definition, storing in cache');
                             Context.cacheBusinessNetwork(businessNetworkHash, businessNetworkDefinition);
-
+               //             print('init:6');
                         });
+               //     print('init:4 after');
                 }
 
             })
             .then(() => {
-
+           //     print('init:7');
                 // Load the compiled script bundle.
                 compiledScriptBundle = Context.getCachedCompiledScriptBundle(businessNetworkHash);
                 if (!compiledScriptBundle) {
@@ -171,13 +185,13 @@ class Engine {
 
             })
             .then((sysdata) => {
-
+    //            print('init:8');
                 // Add the business network definition to the sysdata collection.
                 return sysdata.add('businessnetwork', businessNetworkRecord);
 
             })
             .then(() => {
-
+    //            print('init:9');
                 // Ensure that the system registries collection exists.
                 LOG.debug(method, 'Ensuring that sysregistries collection exists');
                 return dataService.getCollection('$sysregistries')
@@ -195,7 +209,7 @@ class Engine {
 
             })
             .then(() => {
-
+      //          print('init:10');
                 // Ensure that the system identities collection exists.
                 LOG.debug(method, 'Ensuring that sysidentities collection exists');
                 return dataService.getCollection('$sysidentities')
@@ -213,7 +227,7 @@ class Engine {
 
             })
             .then(() => {
-
+      //          print('init:12');
                 // Initialize the context.
                 LOG.debug(method, 'Initializing context');
                 return context.initialize({
@@ -225,7 +239,6 @@ class Engine {
 
             })
             .then(() => {
-
                 // Create all the default registries for each asset and participant type.
                 LOG.debug(method, 'Creating default registries');
                 let registryManager = context.getRegistryManager();
@@ -248,6 +261,7 @@ class Engine {
 
             })
             .then(() => {
+    //            print('init:15');
                 return context.transactionPrepare()
                     .then(() => {
                         return context.transactionCommit();
@@ -257,6 +271,7 @@ class Engine {
                     });
             })
             .catch((error) => {
+    //            print('init:4 ' + error);
                 LOG.error(method, 'Caught error, rethrowing', error);
                 return context.transactionRollback()
                     .then(() => {
@@ -267,6 +282,7 @@ class Engine {
                     });
             })
             .then(() => {
+   //             print('init:exit');
                 LOG.exit(method);
             });
     }

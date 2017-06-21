@@ -15,7 +15,7 @@
 'use strict';
 
 const ClassDeclaration = require('./classdeclaration');
-const Field = require('./field');
+// const Field = require('./field');
 
 /** Class representing the definition of an Event.
  * @extends ClassDeclaration
@@ -44,14 +44,28 @@ class EventDeclaration extends ClassDeclaration {
     process() {
         super.process();
 
+        // if(!this.ast.classExtension) {
+        //     this.superType = 'Event';
+        // }
+
+
         // we add the timestamp property that all events must have
-        if(this.getProperty('timestamp') === null) {
-            const ast = {
-                id : {name: 'timestamp'},
-                propertyType: {name: 'DateTime'}
-            };
-            this.properties.push(new Field(this, ast));
-        }
+        // if(this.getProperty('timestamp') === null) {
+        //     const ast = {
+        //         id : {name: 'timestamp'},
+        //         propertyType: {name: 'DateTime'}
+        //     };
+        //     this.properties.push(new Field(this, ast));
+        // }
+    }
+
+     /**
+     * Returns true if this class is the definition of an event
+     *
+     * @return {boolean} true if the class is an event
+     */
+    isEvent() {
+        return true;
     }
 }
 

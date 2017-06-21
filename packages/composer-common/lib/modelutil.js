@@ -75,6 +75,17 @@ class ModelUtil {
     }
 
     /**
+     * Returns the system namespace
+     * @return {string} - namespace of system types
+     * @private
+     */
+    static getSystemNamespace() {
+        let result = 'org.hyperledger.composer.system';
+
+        return result;
+    }
+
+    /**
      * Returns true if the type is a primitive type
      * @param {string} type - the name of the type
      * @return {boolean} - true if the type is a primitive

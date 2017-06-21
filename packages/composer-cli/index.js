@@ -15,3 +15,8 @@
 'use strict';
 
 module.exports.version = require('./package.json');
+module.exports.Network = {
+    'Deploy': require('./lib/cmds/network/lib/deploy').handler,
+    'Update' : require('./lib/cmds/network/lib/update').handler };
+
+module.exports.Archive = { 'Create': require('./lib/cmds/archive/lib/create').handler };

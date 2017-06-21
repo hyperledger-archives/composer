@@ -98,12 +98,12 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getDescription().should.equal('A test business network.');
                 businessNetwork.getMetadata().getREADME().should.equal('This is a test');
                 businessNetwork.getMetadata().getPackageJson().customKey.should.equal('custom value');
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(4);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
                 businessNetwork.aclManager.getAclRules().should.have.length(5);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(25);
+                intro.getClassDeclarations().length.should.equal(29);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
@@ -113,11 +113,11 @@ describe('BusinessNetworkDefinition', () => {
 
             return BusinessNetworkDefinition.fromDirectory(__dirname + '/data/zip/test-archive-dotfolders').then(businessNetwork => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(4);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(25);
+                intro.getClassDeclarations().length.should.equal(29);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
@@ -139,13 +139,13 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getDescription().should.equal('A test business network using npm model dependencies.');
 
 
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(2);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
 
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 const intro = businessNetwork.getIntrospector();
-                intro.getClassDeclarations().length.should.equal(13);
-                businessNetwork.getModelManager().getModelFiles().length.should.equal(2);
+                intro.getClassDeclarations().length.should.equal(17);
+                businessNetwork.getModelManager().getModelFiles().length.should.equal(3);
                 const sm = businessNetwork.getScriptManager();
                 sm.getScripts().length.should.equal(2);
             });
@@ -162,7 +162,7 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getIdentifier().should.equal('test-archive@0.0.1');
                 businessNetwork.getDescription().should.equal('A test business network.');
                 businessNetwork.getMetadata().getREADME().should.equal('This is a test');
-                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
+                Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(4);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
 
                 return businessNetwork.toArchive().then(buffer => {

@@ -62,6 +62,8 @@
     "logError": true
   },
   "dependencies": {
+    "composer-common": "^0.7.6",
+    "composer-runtime": "^0.7.6",
     "composer-common": "^0.8.1",
     "composer-runtime": "^0.8.1",
     "dexie": "^1.5.1",

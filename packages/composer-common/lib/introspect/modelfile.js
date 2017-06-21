@@ -26,6 +26,7 @@ const ParseException = require('./parseexception');
 const ModelUtil = require('../modelutil');
 const Globalize = require('../globalize');
 
+
 /**
  * Class representing a Model File. A Model File contains a single namespace
  * and a set of model elements: assets, transactions etc.
@@ -79,19 +80,37 @@ class ModelFile {
             this.imports = this.ast.imports;
         }
 
+        let decorate = false;
+        let systemNamespace = ModelUtil.getSystemNamespace();
+        if(this.namespace !== systemNamespace) {
+            this.imports.unshift(systemNamespace + '.$Asset');
+            this.imports.unshift(systemNamespace + '.$Participant');
+            this.imports.unshift(systemNamespace + '.$Event');
+            this.imports.unshift(systemNamespace + '.$Transaction');
+            decorate = true;
+        }
+
+        // console.log('\n========\n Parsed AST for the model file ');
+        // console.log(util.inspect(this.ast,{ depth: 7, colors: true, }));
+        // console.log('\n========\n');
         for(let n=0; n < this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
+            let doDecorate = (thing.classExtension === null && decorate);
 
             if(thing.type === 'AssetDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Asset' } }; }
                 this.declarations.push( new AssetDeclaration(this, thing) );
             }
             else if(thing.type === 'TransactionDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Transaction' } }; }
                 this.declarations.push( new TransactionDeclaration(this, thing) );
             }
             else if(thing.type === 'EventDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Event' } }; }
                 this.declarations.push( new EventDeclaration(this, thing) );
             }
             else if(thing.type === 'ParticipantDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Participant' } }; }
                 this.declarations.push( new ParticipantDeclaration(this, thing) );
             }
             else if(thing.type === 'EnumDeclaration') {
@@ -108,6 +127,9 @@ class ModelFile {
                 }),this.modelFile);
             }
         }
+
+
+
     }
 
     /**
@@ -262,15 +284,16 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-        //console.log('resolveImport ' + this.getNamespace() + ' ' + type );
-
         for(let n=0; n < this.imports.length; n++) {
             let importName = this.imports[n];
+            //console.log('>>>>> importName');
             if( ModelUtil.getShortName(importName) === type ) {
                 return importName;
             } else if (ModelUtil.isWildcardName(importName)) {
                 const wildcardNamespace = ModelUtil.getNamespace(importName);
+
                 const modelFile = this.getModelManager().getModelFile(wildcardNamespace);
+
                 if (modelFile && modelFile.isLocalType(type)) {
                     return wildcardNamespace + '.' + type;
                 }

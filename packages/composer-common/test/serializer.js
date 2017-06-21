@@ -50,14 +50,12 @@ describe('Serializer', () => {
         o String lastName
         }
 
-        transaction SampleTransaction identified by transactionId {
-        o String transactionId
+        transaction SampleTransaction {
         --> SampleAsset asset
         o String newValue
         }
 
-        transaction SampleEvent identified by eventId {
-        o String eventId
+        event SampleEvent{
         --> SampleAsset asset
         o String newValue
         }

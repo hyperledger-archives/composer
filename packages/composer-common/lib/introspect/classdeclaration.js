@@ -148,11 +148,14 @@ class ClassDeclaration {
         // if we have a super type make sure it exists
         if(this.superType!==null) {
             let classDecl = null;
+            // console.log('>>>>'+this.superType);
             if(this.getModelFile().isImportedType(this.superType)) {
                 let fqnSuper = this.getModelFile().resolveImport(this.superType);
                 classDecl = this.modelFile.getModelManager().getType(fqnSuper);
+                // console.log('>>>>imported');
             }
             else {
+                // console.log('>>>>local');
                 classDecl = this.getModelFile().getType(this.superType);
             }
 
@@ -261,6 +264,15 @@ class ClassDeclaration {
         return false;
     }
 
+     /**
+     * Returns true if this class is the definition of an event.
+     *
+     * @return {boolean} true if the class is an event
+     */
+    isEvent() {
+        return false;
+    }
+
     /**
      * Returns true if this class can be pointed to by a relationship
      *
@@ -268,6 +280,16 @@ class ClassDeclaration {
      */
     isRelationshipTarget() {
         return false;
+    }
+
+    /**
+     * Returns true if this class can be pointed to by a relationship in a
+     * system model
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isSystemRelationshipTarget() {
+        return this.isRelationshipTarget();
     }
 
     /**

@@ -118,14 +118,14 @@ class Deploy {
         }).then((result) => {
             spinner.succeed();
             console.log();
-
+            adminConnection.disconnect();
             return result;
         }).catch((error) => {
 
             if (spinner) {
                 spinner.fail();
             }
-
+            adminConnection.disconnect();
             console.log();
 
             throw error;

@@ -1,4 +1,4 @@
-/*
+/*;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,23 @@ const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
 const TypeNotFoundException = require('./typenotfoundexception');
 
+// const ENCODING = 'utf8';
+
+const LOG = require('./log/logger').getLog('ModelManager');
+const SYSTEM_MODEL_CONTENTS = [
+    'namespace org.hyperledger.composer.system',
+    'abstract asset $Asset {  }',
+    'abstract participant $Participant {   }',
+    'abstract transaction $Transaction identified by transactionId{',
+    '  o String transactionId',
+    '  o DateTime timestamp',
+    '}',
+    'abstract event $Event identified by eventId{',
+    '   o String eventId',
+  /*  '  --> _cst_Transaction transaction',*/
+    '   }'
+];
+// const util = require('util');
 /**
  * <p>
  * The structure of {@link Resource}s (Assets, Transactions, Participants) is modelled
@@ -40,6 +57,7 @@ const TypeNotFoundException = require('./typenotfoundexception');
  * @memberof module:composer-common
  */
 class ModelManager {
+
     /**
      * Create the ModelManager.
      * <p>
@@ -48,7 +66,12 @@ class ModelManager {
      * </p>
      */
     constructor() {
+        LOG.entry('constructor');
         this.modelFiles = {};
+        let systemModelContents = SYSTEM_MODEL_CONTENTS.join('\n');
+        LOG.info('info',systemModelContents);
+        this.addModelFile(systemModelContents);
+        LOG.exit('constructor');
     }
 
     /**
@@ -96,6 +119,9 @@ class ModelManager {
      * @return {Object} The newly added model file (internal).
      */
     addModelFile(modelFile, fileName) {
+        const NAME = 'addModelFile';
+        LOG.info(NAME,'addModelFile',modelFile,fileName);
+
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             m.validate();
@@ -121,6 +147,8 @@ class ModelManager {
      * @returns {Object} The newly added model file (internal).
      */
     updateModelFile(modelFile, fileName) {
+        const NAME = 'updateModelFile';
+        LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             if (!this.modelFiles[m.getNamespace()]) {
@@ -162,6 +190,8 @@ class ModelManager {
      * @returns {Object[]} The newly added model files (internal).
      */
     addModelFiles(modelFiles, fileNames) {
+        const NAME = 'addModelFiles';
+        LOG.entry(NAME,'addModelFiles',modelFiles,fileNames);
         const originalModelFiles = {};
         Object.assign(originalModelFiles, this.modelFiles);
         let newModelFiles = [];
@@ -194,6 +224,8 @@ class ModelManager {
             // let's go and retrofit the model to make sure all is good
             // make sure that models are all correctly/
             // temp workaround until system models in place
+            LOG.info(NAME,'retofitting the model files now');
+
             for (let ns in this.modelFiles) {
                 if (! this.modelFiles[ns] === undefined) {
                     this.modelFiles[ns].retrofit();
@@ -208,6 +240,8 @@ class ModelManager {
             this.modelFiles = {};
             Object.assign(this.modelFiles, originalModelFiles);
             throw err;
+        } finally{
+            LOG.exit(NAME,newModelFiles);
         }
     }
 
@@ -268,6 +302,8 @@ class ModelManager {
      */
     clearModelFiles() {
         this.modelFiles = {};
+        let systemModelContents = SYSTEM_MODEL_CONTENTS.join('\n');
+        this.addModelFile(systemModelContents);
     }
 
     /**
@@ -297,6 +333,7 @@ class ModelManager {
      * @private
      */
     getType(qualifiedName) {
+
         const namespace = ModelUtil.getNamespace(qualifiedName);
 
         const modelFile = this.getModelFile(namespace);

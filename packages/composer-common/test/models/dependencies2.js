@@ -45,7 +45,6 @@ describe('Dependencies2 Model', function() {
 
             // const participant = factory.newResource('org.acme.base', 'ClientAdminMember', 'testadmin');
             const transaction = factory.newTransaction('org.acme.core', 'BaseTransaction', 'testing');
-            console.log(transaction);
             transaction.invoker = factory.newRelationship('org.acme.base', 'ClientAdminMember', 'testadmin');
             transaction.validate();
             const jsonObj = serializer.toJSON(transaction);

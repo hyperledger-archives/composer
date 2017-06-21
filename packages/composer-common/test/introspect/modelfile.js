@@ -15,6 +15,7 @@
 'use strict';
 
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const EventDeclaration = require('../../lib/introspect/eventdeclaration');
@@ -34,10 +35,32 @@ describe('ModelFile', () => {
     const carLeaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
 
     let mockModelManager;
+    let mockClassDeclaration;
     let sandbox;
 
     beforeEach(() => {
+
+
+        const SYSTEM_MODEL_CONTENTS = [
+            'namespace org.hyperledger.composer.system',
+            'abstract asset $Asset {  }',
+            'abstract participant $Participant {   }',
+            'abstract transaction $Transaction identified by transactionId{',
+            '  o String transactionId',
+            '  o DateTime timestamp',
+            '}',
+            'abstract event $Event identified by eventId{',
+            '   o String eventId',
+          /*  '  --> _cst_Transaction transaction',*/
+            '   }'
+        ];
+        const mockSystemModel = SYSTEM_MODEL_CONTENTS.join('\n');
+        let mockSystemModelFile = new ModelFile(mockModelManager, mockSystemModel);
         mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelManager.getType.returns(mockClassDeclaration);
+        mockClassDeclaration.getProperties.returns([]);
         sandbox = sinon.sandbox.create();
     });
 
@@ -361,6 +384,13 @@ describe('ModelFile', () => {
     });
 
     describe('#resolveImport', () => {
+
+        it('should find the fully qualified name of a type in the system namespace', () => {
+            const model = `
+            namespace org.acme`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.resolveImport('$Asset').should.equal('org.hyperledger.composer.system.$Asset');
+        });
 
         it('should find the fully qualified name of the import', () => {
             const model = `

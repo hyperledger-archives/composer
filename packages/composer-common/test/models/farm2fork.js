@@ -35,11 +35,8 @@ describe('Farm2Fork Model', function() {
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
             modelManager.addModelFile(file,fileName);
-            modelManager.getModelFiles().length.should.equal(2);
-            let modelFile = modelManager.getModelFiles()[1];
-            modelFile.getNamespace().should.equal('org.acme');
-
-            modelFile = modelManager.getModelFile('org.acme');
+            modelManager.getModelFiles().length.should.equal(3);
+            let modelFile = modelManager.getModelFile('org.acme');
             modelFile.getNamespace().should.equal('org.acme');
 
             modelFile.getAssetDeclarations().length.should.equal(3);

@@ -44,8 +44,7 @@ describe('TransactionLogger', () => {
             o String assetId
             o String theValue
         }
-        transaction MyTransaction identified by transactionId {
-            o String transactionId
+        transaction MyTransaction {
         }`);
         factory = new Factory(modelManager);
         serializer = new Serializer(factory, modelManager);

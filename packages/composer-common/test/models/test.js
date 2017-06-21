@@ -231,16 +231,13 @@ describe('Test Model', function(){
             file.should.not.be.null;
             modelManager.addModelFile(file,fileName2);
 
-            modelManager.getModelFiles().length.should.equal(2);
-            let modelFile = modelManager.getModelFiles()[1];
-            modelFile.getNamespace().should.equal('org.acme');
-
-            modelFile = modelManager.getModelFile('org.acme');
+            let modelFile = modelManager.getModelFile('org.acme');
             modelFile.getNamespace().should.equal('org.acme');
 
             // check the clear
             modelManager.clearModelFiles();
-            modelManager.getModelFiles().length.should.equal(0);
+            modelManager.getModelFiles().length.should.equal(1);
+            // the system model will remain hence 1.
 
             // re-add
             modelManager.addModelFile(systemModel);
@@ -329,8 +326,8 @@ describe('Test Model', function(){
             let modelFile = modelManager.getModelFile('org.acme');
             modelFile.isLocalType('Participant').should.equal(false);
             modelFile.isImportedType('Participant').should.equal(true);
-            modelFile.getImports().length.should.equal(1);
-            modelFile.getImports()[0].should.equal('concerto.Participant');
+            modelFile.getImports().length.should.equal(5);
+            modelFile.getImports().includes('concerto.Participant').should.equal(true);
         });
     });
 
@@ -363,7 +360,7 @@ describe('Test Model', function(){
             let modelFile = modelManager.getModelFile('stdlib.business');
             modelFile.isLocalType('Business').should.equal(true);
             modelFile.isImportedType('Person').should.equal(true);
-            modelFile.getImports().length.should.equal(2);
+            modelFile.getImports().length.should.equal(6);
         });
     });
 });
