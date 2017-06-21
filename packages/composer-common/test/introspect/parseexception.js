@@ -15,7 +15,7 @@
 'use strict';
 
 const BaseModelException = require('../../lib/introspect/basemodelexception');
-const ParseException = require('../../lib/introspect/parseException');
+const ParseException = require('../../lib/introspect/parseexception');
 
 require('chai').should();
 
