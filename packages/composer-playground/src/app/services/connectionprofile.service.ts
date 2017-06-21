@@ -68,14 +68,6 @@ export class ConnectionProfileService {
         this.currentCertificate = cert;
     }
 
-    getHostname(): string {
-        return this.currentHostname;
-    }
-
-    setHostname(hostname: string) {
-        this.currentHostname = hostname;
-    }
-
     private getAdminConnection() {
         if (!this.adminConnection) {
             this.adminConnection = new AdminConnection();
