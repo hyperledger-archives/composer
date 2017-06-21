@@ -4,7 +4,7 @@ title: Connection Profiles
 section: reference
 index-order: 4
 sidebar: sidebars/reference.md
-excerpt: Use connection profiles to define the fabric to deploy your business network to. This topic contains example connection profiles for Hyperledger Fabric v0.6 and 1.0-beta.
+excerpt: In order to connect your business network to a fabric, you must [**define a connection profile**](./connectionprofile.html). Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0-beta.
 ---
 
 # Connection Profiles

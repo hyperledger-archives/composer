@@ -4,7 +4,7 @@ title: Hyperledger Composer Glossary of Terms
 section: reference
 index-order: 7
 sidebar: sidebars/reference.md
-excerpt: The Hyperledger Composer glossary contains definitions of all relevant terms to developer a solution with Hyperledger Composer.
+excerpt: The glossary contains [**definitions of all Hyperledger Composer terms**](./glossary.html) for developing a solution with Hyperledger Composer.
 ---
 
 # Glossary and definition of terms

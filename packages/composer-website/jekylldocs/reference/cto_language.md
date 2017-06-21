@@ -4,7 +4,7 @@ title: Modeling Language
 section: reference
 index-order: 2
 sidebar: sidebars/reference.md
-excerpt: Hyperledger Composer includes an Object-Oriented modeling language that is used to define the domain model for a business network definition.
+excerpt: The [**Hyperledger Composer modeling language**](./cto_language.html) is an object-oriented language which defines the business network model containing assets, participants, and transactions.
 ---
 
 # {{site.data.conrefs.composer_full}} Modeling Language

@@ -4,10 +4,10 @@ title: Transaction Processor Functions
 section: reference
 index-order: 5
 sidebar: sidebars/reference.md
-excerpt: A Hyperledger Composer Business Network Definition is composed of a set of model files and scripts. The scripts contain transaction processor functions that implement the transactions defined in the Business Network Definition's model files.
+excerpt: "[**A Hyperledger Composer business network must include one or more script files**](./js_scripts.html) to implement transaction logic. The transaction logic is automatically invoked by the runtime whenever the relavant transactions are submitted."
 ---
 
-# JavaScript Functions
+# Transaction Processor Functions
 
 ---
 
@@ -58,3 +58,12 @@ parameters of the functions in the script.
 The standard `@param` decorator must be used to specify the types of parameters for functions.
 
 The `@transaction` decorator is added to a function to indicate that it processes incoming transactions. Functions with the @transaction decorator must take a single transaction type parameter. The transaction type must be defined in the model files in the business network definition.
+
+---
+
+## What next?
+
+Transaction processor functions can also be used to:
+
+- [**Define queries**](../business-network/query.html) for retrieving information about the blockchain world-state from a couchDB database.
+- [**Define events**](../business-network/publishing-events.html) for sending event data to applications.

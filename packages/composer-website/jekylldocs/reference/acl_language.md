@@ -4,7 +4,7 @@ title: Access Control Language
 section: reference
 index-order: 3
 sidebar: sidebars/reference.md
-excerpt: Hyperledger Composer includes an access control language that provides declarative access control over the elements of the domain model. 
+excerpt: The [**Hyperledger Composer access control language**](./acl_language.html) provides declarative access control over the elements of the domain model. Access control rules define actions that individual participants or participant groups can perform on resources in the business network, including conditional actions.
 ---
 
 # {{site.data.conrefs.composer_full}} Access Control Language

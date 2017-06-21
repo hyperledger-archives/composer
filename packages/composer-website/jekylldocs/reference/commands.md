@@ -4,7 +4,7 @@ title: Hyperledger Composer CLI Commands
 section: reference
 index-order: 6
 sidebar: sidebars/reference.md
-excerpt: Hyperledger Composer CLI commands can perform multiple administrative, operational, and development tasks.
+excerpt: The [**list of all Hyperledger Composer CLI commands**](./commands.html) for performing multiple administrative, operational, and development tasks.
 ---
 
 # {{site.data.conrefs.composer_full}} Command Line

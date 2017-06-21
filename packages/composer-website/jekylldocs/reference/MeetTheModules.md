@@ -4,7 +4,7 @@ title: Hyperledger Composer npm Modules
 section: reference
 sidebar: sidebars/reference.md
 index-order: 1
-excerpt: Hyperledger Composer contains a number of npm modules which provide the APIs and command line tools necessary for developing a solution with Hyperledger Composer.
+excerpt: "[**Hyperledger Composer contains a number of npm modules**](./MeetTheModules.html) which provide the APIs and command line tools necessary for developing a solution with Hyperledger Composer."
 ---
 
 # {{site.data.conrefs.composer_full}} npm Modules
