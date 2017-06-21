@@ -150,17 +150,29 @@ ga('send', 'pageview');
 <p>For example:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONFIG='{
   "connectionProfiles": {
-    "hlfabric": {
-      "type": "hlf",
-      "keyValStore": "/home/composer/.composer-credentials",
-      "membershipServicesURL": "grpc://membersrvc:7054",
-      "peerURL": "grpc://vp0:7051",
-      "eventHubURL": "grpc://vp0:7053",
-      "deployWaitTime": 300,
-      "invokeWaitTime": 30,
-      "networks": {
-        "org.example.biznet": "25e9c6abfdc8a081c218e773f2e513ee504ba9acb437d05fac7e08fa5c0d309d"
-      }
+    "hlfv1": {
+      "name": "hlfv1",
+      "description": "Hyperledger Fabric v1.0",
+      "type": "hlfv1",
+      "keyValStore": "/home/composer/.hfc-key-store",
+      "timeout": 300,
+      "orderers": [
+        {
+          "url": "grpc://orderer.example.com:7050"
+        }
+      ],
+      "channel": "mychannel",
+      "mspID": "Org1MSP",
+      "ca": {
+        "url": "http://ca.example.com:7054",
+        "name": "ca.example.com"
+      },
+      "peers": [
+        {
+          "requestURL": "grpc://peer0.org1.example.com:7051",
+          "eventURL": "grpc://peer0.org1.example.com:7053"
+        }
+      ]
     }
   }
 }'
@@ -170,14 +182,14 @@ ga('send', 'pageview');
 <p>You can use the <code>COMPOSER_CONNECTION_PROFILE</code> environment variable to specify the name of the connection profile that the REST server should use.</p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfabric
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfv1
 </code></pre></div></li>
 <li><p><code>COMPOSER_BUSINESS_NETWORK</code></p>
 
 <p>You can use the <code>COMPOSER_BUSINESS_NETWORK</code> environment variable to specify the name of the deployed business network that the REST server should connect to.</p>
 
 <p>For example:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_BUSINESS_NETWORK=digitalproperty-network
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_BUSINESS_NETWORK=my-network
 </code></pre></div></li>
 <li><p><code>COMPOSER_ENROLLMENT_ID</code></p>
 
@@ -260,11 +272,11 @@ RUN npm install --production loopback-connector-mongodb passport-github &amp;&am
 
 <p>The following example will demonstrate how to deploy the REST server using Docker. The deployed REST server will persist data using MongoDB, and will be secured using GitHub authentication.</p>
 
-<p>The examples are based on the Getting Started guide for Hyperledger Fabric v1.0, and may need adjusting for your configuration, for example if the Docker network name does not match.</p>
+<p>The examples are based on the business network that is deployed to Hyperledger Fabric v1.0 as part of the Developer Tutorial, and may need adjusting for your configuration, for example if the Docker network name does not match.</p>
 
 <ol>
 <li><p>Start an instance of MongoDB:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">docker run -d --name mongo --network hlfv1_default -p 27017:27017 mongo
+<div class="highlight"><pre><code class="language-" data-lang="">docker run -d --name mongo --network composer_default -p 27017:27017 mongo
 </code></pre></div></li>
 <li><p>Create a new, empty directory. Create a new file named <code>Dockerfile</code> in the new directory, with the following contents:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">FROM hyperledger/composer-rest-server
@@ -276,35 +288,37 @@ RUN npm install --production loopback-connector-mongodb passport-github &amp;&am
 <div class="highlight"><pre><code class="language-" data-lang="">docker build -t myorg/my-composer-rest-server .
 </code></pre></div></li>
 <li><p>Create a new file named <code>envvars.txt</code>, with the following contents:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfabric
-COMPOSER_BUSINESS_NETWORK=digitalproperty-network
+<div class="highlight"><pre><code class="language-" data-lang="">COMPOSER_CONNECTION_PROFILE=hlfv1
+COMPOSER_BUSINESS_NETWORK=my-network
 COMPOSER_ENROLLMENT_ID=admin
 COMPOSER_ENROLLMENT_SECRET=adminpw
 COMPOSER_NAMESPACES=never
 COMPOSER_SECURITY=true
 COMPOSER_CONFIG='{
   "connectionProfiles": {
-    "hlfabric": {
+    "hlfv1": {
+      "name": "hlfv1",
+      "description": "Hyperledger Fabric v1.0",
       "type": "hlfv1",
+      "keyValStore": "/home/composer/.hfc-key-store",
+      "timeout": 300,
       "orderers": [
-        "grpc://orderer0:7050"
-      ],
-      "ca": "http://ca0:7054",
-      "peers": [
         {
-          "requestURL": "grpc://peer0:7051",
-          "eventURL": "grpc://peer0:7053"
-        },
-        {
-          "requestURL": "grpc://peer1:7051",
-          "eventURL": "grpc://peer1:7053"
+          "url": "grpc://orderer.example.com:7050"
         }
       ],
-      "keyValStore": "/home/composer/.hfc-key-store",
       "channel": "mychannel",
       "mspID": "Org1MSP",
-      "deployWaitTime": "300",
-      "invokeWaitTime": "100"
+      "ca": {
+        "url": "http://ca.example.com:7054",
+        "name": "ca.example.com"
+      },
+      "peers": [
+        {
+          "requestURL": "grpc://peer0.org1.example.com:7051",
+          "eventURL": "grpc://peer0.org1.example.com:7053"
+        }
+      ]
     }
   }
 }'
@@ -344,7 +358,7 @@ COMPOSER_PROVIDERS='{
     -e COMPOSER_DATASOURCES="${COMPOSER_DATASOURCES}" \
     -e COMPOSER_PROVIDERS="${COMPOSER_PROVIDERS}" \
     --name rest \
-    --network hlfv1_default \
+    --network composer_default \
     -p 3000:3000 \
     myorg/my-composer-rest-server
 </code></pre></div></li>
