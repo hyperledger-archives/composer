@@ -228,70 +228,43 @@ class ModelBinding {
 
     /**
      * Semantic validation of the structure of this ModelBinding.
-     * &lt;p>
-     * Algorithm:
-     * &lt;/p>
-     * &lt;ul>
-     * &lt;li>If we have a variableName, then qualifiedName cannot be a namespace
-     * &lt;li>If we have an instanceId, then qualifiedName cannot be a namespace
-     * &lt;/ul>
-     * &lt;pre>
-     * We assume we have ns.class.property and try to resolve the class in ns
-     * - On success
-     * -- Check that the property exists
-     * - On failure
-     * -- Try to resolve ns.class
-     * -- On failure
-     * --- If instanceId and variableName are null
-     * --- Try to resolve ns
-     * &lt;/pre>
+     *
      * @throws {IllegalModelException}
      * @private
      */
     validate() {
         const mm = this.getAclRule().getAclFile().getModelManager();
 
-        // assume qualifiedName is ns.class.property
-        const nsDotClass = ModelUtil.getNamespace(this.qualifiedName);
-        const ns = ModelUtil.getNamespace(nsDotClass);
-        const className = ModelUtil.getShortName(nsDotClass);
-        const propertyName = ModelUtil.getShortName(this.qualifiedName);
-        const modelFile = mm.getModelFile(ns);
+        const ns = ModelUtil.getNamespace(this.qualifiedName);
+        if (ModelUtil.isRecursiveWildcardName(this.qualifiedName)) {
+            const namespaces = mm.getNamespaces();
 
-        if(modelFile) {
-            const classDeclaration = modelFile.getLocalType(className);
-            if(!classDeclaration) {
-                throw new Error('Failed to find class ' + nsDotClass);
+            if (namespaces.findIndex(function (element, index, array) {
+                return (ns === element || element.startsWith(ns + '.'));
+            })=== -1) {
+                throw new IllegalModelException('Failed to find namespace ' + this.qualifiedName);
             }
-            this.classDeclaration = classDeclaration;
-            const property = classDeclaration.getProperty(propertyName);
-            if(!property) {
-                throw new Error('Failed to find property ' + this.qualifiedName);
-            }
-        }
-        else {
-            // assume qualifiedName is ns.class
-            const ns = ModelUtil.getNamespace(this.qualifiedName);
-            const className = ModelUtil.getShortName(this.qualifiedName);
+        } else if (ModelUtil.isWildcardName(this.qualifiedName)) {
             const modelFile = mm.getModelFile(ns);
 
-            if(modelFile) {
-                const classDeclaration = modelFile.getLocalType(className);
-                if(!classDeclaration) {
-                    throw new Error('Failed to find class ' + this.qualifiedName);
-                }
-                this.classDeclaration = classDeclaration;
+            if(!modelFile) {
+                throw new IllegalModelException('Failed to find namespace ' + this.qualifiedName);
             }
-            else if(this.instanceId === null &amp;&amp; this.variableName === null) {
-                // assume namespace
-                const modelFile = mm.getModelFile(this.qualifiedName);
-                if(!modelFile) {
-                    throw new Error('Failed to find namespace ' + this.qualifiedName);
-                }
+        } else {
+            const modelFile = mm.getModelFile(ns);
+
+            if(!modelFile) {
+                throw new IllegalModelException('Failed to find namespace ' + ns);
             }
-            else {
-                throw new Error('Failed to resolve ' + this.qualifiedName);
+
+            const className = ModelUtil.getShortName(this.qualifiedName);
+            const classDeclaration = modelFile.getLocalType(className);
+
+            if(!classDeclaration) {
+                throw new IllegalModelException('Failed to find class ' + this.qualifiedName);
             }
+
+            this.classDeclaration = classDeclaration;
         }
     }
 
