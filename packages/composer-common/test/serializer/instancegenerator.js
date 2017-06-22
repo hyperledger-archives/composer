@@ -20,7 +20,7 @@ const ModelManager = require('../../lib/modelmanager');
 const TypedStack = require('../../lib/serializer/typedstack');
 
 const chai = require('chai');
-chai.should();
+const should = chai.should();
 
 describe('InstanceGenerator', () => {
 
@@ -39,8 +39,9 @@ describe('InstanceGenerator', () => {
         visitor = new InstanceGenerator();
     });
 
-    let test = (modelFile) => {
+    let test = (modelFile, additionalParams) => {
         modelManager.addModelFile(modelFile);
+        Object.assign(parameters, additionalParams);
         let resource = factory.newResource('org.acme.test', 'MyAsset', 'asset1');
         parameters.stack = new TypedStack(resource);
         let classDeclaration = resource.getClassDeclaration();
@@ -307,7 +308,23 @@ describe('InstanceGenerator', () => {
             }
         });
 
+        it('should not generate default value for optional property if not requested', () => {
+            let resource = test(`namespace org.acme.test
+            asset MyAsset identified by assetId {
+                o String assetId
+                o String theValue optional
+            }`, { includeOptionalFields: false });
+            should.equal(resource.theValue, undefined);
+        });
 
+        it('should generate default value for optional property if requested', () => {
+            let resource = test(`namespace org.acme.test
+            asset MyAsset identified by assetId {
+                o String assetId
+                o String theValue optional
+            }`, { includeOptionalFields: true });
+            resource.theValue.should.be.a('String');
+        });
 
     });
 

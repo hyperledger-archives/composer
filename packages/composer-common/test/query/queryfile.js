@@ -14,6 +14,7 @@
 
 'use strict';
 
+const Query = require('../../lib/query/query');
 const QueryFile = require('../../lib/query/queryfile');
 const parser = require('../../lib/query/parser');
 const ModelManager = require('../../lib/modelmanager');
@@ -54,6 +55,11 @@ describe('QueryFile', () => {
             (() => {
                 new QueryFile( 'test', modelManager, [{}]);
             }).should.throw(/as a string as input/);
+        });
+
+        it('should handle an empty definitions string', () => {
+            const queryFile = new QueryFile('test', modelManager, '');
+            queryFile.getQueries().should.deep.equal([]);
         });
 
         it('should call the parser with the definitions and save the abstract syntax tree', () => {
@@ -134,4 +140,21 @@ describe('QueryFile', () => {
             sinon.assert.calledWith(visitor.visit, queryFile, ['some', 'args']);
         });
     });
+
+    describe('#buildQuery', () => {
+
+        it('should programatically add a query to the query file', () => {
+            const queryFile = new QueryFile('generated.qry', modelManager, '');
+            const query = queryFile.buildQuery('GEN1', 'Generated query 1', 'SELECT org.acme.Car');
+            query.should.be.an.instanceOf(Query);
+            query.getName().should.equal('GEN1');
+            query.getDescription().should.equal('Generated query 1');
+            query.getSelect().getText().should.equal('SELECT org.acme.Car');
+            queryFile.getQueries().find((query) => {
+                return query.getName() === 'GEN1';
+            }).should.equal(query);
+        });
+
+    });
+
 });
