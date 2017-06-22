@@ -18,6 +18,8 @@ const AclRule = require('../../lib/acl/aclrule');
 const AclFile = require('../../lib/acl/aclfile');
 const ModelManager = require('../../lib/modelmanager');
 const ModelFile = require('../../lib/introspect/modelfile');
+const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
+const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 
 const should = require('chai').should();
 const sinon = require('sinon');
@@ -28,6 +30,8 @@ describe('AclRule', () => {
     let aclFile;
     let mockModelManager;
     let mockModelFile;
+    let mockAssetDeclaration;
+    let mockParticipantDeclaration;
     let sandbox;
 
     const ast = {
@@ -65,9 +69,11 @@ describe('AclRule', () => {
         mockModelManager = sinon.createStubInstance(ModelManager);
         aclFile.getModelManager.returns(mockModelManager);
         mockModelFile = sinon.createStubInstance(ModelFile);
+        mockAssetDeclaration = sinon.createStubInstance(AssetDeclaration);
+        mockParticipantDeclaration = sinon.createStubInstance(ParticipantDeclaration);
         mockModelManager.getModelFile.withArgs('org.acme').returns(mockModelFile);
-        mockModelFile.getLocalType.withArgs('Car').returns('fake');
-        mockModelFile.getLocalType.withArgs('Driver').returns('fake');
+        mockModelFile.getLocalType.withArgs('Car').returns(mockAssetDeclaration);
+        mockModelFile.getLocalType.withArgs('Driver').returns(mockParticipantDeclaration);
         sandbox = sinon.sandbox.create();
     });
 
