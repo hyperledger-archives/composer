@@ -23,7 +23,7 @@ transaction SampleTransaction identified by transactionId {
 
 event SampleEvent identified by eventId {
   o String eventId
-  o String assetId
+  --> SampleAsset asset
   o String oldValue
   o String newValue
 }

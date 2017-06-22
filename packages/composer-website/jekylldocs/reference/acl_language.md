@@ -52,12 +52,12 @@ rule SampleConditionalRule {
 
 Multiple ACL rules may be defined that conceptually define a decision table. The actions of the decision tree define access control decisions (ALLOW or DENY). If the decision table fails to match then by default access is denied.
 
-**Resource** defines the things that the ACL rule applies to. This can be a property on a class, an entire class or all classes within a namespace. It can also be an instance of a class.
+**Resource** defines the things that the ACL rule applies to. This can be a class, all classes within a namespace, or all classes under a namespace. It can also be an instance of a class.
 
 Resource Examples:
-- Namespace: org.example
+- Namespace: org.example.*
+- Namespace (recursive): org.example.**
 - Class in namespace: org.example.Car
-- Property on class: org.example.Car.owner
 - Instance of a class: org.example.Car#ABC123
 
 **Operation** identifies the action that the rule governs. It must be one of: CREATE, READ, UPDATE, DELETE or ALL.
@@ -91,15 +91,6 @@ rule R2 {
 }
 
 rule R3 {
-    description: "Driver can change the ownership of a car that they own"
-    participant(d): "org.example.Driver"
-    operation: UPDATE
-    resource(o): "org.example.Car"
-    condition: (o == d)
-    action: ALLOW
-}
-
-rule R4 {
     description: "regulators can perform all operations on Cars"
     participant: "org.example.Regulator"
     operation: ALL
@@ -107,11 +98,19 @@ rule R4 {
     action: ALLOW
 }
 
-rule R5 {
+rule R4 {
     description: "Everyone can read all resources in the org.example namespace"
     participant: "ANY"
     operation: READ
-    resource: "org.example"
+    resource: "org.example.*"
+    action: ALLOW
+}
+
+rule R5 {
+    description: "Everyone can read all resources under the org.example namespace"
+    participant: "ANY"
+    operation: READ
+    resource: "org.example.**"
     action: ALLOW
 }
 ```
