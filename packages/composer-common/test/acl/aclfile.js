@@ -17,6 +17,8 @@
 const AclFile = require('../../lib/acl/aclfile');
 const parser = require('../../lib/acl/parser');
 const ModelManager = require('../../lib/modelmanager');
+const IllegalModelException = require('../../lib/introspect/illegalmodelexception');
+const ParseException = require('../../lib/introspect/parseexception');
 const fs = require('fs');
 const path = require('path');
 
@@ -81,7 +83,7 @@ describe('AclFile', () => {
 
     describe('#constructor', () => {
 
-        it('should parse a rule correctly', () => {
+        it('should parse R1 rule correctly', () => {
             const aclContents = `rule R1 {
                 description: "Fred can DELETE the car ABC123"
                 participant: "org.acme.Driver#Fred"
@@ -105,7 +107,7 @@ describe('AclFile', () => {
             r1.getDescription().should.equal('Fred can DELETE the car ABC123');
         });
 
-        it('should parse a rule correctly', () => {
+        it('should parse R2 rule correctly', () => {
             const aclContents = `rule R2 {
                 description: "regulator with ID Bill can not update a Car if they own it"
                 participant(r): "org.acme.Regulator#Bill"
@@ -126,13 +128,12 @@ describe('AclFile', () => {
             r2.getParticipant().getVariableName().should.equal('r');
         });
 
-        it('should parse a rule correctly', () => {
+        it('should parse R3 rule correctly', () => {
             const aclContents = `rule R3 {
-                description: "Driver can change the ownership of a car that they own"
-                participant(d): "org.acme.Driver"
-                operation: UPDATE
-                resource(o): "org.acme.Car.owner"
-                condition: (o == d)
+                description: "regulators can perform all operations on Cars"
+                participant: "org.acme.Regulator"
+                operation: ALL
+                resource: "org.acme.Car"
                 action: ALLOW
             }`;
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
@@ -140,20 +141,21 @@ describe('AclFile', () => {
             aclFile.getDefinitions().should.equal(aclContents);
             const r3 = aclFile.getAclRules()[0];
             r3.getName().should.equal('R3');
-            r3.getNoun().getFullyQualifiedName().should.equal('org.acme.Car.owner');
-            r3.getVerbs().should.deep.equal(['UPDATE']);
-            r3.getParticipant().getFullyQualifiedName().should.equal('org.acme.Driver');
-            r3.getParticipant().getVariableName().should.equal('d');
+            r3.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r3.getVerbs().should.deep.equal(['ALL']);
+            r3.getParticipant().getFullyQualifiedName().should.equal('org.acme.Regulator');
+            (r3.getParticipant().getInstanceIdentifier() === null).should.be.true;
+            (r3.getParticipant().getVariableName() === null).should.be.true;
             (r3.getTransaction() === null).should.be.true;
-            r3.getPredicate().getExpression().should.equal('o == d');
+            r3.getPredicate().getExpression().should.equal('true');
             r3.getAction().should.equal('ALLOW');
-            r3.getDescription().should.equal('Driver can change the ownership of a car that they own');
+            r3.getDescription().should.equal('regulators can perform all operations on Cars');
         });
 
-        it('should parse a rule correctly', () => {
+        it('should parse R4 rule correctly', () => {
             const aclContents = `rule R4 {
-                description: "regulators can perform all operations on Cars"
-                participant: "org.acme.Regulator"
+                description: "anyone in the org.acme namespace can perform all operations on Cars"
+                participant: "org.acme.*"
                 operation: ALL
                 resource: "org.acme.Car"
                 action: ALLOW
@@ -165,21 +167,21 @@ describe('AclFile', () => {
             r4.getName().should.equal('R4');
             r4.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
             r4.getVerbs().should.deep.equal(['ALL']);
-            r4.getParticipant().getFullyQualifiedName().should.equal('org.acme.Regulator');
+            r4.getParticipant().getFullyQualifiedName().should.equal('org.acme.*');
             (r4.getParticipant().getInstanceIdentifier() === null).should.be.true;
             (r4.getParticipant().getVariableName() === null).should.be.true;
             (r4.getTransaction() === null).should.be.true;
             r4.getPredicate().getExpression().should.equal('true');
             r4.getAction().should.equal('ALLOW');
-            r4.getDescription().should.equal('regulators can perform all operations on Cars');
+            r4.getDescription().should.equal('anyone in the org.acme namespace can perform all operations on Cars');
         });
 
-        it('should parse a rule correctly', () => {
+        it('should parse R5 rule correctly', () => {
             const aclContents = `rule R5 {
-                description: "Everyone can read all resources in the org.acme namespace"
-                participant: "ANY"
-                operation: READ
-                resource: "org.acme"
+                description: "anyone under the org.acme namespace can perform all operations on Cars"
+                participant: "org.acme.**"
+                operation: ALL
+                resource: "org.acme.Car"
                 action: ALLOW
             }`;
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
@@ -187,17 +189,63 @@ describe('AclFile', () => {
             aclFile.getDefinitions().should.equal(aclContents);
             const r5 = aclFile.getAclRules()[0];
             r5.getName().should.equal('R5');
-            r5.getNoun().getFullyQualifiedName().should.equal('org.acme');
-            r5.getVerbs().should.deep.equal(['READ']);
-            (r5.getParticipant() === null).should.be.true;
+            r5.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r5.getVerbs().should.deep.equal(['ALL']);
+            r5.getParticipant().getFullyQualifiedName().should.equal('org.acme.**');
+            (r5.getParticipant().getInstanceIdentifier() === null).should.be.true;
+            (r5.getParticipant().getVariableName() === null).should.be.true;
             (r5.getTransaction() === null).should.be.true;
             r5.getPredicate().getExpression().should.equal('true');
             r5.getAction().should.equal('ALLOW');
-            r5.getDescription().should.equal('Everyone can read all resources in the org.acme namespace');
+            r5.getDescription().should.equal('anyone under the org.acme namespace can perform all operations on Cars');
         });
 
-        it('should parse a rule correctly', () => {
+        it('should parse R6 rule correctly', () => {
             const aclContents = `rule R6 {
+                description: "Everyone can read all resources in the org.acme namespace"
+                participant: "ANY"
+                operation: READ
+                resource: "org.acme.*"
+                action: ALLOW
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            aclFile.getAclRules().length.should.equal(1);
+            aclFile.getDefinitions().should.equal(aclContents);
+            const r6 = aclFile.getAclRules()[0];
+            r6.getName().should.equal('R6');
+            r6.getNoun().getFullyQualifiedName().should.equal('org.acme.*');
+            r6.getVerbs().should.deep.equal(['READ']);
+            (r6.getParticipant() === null).should.be.true;
+            (r6.getTransaction() === null).should.be.true;
+            r6.getPredicate().getExpression().should.equal('true');
+            r6.getAction().should.equal('ALLOW');
+            r6.getDescription().should.equal('Everyone can read all resources in the org.acme namespace');
+        });
+
+        it('should parse R7 rule correctly', () => {
+            const aclContents = `rule R7 {
+                description: "Everyone can read all resources under the org.acme namespace"
+                participant: "ANY"
+                operation: READ
+                resource: "org.acme.**"
+                action: ALLOW
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            aclFile.getAclRules().length.should.equal(1);
+            aclFile.getDefinitions().should.equal(aclContents);
+            const r7 = aclFile.getAclRules()[0];
+            r7.getName().should.equal('R7');
+            r7.getNoun().getFullyQualifiedName().should.equal('org.acme.**');
+            r7.getVerbs().should.deep.equal(['READ']);
+            (r7.getParticipant() === null).should.be.true;
+            (r7.getTransaction() === null).should.be.true;
+            r7.getPredicate().getExpression().should.equal('true');
+            r7.getAction().should.equal('ALLOW');
+            r7.getDescription().should.equal('Everyone can read all resources under the org.acme namespace');
+        });
+
+        it('should parse R8 rule correctly', () => {
+            const aclContents = `rule R8 {
                 description: "Drivers can do something in a org.acme.Transaction transaction"
                 participant: "ANY"
                 operation: ALL
@@ -208,20 +256,68 @@ describe('AclFile', () => {
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
             aclFile.getAclRules().length.should.equal(1);
             aclFile.getDefinitions().should.equal(aclContents);
-            const r6 = aclFile.getAclRules()[0];
-            r6.getName().should.equal('R6');
-            r6.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
-            r6.getVerbs().should.deep.equal(['ALL']);
-            (r6.getParticipant() === null).should.be.true;
-            r6.getTransaction().getFullyQualifiedName().should.equal('org.acme.Transaction');
-            (r6.getTransaction().getVariableName() === null).should.be.true;
-            r6.getPredicate().getExpression().should.equal('true');
-            r6.getAction().should.equal('ALLOW');
-            r6.getDescription().should.equal('Drivers can do something in a org.acme.Transaction transaction');
+            const r8 = aclFile.getAclRules()[0];
+            r8.getName().should.equal('R8');
+            r8.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r8.getVerbs().should.deep.equal(['ALL']);
+            (r8.getParticipant() === null).should.be.true;
+            r8.getTransaction().getFullyQualifiedName().should.equal('org.acme.Transaction');
+            (r8.getTransaction().getVariableName() === null).should.be.true;
+            r8.getPredicate().getExpression().should.equal('true');
+            r8.getAction().should.equal('ALLOW');
+            r8.getDescription().should.equal('Drivers can do something in a org.acme.Transaction transaction');
         });
 
-        it('should parse a rule correctly', () => {
-            const aclContents = `rule R7 {
+        it('should parse R9 rule correctly', () => {
+            const aclContents = `rule R9 {
+                description: "Drivers can do something with transactions in the org.acme namespace"
+                participant: "ANY"
+                operation: ALL
+                resource: "org.acme.Car"
+                transaction: "org.acme.*"
+                action: ALLOW
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            aclFile.getAclRules().length.should.equal(1);
+            aclFile.getDefinitions().should.equal(aclContents);
+            const r9 = aclFile.getAclRules()[0];
+            r9.getName().should.equal('R9');
+            r9.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r9.getVerbs().should.deep.equal(['ALL']);
+            (r9.getParticipant() === null).should.be.true;
+            r9.getTransaction().getFullyQualifiedName().should.equal('org.acme.*');
+            (r9.getTransaction().getVariableName() === null).should.be.true;
+            r9.getPredicate().getExpression().should.equal('true');
+            r9.getAction().should.equal('ALLOW');
+            r9.getDescription().should.equal('Drivers can do something with transactions in the org.acme namespace');
+        });
+
+        it('should parse R10 rule correctly', () => {
+            const aclContents = `rule R10 {
+                description: "Drivers can do something with transactions under the org.acme namespace"
+                participant: "ANY"
+                operation: ALL
+                resource: "org.acme.Car"
+                transaction: "org.acme.**"
+                action: ALLOW
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            aclFile.getAclRules().length.should.equal(1);
+            aclFile.getDefinitions().should.equal(aclContents);
+            const r10 = aclFile.getAclRules()[0];
+            r10.getName().should.equal('R10');
+            r10.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r10.getVerbs().should.deep.equal(['ALL']);
+            (r10.getParticipant() === null).should.be.true;
+            r10.getTransaction().getFullyQualifiedName().should.equal('org.acme.**');
+            (r10.getTransaction().getVariableName() === null).should.be.true;
+            r10.getPredicate().getExpression().should.equal('true');
+            r10.getAction().should.equal('ALLOW');
+            r10.getDescription().should.equal('Drivers can do something with transactions under the org.acme namespace');
+        });
+
+        it('should parse R11 rule correctly', () => {
+            const aclContents = `rule R11 {
                 description: "Regulators can do something in a org.acme.Transaction transaction"
                 participant: "ANY"
                 operation: ALL
@@ -233,21 +329,20 @@ describe('AclFile', () => {
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
             aclFile.getAclRules().length.should.equal(1);
             aclFile.getDefinitions().should.equal(aclContents);
-            const r7 = aclFile.getAclRules()[0];
-            r7.getName().should.equal('R7');
-            r7.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
-            r7.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
-            r7.getVerbs().should.deep.equal(['ALL']);
-            (r7.getParticipant() === null).should.be.true;
-            r7.getTransaction().getFullyQualifiedName().should.equal('org.acme.Transaction');
-            r7.getTransaction().getVariableName().should.equal('tx');
-            r7.getPredicate().getExpression().should.equal('tx.asset.colour === \'blue\'');
-            r7.getAction().should.equal('ALLOW');
-            r7.getDescription().should.equal('Regulators can do something in a org.acme.Transaction transaction');
+            const r11 = aclFile.getAclRules()[0];
+            r11.getName().should.equal('R11');
+            r11.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r11.getVerbs().should.deep.equal(['ALL']);
+            (r11.getParticipant() === null).should.be.true;
+            r11.getTransaction().getFullyQualifiedName().should.equal('org.acme.Transaction');
+            r11.getTransaction().getVariableName().should.equal('tx');
+            r11.getPredicate().getExpression().should.equal('tx.asset.colour === \'blue\'');
+            r11.getAction().should.equal('ALLOW');
+            r11.getDescription().should.equal('Regulators can do something in a org.acme.Transaction transaction');
         });
 
-        it('should parse a rule correctly', () => {
-            const aclContents = `rule R8 {
+        it('should parse R12 rule correctly', () => {
+            const aclContents = `rule R12 {
                 description: "Fred can CREATE, READ, and UPDATE the car ABC123"
                 participant: "org.acme.Driver#Fred"
                 operation: CREATE, READ, UPDATE
@@ -257,12 +352,20 @@ describe('AclFile', () => {
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
             aclFile.getAclRules().length.should.equal(1);
             aclFile.getDefinitions().should.equal(aclContents);
-            const r8 = aclFile.getAclRules()[0];
-            r8.getVerbs().should.deep.equal(['CREATE', 'READ', 'UPDATE']);
+            const r12 = aclFile.getAclRules()[0];
+            r12.getName().should.equal('R12');
+            r12.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            r12.getNoun().getInstanceIdentifier().should.equal('ABC123');
+            r12.getVerbs().should.deep.equal(['CREATE', 'READ', 'UPDATE']);
+            r12.getParticipant().getFullyQualifiedName().should.equal('org.acme.Driver');
+            r12.getParticipant().getInstanceIdentifier().should.equal('Fred');
+            (r12.getParticipant().getVariableName() === null).should.be.true;
+            r12.getAction().should.equal('ALLOW');
+            r12.getDescription().should.equal('Fred can CREATE, READ, and UPDATE the car ABC123');
         });
 
-        it('should parse a rule correctly', () => {
-            const aclContents = `rule R9 {
+        it('should parse R13 rule correctly', () => {
+            const aclContents = `rule R13 {
                 description: "regulator with ID Bill can not update or delete a Car if they own it"
                 participant(r): "org.acme.Regulator#Bill"
                 operation: UPDATE, DELETE
@@ -273,12 +376,18 @@ describe('AclFile', () => {
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
             aclFile.getAclRules().length.should.equal(1);
             aclFile.getDefinitions().should.equal(aclContents);
-            const r9 = aclFile.getAclRules()[0];
-            r9.getVerbs().should.deep.equal(['UPDATE', 'DELETE']);
+            const r13 = aclFile.getAclRules()[0];
+            r13.getName().should.equal('R13');
+            r13.getNoun().getFullyQualifiedName().should.equal('org.acme.Car');
+            (r13.getNoun().getInstanceIdentifier() === null).should.be.true;
+            r13.getParticipant().getFullyQualifiedName().should.equal('org.acme.Regulator');
+            r13.getParticipant().getInstanceIdentifier().should.equal('Bill');
+            r13.getParticipant().getVariableName().should.equal('r');
+            r13.getVerbs().should.deep.equal(['UPDATE', 'DELETE']);
         });
 
         it('should fail to parse a rule with ALL and another verb', () => {
-            const aclContents = `rule R9 {
+            const aclContents = `rule A {
                 description: "regulator with ID Bill can not update or delete a Car if they own it"
                 participant(r): "org.acme.Regulator#Bill"
                 operation: ALL, DELETE
@@ -288,31 +397,45 @@ describe('AclFile', () => {
             }`;
             (() => {
                 new AclFile('test.acl', modelManager, aclContents);
-            }).should.throw(/Expected.*but.*found/);
+            }).should.throw(ParseException, /Expected.*but.*found/);
         });
 
-        it('should fail to parse a rule with duplicate verbs', () => {
-            const aclContents = `rule R9 {
+        it('should fail to parse a rule with a glob and instance ID', () => {
+            const aclContents = `rule B {
                 description: "regulator with ID Bill can not update or delete a Car if they own it"
-                participant(r): "org.acme.Regulator#Bill"
-                operation: DELETE, READ, DELETE
+                participant(r): "org.acme.Regulator.*#Bill"
+                operation: UPDATE, DELETE
                 resource(c): "org.acme.Car"
                 condition: (c.owner == r)
                 action: DENY
             }`;
-            const aclFile = new AclFile('test.acl', modelManager, aclContents);
             (() => {
-                aclFile.validate();
-            }).should.throw(/has been specified more than once/);
+                new AclFile('test.acl', modelManager, aclContents);
+            }).should.throw(ParseException, /Expected.*but.*found/);
         });
+
+        it('should fail to parse a rule with a recursive glob and instance ID', () => {
+            const aclContents = `rule C {
+                description: "regulator with ID Bill can not update or delete a Car if they own it"
+                participant(r): "org.acme.Regulator.**#Bill"
+                operation: UPDATE, DELETE
+                resource(c): "org.acme.Car"
+                condition: (c.owner == r)
+                action: DENY
+            }`;
+            (() => {
+                new AclFile('test.acl', modelManager, aclContents);
+            }).should.throw(ParseException, /Expected.*but.*found/);
+        });
+
 
         it('should parse correctly and preserve order', () => {
             const aclFile = new AclFile('test.acl', modelManager, testAcl);
-            aclFile.getAclRules().length.should.equal(9);
+            aclFile.getAclRules().length.should.equal(13);
             aclFile.getDefinitions().should.equal(testAcl);
             aclFile.getAclRules().map((aclRule) => {
                 return aclRule.getName();
-            }).should.deep.equal(['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8' , 'R9']);
+            }).should.deep.equal(['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8' , 'R9', 'R10', 'R11', 'R12', 'R13']);
         });
 
     });
@@ -329,7 +452,7 @@ describe('AclFile', () => {
                 description: "some rule"
                 participant: "ANY"
                 operation: ALL
-                resource: "org.acme"
+                resource: "org.acme.*"
                 action: ALLOW
             }
 
@@ -337,13 +460,57 @@ describe('AclFile', () => {
                 description: "some rule"
                 participant: "ANY"
                 operation: ALL
-                resource: "org.acme"
+                resource: "org.acme.*"
                 action: ALLOW
             }`;
             const aclFile = new AclFile('test.acl', modelManager, aclContents);
             (() => {
                 aclFile.validate();
             }).should.throw(/Found two or more ACL rules with the name/);
+        });
+
+        it('should fail to validate a rule with duplicate verbs', () => {
+            const aclContents = `rule A {
+                description: "regulator with ID Bill can not update or delete a Car if they own it"
+                participant(r): "org.acme.Regulator#Bill"
+                operation: DELETE, READ, DELETE
+                resource(c): "org.acme.Car"
+                condition: (c.owner == r)
+                action: DENY
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            (() => {
+                aclFile.validate();
+            }).should.throw(/has been specified more than once/);
+        });
+
+        it('should fail to validate a rule when participant is not a participant', () => {
+            const aclContents = `rule B {
+                description: "org.acme.Car is an asset, not a particpant"
+                participant: "org.acme.Car"
+                operation: READ
+                resource: "org.acme.Car"
+                action: ALLOW
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            (() => {
+                aclFile.validate();
+            }).should.throw(IllegalModelException, /The participant.*must be a participant/);
+        });
+
+        it('should fail to validate a rule when transaction is not a transaction', () => {
+            const aclContents = `rule D {
+                description: "org.acme.Car is an asset, not a transaction"
+                participant: "ANY"
+                operation: ALL
+                resource: "org.acme.*"
+                transaction: "org.acme.Car"
+                action: ALLOW
+            }`;
+            const aclFile = new AclFile('test.acl', modelManager, aclContents);
+            (() => {
+                aclFile.validate();
+            }).should.throw(IllegalModelException, /The transaction.*must be a transaction/);
         });
 
     });

@@ -14,7 +14,7 @@ Feature: Event steps
             | asset  | newValue |
             | 1      | 100      |
         Then I should have received the following event of type org.acme.sample.SampleEvent
-            | assetId | oldValue | newValue |
+            | asset | oldValue | newValue |
             | 1       | 10       | 100      |
 
     Scenario: then I should have received the following events
@@ -23,7 +23,7 @@ Feature: Event steps
             | 1      | 100      |
         Then I should have received the following event
             """
-            {"$class":"org.acme.sample.SampleEvent", "assetId":"1", "oldValue":"10", "newValue":"100"}
+            {"$class":"org.acme.sample.SampleEvent", "asset":"1", "oldValue":"10", "newValue":"100"}
             """
 
     Scenario: then I should have received the following events of type (1)
@@ -32,7 +32,7 @@ Feature: Event steps
             | 1      | 20       |
             | 1      | 100      |
         Then I should have received the following event of type org.acme.sample.SampleEvent
-            | assetId | oldValue | newValue |
+            | asset | oldValue | newValue |
             | 1       | 10       | 20       |
             | 1       | 20       | 100      |
 
@@ -44,13 +44,13 @@ Feature: Event steps
         Then I should have received the following events
             """
             [
-                {"$class":"org.acme.sample.SampleEvent", "assetId":"1", "oldValue":"10", "newValue":"20"},
-                {"$class":"org.acme.sample.SampleEvent", "assetId":"1", "oldValue":"20", "newValue":"100"}
+                {"$class":"org.acme.sample.SampleEvent", "asset":"1", "oldValue":"10", "newValue":"20"},
+                {"$class":"org.acme.sample.SampleEvent", "asset":"1", "oldValue":"20", "newValue":"100"}
             ]
             """
 
     Scenario: I should get an error when I do not receive an event of type (1)
         Then I should have received the following event of type org.acme.sample.SampleEvent
-            | assetId | oldValue | newValue |
+            | asset | oldValue | newValue |
             | 1       | 10       | 20       |
         And I should get an error matching /failed to find expected event/
