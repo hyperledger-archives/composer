@@ -49,9 +49,10 @@ class Registry extends EventEmitter {
      */
     getAll() {
         return this.dataCollection.getAll()
-            .then((resources) => {
-                return resources.map((resource) => {
-                    return this.serializer.fromJSON(resource);
+            .then((objects) => {
+                return objects.map((object) => {
+                    object = this.removeInternalProperties(object);
+                    return this.serializer.fromJSON(object);
                 }).filter((resource) => {
                     try {
                         this.accessController.check(resource, 'READ');
@@ -71,8 +72,9 @@ class Registry extends EventEmitter {
      */
     get(id) {
         return this.dataCollection.get(id)
-            .then((resource) => {
-                let result = this.serializer.fromJSON(resource);
+            .then((object) => {
+                object = this.removeInternalProperties(object);
+                let result = this.serializer.fromJSON(object);
                 try {
                     this.accessController.check(result, 'READ');
                     return result;
@@ -95,8 +97,9 @@ class Registry extends EventEmitter {
                     return false;
                 }
                 return this.dataCollection.get(id)
-                    .then((resource) => {
-                        let result = this.serializer.fromJSON(resource);
+                    .then((object) => {
+                        object = this.removeInternalProperties(object);
+                        let result = this.serializer.fromJSON(object);
                         try {
                             this.accessController.check(result, 'READ');
                             return true;
@@ -150,6 +153,7 @@ class Registry extends EventEmitter {
         let object = this.serializer.toJSON(resource, {
             convertResourcesToRelationships: options.convertResourcesToRelationships
         });
+        object = this.addInternalProperties(object);
         return this.dataCollection.add(id, object)
             .then(() => {
                 this.emit('resourceadded', {
@@ -202,6 +206,7 @@ class Registry extends EventEmitter {
         let object = this.serializer.toJSON(resource, {
             convertResourcesToRelationships: options.convertResourcesToRelationships
         });
+        object = this.addInternalProperties(object);
         return this.dataCollection.get(id)
             .then((oldResource) => {
                 return this.serializer.fromJSON(oldResource);
@@ -260,8 +265,9 @@ class Registry extends EventEmitter {
                     return resource;
                 } else {
                     return this.dataCollection.get(resource)
-                        .then((resource) => {
-                            return this.serializer.fromJSON(resource);
+                        .then((object) => {
+                            object = this.removeInternalProperties(object);
+                            return this.serializer.fromJSON(object);
                         });
                 }
             })
@@ -276,6 +282,36 @@ class Registry extends EventEmitter {
                         });
                     });
             });
+    }
+
+    /**
+     * Add any internal properties to the specified JSON object before
+     * persisting it into a data collection.
+     * @param {Object} json The JSON object.
+     * @return {Object} The JSON object.
+     */
+    addInternalProperties(json) {
+        if (!json || typeof json !== 'object' || Array.isArray(json)) {
+            throw new Error('Can only add properties to JSON objects');
+        }
+        json.$registryType = this.type;
+        json.$registryID = this.id;
+        return json;
+    }
+
+    /**
+     * Remove any internal properties to the specified JSON object before
+     * reinflating it back into a resource.
+     * @param {Object} json The JSON object.
+     * @return {Object} The JSON object.
+     */
+    removeInternalProperties(json) {
+        if (!json || typeof json !== 'object' || Array.isArray(json)) {
+            throw new Error('Can only add properties to JSON objects');
+        }
+        delete json.$registryType;
+        delete json.$registryID;
+        return json;
     }
 
     /**
