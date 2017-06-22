@@ -145,4 +145,4 @@ You can then start {{site.data.conrefs.composer_full}} Playground by clicking on
 
 ## What's next?
 
-* Take a tutorial on using Playground, and try [running a car auction with the Playground](../tutorials/playground-guide.html).
+* Take a tutorial on using Playground, and try [our Playground tutorial](../tutorials/playground-guide.html).
