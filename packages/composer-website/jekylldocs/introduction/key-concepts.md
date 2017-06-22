@@ -7,8 +7,6 @@ excerpt:
 
 # Features and Concepts in {{site.data.conrefs.composer_full}}
 
----
-
 {{site.data.conrefs.composer_full}} is a programming model containing a modeling language, and a set of APIs to quickly define and deploy business networks and applications that allow **participants** to send **transactions** that exchange **assets**.
 
 ---

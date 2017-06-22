@@ -8,8 +8,6 @@ excerpt: Enabling REST API authentication for a business network
 
 # Enabling REST API authentication for a business network
 
----
-
 By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. For example, when using the following command, all requests made to the REST server will be serviced by using the Blockchain identity **alice1** to digitally sign all transactions:
 
     composer-rest-server -p hlfv1 -n digitalproperty-network -i alice1 -s suchs3cret

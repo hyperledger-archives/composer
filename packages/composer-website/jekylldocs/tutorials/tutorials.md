@@ -8,8 +8,6 @@ excerpt: Tutorials
 
 # Tutorials
 
----
-
 We have two basic tutorial options. For developers, we recommend reading the [**developer guide**](../tutorials/developer-guide.html). This guide presumes you have a development environment setup including the [**installation of the development tools**](../installing/development-tools.html). For other users, we recommend the [**playground guide**](../tutorials/playground-guide.html).
 
 ---

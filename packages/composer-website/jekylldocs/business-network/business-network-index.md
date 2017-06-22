@@ -8,8 +8,6 @@ excerpt: Overview of Developing Business Networks
 
 # Developing Business Networks
 
----
-
 Developers use {{site.data.conrefs.composer_full}} to digitize business networks. The business network is accessed by multiple participants in the network, some of which may be responsible for the maintenance (hosting) of the network itself, referred to as maintainers of the network.
 
 Typically each maintainer of the network will run several peer nodes (for crash fault tolerance) and {{site.data.conrefs.hlf_full}} replicates the distributed ledger across the set of peer nodes.

@@ -10,8 +10,6 @@ index-order: 4
 
 # Revoke an Identity of a Participant
 
----
-
 An identity can be revoked from a participant using either the API or the command line. Once an identity has been revoked, the identity can no longer be used by the participant to interact with the business network in the context of that participant.
 
 {{site.data.conrefs.composer_full}} issues identities as Hyperledger Fabric enrollment

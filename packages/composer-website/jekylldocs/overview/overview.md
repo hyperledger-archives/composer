@@ -8,8 +8,6 @@ excerpt: Hyperledger Composer overview
 
 # Overview
 
----
-
 {{site.data.conrefs.composer_full}} is a set of APIs, a modeling language and
 a programming model to quickly define and deploy business networks and applications
 that allow **participants** to send **transactions** that exchange **assets**.

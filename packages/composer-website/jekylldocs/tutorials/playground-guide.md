@@ -8,8 +8,6 @@ excerpt: Playground Tutorial
 
 # Using the Playground to run a Car Auction
 
----
-
 ## Before you begin
 
 Before beginning, you will need:

@@ -10,13 +10,9 @@ index-order: 1
 
 # Try {{site.data.conrefs.composer_full}} Playground online
 
----
-
 The {{site.data.conrefs.composer_short}} Playground is a tool which provides a simple UI for quickly editing and testing a business network. The hosted version (Online Playground) runs your business network in browser memory.  If you install Playground locally (Local Playground) you can deploy to {{site.data.conrefs.hlf_full}} instances.
 
 **Note:** There is no install necessary to use the Online Playground.  If you'd like to install a local version, skip to the [Install Local Playground](./using-playground-locally.html) instructions.
-
----
 
 ## Before you begin
 

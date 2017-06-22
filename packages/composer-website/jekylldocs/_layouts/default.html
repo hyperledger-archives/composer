@@ -3,22 +3,34 @@ layout: base
 markdown: 0
 ---
 <div class="content">
-    <article class="container">
-      <div class="row">
+    <article class="docs-container">
         <!-- If there's a sidebar, divide into 2 columns -->
         {% if page.sidebar %}
-        <div class="col-md-3">
-          <nav class="context-nav" id="myScrollspy">
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            {% include navbar.html %}
+          </div>
+
+          <div class="docs-current-page-grid">
+          <p>{{ page.title }}</p>
+          </div>
+
+          <nav class="context-nav">
             {% capture sidebar %}{% include {{ page.sidebar }} %}{% endcapture %}
             {% if sidebarHTML %}
               {{ sidebar }}
             {% else %}
               {{ sidebar | markdownify }}
             {% endif %}
+                <div class="docs-footer-grid">
+                {% include docsfooter.html %}
+                </div>
           </nav>
         </div>
-        <div class="col-md-9">
+        <div class="page-content-grid">
           <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
             {% if page.markdown == 1 %}
               {{ content | markdownify }}
             {% else %}
@@ -38,7 +50,6 @@ markdown: 0
           </section>
         </div>
         {% endif %}
-      </div>
       <div class="PageNavigation">
     {% if page.previous.url %}
       <a class="prev" href="{{page.previous.url}}">&laquo; {{page.previous.title}}</a>
@@ -49,3 +60,45 @@ markdown: 0
   </div>
     </article>
 </div>
+
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
