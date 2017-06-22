@@ -219,13 +219,23 @@ class Factory {
         newObj.assignFieldDefaults();
 
         if(options.generate) {
+            let generator;
+            let includeOptionalFields;
+            if ((/^empty$/i).test(options.generate)) {
+                generator = ValueGeneratorFactory.empty();
+                includeOptionalFields = false;
+            } else {
+                generator = ValueGeneratorFactory.sample();
+                includeOptionalFields = true;
+            }
+
             const visitor = new InstanceGenerator();
-            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
             const parameters = {
                 stack: new TypedStack(newObj),
                 modelManager: this.modelManager,
                 factory: this,
-                valueGenerator: generator
+                valueGenerator: generator,
+                includeOptionalFields: includeOptionalFields
             };
 
             classDecl.accept(visitor, parameters);
