@@ -63,8 +63,10 @@ class InstanceGenerator {
     visitClassDeclaration(classDeclaration, parameters) {
         const obj = parameters.stack.pop();
         const properties = classDeclaration.getProperties();
-        for(let n=0; n < properties.length; n++) {
-            const property = properties[n];
+        for (const property of properties) {
+            if (!parameters.includeOptionalFields && property.isOptional()) {
+                continue;
+            }
             const value = obj[property.getName()];
             if(Util.isNull(value)) {
                 obj[property.getName()] = property.accept(this,parameters);
@@ -81,7 +83,6 @@ class InstanceGenerator {
      * @private
      */
     visitField(field, parameters) {
-
         if (field.isArray()) {
             let result = [];
             for (let i = 0; i < 3; i++) {
