@@ -191,7 +191,7 @@
               <div class="nested-row">
                 <div class="nested-property">Orderer URL</div>
                 <div class="nested-value">{{orderer.url}}</div>
-                <button type="button" class="certificate-button" (click)="showCertificate(orderer.cert,orderer.hostnameOverride)">
+                <button type="button" class="certificate-button" (click)="showCertificate(orderer.cert)">
                 <svg class="standard-icon" aria-hidden="true">
                   <use xlink:href="#icon-data-quality_16"></use>
                 </svg>
@@ -243,7 +243,7 @@
               <div class="nested-row">
                 <div class="nested-property">Peer Request URL</div>
                 <div class="nested-value">{{peer.requestURL}}</div>
-                <button type="button" class="certificate-button" (click)="showCertificate(peer.cert,peer.hostnameOverride)">
+                <button type="button" class="certificate-button" (click)="showCertificate(peer.cert)">
                 <svg class="standard-icon" aria-hidden="true">
                   <use xlink:href="#icon-data-quality_16"></use>
                 </svg>
@@ -464,7 +464,6 @@
                       {{ v1FormErrors.orderers.url }}
                     </div>
                     <input hidden type="text" formControlName="cert">
-                    <input hidden type="text" formControlName="hostnameOverride">
                   </div>
                   <button type="button" [ngClass]="{'certificate-button':true, 'no-cert': v1Form.controls.orderers.controls[i].value.cert === ''}" (click)="openAddCertificateModal(i,'orderers');">
                     <svg class="standard-icon" aria-hidden="true">
@@ -477,9 +476,6 @@
 
             <div *ngIf="v1FormErrors.orderers.cert" class="error-message">
               {{ v1FormErrors.orderers.cert }}
-            </div>
-            <div *ngIf="v1FormErrors.orderers.hostnameOverride" class="error-message">
-              {{ v1FormErrors.orderers.hostnameOverride }}
             </div>
           </div>
 
@@ -573,7 +569,6 @@
                     </div>
 
                     <input hidden type="text" formControlName="cert">
-                    <input hidden type="text" formControlName="hostnameOverride">
                   </div>
                 </div>
               </div>

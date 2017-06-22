@@ -19,18 +19,21 @@ services:
               "keyValStore": "/home/composer/.hfc-key-store",
               "timeout": 300,
               "orderers": [
-                  {
-                      "url": "grpc://orderer.example.com:7050"
-                  }
+                {
+                  "url": "grpc://orderer.example.com:7050"
+                }
               ],
               "channel": "mychannel",
               "mspID": "Org1MSP",
-              "ca": {"url": "http://ca.example.com:7054", "name": "ca.example.com"},
+              "ca": {
+                "url": "http://ca.example.com:7054",
+                "name": "ca.example.com"
+              },
               "peers": [
-                  {
-                      "requestURL": "grpc://peer0.org1.example.com:7051",
-                      "eventURL": "grpc://peer0.org1.example.com:7053"
-                  }
+                {
+                  "requestURL": "grpc://peer0.org1.example.com:7051",
+                  "eventURL": "grpc://peer0.org1.example.com:7053"
+                }
               ]
             }
           },

@@ -177,7 +177,7 @@ rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.acme.mynetwork"
+    resource: "org.acme.mynetwork.*"
     action: ALLOW
 }
 ```

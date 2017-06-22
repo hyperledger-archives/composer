@@ -47,4 +47,5 @@ out
 # Build generated files should be ignored by git, but not by npm.
 lib/acl/parser.js
 lib/introspect/parser.js
+lib/query/parser.js
 index.d.ts
