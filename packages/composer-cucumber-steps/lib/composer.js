@@ -475,6 +475,7 @@ class Composer {
                         this.compareResources(actualResource, expectedResource);
                         return true;
                     } catch (error) {
+                        console.log(error);
                         return false;
                     }
                 });

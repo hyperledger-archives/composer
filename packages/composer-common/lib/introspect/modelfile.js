@@ -283,7 +283,7 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-         for(let n=0; n < this.imports.length; n++) {
+        for(let n=0; n < this.imports.length; n++) {
             let importName = this.imports[n];
             if( ModelUtil.getShortName(importName) === type ) {
                 return importName;
