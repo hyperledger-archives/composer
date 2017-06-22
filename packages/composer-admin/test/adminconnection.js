@@ -61,6 +61,8 @@ describe('AdminConnection', () => {
         mockConnection.login.resolves(mockSecurityContext);
         mockConnection.deploy.resolves();
         mockConnection.ping.resolves();
+        mockConnection.queryChainCode.resolves();
+        mockConnection.invokeChainCode.resolves();
         mockConnection.undeploy.resolves();
         mockConnection.update.resolves();
         mockConnection.list.resolves(['biznet1', 'biznet2']);
@@ -199,7 +201,7 @@ describe('AdminConnection', () => {
             return adminConnection.deploy(businessNetworkDefinition)
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.deploy);
-                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext,  true, businessNetworkDefinition);
+                sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, businessNetworkDefinition);
             });
         });
     });
@@ -239,6 +241,30 @@ describe('AdminConnection', () => {
             .then(() => {
                 sinon.assert.calledOnce(mockConnection.ping);
                 sinon.assert.calledWith(mockConnection.ping, mockSecurityContext);
+            });
+        });
+    });
+
+    describe('#getLogLevel', () => {
+        it('should not fail', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.getLogLevel()
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.queryChainCode);
+                sinon.assert.calledWith(mockConnection.queryChainCode, mockSecurityContext, 'getloglevel', []);
+            });
+        });
+    });
+
+    describe('#setLogLevel', () => {
+        it('should invoke ', () => {
+            adminConnection.connection = mockConnection;
+            adminConnection.securityContext = mockSecurityContext;
+            return adminConnection.setLogLevel('ERROR')
+            .then(() => {
+                sinon.assert.calledOnce(mockConnection.invokeChainCode);
+                sinon.assert.calledWith(mockConnection.invokeChainCode, mockSecurityContext, 'setloglevel', ['ERROR']);
             });
         });
     });

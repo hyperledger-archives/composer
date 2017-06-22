@@ -181,14 +181,14 @@ class ConnectorServer {
      * Handle a request from the client to deploy a business network.
      * @param {string} connectionID The connection ID.
      * @param {string} securityContextID The security context ID.
-     * @param {boolean} force Deploy a new instance if the business network is already deployed.
      * @param {string} businessNetworkBase64 The business network archive, as a base64 encoded string.
+     * @param {Object} deployOptions connector specific deployment options
      * @param {function} callback The callback to call when complete.
      * @return {Promise} A promise that is resolved when complete.
      */
-    connectionDeploy(connectionID, securityContextID, force, businessNetworkBase64, callback) {
+    connectionDeploy(connectionID, securityContextID, businessNetworkBase64, deployOptions, callback) {
         const method = 'connectionDeploy';
-        LOG.entry(method, connectionID, securityContextID, force, businessNetworkBase64);
+        LOG.entry(method, connectionID, securityContextID, businessNetworkBase64, deployOptions);
         let connection = this.connections[connectionID];
         if (!connection) {
             let error = new Error(`No connection found with ID ${connectionID}`);
@@ -208,7 +208,7 @@ class ConnectorServer {
         let businessNetworkArchive = Buffer.from(businessNetworkBase64, 'base64');
         return BusinessNetworkDefinition.fromArchive(businessNetworkArchive)
             .then((businessNetworkDefinition) => {
-                return connection.deploy(securityContext, force, businessNetworkDefinition);
+                return connection.deploy(securityContext, businessNetworkDefinition, deployOptions);
             })
             .then(() => {
                 callback(null);
