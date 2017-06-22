@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
 				</ul>
 			</li>
 			
@@ -102,6 +102,8 @@
 
 const debug = require('debug')('ibm-concerto');
 const Globalize = require('./globalize');
+
+const ModelUtil = require('./modelutil');
 
 const InstanceGenerator = require('./serializer/instancegenerator');
 const ValueGeneratorFactory = require('./serializer/valuegenerator');
@@ -172,7 +174,7 @@ class Factory {
      * &lt;dt>sample&lt;/dt>&lt;dd>return a resource instance with generated sample data.&lt;/dd>
      * &lt;dt>empty&lt;/dt>&lt;dd>return a resource instance with empty property values.&lt;/dd>&lt;/dl>
      * @return {Resource} the new instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
+     * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
         if(!id || typeof(id) !== 'string') {
@@ -191,24 +193,9 @@ class Factory {
             }));
         }
 
-        let modelFile = this.modelManager.getModelFile(ns);
-        if(!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
-            throw new Error(formatter({
-                namespace: ns
-            }));
-        }
+        const qualifiedName = ModelUtil.getFullyQualifiedName(ns, type);
+        const classDecl = this.modelManager.getType(qualifiedName);
 
-        if(!modelFile.isDefined(type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        let classDecl = modelFile.getType(type);
         if(classDecl.isAbstract()) {
             let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
             throw new Error(formatter({
@@ -232,13 +219,23 @@ class Factory {
         newObj.assignFieldDefaults();
 
         if(options.generate) {
+            let generator;
+            let includeOptionalFields;
+            if ((/^empty$/i).test(options.generate)) {
+                generator = ValueGeneratorFactory.empty();
+                includeOptionalFields = false;
+            } else {
+                generator = ValueGeneratorFactory.sample();
+                includeOptionalFields = true;
+            }
+
             const visitor = new InstanceGenerator();
-            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
             const parameters = {
                 stack: new TypedStack(newObj),
                 modelManager: this.modelManager,
                 factory: this,
-                valueGenerator: generator
+                valueGenerator: generator,
+                includeOptionalFields: includeOptionalFields
             };
 
             classDecl.accept(visitor, parameters);
@@ -262,27 +259,11 @@ class Factory {
      * &lt;dt>sample&lt;/dt>&lt;dd>return a resource instance with generated sample data.&lt;/dd>
      * &lt;dt>empty&lt;/dt>&lt;dd>return a resource instance with empty property values.&lt;/dd>&lt;/dl>
      * @return {Resource} the new instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
+     * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newConcept(ns, type, options) {
-        let modelFile = this.modelManager.getModelFile(ns);
-        if(!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-notregisteredwithmm');
-            throw new Error(formatter({
-                namespace: ns
-            }));
-        }
-
-        if(!modelFile.isDefined(type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        let classDecl = modelFile.getType(type);
+        const qualifiedName = ModelUtil.getFullyQualifiedName(ns, type);
+        const classDecl = this.modelManager.getType(qualifiedName);
 
         if(classDecl.isAbstract()) {
             let formatter = Globalize.messageFormatter('factory-newinstance-abstracttype');
@@ -333,29 +314,14 @@ class Factory {
      * @param {string} type - the type of the Resource
      * @param {string} id - the identifier
      * @return {Relationship} - the new relationship instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
+     * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newRelationship(ns, type, id) {
-        let modelFile = this.modelManager.getModelFile(ns);
-        if(!modelFile) {
-            let formatter = Globalize.messageFormatter('factory-newrelationship-notregisteredwithmm');
+        // Load the type declaration to force an error if it doesn't exist
+        const fqn = ModelUtil.getFullyQualifiedName(ns, type);
+        this.modelManager.getType(fqn);
 
-            throw new Error(formatter({
-                namespace: ns
-            }));
-        }
-
-        if(!modelFile.isDefined(type)) {
-            let formatter = Globalize.messageFormatter('factory-newinstance-typenotdeclaredinns');
-
-            throw new Error(formatter({
-                namespace: ns,
-                type: type
-            }));
-        }
-
-        let relationship = new Relationship(this.modelManager,ns,type,id);
-        return relationship;
+        return new Relationship(this.modelManager, ns, type, id);
     }
 
     /**
@@ -481,7 +447,7 @@ module.exports = Factory;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 15th 2017
+		on Thu Jun 22nd 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

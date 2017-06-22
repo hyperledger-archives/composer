@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
 				</ul>
 			</li>
 			
@@ -100,24 +100,42 @@
 
 'use strict';
 
-const BaseException = require('../baseexception');
+const BaseModelException = require('./basemodelexception');
 
 /**
  * Exception throws when a Composer file is syntactically invalid
- * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @extends BaseModelException
+ * @see See [BaseModelException]{@link module:composer-common.BaseModelException}
  * @class
  * @memberof module:composer-common
  */
-class ParseException extends BaseException {
+class ParseException extends BaseModelException {
 
     /**
      * Create an ParseException
      * @param {string} message - the message for the exception
+     * @param {string} fileLocation - the optional file location associated with the exception
      */
-    constructor(message) {
-        super(message);
+    constructor(message, fileLocation) {
+
+        let fullMessage = message +  ' Line ' + fileLocation.start.line + ' column ' + fileLocation.start.column;
+
+        // The parser does not give us back the end location of an invalid token.
+        // Making the end column equal to the end column makes use of
+        // vscodes default behaviour of selecting an entire word
+        if (fileLocation) {
+            if (fileLocation.end &amp;&amp; fileLocation.start) {
+                if (fileLocation.end.offset &amp;&amp; fileLocation.start.offset) {
+                    if (fileLocation.end.offset - fileLocation.start.offset === 1) {
+                        fileLocation.end.column = fileLocation.start.column;
+                        fileLocation.end.offset = fileLocation.start.offset;
+                    }
+                }
+            }
+        }
+        super(message, fileLocation, fullMessage);
     }
+
 }
 
 module.exports = ParseException;
@@ -168,7 +186,7 @@ module.exports = ParseException;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 15th 2017
+		on Thu Jun 22nd 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

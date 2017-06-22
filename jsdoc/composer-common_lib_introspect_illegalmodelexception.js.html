@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
 				</ul>
 			</li>
 			
@@ -100,39 +100,47 @@
 
 'use strict';
 
-const BaseException = require('../baseexception');
+const BaseModelException = require('./basemodelexception');
 
 /**
  * Exception throws when a composer file is semantically invalid
- * @extends BaseException
- * @see See [BaseException]{@link module:composer-common.BaseException}
+ * @extends BaseModelException
+ * @see See [BaseModelException]{@link module:composer-common.BaseModelException}
  * @class
  * @memberof module:composer-common
  */
-class IllegalModelException extends BaseException {
+class IllegalModelException extends BaseModelException {
 
     /**
-     * Create an IllegalModelException
-     * @param {string} message - the message for the exception
-     * @param {string} modelFile - the optional modelfile associated with the exception
-     * @param {string} fileLocation - the optional file location associated with the exception
+     * Create an IllegalModelException.
+     * @param {String} message - the message for the exception
+     * @param {ModelFile} [modelFile] - the optional modelfile associated with the exception
+     * @param {Object} [fileLocation] - location details of the error within the model file.
+     * @param {String} fileLocation.start.line - start line of the error location.
+     * @param {String} fileLocation.start.column - start column of the error location.
+     * @param {String} fileLocation.end.line - end line of the error location.
+     * @param {String} fileLocation.end.column - end column of the error location.
      */
     constructor(message, modelFile, fileLocation) {
 
-        let messagePrefix = '';
+        let messageSuffix = '';
         if(modelFile &amp;&amp; modelFile.getFileName()) {
-            messagePrefix = 'File \'' + modelFile.getFileName() + '\': ' ;
+            messageSuffix = 'File \'' + modelFile.getFileName() + '\': ' ;
         }
 
         if(fileLocation) {
-            messagePrefix = messagePrefix + 'line ' + fileLocation.start.line + ' column ' +
+            messageSuffix = messageSuffix + 'line ' + fileLocation.start.line + ' column ' +
                 fileLocation.start.column + ', to line ' + fileLocation.end.line + ' column ' +
                 fileLocation.end.column + '. ';
         }
 
-        super(messagePrefix + message);
+        // First character to be uppercase
+        messageSuffix = messageSuffix.charAt(0).toUpperCase() + messageSuffix.slice(1);
+
+        super(message + ' ' + messageSuffix);
         this.modelFile = modelFile;
         this.fileLocation = fileLocation;
+        this.shortMessage = message;
     }
 
     /**
@@ -141,14 +149,6 @@ class IllegalModelException extends BaseException {
      */
     getModelFile() {
         return this.modelFile;
-    }
-
-    /**
-     * Returns the file location associated with the exception or null
-     * @return {string} the optional location associated with the exception
-     */
-    getFileLocation() {
-        return this.fileLocation;
     }
 }
 
@@ -200,7 +200,7 @@ module.exports = IllegalModelException;
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 15th 2017
+		on Thu Jun 22nd 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

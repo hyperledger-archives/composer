@@ -121,7 +121,7 @@ ga('send', 'pageview');
             
               <h1 id="installing-and-running-hyperledger-composer-playground-locally">Installing and running Hyperledger Composer Playground locally</h1>
 
-<p>This tutorial will take you through how to install and run the Hyperledger Composer Playground on your local machine. It also creates an instance of Hyperledger Fabric v1.0-Alpha1.</p>
+<p>This tutorial will take you through how to install and run the Hyperledger Composer Playground on your local machine. It also creates an instance of Hyperledger Fabric v1.0-Beta.</p>
 
 <p>Hyperledger Composer Playground can also be used in a &quot;browser only&quot; mode, without a running instance of Hyperledger Fabric. When used in this mode, all the functionality of Hyperledger Composer Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.</p>
 
@@ -159,7 +159,7 @@ docker images -aq | xargs docker rmi -f
 
 <p>When connecting to the peer you must specify an identity where the userID contains the text <code>admin</code>, for example, <code>PeerAdmin</code>, <code>myadmin</code>, or <code>AdminPeer</code> are all valid userID&#39;s. Peers in different organizations may have different admin users. Only an admin user of peer&#39;s organization will be able to deploy a business network to their peers.</p>
 
-<p>These security changes mean that Hyperledger Composer cannot support older versions of Hyperledger Fabric v1.0 (e.g. alpha 1).</p>
+<p>Due to many breaking API changes between Hyperledger Fabric v1.0 alpha 1 and Hyperledger Fabric v1.0 beta, Hyperledger Composer only supports the beta level and cannot support older versions of Hyperledger Fabric v1.0 (e.g. alpha 1).</p>
 
 <h3 id="deploying-business-networks-using-playground-locally">Deploying business networks using Playground locally</h3>
 

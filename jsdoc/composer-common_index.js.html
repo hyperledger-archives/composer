@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
 				</ul>
 			</li>
 			
@@ -138,8 +138,11 @@ module.exports.AclFile = require('./lib/acl/aclfile');
 module.exports.AclManager = require('./lib/aclmanager');
 module.exports.AssetDeclaration = require('./lib/introspect/assetdeclaration');
 module.exports.BaseException = require('./lib/baseexception');
+module.exports.BaseModelException = require('./lib/introspect/basemodelexception');
 module.exports.BusinessNetworkDefinition = require('./lib/businessnetworkdefinition');
+module.exports.BusinessNetworkMetadata = require('./lib/businessnetworkmetadata');
 module.exports.ClassDeclaration = require('./lib/introspect/classdeclaration');
+module.exports.CodeGen = require('./lib/codegen/codegen.js');
 module.exports.ComboConnectionProfileStore = require('./lib/comboconnectionprofilestore');
 module.exports.Concept = require('./lib/model/concept');
 module.exports.ConceptDeclaration = require('./lib/introspect/conceptdeclaration');
@@ -160,8 +163,11 @@ module.exports.Logger = require('./lib/log/logger');
 module.exports.LoopbackVisitor = require('./lib/codegen/fromcto/loopback/loopbackvisitor');
 module.exports.ModelFile = require('./lib/introspect/modelfile');
 module.exports.ModelManager = require('./lib/modelmanager');
+module.exports.OrderBy = require('./lib/query/orderby');
 module.exports.ParticipantDeclaration = require('./lib/introspect/participantdeclaration');
 module.exports.Property = require('./lib/introspect/property');
+module.exports.Query = require('./lib/query/query');
+module.exports.QueryFile = require('./lib/query/queryfile');
 module.exports.Relationship = require('./lib/model/relationship');
 module.exports.RelationshipDeclaration = require('./lib/introspect/relationshipdeclaration');
 module.exports.Resource = require('./lib/model/resource');
@@ -170,12 +176,14 @@ module.exports.Script = require('./lib/introspect/script');
 module.exports.ScriptManager = require('./lib/scriptmanager');
 module.exports.SecurityContext = require('./lib/securitycontext');
 module.exports.SecurityException = require('./lib/securityexception');
+module.exports.Select = require('./lib/query/select');
 module.exports.Serializer = require('./lib/serializer');
+module.exports.Sort = require('./lib/query/sort');
 module.exports.TransactionDeclaration = require('./lib/introspect/transactiondeclaration');
 module.exports.TypescriptVisitor = require('./lib/codegen/fromcto/typescript/typescriptvisitor');
 module.exports.Util = require('./lib/util');
 module.exports.Wallet = require('./lib/wallet');
-module.exports.CodeGen = require('./lib/codegen/codegen.js');
+module.exports.Where = require('./lib/query/where');
 module.exports.Writer = require('./lib/codegen/writer.js');
 module.exports.version = require('./package.json');
 </pre>
@@ -225,7 +233,7 @@ module.exports.version = require('./package.json');
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on Thu Jun 15th 2017
+		on Thu Jun 22nd 2017
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

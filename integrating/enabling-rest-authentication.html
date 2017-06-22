@@ -126,7 +126,7 @@ ga('send', 'pageview');
 <hr>
 
 <p>By default, the Hyperledger Composer REST server services all requests by using the Blockchain identity specified on the command line at startup. For example, when using the following command, all requests made to the REST server will be serviced by using the Blockchain identity <strong>alice1</strong> to digitally sign all transactions:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n digitalproperty-network -i alice1 -s suchs3cret
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i alice1 -s suchs3cret
 </code></pre></div>
 <p>This means that the business network cannot distinguish between different clients of the REST server. This may be acceptable in certain use cases, for example if the Blockchain identity only has read-only access and the REST server is secured using an API management gateway.</p>
 
@@ -182,8 +182,8 @@ ga('send', 'pageview');
 
 <p>Once the environment variable <code>COMPOSER_PROVIDERS</code> has been set, you can use the <code>-S true</code> argument to start the REST server with security enabled. Once security is enabled, clients will have to authenticate before they can make any requests to the business network.</p>
 
-<p>For example, here is the command for the getting started guide, however you may need to modify the command for your business network:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n digitalproperty-network -i admin -s adminpw -S true
+<p>For example, here is the command for the business network that is deployed as part of the Developer Tutorial, however you may need to modify the command for your business network:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">composer-rest-server -p hlfv1 -n my-network -i admin -s adminpw -S true
 </code></pre></div>
 <p>Now, navigate to the REST API explorer at <a href="http://localhost:3000/explorer/">http://localhost:3000/explorer/</a>. If security has been successfully enabled, any attempts to call one of the business network REST API operations using the REST API explorer should be rejected with an <code>HTTP 401 Authorization Required</code> message.</p>
 
@@ -201,7 +201,7 @@ ga('send', 'pageview');
 
 <h2 id="adding-a-blockchain-identity-to-the-default-wallet">Adding a Blockchain identity to the default wallet</h2>
 
-<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.example.sample.SampleParticipant#alice@email.com</code>, and the secret is <code>suchs3cret</code>.</p>
+<p>First, you must issue a Blockchain identity to a participant in the business network. This example will assume that you have issued the Blockchain identity <code>alice1</code> to the participant <code>org.acme.mynetwork.Trader#alice@email.com</code>, and the secret is <code>suchs3cret</code>.</p>
 
 <p>Follow these steps to add a Blockchain identity to the default wallet:</p>
 
@@ -247,8 +247,8 @@ The response from the operation should be:</p>
 
 <p>You can test that the Blockchain identity is being used by calling the <code>GET /system/ping</code> operation. This operation returns the fully qualified identifier for the participant that the Blockchain identity was issued to:</p>
 <div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.7.3"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"participant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.example.sample.SampleParticipant#alice@email.com"</span><span class="w">
+  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.8.0"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"participant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader#alice@email.com"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <h2 id="final-notes">Final notes</h2>
