@@ -226,7 +226,7 @@ ga('send', 'pageview');
 </ol>
 
 <ul>
-<li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0-alpha is must be <code>hlfv1</code>.</li>
+<li><code>type</code> defines the version of Hyperledger Fabric that you will connect to. To connect to Hyperledger Fabric v1.0-beta is must be <code>hlfv1</code>.</li>
 <li><code>orderers</code> is an array of objects which describe the orderes to communicate with. Within <code>orderers</code>, you must define the <code>url</code> of each orderer. If you are connecting via TLS, all <code>url</code> properties in your connection profile must begin with <code>grpcs://</code> and must also contain the correct TLS certificate in the <code>cert</code> property.</li>
 <li><p><code>peers</code> is an array of objects describing the peers to communicate with. Each <code>peer</code> must have a defined <code>requestURL</code> and a defined <code>eventURL</code>. If you are connecting using TLS, each <code>peer</code> must also have the correct TLS certificate in the <code>cert</code> property.</p></li>
 <li><p>Each instance of the <code>cert</code> property should contain the correct TLS certificate string in PEM format. Multiple certificates can be placed in each <code>cert</code> property.  </p>
