@@ -63,6 +63,11 @@ func NewContainer(vm *duktape.Context, stub shim.ChaincodeStubInterface) (result
 	return result
 }
 
+func (container *Container) setStub(stub shim.ChaincodeStubInterface) {
+	container.LoggingService.setStub(stub)
+}
+
+
 // getVersion returns the current version of the chaincode.
 func (container *Container) getVersion(vm *duktape.Context) (result int) {
 	logger.Debug("Entering Container.getVersion", vm)

@@ -68,8 +68,8 @@ describe('composer network download CLI unit tests', function () {
         sandbox.stub(fs,'writeFileSync' );
         sandbox.stub(CmdUtil, 'createBusinessNetworkConnection').returns(mockBusinessNetworkConnection);
         sandbox.stub(process, 'exit');
-
-        sandbox.stub(ListCmd,'getMatchingRegistries').returns(Promise.resolve([{id:'reg1','name':'reg1','registryType':'Asset','assets':{}},{id:'reg2','name':'reg2','registryType':'Asset','assets':{}}]));
+        sandbox.stub(ListCmd, 'getMatchingAssets').resolves({});
+        sandbox.stub(ListCmd,'getMatchingRegistries').resolves([{id:'reg1','name':'reg1','registryType':'Asset','assets':{}},{id:'reg2','name':'reg2','registryType':'Asset','assets':{}}]);
     });
 
     afterEach(() => {
