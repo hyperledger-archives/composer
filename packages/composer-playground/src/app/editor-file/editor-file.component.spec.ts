@@ -37,7 +37,7 @@ class MockPerfectScrollBarDirective {
     selector: '[debounce]'
 })
 class MockDebounceDirective {
-    @Input() value;
+    @Input() delay;
 }
 
 describe('EditorFileComponent', () => {

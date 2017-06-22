@@ -21,9 +21,11 @@ export class DebounceDirective implements OnInit {
 
     ngOnInit(): void {
         const eventStream = Observable.fromEvent(this.elementRef.nativeElement, 'keyup')
-            .map(() => this.model.value)
+            .map(() => {
+                console.log('@14gracel');
+                return this.model.value;
+            })
             .debounceTime(this.delay);
-
         eventStream.subscribe((input) => this.debounceFunc.emit(input));
     }
 
