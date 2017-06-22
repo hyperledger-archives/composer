@@ -12,7 +12,7 @@ index-order: 3
 
 Follow the instructions below to get the required {{site.data.conrefs.composer_full}} development tools and stand up a {{site.data.conrefs.hlf_full}}.
 
-There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0-alpha. The default is for v1.0-alpha and we suggest this is the one you use.
+There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0-beta. The default is for v1.0-beta and we suggest this is the one you use.
 
 ---
 
@@ -108,7 +108,7 @@ docker rmi $(docker images dev-* -q)
 
         export FABRIC_VERSION=hlfv0.6
 
-    {{site.data.conrefs.hlf_full}} v1.0-alpha is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
+    {{site.data.conrefs.hlf_full}} v1.0-beta is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
 
         export FABRIC_VERSION=hlfv1
 

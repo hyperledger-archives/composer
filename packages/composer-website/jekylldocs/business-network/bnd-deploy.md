@@ -27,7 +27,7 @@ In {{site.data.conrefs.hlf_full}} Beta peers now enforce the concepts of admins 
 
 When connecting to the peer you must specify an identity where the userID contains the text `admin`, for example, `PeerAdmin`, `myadmin`, or `AdminPeer` are all valid userID's. Peers in different organizations may have different admin users. Only an admin user of peer's organization will be able to deploy a business network to their peers.
 
-These security changes mean that {{site.data.conrefs.composer_full}} cannot support older versions of {{site.data.conrefs.hlf_full}} v1.0 (e.g. alpha 1).
+Due to many breaking API changes between Hyperledger Fabric alpha 1 and Hyperledger Fabric beta, {{site.data.conrefs.composer_full}} only supports the beta level and cannot support older versions of {{site.data.conrefs.hlf_full}} v1.0 (e.g. alpha 1).
 
 ### Deploying business networks using Playground locally
 
