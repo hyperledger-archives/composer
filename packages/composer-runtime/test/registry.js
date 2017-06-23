@@ -665,4 +665,16 @@ describe('Registry', () => {
 
     });
 
+    describe('#toJSON', () => {
+
+        it('should return an empty object', () => {
+            registry.toJSON().should.deep.equal({
+                type: 'Asset',
+                id: 'doges',
+                name: 'The doges registry'
+            });
+        });
+
+    });
+
 });

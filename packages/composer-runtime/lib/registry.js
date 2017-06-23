@@ -314,6 +314,18 @@ class Registry extends EventEmitter {
         return json;
     }
 
+    /**
+     * Return an object suitable for serialization.
+     * @return {Object} An object suitable for serialization.
+     */
+    toJSON() {
+        return {
+            type: this.type,
+            id: this.id,
+            name: this.name
+        };
+    }
+
 }
 
 module.exports = Registry;
