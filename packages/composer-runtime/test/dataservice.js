@@ -199,12 +199,4 @@ describe('DataService', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            dataService.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

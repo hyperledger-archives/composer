@@ -58,16 +58,7 @@ class Engine {
             log: (level, method, msg, args) => {
                 args = args || [];
                 let formattedArguments = args.map((arg) => {
-                    if (arg === Object(arg)) {
-                        // It's an object, array, or function, so serialize it as JSON.
-                        try {
-                            return JSON.stringify(arg);
-                        } catch (e) {
-                            return arg;
-                        }
-                    } else {
-                        return arg;
-                    }
+                    return String(arg);
                 }).join(', ');
                 switch (level) {
                 case 'debug':
@@ -418,14 +409,6 @@ class Engine {
         };
         LOG.exit(method, result);
         return Promise.resolve(result);
-    }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
     }
 
 }

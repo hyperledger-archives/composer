@@ -1023,12 +1023,4 @@ describe('Context', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            context.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

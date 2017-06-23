@@ -114,20 +114,6 @@ describe('Engine', () => {
             sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/world, i, am, simon/));
         });
 
-        it('should format object arguments into JSON', () => {
-            LOG.debug('installLogger', 'hello', { hi: 'there' });
-            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/{"hi":"there"}/));
-        });
-
-        it('should cope with object arguments that cannot be formatted into JSON', () => {
-            let object = {
-                hi: 'there'
-            };
-            object.object = object;
-            LOG.debug('installLogger', 'hello', object);
-            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/\[object Object\]/));
-        });
-
     });
 
     describe('#init', () => {
@@ -438,14 +424,6 @@ describe('Engine', () => {
                         participant: 'org.doge.Doge#DOGE_1'
                     });
                 });
-        });
-
-    });
-
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            engine.toJSON().should.deep.equal({});
         });
 
     });

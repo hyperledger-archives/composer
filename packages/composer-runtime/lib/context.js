@@ -790,14 +790,6 @@ class Context {
         }, Promise.resolve());
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = Context;
