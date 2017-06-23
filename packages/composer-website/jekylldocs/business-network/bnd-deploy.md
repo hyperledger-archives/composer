@@ -8,7 +8,6 @@ excerpt: How to deploy or update Business Networks
 
 # Deploying and Updating Business Networks
 
----
 
 Before a business network definition can be deployed it must be packaged into a _Business Network Archive_ (BNA) file. The `composer archive create` command is used to create a BNA file from a root folder on disk.
 

@@ -8,7 +8,6 @@ excerpt: How to publish a model or business network definition for use by applic
 
 # Publish Models or Business Network Definitions for use by applications
 
----
 
 {{site.data.conrefs.composer_full}} can optionally use the `npm` package manager to publish both business networks, and models. By publishing business networks to `npm` applications that need to reference the business networks (for example to introspect them, or deploy them) can declare a binary package dependency on the published `npm` package. Using _semantic versioning_ of the npm package for the business network also allows applications to specify their tolerance for accepting incompatible changes to the business network.
 
