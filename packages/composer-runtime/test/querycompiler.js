@@ -162,9 +162,8 @@ describe('QueryCompiler', () => {
     describe('#compile', () => {
 
         it('should compile all of the scripts in the specified script manager into a bundle', () => {
-            const compiledQueryBundle = queryCompiler.compile(modelManager, queryManager);
+            const compiledQueryBundle = queryCompiler.compile(queryManager);
             compiledQueryBundle.queryCompiler.should.equal(queryCompiler);
-            compiledQueryBundle.modelManager.should.equal(modelManager);
             compiledQueryBundle.compiledQueries.should.be.an('array');
             compiledQueryBundle.compiledQueries.should.have.lengthOf(13);
             compiledQueryBundle.compiledQueries.should.all.have.property('name');
@@ -202,6 +201,13 @@ describe('QueryCompiler', () => {
             compiled.should.all.have.property('name');
             compiled.should.all.have.property('hash');
             compiled.should.all.have.property('generator');
+        });
+
+        it('should handle no queries in the query manager', () => {
+            queryManager.queryFile = null;
+            const compiled = queryCompiler.visitQueryManager(queryManager, {});
+            compiled.should.be.an('array');
+            compiled.should.have.lengthOf(0);
         });
 
     });

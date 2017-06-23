@@ -17,6 +17,7 @@
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const ModelManager = require('composer-common').ModelManager;
 const QueryCompiler = require('../lib/querycompiler');
+const QueryManager = require('composer-common').QueryManager;
 const QueryService = require('../lib/queryservice');
 
 require('chai').should();
@@ -30,6 +31,7 @@ describe('CompiledQueryBundle', () => {
 
     let queryCompiler;
     let modelManager;
+    let queryManager;
     let query1;
     let query2;
     let query3;
@@ -61,6 +63,7 @@ describe('CompiledQueryBundle', () => {
             o String transactionId
             o String newValue
         }`);
+        queryManager = new QueryManager(modelManager);
         query1 = {
             name: 'Q1',
             hash: '32d833f348ce377c8cc3291cc520213770d5d519d7970540c1c36c4261c140cc',
@@ -76,7 +79,7 @@ describe('CompiledQueryBundle', () => {
             hash: '9fc58f1abf0d4f134609c7572d4475fd5b6469591323164a998d435099198294',
             generator: sinon.stub().returns(fakeQueryString)
         };
-        compiledQueryBundle = new CompiledQueryBundle(queryCompiler, modelManager, [query1, query2, query3]);
+        compiledQueryBundle = new CompiledQueryBundle(queryCompiler, queryManager, [query1, query2, query3]);
         mockQueryService = sinon.createStubInstance(QueryService);
         mockQueryService.queryNative.resolves(fakeQueryResults);
     });

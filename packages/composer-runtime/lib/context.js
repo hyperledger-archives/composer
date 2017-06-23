@@ -202,7 +202,7 @@ class Context {
         LOG.debug(method, 'Compiled query bundle is not in cache, loading');
         return Promise.resolve()
             .then(() => {
-                let compiledQueryBundle = this.getQueryCompiler().compile(businessNetworkDefinition.getModelManager(), null);
+                let compiledQueryBundle = this.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
                 Context.cacheCompiledQueryBundle(businessNetworkRecord.hash, compiledQueryBundle);
                 LOG.exit(method, compiledQueryBundle);
                 return compiledQueryBundle;

@@ -40,15 +40,14 @@ class QueryCompiler {
     /**
      * Compile all the queries in the specified query manager into a compiled
      * query bundle for use by the runtime.
-     * @param {ModelManager} modelManager The model manager to use.
      * @param {QueryManager} queryManager The query manager to process.
      * @return {CompiledQueryBundle} The compiled query bundle.
      */
-    compile(modelManager, queryManager) {
+    compile(queryManager) {
         const method = 'compile';
         LOG.entry(method, queryManager);
         const compiledQueries = queryManager.accept(this, {});
-        const result = new CompiledQueryBundle(this, modelManager, compiledQueries);
+        const result = new CompiledQueryBundle(this, queryManager, compiledQueries);
         LOG.exit(method, result);
         return result;
     }
@@ -105,7 +104,11 @@ class QueryCompiler {
         LOG.entry(method, queryManager, parameters);
 
         // Compile all of the query files in this query manager.
-        const compiledQueries = queryManager.getQueryFile().accept(this, parameters);
+        let compiledQueries = [];
+        const queryFile = queryManager.getQueryFile();
+        if (queryFile) {
+            compiledQueries = queryManager.getQueryFile().accept(this, parameters);
+        }
 
         LOG.exit(method, compiledQueries);
         return compiledQueries;

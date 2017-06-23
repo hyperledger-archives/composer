@@ -16,7 +16,6 @@
 
 const createHash = require('sha.js');
 const Logger = require('composer-common').Logger;
-const QueryFile = require('composer-common').QueryFile;
 
 const LOG = Logger.getLog('CompiledQueryBundle');
 
@@ -29,19 +28,19 @@ class CompiledQueryBundle {
     /**
      * Constructor.
      * @param {QueryCompiler} queryCompiler The query compiler to use.
-     * @param {ModelManager} modelManager The model manager to use.
+     * @param {QueryManager} queryManager The query manager to use.
      * @param {Object[]} compiledQueries The compiled queries to use.
      */
-    constructor(queryCompiler, modelManager, compiledQueries) {
+    constructor(queryCompiler, queryManager, compiledQueries) {
         this.queryCompiler = queryCompiler;
-        this.modelManager = modelManager;
+        this.queryManager = queryManager;
         this.compiledQueries = compiledQueries;
         this.compiledQueriesByName = {};
         compiledQueries.forEach((compiledQuery) => {
             this.compiledQueriesByName[compiledQuery.name] = compiledQuery;
             this.compiledQueriesByName[compiledQuery.hash] = compiledQuery;
         });
-        this.dynamicQueryFile = new QueryFile('$dynamic_queries.qry', modelManager, '');
+        this.dynamicQueryFile = queryManager.createQueryFile('$dynamic_queries.qry', '');
     }
 
     /**

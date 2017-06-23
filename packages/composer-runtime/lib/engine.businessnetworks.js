@@ -129,7 +129,7 @@ class EngineBusinessNetworks {
                 Context.cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle);
 
                 // Cache the compiled query bundle.
-                compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getModelManager(), null);
+                compiledQueryBundle = context.getQueryCompiler().compile(businessNetworkDefinition.getQueryManager());
                 LOG.debug(method, 'Loaded compiled query bundle, storing in cache');
                 Context.cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle);
 
