@@ -97,19 +97,6 @@ class OrderBy {
         return this.sortCriteria;
     }
 
-    /**
-     * Returns a new object representing this Query that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            sortCriteria: this.sortCriteria.map((sortCriteria) => {
-                return sortCriteria.toJSON();
-            })
-        };
-        return result;
-    }
 }
 
 module.exports = OrderBy;

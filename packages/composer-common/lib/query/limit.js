@@ -90,17 +90,6 @@ class Limit {
         return this.ast;
     }
 
-    /**
-     * Returns a new object representing this Limit that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            ast: this.ast
-        };
-        return result;
-    }
 }
 
 module.exports = Limit;

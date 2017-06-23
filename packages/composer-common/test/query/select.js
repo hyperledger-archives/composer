@@ -14,14 +14,19 @@
 
 'use strict';
 
-const Query = require('../../lib/query/query');
-const parser = require('../../lib/query/parser');
-const Select = require('../../lib/query/select');
-const ModelManager = require('../../lib/modelmanager');
 const fs = require('fs');
+const Limit = require('../../lib/query/limit');
+const ModelManager = require('../../lib/modelmanager');
+const OrderBy = require('../../lib/query/orderby');
+const parser = require('../../lib/query/parser');
 const path = require('path');
+const Query = require('../../lib/query/query');
+const QueryFile = require('../../lib/query/queryfile');
+const Select = require('../../lib/query/select');
+const Skip = require('../../lib/query/skip');
+const Where = require('../../lib/query/where');
 
-require('chai').should();
+const should = require('chai').should();
 const sinon = require('sinon');
 
 describe('Select', () => {
@@ -31,6 +36,7 @@ describe('Select', () => {
     let modelManager;
     let sandbox;
     let mockQuery;
+    let mockQueryFile;
 
     const select = parser.parse('SELECT org.acme.Driver', { startRule: 'SelectStatement' });
 
@@ -42,11 +48,20 @@ describe('Select', () => {
 
     const selectWhereLimitSkip = parser.parse('SELECT org.acme.Driver WHERE (prop = "value") LIMIT 10 SKIP 5', { startRule: 'SelectStatement' });
 
+    const selectFrom = parser.parse('SELECT org.acme.Driver FROM DogesDrivers', { startRule: 'SelectStatement' });
+
+    const selectConcept = parser.parse('SELECT org.acme.Address', { startRule: 'SelectStatement' });
+
+    const selectEnum = parser.parse('SELECT org.acme.Enum', { startRule: 'SelectStatement' });
+
     beforeEach(() => {
         modelManager = new ModelManager();
         modelManager.addModelFile(testModel);
         sandbox = sinon.sandbox.create();
         mockQuery = sinon.createStubInstance(Query);
+        mockQueryFile = sinon.createStubInstance(QueryFile);
+        mockQuery.getQueryFile.returns(mockQueryFile);
+        mockQueryFile.getModelManager.returns(modelManager);
     });
 
     afterEach(() => {
@@ -67,43 +82,7 @@ describe('Select', () => {
             }).should.throw(/Invalid Query or AST/);
         });
 
-        it('should save a select query', () => {
-            let s = new Select( mockQuery, select );
-            s.getQuery().should.equal(mockQuery);
-            s.getResource().should.equal('org.acme.Driver');
-            (s.getWhere() === null).should.be.true;
-        });
-
-        it('should save a select where query', () => {
-            let s = new Select( mockQuery, selectWhere );
-            s.getQuery().should.equal(mockQuery);
-            s.getWhere().getSelect().should.equal(s);
-        });
-
-        it('should save a select where order by query', () => {
-            let s = new Select( mockQuery, selectWhereOrderBy );
-            s.getQuery().should.equal(mockQuery);
-            s.getWhere().getSelect().should.equal(s);
-            s.getOrderBy().getSelect().should.equal(s);
-        });
-
-        it('should save a select where limit', () => {
-            let s = new Select( mockQuery, selectWhereLimit );
-            s.getQuery().should.equal(mockQuery);
-            s.getWhere().getSelect().should.equal(s);
-            s.getLimit().getAST().should.deep.equal({ type: 'Literal', value: 10 });
-        });
-
-        it('should save a select where skip', () => {
-            let s = new Select( mockQuery, selectWhereLimitSkip );
-            s.getQuery().should.equal(mockQuery);
-            s.getWhere().getSelect().should.equal(s);
-            s.getLimit().getAST().should.deep.equal({ type: 'Literal', value: 10 });
-            s.getSkip().getAST().should.deep.equal({ type: 'Literal', value: 5 });
-        });
-
     });
-
 
     describe('#accept', () => {
 
@@ -116,6 +95,120 @@ describe('Select', () => {
             sinon.assert.calledOnce(visitor.visit);
             sinon.assert.calledWith(visitor.visit, s, ['some', 'args']);
         });
+    });
+
+    describe('#getQuery', () => {
+
+        it('should return the query', () => {
+            const s = new Select(mockQuery, select);
+            s.getQuery().should.equal(mockQuery);
+        });
+
+    });
+
+    describe('#validate', () => {
+
+        it('should throw for concept resources', () => {
+            const s = new Select(mockQuery, selectConcept);
+            (() => {
+                s.validate();
+            }).should.throw(/Can only select/);
+        });
+
+        it('should throw for enum resources', () => {
+            const s = new Select(mockQuery, selectEnum);
+            (() => {
+                s.validate();
+            }).should.throw(/Can only select/);
+        });
+
+    });
+
+    describe('#getResource', () => {
+
+        it('should return the resource', () => {
+            const s = new Select(mockQuery, select);
+            s.getResource().should.equal('org.acme.Driver');
+        });
+
+    });
+
+    describe('#getRegistry', () => {
+
+        it('should return null if the registry is not specified', () => {
+            const s = new Select(mockQuery, select);
+            should.equal(s.getRegistry(), null);
+        });
+
+        it('should return the registry', () => {
+            const s = new Select(mockQuery, selectFrom);
+            s.getRegistry().should.equal('DogesDrivers');
+        });
+
+    });
+
+    describe('#getWhere', () => {
+
+        it('should return null if the where clause is not specified', () => {
+            const s = new Select(mockQuery, select);
+            should.equal(s.getWhere(), null);
+        });
+
+        it('should return the where clause', () => {
+            const s = new Select(mockQuery, selectWhere);
+            const where = s.getWhere();
+            where.should.be.an.instanceOf(Where);
+            where.getAST().type.should.equal('AssignmentExpression');
+        });
+
+    });
+
+    describe('#getOrderBy', () => {
+
+        it('should return null if the order by clause is not specified', () => {
+            const s = new Select(mockQuery, select);
+            should.equal(s.getWhere(), null);
+        });
+
+        it('should return the order by clause', () => {
+            const s = new Select(mockQuery, selectWhereOrderBy);
+            const orderBy = s.getOrderBy();
+            orderBy.should.be.an.instanceOf(OrderBy);
+            orderBy.getSortCriteria().should.have.lengthOf(1);
+        });
+
+    });
+
+    describe('#getLimit', () => {
+
+        it('should return null if the limit clause is not specified', () => {
+            const s = new Select(mockQuery, select);
+            should.equal(s.getLimit(), null);
+        });
+
+        it('should return the limit clause', () => {
+            const s = new Select(mockQuery, selectWhereLimit);
+            const limit = s.getLimit();
+            limit.should.be.an.instanceOf(Limit);
+            limit.getAST().type.should.equal('Literal');
+        });
+
+    });
+
+    describe('#getSkip', () => {
+
+        it('should return null if the skip clause is not specified', () => {
+            const s = new Select(mockQuery, select);
+            should.equal(s.getSkip(), null);
+        });
+
+        it('should return the limit clause', () => {
+            const s = new Select(mockQuery, selectWhereLimitSkip);
+            const skip = s.getSkip();
+            skip.should.be.an.instanceOf(Skip);
+            skip.getAST().type.should.equal('Literal');
+        });
+
     });
 
     describe('#getText', () => {

@@ -80,13 +80,4 @@ describe('QueryManager', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let qm = new QueryManager(modelManager);
-            qm.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

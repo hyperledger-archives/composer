@@ -288,14 +288,4 @@ describe('Factory', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            let factory = new Factory(mockModelManager);
-            factory.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

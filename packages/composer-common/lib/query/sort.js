@@ -109,17 +109,6 @@ class Sort {
         return this.direction;
     }
 
-    /**
-     * Returns a new object representing this Query that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            resouce: this.resource
-        };
-        return result;
-    }
 }
 
 module.exports = Sort;

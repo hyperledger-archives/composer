@@ -203,14 +203,4 @@ describe('FunctionDeclaration', () => {
         it('should throw if @transaction isn\'t specified and the function is a transaction function');
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let func = loadFunctionDeclaration('test/data/parser/functiondeclaration.good.js');
-            let jsonObject = func.toJSON();
-            jsonObject.should.deep.equal({});
-        });
-
-    });
-
 });

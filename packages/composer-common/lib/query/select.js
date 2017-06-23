@@ -75,12 +75,10 @@ class Select {
      */
     process() {
 
-        this.resource = null;
+        // The grammar ensures that the resource property is set.
+        this.resource = this.ast.resource;
 
-        if(this.ast.resource) {
-            this.resource = this.ast.resource;
-        }
-
+        this.registry = null;
         if(this.ast.registry) {
             this.registry = this.ast.registry;
         }
@@ -119,16 +117,15 @@ class Select {
      */
     validate() {
 
-        if(this.resource) {
-            const mm = this.getQuery().getQueryFile().getModelManager();
+        // The grammar ensures that the resource property is set.
+        const mm = this.getQuery().getQueryFile().getModelManager();
 
-            // checks the resource type exists
-            const resourceClassDeclaration = mm.getType(this.resource);
+        // checks the resource type exists
+        const resourceClassDeclaration = mm.getType(this.resource);
 
-            // check that it is not an enum or concept
-            if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
-                throw new Error('Can only select assets, participants and transactions.');
-            }
+        // check that it is not an enum or concept
+        if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
+            throw new Error('Can only select assets, participants and transactions.');
         }
 
         if(this.where) {
@@ -210,21 +207,6 @@ class Select {
         return this.text;
     }
 
-    /**
-     * Returns a new object representing this Query that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            resouce: this.resource,
-            where: this.where ? this.where.toJSON() : null,
-            limit: this.limit ? this.limit : null,
-            skip: this.skip ? this.skip : null,
-            orderBy: this.orderBy ? this.orderBy.toJSON() : null
-        };
-        return result;
-    }
 }
 
 module.exports = Select;

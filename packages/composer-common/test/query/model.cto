@@ -1,5 +1,10 @@
 namespace org.acme
 
+enum Enum {
+    o VALUE_1
+    o VALUE_2
+}
+
 asset Car identified by id {
   o String id
   -->Driver owner

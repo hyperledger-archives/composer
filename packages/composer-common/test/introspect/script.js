@@ -169,16 +169,4 @@ describe('Script', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an object', () => {
-            const FUNC_TEXT = 'function foo() {return 0;}';
-            let script = new Script(modelManager, 'SCRIPT_001', 'JS', FUNC_TEXT );
-            script.toJSON().should.deep.equal({
-                identifier: 'SCRIPT_001',
-                language: 'JS'
-            });
-        });
-
-    });
 });

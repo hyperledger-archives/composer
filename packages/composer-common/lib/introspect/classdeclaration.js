@@ -487,14 +487,6 @@ class ClassDeclaration {
     }
 
     /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
-    /**
      * Returns the string representation of this class
      * @return {String} the string representation of the class
      */

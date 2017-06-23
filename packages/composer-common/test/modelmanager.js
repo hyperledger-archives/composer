@@ -416,12 +416,4 @@ describe('ModelManager', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            modelManager.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });
