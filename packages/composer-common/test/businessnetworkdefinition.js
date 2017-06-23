@@ -16,6 +16,7 @@
 
 const BusinessNetworkDefinition = require('../lib/businessnetworkdefinition');
 const fs = require('fs');
+
 require('chai').should();
 describe('BusinessNetworkDefinition', () => {
     let businessNetworkDefinition;
@@ -164,7 +165,8 @@ describe('BusinessNetworkDefinition', () => {
              We first need to read a ZIP and create a business network.
              After we have done this, we'll be able to create a new ZIP with the contents of the business network.
             */
-            let readFile = fs.readFileSync(__dirname + '/data/zip/test-archive.zip');
+            let fileName = __dirname + '/data/zip/test-archive.zip';
+            let readFile = fs.readFileSync(fileName);
             return BusinessNetworkDefinition.fromArchive(readFile).then((businessNetwork) => {
                 businessNetwork.should.be.BusinessNetworkDefinition;
                 businessNetwork.getIdentifier().should.equal('test-archive@0.0.1');
