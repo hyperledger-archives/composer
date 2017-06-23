@@ -56,6 +56,7 @@ participant Farmer extends User {
     o String address2
     o String county
     o String postcode
+    o Integer age optional
     --> Business business
 }
 

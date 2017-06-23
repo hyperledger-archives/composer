@@ -258,7 +258,7 @@ class BusinessNetworkDefinition {
                 LOG.debug(method, 'Added ACL files to ACL manager');
                 LOG.debug(method, 'Adding Query files to query manager');
                 queriesFiles.forEach((queryFile) => {
-                    businessNetworkDefinition.getQueryManager().setQueryFile( new QueryFile('queries.qry', businessNetworkDefinition.getMdoelManager(), queryFile));
+                    businessNetworkDefinition.getQueryManager().setQueryFile( new QueryFile('queries.qry', businessNetworkDefinition.getModelManager(), queryFile));
                 });
                 LOG.debug(method, 'Added Query files to query manager');
 
