@@ -1,9 +1,11 @@
 ---
 layout: default
-title: Tutorial - Developer Guide
+title: Developer Guide
 category: tutorials
+section: tutorials
+index-order: 2
 sidebar: sidebars/tutorials.md
-excerpt: Developer Guide
+excerpt: "The developer guide will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on Hyperledger Fabric."
 ---
 
 # Developer Tutorial for creating a {{site.data.conrefs.composer_full}} solution

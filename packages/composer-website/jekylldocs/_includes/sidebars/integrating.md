@@ -11,5 +11,5 @@
   - [Integrating using Node-RED](../integrating/node-red.html)
 - [Managing and Operating](../managing/managingindex.html)
 - [Diagnosing Problems](../problems/diagnostics.html)
-- [Reference](../reference/MeetTheModules.html)
+- [Reference](../reference/reference-index.html)
 - [Support](../support/index.html)

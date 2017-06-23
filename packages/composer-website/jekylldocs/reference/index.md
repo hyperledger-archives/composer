@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Reference
-category: reference
 excerpt: Hyperledger Composer module info
 ---
 

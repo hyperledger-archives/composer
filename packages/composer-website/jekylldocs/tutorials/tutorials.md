@@ -1,8 +1,10 @@
 ---
 layout: default
-title: Tutorials
+title: Tutorials Index
 category: tutorials
+section: tutorials
 sidebar: sidebars/tutorials.md
+index-order: 0
 excerpt: Tutorials
 ---
 

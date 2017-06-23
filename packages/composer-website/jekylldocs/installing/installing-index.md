@@ -4,6 +4,7 @@ title: Installing Index
 category: tasks
 sidebar: sidebars/installing.md
 section: installing
+index-order: 0
 excerpt: Tutorials
 ---
 

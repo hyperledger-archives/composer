@@ -13,7 +13,8 @@ Developers use {{site.data.conrefs.composer_full}} to digitize business networks
 Typically each maintainer of the network will run several peer nodes (for crash fault tolerance) and {{site.data.conrefs.hlf_full}} replicates the distributed ledger across the set of peer nodes.
 
 ## Model
-Developers work with business analysts to define the domain data model for the business network. The data model is expressed using the {{site.data.conrefs.composer_short}} Modelling Language and defines the structure of the resources that will be stored on the ledger, or processed as transactions.
+
+Developers work with business analysts to define the domain data model for the business network. The data model is expressed using the {{site.data.conrefs.composer_short}} Modeling Language and defines the structure of the resources that will be stored on the ledger, or processed as transactions.
 
 Once the domain model is in place, developers can capture _smart contracts_ as executable transaction processor functions, written in JavaScript.
 
@@ -35,7 +36,9 @@ Once the business network is tested and in place, front-end applications need to
 
 The REST Server can be configured to authenticate the participants in the business network, ensuring that credentials and permissions are enforced.
 
-## References
+---
+
+# References
 
 * [**Modeling Language**](../reference/cto_language.html)
 * [**Access Control Language**](../reference/acl_language.html)

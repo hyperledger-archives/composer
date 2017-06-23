@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Hyperledger Composer - Access Contol Language
-category: reference
+title: Access Control Language
+section: reference
+index-order: 3
 sidebar: sidebars/reference.md
-excerpt: Guide to the Hyperledger Composer access control language
+excerpt: The [**Hyperledger Composer access control language**](./acl_language.html) provides declarative access control over the elements of the domain model. Access control rules define actions that individual participants or participant groups can perform on resources in the business network, including conditional actions.
 ---
 
 # {{site.data.conrefs.composer_full}} Access Control Language
@@ -18,7 +19,7 @@ Access control for a business network is defined by an ordered set of ACL rules.
 
 ACL rules are defined in a file called `permissions.acl` in the root of the business network. If this file is missing from the business network then all access is **permitted**.
 
-### Access Control Rule Grammer
+### Access Control Rule Grammar
 
 There are two types of ACL rules: simple ACL rules and conditional ACL rules. Simple rules are used to control access to a namespace, asset or property of an asset by a participant type or participant instance.
 
