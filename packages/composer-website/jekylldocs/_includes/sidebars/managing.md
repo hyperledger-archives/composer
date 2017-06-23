@@ -12,5 +12,5 @@
 [Enabling OAuth using GitHub](../managing/github-oauth.html)
 [Enabling access control using the current participant](../managing/current-participant.html)
 **[Diagnosing Problems](../problems/diagnostics.html)**
-**[Reference](../reference/MeetTheModules.html)**
+**[Reference](../reference/reference-index.html)**
 **[Support](../support/index.html)**

@@ -40,7 +40,6 @@ docker images -aq | xargs docker rmi -f
 
 2. Access your local {{site.data.conrefs.composer_full}} Playground by clicking this link: <a href="http://localhost:8080" target="blank">http://<span></span>localhost:8080</a>.
 
-    By default, the Web Browser connection profile is in use (for developing and testing in browser memory).  To connect instead to the {{site.data.conrefs.hlf_full}} instance created in the previous step, click the globe icon in the top right of the UI to visit the Connection Profiles panel and change your active profile to 'hlfabric'.
 
 ## Deploying business networks to {{site.data.conrefs.hlf_full}} Beta
 
@@ -145,4 +144,4 @@ You can then start {{site.data.conrefs.composer_full}} Playground by clicking on
 
 ## What's next?
 
-* Take a tutorial on using Playground, and try [running a car auction with the Playground](../tutorials/playground-guide.html).
+* Take a tutorial on using Playground, and try [our Playground tutorial](../tutorials/playground-guide.html).
