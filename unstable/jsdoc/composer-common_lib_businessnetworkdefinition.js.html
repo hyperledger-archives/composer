@@ -102,6 +102,8 @@
 
 const AclFile = require('./acl/aclfile');
 const AclManager = require('./aclmanager');
+const QueryFile = require('./query/queryfile');
+const QueryManager = require('./querymanager');
 const BusinessNetworkMetadata = require('./businessnetworkmetadata');
 const Factory = require('./factory');
 const fs = require('fs');
@@ -174,6 +176,7 @@ class BusinessNetworkDefinition {
 
         this.modelManager = new ModelManager();
         this.aclManager = new AclManager(this.modelManager);
+        this.queryManager = new QueryManager(this.modelManager);
         this.scriptManager = new ScriptManager(this.modelManager);
         this.introspector = new Introspector(this.modelManager);
         this.factory = new Factory(this.modelManager);
@@ -239,6 +242,7 @@ class BusinessNetworkDefinition {
             let ctoModelFileNames = [];
             let jsScriptFiles = [];
             let permissionsFiles = [];
+            let queriesFiles = [];
             let businessNetworkDefinition;
             let readmeContents = null;
             let packageJsonContents = null;
@@ -307,11 +311,22 @@ class BusinessNetworkDefinition {
                 });
             }
 
+            LOG.debug(method, 'Loading query queries.qry');
+            let queryFile = zip.file('queries.qry');
+            if (queryFile !== null) {
+                promise = promise.then(() => {
+                    return queryFile.async('string');
+                }).then(contents => {
+                    LOG.debug(method, 'Loaded queries.qry');
+                    queriesFiles.push(contents);
+                });
+            }
+
             return promise.then(() => {
                 LOG.debug(method, 'Loaded package.json');
                 businessNetworkDefinition = new BusinessNetworkDefinition(null, null, packageJsonContents, readmeContents);
 
-                LOG.debug(method, 'Loaded all model, JavaScript, and ACL files');
+                LOG.debug(method, 'Loaded all model, JavaScript, ACL files and Query files');
                 LOG.debug(method, 'Adding model files to model manager');
                 businessNetworkDefinition.modelManager.addModelFiles(ctoModelFiles,ctoModelFileNames); // Adds all cto files to model manager
                 LOG.debug(method, 'Added model files to model manager');
@@ -327,6 +342,11 @@ class BusinessNetworkDefinition {
                     businessNetworkDefinition.getAclManager().setAclFile( new AclFile('permissions.acl', businessNetworkDefinition.getModelManager(), permissionFile));
                 });
                 LOG.debug(method, 'Added ACL files to ACL manager');
+                LOG.debug(method, 'Adding Query files to query manager');
+                queriesFiles.forEach((queryFile) => {
+                    businessNetworkDefinition.getQueryManager().setQueryFile( new QueryFile('queries.qry', businessNetworkDefinition.getModelManager(), queryFile));
+                });
+                LOG.debug(method, 'Added Query files to query manager');
 
                 LOG.exit(method, businessNetworkDefinition.toString());
                 return businessNetworkDefinition; // Returns business network (with model manager and script manager)
@@ -354,6 +374,11 @@ class BusinessNetworkDefinition {
         const aclFile = this.getAclManager().getAclFile();
         if(aclFile) {
             zip.file(aclFile.getIdentifier(), aclFile.definitions, options);
+        }
+
+        const queryFile = this.getQueryManager().getQueryFile();
+        if(queryFile) {
+            zip.file(queryFile.getIdentifier(), queryFile.definitions, options);
         }
 
         let modelManager = this.getModelManager();
@@ -590,6 +615,19 @@ class BusinessNetworkDefinition {
             }
         }
 
+         // grab the query.qry
+        const queryPath = fsPath.resolve(path, 'queries.qry');
+        if(fs.existsSync(queryPath)) {
+            let queryContents = fs.readFileSync( queryPath, ENCODING);
+
+            if(queryContents) {
+                LOG.debug(method, 'Loaded queries.qry', queryContents);
+                const queryFile = new QueryFile('queries.qry', businessNetwork.getModelManager(), queryContents);
+                businessNetwork.getQueryManager().setQueryFile(queryFile);
+            }
+        }
+
+
         LOG.exit(method, path);
         return Promise.resolve(businessNetwork);
     }
@@ -718,6 +756,16 @@ class BusinessNetworkDefinition {
      */
     getModelManager() {
         return this.modelManager;
+    }
+
+    /**
+     * Provides access to the QueryManager for this business network. The QueryManager
+     * manage access to the models that have been defined within this business network.
+     * @return {QueryManager} the QueryManager for this business network
+     * @private
+     */
+    getQueryManager() {
+        return this.queryManager;
     }
 
 }
