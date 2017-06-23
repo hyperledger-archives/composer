@@ -8,8 +8,6 @@ excerpt: Hyperledger Composer overview
 
 # Welcome to {{site.data.conrefs.composer_full}}
 
----
-
 {{site.data.conrefs.composer_full}} is an extensive, open development toolset and framework to make developing blockchain applications easier. Our primary goal is to accelerate time to value, and make it easier to integrate your blockchain applications with the existing business systems. You can use {{site.data.conrefs.composer_short}} to rapidly develop use cases and deploy a blockchain solution in weeks rather than months. {{site.data.conrefs.composer_short}} allows you to model your business network and integrate existing systems and data with your blockchain applications.
 
 {{site.data.conrefs.composer_full}} supports the existing [Hyperledger Fabric blockchain](https://hyperledger.org) infrastructure and runtime, which supports pluggable blockchain consensus protocols to ensure that transactions are validated according to policy by the designated business network participants.

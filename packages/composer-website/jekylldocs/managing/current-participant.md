@@ -10,8 +10,6 @@ index-order: 6
 
 # Implementing participant-based access control
 
----
-
 The current participant can be used to implement access control in a transaction processor function. You can use the type and the identifier of the current participant to permit or reject the execution of a transaction processor function.
 
 ## Before you start

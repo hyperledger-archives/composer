@@ -14,8 +14,6 @@ This tutorial will take you through how to install and run the {{site.data.conre
 
 {{site.data.conrefs.composer_full}} Playground can also be used in a "browser only" mode, without a running instance of {{site.data.conrefs.hlf_full}}. When used in this mode, all the functionality of {{site.data.conrefs.composer_full}} Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.
 
----
-
 ## Before you begin
 
 In order to install {{site.data.conrefs.composer_full}} Playground, you need the following software installed:

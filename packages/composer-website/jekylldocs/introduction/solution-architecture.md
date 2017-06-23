@@ -7,8 +7,6 @@ excerpt:
 
 # Typical {{site.data.conrefs.composer_full}} Solution Architecture
 
----
-
 {{site.data.conrefs.composer_full}} enables architects and developers to quickly create "full-stack" blockchain solutions. I.e. business logic that runs on the blockchain, REST APIs that expose the blockchain logic to web or mobile applications, as well as integrating the blockchain with existing enterprise systems of record.
 
 ![Diagram of typical {{site.data.conrefs.composer_full}} archetecture](../assets/img/ComposerArchitecture.svg)

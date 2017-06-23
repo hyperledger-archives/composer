@@ -8,7 +8,6 @@ excerpt: How to create a business network definition
 
 # Create a Business Network Definition
 
----
 
 A business network definition has the following layout:
 
@@ -45,7 +44,7 @@ The scripts for a business network definition are typically stored under the `li
 
 ## Permissions.acl
 
-The permissions for the business network expressed are expressed in an optional `permissions.acl` file. 
+The permissions for the business network expressed are expressed in an optional `permissions.acl` file.
 
 # Cloning an Example Business Network Definition
 

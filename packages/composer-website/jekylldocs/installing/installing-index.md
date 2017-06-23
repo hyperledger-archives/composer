@@ -10,8 +10,6 @@ excerpt: Tutorials
 
 # Installing {{site.data.conrefs.composer_full}}
 
----
-
 <a href="../installing/getting-started-with-playground.html"><img src='../assets/img/Install01.svg' width="30%"/></a> <a href="../installing/using-playground-locally.html"><img src='../assets/img/Install02.svg' width="30%"/></a> <a href="../installing/development-tools.html"><img src='../assets/img/Install03.svg' width="30%"/></a>
 
 {% assign sorted = (site.pages | sort: 'index-order') %}

@@ -10,8 +10,6 @@ index-order: 2
 
 # Adding participants
 
----
-
 A participant can be added to a participant registry using either the API or the command line.
 
 ## Before you start
