@@ -129,6 +129,9 @@ docker rmi $(docker images dev-* -q)
 
 *If you want to swap between v0.6 and v1.0, ensure you first issue a `teardownFabric.sh` command on your original version.*
 
+> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
+
+
 ## Script details
 
 ![](../assets/img/developer-tools-commands.png).

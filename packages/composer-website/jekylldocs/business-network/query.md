@@ -68,4 +68,4 @@ function onQueryMarbleByOwner(transaction) {
 
 Using a selector it is possible to query all assets of a given type, with a given set of properties, and then to convert them back into Composer resources using `getSerializer().fromJSON(jsObject)`. Once the JS object returned by a query have been converted back into a Composer object it can be updated and persisted back into an asset registry.
 
->Note that in the future Composer will define a query language expressed in terms of assets, participants and transactions and automatically marshall the JS objects returned by CouchDB to the corresponding Composer modelled types.
+>Note that in the future Composer will define a query language expressed in terms of assets, participants and transactions and automatically marshal the JS objects returned by CouchDB to the corresponding Composer modeled types.

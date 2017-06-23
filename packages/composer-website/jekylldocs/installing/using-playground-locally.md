@@ -10,7 +10,7 @@ index-order: 2
 
 # Installing and running {{site.data.conrefs.composer_full}} Playground locally
 
-This tutorial will take you through how to install and run the {{site.data.conrefs.composer_full}} Playground on your local machine. It also creates an instance of {{site.data.conrefs.hlf_full}} v1.0-Beta.
+This tutorial will take you through how to install and run the {{site.data.conrefs.composer_full}} Playground on your local machine. It also creates an instance of {{site.data.conrefs.hlf_full}} v1.0 Beta 1.
 
 {{site.data.conrefs.composer_full}} Playground can also be used in a "browser only" mode, without a running instance of {{site.data.conrefs.hlf_full}}. When used in this mode, all the functionality of {{site.data.conrefs.composer_full}} Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.
 
