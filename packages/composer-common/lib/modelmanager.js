@@ -23,20 +23,19 @@ const TypeNotFoundException = require('./typenotfoundexception');
 // const ENCODING = 'utf8';
 
 const LOG = require('./log/logger').getLog('ModelManager');
-const SYSTEM_MODEL_CONTENTS = [
-    'namespace org.hyperledger.composer.system',
-    'abstract asset $Asset {  }',
-    'abstract participant $Participant {   }',
-    'abstract transaction $Transaction identified by transactionId{',
-    '  o String transactionId',
-    '  o DateTime timestamp',
-    '}',
-    'abstract event $Event identified by eventId{',
-    '  o String eventId',
-    '  o DateTime timestamp',
-/*    '  --> $Transaction transaction',*/
-    '}'
-];
+const SYSTEM_MODEL_CONTENTS = `
+    namespace org.hyperledger.composer.system
+    abstract asset $Asset {  }
+    abstract participant $Participant {   }
+    abstract transaction $Transaction identified by transactionId{
+      o String transactionId
+      o DateTime timestamp
+    }
+    abstract event $Event identified by eventId{
+      o String eventId
+      o DateTime timestamp
+    }
+`;
 // const util = require('util');
 /**
  * <p>
@@ -68,7 +67,7 @@ class ModelManager {
     constructor() {
         LOG.entry('constructor');
         this.modelFiles = {};
-        let systemModelContents = SYSTEM_MODEL_CONTENTS.join('\n');
+        let systemModelContents = SYSTEM_MODEL_CONTENTS;
         LOG.info('info',systemModelContents);
         this.addModelFile(systemModelContents);
         LOG.exit('constructor');
@@ -125,12 +124,10 @@ class ModelManager {
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
             m.validate();
-            m.retrofit();
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
             modelFile.validate();
-            modelFile.retrofit();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
             return modelFile;
         }
@@ -155,7 +152,6 @@ class ModelManager {
                 throw new Error('model file does not exist');
             }
             m.validate();
-            m.retrofit();
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
@@ -163,7 +159,6 @@ class ModelManager {
                 throw new Error('model file does not exist');
             }
             modelFile.validate();
-            modelFile.retrofit();
             this.modelFiles[modelFile.getNamespace()] = modelFile;
             return modelFile;
         }
@@ -177,6 +172,9 @@ class ModelManager {
     deleteModelFile(namespace) {
         if (!this.modelFiles[namespace]) {
             throw new Error('model file does not exist');
+        } else if (namespace === ModelUtil.getSystemNamespace()) {
+            throw new Error('Cannot delete system namespace');
+
         }
         delete this.modelFiles[namespace];
     }
@@ -220,18 +218,6 @@ class ModelManager {
             for (let ns in this.modelFiles) {
                 this.modelFiles[ns].validate();
             }
-
-            // let's go and retrofit the model to make sure all is good
-            // make sure that models are all correctly/
-            // temp workaround until system models in place
-            LOG.info(NAME,'retofitting the model files now');
-
-            for (let ns in this.modelFiles) {
-                if (! this.modelFiles[ns] === undefined) {
-                    this.modelFiles[ns].retrofit();
-                }
-            }
-
 
             // return the model files.
             return newModelFiles;
@@ -302,7 +288,7 @@ class ModelManager {
      */
     clearModelFiles() {
         this.modelFiles = {};
-        let systemModelContents = SYSTEM_MODEL_CONTENTS.join('\n');
+        let systemModelContents = SYSTEM_MODEL_CONTENTS;
         this.addModelFile(systemModelContents);
     }
 

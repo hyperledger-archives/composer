@@ -41,20 +41,20 @@ describe('ModelFile', () => {
     beforeEach(() => {
 
 
-        const SYSTEM_MODEL_CONTENTS = [
-            'namespace org.hyperledger.composer.system',
-            'abstract asset $Asset {  }',
-            'abstract participant $Participant {   }',
-            'abstract transaction $Transaction identified by transactionId{',
-            '  o String transactionId',
-            '  o DateTime timestamp',
-            '}',
-            'abstract event $Event identified by eventId{',
-            '   o String eventId',
-          /*  '  --> _cst_Transaction transaction',*/
-            '   }'
-        ];
-        const mockSystemModel = SYSTEM_MODEL_CONTENTS.join('\n');
+        const SYSTEM_MODEL_CONTENTS = `
+            namespace org.hyperledger.composer.system
+            abstract asset $Asset {  }
+            abstract participant $Participant {   }
+            abstract transaction $Transaction identified by transactionId{
+              o String transactionId
+              o DateTime timestamp
+            }
+            abstract event $Event identified by eventId{
+               o String eventId
+               o DateTime timestamp
+               }
+        `;
+        const mockSystemModel = SYSTEM_MODEL_CONTENTS;
         let mockSystemModelFile = new ModelFile(mockModelManager, mockSystemModel);
         mockModelManager = sinon.createStubInstance(ModelManager);
         mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
