@@ -1,9 +1,11 @@
 ---
 layout: default
-title: Tutorial - Using the Playground
+title: Playground Guide
 category: tutorials
+section: tutorials
+index-order: 1
 sidebar: sidebars/tutorials.md
-excerpt: Playground Tutorial
+excerpt: The Playground guide runs through importing the car auction sample business network. In this guide, you'll create participants, assets, and transactions; set up and run the auction, and verify that the transactions worked correctly. If you want to run the playground guide locally [**install the Playground locally**](../installing/using-playground-locally.html) first, then use the playground guide.
 ---
 
 # Playground Tutorial
@@ -25,7 +27,7 @@ Open the file **Model File** from the left hand side navigation in Playground. T
 
 As an example, we're going to replace the entire contents of the **Model File** with a simplistic model below to track the ownership of commodities on the blockchain.
 
-This will create errors with other files, don't worry as we'll fix that! 😉
+This will create errors with other files, don't worry as we'll fix that!
 
 ```
 /**

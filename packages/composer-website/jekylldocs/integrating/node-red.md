@@ -3,8 +3,9 @@ layout: default
 title: Integrating with Node-RED
 category: integrating
 section: integrating
+index-order: 5
 sidebar: sidebars/integrating.md
-excerpt: Deploying the REST server for a business network
+excerpt: "[Node-RED](http://nodered.org) includes a number of [**Hyperledger Composer _nodes_ allowing you to submit transactions, read, update and delete assets and participants, and subscribe to events.**](./node-red.html)"
 ---
 
 # Integrating with Node-RED
@@ -13,11 +14,11 @@ excerpt: Deploying the REST server for a business network
 
 Node-RED is commonly used to rapidly prototype Internet of Things style applications, or to wire existing Internet services together.
 You can use the {{site.data.conrefs.composer_full}} Node-RED contribution to:
+
 - Submit transactions
 - Read and update assets and participants
 - Subscribe to events
-
-_Note: delete operations on assets and participants are not yet supported._
+- Delete assets and participants
 
 The {{site.data.conrefs.composer_full}} Node-RED nodes are distributed as a standalone npm package, published here:
 - https://www.npmjs.com/package/node-red-contrib-hyperledger-composer

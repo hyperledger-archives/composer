@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Network Deploy CLI
-category: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Composer Network Deploy CLI
 ---
