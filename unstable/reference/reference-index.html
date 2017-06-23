@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Developing Applications | Hyperledger Composer</title>
+    <title>Reference Index | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -104,13 +104,18 @@ ga('send', 'pageview');
 <strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
 <strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
 <strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
-<a href="../applications/node.html">Node.js applications</a>
-<a href="../applications/web.html">Web or mobile applications</a>
-<a href="../applications/subscribing-to-events.html">Subscribing to events</a>
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
 <strong><a href="../reference/reference-index.html">Reference</a></strong>
+<a href="../reference/MeetTheModules.html">npm Modules</a>
+<a href="../reference/cto_language.html">Modeling Language</a>
+<a href="../reference/acl_language.html">Access Control Language</a>
+<a href="../reference/connectionprofile.html">Connection Profile</a>
+<a href="../reference/js_scripts.html">Transaction Processor Functions</a>
+<a href="../reference/commands.html">CLI Commands</a>
+<a href="../jsdoc/index.html">API Documentation</a>
+<a href="../reference/glossary.html">Glossary</a>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
             
@@ -119,36 +124,41 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="developing-applications">Developing Applications</h1>
+              <h1 id="reference-material-for-hyperledger-composer">Reference material for Hyperledger Composer</h1>
+
+<p>The Hyperledger Composer reference material contains a number of topics including reference information for the npm modules, CLI commands, modeling language, APIs, connection profiles, and a glossary of common terms.</p>
 
 <hr>
 
-<p>Hyperledger Composer supports creating web, mobile or native Node.js applications. It includes the <code>composer-rest-server</code> (itself based on LoopBack technology) to automatically generate a REST API for a business network, and the <code>hyperledger-composer</code> code generation plugin for the Yeoman framework to generate a skeleton Angular application.</p>
+<h3 id="hyperledger-composer-npm-modules">Hyperledger Composer npm Modules</h3>
 
-<p>In addition it includes a rich set of JavaScript APIs to build native Node.js applications.</p>
+<p><a href="./MeetTheModules.html"><strong>Hyperledger Composer contains a number of npm modules</strong></a> which provide the APIs and command line tools necessary for developing a solution with Hyperledger Composer.</p>
+
+<h3 id="modeling-language">Modeling Language</h3>
+
+<p>The <a href="./cto_language.html"><strong>Hyperledger Composer modeling language</strong></a> is an object-oriented language which defines the business network model containing assets, participants, and transactions.</p>
+
+<h3 id="access-control-language">Access Control Language</h3>
+
+<p>The <a href="./acl_language.html"><strong>Hyperledger Composer access control language</strong></a> provides declarative access control over the elements of the domain model. Access control rules define actions that individual participants or participant groups can perform on resources in the business network, including conditional actions.</p>
+
+<h3 id="connection-profiles">Connection Profiles</h3>
+
+<p>In order to connect your business network to a fabric, you must <a href="./connectionprofile.html"><strong>define a connection profile</strong></a>. Connection profiles contain the information necessary to connect to a fabric. This topic contains example connection profiles for Hyperledger Fabric v0.6 and v1.0-beta.</p>
+
+<h3 id="transaction-processor-functions">Transaction Processor Functions</h3>
+
+<p><a href="./js_scripts.html"><strong>A Hyperledger Composer business network must include one or more script files</strong></a> to implement transaction logic. The transaction logic is automatically invoked by the runtime whenever the relavant transactions are submitted.</p>
+
+<h3 id="hyperledger-composer-cli-commands">Hyperledger Composer CLI Commands</h3>
+
+<p>The <a href="./commands.html"><strong>list of all Hyperledger Composer CLI commands</strong></a> for performing multiple administrative, operational, and development tasks.</p>
+
+<h3 id="hyperledger-composer-glossary-of-terms">Hyperledger Composer Glossary of Terms</h3>
+
+<p>The glossary contains <a href="./glossary.html"><strong>definitions of all Hyperledger Composer terms</strong></a> for developing a solution with Hyperledger Composer.</p>
 
 <hr>
-
-<h3 id="writing-a-node-js-application">Writing a Node.js application</h3>
-
-<p><a href="./node.html"><strong>Developing Node.js applications to work with Hyperledger Composer</strong></a> allows you to  programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions.</p>
-
-<h3 id="writing-web-or-mobile-applications">Writing Web or mobile applications</h3>
-
-<p>Web or mobile applications that need to interact with deployed business networks should make calls to a REST API. The easiest way to create the REST API is to use the <code>composer-rest-server</code> to <a href="./web.html"><strong>dynamically generate a REST API from the deployed business network</strong></a>.</p>
-
-<h3 id="subscribing-to-events">Subscribing to events</h3>
-
-<p>Node.js applications can <a href="./subscribing-to-events.html"><strong>subscribe to events from a business network</strong></a> by using the <code>composer-client.BusinessNetworkConnection.on</code> API call. Events are defined in the business network model file and are emitted by specified transactions in the transaction processor function file.</p>
-
-<hr>
-
-<h2 id="references">References</h2>
-
-<ul>
-<li><a href="http://yeoman.io"><strong>Yeoman Code Generator</strong></a></li>
-<li><a href="https://angular.io"><strong>Angular Framework</strong></a></li>
-</ul>
 
             
           </section>

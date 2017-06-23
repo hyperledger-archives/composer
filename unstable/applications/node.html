@@ -110,7 +110,7 @@ ga('send', 'pageview');
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
-<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../reference/reference-index.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
             
@@ -125,7 +125,7 @@ ga('send', 'pageview');
 
 <p>Application developers use the <code>composer-client</code> npm module to programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions. If applications need to be able to deploy or administer business networks, then the <code>composer-admin</code> npm module can be used.</p>
 
-<p>The sample <a href="https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js"><code>landregistry.js</code></a> file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction. This has been implemented using a JavaScript class; however you are free to structure your code as you wish. </p>
+<p>The sample <a href="https://github.com/hyperledger/composer-sample-applications/blob/master/packages/digitalproperty-app/lib/landRegistry.js"><code>landregistry.js</code></a> file contains a class to the represent the land regsitry and contains methods for listing the land titles, adding default titles, and submitting the transaction. This has been implemented using a JavaScript class; however you are free to structure your code as you wish.</p>
 
 <p>It&#39;s worth highlighting that the style of the API is to use promises. Typically Hyperledger Composer APIs will return a promise that is resolved when the operation has been successfully completed or with the result of the operation if applicable.</p>
 
@@ -152,7 +152,7 @@ This API returns a Promise to the businessNetworkDefinition if successful:</p>
 </code></pre></div>
 <p>For a client application this is all the essential setup that is required, from this point on it&#39;s up to what the application wants to do as to what APIs are called.</p>
 
-<h2 id="adding-assets-to-a-regsitry">Adding assets to a regsitry</h2>
+<h2 id="adding-assets-to-a-registry">Adding assets to a registry</h2>
 
 <p>The Hyperledger Composer runtime will create a default registry for each type of modeled asset. So in this example, a LandTitle registry will have been created. What we want to do here is get access to that registry and then add some assets. The <code>getAssetRegistry()</code> method takes the fully qualified asset name as defined in the CTO model file (that is the namespace plus the name of the asset type). It returns a promise that is resolved with the asset registry:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">this</span><span class="p">.</span><span class="nx">bizNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork.LandTitle'</span><span class="p">)</span>
@@ -162,7 +162,7 @@ This API returns a Promise to the businessNetworkDefinition if successful:</p>
 </code></pre></div>
 <p>Next step is to create some assets (look for the method <code>_bootstrapTitles</code> in the code )</p>
 
-<p>A factory style pattern is used to create assets. A factory is obtained from the businessNetworkDefinition and used to create instances of all the types defined in the business network.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The indentifiers here (firstName lastName) matches with the properties defined in the model.</p>
+<p>A factory style pattern is used to create assets. A factory is obtained from the businessNetworkDefinition and used to create instances of all the types defined in the business network.  Note the use of the namespace and asset name.  Then we can set the properties of this asset. The identifiers here (firstName lastName) matches with the properties defined in the model.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">factory</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getFactory</span><span class="p">();</span>
 <span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="s1">'net.biz.digitalPropertyNetwork'</span><span class="p">,</span> <span class="s1">'Person'</span><span class="p">,</span> <span class="s1">'PID:1234567890'</span><span class="p">);</span>
 <span class="nx">owner</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Fred'</span><span class="p">;</span>
@@ -239,7 +239,7 @@ participant Person identified by personId {
   <span class="k">return</span> <span class="nx">registry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'LID:1148'</span><span class="p">);</span>
 <span class="p">})</span>
 </code></pre></div>
-<p>The getAssetRegistry call should now be looking a bit familar, the get API is used to get a specific land title.
+<p>The getAssetRegistry call should now be looking a bit familiar, the get API is used to get a specific land title.
 The next step is to create the transaction we want to submit.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">let</span> <span class="nx">serializer</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">businessNetworkDefinition</span><span class="p">.</span><span class="nx">getSerializer</span><span class="p">();</span>
 

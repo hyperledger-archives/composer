@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer - Transaction Processor Functions | Hyperledger Composer</title>
+    <title>Transaction Processor Functions | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -107,17 +107,13 @@ ga('send', 'pageview');
 <strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
-<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../reference/reference-index.html">Reference</a></strong>
 <a href="../reference/MeetTheModules.html">npm Modules</a>
 <a href="../reference/cto_language.html">Modeling Language</a>
 <a href="../reference/acl_language.html">Access Control Language</a>
 <a href="../reference/connectionprofile.html">Connection Profile</a>
 <a href="../reference/js_scripts.html">Transaction Processor Functions</a>
-<a href="../reference/commands.html">Command Line Interface</a>
-<a href="../reference/composer.participant.add.html">CLI Add Participant</a>
-<a href="../reference/composer.identity.issue.html">CLI Issue Identity </a>
-<a href="../reference/composer.identity.revoke.html">CLI Revoke Identity</a>
-<a href="../reference/composer.identity.import.html">CLI Import Identity</a>
+<a href="../reference/commands.html">CLI Commands</a>
 <a href="../jsdoc/index.html">API Documentation</a>
 <a href="../reference/glossary.html">Glossary</a>
 <strong><a href="../support/index.html">Support</a></strong></p>
@@ -128,14 +124,11 @@ ga('send', 'pageview');
         <div class="col-md-9">
           <section class="content-chunk">
             
-              <h1 id="javascript-functions">JavaScript Functions</h1>
+              <h1 id="transaction-processor-functions">Transaction Processor Functions</h1>
 
 <hr>
 
-<p>A Hyperledger Composer Business Network Definition is composed of a set of model files
-and a set of scripts. The scripts may contain transaction processor
-functions that implement the transactions defined in the Business
-Network Definition&#39;s model files.</p>
+<p>A Hyperledger Composer Business Network Definition is composed of a set of model files and a set of scripts. The scripts may contain transaction processor functions that implement the transactions defined in the Business Network Definition&#39;s model files.</p>
 
 <p>Transaction processor functions are automatically invoked by the runtime when transactions are submitted using the BusinessNetworkConnection API.</p>
 
@@ -181,6 +174,17 @@ parameters of the functions in the script.</p>
 <p>The standard <code>@param</code> decorator must be used to specify the types of parameters for functions.</p>
 
 <p>The <code>@transaction</code> decorator is added to a function to indicate that it processes incoming transactions. Functions with the @transaction decorator must take a single transaction type parameter. The transaction type must be defined in the model files in the business network definition.</p>
+
+<hr>
+
+<h2 id="what-next">What next?</h2>
+
+<p>Transaction processor functions can also be used to:</p>
+
+<ul>
+<li><a href="../business-network/query.html"><strong>Define queries</strong></a> for retrieving information about the blockchain world-state from a couchDB database.</li>
+<li><a href="../business-network/publishing-events.html"><strong>Define events</strong></a> for sending event data to applications.</li>
+</ul>
 
             
           </section>

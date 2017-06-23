@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Calling REST APIs | Hyperledger Composer</title>
+    <title>Calling external REST services | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -112,7 +112,7 @@ ga('send', 'pageview');
 <a href="../integrating/node-red.html">Integrating using Node-RED</a>
 <strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
 <strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
-<strong><a href="../reference/MeetTheModules.html">Reference</a></strong>
+<strong><a href="../reference/reference-index.html">Reference</a></strong>
 <strong><a href="../support/index.html">Support</a></strong></p>
 
             
@@ -126,12 +126,12 @@ ga('send', 'pageview');
 <hr>
 
 <blockquote>
-<p>The status of this feature is experimental. We welcome your feedback on the utility of this feature. We may evolve the feature in the future to make it more generally useful. While we will strive to ensure backwards compatability this cannot be guaranteed.</p>
+<p>The status of this feature is experimental. We welcome your feedback on the utility of this feature. We may evolve the feature in the future to make it more generally useful. While we will strive to ensure backwards compatibility this cannot be guaranteed.</p>
 </blockquote>
 
 <h2 id="scenario">Scenario</h2>
 
-<p>In some cases it is desireable to be able to call REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. This allows the TP functions to off-board complex or expensive computation to a centrally or peer hosted service.</p>
+<p>In some cases it is desirable to be able to call REST APIs from transaction processor functions. This allows you to move complex computation off the blockchain. This allows the transaction processor functions to off-board complex or expensive computation to a centrally or peer hosted service.</p>
 
 <h2 id="calling-an-external-rest-service">Calling an External REST Service</h2>
 
@@ -152,7 +152,7 @@ ga('send', 'pageview');
 
 <p>The <code>body</code> property of the response is automatically converted to a JS Object if possible, otherwise it is returned as a <code>string</code>.</p>
 
-<p>Transaction processor functions may optionally call the <code>getSerializer().fromJSON(object)</code> function to convert a reponse body JS Object back into a Composer asset/participant/transaction. </p>
+<p>Transaction processor functions may optionally call the <code>getSerializer().fromJSON(object)</code> function to convert a reponse body JS Object back into a Composer asset/participant/transaction.</p>
 
 <h2 id="examples">Examples</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
