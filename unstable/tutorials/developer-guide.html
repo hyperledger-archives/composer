@@ -12,10 +12,7 @@
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
-  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="/composer/unstable/assets/js/clipboard.min.js"></script>
 
   
     <!-- Google Analytics -->
@@ -34,12 +31,10 @@ ga('send', 'pageview');
 
   
     <link href="/composer/unstable/assets/css/normalize.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/main.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/footer.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/prettify.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="/composer/unstable/assets/css/composer-style.css" rel="stylesheet">
     <link href="/composer/unstable/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="/composer/unstable/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+
   
 </head>
 
@@ -47,80 +42,92 @@ ga('send', 'pageview');
 <body class="">
 
   
-  <!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
+  <!-- % include navbar.html % -->
+  
+
+  <div class="SiteWrapper">
+    
+      <div class="content">
+    <article class="docs-container">
+        <!-- If there's a sidebar, divide into 2 columns -->
+        
+        <div class="page-sidebar-grid" id="off-canvas">
+          <!-- <a class="toggle close" href="#">close</a> -->
+          <div class="docs-pagenav-grid">
+            <!-- Navigation -->
+  <nav class="navbar-docs" role="navigation">
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
             <a class="navbar-brand" href="/composer/unstable/index.html"><b>Hyperledger</b> Composer</a>
-        </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-right">
+            <div class="top-nav-docs">
                 <!-- <li>
                     <a href="services.html">Composer</a>
                 </li> -->
                 <!-- <li>
                     <a href="https://composer-playground.mybluemix.net/">Playground</a>
                 </li> -->
-                <li>
                     <a href="../tutorials/tutorials.html">Tutorials</a>
-                </li>
-                <li>
                     <a href="../introduction/introduction.html">Docs</a>
-                </li>
-                <li>
                     <a href="../support/index.html">Community</a>
-                </li>
-            </ul>
+            </div>
         </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container
-   -->
 </nav>
 
-  
+          </div>
 
-  <div class="SiteWrapper">
-    
-      <div class="content">
-    <article class="container">
-      <div class="row">
-        <!-- If there's a sidebar, divide into 2 columns -->
-        
-        <div class="col-md-3">
-          <nav class="context-nav" id="myScrollspy">
+          <div class="docs-current-page-grid">
+          <p>Developer Guide</p>
+          </div>
+
+          <nav class="context-nav">
             
             
-              <p><strong><a href="../introduction/introduction.html">Introduction</a></strong>
-<strong><a href="../installing/installing-index.html">Installing</a></strong>
-<strong><a href="../tutorials/tutorials.html">Tutorials</a></strong>
-<a href="../tutorials/playground-guide.html">Playground Tutorial</a>
-<a href="../tutorials/developer-guide.html">Developer Tutorial</a>
-<strong><a href="../business-network/business-network-index.html">Developing Business Networks</a></strong>
-<strong><a href="../applications/applications-index.html">Developing Applications</a></strong>
-<strong><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></strong>
-<strong><a href="../managing/managingindex.html">Managing and Operating</a></strong>
-<strong><a href="../problems/diagnostics.html">Diagnosing Problems</a></strong>
-<strong><a href="../reference/reference-index.html">Reference</a></strong>
-<strong><a href="../support/index.html">Support</a></strong></p>
+              <ul>
+<li><a href="../introduction/introduction.html">Introduction</a></li>
+<li><a href="../installing/installing-index.html">Installing</a></li>
+<li><a href="../tutorials/tutorials.html">Tutorials</a>
+
+<ul>
+<li><a href="../tutorials/playground-guide.html">Playground Tutorial</a></li>
+<li><a href="../tutorials/developer-guide.html">Developer Tutorial</a></li>
+</ul></li>
+<li><a href="../business-network/business-network-index.html">Developing Business Networks</a></li>
+<li><a href="../applications/applications-index.html">Developing Applications</a></li>
+<li><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></li>
+<li><a href="../managing/managingindex.html">Managing and Operating</a></li>
+<li><a href="../problems/diagnostics.html">Diagnosing Problems</a></li>
+<li><a href="../reference/reference-index.html">Reference</a></li>
+<li><a href="../support/index.html">Support</a></li>
+</ul>
 
             
+                <div class="docs-footer-grid">
+                <div class="footer-bg-break docs-footer-break">
+<div class="footer-container-break">
+    <div class="footer-left-break">
+      <p>Released under the Apache License v2.0</p>
+    </div>
+  <div class="footer-right-break">
+    <ul>
+      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
+      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
+      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
+      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
+      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+
+                </div>
           </nav>
         </div>
-        <div class="col-md-9">
+        <div class="page-content-grid">
           <section class="content-chunk">
+            <!-- <a class="toggle open" href="#nav">open</a> -->
             
               <h1 id="developer-tutorial-for-creating-a-hyperledger-composer-solution">Developer Tutorial for creating a Hyperledger Composer solution</h1>
-
-<hr>
 
 <p><em>Note:</em> this tutorial was written against Hyperledger Composer v0.8 on Ubuntu Linux running with Hyperledger Fabric v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a Hyperledger Fabric v0.6 setup are shown in <em>italics</em>).</p>
 
@@ -163,25 +170,25 @@ ga('send', 'pageview');
 <p>Note: Depending on timeouts encountered (see &#39;Unit Test&#39; later on) we have added a default mocha &#39;test&#39; timeout of 4 seconds below.</p>
 
 <p>The start of the <code>package.json</code> file should now look like this:</p>
-<div class="highlight"><pre><code class="language-JavaScript" data-lang="JavaScript">{
-  "name": "my-network",
-  "version": "0.0.1",
-  "description": "My very first Hyperledger Composer Network",
-  "scripts": {
-      "prepublish": "mkdirp ./dist &amp;&amp; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna",
-      "pretest": "npm run lint",
-      "lint": "eslint .",
-      "postlint": "npm run licchk",
-      "licchk": "license-check",
-      "postlicchk": "npm run doc",
-      "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
-      "test-inner": "mocha --recursive &amp;&amp; cucumber-js",
-      "test-cover": "nyc npm run test-inner",
-      "test": "mocha --recursive -t 4000"
-    },
-...
-}
-</code></pre></div>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
+  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-network"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0.1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"My very first Hyperledger Composer Network"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"prepublish"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mkdirp ./dist &amp;&amp; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"pretest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run lint"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ."</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"postlint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run licchk"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"licchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"license-check"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"postlicchk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run doc"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"doc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jsdoc --pedantic --recurse -c jsdoc.conf"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"test-inner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha --recursive &amp;&amp; cucumber-js"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"test-cover"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nyc npm run test-inner"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mocha --recursive -t 4000"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+</span><span class="err">...</span><span class="w">
+</span><span class="err">}</span><span class="w">
+</span></code></pre></div>
 <p>Save your changes to <code>package.json</code></p>
 
 <h3 id="update-your-readme-md-file">Update your README.md file</h3>
@@ -229,7 +236,7 @@ transaction Trade identified by transactionId {
 <p>Open the file <code>lib/sample.js</code> in the left-hand pane and inspect the contents (note that you can create an many JavaScript files as convenient for your business network definition). If a JavaScript function has the <code>@transaction</code> annotation, it will be automatically invoked when a transaction of the type defined by the <code>@param</code> annotation is submitted.</p>
 
 <p>Now replace the entire contents of <code>sample.js</code> with the function below (including the license header info)</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/*
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -241,20 +248,20 @@ transaction Trade identified by transactionId {
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */</span>
 
-/**
+<span class="cm">/**
  * Track the trade of a commodity from one trader to another
  * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
  * @transaction
- */
-function tradeCommodity(trade) {
-    trade.commodity.owner = trade.newOwner;
-    return getAssetRegistry('org.acme.mynetwork.Commodity')
-        .then(function (assetRegistry) {
-            return assetRegistry.update(trade.commodity);
-        });
-}
+ */</span>
+<span class="kd">function</span> <span class="nx">tradeCommodity</span><span class="p">(</span><span class="nx">trade</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">trade</span><span class="p">.</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">trade</span><span class="p">.</span><span class="nx">newOwner</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">getAssetRegistry</span><span class="p">(</span><span class="s1">'org.acme.mynetwork.Commodity'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">assetRegistry</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="nx">trade</span><span class="p">.</span><span class="nx">commodity</span><span class="p">);</span>
+        <span class="p">});</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>This function simply changes the <code>owner</code> property on a commodity based on the <code>newOwner</code> property on an incoming <code>Trade</code> transaction. It then persists the modified <code>Commodity</code> back into the asset registry, used to store <code>Commodity</code> instances.</p>
 
@@ -263,16 +270,16 @@ function tradeCommodity(trade) {
 <h2 id="update-your-access-control-rules">Update your Access Control Rules</h2>
 
 <p>The file <code>permissions.acl</code> defines the access control rules for the business network definition. Replace the entire contents of <code>permissions.acl</code> with the rule below.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/**
- * Access control rules for mynetwork
- */
-rule Default {
-    description: "Allow all participants access to all resources"
-    participant: "ANY"
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">/<span class="k">**</span>
+ <span class="k">*</span> Access control rules <span class="k">for </span>mynetwork
+ <span class="k">*</span>/
+rule Default <span class="o">{</span>
+    description: <span class="s2">"Allow all participants access to all resources"</span>
+    participant: <span class="s2">"ANY"</span>
     operation: ALL
-    resource: "org.acme.mynetwork.*"
+    resource: <span class="s2">"org.acme.mynetwork.*"</span>
     action: ALLOW
-}
+<span class="o">}</span>
 </code></pre></div>
 <p>Save your changes to <code>permissions.acl</code></p>
 
@@ -281,17 +288,17 @@ rule Default {
 <p>To check that the structure of the files is valid, you can now generate a Business Network Archive (BNA) file for your business network definition. The BNA file is the deployable unit -- a file that can be deployed to the Composer runtime for execution.</p>
 
 <p>Switch back to the terminal and type:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cd my-network
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd </span>my-network
 npm install
 </code></pre></div>
 <p>You should see the following output:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">&gt; my-network@0.0.1 prepublish /home/user/my-network
-&gt; mkdirp ./dist &amp;&amp; composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">&gt; </span>my-network@0.0.1 prepublish /home/user/my-network
+<span class="gp">&gt; </span>mkdirp ./dist <span class="o">&amp;&amp;</span> composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
 
 Creating Business Network Archive
 
-Looking for package.json of Business Network Definition in /home/user/my-network
+Looking <span class="k">for </span>package.json of Business Network Definition <span class="k">in</span> /home/user/my-network
 
 Found:
 Description:My very first Hyperledger Composer Network
@@ -314,7 +321,7 @@ Command succeeded
 <p>From your project working directory (my-network), open the file <code>test/sample.js</code> and inspect the contents.</p>
 
 <p>The test code below will replace the namespace, types and logic of the unit test pertaining to &#39;my-network&#39; as shown below. For convenience, you can copy the entire script contents below and replace the current Sample.js file contents entirely:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/*
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -326,108 +333,108 @@ Command succeeded
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */</span>
 
-'use strict';
+<span class="s1">'use strict'</span><span class="p">;</span>
 
-const AdminConnection = require('composer-admin').AdminConnection;
-const BrowserFS = require('browserfs/dist/node/index');
-const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
-const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
-const path = require('path');
+<span class="kr">const</span> <span class="nx">AdminConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-admin'</span><span class="p">).</span><span class="nx">AdminConnection</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">BrowserFS</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'browserfs/dist/node/index'</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">BusinessNetworkConnection</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-client'</span><span class="p">).</span><span class="nx">BusinessNetworkConnection</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">BusinessNetworkDefinition</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'composer-common'</span><span class="p">).</span><span class="nx">BusinessNetworkDefinition</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'path'</span><span class="p">);</span>
 
-require('chai').should();
+<span class="nx">require</span><span class="p">(</span><span class="s1">'chai'</span><span class="p">).</span><span class="nx">should</span><span class="p">();</span>
 
-const bfs_fs = BrowserFS.BFSRequire('fs');
-const NS = 'org.acme.mynetwork';
+<span class="kr">const</span> <span class="nx">bfs_fs</span> <span class="o">=</span> <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">BFSRequire</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">NS</span> <span class="o">=</span> <span class="s1">'org.acme.mynetwork'</span><span class="p">;</span>
 
-describe('Commodity Trading', () =&gt; {
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'Commodity Trading'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-    // let adminConnection;
-    let businessNetworkConnection;
+    <span class="c1">// let adminConnection;</span>
+    <span class="kd">let</span> <span class="nx">businessNetworkConnection</span><span class="p">;</span>
 
-    before(() =&gt; {
-        BrowserFS.initialize(new BrowserFS.FileSystem.InMemory());
-        const adminConnection = new AdminConnection({ fs: bfs_fs });
-        return adminConnection.createProfile('defaultProfile', {
-            type: 'embedded'
-        })
-            .then(() =&gt; {
-                return adminConnection.connect('defaultProfile', 'admin', 'adminpw');
-            })
-            .then(() =&gt; {
-                return BusinessNetworkDefinition.fromDirectory(path.resolve(__dirname, '..'));
-            })
-            .then((businessNetworkDefinition) =&gt; {
-                return adminConnection.deploy(businessNetworkDefinition);
-            })
-            .then(() =&gt; {
-                businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-                return businessNetworkConnection.connect('defaultProfile', 'my-network', 'admin', 'adminpw');
-            });
-    });
+    <span class="nx">before</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">initialize</span><span class="p">(</span><span class="k">new</span> <span class="nx">BrowserFS</span><span class="p">.</span><span class="nx">FileSystem</span><span class="p">.</span><span class="nx">InMemory</span><span class="p">());</span>
+        <span class="kr">const</span> <span class="nx">adminConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AdminConnection</span><span class="p">({</span> <span class="na">fs</span><span class="p">:</span> <span class="nx">bfs_fs</span> <span class="p">});</span>
+        <span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">createProfile</span><span class="p">(</span><span class="s1">'defaultProfile'</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">type</span><span class="p">:</span> <span class="s1">'embedded'</span>
+        <span class="p">})</span>
+            <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'defaultProfile'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">);</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">BusinessNetworkDefinition</span><span class="p">.</span><span class="nx">fromDirectory</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">'..'</span><span class="p">));</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">businessNetworkDefinition</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">adminConnection</span><span class="p">.</span><span class="nx">deploy</span><span class="p">(</span><span class="nx">businessNetworkDefinition</span><span class="p">);</span>
+            <span class="p">})</span>
+            <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="nx">businessNetworkConnection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BusinessNetworkConnection</span><span class="p">({</span> <span class="na">fs</span><span class="p">:</span> <span class="nx">bfs_fs</span> <span class="p">});</span>
+                <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">'defaultProfile'</span><span class="p">,</span> <span class="s1">'my-network'</span><span class="p">,</span> <span class="s1">'admin'</span><span class="p">,</span> <span class="s1">'adminpw'</span><span class="p">);</span>
+            <span class="p">});</span>
+    <span class="p">});</span>
 
-    describe('#tradeCommodity', () =&gt; {
+    <span class="nx">describe</span><span class="p">(</span><span class="s1">'#tradeCommodity'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-        it('should be able to trade a commodity', () =&gt; {
-            const factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+        <span class="nx">it</span><span class="p">(</span><span class="s1">'should be able to trade a commodity'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="kr">const</span> <span class="nx">factory</span> <span class="o">=</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getBusinessNetwork</span><span class="p">().</span><span class="nx">getFactory</span><span class="p">();</span>
 
-            // create the traders
-            const dan = factory.newResource(NS, 'Trader', 'dan@email.com');
-            dan.firstName = 'Dan';
-            dan.lastName = 'Selman';
+            <span class="c1">// create the traders</span>
+            <span class="kr">const</span> <span class="nx">dan</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'dan@email.com'</span><span class="p">);</span>
+            <span class="nx">dan</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Dan'</span><span class="p">;</span>
+            <span class="nx">dan</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Selman'</span><span class="p">;</span>
 
-            const simon = factory.newResource(NS, 'Trader', 'simon@email.com');
-            simon.firstName = 'Simon';
-            simon.lastName = 'Stone';
+            <span class="kr">const</span> <span class="nx">simon</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="s1">'simon@email.com'</span><span class="p">);</span>
+            <span class="nx">simon</span><span class="p">.</span><span class="nx">firstName</span> <span class="o">=</span> <span class="s1">'Simon'</span><span class="p">;</span>
+            <span class="nx">simon</span><span class="p">.</span><span class="nx">lastName</span> <span class="o">=</span> <span class="s1">'Stone'</span><span class="p">;</span>
 
-            // create the commodity
-            const commodity = factory.newResource(NS, 'Commodity', 'EMA');
-            commodity.description = 'Corn';
-            commodity.mainExchange = 'Euronext';
-            commodity.quantity = 100;
-            commodity.owner = factory.newRelationship(NS, 'Trader', dan.$identifier);
+            <span class="c1">// create the commodity</span>
+            <span class="kr">const</span> <span class="nx">commodity</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newResource</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Commodity'</span><span class="p">,</span> <span class="s1">'EMA'</span><span class="p">);</span>
+            <span class="nx">commodity</span><span class="p">.</span><span class="nx">description</span> <span class="o">=</span> <span class="s1">'Corn'</span><span class="p">;</span>
+            <span class="nx">commodity</span><span class="p">.</span><span class="nx">mainExchange</span> <span class="o">=</span> <span class="s1">'Euronext'</span><span class="p">;</span>
+            <span class="nx">commodity</span><span class="p">.</span><span class="nx">quantity</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+            <span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="nx">dan</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
 
-            // create the trade transaction
-            const trade = factory.newTransaction(NS, 'Trade');
-            trade.newOwner = factory.newRelationship(NS, 'Trader', simon.$identifier);
-            trade.commodity = factory.newRelationship(NS, 'Commodity', commodity.$identifier);
+            <span class="c1">// create the trade transaction</span>
+            <span class="kr">const</span> <span class="nx">trade</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newTransaction</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trade'</span><span class="p">);</span>
+            <span class="nx">trade</span><span class="p">.</span><span class="nx">newOwner</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Trader'</span><span class="p">,</span> <span class="nx">simon</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
+            <span class="nx">trade</span><span class="p">.</span><span class="nx">commodity</span> <span class="o">=</span> <span class="nx">factory</span><span class="p">.</span><span class="nx">newRelationship</span><span class="p">(</span><span class="nx">NS</span><span class="p">,</span> <span class="s1">'Commodity'</span><span class="p">,</span> <span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
 
-            // the owner should of the commodity should be dan
-            commodity.owner.$identifier.should.equal(dan.$identifier);
+            <span class="c1">// the owner should of the commodity should be dan</span>
+            <span class="nx">commodity</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">dan</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
 
-            // Get the asset registry.
-            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity')
-                .then((assetRegistry) =&gt; {
+            <span class="c1">// Get the asset registry.</span>
+            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Commodity'</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">assetRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-                    // add the commodity to the asset registry.
-                    return assetRegistry.add(commodity)
-                        .then(() =&gt; {
-                            return businessNetworkConnection.getParticipantRegistry(NS + '.Trader');
-                        })
-                        .then((participantRegistry) =&gt; {
-                            // add the traders
-                            return participantRegistry.addAll([dan, simon]);
-                        })
-                        .then(() =&gt; {
-                            // submit the transaction
-                            return businessNetworkConnection.submitTransaction(trade);
-                        })
-                        .then(() =&gt; {
-                            return businessNetworkConnection.getAssetRegistry(NS + '.Commodity');
-                        })
-                        .then((assetRegistry) =&gt; {
-                            // re-get the commodity
-                            return assetRegistry.get(commodity.$identifier);
-                        })
-                        .then((newCommodity) =&gt; {
-                            // the owner of the commodity should not be simon
-                            newCommodity.owner.$identifier.should.equal(simon.$identifier);
-                        });
-                });
-        });
-    });
-});
+                    <span class="c1">// add the commodity to the asset registry.</span>
+                    <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">commodity</span><span class="p">)</span>
+                        <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getParticipantRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Trader'</span><span class="p">);</span>
+                        <span class="p">})</span>
+                        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">participantRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="c1">// add the traders</span>
+                            <span class="k">return</span> <span class="nx">participantRegistry</span><span class="p">.</span><span class="nx">addAll</span><span class="p">([</span><span class="nx">dan</span><span class="p">,</span> <span class="nx">simon</span><span class="p">]);</span>
+                        <span class="p">})</span>
+                        <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="c1">// submit the transaction</span>
+                            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">submitTransaction</span><span class="p">(</span><span class="nx">trade</span><span class="p">);</span>
+                        <span class="p">})</span>
+                        <span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="k">return</span> <span class="nx">businessNetworkConnection</span><span class="p">.</span><span class="nx">getAssetRegistry</span><span class="p">(</span><span class="nx">NS</span> <span class="o">+</span> <span class="s1">'.Commodity'</span><span class="p">);</span>
+                        <span class="p">})</span>
+                        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">assetRegistry</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="c1">// re-get the commodity</span>
+                            <span class="k">return</span> <span class="nx">assetRegistry</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">commodity</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
+                        <span class="p">})</span>
+                        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">newCommodity</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="c1">// the owner of the commodity should not be simon</span>
+                            <span class="nx">newCommodity</span><span class="p">.</span><span class="nx">owner</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="nx">simon</span><span class="p">.</span><span class="nx">$identifier</span><span class="p">);</span>
+                        <span class="p">});</span>
+                <span class="p">});</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">});</span>
 </code></pre></div>
 <p>Save your changes to <code>sample.js</code></p>
 
@@ -487,13 +494,13 @@ Commodity Trading
 <p>You can browse the structure of the Trade Commodity business network by pressing the link on the left, check the contents of the model, script files and access control.</p>
 
 <p>Next, navigate to the &quot;Test&quot; tab at the top and create two &#39;Trader&#39; participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the &quot;Create New Participant&quot; button.</p>
-<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
-  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jenny"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"lastName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jones"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div><div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">{</span>
+  <span class="s2">"$class"</span><span class="err">:</span> <span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span>
+  <span class="s2">"tradeId"</span><span class="err">:</span> <span class="s2">"TRADER1"</span><span class="p">,</span>
+  <span class="s2">"firstName"</span><span class="err">:</span> <span class="s2">"Jenny"</span><span class="p">,</span>
+  <span class="s2">"lastName"</span><span class="err">:</span> <span class="s2">"Jones"</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
   </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.mynetwork.Trader"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TRADER2"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"firstName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amy"</span><span class="p">,</span><span class="w">
@@ -665,7 +672,6 @@ npm start
         </div>
         <!-- Otherwise, have the main content fill all 12 columns... -->
         
-      </div>
       <div class="PageNavigation">
     
     
@@ -673,25 +679,49 @@ npm start
     </article>
 </div>
 
-    
+<script>
+(function (document) {
+    function clipboard_init() {
+        var charts = document.querySelectorAll("div.highlight"),
+            arr = [],
+            i, j, maxItem, pre, btn, el;
+
+        // Make sure we are dealing with an array
+        for(i = 0, maxItem = charts.length; i < maxItem; i++) arr.push(charts[i]);
+
+        // Find the UML source element and get the text
+        for (i = 0, maxItem = arr.length; i < maxItem; i++) {
+            el = arr[i];
+            pre = el.childNodes[0];
+
+            pre.id = "hl_code" + i.toString();
+            btn = document.createElement('copy-button');
+            btn.appendChild(document.createTextNode('Copy'));
+            btn.setAttribute("class", "copy-btn");
+            btn.setAttribute("data-clipboard-target", "#hl_code" + i.toString());
+            el.insertBefore(btn, pre);
+        }
+        new Clipboard('.copy-btn');
+    };
+
+    function onReady(fn) {
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', fn);
+        } else {
+            document.attachEvent('onreadystatechange', function() {
+                if (document.readyState === 'interactive')
+                    fn();
+            });
+        }
+    }
+
+    onReady(function(){
+        clipboard_init();
+    });
+})(document);
+</script>
 
     
-      <div class="footer-bg docs-footer">
-<div class="footer-container">
-    <div class="footer-left">
-      <p>Released under the Apache License v2.0</p>
-    </div>
-  <div class="footer-right">
-    <ul>
-      <li><a href="https://github.com/hyperledger/composer">GitHub</a></li>
-      <!-- <li><a href="https://github.com/hyperledger/composer/LICENSE.txt">Legal</a></li> -->
-      <li><a href="/composer/unstable/jsdoc/index.html">APIs</a></li>
-      <li><a href="http://stackoverflow.com/questions/tagged/fabric-composer">Stack Overflow</a></li>
-      <li><a href="https://goo.gl/forms/7YPMLP2LTN2hjIRk2">Feedback?</a></li>
-    </ul>
-  </div>
-</div>
-</div>
 
     
 
@@ -701,22 +731,4 @@ npm start
 
 <!-- jQuery -->
 <script src="/composer/unstable/assets/js/jquery.js"></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src="/composer/unstable/assets/js/bootstrap.js"></script>
-
-<script>
-
-  $( document ).ready(function() {
-
-      new Clipboard('.btn', {
-    text: function() {
-
-        return document.querySelector("[style='display:none;']").value;
-    }
-});
-  });
-
-</script>
-
 </html>

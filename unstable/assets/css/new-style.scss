@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600|Source+Code+Pro');
 
 $font-stack: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 $display-font: 'Open Sans';
@@ -487,7 +487,6 @@ li {
     height: 100%;
     ul {
       display: flex;
-
       flex-grow: 2;
       flex-direction: row;
       margin: 0;
@@ -865,129 +864,129 @@ li {
 
 // Docs styling updates
 
-nav {
-      .container {
-        padding-top: 5px;
-      }
-    }
-
-  .context-nav {
-    a {
-        padding-left: 1rem;
-        border: none;
-        border-left: 2px solid transparent;
-        transition: none;
-
-        &:hover {
-          color: $first-highlight;
-          border-left: 2px solid $second-highlight;
-          transition: none;
-        }
-
-        &:last-child {
-          padding-left: 0;
-          border: none;
-        }
-
-        &:active {
-          color: $first-highlight;
-        }
-
-        + strong {
-          a {
-            padding-top: 1.5rem;
-            border-left: none;
-          }
-        }
-      }
-  }
-
-  .SiteWrapper {
-    .content {
-      .container {
-        .content-chunk {
-
-          p {
-            margin-top: 1.3rem;
-          }
-
-          h1 {
-            font-weight: 300;
-            font-size: 2em;
-          }
-
-          h2 {
-            margin-top: 2rem;
-          }
-
-          h3 {
-            font-family: $font-stack;
-            font-weight: 300;
-            font-size: 1.2rem;
-            line-height: 130%;
-            color: $primary-text;
-            margin-top: 2rem;
-          }
-
-          pre {
-            background-color: $third-highlight;
-            border: 1px solid $keyline-highlight;
-          }
-
-          code {
-            border-radius: 2px;
-            padding-right: 5px;
-            padding-top: 1px;
-            padding-bottom: 1px;
-          }
-
-          ul {
-            list-style: none;
-            padding-left: 2em;
-            text-indent: -1em;
-
-            li:before {
-              color: $primary-text;
-              content: '- \0000a0';
-              font-size: 1rem;
-              font-weight: 600;
-            }
-
-            li {
-              padding-bottom: 0.5rem;
-              p {
-                display: inline;
-              }
-
-            }
-          }
-
-          ol {
-            border-left: 1px solid $keyline-highlight;
-            li {
-                margin-top: 1.3rem;
-            }
-          }
-
-        a {
-          color: $first-highlight;
-        }
-        }
-      }
-    }
-  }
-
-  // Docs Footer
-
-  .docs-footer {
-    // position: absolute;
-    // bottom: 0;
-    background-color: $sixth-highlight;
-  }
-
-  // 404 page
-.container {
-  .404-info {
-
-  }
-}
+// nav {
+//       .container {
+//         padding-top: 5px;
+//       }
+//     }
+//
+//   .context-nav {
+//     a {
+//         padding-left: 1rem;
+//         border: none;
+//         border-left: 2px solid transparent;
+//         transition: none;
+//
+//         &:hover {
+//           color: $first-highlight;
+//           border-left: 2px solid $second-highlight;
+//           transition: none;
+//         }
+//
+//         &:last-child {
+//           padding-left: 0;
+//           border: none;
+//         }
+//
+//         &:active {
+//           color: $first-highlight;
+//         }
+//
+//         + strong {
+//           a {
+//             padding-top: 1.5rem;
+//             border-left: none;
+//           }
+//         }
+//       }
+//   }
+//
+//   .SiteWrapper {
+//     .content {
+//       .container {
+//         .content-chunk {
+//
+//           p {
+//             margin-top: 1.3rem;
+//           }
+//
+//           h1 {
+//             font-weight: 300;
+//             font-size: 2em;
+//           }
+//
+//           h2 {
+//             margin-top: 2rem;
+//           }
+//
+//           h3 {
+//             font-family: $font-stack;
+//             font-weight: 300;
+//             font-size: 1.2rem;
+//             line-height: 130%;
+//             color: $primary-text;
+//             margin-top: 2rem;
+//           }
+//
+//           pre {
+//             background-color: $third-highlight;
+//             border: 1px solid $keyline-highlight;
+//           }
+//
+//           code {
+//             border-radius: 2px;
+//             padding-right: 5px;
+//             padding-top: 1px;
+//             padding-bottom: 1px;
+//           }
+//
+//           ul {
+//             list-style: none;
+//             padding-left: 2em;
+//             text-indent: -1em;
+//
+//             li:before {
+//               color: $primary-text;
+//               content: '- \0000a0';
+//               font-size: 1rem;
+//               font-weight: 600;
+//             }
+//
+//             li {
+//               padding-bottom: 0.5rem;
+//               p {
+//                 display: inline;
+//               }
+//
+//             }
+//           }
+//
+//           ol {
+//             border-left: 1px solid $keyline-highlight;
+//             li {
+//                 margin-top: 1.3rem;
+//             }
+//           }
+//
+//         a {
+//           color: $first-highlight;
+//         }
+//         }
+//       }
+//     }
+//   }
+//
+//   // Docs Footer
+//
+//   .docs-footer {
+//     // position: absolute;
+//     // bottom: 0;
+//     background-color: $sixth-highlight;
+//   }
+//
+//   // 404 page
+// .container {
+//   .404-info {
+//
+//   }
+// }
