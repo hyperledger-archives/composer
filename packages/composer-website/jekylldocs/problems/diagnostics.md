@@ -8,8 +8,6 @@ excerpt: Diagnosing Problems
 
 # Diagnosing Problems
 
----
-
 If something should ever go wrong with an application, what should you do about getting diagnostics?
 
 Let's look at the `digitalproperty-app` sample, and use that to explain how to get diagnostics out of the framework.

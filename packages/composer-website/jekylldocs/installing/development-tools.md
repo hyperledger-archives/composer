@@ -14,8 +14,6 @@ Follow the instructions below to get the required {{site.data.conrefs.composer_f
 
 There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0-beta. The default is for v1.0-beta and we suggest this is the one you use.
 
----
-
 ## Before you begin
 
 The following are prerequisites for installing the required development tools:
@@ -40,8 +38,9 @@ chmod u+x prereqs-ubuntu.sh
 
 Next run the script - as this uses sudo you will be prompted for your password.
 
-`./prereqs-ubuntu.sh`
-
+```
+./prereqs-ubuntu.sh
+```
 ---
 
 ## Step 1: Installing {{site.data.conrefs.composer_full}} development tools

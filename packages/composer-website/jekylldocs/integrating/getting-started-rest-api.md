@@ -10,8 +10,6 @@ excerpt: Hyperledger Composer includes a standalone [**Node.js process that expo
 
 # Generating a REST API
 
----
-
 ## Running the REST server
 {{site.data.conrefs.composer_full}} includes a standalone Node.js process that exposes a business network as a REST API. The LoopBack framework is used to generate an Open API, described by a Swagger document.
 

@@ -5,7 +5,7 @@ category: start
 section: integrating
 index-order: 3
 sidebar: sidebars/integrating.md
-excerpt: By deploying a REST server for a business network, you can [**integrate existing systems and data with your Hyperledger Composer business network**](./deploying-the-rest-server.html), allowing you to create, update, or delete assets and participants, as well as get and submit transactions. 
+excerpt: By deploying a REST server for a business network, you can [**integrate existing systems and data with your Hyperledger Composer business network**](./deploying-the-rest-server.html), allowing you to create, update, or delete assets and participants, as well as get and submit transactions.
 ---
 
 # Deploying the REST server for a business network

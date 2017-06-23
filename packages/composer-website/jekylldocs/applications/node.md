@@ -10,7 +10,6 @@ excerpt: "[**Developing Node.js applications to work with Hyperledger Composer**
 
 # Writing Node.js Applications
 
----
 
 Application developers use the `composer-client` npm module to programmatically connect to a deployed business network, create, read, update and delete assets and participants and to submit transactions. If applications need to be able to deploy or administer business networks, then the `composer-admin` npm module can be used.
 
