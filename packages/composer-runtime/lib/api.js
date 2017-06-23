@@ -292,6 +292,31 @@ class Api {
                 });
         };
 
+        /**
+         * Build a query ready for later execution. The specified query string must be written
+         * in the Composer query language.
+         *
+         * This functionality is Blockchain platform dependent. For example, when a Composer
+         * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
+         * configured with the CouchDB database for the world state.
+         * @example
+         * // Build a query.
+         * var query = buildQuery('SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)');
+         * // Execute the query.
+         * return query(query, { inputValue: 'blue' })
+         *   .then(function (assets) {
+         *     assets.forEach(function (asset) {
+         *       // Process each asset.
+         *     });
+         *   })
+         *   .catch(function (error) {
+         *     // Add optional error handling here.
+         *   });
+         * @method module:composer-runtime#buildQuery
+         * @param {string} query The query string, written using the Composer query language.
+         * @return {Query} The built query, which can be passed in a call to query.
+         * @public
+         */
         this.buildQuery = function buildQuery(query) {
             const method = 'buildQuery';
             LOG.entry(method, query);
@@ -301,6 +326,31 @@ class Api {
             return result;
         };
 
+        /**
+         * Execute a query defined in a Composer query file, or execute a query built with buildQuery.
+         *
+         * This functionality is Blockchain platform dependent. For example, when a Composer
+         * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
+         * configured with the CouchDB database for the world state.
+         * @example
+         * // Execute the query.
+         * return query('Q1', { inputValue: 'blue' })
+         *   .then(function (assets) {
+         *     assets.forEach(function (asset) {
+         *       // Process each asset.
+         *     });
+         *   })
+         *   .catch(function (error) {
+         *     // Add optional error handling here.
+         *   });
+         * @method module:composer-runtime#buildQuery
+         * @param {string|Query} query The name of the query, or a built query.
+         * @param {Object} [parameters] The parameters for the query.
+         * @return {Promise} A promise that will be resolved with an array of
+         * {@link module:composer-common.Resource Resource} representing the
+         * resources returned by the query.
+         * @public
+         */
         this.query = function query(query, parameters) {
             const method = 'query';
             LOG.entry(method, query);
@@ -334,6 +384,7 @@ class Api {
         Object.freeze(this);
         LOG.exit(method);
     }
+
 }
 
 module.exports = Api;
