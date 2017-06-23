@@ -14,10 +14,14 @@
 
 'use strict';
 
+const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
+require('sinon-as-promised');
 
 describe('DataService', () => {
 
@@ -176,6 +180,24 @@ describe('DataService', () => {
 
     });
 
+    describe('#ensureCollection', () => {
+
+        it('should return an existing collection', () => {
+            const mockDataCollection = sinon.createStubInstance(DataCollection);
+            sinon.stub(dataService, 'getCollection').withArgs('suchcollection').resolves(mockDataCollection);
+            return dataService.ensureCollection('suchcollection')
+                .should.eventually.be.equal(mockDataCollection);
+        });
+
+        it('should create a collection that does not exist', () => {
+            const mockDataCollection = sinon.createStubInstance(DataCollection);
+            sinon.stub(dataService, 'getCollection').withArgs('suchcollection').rejects(new Error('no such collection!'));
+            sinon.stub(dataService, 'createCollection').withArgs('suchcollection').resolves(mockDataCollection);
+            return dataService.ensureCollection('suchcollection')
+                .should.eventually.be.equal(mockDataCollection);
+        });
+
+    });
 
     describe('#toJSON', () => {
 

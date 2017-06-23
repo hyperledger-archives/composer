@@ -20,6 +20,7 @@ const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefi
 const IdentityManager = require('./identitymanager');
 const Logger = require('composer-common').Logger;
 const LRU = require('lru-cache');
+const QueryCompiler = require('./querycompiler');
 const QueryExecutor = require('./queryexecutor');
 const RegistryManager = require('./registrymanager');
 const Resolver = require('./resolver');
@@ -30,6 +31,7 @@ const LOG = Logger.getLog('Context');
 
 const businessNetworkCache = LRU(8);
 const compiledScriptBundleCache = LRU(8);
+const compiledQueryBundleCache = LRU(8);
 
 /**
  * A class representing the current request being handled by the JavaScript engine.
@@ -38,19 +40,6 @@ const compiledScriptBundleCache = LRU(8);
  * @memberof module:composer-runtime
  */
 class Context {
-
-    /**
-     * Get a business network from the cache.
-     * @param {string} businessNetworkHash The hash of the business network definition.
-     * @return {BusinessNetworkDefinition} The business network definition.
-     */
-    static getCachedBusinessNetwork(businessNetworkHash) {
-        const method = 'getCachedBusinessNetwork';
-        LOG.entry(method, businessNetworkHash);
-        const result = businessNetworkCache.get(businessNetworkHash);
-        LOG.exit(method, result);
-        return result;
-    }
 
     /**
      * Store a business network in the cache.
@@ -67,25 +56,24 @@ class Context {
     /**
      * Store a compiled script bundle in the cache.
      * @param {string} businessNetworkHash The hash of the business network definition.
-     * @return {CompiledScriptBundle} The compiled script bundle.
-     */
-    static getCachedCompiledScriptBundle(businessNetworkHash) {
-        const method = 'getCachedCompiledScriptBundle';
-        LOG.entry(method, businessNetworkHash);
-        const result = compiledScriptBundleCache.get(businessNetworkHash);
-        LOG.exit(method, result);
-        return result;
-    }
-
-    /**
-     * Store a compiled script bundle in the cache.
-     * @param {string} businessNetworkHash The hash of the business network definition.
      * @param {CompiledScriptBundle} compiledScriptBundle The compiled script bundle.
      */
     static cacheCompiledScriptBundle(businessNetworkHash, compiledScriptBundle) {
         const method = 'cacheCompiledScriptBundle';
         LOG.entry(method, businessNetworkHash, compiledScriptBundle);
         compiledScriptBundleCache.set(businessNetworkHash, compiledScriptBundle);
+        LOG.exit(method);
+    }
+
+    /**
+     * Store a compiled query bundle in the cache.
+     * @param {string} businessNetworkHash The hash of the business network definition.
+     * @param {CompiledQueryBundle} compiledQueryBundle The compiled query bundle.
+     */
+    static cacheCompiledQueryBundle(businessNetworkHash, compiledQueryBundle) {
+        const method = 'cacheCompiledQueryBundle';
+        LOG.entry(method, businessNetworkHash, compiledQueryBundle);
+        compiledQueryBundleCache.set(businessNetworkHash, compiledQueryBundle);
         LOG.exit(method);
     }
 
@@ -109,6 +97,8 @@ class Context {
         this.eventNumber = 0;
         this.scriptCompiler = null;
         this.compiledScriptBundle = null;
+        this.queryCompiler = null;
+        this.compiledQueryBundle = null;
     }
 
     /**
@@ -186,6 +176,36 @@ class Context {
                 Context.cacheCompiledScriptBundle(businessNetworkRecord.hash, compiledScriptBundle);
                 LOG.exit(method, compiledScriptBundle);
                 return compiledScriptBundle;
+            })
+            .catch((error) => {
+                LOG.error(method, error);
+                throw error;
+            });
+    }
+
+    /**
+     * Load or compile the compiled query bundle.
+     * @param {Object} businessNetworkRecord The business network record.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition.
+     * @return {Promise} A promise that will be resolved with a {@link BusinessNetworkDefinition}
+     * when complete, or rejected with an error.
+     */
+    loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition) {
+        const method = 'loadCompiledQueryBundle';
+        LOG.entry(method);
+        LOG.debug(method, 'Looking in cache for compiled query bundle', businessNetworkRecord.hash);
+        let compiledQueryBundle = compiledQueryBundleCache.get(businessNetworkRecord.hash);
+        if (compiledQueryBundle) {
+            LOG.debug(method, 'Compiled query bundle is in cache');
+            return Promise.resolve(compiledQueryBundle);
+        }
+        LOG.debug(method, 'Compiled query bundle is not in cache, loading');
+        return Promise.resolve()
+            .then(() => {
+                let compiledQueryBundle = this.getQueryCompiler().compile(businessNetworkDefinition.getModelManager(), null);
+                Context.cacheCompiledQueryBundle(businessNetworkRecord.hash, compiledQueryBundle);
+                LOG.exit(method, compiledQueryBundle);
+                return compiledQueryBundle;
             })
             .catch((error) => {
                 LOG.error(method, error);
@@ -285,6 +305,37 @@ class Context {
     }
 
     /**
+     * Get the compiled query bundle to use.
+     * @param {BusinessNetworkDefinition} businessNetworkDefinition The business network definition to use.
+     * @param {Object} [options] The options to use.
+     * @param {CompiledQueryBundle} [options.compiledQueryBundle] The business network definition to use.
+     * @return {Promise} A promise that will be resolved when complete, or rejected
+     * with an error.
+     */
+    findCompiledQueryBundle(businessNetworkDefinition, options) {
+        const method = 'findCompiledQueryBundle';
+        LOG.entry(method, options);
+        options = options || {};
+        return Promise.resolve()
+            .then(() => {
+                if (options.compiledQueryBundle) {
+                    LOG.debug(method, 'Compiled query bundle already specified');
+                    return options.compiledQueryBundle;
+                } else {
+                    LOG.debug(method, 'Compiled query bundle not specified, loading from world state');
+                    return this.loadBusinessNetworkRecord()
+                        .then((businessNetworkRecord) => {
+                            return this.loadCompiledQueryBundle(businessNetworkRecord, businessNetworkDefinition);
+                        });
+                }
+            })
+            .then((compiledQueryBundle) => {
+                LOG.exit(method, compiledQueryBundle);
+                return compiledQueryBundle;
+            });
+    }
+
+    /**
      * Initialize the context for use.
      * @param {Object} [options] The options to use.
      * @param {BusinessNetworkDefinition} [options.businessNetworkDefinition] The business network definition to use.
@@ -307,11 +358,16 @@ class Context {
             .then((businessNetworkDefinition) => {
                 LOG.debug(method, 'Got business network archive');
                 this.businessNetworkDefinition = businessNetworkDefinition;
-                return this.findCompiledScriptBundle(businessNetworkDefinition, options);
+                return this.findCompiledScriptBundle(this.businessNetworkDefinition, options);
             })
             .then((compiledScriptBundle) => {
                 LOG.debug(method, 'Got compiled script bundle');
                 this.compiledScriptBundle = compiledScriptBundle;
+                return this.findCompiledQueryBundle(this.businessNetworkDefinition, options);
+            })
+            .then((compiledQueryBundle) => {
+                LOG.debug(method, 'Got compiled query bundle');
+                this.compiledQueryBundle = compiledQueryBundle;
                 LOG.debug(method, 'Loading sysregistries collection', options.sysregistries);
                 if (options.sysregistries) {
                     this.sysregistries = options.sysregistries;
@@ -360,7 +416,8 @@ class Context {
             this.getDataService(),
             this.getEventService(),
             this.getIdentityService(),
-            this.getHTTPService()
+            this.getHTTPService(),
+            this.getQueryService()
         ];
     }
 
@@ -503,7 +560,7 @@ class Context {
      */
     getApi() {
         if (!this.api) {
-            this.api = new Api(this.getFactory(), this.getSerializer(), this.getParticipant(), this.getRegistryManager(), this.getHTTPService(), this.getEventService(), this.getQueryService(), this);
+            this.api = new Api(this);
         }
         return this.api;
     }
@@ -637,6 +694,25 @@ class Context {
      */
     getCompiledScriptBundle() {
         return this.compiledScriptBundle;
+    }
+
+    /**
+     * Get the query compiler.
+     * @return {QueryCompiler} queryCompiler The query compiler.
+     */
+    getQueryCompiler() {
+        if (!this.queryCompiler) {
+            this.queryCompiler = new QueryCompiler();
+        }
+        return this.queryCompiler;
+    }
+
+    /**
+     * Get the compiled query bundle.
+     * @return {CompiledScriptBundle} compiledQueryBundle The compiled query bundle.
+     */
+    getCompiledQueryBundle() {
+        return this.compiledQueryBundle;
     }
 
     /**

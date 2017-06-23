@@ -14,9 +14,11 @@
 
 'use strict';
 
-const Where = require('./where');
-const OrderBy = require('./orderby');
 const IllegalModelException = require('../introspect/illegalmodelexception');
+const Limit = require('./limit');
+const OrderBy = require('./orderby');
+const Skip = require('./skip');
+const Where = require('./where');
 
 /**
  * Select defines a SELECT query over a resource (asset, transaction or participant)
@@ -79,6 +81,10 @@ class Select {
             this.resource = this.ast.resource;
         }
 
+        if(this.ast.registry) {
+            this.registry = this.ast.registry;
+        }
+
         this.where = null;
         if(this.ast.where) {
             this.where = new Where(this, this.ast.where);
@@ -86,12 +92,12 @@ class Select {
 
         this.limit = null;
         if(this.ast.limit) {
-            this.limit = parseInt(this.ast.limit);
+            this.limit = new Limit(this, this.ast.limit);
         }
 
         this.skip = null;
         if(this.ast.skip) {
-            this.skip = parseInt(this.ast.skip);
+            this.skip = new Skip(this, this.ast.skip);
         }
 
         this.orderBy = null;
@@ -129,6 +135,14 @@ class Select {
             this.where.validate();
         }
 
+        if(this.limit) {
+            this.limit.validate();
+        }
+
+        if(this.skip) {
+            this.skip.validate();
+        }
+
         if(this.orderBy) {
             this.orderBy.validate();
         }
@@ -141,6 +155,15 @@ class Select {
      */
     getResource() {
         return this.resource;
+    }
+
+    /**
+     * Returns the name of the registry of this select or null if it does not have a registry.
+     *
+     * @return {string} the name of the registry of the select
+     */
+    getRegistry() {
+        return this.registry;
     }
 
     /**
@@ -164,7 +187,7 @@ class Select {
     /**
      * Returns the LIMIT count for this query or null if it does not have a LIMIT
      *
-     * @return {integer} the LIMIT count or null
+     * @return {Limit} the LIMIT or null
      */
     getLimit() {
         return this.limit;
@@ -173,7 +196,7 @@ class Select {
     /**
      * Returns the SKIP count for this query or null if it does not have a SKIP
      *
-     * @return {integer} the SKIP count or null
+     * @return {Skip} the SKIP or null
      */
     getSkip() {
         return this.skip;

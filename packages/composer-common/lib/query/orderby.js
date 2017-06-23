@@ -41,6 +41,7 @@ class OrderBy {
 
         this.ast = ast;
         this.select = select;
+        this.sortCriteria = [];
         this.process();
     }
 
@@ -71,11 +72,7 @@ class OrderBy {
      * @private
      */
     process() {
-        this.sortCriteria = null;
-
         if(this.ast.sort) {
-            this.sortCriteria = [];
-
             for(let n=0; n < this.ast.sort.length; n++) {
                 this.sortCriteria.push( new Sort(this, this.ast.sort[n]));
             }
@@ -90,6 +87,14 @@ class OrderBy {
      */
     validate() {
         // TODO (DCS) check that the fields we are sorting by exist!
+    }
+
+    /**
+     * Return the sort criteria of this order by.
+     * @return {Sort[]} The sort criteria of this order by.
+     */
+    getSortCriteria() {
+        return this.sortCriteria;
     }
 
     /**

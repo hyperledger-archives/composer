@@ -17,19 +17,19 @@
 const IllegalModelException = require('../introspect/illegalmodelexception');
 
 /**
- * Where defines the WHERE portion of a SELECT statement
+ * Skip defines the SKIP portion of a SELECT statement
  *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class Where {
+class Skip {
 
     /**
-     * Create a Where from an Abstract Syntax Tree. The AST is the
+     * Create a Skip from an Abstract Syntax Tree. The AST is the
      * result of parsing.
      *
-     * @param {Select} select - the Select for this Where
+     * @param {Select} select - the Select for this Skip
      * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
@@ -55,7 +55,7 @@ class Where {
     }
 
     /**
-     * Returns the Select that owns this Where.
+     * Returns the Select that owns this Skip.
      *
      * @return {Select} the owning Select
      */
@@ -73,7 +73,7 @@ class Where {
     }
 
     /**
-     * Semantic validation of the structure of this where.
+     * Semantic validation of the structure of this skip.
      *
      * @throws {IllegalModelException}
      * @private
@@ -83,15 +83,15 @@ class Where {
     }
 
     /**
-     * Return the AST for this where statement.
-     * @return {Object} The AST for this where statement.
+     * Return the AST for this skip statement.
+     * @return {Object} The AST for this skip statement.
      */
     getAST() {
         return this.ast;
     }
 
     /**
-     * Returns a new object representing this Where that is
+     * Returns a new object representing this Skip that is
      * suitable for serializing as JSON.
      * @return {Object} A new object suitable for serializing as JSON.
      */
@@ -103,4 +103,4 @@ class Where {
     }
 }
 
-module.exports = Where;
+module.exports = Skip;

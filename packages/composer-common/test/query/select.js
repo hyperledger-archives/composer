@@ -91,15 +91,15 @@ describe('Select', () => {
             let s = new Select( mockQuery, selectWhereLimit );
             s.getQuery().should.equal(mockQuery);
             s.getWhere().getSelect().should.equal(s);
-            s.getLimit().should.equal(10);
+            s.getLimit().getAST().should.deep.equal({ type: 'Literal', value: 10 });
         });
 
         it('should save a select where skip', () => {
             let s = new Select( mockQuery, selectWhereLimitSkip );
             s.getQuery().should.equal(mockQuery);
             s.getWhere().getSelect().should.equal(s);
-            s.getLimit().should.equal(10);
-            s.getSkip().should.equal(5);
+            s.getLimit().getAST().should.deep.equal({ type: 'Literal', value: 10 });
+            s.getSkip().getAST().should.deep.equal({ type: 'Literal', value: 5 });
         });
 
     });
