@@ -55,6 +55,7 @@ import { ViewCertificateComponent } from './view-certificate';
 import { FileDragDropDirective } from './directives/file-drag-drop';
 import { CheckOverFlowDirective } from './directives/check-overflow';
 import { FocusHereDirective } from './directives/focus-here';
+import { DebounceDirective } from './directives/debounce';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 import { AdminService } from './services/admin.service';
@@ -153,7 +154,8 @@ type StoreType = {
         TransactionComponent,
         VersionCheckComponent,
         ViewCertificateComponent,
-        WelcomeComponent
+        WelcomeComponent,
+        DebounceDirective
     ],
     imports: [ // import Angular's modules
         BrowserAnimationsModule,
