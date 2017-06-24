@@ -18,7 +18,7 @@
     "postdoc": "npm run lint",
     "lint": "eslint .",
     "start": "node cli.js",
-    "test": "nyc mocha --recursive -t 5000"
+    "test": "nyc mocha --recursive -t 10000"
   },
   "repository": {
     "type": "git",

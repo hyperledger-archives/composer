@@ -1,7 +1,7 @@
 {
-  "name": "composer-connector-hlf",
+  "name": "composer-runtime-pouchdb",
   "version": "0.9.0",
-  "description": "The Hyperledger Fabric Client connector for Hyperledger Composer",
+  "description": "Common PouchDB based runtime container code for Hyperledger Composer",
   "engines": {
     "node": ">=6",
     "npm": ">=3"
@@ -27,6 +27,18 @@
   ],
   "author": "Hyperledger Composer",
   "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "eslint": "^3.17.1",
+    "jsdoc": "^3.4.3",
+    "license-check": "^1.1.5",
+    "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
+    "sinon": "^1.17.7",
+    "sinon-as-promised": "^4.0.2",
+    "watchify": "^3.7.0"
+  },
   "license-check-config": {
     "src": [
       "**/*.js",
@@ -41,23 +53,14 @@
   },
   "dependencies": {
     "composer-common": "^0.9.0",
-    "composer-runtime-hlf": "^0.9.0",
-    "fs-extra": "^1.0.0",
-    "hfc": "^0.6.5",
-    "semver": "^5.3.0",
-    "temp": "^0.8.3",
+    "composer-runtime": "^0.9.0",
+    "debug": "^2.6.2",
+    "pouchdb": "^6.2.0",
+    "pouchdb-find": "^6.2.0",
+    "pouchdb-adapter-memory": "^6.2.0",
+    "istanbul-lib-instrument": "^1.7.2",
+    "request": "^2.81.0",
     "uuid": "^3.0.1"
-  },
-  "devDependencies": {
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "eslint": "^3.17.1",
-    "jsdoc": "^3.4.3",
-    "license-check": "^1.1.5",
-    "mocha": "^3.2.0",
-    "nyc": "^10.1.2",
-    "sinon": "^1.17.7",
-    "sinon-as-promised": "^4.0.2"
   },
   "nyc": {
     "exclude": [
