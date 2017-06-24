@@ -72,12 +72,4 @@ describe('QueryService', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            queryService.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

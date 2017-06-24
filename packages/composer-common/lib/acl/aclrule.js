@@ -214,23 +214,6 @@ class AclRule {
         return this.description;
     }
 
-    /**
-     * Returns a new object representing this Acl Rule that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            name: this.name,
-            noun: this.noun,
-            verb: this.verb,
-            participant: this.participant,
-            predicate: this.predicate,
-            action: this.action,
-            description: this.description
-        };
-        return result;
-    }
 }
 
 module.exports = AclRule;

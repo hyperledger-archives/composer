@@ -80,13 +80,4 @@ describe('AclManager', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let mm = new AclManager(modelManager);
-            mm.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

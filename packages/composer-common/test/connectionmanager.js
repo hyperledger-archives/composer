@@ -70,12 +70,4 @@ describe('ConnectionManager', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should not be able to serialize', () => {
-            let cm = new ConnectionManager(mockConnectionProfileManager);
-            cm.should.not.be.null;
-            cm.toJSON().should.deep.equal({});
-        });
-    });
 });

@@ -174,13 +174,4 @@ describe('Connection', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let c = new Connection(mockConnectionManager, 'debFabric1', 'org.acme.Business');
-            c.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

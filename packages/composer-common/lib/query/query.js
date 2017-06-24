@@ -145,19 +145,6 @@ class Query {
         return this.select;
     }
 
-    /**
-     * Returns a new object representing this Query that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            name: this.name,
-            description: this.description,
-            select: this.select.toJSON()
-        };
-        return result;
-    }
 }
 
 module.exports = Query;

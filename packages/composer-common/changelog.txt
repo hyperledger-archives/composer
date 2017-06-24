@@ -12,6 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
+Version 0.9.0 {fdb6e4aa0f2c964c87b5cdacca6853e1} 2017-06-23
+- Removed useless toJSON methods everywhere
+
 Version 0.8.1 {5ac120d6a9f42683dfcd729fea3ea1c9} 2017-06-20
 - Added BaseModelException to standardise model errors
 

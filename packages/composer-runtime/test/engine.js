@@ -15,6 +15,7 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Container = require('../lib/container');
 const Context = require('../lib/context');
@@ -23,6 +24,7 @@ const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const Logger = require('composer-common').Logger;
 const LoggingService = require('../lib/loggingservice');
+const QueryCompiler = require('../lib/querycompiler');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
 const ScriptCompiler = require('../lib/scriptcompiler');
@@ -112,20 +114,6 @@ describe('Engine', () => {
             sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/world, i, am, simon/));
         });
 
-        it('should format object arguments into JSON', () => {
-            LOG.debug('installLogger', 'hello', { hi: 'there' });
-            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/{"hi":"there"}/));
-        });
-
-        it('should cope with object arguments that cannot be formatted into JSON', () => {
-            let object = {
-                hi: 'there'
-            };
-            object.object = object;
-            LOG.debug('installLogger', 'hello', object);
-            sinon.assert.calledWith(mockLoggingService.logDebug, sinon.match(/\[object Object\]/));
-        });
-
     });
 
     describe('#init', () => {
@@ -146,8 +134,7 @@ describe('Engine', () => {
             let sysdata = sinon.createStubInstance(DataCollection);
             let sysregistries = sinon.createStubInstance(DataCollection);
             let sysidentities = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').rejects();
-            mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
+            mockDataService.ensureCollection.withArgs('$sysdata').resolves(sysdata);
             let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
             let mockScriptManager = sinon.createStubInstance(ScriptManager);
             mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
@@ -156,20 +143,21 @@ describe('Engine', () => {
             let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
             mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
             mockContext.getScriptCompiler.returns(mockScriptCompiler);
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
+            mockContext.getQueryCompiler.returns(mockQueryCompiler);
             sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
-            mockDataService.getCollection.withArgs('$sysregistries').rejects();
-            mockDataService.createCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockDataService.getCollection.withArgs('$sysidentities').rejects();
-            mockDataService.createCollection.withArgs('$sysidentities').resolves(sysidentities);
-            mockRegistryManager.get.withArgs('Transaction', 'default').rejects();
-            mockRegistryManager.add.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
+            mockDataService.ensureCollection.withArgs('$sysregistries').resolves(sysregistries);
+            mockDataService.ensureCollection.withArgs('$sysidentities').resolves(sysidentities);
+            mockRegistryManager.ensure.withArgs('Transaction', 'default', 'Default Transaction Registry').resolves();
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
             mockRegistryManager.createDefaults.resolves();
             return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
                 .then(() => {
-                    sinon.assert.calledThrice(mockDataService.createCollection);
-                    sinon.assert.calledWith(mockDataService.createCollection, '$sysdata');
+                    sinon.assert.calledThrice(mockDataService.ensureCollection);
+                    sinon.assert.calledWith(mockDataService.ensureCollection, '$sysdata');
                     sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                     sinon.assert.calledWith(BusinessNetworkDefinition.fromArchive, sinon.match((archive) => {
                         return archive.compare(Buffer.from('hello world')) === 0;
@@ -182,150 +170,19 @@ describe('Engine', () => {
                     sinon.assert.calledWith(Context.cacheBusinessNetwork, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(Context.cacheCompiledScriptBundle);
                     sinon.assert.calledWith(Context.cacheCompiledScriptBundle, 'dc9c1c09907c36f5379d615ae61c02b46ba254d92edb77cb63bdcc5247ccd01c', mockCompiledScriptBundle);
-                    sinon.assert.calledWith(mockDataService.createCollection, '$sysregistries');
-                    sinon.assert.calledWith(mockDataService.createCollection, '$sysidentities');
-                    sinon.assert.calledOnce(mockRegistryManager.add);
-                    sinon.assert.calledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
+                    sinon.assert.calledWith(mockDataService.ensureCollection, '$sysregistries');
+                    sinon.assert.calledWith(mockDataService.ensureCollection, '$sysidentities');
+                    sinon.assert.calledOnce(mockRegistryManager.ensure);
+                    sinon.assert.calledWith(mockRegistryManager.ensure, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);
                     sinon.assert.calledOnce(mockContext.initialize);
                     sinon.assert.calledWith(mockContext.initialize, {
                         businessNetworkDefinition: mockBusinessNetworkDefinition,
                         compiledScriptBundle: mockCompiledScriptBundle,
+                        compiledQueryBundle: mockCompiledQueryBundle,
                         sysregistries: sysregistries,
                         sysidentities: sysidentities
                     });
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, false);
-                    sinon.assert.calledOnce(mockContext.transactionPrepare);
-                    sinon.assert.calledOnce(mockContext.transactionCommit);
-                    sinon.assert.notCalled(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
-        });
-
-        it('should ignore existing system data collection', () => {
-            let sysdata = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            let mockScriptManager = sinon.createStubInstance(ScriptManager);
-            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
-            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
-            mockContext.getScriptCompiler.returns(mockScriptCompiler);
-            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
-            mockDataService.getCollection.withArgs('$sysregistries').rejects();
-            mockDataService.createCollection.withArgs('$sysregistries').resolves();
-            mockDataService.getCollection.withArgs('$sysidentities').rejects();
-            mockDataService.createCollection.withArgs('$sysidentities').resolves();
-            mockRegistryManager.get.rejects();
-            mockRegistryManager.add.resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
-                .then(() => {
-                    sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysdata');
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, false);
-                    sinon.assert.calledOnce(mockContext.transactionPrepare);
-                    sinon.assert.calledOnce(mockContext.transactionCommit);
-                    sinon.assert.notCalled(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
-        });
-
-        it('should ignore existing system registries collection', () => {
-            let sysdata = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').rejects();
-            mockDataService.createCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            let mockScriptManager = sinon.createStubInstance(ScriptManager);
-            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
-            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
-            mockContext.getScriptCompiler.returns(mockScriptCompiler);
-            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
-            let sysregistries = sinon.createStubInstance(DataCollection);
-            let sysidentities = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockDataService.getCollection.withArgs('$sysidentities').rejects();
-            mockDataService.createCollection.withArgs('$sysidentities').resolves(sysidentities);
-            mockRegistryManager.get.rejects();
-            mockRegistryManager.add.resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
-                .then(() => {
-                    sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysregistries');
-                    sinon.assert.calledOnce(mockContext.initialize);
-                    sinon.assert.calledWith(mockContext.initialize, {
-                        businessNetworkDefinition: mockBusinessNetworkDefinition,
-                        compiledScriptBundle: mockCompiledScriptBundle,
-                        sysregistries: sysregistries,
-                        sysidentities: sysidentities
-                    });
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, false);
-                    sinon.assert.calledOnce(mockContext.transactionPrepare);
-                    sinon.assert.calledOnce(mockContext.transactionCommit);
-                    sinon.assert.notCalled(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
-        });
-
-        it('should ignore existing system identities collection', () => {
-            let sysdata = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysdata').resolves(sysdata);
-            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            let mockScriptManager = sinon.createStubInstance(ScriptManager);
-            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
-            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
-            mockContext.getScriptCompiler.returns(mockScriptCompiler);
-            sysdata.add.withArgs('businessnetwork', sinon.match.any).resolves();
-            let sysregistries = sinon.createStubInstance(DataCollection);
-            let sysidentities = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.withArgs('$sysregistries').rejects();
-            mockDataService.createCollection.withArgs('$sysregistries').resolves(sysregistries);
-            mockDataService.getCollection.withArgs('$sysidentities').resolves(sysidentities);
-            mockRegistryManager.get.rejects();
-            mockRegistryManager.add.resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
-                .then(() => {
-                    sinon.assert.neverCalledWith(mockDataService.createCollection, '$sysidentities');
-                    sinon.assert.calledOnce(mockContext.initialize);
-                    sinon.assert.calledWith(mockContext.initialize, {
-                        businessNetworkDefinition: mockBusinessNetworkDefinition,
-                        compiledScriptBundle: mockCompiledScriptBundle,
-                        sysregistries: sysregistries,
-                        sysidentities: sysidentities
-                    });
-                    sinon.assert.calledOnce(mockContext.transactionStart);
-                    sinon.assert.calledWith(mockContext.transactionStart, false);
-                    sinon.assert.calledOnce(mockContext.transactionPrepare);
-                    sinon.assert.calledOnce(mockContext.transactionCommit);
-                    sinon.assert.notCalled(mockContext.transactionRollback);
-                    sinon.assert.calledOnce(mockContext.transactionEnd);
-                });
-        });
-
-        it('should ignore existing default transaction registry', () => {
-            let mockDataCollection = sinon.createStubInstance(DataCollection);
-            mockDataService.getCollection.rejects();
-            mockDataService.createCollection.resolves(mockDataCollection);
-            let mockBusinessNetworkDefinition = sinon.createStubInstance(BusinessNetworkDefinition);
-            let mockScriptManager = sinon.createStubInstance(ScriptManager);
-            mockBusinessNetworkDefinition.getScriptManager.returns(mockScriptManager);
-            sandbox.stub(BusinessNetworkDefinition, 'fromArchive').resolves(mockBusinessNetworkDefinition);
-            let mockScriptCompiler = sinon.createStubInstance(ScriptCompiler);
-            let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
-            mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
-            mockContext.getScriptCompiler.returns(mockScriptCompiler);
-            mockRegistryManager.get.withArgs('Transaction', 'default').resolves();
-            return engine.init(mockContext, 'init', ['aGVsbG8gd29ybGQ='])
-                .then(() => {
-                    sinon.assert.neverCalledWith(mockRegistryManager.add, 'Transaction', 'default', 'Default Transaction Registry');
                     sinon.assert.calledOnce(mockContext.transactionStart);
                     sinon.assert.calledWith(mockContext.transactionStart, false);
                     sinon.assert.calledOnce(mockContext.transactionPrepare);
@@ -567,14 +424,6 @@ describe('Engine', () => {
                         participant: 'org.doge.Doge#DOGE_1'
                     });
                 });
-        });
-
-    });
-
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            engine.toJSON().should.deep.equal({});
         });
 
     });

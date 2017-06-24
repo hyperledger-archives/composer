@@ -191,19 +191,6 @@ class ModelBinding {
         return this.classDeclaration;
     }
 
-    /**
-     * Returns a new object representing this function declaration that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            qualifiedName: this.qualifiedName,
-            instanceId: this.instanceId,
-            variableName: this.variableName
-        };
-        return result;
-    }
 }
 
 module.exports = ModelBinding;

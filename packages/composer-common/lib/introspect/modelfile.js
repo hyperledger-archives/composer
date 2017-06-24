@@ -545,14 +545,6 @@ class ModelFile {
         return this.definitions;
     }
 
-    /**
-     * Return an object suitable for serialization.
-     * @return {Object} An object suitable for serialization.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = ModelFile;

@@ -24,6 +24,21 @@ const Resource = require('composer-common').Resource;
 class Registry extends EventEmitter {
 
     /**
+     * Remove any internal properties to the specified JSON object before
+     * reinflating it back into a resource.
+     * @param {Object} json The JSON object.
+     * @return {Object} The JSON object.
+     */
+    static removeInternalProperties(json) {
+        if (!json || typeof json !== 'object' || Array.isArray(json)) {
+            throw new Error('Can only add properties to JSON objects');
+        }
+        delete json.$registryType;
+        delete json.$registryID;
+        return json;
+    }
+
+    /**
      * Constructor.
      * @param {string} dataCollection The data collection to use.
      * @param {Serializer} serializer The serializer to use.
@@ -51,7 +66,7 @@ class Registry extends EventEmitter {
         return this.dataCollection.getAll()
             .then((objects) => {
                 return objects.map((object) => {
-                    object = this.removeInternalProperties(object);
+                    object = Registry.removeInternalProperties(object);
                     return this.serializer.fromJSON(object);
                 }).filter((resource) => {
                     try {
@@ -73,7 +88,7 @@ class Registry extends EventEmitter {
     get(id) {
         return this.dataCollection.get(id)
             .then((object) => {
-                object = this.removeInternalProperties(object);
+                object = Registry.removeInternalProperties(object);
                 let result = this.serializer.fromJSON(object);
                 try {
                     this.accessController.check(result, 'READ');
@@ -98,7 +113,7 @@ class Registry extends EventEmitter {
                 }
                 return this.dataCollection.get(id)
                     .then((object) => {
-                        object = this.removeInternalProperties(object);
+                        object = Registry.removeInternalProperties(object);
                         let result = this.serializer.fromJSON(object);
                         try {
                             this.accessController.check(result, 'READ');
@@ -266,7 +281,7 @@ class Registry extends EventEmitter {
                 } else {
                     return this.dataCollection.get(resource)
                         .then((object) => {
-                            object = this.removeInternalProperties(object);
+                            object = Registry.removeInternalProperties(object);
                             return this.serializer.fromJSON(object);
                         });
                 }
@@ -296,21 +311,6 @@ class Registry extends EventEmitter {
         }
         json.$registryType = this.type;
         json.$registryID = this.id;
-        return json;
-    }
-
-    /**
-     * Remove any internal properties to the specified JSON object before
-     * reinflating it back into a resource.
-     * @param {Object} json The JSON object.
-     * @return {Object} The JSON object.
-     */
-    removeInternalProperties(json) {
-        if (!json || typeof json !== 'object' || Array.isArray(json)) {
-            throw new Error('Can only add properties to JSON objects');
-        }
-        delete json.$registryType;
-        delete json.$registryID;
         return json;
     }
 

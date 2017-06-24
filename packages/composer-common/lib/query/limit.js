@@ -15,22 +15,21 @@
 'use strict';
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
-const Sort = require('./sort');
 
 /**
- * Defines the ORDER BY specification for a SELECT statement
+ * Limit defines the LIMIT portion of a SELECT statement
  *
  * @private
  * @class
  * @memberof module:composer-common
  */
-class OrderBy {
+class Limit {
 
     /**
-     * Create an OrderBy from an Abstract Syntax Tree. The AST is the
+     * Create a Limit from an Abstract Syntax Tree. The AST is the
      * result of parsing.
      *
-     * @param {Select} select - the Select for this order by
+     * @param {Select} select - the Select for this Limit
      * @param {string} ast - the AST created by the parser
      * @throws {IllegalModelException}
      */
@@ -41,7 +40,6 @@ class OrderBy {
 
         this.ast = ast;
         this.select = select;
-        this.sortCriteria = [];
         this.process();
     }
 
@@ -57,7 +55,7 @@ class OrderBy {
     }
 
     /**
-     * Returns the Select that owns this OrderBy.
+     * Returns the Select that owns this Limit.
      *
      * @return {Select} the owning Select
      */
@@ -72,31 +70,26 @@ class OrderBy {
      * @private
      */
     process() {
-        if(this.ast.sort) {
-            for(let n=0; n < this.ast.sort.length; n++) {
-                this.sortCriteria.push( new Sort(this, this.ast.sort[n]));
-            }
-        }
     }
 
     /**
-     * Semantic validation of the structure of this select.
+     * Semantic validation of the structure of this limit.
      *
      * @throws {IllegalModelException}
      * @private
      */
     validate() {
-        // TODO (DCS) check that the fields we are sorting by exist!
+        // TODO (DCS) walk the AST and check that the properties exist in the model!
     }
 
     /**
-     * Return the sort criteria of this order by.
-     * @return {Sort[]} The sort criteria of this order by.
+     * Return the AST for this limit statement.
+     * @return {Object} The AST for this limit statement.
      */
-    getSortCriteria() {
-        return this.sortCriteria;
+    getAST() {
+        return this.ast;
     }
 
 }
 
-module.exports = OrderBy;
+module.exports = Limit;
