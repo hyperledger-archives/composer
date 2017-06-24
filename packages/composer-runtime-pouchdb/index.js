@@ -14,11 +14,6 @@
 
 'use strict';
 
-module.exports.WebContainer = require('./lib/webcontainer');
-module.exports.WebContext = require('./lib/webcontext');
-module.exports.WebDataService = require('./lib/webdataservice');
-module.exports.WebHTTPService = require('./lib/webhttpservice');
-module.exports.WebEventService = require('./lib/webeventservice');
-module.exports.WebIdentityService = require('./lib/webidentityservice');
-module.exports.WebLoggingService = require('./lib/webloggingservice');
-module.exports.WebQueryService = require('./lib/webqueryservice');
+module.exports.PouchDBDataCollection = require('./lib/pouchdbdatacollection');
+module.exports.PouchDBDataService = require('./lib/pouchdbdataservice');
+module.exports.PouchDBUtils = require('./lib/pouchdbutils');
