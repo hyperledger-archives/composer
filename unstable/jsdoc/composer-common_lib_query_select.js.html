@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="CompiledQueryBundle.html">CompiledQueryBundle</a></li><li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="QueryCompiler.html">QueryCompiler</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
 				</ul>
 			</li>
 			
@@ -100,9 +100,11 @@
 
 'use strict';
 
-const Where = require('./where');
-const OrderBy = require('./orderby');
 const IllegalModelException = require('../introspect/illegalmodelexception');
+const Limit = require('./limit');
+const OrderBy = require('./orderby');
+const Skip = require('./skip');
+const Where = require('./where');
 
 /**
  * Select defines a SELECT query over a resource (asset, transaction or participant)
@@ -159,10 +161,12 @@ class Select {
      */
     process() {
 
-        this.resource = null;
+        // The grammar ensures that the resource property is set.
+        this.resource = this.ast.resource;
 
-        if(this.ast.resource) {
-            this.resource = this.ast.resource;
+        this.registry = null;
+        if(this.ast.registry) {
+            this.registry = this.ast.registry;
         }
 
         this.where = null;
@@ -172,12 +176,12 @@ class Select {
 
         this.limit = null;
         if(this.ast.limit) {
-            this.limit = parseInt(this.ast.limit);
+            this.limit = new Limit(this, this.ast.limit);
         }
 
         this.skip = null;
         if(this.ast.skip) {
-            this.skip = parseInt(this.ast.skip);
+            this.skip = new Skip(this, this.ast.skip);
         }
 
         this.orderBy = null;
@@ -199,20 +203,27 @@ class Select {
      */
     validate() {
 
-        if(this.resource) {
-            const mm = this.getQuery().getQueryFile().getModelManager();
+        // The grammar ensures that the resource property is set.
+        const mm = this.getQuery().getQueryFile().getModelManager();
 
-            // checks the resource type exists
-            const resourceClassDeclaration = mm.getType(this.resource);
+        // checks the resource type exists
+        const resourceClassDeclaration = mm.getType(this.resource);
 
-            // check that it is not an enum or concept
-            if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
-                throw new Error('Can only select assets, participants and transactions.');
-            }
+        // check that it is not an enum or concept
+        if(resourceClassDeclaration.isConcept() || resourceClassDeclaration.isEnum()) {
+            throw new Error('Can only select assets, participants and transactions.');
         }
 
         if(this.where) {
             this.where.validate();
+        }
+
+        if(this.limit) {
+            this.limit.validate();
+        }
+
+        if(this.skip) {
+            this.skip.validate();
         }
 
         if(this.orderBy) {
@@ -227,6 +238,15 @@ class Select {
      */
     getResource() {
         return this.resource;
+    }
+
+    /**
+     * Returns the name of the registry of this select or null if it does not have a registry.
+     *
+     * @return {string} the name of the registry of the select
+     */
+    getRegistry() {
+        return this.registry;
     }
 
     /**
@@ -250,7 +270,7 @@ class Select {
     /**
      * Returns the LIMIT count for this query or null if it does not have a LIMIT
      *
-     * @return {integer} the LIMIT count or null
+     * @return {Limit} the LIMIT or null
      */
     getLimit() {
         return this.limit;
@@ -259,7 +279,7 @@ class Select {
     /**
      * Returns the SKIP count for this query or null if it does not have a SKIP
      *
-     * @return {integer} the SKIP count or null
+     * @return {Skip} the SKIP or null
      */
     getSkip() {
         return this.skip;
@@ -273,21 +293,6 @@ class Select {
         return this.text;
     }
 
-    /**
-     * Returns a new object representing this Query that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            resouce: this.resource,
-            where: this.where ? this.where.toJSON() : null,
-            limit: this.limit ? this.limit : null,
-            skip: this.skip ? this.skip : null,
-            orderBy: this.orderBy ? this.orderBy.toJSON() : null
-        };
-        return result;
-    }
 }
 
 module.exports = Select;
