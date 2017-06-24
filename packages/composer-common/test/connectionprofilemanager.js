@@ -189,15 +189,4 @@ describe('ConnectionProfileManager', () => {
 
     });
 
-
-    describe('#toJSON', () => {
-
-        it('should not be able to serialize', () => {
-            const store = sinon.createStubInstance(ConnectionProfileStore);
-            let cpm = new ConnectionProfileManager(store);
-            cpm.should.not.be.null;
-            cpm.toJSON().should.deep.equal({});
-        });
-    });
-
 });

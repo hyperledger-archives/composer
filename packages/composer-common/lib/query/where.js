@@ -83,16 +83,13 @@ class Where {
     }
 
     /**
-     * Returns a new object representing this Where that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
+     * Return the AST for this where statement.
+     * @return {Object} The AST for this where statement.
      */
-    toJSON() {
-        let result = {
-            ast: this.ast
-        };
-        return result;
+    getAST() {
+        return this.ast;
     }
+
 }
 
 module.exports = Where;

@@ -82,12 +82,4 @@ describe('LoggingService', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            loggingService.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

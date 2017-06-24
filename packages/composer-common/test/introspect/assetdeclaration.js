@@ -162,15 +162,4 @@ describe('AssetDeclaration', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let asset = loadLastAssetDeclaration('test/data/parser/assetdeclaration.json.cto');
-            asset.validate();
-            let jsonObject = asset.toJSON();
-            jsonObject.should.deep.equal({});
-        });
-
-    });
-
 });

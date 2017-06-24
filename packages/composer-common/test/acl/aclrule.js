@@ -81,16 +81,6 @@ describe('AclRule', () => {
         sandbox.restore();
     });
 
-    describe('#toJSON', () => {
-
-        it('should generate a JSON representation', () => {
-            aclRule = new AclRule( aclFile, ast );
-            const json = aclRule.toJSON();
-            json.should.not.be.null;
-        });
-
-    });
-
     describe('#constructor', () => {
 
         it('should throw when null AclFile provided', () => {

@@ -249,14 +249,6 @@ class DataCollection {
         throw new Error('abstract function called');
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = DataCollection;

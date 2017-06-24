@@ -183,14 +183,6 @@ class ConnectionProfileManager {
     }
 
     /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
-    /**
      * Clear the static object containing all the connection managers
      */
     static removeAllConnectionManagers() {

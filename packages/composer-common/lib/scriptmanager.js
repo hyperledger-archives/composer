@@ -133,13 +133,6 @@ class ScriptManager {
         return Object.keys(this.scripts);
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
 }
 
 module.exports = ScriptManager;

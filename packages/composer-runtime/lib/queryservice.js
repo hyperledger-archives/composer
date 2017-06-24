@@ -14,19 +14,15 @@
 
 'use strict';
 
+const Service = require('./service');
+
 /**
  * Base class representing the query service provided by a {@link Container}.
  * @protected
  * @abstract
  * @memberof module:composer-runtime
  */
-class QueryService {
-
-    /**
-     * Constructor.
-     */
-    constructor() {
-    }
+class QueryService extends Service {
 
     /**
      * Query the underlying world-state store using a store native query string.
@@ -54,13 +50,6 @@ class QueryService {
         throw new Error('abstract function called');
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
 }
 
 module.exports = QueryService;

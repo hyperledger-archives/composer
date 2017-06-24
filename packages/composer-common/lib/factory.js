@@ -304,13 +304,6 @@ class Factory {
         return event;
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
 }
 
 module.exports = Factory;

@@ -243,12 +243,4 @@ describe('DataCollection', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            dataCollection.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

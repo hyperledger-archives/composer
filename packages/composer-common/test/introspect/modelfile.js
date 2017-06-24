@@ -454,16 +454,6 @@ describe('ModelFile', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let modelFile = new ModelFile(mockModelManager, carLeaseModel);
-            let parsed = modelFile.toJSON();
-            parsed.should.deep.equal({});
-        });
-
-    });
-
     describe('#getAssetDeclaration', () => {
 
         it('should return the specified asset declaration', () => {

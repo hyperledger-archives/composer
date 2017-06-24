@@ -81,22 +81,4 @@ describe('Property', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let p = new Property(mockClassDeclaration, {
-                id: {
-                    name: 'property',
-                },
-                propertyType: {
-                    name: 'suchType'
-                },
-                array: true
-            });
-            let object = p.toJSON();
-            object.should.deep.equal({});
-        });
-
-    });
-
 });

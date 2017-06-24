@@ -63,8 +63,6 @@ describe('EventDeclaration', () => {
             abstractEvent.getFullyQualifiedName().should.equal('org.acme.AbstractEvent');
             abstractEvent.isAbstract().should.be.true;
             abstractEvent.validate();
-            let jsonObject = abstractEvent.toJSON();
-            jsonObject.should.deep.equal({});
 
             const concreteEvent = modelFile.getEventDeclaration('ConcreteEvent');
             concreteEvent.getFullyQualifiedName().should.equal('org.acme.ConcreteEvent');

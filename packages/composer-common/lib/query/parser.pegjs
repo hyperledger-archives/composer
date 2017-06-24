@@ -1420,35 +1420,31 @@ SimpleSelectStatement
   }
 
 Limit
- = LimitPlaceholder
+ = LimitParameter
  / LimitLiteral
 
-LimitPlaceholder
- = LimitToken _ limit:Placeholder {
-    return {
-      limit: limit
-    };
+LimitParameter
+ = LimitToken _ limit:Parameter {
+    return limit;
   }
 
 LimitLiteral
  = LimitToken _ limit:$DecimalIntegerLiteral {
-    return limit;
+    return { type: "Literal", value: parseInt(limit) };
   }
 
 Skip
- = SkipPlaceholder
+ = SkipParameter
  / SkipLiteral
 
-SkipPlaceholder
- = SkipToken _ skip:Placeholder {
-    return {
-      skip: skip
-    };
+SkipParameter
+ = SkipToken _ skip:Parameter {
+    return skip;
   }
 
 SkipLiteral
  = SkipToken _ skip:$DecimalIntegerLiteral {
-    return skip;
+    return { type: "Literal", value: parseInt(skip) };
   }
 
 SortDirection
@@ -1463,7 +1459,9 @@ OrderBy
   }
 
 Sort
- = SortSingleField
+ = sort:SortSingleField {
+     return [sort]
+ }
  / SortArray
 
 SortArray
@@ -1502,12 +1500,11 @@ Operator
   / GTToken { return ">"; }
   / GTEToken { return ">="; }
 
-Placeholder
+Parameter
   = _ "_$" name:Identifier {
   return {
-    type: "Placeholder",
-    index: name,
-    location: location()
+    type: "Identifier",
+    name: "_$" + name.name
   };
  }
 
@@ -1515,7 +1512,7 @@ Placeholder
 
 Expr
   = Literal
-  / Placeholder
+  / Parameter
   / QualifiedName
 
 StringSequence "string"

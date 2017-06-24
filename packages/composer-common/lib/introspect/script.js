@@ -121,16 +121,6 @@ class Script {
         return this.tokens;
     }
 
-    /**
-     * Return a JSON safe representation of this object, primarily for logging.
-     * @return {object} A JSON safe representation of this object.
-     */
-    toJSON() {
-        return {
-            identifier: this.identifier,
-            language: this.language
-        };
-    }
 }
 
 module.exports = Script;
