@@ -57,8 +57,7 @@ describe('QueryCompiler', () => {
             o String lastName
         }
 
-        transaction SampleTransaction identified by transactionId {
-            o String transactionId
+        transaction SampleTransaction {
             o String newValue
         }`);
         queryFile1 = new QueryFile('test.qry', modelManager, `

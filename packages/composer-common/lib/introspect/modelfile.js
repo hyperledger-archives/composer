@@ -79,19 +79,46 @@ class ModelFile {
             this.imports = this.ast.imports;
         }
 
+        let decorate = false;
+        let systemNamespace = ModelUtil.getSystemNamespace();
+        if(this.namespace !== systemNamespace) {
+            this.imports.unshift(systemNamespace + '.$Asset');
+            this.imports.unshift(systemNamespace + '.$Participant');
+            this.imports.unshift(systemNamespace + '.$Event');
+            this.imports.unshift(systemNamespace + '.$Transaction');
+            decorate = true;
+        }
+
+        // console.log('\n========\n Parsed AST for the model file ');
+        // console.log(util.inspect(this.ast,{ depth: 7, colors: true, }));
+        // console.log('\n========\n');
+
+        // Whilst the ast is being walked, we want to add to or 'decorate' the root
+        // types in model passed in. These are the ones that implicitly extend
+        // the system types.
+        // Above, the system tests are added to the import, and the decorate flag is
+        // set to true
+        // In the loop below, if the classExention is null (meaning reached the root type in
+        // the users model), and we should be decorating then add in the correct extension type
+
         for(let n=0; n < this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
+            let doDecorate = (thing.classExtension === null && decorate);
 
             if(thing.type === 'AssetDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Asset' } }; }
                 this.declarations.push( new AssetDeclaration(this, thing) );
             }
             else if(thing.type === 'TransactionDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Transaction' } }; }
                 this.declarations.push( new TransactionDeclaration(this, thing) );
             }
             else if(thing.type === 'EventDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Event' } }; }
                 this.declarations.push( new EventDeclaration(this, thing) );
             }
             else if(thing.type === 'ParticipantDeclaration') {
+                if (doDecorate){thing.classExtension = { type: 'ClassExtension', class: { type: 'Identifier', name: '$Participant' } }; }
                 this.declarations.push( new ParticipantDeclaration(this, thing) );
             }
             else if(thing.type === 'EnumDeclaration') {
@@ -108,6 +135,9 @@ class ModelFile {
                 }),this.modelFile);
             }
         }
+
+
+
     }
 
     /**
@@ -137,16 +167,6 @@ class ModelFile {
      */
     getImports() {
         return this.imports;
-    }
-
-    /** retrofit the model
-     */
-    retrofit() {
-       // Validate all of the types in this model file.
-        for(let n=0; n < this.declarations.length; n++) {
-            let classDeclaration = this.declarations[n];
-            classDeclaration.retrofit();
-        }
     }
 
     /**
@@ -262,8 +282,6 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-        //console.log('resolveImport ' + this.getNamespace() + ' ' + type );
-
         for(let n=0; n < this.imports.length; n++) {
             let importName = this.imports[n];
             if( ModelUtil.getShortName(importName) === type ) {

@@ -73,27 +73,25 @@ describe('AccessController', () => {
         participant TestParticipant3 identified by participantId extends BaseParticipant {
             o String participantId
         }
-        transaction TestTransaction identified by transactionId extends BaseTransaction {
-            o String transactionId
+        transaction TestTransaction extends BaseTransaction {
         }
         transaction TestTransaction2 extends TestTransaction {
 
         }
-        transaction TestTransaction3 identified by transactionId extends BaseTransaction {
-            o String transactionId
+        transaction TestTransaction3 extends BaseTransaction {
         }`);
         modelManager.addModelFile(`
         namespace org.acme.test2
         import org.acme.base.BaseAsset
         import org.acme.base.BaseParticipant
+        import org.acme.base.BaseTransaction
         asset TestAsset2 identified by assetId extends BaseAsset {
             o String assetId
         }
         participant TestParticipant2 identified by participantId extends BaseParticipant {
             o String participantId
         }
-        transaction TestTransaction2 identified by transactionId extends BaseParticipant {
-            o String transactionId
+        transaction TestTransaction2 extends BaseTransaction {
         }`);
         aclManager = new AclManager(modelManager);
         factory = new Factory(modelManager);

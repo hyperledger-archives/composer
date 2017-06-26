@@ -59,8 +59,7 @@ describe('CompiledQueryBundle', () => {
             o String lastName
         }
 
-        transaction SampleTransaction identified by transactionId {
-            o String transactionId
+        transaction SampleTransaction  {
             o String newValue
         }`);
         queryManager = new QueryManager(modelManager);

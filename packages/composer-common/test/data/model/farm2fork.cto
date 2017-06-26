@@ -52,9 +52,9 @@ asset Meat identified by identifier {
     o Boolean packaged default=false
 }
 
-abstract transaction AnimalTransaction identified by transactionId {
+abstract transaction AnimalTransaction  {
     --> Animal animal //an AnimalTransaction is related to an Animal
-    o String transactionId
+    
 }
 
 transaction Foo extends Meat {
@@ -86,15 +86,15 @@ transaction SlaughterAnimal extends AnimalTransaction {
     o Meat meat
 }
 
-transaction MeatTransaction identified by transactionId {
+transaction MeatTransaction  {
     --> Meat meat
-    o String transactionId
+    
 }
 
 transaction PackageMeat extends MeatTransaction {
 }
 
-transaction PackagedMeatTransferedToPrivateConsumer identified by transactionId {
+transaction PackagedMeatTransferedToPrivateConsumer  {
     --> Participant privateConsumer
-    o String transactionId
+    
 }

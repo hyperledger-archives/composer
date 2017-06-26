@@ -19,6 +19,7 @@ const EnumDeclaration = require('../lib/introspect/enumdeclaration');
 const ModelFile = require('../lib/introspect/modelfile');
 const ModelManager = require('../lib/modelmanager');
 const ParticipantDeclaration = require('../lib/introspect/participantdeclaration');
+const EventDeclaration = require('../lib/introspect/eventdeclaration');
 const TypeNotFoundException = require('../lib/typenotfoundexception');
 const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
 const fs = require('fs');
@@ -171,7 +172,7 @@ describe('ModelManager', () => {
             }
 
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
-            modelManager.getModelFiles().length.should.equal(1);
+            modelManager.getModelFiles().length.should.equal(2);
         });
 
         it('should restore existing model files on validation error', () => {
@@ -306,7 +307,7 @@ describe('ModelManager', () => {
             let mf2 = sinon.createStubInstance(ModelFile);
             mf2.getNamespace.returns('org.such');
             modelManager.addModelFile(mf2);
-            modelManager.getNamespaces().should.include.members(['org.wow', 'org.such']);
+            modelManager.getNamespaces().should.have.members(['org.hyperledger.composer.system', 'org.wow', 'org.such']);
         });
 
     });
@@ -337,6 +338,16 @@ describe('ModelManager', () => {
             modelManager.addModelFile(modelBase);
             let decls = modelManager.getParticipantDeclarations();
             decls.should.all.be.an.instanceOf(ParticipantDeclaration);
+        });
+
+    });
+
+    describe('#getEventDeclarations', () => {
+
+        it('should return all of the event declarations', () => {
+            modelManager.addModelFile(modelBase);
+            let decls = modelManager.getEventDeclarations();
+            decls.should.all.be.an.instanceOf(EventDeclaration);
         });
 
     });

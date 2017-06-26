@@ -39,17 +39,13 @@ describe('ScriptCompiler', () => {
         modelManager = new ModelManager();
         modelManager.addModelFile(`
         namespace org.acme
-        transaction TestTransaction identified by transactionId {
-            o String transactionId
+        transaction TestTransaction {
         }
-        transaction TestTransaction2 identified by transactionId {
-            o String transactionId
+        transaction TestTransaction2 {
         }
-        transaction TestTransaction3 identified by transactionId {
-            o String transactionId
+        transaction TestTransaction3 {
         }
-        transaction TestTransaction4 identified by transactionId {
-            o String transactionId
+        transaction TestTransaction4 {
         }`);
         scriptManager = new ScriptManager(modelManager);
         scriptManager.addScript(scriptManager.createScript('script1', 'JS', `
