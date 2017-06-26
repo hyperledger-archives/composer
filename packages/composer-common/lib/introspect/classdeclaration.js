@@ -261,6 +261,15 @@ class ClassDeclaration {
         return false;
     }
 
+     /**
+     * Returns true if this class is the definition of an event.
+     *
+     * @return {boolean} true if the class is an event
+     */
+    isEvent() {
+        return false;
+    }
+
     /**
      * Returns true if this class can be pointed to by a relationship
      *
@@ -268,6 +277,16 @@ class ClassDeclaration {
      */
     isRelationshipTarget() {
         return false;
+    }
+
+    /**
+     * Returns true if this class can be pointed to by a relationship in a
+     * system model
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isSystemRelationshipTarget() {
+        return this.isRelationshipTarget();
     }
 
     /**
@@ -498,8 +517,7 @@ class ClassDeclaration {
         return 'ClassDeclaration {id=' + this.getFullyQualifiedName() + superType + ' enum=' + this.isEnum() + ' abstract=' + this.isAbstract() + '}';
     }
 
-    /** fixes up the model, post-process*/
-    retrofit(){}
+
 }
 
 module.exports = ClassDeclaration;

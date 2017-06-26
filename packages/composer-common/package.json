@@ -41,6 +41,7 @@
     "chai-as-promised": "^6.0.0",
     "chai-things": "^0.2.0",
     "eslint": "^3.17.1",
+    "folder-zip-sync": "^1.0.4",
     "jsdoc": "^3.4.3",
     "license-check": "^1.1.5",
     "mocha": "^3.2.0",
@@ -114,9 +115,11 @@
     ],
     "all": true,
     "check-coverage": true,
-    "statements": 97,
-    "branches": 93,
-    "functions": 97,
-    "lines": 97
+
+    "statements": 96,
+    "branches": 91,
+    "functions": 96,
+    "lines": 96
+
   }
 }

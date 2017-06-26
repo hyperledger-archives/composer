@@ -26,7 +26,7 @@ chai.should();
 chai.use(require('chai-as-promised'));
 
 
-describe('Transaction (asset specific) system tests', () => {
+describe.only('Transaction (asset specific) system tests', () => {
 
     let businessNetworkDefinition;
     let admin;

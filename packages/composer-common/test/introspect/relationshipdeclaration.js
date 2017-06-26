@@ -17,6 +17,7 @@
 const ModelManager = require('../../lib/modelmanager');
 const sinon = require('sinon');
 const RelationshipDeclaration = require('../../lib/introspect/relationshipdeclaration');
+// const ModelUtil = require('../../lib/modelutil');
 
 const chai = require('chai');
 chai.should();
@@ -34,6 +35,7 @@ describe('RelationshipDeclaration', function () {
       o String vin
       -->Person owner
     }
+
     `;
 
     before(function () {
@@ -41,7 +43,6 @@ describe('RelationshipDeclaration', function () {
     });
 
     beforeEach(function () {
-        modelManager.addModelFile(levelOneModel);
     });
 
     afterEach(function () {
@@ -50,6 +51,7 @@ describe('RelationshipDeclaration', function () {
 
     describe('#validate', function() {
         it('should detect relationships with no type', function () {
+            modelManager.addModelFile(levelOneModel);
             const vehicleDeclaration = modelManager.getType('org.acme.l1.Car');
             const field = vehicleDeclaration.getProperty('owner');
             (field instanceof RelationshipDeclaration).should.be.true;
@@ -58,6 +60,11 @@ describe('RelationshipDeclaration', function () {
             (function () {
                 field.validate(vehicleDeclaration);
             }).should.throw(/Relationship must have a type/);
+
+
         });
+
+
+
     });
 });

@@ -16,6 +16,7 @@
 
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const fs = require('fs');
 const path = require('path');
 
@@ -27,10 +28,30 @@ describe('ModelFile semantic validation', () => {
     const invalidModel = fs.readFileSync(path.resolve(__dirname, '../data/model/invalid.cto'), 'utf8');
 
     let mockModelManager;
+    let mockClassDeclaration;
     let sandbox;
 
     beforeEach(() => {
+        const SYSTEM_MODEL_CONTENTS = [
+            'namespace org.hyperledger.composer.system',
+            'abstract asset $Asset {  }',
+            'abstract participant $Participant {   }',
+            'abstract transaction $Transaction identified by transactionId{',
+            '  o String transactionId',
+            '  o DateTime timestamp',
+            '}',
+            'abstract event $Event identified by eventId{',
+            '   o String eventId',
+        /*  '  --> _cst_Transaction transaction',*/
+            '   }'
+        ];
+        const mockSystemModel = SYSTEM_MODEL_CONTENTS.join('\n');
+        let mockSystemModelFile = new ModelFile(mockModelManager, mockSystemModel);
         mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelManager.getType.returns(mockClassDeclaration);
+        mockClassDeclaration.getProperties.returns([]);
         sandbox = sinon.sandbox.create();
     });
 
