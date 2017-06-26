@@ -48,7 +48,7 @@ o DEER_OTHER
 
 Assets, Participants and Transactions are class definitions. The concepts of Asset, Participant and Transaction may be considered to be different stereotypes of the class type.
 
-A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition. Therefore an Asset (instance) has-an Asset Definition.
+A class in {{site.data.conrefs.composer_full}} is referred to as a Resource Definition. Therefore an Asset (instance) has an Asset Definition.
 
 A resource definition has the following properties:
 
