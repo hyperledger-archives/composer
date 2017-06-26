@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/scriptmanager.js</title>
+	<title>Hyperledger Composer Source: composer-client/lib/query.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/scriptmanager.js</h1>
+		<h1 class="page-title">Source: composer-client/lib/query.js</h1>
     
 <section>
     <article>
@@ -100,128 +100,55 @@
 
 'use strict';
 
-const Script = require('./introspect/script');
+const Logger = require('composer-common').Logger;
+
+const LOG = Logger.getLog('Query');
 
 /**
- * &lt;p>
- * Manages a set of scripts.
- * &lt;/p>
- * @private
- * @class
- * @memberof module:composer-common
+ * Do not attempt to create an instance of this class.&lt;br>
+ * You must use the {@link module:composer-client#BusinessNetworkConnection.buildQuery buildQuery}
+ * method instead.
+ *
+ * @class Query
+ * @classdesc A query represents a built query.
+ * @memberof module:composer-client
+ * @public
  */
-class ScriptManager {
 
-  /**
-   * Create the ScriptManager.
-   * &lt;p>
-   * &lt;strong>Note: Only to be called by framework code. Applications should
-   * retrieve instances from {@link BusinessNetworkDefinition}&lt;/strong>
-   * &lt;/p>
-   * @param {ModelManager} modelManager - The ModelManager to use for this ScriptManager
-   */
-    constructor(modelManager) {
-        this.modelManager = modelManager;
-        this.scripts = {};
-    }
+/**
+ * The Query class represents a built query. A built query has been parsed and validated.
+ * Do not attempt to create an instance of this class.
+ * You must use the {@link module:composer-client#BusinessNetworkConnection.buildQuery buildQuery}
+ * method instead.
+ * @class
+ * @memberof module:composer-client
+ */
+class Query {
+
     /**
-     * Visitor design pattern
-     * @param {Object} visitor - the visitor
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
+     * Constructor.
+     * @param {string} identifier The identifier of the built query.
      * @private
      */
-    accept(visitor,parameters) {
-        return visitor.visit(this, parameters);
+    constructor(identifier) {
+        const method = 'constructor';
+        LOG.entry(method, identifier);
+        this.identifier = identifier;
+        LOG.exit(method);
     }
 
     /**
-     * Creates a new Script from a string.
-     *
-     * @param {string} identifier - the identifier of the script
-     * @param {string} language - the language identifier of the script
-     * @param {string} contents - the contents of the script
-     * @returns {Script} - the instantiated script
-     */
-    createScript(identifier, language, contents) {
-        return new Script(this.modelManager, identifier, language, contents );
-    }
-
-    /**
-     * Adds a Script to the ScriptManager
-     * @param {Script} script - The script to add to the ScriptManager
-     */
-    addScript(script) {
-        this.scripts[script.getIdentifier()] = script;
-    }
-
-    /**
-     * Update an existing Script in the ScriptManager
-     * @param {Script} script - The script to add to the ScriptManager
-     */
-    updateScript(script) {
-        if (!this.scripts[script.getIdentifier()]) {
-            throw new Error('Script file does not exist');
-        }
-        this.addScript(script);
-    }
-
-    /**
-     * Remove the Script
-     * @param {string} identifier - The identifier of the script to remove
-     * delete.
-     */
-    deleteScript(identifier) {
-        if (!this.scripts[identifier]) {
-            throw new Error('Script file does not exist');
-        }
-        delete this.scripts[identifier];
-    }
-
-    /**
-     * Get the array of Script instances
-     * @return {Script[]} The Scripts registered
+     * Get the identifier for this built query.
      * @private
+     * @return {string} The identifier for this built query.
      */
-    getScripts() {
-        let keys = Object.keys(this.scripts);
-        let result = [];
-
-        for(let n=0; n &lt; keys.length;n++) {
-            result.push(this.scripts[keys[n]]);
-        }
-
-        return result;
-    }
-
-    /**
-     * Remove all registered Composer files
-     */
-    clearScripts() {
-        this.scripts = {};
-    }
-
-    /**
-     * Get the Script associated with an identifier
-     * @param {string} identifier - the identifier of the Script
-     * @return {Script} the Script
-     * @private
-     */
-    getScript(identifier) {
-        return this.scripts[identifier];
-    }
-
-    /**
-     * Get the identifiers of all registered scripts
-     * @return {string[]} The identifiers of all registered scripts
-     */
-    getScriptIdentifiers() {
-        return Object.keys(this.scripts);
+    getIdentifier() {
+        return this.identifier;
     }
 
 }
 
-module.exports = ScriptManager;
+module.exports = Query;
 </pre>
     </article>
 </section>

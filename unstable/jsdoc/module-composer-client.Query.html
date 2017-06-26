@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/scriptmanager.js</title>
+	<title>Hyperledger Composer Class: Query</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -74,158 +74,325 @@
 <div class="row">
 
 	
-	<div class="col-md-12">
+	<div class="col-md-8">
 	
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/scriptmanager.js</h1>
-    
+	<h1 class="page-title">Class: Query</h1>
 <section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript linenums">/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-'use strict';
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-composer-client.html">composer-client</a>.</span>
+        
+        Query
+        </h2>
+        
+            <div class="class-description"><p>The Query class represents a built query. A built query has been parsed and validated.<br>Do not attempt to create an instance of this class.<br>You must use the buildQuery<br>method instead.</p></div>
+        
+    
+</header>
 
-const Script = require('./introspect/script');
 
-/**
- * &lt;p>
- * Manages a set of scripts.
- * &lt;/p>
- * @private
- * @class
- * @memberof module:composer-common
- */
-class ScriptManager {
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="Query"><span class="type-signature"></span>new Query(identifier)</h4>
+    
+    
+</dt>
+<dd>
 
-  /**
-   * Create the ScriptManager.
-   * &lt;p>
-   * &lt;strong>Note: Only to be called by framework code. Applications should
-   * retrieve instances from {@link BusinessNetworkDefinition}&lt;/strong>
-   * &lt;/p>
-   * @param {ModelManager} modelManager - The ModelManager to use for this ScriptManager
-   */
-    constructor(modelManager) {
-        this.modelManager = modelManager;
-        this.scripts = {};
-    }
-    /**
-     * Visitor design pattern
-     * @param {Object} visitor - the visitor
-     * @param {Object} parameters  - the parameter
-     * @return {Object} the result of visiting or null
-     * @private
-     */
-    accept(visitor,parameters) {
-        return visitor.visit(this, parameters);
-    }
+    
+    <div class="description">
+        <p>Constructor.</p>
+    </div>
+    
 
-    /**
-     * Creates a new Script from a string.
-     *
-     * @param {string} identifier - the identifier of the script
-     * @param {string} language - the language identifier of the script
-     * @param {string} contents - the contents of the script
-     * @returns {Script} - the instantiated script
-     */
-    createScript(identifier, language, contents) {
-        return new Script(this.modelManager, identifier, language, contents );
-    }
+    
 
-    /**
-     * Adds a Script to the ScriptManager
-     * @param {Script} script - The script to add to the ScriptManager
-     */
-    addScript(script) {
-        this.scripts[script.getIdentifier()] = script;
-    }
+    
 
-    /**
-     * Update an existing Script in the ScriptManager
-     * @param {Script} script - The script to add to the ScriptManager
-     */
-    updateScript(script) {
-        if (!this.scripts[script.getIdentifier()]) {
-            throw new Error('Script file does not exist');
-        }
-        this.addScript(script);
-    }
+    
+    
+        <h5>Parameters:</h5>
+        
 
-    /**
-     * Remove the Script
-     * @param {string} identifier - The identifier of the script to remove
-     * delete.
-     */
-    deleteScript(identifier) {
-        if (!this.scripts[identifier]) {
-            throw new Error('Script file does not exist');
-        }
-        delete this.scripts[identifier];
-    }
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-    /**
-     * Get the array of Script instances
-     * @return {Script[]} The Scripts registered
-     * @private
-     */
-    getScripts() {
-        let keys = Object.keys(this.scripts);
-        let result = [];
+        <th>Type</th>
 
-        for(let n=0; n &lt; keys.length;n++) {
-            result.push(this.scripts[keys[n]]);
-        }
+        
 
-        return result;
-    }
+        
 
-    /**
-     * Remove all registered Composer files
-     */
-    clearScripts() {
-        this.scripts = {};
-    }
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-    /**
-     * Get the Script associated with an identifier
-     * @param {string} identifier - the identifier of the Script
-     * @return {Script} the Script
-     * @private
-     */
-    getScript(identifier) {
-        return this.scripts[identifier];
-    }
+    <tbody>
+    
 
-    /**
-     * Get the identifiers of all registered scripts
-     * @return {string[]} The identifiers of all registered scripts
-     */
-    getScriptIdentifiers() {
-        return Object.keys(this.scripts);
-    }
+        <tr>
+            
+                <td class="name"><code>identifier</code></td>
+            
 
-}
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
 
-module.exports = ScriptManager;
-</pre>
-    </article>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The identifier of the built query.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-client_lib_query.js.html">composer-client/lib/query.js</a>,
+				 <a href="composer-client_lib_query.js.html#sunlight-1-line-40">line 40</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
 </section>
 
+
+
+
+	<h1 class="page-title">Class: Query</h1>
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-composer-client.html">composer-client</a>.</span>
+        
+        Query
+        </h2>
+        
+            <div class="class-description"><p>A query represents a built query.</p></div>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="Query"><span class="type-signature"></span>new Query()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Do not attempt to create an instance of this class.<br><br>You must use the buildQuery<br>method instead.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-client_lib_query.js.html">composer-client/lib/query.js</a>,
+				 <a href="composer-client_lib_query.js.html#sunlight-1-line-21">line 21</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
@@ -235,6 +402,10 @@ module.exports = ScriptManager;
 
 	<div class="clearfix"></div>
 
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
 	
 
 </div>
