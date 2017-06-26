@@ -232,7 +232,7 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q1');
             compiled.hash.should.equal('d35890cac366631b31745dc6376e5d8414ef441ff66c606505f6bed898d9700c');
             compiled.generator.should.be.a('function');
-            compiled.generator({}).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
+            compiled.generator({}).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
         });
 
         it('should compile a query with parameters', () => {
@@ -240,7 +240,7 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q8');
             compiled.hash.should.equal('c4a085154080078b7a2a1f572f92a28bc679b1e40526343aed4460fc62757a9b');
             compiled.generator.should.be.a('function');
-            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
+            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
         });
 
         it('should compile a query with parameters that be can changed for each execution', () => {
@@ -248,9 +248,9 @@ describe('QueryCompiler', () => {
             compiled.name.should.equal('Q8');
             compiled.hash.should.equal('c4a085154080078b7a2a1f572f92a28bc679b1e40526343aed4460fc62757a9b');
             compiled.generator.should.be.a('function');
-            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
-            compiled.generator({ foo: 'Black hat' }).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Black hat"}}}');
-            compiled.generator({ foo: 'Red hat' }).should.equal('{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Red hat"}}}');
+            compiled.generator({ foo: 'Green hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Green hat"}}}');
+            compiled.generator({ foo: 'Black hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Black hat"}}}');
+            compiled.generator({ foo: 'Red hat' }).should.equal('{"selector":{"$class":"org.acme.sample.SampleAsset","$registryType":"Asset","$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"Red hat"}}}');
         });
 
     });
@@ -258,13 +258,13 @@ describe('QueryCompiler', () => {
     describe('#buildTrivialCompiledQueryGenerator', () => {
 
         it('should build a compiled query generator with no parameters', () => {
-            const generator = queryCompiler.buildTrivialCompiledQueryGenerator({'selector': {}});
+            const generator = queryCompiler.buildTrivialCompiledQueryGenerator({selector: {}});
             generator.should.be.a('function');
             generator({}).should.equal('{"selector":{}}');
         });
 
         it('should build a compiled query generator that throws if any parameters are supplied', () => {
-            const generator = queryCompiler.buildTrivialCompiledQueryGenerator({'selector': {}});
+            const generator = queryCompiler.buildTrivialCompiledQueryGenerator({selector: {}});
             generator.should.be.a('function');
             (() => {
                 generator({ myvar: 1 });
@@ -276,13 +276,13 @@ describe('QueryCompiler', () => {
     describe('#buildComplexCompiledQueryGenerator', () => {
 
         it('should build a compiled query generator with parameters', () => {
-            const generator = queryCompiler.buildComplexCompiledQueryGenerator({'selector':{}}, ['foo'], {});
+            const generator = queryCompiler.buildComplexCompiledQueryGenerator({selector:{}}, ['foo'], {});
             generator.should.be.a('function');
             generator({ foo: 'Green hat' }).should.equal('{"selector":{}}');
         });
 
         it('should build a compiled query generator that throws if any parameters are not supplied', () => {
-            const generator = queryCompiler.buildComplexCompiledQueryGenerator({'selector':{}}, ['foo'], {});
+            const generator = queryCompiler.buildComplexCompiledQueryGenerator({selector:{}}, ['foo'], {});
             generator.should.be.a('function');
             (() => {
                 generator({});
@@ -290,7 +290,7 @@ describe('QueryCompiler', () => {
         });
 
         it('should build a compiled query generator that throws if any extraneous parameters are supplied', () => {
-            const generator = queryCompiler.buildComplexCompiledQueryGenerator({'selector':{}}, ['foo'], {});
+            const generator = queryCompiler.buildComplexCompiledQueryGenerator({selector:{}}, ['foo'], {});
             generator.should.be.a('function');
             (() => {
                 generator({ foo: 'Green hat', bar: 'such unrequired' });
@@ -305,9 +305,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q2, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Asset',
-                    '\\$registryID': 'org.acme.sample.SampleAsset',
-                    '\\$class': 'org.acme.sample.SampleAsset'
+                    $registryType: 'Asset',
+                    $registryID: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
                 }
             });
         });
@@ -316,9 +316,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q10, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Participant',
-                    '\\$registryID': 'org.acme.sample.SampleParticipant',
-                    '\\$class': 'org.acme.sample.SampleParticipant'
+                    $registryType: 'Participant',
+                    $registryID: 'org.acme.sample.SampleParticipant',
+                    $class: 'org.acme.sample.SampleParticipant'
                 }
             });
         });
@@ -327,9 +327,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q11, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Transaction',
-                    '\\$registryID': 'org.acme.sample.SampleTransaction',
-                    '\\$class': 'org.acme.sample.SampleTransaction'
+                    $registryType: 'Transaction',
+                    $registryID: 'org.acme.sample.SampleTransaction',
+                    $class: 'org.acme.sample.SampleTransaction'
                 }
             });
         });
@@ -345,11 +345,11 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q1, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Asset',
-                    '\\$registryID': 'org.acme.sample.SampleAsset',
-                    '\\$class': 'org.acme.sample.SampleAsset',
+                    $registryType: 'Asset',
+                    $registryID: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset',
                     value: {
-                        '$eq': 'Green hat'
+                        $eq: 'Green hat'
                     }
                 }
             });
@@ -359,9 +359,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q9, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Asset',
-                    '\\$registryID': 'DogesSampleAssets',
-                    '\\$class': 'org.acme.sample.SampleAsset'
+                    $registryType: 'Asset',
+                    $registryID: 'DogesSampleAssets',
+                    $class: 'org.acme.sample.SampleAsset'
                 }
             });
         });
@@ -370,9 +370,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q13, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Asset',
-                    '\\$registryID': 'org.acme.sample.SampleAsset',
-                    '\\$class': 'org.acme.sample.SampleAsset'
+                    $registryType: 'Asset',
+                    $registryID: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
                 },
                 sort: [
                     { foo: 'asc' },
@@ -385,9 +385,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q3, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Asset',
-                    '\\$registryID': 'org.acme.sample.SampleAsset',
-                    '\\$class': 'org.acme.sample.SampleAsset'
+                    $registryType: 'Asset',
+                    $registryID: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
                 },
                 limit: 5
             });
@@ -397,9 +397,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q4, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Asset',
-                    '\\$registryID': 'org.acme.sample.SampleAsset',
-                    '\\$class': 'org.acme.sample.SampleAsset',
+                    $registryType: 'Asset',
+                    $registryID: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset',
                 },
                 skip: 10
             });
@@ -409,9 +409,9 @@ describe('QueryCompiler', () => {
             const result = queryCompiler.visitSelect(selectsFromQueries.Q5, {});
             result.should.deep.equal({
                 selector: {
-                    '\\$registryType': 'Asset',
-                    '\\$registryID': 'org.acme.sample.SampleAsset',
-                    '\\$class': 'org.acme.sample.SampleAsset'
+                    $registryType: 'Asset',
+                    $registryID: 'org.acme.sample.SampleAsset',
+                    $class: 'org.acme.sample.SampleAsset'
                 },
                 limit: 5,
                 skip: 10
@@ -424,7 +424,7 @@ describe('QueryCompiler', () => {
 
         it('should visit a where statement', () => {
             const result = queryCompiler.visitWhere(wheresFromQueries.Q1, {});
-            result.should.deep.equal({ selector: { value: { '$eq': 'Green hat' } } });
+            result.should.deep.equal({ selector: { value: { $eq: 'Green hat' } } });
         });
 
     });
@@ -524,7 +524,7 @@ describe('QueryCompiler', () => {
                     value: false
                 }
             });
-            result.should.deep.equal({ '$and': [ true, false ] });
+            result.should.deep.equal({ $and: [ true, false ] });
         });
 
         it('should compile a condition expression', () => {
@@ -540,7 +540,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$lt': 'bar' } });
+            result.should.deep.equal({ foo: { $lt: 'bar' } });
         });
 
     });
@@ -577,7 +577,7 @@ describe('QueryCompiler', () => {
                     value: false
                 }
             });
-            result.should.deep.equal({ '$and': [ true, false ] });
+            result.should.deep.equal({ $and: [ true, false ] });
         });
 
         it('should compile an OR expression', () => {
@@ -593,7 +593,7 @@ describe('QueryCompiler', () => {
                     value: false
                 }
             });
-            result.should.deep.equal({ '$or': [ true, false ] });
+            result.should.deep.equal({ $or: [ true, false ] });
         });
 
     });
@@ -754,7 +754,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$lt': 'bar' } });
+            result.should.deep.equal({ foo: { $lt: 'bar' } });
         });
 
         it('should compile a less than or equal expression', () => {
@@ -770,7 +770,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$lte': 'bar' } });
+            result.should.deep.equal({ foo: { $lte: 'bar' } });
         });
 
         it('should compile a greater than expression', () => {
@@ -786,7 +786,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$gt': 'bar' } });
+            result.should.deep.equal({ foo: { $gt: 'bar' } });
         });
 
         it('should compile a greater than or equal expression', () => {
@@ -802,7 +802,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$gte': 'bar' } });
+            result.should.deep.equal({ foo: { $gte: 'bar' } });
         });
 
         it('should compile an equals expression', () => {
@@ -818,7 +818,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$eq': 'bar' } });
+            result.should.deep.equal({ foo: { $eq: 'bar' } });
         });
 
         it('should compile a not equals expression', () => {
@@ -834,7 +834,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$ne': 'bar' } });
+            result.should.deep.equal({ foo: { $ne: 'bar' } });
         });
 
         it('should compile and reverse a less than expression', () => {
@@ -850,7 +850,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$gt': 'bar' } });
+            result.should.deep.equal({ foo: { $gt: 'bar' } });
         });
 
         it('should compile and reverse a less than or equal expression', () => {
@@ -866,7 +866,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$gte': 'bar' } });
+            result.should.deep.equal({ foo: { $gte: 'bar' } });
         });
 
         it('should compile and reverse a greater than expression', () => {
@@ -882,7 +882,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$lt': 'bar' } });
+            result.should.deep.equal({ foo: { $lt: 'bar' } });
         });
 
         it('should compile and reverse a greater than or equal expression', () => {
@@ -898,7 +898,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$lte': 'bar' } });
+            result.should.deep.equal({ foo: { $lte: 'bar' } });
         });
 
         it('should compile and reverse an equals expression', () => {
@@ -914,7 +914,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$eq': 'bar' } });
+            result.should.deep.equal({ foo: { $eq: 'bar' } });
         });
 
         it('should compile and reverse a not equals expression', () => {
@@ -930,7 +930,7 @@ describe('QueryCompiler', () => {
                     value: 'bar'
                 }
             });
-            result.should.deep.equal({ foo: { '$ne': 'bar' } });
+            result.should.deep.equal({ foo: { $ne: 'bar' } });
         });
 
         it('should compile an expression with a parameter', () => {
@@ -952,7 +952,7 @@ describe('QueryCompiler', () => {
                     name: '_$myvar'
                 }
             }, parameters);
-            result.should.deep.equal({ foo: { '$lt': 'bar' } });
+            result.should.deep.equal({ foo: { $lt: 'bar' } });
         });
 
     });

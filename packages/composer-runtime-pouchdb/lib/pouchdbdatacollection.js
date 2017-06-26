@@ -57,7 +57,9 @@ class PouchDBDataCollection extends DataCollection {
         return this.db.allDocs({ include_docs: true, startkey: startKey, endkey: endKey, inclusive_end: false })
             .then((response) => {
                 const result = response.rows.map((row) => {
-                    return row.doc.data;
+                    delete row.doc._id;
+                    delete row.doc._rev;
+                    return row.doc;
                 });
                 LOG.exit(result);
                 return result;
@@ -80,8 +82,8 @@ class PouchDBDataCollection extends DataCollection {
                 if (!doc) {
                     throw new Error(`Object with ID '${id}' in collection with ID '${this.collectionId}' does not exist`);
                 }
-                LOG.exit(method, doc.data);
-                return doc.data;
+                LOG.exit(method, doc);
+                return doc;
             });
     }
 
@@ -123,9 +125,7 @@ class PouchDBDataCollection extends DataCollection {
                     throw new Error(`Failed to add object with ID '${id}' as the object already exists`);
                 }
                 return this.dataService.handleAction(() => {
-                    return PouchDBUtils.putDocument(this.db, key, {
-                        data: object
-                    });
+                    return PouchDBUtils.putDocument(this.db, key, object);
                 });
             });
     }
@@ -148,9 +148,7 @@ class PouchDBDataCollection extends DataCollection {
                     throw new Error(`Object with ID '${id}' in collection with ID '${this.collectionId}' does not exist`);
                 }
                 return this.dataService.handleAction(() => {
-                    return PouchDBUtils.putDocument(this.db, key, {
-                        data: object
-                    });
+                    return PouchDBUtils.putDocument(this.db, key, object);
                 });
             });
     }

@@ -48,7 +48,6 @@ class Api {
             'getCurrentParticipant',
             'post',
             'emit',
-            'queryNative',
             'buildQuery',
             'query'
         ];
@@ -70,7 +69,7 @@ class Api {
         const registryManager = context.getRegistryManager();
         const httpService = context.getHTTPService();
         const eventService = context.getEventService();
-        const queryService = context.getQueryService();
+        const dataService = context.getDataService();
         const accessController = context.getAccessController();
 
         /**
@@ -255,44 +254,6 @@ class Api {
         };
 
         /**
-         * <p>
-         * Status: EXPERIMENTAL. API subject to change based on feedback.
-         * </p>
-         * <p>
-         * Execute a query against the world-state using a persistence provider
-         * specific query string. For example, when running against Hyperledger Fabric v1
-         * using CouchDB for world-state persistence, the query string can be a CouchDB
-         * selector.
-         * </p>
-         * <p>
-         * CouchDB queries are JS objects. The query below will select all documents in the
-         * database with a property `size` whose value is `SMALL`.
-         * <pre>
-         * var q = {
-         *   selector : {
-         *     size : 'SMALL'
-         * };
-         * </pre>
-         * <p>
-         *  Note that the query must be passed as a string.
-         * </p>
-         * @method module:composer-runtime#queryNative
-         * @param {string} queryString - The couchdb query string
-         * @return {Promise} A promise. The promise is resolved with the result of the query.
-         * @public
-         */
-        this.queryNative = function queryNative(queryString) {
-            const method = 'queryNative';
-            LOG.entry(method, queryString);
-            return queryService.queryNative(queryString)
-                .then((resultArray) => {
-                    LOG.debug(method, JSON.stringify(resultArray));
-                    LOG.exit(method);
-                    return resultArray;
-                });
-        };
-
-        /**
          * Build a query ready for later execution. The specified query string must be written
          * in the Composer query language.
          *
@@ -362,7 +323,7 @@ class Api {
             } else {
                 throw new Error('Invalid query; expecting a built query or the name of a query');
             }
-            return context.getCompiledQueryBundle().execute(queryService, identifier, parameters)
+            return context.getCompiledQueryBundle().execute(dataService, identifier, parameters)
                 .then((objects) => {
                     const resources = objects.map((object) => {
                         object = Registry.removeInternalProperties(object);
