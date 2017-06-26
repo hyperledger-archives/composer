@@ -16,8 +16,11 @@
 
 const AssetDeclaration = require('composer-common').AssetDeclaration;
 const EventEmitter = require('events');
+const Logger = require('composer-common').Logger;
 const ParticipantDeclaration = require('composer-common').ParticipantDeclaration;
 const Registry = require('./registry');
+
+const LOG = Logger.getLog('RegistryManager');
 
 /**
  * A class for managing and persisting registries.
@@ -89,10 +92,7 @@ class RegistryManager extends EventEmitter {
                     if (force) {
                         return this.add('Asset', fqn, `Asset registry for ${fqn}`, true);
                     } else {
-                        return this.get('Asset', fqn)
-                            .catch(() => {
-                                return this.add('Asset', fqn, `Asset registry for ${fqn}`);
-                            });
+                        return this.ensure('Asset', fqn, `Asset registry for ${fqn}`);
                     }
                 }, Promise.resolve());
             })
@@ -102,10 +102,7 @@ class RegistryManager extends EventEmitter {
                     if (force) {
                         return this.add('Participant', fqn, `Participant registry for ${fqn}`, true);
                     } else {
-                        return this.get('Participant', fqn)
-                            .catch(() => {
-                                return this.add('Participant', fqn, `Participant registry for ${fqn}`);
-                            });
+                        return this.ensure('Participant', fqn, `Participant registry for ${fqn}`);
                     }
                 }, Promise.resolve());
             });
@@ -204,6 +201,29 @@ class RegistryManager extends EventEmitter {
                     registryName: name
                 });
                 return result;
+            });
+    }
+
+    /**
+     * Check to see if the specified registry exists, and create it if it does not.
+     * @param {string} type The type of the registry.
+     * @param {string} id The ID of the registry.
+     * @param {string} name The name of the registry.
+     * @param {boolean} force true to force the creation of the collection without checking
+     * @return {Promise} A promise that is resolved when complete, or rejected
+     * with an error.
+     */
+    ensure(type, id, name) {
+        const method = 'ensure';
+        LOG.entry(method, type, id, name);
+        return this.get(type, id)
+            .catch((error) => {
+                LOG.debug(method, 'The registry does not exist, creating');
+                return this.add(type, id, name);
+            })
+            .then((registry) => {
+                LOG.exit(method, registry);
+                return registry;
             });
     }
 

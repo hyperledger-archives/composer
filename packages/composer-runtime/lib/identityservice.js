@@ -34,14 +34,6 @@ class IdentityService extends Service {
         throw new Error('abstract function called');
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = IdentityService;

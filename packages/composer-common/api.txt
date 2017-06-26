@@ -32,7 +32,6 @@ class Factory {
    + Relationship newRelationship(string,string,string) throws TypeNotFoundException
    + Resource newTransaction(string,string,string,Object,string) 
    + Resource newEvent(string,string,string,Object,string) 
-   + Object toJSON() 
 }
 class FileWallet extends Wallet {
    + string getHomeDirectory() 
@@ -108,7 +107,6 @@ class SecurityContext {
    + void constructor(Connection,string) 
    + Connection getConnection() 
    + string getUser() 
-   + Object toJSON() 
 }
 class SecurityException extends BaseException {
    + void constructor(string) 

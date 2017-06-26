@@ -15,6 +15,7 @@
 'use strict';
 
 const BusinessNetworkDefinition = require('composer-common').BusinessNetworkDefinition;
+const CompiledQueryBundle = require('../lib/compiledquerybundle');
 const CompiledScriptBundle = require('../lib/compiledscriptbundle');
 const Container = require('../lib/container');
 const Context = require('../lib/context');
@@ -22,6 +23,7 @@ const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const LoggingService = require('../lib/loggingservice');
+const QueryCompiler = require('../lib/querycompiler');
 const RegistryManager = require('../lib/registrymanager');
 const ScriptCompiler = require('../lib/scriptcompiler');
 const ScriptManager = require('composer-common').ScriptManager;
@@ -129,6 +131,10 @@ describe('EngineBusinessNetworks', () => {
             let mockCompiledScriptBundle = sinon.createStubInstance(CompiledScriptBundle);
             mockScriptCompiler.compile.returns(mockCompiledScriptBundle);
             mockContext.getScriptCompiler.returns(mockScriptCompiler);
+            let mockQueryCompiler = sinon.createStubInstance(QueryCompiler);
+            let mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
+            mockQueryCompiler.compile.returns(mockCompiledQueryBundle);
+            mockContext.getQueryCompiler.returns(mockQueryCompiler);
             sandbox.stub(Context, 'cacheBusinessNetwork');
             sandbox.stub(Context, 'cacheCompiledScriptBundle');
             mockRegistryManager.createDefaults.resolves();
@@ -147,6 +153,7 @@ describe('EngineBusinessNetworks', () => {
                     sinon.assert.calledWith(mockContext.initialize, {
                         businessNetworkDefinition: mockBusinessNetworkDefinition,
                         compiledScriptBundle: mockCompiledScriptBundle,
+                        compiledQueryBundle: mockCompiledQueryBundle,
                         reinitialize: true
                     });
                     sinon.assert.calledOnce(mockRegistryManager.createDefaults);

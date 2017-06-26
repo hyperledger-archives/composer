@@ -45,12 +45,10 @@ describe('Factory', () => {
             o String newValue
             o String optionalValue optional
         }
-        transaction MyTransaction identified by transactionId {
-            o String transactionId
+        transaction MyTransaction {
             o String newValue
         }
-        event MyEvent identified by eventId {
-            o String eventId
+        event MyEvent {
             o String value
         }`);
         factory = new Factory(modelManager);
@@ -286,16 +284,6 @@ describe('Factory', () => {
             sinon.assert.calledOnce(spy);
             sinon.assert.calledWith(spy, namespace, 'MyEvent', 'valid', { hello: 'world' });
         });
-    });
-
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let mockModelManager = sinon.createStubInstance(ModelManager);
-            let factory = new Factory(mockModelManager);
-            factory.toJSON().should.deep.equal({});
-        });
-
     });
 
 });

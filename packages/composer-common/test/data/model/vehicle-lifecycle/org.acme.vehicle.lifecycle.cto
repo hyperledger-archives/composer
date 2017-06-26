@@ -37,6 +37,6 @@ participant AuctionHouse extends Company {
 participant ScrapMerchant extends Company {
 }
 
-transaction SetupDemo identified by transactionID {
-  o String transactionID
+transaction SetupDemo  {
+  
 }

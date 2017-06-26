@@ -59,16 +59,6 @@ describe('ModelBinding', () => {
         sandbox.restore();
     });
 
-    describe('#toJSON', () => {
-
-        it('should generate a JSON representation', () => {
-            modelBinding = new ModelBinding( aclFile, classAst );
-            const json = modelBinding.toJSON();
-            json.should.not.be.null;
-        });
-
-    });
-
     describe('#constructor', () => {
 
         it('should throw when null AclRule provided', () => {

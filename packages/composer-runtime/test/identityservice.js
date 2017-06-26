@@ -32,12 +32,4 @@ describe('IdentityService', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            identityService.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

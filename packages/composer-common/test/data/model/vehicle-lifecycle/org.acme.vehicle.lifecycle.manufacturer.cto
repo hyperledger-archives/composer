@@ -55,8 +55,8 @@ asset Order identified by orderId {
 /**
  * Transaction to create an order
  */
-transaction PlaceOrder identified by transactionID {
-  o String transactionID
+transaction PlaceOrder  {
+  
   o VehicleDetails vehicleDetails
   --> Manufacturer manufacturer
   --> Person orderer
@@ -65,8 +65,8 @@ transaction PlaceOrder identified by transactionID {
 /**
  * Transaction to update the status of an order
  */
-transaction UpdateOrderStatus identified by transactionID {
-  o String transactionID
+transaction UpdateOrderStatus  {
+  
   o OrderStatus orderStatus
   o String vin optional
   o String v5c optional

@@ -45,6 +45,26 @@ describe('Registry', () => {
         registry = new Registry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
     });
 
+    describe('#removeInternalProperties', () => {
+
+        it('should throw for anything that is not an object', () => {
+            [undefined, null, 'foobar', [1, 2, 3]].forEach((thing) => {
+                (() => {
+                    Registry.removeInternalProperties(thing);
+                }).should.throw(/Can only add properties to JSON objects/);
+            });
+        });
+
+        it('should add properties to the object', () => {
+            const object = Registry.removeInternalProperties({
+                $registryType: 'Asset',
+                $registryID: 'doges'
+            });
+            object.should.deep.equal({});
+        });
+
+    });
+
     describe('#constructor', () => {
 
         it('should be an event emitter', () => {
@@ -641,26 +661,6 @@ describe('Registry', () => {
                 $registryType: 'Asset',
                 $registryID: 'doges'
             });
-        });
-
-    });
-
-    describe('#removeInternalProperties', () => {
-
-        it('should throw for anything that is not an object', () => {
-            [undefined, null, 'foobar', [1, 2, 3]].forEach((thing) => {
-                (() => {
-                    registry.removeInternalProperties(thing);
-                }).should.throw(/Can only add properties to JSON objects/);
-            });
-        });
-
-        it('should add properties to the object', () => {
-            const object = registry.removeInternalProperties({
-                $registryType: 'Asset',
-                $registryID: 'doges'
-            });
-            object.should.deep.equal({});
         });
 
     });

@@ -10,7 +10,7 @@
     "doc": "jsdoc --pedantic --recurse -c jsdoc.conf",
     "postdoc": "npm run lint",
     "lint": "eslint .",
-    "test-inner": "mocha --recursive -t 5000 && cucumber-js",
+    "test-inner": "mocha --recursive -t 10000 && cucumber-js",
     "test": "nyc npm run test-inner"
   },
   "repository": {

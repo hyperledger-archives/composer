@@ -41,6 +41,7 @@ class OrderBy {
 
         this.ast = ast;
         this.select = select;
+        this.sortCriteria = [];
         this.process();
     }
 
@@ -71,11 +72,7 @@ class OrderBy {
      * @private
      */
     process() {
-        this.sortCriteria = null;
-
         if(this.ast.sort) {
-            this.sortCriteria = [];
-
             for(let n=0; n < this.ast.sort.length; n++) {
                 this.sortCriteria.push( new Sort(this, this.ast.sort[n]));
             }
@@ -93,18 +90,13 @@ class OrderBy {
     }
 
     /**
-     * Returns a new object representing this Query that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
+     * Return the sort criteria of this order by.
+     * @return {Sort[]} The sort criteria of this order by.
      */
-    toJSON() {
-        let result = {
-            sortCriteria: this.sortCriteria.map((sortCriteria) => {
-                return sortCriteria.toJSON();
-            })
-        };
-        return result;
+    getSortCriteria() {
+        return this.sortCriteria;
     }
+
 }
 
 module.exports = OrderBy;

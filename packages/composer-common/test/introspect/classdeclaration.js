@@ -211,23 +211,6 @@ describe('ClassDeclaration', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let clz = new ClassDeclaration(mockModelFile, {
-                id: {
-                    name: 'suchName'
-                },
-                body: {
-                    declarations: [
-                    ]
-                }
-            });
-            clz.toJSON().should.deep.equal({});
-        });
-
-    });
-
     describe('#getSuperType', function() {
         const modelFileNames = [
             'test/data/parser/classdeclaration.participantwithparents.parent.cto',
@@ -255,11 +238,11 @@ describe('ClassDeclaration', () => {
             superclassName.should.equal('com.testing.parent.Super');
         });
 
-        it('should return null when none exists', function() {
+        it('should return system type when none exists', function() {
             const baseclass = modelManager.getType('com.testing.parent.Base');
             should.exist(baseclass);
             const superclassName = baseclass.getSuperType();
-            should.equal(superclassName, null);
+            should.equal(superclassName,'org.hyperledger.composer.system.$Participant');
         });
     });
 
@@ -305,11 +288,12 @@ describe('ClassDeclaration', () => {
             modelManager.addModelFiles(modelFiles);
         });
 
-        it('should return empty array if there are no superclasses', function() {
+        it('should return array with only system types if there are no superclasses', function() {
             const testClass = modelManager.getType('com.testing.parent.Base');
             should.exist(testClass);
             const superclasses = testClass.getAllSuperTypeDeclarations();
-            superclasses.should.be.empty;
+            const superclassNames = superclasses.map(classDef => classDef.getName());
+            superclassNames.should.have.members(['$Participant']);
         });
 
         it('should return all superclass definitions', function() {
@@ -317,7 +301,7 @@ describe('ClassDeclaration', () => {
             should.exist(testClass);
             const superclasses = testClass.getAllSuperTypeDeclarations();
             const superclassNames = superclasses.map(classDef => classDef.getName());
-            superclassNames.should.have.same.members(['Base', 'Super']);
+            superclassNames.should.have.same.members(['Base', 'Super','$Participant']);
         });
     });
 

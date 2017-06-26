@@ -94,14 +94,6 @@ class Field extends Property {
     }
 
     /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
-    /**
      * Returns a string representation of this property§
      * @return {String} the string version of the property.
      */

@@ -78,12 +78,4 @@ describe('HTTPService', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            httpService.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

@@ -60,7 +60,7 @@ query Q12 {
 }
 
 query Q13 {
-    description: "Select all drivers aged less than equal 44" 
+    description: "Select all drivers aged less than or equal to 44" 
     statement: 
         SELECT org.acme.Driver 
             WHERE (age <= 44)
@@ -70,14 +70,14 @@ query Q14 {
     description: "Select all drivers aged older than 44" 
     statement: 
         SELECT org.acme.Driver 
-            WHERE (age >45)
+            WHERE (age >44)
 }
 
 query Q15 {
     description: "Select all drivers aged older than or equal to 44" 
     statement: 
         SELECT org.acme.Driver 
-            WHERE (age>= 45)
+            WHERE (age>= 44)
 }
 
 query Q16 {
