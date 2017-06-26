@@ -36,28 +36,19 @@ describe('ModelFile', () => {
 
     let mockModelManager;
     let mockClassDeclaration;
+    let mockSystemModelFile;
+    let mockSystemAsset;
     let sandbox;
 
     beforeEach(() => {
-
-
-        const SYSTEM_MODEL_CONTENTS = `
-            namespace org.hyperledger.composer.system
-            abstract asset $Asset {  }
-            abstract participant $Participant {   }
-            abstract transaction $Transaction identified by transactionId{
-              o String transactionId
-              o DateTime timestamp
-            }
-            abstract event $Event identified by eventId{
-               o String eventId
-               o DateTime timestamp
-               }
-        `;
-        const mockSystemModel = SYSTEM_MODEL_CONTENTS;
-        let mockSystemModelFile = new ModelFile(mockModelManager, mockSystemModel);
+        mockSystemModelFile = sinon.createStubInstance(ModelFile);
+        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
+        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
         mockModelManager = sinon.createStubInstance(ModelManager);
         mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
+        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
+        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
         mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
         mockModelManager.getType.returns(mockClassDeclaration);
         mockClassDeclaration.getProperties.returns([]);
@@ -166,29 +157,6 @@ describe('ModelFile', () => {
         });
 
     });
-
-    // describe('#retrofit', () => {
-    //
-    //     it('should complete succefully when having a transaction',  () => {
-    //         const model1 = `
-    //     namespace org.acme.boilerplate
-    //     import org.acme.core.basetx
-    //     transaction tr1 extends basetx {
-    //     }`;
-    //         const model2 = `
-    //     namespace org.acme.core
-    //
-    //     abstract transaction basetx identified by id {
-    //         o String id
-    //     }`;
-    //         let modelFile1 = new ModelFile(mockModelManager, model1);
-    //         let modelFile2 = new ModelFile(mockModelManager, model2);
-    //         modelFile2.retrofit();
-    //         modelFile1.retrofit();
-    //     });
-    //
-    //
-    // } );
 
     describe('#validate', () => {
 
@@ -389,7 +357,7 @@ describe('ModelFile', () => {
             const model = `
             namespace org.acme`;
             let modelFile = new ModelFile(mockModelManager, model);
-            modelFile.resolveImport('$Asset').should.equal('org.hyperledger.composer.system.$Asset');
+            modelFile.resolveImport('Asset').should.equal('org.hyperledger.composer.system.Asset');
         });
 
         it('should find the fully qualified name of the import', () => {

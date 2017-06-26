@@ -31,9 +31,13 @@ describe('ClassDeclaration', () => {
 
     let mockModelManager;
     let mockModelFile;
+    let mockSystemAsset;
 
     beforeEach(() => {
         mockModelManager = sinon.createStubInstance(ModelManager);
+        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
+        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
+        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
         mockModelFile = sinon.createStubInstance(ModelFile);
     });
 
@@ -242,7 +246,7 @@ describe('ClassDeclaration', () => {
             const baseclass = modelManager.getType('com.testing.parent.Base');
             should.exist(baseclass);
             const superclassName = baseclass.getSuperType();
-            should.equal(superclassName,'org.hyperledger.composer.system.$Participant');
+            should.equal(superclassName,'org.hyperledger.composer.system.Participant');
         });
     });
 
@@ -293,7 +297,7 @@ describe('ClassDeclaration', () => {
             should.exist(testClass);
             const superclasses = testClass.getAllSuperTypeDeclarations();
             const superclassNames = superclasses.map(classDef => classDef.getName());
-            superclassNames.should.have.members(['$Participant']);
+            superclassNames.should.have.members(['Participant']);
         });
 
         it('should return all superclass definitions', function() {
@@ -301,7 +305,7 @@ describe('ClassDeclaration', () => {
             should.exist(testClass);
             const superclasses = testClass.getAllSuperTypeDeclarations();
             const superclassNames = superclasses.map(classDef => classDef.getName());
-            superclassNames.should.have.same.members(['Base', 'Super','$Participant']);
+            superclassNames.should.have.same.members(['Base', 'Super','Participant']);
         });
     });
 

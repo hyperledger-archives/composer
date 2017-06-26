@@ -34,10 +34,10 @@ describe('Typed', () => {
         modelManager.addModelFile(`
         namespace org.acme.ext
         import org.acme.base.BaseAsset2
-        asset Asset identified by assetId extends BaseAsset2 {
+        asset MyAsset identified by assetId extends BaseAsset2 {
             o String assetId
         }
-        asset Asset2 extends Asset {
+        asset Asset2 extends MyAsset {
         }`);
     });
 
