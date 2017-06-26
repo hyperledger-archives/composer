@@ -291,7 +291,7 @@ class HLFConnection extends Connection {
             })
             .catch((error) => {
                 const newError = new Error('error trying login and get user Context. ' + error);
-                LOG.error(method, newError);
+                LOG.error(method, error);
                 throw newError;
             });
     }
@@ -503,7 +503,7 @@ class HLFConnection extends Connection {
             })
             .catch((error) => {
                 const newError = new Error('error trying deploy. ' + error);
-                LOG.error(method, newError);
+                LOG.error(method, error);
                 throw newError;
             });
 
