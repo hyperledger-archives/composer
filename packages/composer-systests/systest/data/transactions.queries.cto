@@ -47,8 +47,7 @@ participant SampleParticipant identified by participantId {
   o SampleEnum enumValue
 }
 
-transaction SampleTransaction identified by transactionId {
-  o String transactionId
+transaction SampleTransaction {
   o String namedQuery optional
   o String dynamicQuery optional
   o String parameters optional
