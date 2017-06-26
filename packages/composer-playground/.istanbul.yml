@@ -6,7 +6,7 @@ instrumentation:
         - "docker/*"
 check:
     global:
-        statements: 97
-        branches: 89
-        functions: 95
-        lines: 97
+        statements: 98
+        branches: 93
+        functions: 96
+        lines: 98

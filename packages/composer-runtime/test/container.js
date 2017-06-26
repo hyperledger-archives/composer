@@ -46,12 +46,4 @@ describe('Container', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            container.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

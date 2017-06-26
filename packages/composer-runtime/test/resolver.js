@@ -369,12 +369,4 @@ describe('Resolver', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            resolver.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

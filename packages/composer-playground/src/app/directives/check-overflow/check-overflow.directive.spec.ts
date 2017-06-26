@@ -64,11 +64,12 @@ describe('CheckOverFlowDirective', () => {
             component = fixture.componentInstance;
             fixture.detectChanges();
 
+            tick();
+
             let de = fixture.debugElement.query(By.css('pre'));
             let el = de.nativeElement;
-            el.style.maxHeight.should.equal('100px');
 
-            tick();
+            el.style.maxHeight.should.equal('100px');
 
             component.overflow.should.equal(false);
         })));
@@ -79,12 +80,12 @@ describe('CheckOverFlowDirective', () => {
             component.expanded = true;
             fixture.detectChanges();
 
+            tick();
+
             let de = fixture.debugElement.query(By.css('pre'));
             let el = de.nativeElement;
 
             el.style.maxHeight.should.equal(el.scrollHeight + 'px');
-
-            tick();
 
             component.overflow.should.equal(true);
         })));

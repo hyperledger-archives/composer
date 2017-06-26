@@ -19,6 +19,7 @@ const EnumDeclaration = require('../lib/introspect/enumdeclaration');
 const ModelFile = require('../lib/introspect/modelfile');
 const ModelManager = require('../lib/modelmanager');
 const ParticipantDeclaration = require('../lib/introspect/participantdeclaration');
+const TypeNotFoundException = require('../lib/typenotfoundexception');
 const TransactionDeclaration = require('../lib/introspect/transactiondeclaration');
 const fs = require('fs');
 
@@ -33,6 +34,7 @@ describe('ModelManager', () => {
     let farm2fork = fs.readFileSync('./test/data/model/farm2fork.cto', 'utf8');
     let concertoModel = fs.readFileSync('./test/data/model/concerto.cto', 'utf8');
     let invalidModel = fs.readFileSync('./test/data/model/invalid.cto', 'utf8');
+    let invalidModel2 = fs.readFileSync('./test/data/model/invalid2.cto', 'utf8');
     let modelManager;
 
     beforeEach(() => {
@@ -69,6 +71,16 @@ describe('ModelManager', () => {
             (() => {
                 modelManager.validateModelFile(invalidModel);
             }).should.throw();
+        });
+
+        it('should fail and set end column to start column and end offset to start offset', () => {
+            invalidModel2.should.not.be.null;
+            try {
+                modelManager.validateModelFile(invalidModel2);
+            } catch (err) {
+                err.getFileLocation().start.column.should.equal(err.getFileLocation().end.column);
+                err.getFileLocation().start.offset.should.equal(err.getFileLocation().start.offset);
+            }
         });
     });
 
@@ -368,13 +380,40 @@ describe('ModelManager', () => {
 
     });
 
-
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            modelManager.toJSON().should.deep.equal({});
+    describe('#getType', function() {
+        it('should throw an error for a primitive type', function() {
+            modelManager.addModelFile(modelBase);
+            (function() {
+                modelManager.getType('String');
+            }).should.throw(TypeNotFoundException);
         });
 
+        it('should throw an error for a namespace that does not exist', function() {
+            modelManager.addModelFile(modelBase);
+            (function() {
+                modelManager.getType('org.acme.nosuchns.SimpleAsset');
+            }).should.throw(TypeNotFoundException, /org.acme.nosuchns/);
+        });
+
+        it('should throw an error for an empty namespace', function() {
+            modelManager.addModelFile(modelBase);
+            (function() {
+                modelManager.getType('NoSuchAsset');
+            }).should.throw(TypeNotFoundException, /NoSuchAsset/);
+        });
+
+        it('should throw an error for a type that does not exist', function() {
+            modelManager.addModelFile(modelBase);
+            (function() {
+                modelManager.getType('org.acme.base.NoSuchAsset');
+            }).should.throw(TypeNotFoundException, /NoSuchAsset/);
+        });
+
+        it('should return the class declaration for a valid type', function() {
+            modelManager.addModelFile(modelBase);
+            const declaration = modelManager.getType('org.acme.base.AbstractAsset');
+            declaration.getFullyQualifiedName().should.equal('org.acme.base.AbstractAsset');
+        });
     });
 
 });

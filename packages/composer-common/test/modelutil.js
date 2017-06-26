@@ -14,8 +14,10 @@
 
 'use strict';
 
+const ClassDeclaration = require('../lib/introspect/classdeclaration');
 const ModelFile = require('../lib/introspect/modelfile');
 const Property = require('../lib/introspect/property');
+const Typed = require('../lib/model/identifiable');
 const ModelManager = require('../lib/modelmanager');
 const ModelUtil = require('../lib/modelutil');
 
@@ -75,6 +77,83 @@ describe('ModelUtil', function () {
             ModelUtil.isWildcardName('org.acme.baz.*').should.be.true;
         });
 
+        it('should return false for a fully qualified name with a recursive wildcard', () => {
+            ModelUtil.isWildcardName('org.acme.baz.**').should.be.false;
+        });
+
+    });
+
+    describe('#isRecursiveWildcardName', () => {
+
+        it('should return false for a name without a recursive wildcard', () => {
+            ModelUtil.isRecursiveWildcardName('Foo').should.be.false;
+        });
+
+        it('should return true for a name with a recursive wildcard', () => {
+            ModelUtil.isRecursiveWildcardName('**').should.be.true;
+        });
+
+        it('should return false for a fully qualified name without a recursive wildcard', () => {
+            ModelUtil.isRecursiveWildcardName('org.acme.baz.Foo').should.be.false;
+        });
+
+        it('should return true for a fully qualified name with a recursive wildcard', () => {
+            ModelUtil.isRecursiveWildcardName('org.acme.baz.**').should.be.true;
+        });
+
+        it('should return false for a fully qualified name with a wildcard', () => {
+            ModelUtil.isRecursiveWildcardName('org.acme.baz.*').should.be.false;
+        });
+
+    });
+
+    describe('#isMatchingType', () => {
+
+        let mockModelManager;
+        let mockModelFile;
+        let mockClassDeclaration;
+        let type;
+
+        beforeEach(() => {
+            mockModelManager = sinon.createStubInstance(ModelManager);
+            mockModelFile = sinon.createStubInstance(ModelFile);
+            mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+
+            mockModelManager.getModelFile.returns(mockModelFile);
+            mockModelFile.getType.returns(mockClassDeclaration);
+            mockClassDeclaration.getFullyQualifiedName.returns('org.acme.baz.Foo');
+            mockClassDeclaration.getAllSuperTypeDeclarations.returns([]);
+
+            type = new Typed(mockModelManager, 'org.acme.baz', 'Foo' );
+        });
+
+        it('should return true for an exact match', () => {
+            ModelUtil.isMatchingType(type, 'org.acme.baz.Foo').should.be.true;
+        });
+
+        it('should return false for a non-match', () => {
+            ModelUtil.isMatchingType(type, 'org.acme.baz.Bar').should.be.false;
+        });
+
+        it('should return true for a wildcard namespace match', () => {
+            ModelUtil.isMatchingType(type, 'org.acme.baz.*').should.be.true;
+        });
+
+        it('should return false for a non-matching wildcard namespace', () => {
+            ModelUtil.isMatchingType(type, 'org.doge.baz.*').should.be.false;
+        });
+
+        it('should return false for an ancestor namespace wildcard match', () => {
+            ModelUtil.isMatchingType(type, 'org.acme.*').should.be.false;
+        });
+
+        it('should return true for a recursive wildcard match', () => {
+            ModelUtil.isMatchingType(type, 'org.acme.**').should.be.true;
+        });
+
+        it('should return false for a non-matching recursive wildcard', () => {
+            ModelUtil.isMatchingType(type, 'org.ac.**').should.be.false;
+        });
     });
 
     describe('#getNamespace', function() {
@@ -152,6 +231,19 @@ describe('ModelUtil', function () {
             (() => {
                 ModelUtil.isAssignableTo(mockModelFile, 'org.doge.Doge', mockProperty);
             }).should.throw(/Cannot find type/);
+        });
+
+    });
+
+    describe('#getFullyQualifiedName', function() {
+        it('valid inputs', function() {
+            const result = ModelUtil.getFullyQualifiedName('a.namespace', 'type');
+            result.should.equal('a.namespace.type');
+        });
+
+        it('empty namespace should return the type with no leading dot', function() {
+            const result = ModelUtil.getFullyQualifiedName('', 'type');
+            result.should.equal('type');
         });
 
     });

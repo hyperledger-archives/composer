@@ -66,7 +66,7 @@ class ModelFile {
         }
         catch(err) {
             if(err.location && err.location.start) {
-                throw new ParseException( 'Syntax error in file ' + this.fileName + '. ' + err.message +  ' Line ' + err.location.start.line + ' column ' + err.location.start.column );
+                throw new ParseException(err.message, err.location);
             }
             else {
                 throw err;
@@ -164,9 +164,9 @@ class ModelFile {
             const modelFile = this.getModelManager().getModelFile(importNamespace);
             if (!modelFile) {
                 let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
-                throw new Error(formatter({
+                throw new IllegalModelException(formatter({
                     type: importName
-                }));
+                }), this);
             }
             if (ModelUtil.isWildcardName(importName)) {
                 // This is a wildcard import, org.acme.*
@@ -175,7 +175,11 @@ class ModelFile {
             }
             const importShortName = ModelUtil.getShortName(importName);
             if (!modelFile.isLocalType(importShortName)) {
-                throw new Error('No type ' + importShortName + ' in namespace ' + importNamespace);
+                let formatter = Globalize.messageFormatter('modelmanager-gettype-notypeinns');
+                throw new IllegalModelException(formatter({
+                    type: importShortName,
+                    namespace: importNamespace
+                }), this);
             }
         });
 
@@ -539,14 +543,6 @@ class ModelFile {
      */
     getDefinitions() {
         return this.definitions;
-    }
-
-    /**
-     * Return an object suitable for serialization.
-     * @return {Object} An object suitable for serialization.
-     */
-    toJSON() {
-        return {};
     }
 
 }

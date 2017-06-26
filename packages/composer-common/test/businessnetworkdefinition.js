@@ -76,6 +76,14 @@ describe('BusinessNetworkDefinition', () => {
             businessNetworkDefinition.getModelManager().should.not.be.null;
         });
 
+        it('should be able to retrieve acl manager', () => {
+            businessNetworkDefinition.getAclManager.should.not.be.null;
+        });
+
+        it('should be able to retrieve query manager', () => {
+            businessNetworkDefinition.getQueryManager.should.not.be.null;
+        });
+
         it('should be able to retrieve identifier', () => {
             businessNetworkDefinition.getIdentifier().should.not.be.null;
         });
@@ -100,8 +108,8 @@ describe('BusinessNetworkDefinition', () => {
                 businessNetwork.getMetadata().getPackageJson().customKey.should.equal('custom value');
                 Object.keys(businessNetwork.modelManager.modelFiles).should.have.length(3);
                 Object.keys(businessNetwork.scriptManager.scripts).should.have.length(2);
-                businessNetwork.aclManager.getAclRules().should.have.length(5);
-
+                businessNetwork.aclManager.getAclRules().should.have.length(4);
+                businessNetwork.queryManager.getQueries().should.have.length(6);
                 const intro = businessNetwork.getIntrospector();
                 intro.getClassDeclarations().length.should.equal(25);
                 const sm = businessNetwork.getScriptManager();

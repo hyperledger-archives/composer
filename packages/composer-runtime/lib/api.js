@@ -18,6 +18,8 @@ const AssetRegistry = require('./api/assetregistry');
 const Factory = require('./api/factory');
 const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./api/participantregistry');
+const Query = require('./api/query');
+const Registry = require('./registry');
 
 const LOG = Logger.getLog('Api');
 
@@ -47,24 +49,30 @@ class Api {
             'post',
             'emit',
             'queryNative',
+            'buildQuery',
+            'query'
         ];
     }
 
     /**
      * Constructor.
-     * @param {Factory} factory The factory to use.
-     * @param {Serializer} serializer The serializer to use.
-     * @param {Resource} participant The current participant.
-     * @param {RegistryManager} registryManager The registry manager to use.
-     * @param {HTTPService} httpService The http service to use.
-     * @param {EventService} eventService The event service to use.
-     * @param {QueryService} queryService The query service to use.
      * @param {Context} context The transaction context.
      * @private
      */
-    constructor(factory, serializer, participant, registryManager, httpService, eventService, queryService, context) {
+    constructor(context) {
         const method = 'constructor';
-        LOG.entry(method, factory, serializer, participant, registryManager, httpService, eventService, queryService, context);
+        LOG.entry(method, context);
+
+        // Get all the things from the context.
+        const factory = context.getFactory();
+        const serializer = context.getSerializer();
+        const participant = context.getParticipant();
+        const registryManager = context.getRegistryManager();
+        const httpService = context.getHTTPService();
+        const eventService = context.getEventService();
+        const queryService = context.getQueryService();
+        const accessController = context.getAccessController();
+
         /**
          * Get the factory. The factory can be used to create new instances of
          * assets, participants, and transactions for storing in registries. The
@@ -213,7 +221,7 @@ class Api {
          */
         this.post = function post(url, typed) {
             const method = 'post';
-            LOG.entry(method);
+            LOG.entry(method, url, typed);
             const options = {};
             options.convertResourcesToRelationships = true;
             options.permitResourcesForRelationships = true;
@@ -235,7 +243,7 @@ class Api {
          */
         this.emit = function emit(event) {
             const method = 'emit';
-            LOG.entry(method);
+            LOG.entry(method, event);
             event.setIdentifier(context.getTransaction().getIdentifier() + '#' + context.getEventNumber());
             let serializedEvent = serializer.toJSON(event, {
                 convertResourcesToRelationships: true
@@ -275,17 +283,108 @@ class Api {
          */
         this.queryNative = function queryNative(queryString) {
             const method = 'queryNative';
-            LOG.entry(method + ' queryString: ' + queryString);
+            LOG.entry(method, queryString);
             return queryService.queryNative(queryString)
                 .then((resultArray) => {
-                    LOG.debug(method + ' results', JSON.stringify(resultArray));
+                    LOG.debug(method, JSON.stringify(resultArray));
                     LOG.exit(method);
                     return resultArray;
                 });
         };
+
+        /**
+         * Build a query ready for later execution. The specified query string must be written
+         * in the Composer query language.
+         *
+         * This functionality is Blockchain platform dependent. For example, when a Composer
+         * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
+         * configured with the CouchDB database for the world state.
+         * @example
+         * // Build a query.
+         * var query = buildQuery('SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)');
+         * // Execute the query.
+         * return query(query, { inputValue: 'blue' })
+         *   .then(function (assets) {
+         *     assets.forEach(function (asset) {
+         *       // Process each asset.
+         *     });
+         *   })
+         *   .catch(function (error) {
+         *     // Add optional error handling here.
+         *   });
+         * @method module:composer-runtime#buildQuery
+         * @param {string} query The query string, written using the Composer query language.
+         * @return {Query} The built query, which can be passed in a call to query.
+         * @public
+         */
+        this.buildQuery = function buildQuery(query) {
+            const method = 'buildQuery';
+            LOG.entry(method, query);
+            const identifier = context.getCompiledQueryBundle().buildQuery(query);
+            const result = new Query(identifier);
+            LOG.exit(method, result);
+            return result;
+        };
+
+        /**
+         * Execute a query defined in a Composer query file, or execute a query built with buildQuery.
+         *
+         * This functionality is Blockchain platform dependent. For example, when a Composer
+         * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
+         * configured with the CouchDB database for the world state.
+         * @example
+         * // Execute the query.
+         * return query('Q1', { inputValue: 'blue' })
+         *   .then(function (assets) {
+         *     assets.forEach(function (asset) {
+         *       // Process each asset.
+         *     });
+         *   })
+         *   .catch(function (error) {
+         *     // Add optional error handling here.
+         *   });
+         * @method module:composer-runtime#buildQuery
+         * @param {string|Query} query The name of the query, or a built query.
+         * @param {Object} [parameters] The parameters for the query.
+         * @return {Promise} A promise that will be resolved with an array of
+         * {@link module:composer-common.Resource Resource} representing the
+         * resources returned by the query.
+         * @public
+         */
+        this.query = function query(query, parameters) {
+            const method = 'query';
+            LOG.entry(method, query);
+            let identifier;
+            if (query instanceof Query) {
+                identifier = query.getIdentifier();
+            } else if (typeof query === 'string') {
+                identifier = query;
+            } else {
+                throw new Error('Invalid query; expecting a built query or the name of a query');
+            }
+            return context.getCompiledQueryBundle().execute(queryService, identifier, parameters)
+                .then((objects) => {
+                    const resources = objects.map((object) => {
+                        object = Registry.removeInternalProperties(object);
+                        return serializer.fromJSON(object);
+                    }).filter((resource) => {
+                        try {
+                            accessController.check(resource, 'READ');
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    });
+                    LOG.debug(method, resources.length);
+                    LOG.exit(method);
+                    return resources;
+                });
+        };
+
         Object.freeze(this);
         LOG.exit(method);
     }
+
 }
 
 module.exports = Api;

@@ -45,6 +45,26 @@ describe('Registry', () => {
         registry = new Registry(mockDataCollection, mockSerializer, mockAccessController, 'Asset', 'doges', 'The doges registry');
     });
 
+    describe('#removeInternalProperties', () => {
+
+        it('should throw for anything that is not an object', () => {
+            [undefined, null, 'foobar', [1, 2, 3]].forEach((thing) => {
+                (() => {
+                    Registry.removeInternalProperties(thing);
+                }).should.throw(/Can only add properties to JSON objects/);
+            });
+        });
+
+        it('should add properties to the object', () => {
+            const object = Registry.removeInternalProperties({
+                $registryType: 'Asset',
+                $registryID: 'doges'
+            });
+            object.should.deep.equal({});
+        });
+
+    });
+
     describe('#constructor', () => {
 
         it('should be an event emitter', () => {
@@ -232,10 +252,14 @@ describe('Registry', () => {
                     sinon.assert.calledWith(mockAccessController.check, mockResource1, 'CREATE');
                     sinon.assert.calledWith(mockAccessController.check, mockResource2, 'CREATE');
                     sinon.assert.calledWith(mockDataCollection.add, 'doge1', {
+                        $registryType: 'Asset',
+                        $registryID: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1'
                     });
                     sinon.assert.calledWith(mockDataCollection.add, 'doge2', {
+                        $registryType: 'Asset',
+                        $registryID: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge2'
                     });
@@ -290,6 +314,8 @@ describe('Registry', () => {
                     sinon.assert.calledOnce(mockAccessController.check);
                     sinon.assert.calledWith(mockAccessController.check, mockResource, 'CREATE');
                     sinon.assert.calledWith(mockDataCollection.add, 'doge1', {
+                        $registryType: 'Asset',
+                        $registryID: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1'
                     });
@@ -378,11 +404,15 @@ describe('Registry', () => {
                     sinon.assert.calledWith(mockAccessController.check, mockOldResource1, 'UPDATE');
                     sinon.assert.calledWith(mockAccessController.check, mockOldResource2, 'UPDATE');
                     sinon.assert.calledWith(mockDataCollection.update, 'doge1', {
+                        $registryType: 'Asset',
+                        $registryID: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1',
                         theValue: 'newValue1'
                     });
                     sinon.assert.calledWith(mockDataCollection.update, 'doge2', {
+                        $registryType: 'Asset',
+                        $registryID: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge2',
                         theValue: 'newValue2'
@@ -454,6 +484,8 @@ describe('Registry', () => {
                     sinon.assert.calledOnce(mockAccessController.check);
                     sinon.assert.calledWith(mockAccessController.check, mockOldResource, 'UPDATE');
                     sinon.assert.calledWith(mockDataCollection.update, 'doge1', {
+                        $registryType: 'Asset',
+                        $registryID: 'doges',
                         $class: 'org.doge.Doge',
                         assetId: 'doge1',
                         newValue: 'newValue'
@@ -609,6 +641,26 @@ describe('Registry', () => {
         it('should return errors from the data service', () => {
             mockDataCollection.remove.rejects();
             return registry.remove(mockResource).should.be.rejected;
+        });
+
+    });
+
+    describe('#addInternalProperties', () => {
+
+        it('should throw for anything that is not an object', () => {
+            [undefined, null, 'foobar', [1, 2, 3]].forEach((thing) => {
+                (() => {
+                    registry.addInternalProperties(thing);
+                }).should.throw(/Can only add properties to JSON objects/);
+            });
+        });
+
+        it('should add properties to the object', () => {
+            const object = registry.addInternalProperties({});
+            object.should.deep.equal({
+                $registryType: 'Asset',
+                $registryID: 'doges'
+            });
         });
 
     });

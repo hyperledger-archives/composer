@@ -124,12 +124,4 @@ describe('ScriptManager', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            scriptManager.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });

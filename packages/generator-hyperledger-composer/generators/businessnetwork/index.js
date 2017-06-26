@@ -1,7 +1,9 @@
 'use strict';
 
+const Util = require('./../util');
+
 let yeoman = require('yeoman-generator');
-let mkdirp = require('mkdirp');
+
 
 module.exports = yeoman.Base.extend({
     constructor: function() {
@@ -10,94 +12,64 @@ module.exports = yeoman.Base.extend({
     },
 
     prompting: function() {
-        console.log('Welcome to the business network skeleton generator');
+        console.log('Welcome to the business network generator');
 
         let questions = [
             {
-                type: 'confirm',
-                name: 'ismodel',
-                message: 'Do you only want to generate a model?',
-                store: true,
-                default: false
-            },
-            {
                 type: 'input',
                 name: 'appname',
-                message: 'What is the business network\'s name?',
+                message: 'Business network name:',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '' && input.indexOf(' ') === -1 && input === input.toLowerCase()) {
-                        return true;
-                    } else {
-                        return 'Name cannot be null, empty or contain a space or uppercase character.';
-                    }
-                }
-            },
-            {
-                type: 'input',
-                name: 'namespace',
-                message: 'What is the business network\'s namespace?',
-                default: 'org.acme.biznet',
-                store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input.match(/^(?:[a-z]\d*(?:\.[a-z])?)+$/)) {
-                        return true;
-                    } else {
-                        return 'Name must mactch: ^(?:[a-z]\d*(?:\.[a-z])?)+$';
-                    }
-                }
+                validate: Util.validateBusinessNetworkName
             },
             {
                 type: 'input',
                 name: 'appdescription',
-                message: 'Describe the business network',
+                message: 'Description:',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Description cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateDescription
             },
             {
                 type: 'input',
                 name: 'appauthor',
-                message: 'Who is the author?',
+                message: 'Author name: ',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Author cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateAuthorName
+            },
+            {
+                type: 'input',
+                name: 'appemail',
+                message: 'Author email:',
+                store: true,
+                validate: Util.validateAuthorEmail
             },
             {
                 type: 'input',
                 name: 'applicense',
-                message: 'Which license do you want to use?',
-                default: 'Apache-2',
+                message: 'License:',
+                default: 'Apache-2.0',
                 store: true,
-                validate: function(input) {
-                    if(input !== null && input !== undefined && input !== '') {
-                        return true;
-                    } else {
-                        return 'Licence cannot be null or empty.';
-                    }
-                }
+                validate: Util.validateLicense
+            },
+            {
+                type: 'input',
+                name: 'namespace',
+                message: 'Namespace:',
+                default: 'org.acme.biznet',
+                store: true,
+                validate: Util.validateNamespace
             }
         ];
 
         return this.prompt(questions)
-        .then((answers) => {
-            this.appname = answers.appname;
-            this.namespace = answers.namespace;
-            this.appdescription = answers.appdescription;
-            this.appauthor = answers.appauthor;
-            this.applicense = answers.applicense;
-            this.ismodel = answers.ismodel;
-        });
+            .then((answers) => {
+                this.appname = answers.appname;
+                this.appemail = answers.appemail;
+                this.namespace = answers.namespace;
+                this.appdescription = answers.appdescription;
+                this.appauthor = answers.appauthor;
+                this.applicense = answers.applicense;
+            });
     },
 
     configuring: function() {
@@ -112,14 +84,13 @@ module.exports = yeoman.Base.extend({
         if (!this.ismodel) {
             this.fs.copyTpl(this.templatePath('./test'), this.destinationPath('./test'), model);
             this.fs.copyTpl(this.templatePath('./lib'), this.destinationPath('./lib'), model);
-        } else {
-            mkdirp.sync(this.destinationPath('test'));
         }
     },
 
     _generateTemplateModel: function() {
         return {
             appname: this.appname,
+            appemail: this.appemail,
             namespace: this.namespace,
             appdescription: this.appdescription,
             appauthor: this.appauthor,

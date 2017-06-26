@@ -18,6 +18,7 @@ const Globalize = require('./globalize');
 const IllegalModelException = require('./introspect/illegalmodelexception');
 const ModelUtil = require('./modelutil');
 const ModelFile = require('./introspect/modelfile');
+const TypeNotFoundException = require('./typenotfoundexception');
 
 /**
  * <p>
@@ -229,41 +230,37 @@ class ModelManager {
     /**
      * Check that the type is valid and returns the FQN of the type.
      * @param {string} context - error reporting context
-     * @param {string} type - a short type name
+     * @param {string} type - fully qualified type name
      * @return {string} - the resolved type name (fully qualified)
      * @throws {IllegalModelException} - if the type is not defined
      * @private
      */
     resolveType(context, type) {
         // is the type a primitive?
-        if (!ModelUtil.isPrimitiveType(type)) {
-
-            let ns = ModelUtil.getNamespace(type);
-            let modelFile = this.getModelFile(ns);
-
-            if (!modelFile) {
-                let formatter = Globalize.messageFormatter('modelmanager-resolvetype-nonsfortype');
-                throw new IllegalModelException(formatter({
-                    type: type,
-                    context: context
-                }));
-            }
-
-            if (!modelFile.isLocalType(type)) {
-                let formatter = Globalize.messageFormatter('modelmanager-resolvetype-notypeinnsforcontext');
-                throw new IllegalModelException(formatter({
-                    context: context,
-                    type: type,
-                    namespace: modelFile.getNamespace()
-                }));
-            }
-            else {
-                return type;
-            }
-        }
-        else {
+        if (ModelUtil.isPrimitiveType(type)) {
             return type;
         }
+
+        let ns = ModelUtil.getNamespace(type);
+        let modelFile = this.getModelFile(ns);
+        if (!modelFile) {
+            let formatter = Globalize.messageFormatter('modelmanager-resolvetype-nonsfortype');
+            throw new IllegalModelException(formatter({
+                type: type,
+                context: context
+            }));
+        }
+
+        if (modelFile.isLocalType(type)) {
+            return type;
+        }
+
+        let formatter = Globalize.messageFormatter('modelmanager-resolvetype-notypeinnsforcontext');
+        throw new IllegalModelException(formatter({
+            context: context,
+            type: type,
+            namespace: modelFile.getNamespace()
+        }));
     }
 
     /**
@@ -294,35 +291,32 @@ class ModelManager {
     /**
      * Look up a type in all registered namespaces.
      *
-     * @param {string} type - the fully qualified name of a type
-     * @return {ClassDeclaration} - the class declaration or null for primitive types
-     * @throws {Error} - if the type cannot be found
+     * @param {string} qualifiedName - fully qualified type name.
+     * @return {ClassDeclaration} - the class declaration for the specified type.
+     * @throws {TypeNotFoundException} - if the type cannot be found or is a primitive type.
      * @private
      */
-    getType(type) {
-        // is the type a primitive?
-        if (!ModelUtil.isPrimitiveType(type)) {
-            let ns = ModelUtil.getNamespace(type);
-            let modelFile = this.getModelFile(ns);
+    getType(qualifiedName) {
+        const namespace = ModelUtil.getNamespace(qualifiedName);
 
-            if (!modelFile) {
-                let formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
-                throw new Error(formatter({
-                    type: type
-                }));
-            }
-
-            let classDecl = modelFile.getType(type);
-
-            if (!classDecl) {
-                throw new Error('No type ' + type + ' in namespace ' + modelFile.getNamespace());
-            }
-
-            return classDecl;
+        const modelFile = this.getModelFile(namespace);
+        if (!modelFile) {
+            const formatter = Globalize.messageFormatter('modelmanager-gettype-noregisteredns');
+            throw new TypeNotFoundException(qualifiedName, formatter({
+                type: qualifiedName
+            }));
         }
-        else {
-            return null;
+
+        const classDecl = modelFile.getType(qualifiedName);
+        if (!classDecl) {
+            const formatter = Globalize.messageFormatter('modelmanager-gettype-notypeinns');
+            throw new TypeNotFoundException(qualifiedName, formatter({
+                type: ModelUtil.getShortName(qualifiedName),
+                namespace: namespace
+            }));
         }
+
+        return classDecl;
     }
 
     /**
@@ -383,14 +377,6 @@ class ModelManager {
         return this.getModelFiles().reduce((prev, cur) => {
             return prev.concat(cur.getConceptDeclarations());
         }, []);
-    }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
     }
 
 }

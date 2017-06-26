@@ -10,8 +10,6 @@ index-order: 1
 
 # Participants and Identities
 
----
-
 A `Participant` is an actor in a business network. A participant might be an individual or an organization. A participant can create assets, and also exchange assets with other participants. A participant works with assets by submitting transactions.
 
 
