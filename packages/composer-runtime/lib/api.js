@@ -336,8 +336,7 @@ class Api {
                             return false;
                         }
                     });
-                    LOG.debug(method, resources.length);
-                    LOG.exit(method);
+                    LOG.exit(method, resources);
                     return resources;
                 });
         };
