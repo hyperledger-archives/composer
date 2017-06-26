@@ -112,7 +112,7 @@ describe('Test Model', function(){
             cObject.LeaseContractID = 'foo';
             cObject.scrapped = false;
             cObject.owner = factory.newRelationship(
-                'concerto', 'Participant', 'CUST_1');
+                'concerto', 'MyParticipant', 'CUST_1');
             cObject.previousOwners = null;
             // serialize the instance to JSON using a Serializer
             let serializer = new Serializer(factory, modelManager);
@@ -249,7 +249,7 @@ describe('Test Model', function(){
             vehicleDecl.getFullyQualifiedName().should.equal('org.acme.Vehicle');
             (() => { modelManager.getType('String'); }).should.throw(TypeNotFoundException);
             modelManager.getType('org.acme.Base').getFullyQualifiedName().should.equal('org.acme.Base');
-            modelManager.getType('concerto.Participant').getName().should.equal('Participant');
+            modelManager.getType('concerto.MyParticipant').getName().should.equal('MyParticipant');
 
             modelFile.getAssetDeclarations().length.should.equal(2);
             modelFile.getTransactionDeclarations().length.should.equal(8);
@@ -287,7 +287,7 @@ describe('Test Model', function(){
             let previousOwnersField = vehicle.getProperty('previousOwners');
             previousOwnersField.isArray().should.be.true;
             (previousOwnersField instanceof RelationshipDeclaration).should.be.true;
-            previousOwnersField.getType().should.equal('Participant');
+            previousOwnersField.getType().should.equal('MyParticipant');
 
             // test the VehicleTransferredToScrapMerchant class
             let txDecl = modelFile.getTransactionDeclaration('VehicleTransferredToScrapMerchant');
@@ -297,7 +297,7 @@ describe('Test Model', function(){
             let scrapMerchantField = txDecl.getProperty('scrapMerchant');
             (scrapMerchantField !== null).should.be.true;
             scrapMerchantField.getName().should.equal('scrapMerchant');
-            (scrapMerchantField.getType() === 'Participant').should.be.true;
+            (scrapMerchantField.getType() === 'MyParticipant').should.be.true;
 
             // test that we can retrieve a field declared in a base class
             let vehicleField = txDecl.getProperty('vehicle');
@@ -324,10 +324,10 @@ describe('Test Model', function(){
             modelManager.addModelFile(file,fileName);
 
             let modelFile = modelManager.getModelFile('org.acme');
-            modelFile.isLocalType('Participant').should.equal(false);
-            modelFile.isImportedType('Participant').should.equal(true);
+            modelFile.isLocalType('MyParticipant').should.equal(false);
+            modelFile.isImportedType('MyParticipant').should.equal(true);
             modelFile.getImports().length.should.equal(5);
-            modelFile.getImports().includes('concerto.Participant').should.equal(true);
+            modelFile.getImports().includes('concerto.MyParticipant').should.equal(true);
         });
     });
 

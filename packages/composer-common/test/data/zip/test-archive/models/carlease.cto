@@ -11,7 +11,7 @@
 namespace org.acme
 
 // import a type from another namespace
-import concerto.Participant
+import concerto.MyParticipant
 
 // define an enumeration
 enum State {
@@ -50,11 +50,11 @@ asset Vehicle extends Base {
   o String LeaseContractID
   o Boolean scrapped default=false
   o DateTime lastUpdate optional
-  --> Participant owner //relationship to a Participant, with the field named 'owner'.
-  --> Participant[] previousOwners optional // Nary relationship
+  --> MyParticipant owner //relationship to a MyParticipant, with the field named 'owner'.
+  --> MyParticipant[] previousOwners optional // Nary relationship
 }
 
-participant Regulator extends Participant {
+participant Regulator extends MyParticipant {
 
 }
 
@@ -68,23 +68,23 @@ transaction VehicleCreated extends VehicleTransaction {
 }
 
 transaction VehicleTransferredToManufacturer extends VehicleTransaction{
-	--> Participant manufacturer
+	--> MyParticipant manufacturer
 }
 
 transaction VehicleTransferredToDealer extends VehicleTransaction{
-	--> Participant dealer
+	--> MyParticipant dealer
 }
 
 transaction VehicleTransferredToLeaseCompany extends VehicleTransaction{
-	--> Participant leaseCompany
+	--> MyParticipant leaseCompany
 }
 
 transaction VehicleTransferredToLeasee extends VehicleTransaction{
-	--> Participant leasee
+	--> MyParticipant leasee
 }
 
 transaction VehicleTransferredToScrapMerchant extends VehicleTransaction{
-	--> Participant scrapMerchant
+	--> MyParticipant scrapMerchant
 }
 
 transaction VehicleScrapped extends VehicleTransaction{
