@@ -416,8 +416,7 @@ class Context {
             this.getDataService(),
             this.getEventService(),
             this.getIdentityService(),
-            this.getHTTPService(),
-            this.getQueryService()
+            this.getHTTPService()
         ];
     }
 
@@ -436,15 +435,6 @@ class Context {
      * @return {IdentityService} The identity service provided by the chaincode container.
      */
     getIdentityService() {
-        throw new Error('abstract function called');
-    }
-
-     /**
-     * Get the query service provided by the chaincode container.
-     * @abstract
-     * @return {QueryService} The query service provided by the chaincode container.
-     */
-    getQueryService() {
         throw new Error('abstract function called');
     }
 

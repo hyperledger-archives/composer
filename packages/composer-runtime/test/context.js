@@ -25,9 +25,8 @@ const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 const Engine = require('../lib/engine');
 const EventService = require('../lib/eventservice');
-const HTTPService = require('../lib/httpservice');
-const QueryService = require('../lib/queryservice');
 const Factory = require('composer-common').Factory;
+const HTTPService = require('../lib/httpservice');
 const IdentityManager = require('../lib/identitymanager');
 const IdentityService = require('../lib/identityservice');
 const Introspector = require('composer-common').Introspector;
@@ -438,18 +437,15 @@ describe('Context', () => {
             let mockEventService = sinon.createStubInstance(EventService);
             let mockIdentityService = sinon.createStubInstance(IdentityService);
             let mockHTTPService = sinon.createStubInstance(HTTPService);
-            let mockQueryService = sinon.createStubInstance(QueryService);
             sinon.stub(context, 'getDataService').returns(mockDataService);
             sinon.stub(context, 'getEventService').returns(mockEventService);
             sinon.stub(context, 'getIdentityService').returns(mockIdentityService);
             sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
-            sinon.stub(context, 'getQueryService').returns(mockQueryService);
             context.getServices().should.deep.equal([
                 mockDataService,
                 mockEventService,
                 mockIdentityService,
-                mockHTTPService,
-                mockQueryService
+                mockHTTPService
             ]);
         });
 
@@ -490,16 +486,6 @@ describe('Context', () => {
         it('should throw as abstract method', () => {
             (() => {
                 context.getHTTPService();
-            }).should.throw(/abstract function called/);
-        });
-
-    });
-
-    describe('#getQueryService', () => {
-
-        it('should throw as abstract method', () => {
-            (() => {
-                context.getQueryService();
             }).should.throw(/abstract function called/);
         });
 
@@ -662,8 +648,8 @@ describe('Context', () => {
             sinon.stub(context, 'getEventService').returns(mockEventService);
             let mockHTTPService = sinon.createStubInstance(HTTPService);
             sinon.stub(context, 'getHTTPService').returns(mockHTTPService);
-            let mockQueryService = sinon.createStubInstance(QueryService);
-            sinon.stub(context, 'getQueryService').returns(mockQueryService);
+            let mockDataService = sinon.createStubInstance(DataService);
+            sinon.stub(context, 'getDataService').returns(mockDataService);
             context.businessNetworkDefinition = mockBusinessNetworkDefinition;
             context.getApi().should.be.an.instanceOf(Api);
         });

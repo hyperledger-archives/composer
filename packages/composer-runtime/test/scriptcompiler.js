@@ -15,6 +15,7 @@
 'use strict';
 
 const Api = require('../lib/api');
+const assert = require('assert');
 const ModelManager = require('composer-common').ModelManager;
 const path = require('path');
 const ScriptManager = require('composer-common').ScriptManager;
@@ -32,6 +33,7 @@ describe('ScriptCompiler', () => {
     let functionDeclarations;
     let scriptCompiler;
     let mockApi;
+    let sandbox;
 
     beforeEach(() => {
         modelManager = new ModelManager();
@@ -56,6 +58,7 @@ describe('ScriptCompiler', () => {
              * @transaction
              */
             function doIt(transaction) {
+                assert.ok(true);
                 getFactory();
                 emit();
             }
@@ -87,11 +90,17 @@ describe('ScriptCompiler', () => {
         Api.getMethodNames().forEach((methodName) => {
             mockApi[methodName] = sinon.stub();
         });
+        sandbox = sinon.sandbox.create();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
     });
 
     describe('#compile', () => {
 
         it('should compile all of the scripts in the specified script manager into a bundle', () => {
+            sandbox.stub(assert, 'ok');
             const compiledScriptBundle = scriptCompiler.compile(scriptManager);
             const functionDeclarations = compiledScriptBundle.functionDeclarations;
             const generatorFunction = compiledScriptBundle.generatorFunction;
@@ -104,6 +113,8 @@ describe('ScriptCompiler', () => {
             result.doIt3b.should.be.a('function');
             result.onTestTransaction2.should.be.a('function');
             result.doIt();
+            sinon.assert.calledOnce(assert.ok);
+            sinon.assert.calledWith(assert.ok, true);
             sinon.assert.calledOnce(mockApi.getFactory);
             sinon.assert.calledOnce(mockApi.emit);
         });
@@ -161,7 +172,7 @@ describe('ScriptCompiler', () => {
             sourceMapConsumer.eachMapping((mapping) => {
                 mappings.push(mapping);
             });
-            mappings.should.have.lengthOf(30);
+            mappings.should.have.lengthOf(37);
             sourceMapConsumer.sourceContentFor(path.resolve(process.cwd(), 'script1')).should.match(/function doIt3a\(transaction\) {/);
         });
 

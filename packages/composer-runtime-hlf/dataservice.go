@@ -63,7 +63,9 @@ func NewDataService(vm *duktape.Context, context *Context, stub shim.ChaincodeSt
 	vm.PushGoFunction(result.getCollection)    // [ global composer theDataService getCollection ]
 	vm.PutPropString(-2, "_getCollection")     // [ global composer theDataService ]
 	vm.PushGoFunction(result.existsCollection) // [ global composer theDataService existsCollection ]
-	vm.PutPropString(-2, "existsCollection")   // [ global composer theDataService ]
+	vm.PutPropString(-2, "_existsCollection")  // [ global composer theDataService ]
+	vm.PushGoFunction(result.executeQuery)     // [ global composer theDataService executeQuery ]
+	vm.PutPropString(-2, "_executeQuery")      // [ global composer theDataService ]
 
 	// Return the new data service.
 	return result
@@ -207,6 +209,23 @@ func (dataService *DataService) existsCollection(vm *duktape.Context) (result in
 	if vm.Pcall(2) == duktape.ExecError {
 		panic(vm.ToString(-1))
 	}
+	return 0
+}
+
+// executeQuery executes a query against the data in the world state.
+func (dataService *DataService) executeQuery(vm *duktape.Context) (result int) {
+	logger.Debug("Entering DataService.executeQuery", vm)
+	defer func() { logger.Debug("Exiting DataService.executeQuery", result) }()
+
+	// argument 0 is the CouchDB queryString
+	queryString := vm.RequireString(0)
+	logger.Debug("CouchDB query string", queryString)
+
+	// argument 1 is the callback function (err,response)
+	vm.RequireFunction(1)
+
+	vm.PushErrorObjectVa(duktape.ErrError, "%s", "Query functionality is not available on this Blockchain platform")
+	vm.Throw()
 	return 0
 }
 
