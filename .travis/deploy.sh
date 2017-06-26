@@ -78,6 +78,10 @@ if [ -z "${TRAVIS_TAG}" ]; then
     echo "Pushing with tag unstable"
     lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish --tag=unstable 2>&1 | tee
 
+	# quick check to see if the latest npm module has been published
+	npm view composer-playground@0.9.0-20170626131511 | grep dist-tags
+	sleep 30
+
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do
 
