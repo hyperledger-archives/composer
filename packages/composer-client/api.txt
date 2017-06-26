@@ -21,6 +21,8 @@ class BusinessNetworkConnection extends EventEmitter {
    + Promise connect(string,string,string,string,Object) 
    + Promise disconnect() 
    + Promise submitTransaction(Resource) 
+   + Query buildQuery(string) 
+   + Promise query(Object) 
    + Promise ping() 
    + Promise issueIdentity(string,object,boolean) 
    + Promise revokeIdentity(string) 
@@ -31,6 +33,8 @@ class ParticipantRegistry extends Registry {
    + Promise participantRegistryExists(SecurityContext,string,ModelManager,Factory,Serializer) 
    + Promise addParticipantRegistry(SecurityContext,string,string,ModelManager,Factory,Serializer) 
    + void constructor(string,string,SecurityContext,ModelManager,Factory,Serializer) 
+}
+class Query {
 }
 class Registry {
    + Promise getAllRegistries(SecurityContext,string) 
