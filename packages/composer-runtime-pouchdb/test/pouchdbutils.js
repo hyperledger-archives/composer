@@ -34,11 +34,11 @@ describe('PouchDBUtils', () => {
         return db.bulkDocs([
             {
                 _id: 'thing1',
-                data: { thing: 1 }
+                thing: 1
             },
             {
                 _id: 'thing2',
-                data: { thing: 2 }
+                thing: 2
             },
         ]);
     });
@@ -49,15 +49,15 @@ describe('PouchDBUtils', () => {
 
     describe('#getDocument', () => {
 
-        it('should return null if the specified object does not exist', () => {
+        it('should return undefined if the specified object does not exist', () => {
             return PouchDBUtils.getDocument(db, 'thing3')
-                .should.eventually.be.null;
+                .should.eventually.be.undefined;
         });
 
         it('should get the specified document', () => {
             return PouchDBUtils.getDocument(db, 'thing1')
                 .then((doc) => {
-                    doc.data.should.deep.equal({ thing: 1 });
+                    doc.should.deep.equal({ thing: 1 });
                 });
         });
 
@@ -66,22 +66,26 @@ describe('PouchDBUtils', () => {
     describe('#putDocument', () => {
 
         it('should put a new document', () => {
-            return PouchDBUtils.putDocument(db, 'thing3', { data: { thing: 3 } })
+            return PouchDBUtils.putDocument(db, 'thing3', { thing: 3 })
                 .then(() => {
                     return db.get('thing3');
                 })
                 .then((doc) => {
-                    doc.data.should.deep.equal({ thing: 3 });
+                    delete doc._id;
+                    delete doc._rev;
+                    doc.should.deep.equal({ thing: 3 });
                 });
         });
 
         it('should put an existing document', () => {
-            return PouchDBUtils.putDocument(db, 'thing1', { data: { thing: 100 } })
+            return PouchDBUtils.putDocument(db, 'thing1', { thing: 100 })
                 .then(() => {
                     return db.get('thing1');
                 })
                 .then((doc) => {
-                    doc.data.should.deep.equal({ thing: 100 });
+                    delete doc._id;
+                    delete doc._rev;
+                    doc.should.deep.equal({ thing: 100 });
                 });
         });
 

@@ -15,10 +15,10 @@
 'use strict';
 
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
+const DataService = require('../lib/dataservice');
 const ModelManager = require('composer-common').ModelManager;
 const QueryCompiler = require('../lib/querycompiler');
 const QueryManager = require('composer-common').QueryManager;
-const QueryService = require('../lib/queryservice');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -36,7 +36,7 @@ describe('CompiledQueryBundle', () => {
     let query2;
     let query3;
     let compiledQueryBundle;
-    let mockQueryService;
+    let mockDataService;
 
     beforeEach(() => {
         queryCompiler = new QueryCompiler();
@@ -80,8 +80,8 @@ describe('CompiledQueryBundle', () => {
             generator: sinon.stub().returns(fakeQueryString)
         };
         compiledQueryBundle = new CompiledQueryBundle(queryCompiler, queryManager, [query1, query2, query3]);
-        mockQueryService = sinon.createStubInstance(QueryService);
-        mockQueryService.queryNative.resolves(fakeQueryResults);
+        mockDataService = sinon.createStubInstance(DataService);
+        mockDataService.executeQuery.resolves(fakeQueryResults);
     });
 
     describe('#buildQuery', () => {
@@ -109,48 +109,48 @@ describe('CompiledQueryBundle', () => {
 
         it('should throw for an unrecognized query', () => {
             (() => {
-                compiledQueryBundle.execute(mockQueryService, 'QA');
+                compiledQueryBundle.execute(mockDataService, 'QA');
             }).should.throw(/The specified query does not exist/);
         });
 
         it('should execute a named query using the query service', () => {
-            return compiledQueryBundle.execute(mockQueryService, 'Q1')
+            return compiledQueryBundle.execute(mockDataService, 'Q1')
                 .then((result) => {
                     sinon.assert.calledOnce(query1.generator);
                     sinon.assert.calledWith(query1.generator);
-                    sinon.assert.calledOnce(mockQueryService.queryNative);
-                    sinon.assert.calledWith(mockQueryService.queryNative, fakeQueryString);
+                    sinon.assert.calledOnce(mockDataService.executeQuery);
+                    sinon.assert.calledWith(mockDataService.executeQuery, fakeQueryString);
                     result.should.deep.equal(fakeQueryResults);
                 });
         });
 
         it('should execute a named query with parameters using the query service', () => {
-            return compiledQueryBundle.execute(mockQueryService, 'Q2', { foo: 'bar' })
+            return compiledQueryBundle.execute(mockDataService, 'Q2', { foo: 'bar' })
                 .then((result) => {
                     sinon.assert.calledOnce(query2.generator);
                     sinon.assert.calledWith(query2.generator, { foo: 'bar' });
-                    sinon.assert.calledOnce(mockQueryService.queryNative);
-                    sinon.assert.calledWith(mockQueryService.queryNative, fakeQueryString);
+                    sinon.assert.calledOnce(mockDataService.executeQuery);
+                    sinon.assert.calledWith(mockDataService.executeQuery, fakeQueryString);
                     result.should.deep.equal(fakeQueryResults);
                 });
         });
 
         it('should execute a built query using the query service', () => {
             let identifier = compiledQueryBundle.buildQuery('SELECT org.acme.sample.SampleAsset');
-            return compiledQueryBundle.execute(mockQueryService, identifier)
+            return compiledQueryBundle.execute(mockDataService, identifier)
                 .then((result) => {
-                    sinon.assert.calledOnce(mockQueryService.queryNative);
-                    sinon.assert.calledWith(mockQueryService.queryNative, '{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset"}}');
+                    sinon.assert.calledOnce(mockDataService.executeQuery);
+                    sinon.assert.calledWith(mockDataService.executeQuery, '{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset"}}');
                     result.should.deep.equal(fakeQueryResults);
                 });
         });
 
         it('should execute a built query with parameters using the query service', () => {
             let identifier = compiledQueryBundle.buildQuery('SELECT org.acme.sample.SampleAsset WHERE (value == _$foo)');
-            return compiledQueryBundle.execute(mockQueryService, identifier, { foo: 'bar' })
+            return compiledQueryBundle.execute(mockDataService, identifier, { foo: 'bar' })
                 .then((result) => {
-                    sinon.assert.calledOnce(mockQueryService.queryNative);
-                    sinon.assert.calledWith(mockQueryService.queryNative, '{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"bar"}}}');
+                    sinon.assert.calledOnce(mockDataService.executeQuery);
+                    sinon.assert.calledWith(mockDataService.executeQuery, '{"selector":{"\\\\$class":"org.acme.sample.SampleAsset","\\\\$registryType":"Asset","\\\\$registryID":"org.acme.sample.SampleAsset","value":{"$eq":"bar"}}}');
                     result.should.deep.equal(fakeQueryResults);
                 });
         });
@@ -160,23 +160,23 @@ describe('CompiledQueryBundle', () => {
     describe('#executeInternal', () => {
 
         it('should execute the query using the query service', () => {
-            return compiledQueryBundle.executeInternal(mockQueryService, query1)
+            return compiledQueryBundle.executeInternal(mockDataService, query1)
                 .then((result) => {
                     sinon.assert.calledOnce(query1.generator);
                     sinon.assert.calledWith(query1.generator);
-                    sinon.assert.calledOnce(mockQueryService.queryNative);
-                    sinon.assert.calledWith(mockQueryService.queryNative, fakeQueryString);
+                    sinon.assert.calledOnce(mockDataService.executeQuery);
+                    sinon.assert.calledWith(mockDataService.executeQuery, fakeQueryString);
                     result.should.deep.equal(fakeQueryResults);
                 });
         });
 
         it('should execute the query with parameters using the query service', () => {
-            return compiledQueryBundle.executeInternal(mockQueryService, query2, { foo: 'bar' })
+            return compiledQueryBundle.executeInternal(mockDataService, query2, { foo: 'bar' })
                 .then((result) => {
                     sinon.assert.calledOnce(query2.generator);
                     sinon.assert.calledWith(query2.generator, { foo: 'bar' });
-                    sinon.assert.calledOnce(mockQueryService.queryNative);
-                    sinon.assert.calledWith(mockQueryService.queryNative, fakeQueryString);
+                    sinon.assert.calledOnce(mockDataService.executeQuery);
+                    sinon.assert.calledWith(mockDataService.executeQuery, fakeQueryString);
                     result.should.deep.equal(fakeQueryResults);
                 });
         });

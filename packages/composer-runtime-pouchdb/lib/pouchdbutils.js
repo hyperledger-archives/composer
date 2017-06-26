@@ -36,10 +36,13 @@ class PouchDBUtils {
         LOG.entry(method, id);
         return db.get(id)
             .catch((error) => {
-                LOG.exit(method, null);
-                return null;
+                // Ignore the error.
             })
             .then((doc) => {
+                if (doc) {
+                    delete doc._id;
+                    delete doc._rev;
+                }
                 LOG.exit(method, doc);
                 return doc;
             });
@@ -56,7 +59,10 @@ class PouchDBUtils {
     static putDocument(db, id, doc) {
         const method = 'put';
         LOG.entry(method, id, doc);
-        return PouchDBUtils.getDocument(db, id)
+        return db.get(id)
+            .catch((error) => {
+                // Ignore the error.
+            })
             .then((existing) => {
                 doc._id = id;
                 if (existing) {
@@ -79,7 +85,10 @@ class PouchDBUtils {
     static removeDocument(db, id) {
         const method = 'remove';
         LOG.entry(method, id);
-        return PouchDBUtils.getDocument(db, id)
+        return db.get(id)
+            .catch((error) => {
+                // Ignore the error.
+            })
             .then((existing) => {
                 if (!existing) {
                     return;

@@ -44,11 +44,11 @@ describe('PouchDBDataCollection', () => {
         return db.bulkDocs([
             {
                 _id: pouchCollate.toIndexableString(['doge', 'thing1']),
-                data: { thing: 1 }
+                thing: 1
             },
             {
                 _id: pouchCollate.toIndexableString(['doge', 'thing2']),
-                data: { thing: 2 }
+                thing: 2
             },
         ]);
     });
@@ -117,7 +117,9 @@ describe('PouchDBDataCollection', () => {
                     return db.get(pouchCollate.toIndexableString(['doge', 'thing4']));
                 })
                 .then((doc) => {
-                    doc.data.should.deep.equal({ thing: 4 });
+                    delete doc._id;
+                    delete doc._rev;
+                    doc.should.deep.equal({ thing: 4 });
                 });
         });
 
@@ -141,7 +143,9 @@ describe('PouchDBDataCollection', () => {
                     return db.get(pouchCollate.toIndexableString(['doge', 'thing1']));
                 })
                 .then((doc) => {
-                    doc.data.should.deep.equal({ thing: 100 });
+                    delete doc._id;
+                    delete doc._rev;
+                    doc.should.deep.equal({ thing: 100 });
                 });
         });
 

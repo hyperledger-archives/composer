@@ -180,6 +180,41 @@ describe('DataService', () => {
 
     });
 
+    describe('#executeQuery', () => {
+
+        it('should call _executeQuery and handle no error', () => {
+            sinon.stub(dataService, '_executeQuery').yields(null, {});
+            return dataService.executeQuery('id')
+                .then((result) => {
+                    sinon.assert.calledWith(dataService._executeQuery, 'id');
+                    result.should.deep.equal({});
+                });
+        });
+
+        it('should call _executeQuery and handle an error', () => {
+            sinon.stub(dataService, '_executeQuery').yields(new Error('error'), null);
+            return dataService.executeQuery('id')
+                .then((result) => {
+                    throw new Error('should not getCollection here');
+                })
+                .catch((error) => {
+                    sinon.assert.calledWith(dataService._executeQuery, 'id');
+                    error.should.match(/error/);
+                });
+        });
+
+    });
+
+    describe('#_executeQuery', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                dataService._executeQuery('id');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
     describe('#ensureCollection', () => {
 
         it('should return an existing collection', () => {

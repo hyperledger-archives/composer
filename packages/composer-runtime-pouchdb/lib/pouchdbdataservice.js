@@ -177,6 +177,29 @@ class PouchDBDataService extends DataService {
     }
 
     /**
+     * Execute a query across all objects stored in all collections, using a query
+     * string that is dependent on the current Blockchain platform.
+     * @param {string} queryString The query string for the current Blockchain platform.
+     * @return {Promise} A promise that will be resolved with an array of objects
+     * when complete, or rejected with an error.
+     */
+    executeQuery(queryString) {
+        const method = 'executeQuery';
+        LOG.entry(method, queryString);
+        const query = JSON.parse(queryString);
+        return this.db.find(query)
+            .then((response) => {
+                const docs = response.docs.map((doc) => {
+                    delete doc._id;
+                    delete doc._rev;
+                    return doc;
+                });
+                LOG.exit(method, docs);
+                return docs;
+            });
+    }
+
+    /**
      * Remove all objects from the specified collection.
      * @param {string} id The ID of the collection.
      * @return {Promise} A promise that will be resolved when complete, or rejected

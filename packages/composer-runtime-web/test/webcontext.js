@@ -23,7 +23,6 @@ const WebDataService = require('..').WebDataService;
 const WebEventService = require('..').WebEventService;
 const WebHTTPService = require('..').WebHTTPService;
 const WebIdentityService = require('..').WebIdentityService;
-const WebQueryService = require('..').WebQueryService;
 
 require('chai').should();
 const sinon = require('sinon');
@@ -98,21 +97,6 @@ describe('WebContext', () => {
             let context = new WebContext(mockEngine, 'bob1');
             context.httpService = mockWebHTTPService;
             context.getHTTPService().should.equal(mockWebHTTPService);
-        });
-    });
-
-    describe('#getQueryService', () => {
-
-        it('should return the container query service', () => {
-            let context = new WebContext(mockEngine, 'bob1');
-            context.getQueryService().should.be.an.instanceOf(WebQueryService);
-        });
-
-        it('should return this.queryService if it is set', () => {
-            const mockWebQueryService = sinon.createStubInstance(WebQueryService);
-            let context = new WebContext(mockEngine, 'bob1');
-            context.queryService = mockWebQueryService;
-            context.getQueryService().should.equal(mockWebQueryService);
         });
     });
 
