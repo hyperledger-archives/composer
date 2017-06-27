@@ -2,7 +2,7 @@
 layout: default
 title: Hyperledger Composer CLI Commands
 section: reference
-index-order: 6
+index-order: 8
 sidebar: sidebars/reference.md
 excerpt: The [**list of all Hyperledger Composer CLI commands**](./commands.html) for performing multiple administrative, operational, and development tasks.
 ---
@@ -68,7 +68,7 @@ Revoke an identity from a participant: [composer identity revoke](./composer.ide
 
 `composer identity import`
 
-Import an identity to your local identity wallet: [composer identity import](./composer,identity.import.md)
+Import an identity to your local identity wallet: [composer identity import](./composer.identity.import.md)
 
 ## Transaction execution
 

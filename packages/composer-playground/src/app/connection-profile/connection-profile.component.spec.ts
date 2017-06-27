@@ -11,7 +11,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
-import { AlertService } from '../services/alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 let should = chai.should();
 

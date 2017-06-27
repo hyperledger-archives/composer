@@ -181,12 +181,12 @@ class WebConnection extends Connection {
     /**
      * Deploy all business network artifacts.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, force, businessNetwork) {
+    deploy(securityContext, businessNetwork, deployOptions) {
         let container = WebConnection.createContainer();
         let userID = securityContext.getUserID();
         let chaincodeID = container.getUUID();
@@ -196,7 +196,8 @@ class WebConnection extends Connection {
         let context = new WebContext(engine, userID, this);
         return businessNetwork.toArchive()
             .then((businessNetworkArchive) => {
-                return engine.init(context, 'init', [businessNetworkArchive.toString('base64')]);
+                const initArgs = {};
+                return engine.init(context, 'init', [businessNetworkArchive.toString('base64'), JSON.stringify(initArgs)]);
             })
             .then(() => {
                 return this.setChaincodeID(businessNetwork.getName(), chaincodeID);

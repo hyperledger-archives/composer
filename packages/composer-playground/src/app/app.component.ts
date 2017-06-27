@@ -5,7 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { AdminService } from './services/admin.service';
 import { ClientService } from './services/client.service';
-import { AlertService } from './services/alert.service';
+import { AlertService } from './basic-modals/alert.service';
 import { ConnectionProfileService } from './services/connectionprofile.service';
 import { WalletService } from './services/wallet.service';
 import { IdentityService } from './services/identity.service';
@@ -13,9 +13,11 @@ import { InitializationService } from './services/initialization.service';
 import { BusyComponent } from './basic-modals/busy';
 import { ErrorComponent } from './basic-modals/error';
 import { WelcomeComponent } from './welcome';
-import { VersionCheckComponent } from './version-check/version-check.component.ts';
+import { VersionCheckComponent } from './version-check/version-check.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { AboutService } from './services/about.service';
+import { TransactionService } from './services/transaction.service';
+import { ViewTransactionComponent } from './view-transaction';
 
 /* tslint:disable-next-line:no-var-requires */
 const LZString = require('lz-string');
@@ -60,7 +62,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 private alertService: AlertService,
                 private modalService: NgbModal,
                 private localStorageService: LocalStorageService,
-                private aboutService: AboutService) {
+                private aboutService: AboutService,
+                private transactionService: TransactionService) {
 
     }
 
@@ -74,6 +77,9 @@ export class AppComponent implements OnInit, OnDestroy {
             }),
             this.route.queryParams.subscribe((queryParams) => {
                 this.queryParamsUpdated(queryParams);
+            }),
+            this.transactionService.event$.subscribe((eventStatus) => {
+                this.onEvent(eventStatus);
             }),
             this.router.events.filter((e) => e instanceof NavigationEnd).subscribe((e) => {
                 if (e['url'] === '/') {
@@ -211,6 +217,12 @@ export class AppComponent implements OnInit, OnDestroy {
         if (errorStatus) {
             const modalRef = this.modalService.open(ErrorComponent);
             modalRef.componentInstance.error = errorStatus;
+        }
+    }
+
+    onEvent(eventStatus) {
+        if (eventStatus) {
+            this.modalService.open(ViewTransactionComponent);
         }
     }
 

@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject } from 'rxjs/Rx';
 import { AdminService } from './admin.service';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkConnection } from 'composer-client';
 import { BusinessNetworkDefinition, Util, ModelFile, Script, AclFile } from 'composer-common';
@@ -99,7 +99,7 @@ export class ClientService {
             if (type === 'model') {
                 let modelManager = this.getBusinessNetwork().getModelManager();
                 let original: ModelFile = modelManager.getModelFile(id);
-                let modelFile = this.createModelFile(content, original.getFileName());
+                let modelFile = this.createModelFile(content, original.getName());
                 if (this.modelNamespaceCollides(modelFile.getNamespace(), id)) {
                     throw new Error(`The namespace collides with existing model namespace ${modelFile.getNamespace()}`);
                 }

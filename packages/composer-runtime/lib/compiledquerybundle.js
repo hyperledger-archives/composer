@@ -22,6 +22,7 @@ const LOG = Logger.getLog('CompiledQueryBundle');
 /**
  * A script compiler compiles all scripts in a script manager into a compiled
  * script bundle that can easily be called by the runtime.
+ * @protected
  */
 class CompiledQueryBundle {
 

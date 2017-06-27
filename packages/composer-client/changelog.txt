@@ -12,8 +12,9 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.9.0 {c7bd5d19b93915ff27dd19bd131e95ee} 2017-06-26
+Version 0.9.0 {d6ebf2b722345ee0f7dac56f42730f12} 2017-06-26
 - Added buildQuery and query
+- Removed deprecated BusinesNetworkConnection.existsAssetRegistry method
 
 Version 0.7.3 {bf1e2d4bd784b49a7303565e284c881f} 2017-05-18
 - Deprecated existsAssetRegistry

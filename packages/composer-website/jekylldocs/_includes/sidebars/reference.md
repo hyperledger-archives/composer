@@ -10,6 +10,8 @@
   - [npm Modules](../reference/MeetTheModules.html )
   - [Modeling Language](../reference/cto_language.html )
   - [Access Control Language](../reference/acl_language.html )
+  - [Query Language](../reference/query-language.html)
+  - [Model Compatibility](../reference/model-compatibility.html)
   - [Connection Profile](../reference/connectionprofile.html )
   - [Transaction Processor Functions](../reference/js_scripts.html )
   - [CLI Commands](../reference/commands.html )

@@ -69,25 +69,6 @@ class Factory {
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
      * @return {Resource} the new instance
-     * @throws {ModelException} if the type is not registered with the ModelManager
-     * @deprecated - use newResource instead
-     */
-    newInstance(ns, type, id, options) {
-        return this.newResource(ns, type, id, options);
-    }
-
-    /**
-     * Create a new Resource with a given namespace, type name and id
-     * @param {string} ns - the namespace of the Resource
-     * @param {string} type - the type of the Resource
-     * @param {string} id - the identifier
-     * @param {Object} [options] - an optional set of options
-     * @param {boolean} [options.disableValidation] - pass true if you want the factory to
-     * return a {@link Resource} instead of a {@link ValidatedResource}. Defaults to false.
-     * @param {string} [options.generate] - Pass one of: <dl>
-     * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
-     * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
-     * @return {Resource} the new instance
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
     newResource(ns, type, id, options) {
@@ -213,7 +194,7 @@ class Factory {
             classDecl.accept(visitor, parameters);
         }
 
-        debug('Factory.newInstance created concept %s', classDecl.getFullyQualifiedName() );
+        debug('Factory.newResource created concept %s', classDecl.getFullyQualifiedName() );
         return newObj;
     }
 

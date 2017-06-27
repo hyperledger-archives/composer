@@ -1,6 +1,7 @@
 import { Component, OnInit, trigger, style, transition, animate } from '@angular/core';
 import 'rxjs/add/operator/debounceTime';
-import { AlertService } from '../../services/alert.service';
+import { TransactionService } from '../../services/transaction.service';
+import { AlertService } from '../alert.service';
 
 @Component({
     selector: 'success',
@@ -22,6 +23,7 @@ import { AlertService } from '../../services/alert.service';
 export class SuccessComponent implements OnInit {
 
     messages: Array<any> = [];
+    events = [];
 
     constructor(private alertService: AlertService) {
     }
@@ -48,6 +50,12 @@ export class SuccessComponent implements OnInit {
                 }
             }
         });
+    }
+
+    onLink(callback) {
+        if (callback) {
+            callback();
+        }
     }
 
     close(index) {

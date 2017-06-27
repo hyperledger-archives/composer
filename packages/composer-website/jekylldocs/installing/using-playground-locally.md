@@ -10,7 +10,7 @@ index-order: 2
 
 # Installing and running {{site.data.conrefs.composer_full}} Playground locally
 
-This tutorial will take you through how to install and run the {{site.data.conrefs.composer_full}} Playground on your local machine. It also creates an instance of {{site.data.conrefs.hlf_full}} v1.0-Beta.
+This tutorial will take you through how to install and run the {{site.data.conrefs.composer_full}} Playground on your local machine. It also creates an instance of {{site.data.conrefs.hlf_full}} v1.0 Beta 1.
 
 {{site.data.conrefs.composer_full}} Playground can also be used in a "browser only" mode, without a running instance of {{site.data.conrefs.hlf_full}}. When used in this mode, all the functionality of {{site.data.conrefs.composer_full}} Playground is available, but all of the data (business networks, assets, participants, and transactions) is persisted into browser local storage.
 
@@ -43,7 +43,7 @@ docker images -aq | xargs docker rmi -f
 
 In {{site.data.conrefs.hlf_full}} Beta peers now enforce the concepts of admins and members. Admin user's identities and crypto material must be available to the peer at deployment. To make that identity and its crypto material available, your must import it to your local `keyValStore` directory before deploying the business network. To import the identity, use the [`composer identity import` command](../reference/composer.identity.import.html). When importing an identity, you do not assign it a secret, however the `composer network deploy` command requires a secret. If you are using an imported identity, you can enter any value for the secret.
 
-When connecting to the peer you must specify an identity where the userID contains the text `admin`, for example, `PeerAdmin`, `myadmin`, or `AdminPeer` are all valid userID's. Peers in different organizations may have different admin users. Only an admin user of peer's organization will be able to deploy a business network to their peers.
+When connecting to the peer you must use an identity (certificate) where the Common Name (CN) contains the text `admin`, for example, `PeerAdmin`, `myadmin`, `Admin` or `AdminPeer` are all valid Common Names. Peers in different organizations may have different admin users. Only an admin user of peer's organization will be able to deploy a business network to their peers.
 
 Due to many breaking API changes between {{site.data.conrefs.hlf_full}} v1.0 alpha 1 and {{site.data.conrefs.hlf_full}} v1.0 beta, {{site.data.conrefs.composer_full}} only supports the beta level and cannot support older versions of {{site.data.conrefs.hlf_full}} v1.0 (e.g. alpha 1).
 

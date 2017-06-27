@@ -12,7 +12,7 @@ let should = chai.should();
 let expect = chai.expect;
 
 import { AdminService } from './admin.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition, ModelFile, Script, AclFile } from 'composer-common';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { BusinessNetworkConnection } from 'composer-client';
@@ -150,7 +150,7 @@ describe('ClientService', () => {
 
         it('should update a model file if id matches namespace', inject([ClientService], (service: ClientService) => {
             modelFileMock.getNamespace.returns('model-ns');
-            modelFileMock.getFileName.returns('model.cto');
+            modelFileMock.getName.returns('model.cto');
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
 
             let mockCreateModelFile = sinon.stub(service, 'createModelFile').returns(modelFileMock);
@@ -166,7 +166,7 @@ describe('ClientService', () => {
         it('should replace a model file if id does not match namespace', inject([ClientService], (service: ClientService) => {
             businessNetworkDefMock.getModelManager.returns(modelManagerMock);
             modelFileMock.getNamespace.returns('model-ns');
-            modelFileMock.getFileName.returns('model.cto');
+            modelFileMock.getName.returns('model.cto');
 
             let mockCreateModelFile = sinon.stub(service, 'createModelFile').returns(modelFileMock);
 

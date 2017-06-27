@@ -42,37 +42,36 @@ let apiNamespace;
 let fileName;
 
 module.exports = yeoman.Base.extend({
-    constructor: function() {
+    constructor: function () {
         yeoman.Base.apply(this, arguments);
         this.options = this.env.options;
-        if(arguments[1].skipInstall !== undefined){
+        if (arguments[1].skipInstall !== undefined) {
             skipInstall = arguments[1].skipInstall;
         }
-        if(arguments[1].embeddedRuntime !== undefined){
-            businessNetworkConnection = new BusinessNetworkConnection({ fs: bfs_fs });
-        }
-        else{
-            businessNetworkConnection= new BusinessNetworkConnection();
+        if (arguments[1].embeddedRuntime !== undefined) {
+            businessNetworkConnection = new BusinessNetworkConnection({
+                fs: bfs_fs
+            });
+        } else {
+            businessNetworkConnection = new BusinessNetworkConnection();
         }
     },
 
     prompting: function () {
         console.log('Welcome to the Hyperledger Composer Angular project generator');
 
-        return this.prompt([
-            {
-                type: 'confirm',
-                name: 'liveNetwork',
-                message: 'Do you want to connect to a running Business Network?',
-                default: false,
-                store: true
-            }
-        ])
+        return this.prompt([{
+            type: 'confirm',
+            name: 'liveNetwork',
+            message: 'Do you want to connect to a running Business Network?',
+            default: false,
+            store: true
+        }])
             .then((answers) => {
                 liveNetwork = answers.liveNetwork;
                 let questions;
 
-                if(liveNetwork){
+                if (liveNetwork) {
                     questions = [{
                         when: !this.options.appName,
                         type: 'input',
@@ -118,7 +117,7 @@ module.exports = yeoman.Base.extend({
                         message: 'Business network identifier:',
                         default: 'digitalproperty-network',
                         store: true,
-                        when: function(answers) {
+                        when: function (answers) {
                             return !answers.isNpmSameAsNetworkIdentifier;
                         },
                         validate: Util.validateBusinessNetworkName
@@ -136,7 +135,7 @@ module.exports = yeoman.Base.extend({
                         name: 'enrollmentId',
                         message: 'Enrollment ID:',
                         store: true,
-                        default: 'WebAppAdmin',
+                        default: 'admin',
                         validate: Util.validateEnrollmentId
                     },
                     {
@@ -144,7 +143,7 @@ module.exports = yeoman.Base.extend({
                         name: 'enrollmentSecret',
                         message: 'Enrollment secret:',
                         store: true,
-                        default: 'DJY27pEnl16d',
+                        default: 'adminpw',
                         validate: Util.validateEnrollmentSecret
                     },
                     {
@@ -153,119 +152,74 @@ module.exports = yeoman.Base.extend({
                         message: 'Do you want to generate a new REST API or connect to an existing REST API? ',
                         default: 'generate',
                         store: true,
-                        choices: [
-                            {name: 'Generate a new REST API', value: 'generate'},
-                            {name: 'Connect to an existing REST API', value: 'connect'}
+                        choices: [{
+                            name: 'Generate a new REST API',
+                            value: 'generate'
+                        },
+                        {
+                            name: 'Connect to an existing REST API',
+                            value: 'connect'
+                        }
                         ],
-                        validate: function(input) {
-                            if(input !== null && input !== undefined && input !== '') {
+                        validate: function (input) {
+                            if (input !== null && input !== undefined && input !== '') {
                                 return true;
-                            }
-                            else {
+                            } else {
                                 return 'Connection Profile cannot be null or empty.';
                             }
                         }
+                    }
+                    ];
+                } else {
+                    questions = [{
+                        when: !this.options.appName,
+                        type: 'input',
+                        name: 'appName',
+                        message: 'Project name:',
+                        default: 'angular-app',
+                        store: true,
+                        validate: Util.validateAppName
                     },
                     {
                         type: 'input',
-                        name: 'enrollmentId',
-                        message: 'Enrollment ID:',
+                        name: 'appDescription',
+                        message: 'Description:',
+                        default: 'Hyperledger Composer Angular project',
                         store: true,
-                        default: 'WebAppAdmin',
-                        validate: function(input) {
-                            if(input !== null && input !== undefined && input !== '') {
-                                return true;
-                            }
-                            else {
-                                return 'Enrollment id name cannot be null or empty.';
-                            }
-                        }
+                        validate: Util.validateDescription
                     },
                     {
                         type: 'input',
-                        name: 'enrollmentSecret',
-                        message: 'Enrollment secret:',
+                        name: 'authorName',
+                        message: 'Author name:',
                         store: true,
-                        default: 'DJY27pEnl16d',
-                        validate: function(input) {
-                            if(input !== null && input !== undefined && input !== '') {
-                                return true;
-                            }
-                            else {
-                                return 'Enrollment Secret email cannot be null or empty.';
-                            }
-                        }
+                        validate: Util.validateAuthorName
                     },
                     {
-                        type: 'list',
-                        name: 'apiServer',
-                        message: 'Do you want to generate a new REST API or connect to an existing REST API?: ',
-                        default: 'generate',
+                        type: 'input',
+                        name: 'authorEmail',
+                        message: 'Author email:',
                         store: true,
-                        choices: [
-                            {name: 'Generate a new REST API', value: 'generate'},
-                            {name: 'Connect to an existing REST API', value: 'connect'}
-                        ],
-                        validate: function(input) {
-                            if(input !== null && input !== undefined) {
-                                return true;
-                            }
-                            else {
-                                return 'Must choose whether a REST API should be generated, or if the application should exist to an existing REST API';
-                            }
-                        }
-                    }];
-                }
-                else{
-                    questions = [
-                        {
-                            when: !this.options.appName,
-                            type: 'input',
-                            name: 'appName',
-                            message: 'Project name:',
-                            default: 'angular-app',
-                            store: true,
-                            validate: Util.validateAppName
-                        },
-                        {
-                            type: 'input',
-                            name: 'appDescription',
-                            message: 'Description:',
-                            default: 'Hyperledger Composer Angular project',
-                            store: true,
-                            validate: Util.validateDescription
-                        },
-                        {
-                            type: 'input',
-                            name: 'authorName',
-                            message: 'Author name:',
-                            store: true,
-                            validate: Util.validateAuthorName
-                        },
-                        {
-                            type: 'input',
-                            name: 'authorEmail',
-                            message: 'Author email:',
-                            store: true,
 
-                            validate: Util.validateAuthorEmail
-                        },
-                        {
-                            type: 'input',
-                            name: 'license',
-                            message: 'License:',
-                            default: 'Apache-2.0',
-                            store: true,
-                            validate: Util.validateLicense
-                        },
-                        {
-                            type: 'input',
-                            name: 'fileName',
-                            message: 'Business network archive file (Path from the current working directory):',
-                            default: 'digitalproperty-network.bna',
-                            store: true,
-                            validate: Util.validateBnaName
-                        }];
+                        validate: Util.validateAuthorEmail
+                    },
+                    {
+                        type: 'input',
+                        name: 'license',
+                        message: 'License:',
+                        default: 'Apache-2.0',
+                        store: true,
+                        validate: Util.validateLicense
+                    },
+                    {
+                        type: 'input',
+                        name: 'fileName',
+                        message: 'Business network archive file (Path from the current working directory):',
+                        default: 'digitalproperty-network.bna',
+                        store: true,
+                        validate: Util.validateBnaName
+                    }
+                    ];
                 }
 
                 let self = this;
@@ -279,14 +233,14 @@ module.exports = yeoman.Base.extend({
 
                     let nextQuestions;
 
-                    if(liveNetwork){
+                    if (liveNetwork) {
                         networkIdentifier = answers.networkIdentifier;
                         connectionProfileName = answers.connectionProfileName;
                         enrollmentId = answers.enrollmentId;
                         enrollmentSecret = answers.enrollmentSecret;
                         apiServer = answers.apiServer;
 
-                        if(apiServer === 'generate'){
+                        if (apiServer === 'generate') {
 
                             apiIP = 'http://localhost';
 
@@ -303,14 +257,19 @@ module.exports = yeoman.Base.extend({
                                 message: 'Should namespaces be used in the generated REST API?',
                                 default: 'never',
                                 store: true,
-                                choices: [
-                                    {name: 'Always use namespaces',value: 'always'},
-                                    {name: 'Never use namespaces',value: 'never'}
+                                choices: [{
+                                    name: 'Always use namespaces',
+                                    value: 'always'
+                                },
+                                {
+                                    name: 'Never use namespaces',
+                                    value: 'never'
+                                }
                                 ],
                                 validate: Util.validateNamespace
-                            }];
-                        }
-                        else if(apiServer === 'connect'){
+                            }
+                            ];
+                        } else if (apiServer === 'connect') {
                             nextQuestions = [{
                                 type: 'input',
                                 name: 'apiIP',
@@ -331,26 +290,30 @@ module.exports = yeoman.Base.extend({
                                 message: 'Should namespaces be used in the generated REST API?',
                                 default: 'never',
                                 store: true,
-                                choices: [
-                                    {name: 'Namespaces are used', value: 'always'},
-                                    {name: 'Namespaces are not used', value: 'never'}
+                                choices: [{
+                                    name: 'Namespaces are used',
+                                    value: 'always'
+                                },
+                                {
+                                    name: 'Namespaces are not used',
+                                    value: 'never'
+                                }
                                 ],
                                 validate: Util.validateNamespace
-                            }];
-                        }
-                        else{
+                            }
+                            ];
+                        } else {
                             console.log('Unknown option');
                         }
 
-                        return self.prompt(nextQuestions).then(function(answers){
-                            if(apiIP === undefined){
+                        return self.prompt(nextQuestions).then(function (answers) {
+                            if (apiIP === undefined) {
                                 apiIP = answers.apiIP;
                             }
                             apiPort = answers.apiPort;
                             apiNamespace = answers.apiNamespace;
                         });
-                    }
-                    else{
+                    } else {
                         fileName = answers.fileName;
 
                         nextQuestions = [{
@@ -383,10 +346,11 @@ module.exports = yeoman.Base.extend({
                             }
                             ],
                             validate: Util.validateNamespace
-                        }];
+                        }
+                        ];
 
-                        return self.prompt(nextQuestions).then(function(answers){
-                            if(apiIP === undefined){
+                        return self.prompt(nextQuestions).then(function (answers) {
+                            if (apiIP === undefined) {
                                 apiIP = answers.apiIP;
                             }
                             apiPort = answers.apiPort;
@@ -400,7 +364,7 @@ module.exports = yeoman.Base.extend({
     writing: function () {
         let completedApp = new Promise((resolve, reject) => {
 
-            if(liveNetwork){
+            if (liveNetwork) {
                 return businessNetworkConnection.connect(connectionProfileName, networkIdentifier, enrollmentId, enrollmentSecret)
                     .then((result) => {
                         businessNetworkDefinition = result;
@@ -410,16 +374,21 @@ module.exports = yeoman.Base.extend({
                         this.destinationRoot(appName);
                         destinationPath = this.destinationPath();
                         resolve(this._createApp());
+                    })
+                    .catch((err) => {
+                        reject(err);
                     });
-            }
-            else{
-                fs.readFile(fileName,(err,buffer) => {
+            } else {
+                fs.readFile(fileName, (err, buffer) => {
                     return BusinessNetworkDefinition.fromArchive(buffer)
                         .then((result) => {
                             businessNetworkDefinition = result;
                             this.destinationRoot(appName);
                             destinationPath = this.destinationPath();
                             resolve(this._createApp());
+                        })
+                        .catch((err) => {
+                            reject(err);
                         });
                 });
             }
@@ -430,7 +399,7 @@ module.exports = yeoman.Base.extend({
 
     },
 
-    _createApp: function(){
+    _createApp: function () {
         /* This function will actually generate application code. */
 
         let createdApp = new Promise((resolve, reject) => {
@@ -441,7 +410,7 @@ module.exports = yeoman.Base.extend({
             modelManager = introspector.getModelManager();
             namespaceList = modelManager.getNamespaces();
 
-            shell.mkdir('-p', destinationPath+'/src/assets/');
+            shell.mkdir('-p', destinationPath + '/src/assets/');
             namespaceList.forEach((namespace) => {
 
                 let modelFile = modelManager.getModelFile(namespace);
@@ -449,37 +418,49 @@ module.exports = yeoman.Base.extend({
 
                 assetDeclarations.forEach((asset) => {
 
-                    let tempList = [];
-                    assetProperties = asset.getProperties();
+                    if (!asset.isAbstract()) {
 
-                    assetProperties.forEach((property) =>   {
-                        if(property.constructor.name === 'Field'){
-                            if(property.isTypeEnum() || property.isPrimitive() || !property.isPrimitive()){
-                                tempList.push({'name':property.getName(),'type':property.getType()});
-                            }
-                            else{
-                                console.log('Unknown property type');
-                            }
-                        }
-                        else if(property.constructor.name === 'RelationshipDeclaration'){
-                            tempList.push({'name':property.getName(),'type':property.getType()});
-                        }
-                        else{
-                            console.log('Unknown property constructor name');
-                        }
-                    });
+                        let tempList = [];
+                        assetProperties = asset.getProperties();
 
-                    assetList.push({'name':asset.name,'namespace':asset.getModelFile().getNamespace(), 'properties':tempList, 'identifier':asset.getIdentifierFieldName()});
-                    shell.mkdir('-p', destinationPath+'/src/app/'+asset.name);
+                        assetProperties.forEach((property) => {
+                            if (property.constructor.name === 'Field') {
+                                if (property.isTypeEnum() || property.isPrimitive() || !property.isPrimitive()) {
+                                    tempList.push({
+                                        'name': property.getName(),
+                                        'type': property.getType()
+                                    });
+                                } else {
+                                    console.log('Unknown property type: ' + property);
+                                }
+                            } else if (property.constructor.name === 'RelationshipDeclaration') {
+                                tempList.push({
+                                    'name': property.getName(),
+                                    'type': property.getType()
+                                });
+                            } else {
+                                console.log('Unknown property constructor name: ' + property );
+                            }
+                        });
+
+                        assetList.push({
+                            'name': asset.name,
+                            'namespace': asset.getModelFile().getNamespace(),
+                            'properties': tempList,
+                            'identifier': asset.getIdentifierFieldName()
+                        });
+                        shell.mkdir('-p', destinationPath + '/src/app/' + asset.name);
+
+                    }
                 });
             });
 
             assetList.forEach((asset) => {
-                assetServiceNames.push(asset.name+'Service');
+                assetServiceNames.push(asset.name + 'Service');
             });
 
             assetList.forEach((asset) => {
-                assetComponentNames.push(asset.name+'Component');
+                assetComponentNames.push(asset.name + 'Component');
             });
 
             let model = this._generateTemplateModel();
@@ -488,37 +469,48 @@ module.exports = yeoman.Base.extend({
             this.fs.move(this.destinationPath('_dot_editorconfig'), this.destinationPath('.editorconfig'));
             this.fs.move(this.destinationPath('_dot_gitignore'), this.destinationPath('.gitignore'));
 
-            for(let x=0;x<assetList.length;x++){
+            for (let x = 0; x < assetList.length; x++) {
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.component.ts'),
-                    this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.ts'),
-                    { currentAsset: assetList[x], namespace: assetList[x].namespace, assetIdentifier:assetList[x].identifier }
+                    this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.component.ts'), {
+                        currentAsset: assetList[x],
+                        namespace: assetList[x].namespace,
+                        assetIdentifier: assetList[x].identifier
+                    }
                 );
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.service.ts'),
-                    this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.service.ts'),
-                    { assetName: assetList[x].name, namespace: assetList[x].namespace, apiNamespace: apiNamespace }
+                    this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.service.ts'), {
+                        assetName: assetList[x].name,
+                        namespace: assetList[x].namespace,
+                        apiNamespace: apiNamespace
+                    }
                 );
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.component.spec.ts'),
-                    this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.spec.ts'),
-                    { assetName: assetList[x].name }
+                    this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.component.spec.ts'), {
+                        assetName: assetList[x].name
+                    }
                 );
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.component.html'),
-                    this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.html'),
-                    { currentAsset: assetList[x] }
+                    this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.component.html'), {
+                        currentAsset: assetList[x]
+                    }
                 );
 
                 this.fs.copyTpl(
                     this.templatePath('src/app/asset/asset.component.css'),
-                    this.destinationPath('src/app/'+assetList[x].name+'/'+assetList[x].name+'.component.css'),
-                    { styling: '{}' }
+                    this.destinationPath('src/app/' + assetList[x].name + '/' + assetList[x].name + '.component.css'), {
+                        styling: '{}'
+                    }
                 );
             }
 
             let visitor = new TypescriptVisitor();
-            let parameters = {fileWriter:new FileWriter(this.destinationPath()+'/src/app')};
+            let parameters = {
+                fileWriter: new FileWriter(this.destinationPath() + '/src/app')
+            };
 
             modelManager.accept(visitor, parameters);
 
@@ -528,24 +520,23 @@ module.exports = yeoman.Base.extend({
 
             resolve();
         });
-        return createdApp.then(()=>{
+        return createdApp.then(() => {
             console.log('Created application!');
         });
     },
 
     install: function () {
-        if(!skipInstall){
+        if (!skipInstall) {
             return this.installDependencies({
                 bower: false,
                 npm: true
             });
-        }
-        else{
+        } else {
             console.log('Skipped installing dependencies');
         }
     },
 
-    _generateTemplateModel: function() {
+    _generateTemplateModel: function () {
         return {
             appName: appName,
             appDescription: appDescription,
@@ -568,8 +559,7 @@ module.exports = yeoman.Base.extend({
         };
     },
 
-    end: function() {
+    end: function () {
         shell.exec('pkill yo');
     }
 });
-

@@ -46,8 +46,7 @@ participant Trader identified by tradeId {
     o String firstName
     o String lastName
 }
-transaction Trade identified by transactionId {
-    o String transactionId
+transaction Trade {
     --> Commodity commodity
     --> Trader newOwner
 }
@@ -64,20 +63,6 @@ Now that the domain model has been defined, we can define the business logic for
 Open the file **Script File** from the left-hand side navigation and replace the entire contents of this with the function below.
 
 ```
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 /**
  * Track the trade of a commodity from one trader to another
  * @param {org.acme.mynetwork.Trade} trade - the trade to be processed
@@ -108,7 +93,7 @@ rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.acme.mynetwork"
+    resource: "org.acme.mynetwork.*"
     action: ALLOW
 }
 ```
