@@ -429,6 +429,7 @@ function mixin(sourceClass) {
 
 mixin(require('./engine.businessnetworks'));
 mixin(require('./engine.identities'));
+mixin(require('./engine.queries'));
 mixin(require('./engine.registries'));
 mixin(require('./engine.resources'));
 mixin(require('./engine.transactions'));
