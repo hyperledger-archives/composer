@@ -1,3 +1,8 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
 ---
 ################################################################################
 #
@@ -9,22 +14,20 @@
 ################################################################################
 Profiles:
 
-    TwoOrgsOrdererGenesis:
+    ComposerOrdererGenesis:
         Orderer:
             <<: *OrdererDefaults
             Organizations:
                 - *OrdererOrg
         Consortiums:
-            SampleConsortium:
+            ComposerConsortium:
                 Organizations:
-                    - *Org0
                     - *Org1
-    TwoOrgsChannel:
-        Consortium: SampleConsortium
+    ComposerChannel:
+        Consortium: ComposerConsortium
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Org0
                 - *Org1
 
 ################################################################################
@@ -42,117 +45,35 @@ Organizations:
     - &OrdererOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: OrdererMSP
+        Name: OrdererOrg
 
         # ID to load the MSP definition as
         ID: OrdererMSP
 
-        #########################################################################
-        # FIXME: this path needs to be fixed to point to the actual location of #
-        # the project 'fabric-sdk-node' in the file system                      #
-        #########################################################################
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: /fabric-sdk-node/test/fixtures/channel/crypto-config/ordererOrganizations/example.com/msp/
+        MSPDir: crypto-config/ordererOrganizations/example.com/msp
 
-        # AdminPrincipal dictates the type of principal used for an organization's Admins policy
-        # Today, only the values of Role.ADMIN ad Role.MEMBER are accepted, which indicates a principal
-        # of role type ADMIN and role type MEMBER respectively
-        AdminPrincipal: Role.MEMBER
-
-        # BCCSP (Blockchain crypto provider): Select which crypto implementation or
-        # library to use
-        BCCSP:
-            Default: SW
-            SW:
-                Hash: SHA2
-                Security: 256
-                # Location of Key Store. If this is unset, a location will
-                # be chosen using 'MSPDir'/keystore
-                FileKeyStore:
-                    KeyStore:
-
-    - &Org0
-        # DefaultOrg defines the organization which is used in the sampleconfig
-        # of the fabric.git development environment
-        Name: Org1MSP
-
-        # ID to load the MSP definition as
-        ID: Org1MSP
-
-        #########################################################################
-        # FIXME: this path needs to be fixed to point to the actual location of #
-        # the project 'fabric-sdk-node' in the file system                      #
-        #########################################################################
-        # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: /fabric-sdk-node/test/fixtures/channel/crypto-config/peerOrganizations/org1.example.com/msp/
-
-        # AdminPrincipal dictates the type of principal used for an
-        # organization's Admins policy. Today, only the values of Role.ADMIN and
-        # Role.MEMBER are accepted, which indicates a principal of role type
-        # ADMIN and role type MEMBER respectively.
+        # turn off security for the channel
         AdminPrincipal: Role.ADMIN
-
-        # BCCSP (Blockchain crypto provider): Select which crypto implementation or
-        # library to use
-        BCCSP:
-            Default: SW
-            SW:
-                # TODO: The default Hash and Security level needs refactoring to
-                # be fully configurable. Changing these defaults requires
-                # coordination SHA2 is hardcoded in several places, not only
-                # BCCSP.
-                Hash: SHA2
-                Security: 256
-                # Location of key store. If this is unset, a location will be
-                # chosen using: 'MSPDir'/keystore
-                FileKeyStore:
-                    KeyStore:
-
-        AnchorPeers:
-            # AnchorPeers defines the location of peers which can be used for
-            # cross-org gossip communication. Note, this value is only encoded
-            # in the genesis block in the Application section context.
-            - Host: peer0.org1.example.com
-              Port: 7051
 
     - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: Org2MSP
+        Name: Org1
 
         # ID to load the MSP definition as
-        ID: Org2MSP
+        ID: Org1MSP
 
-        #########################################################################
-        # FIXME: this path needs to be fixed to point to the actual location of #
-        # the project 'fabric-sdk-node' in the file system                      #
-        #########################################################################
-        # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: /fabric-sdk-node/test/fixtures/channel/crypto-config/peerOrganizations/org2.example.com/msp/
+        MSPDir: crypto-config/peerOrganizations/org1.example.com/msp
 
-        # AdminPrincipal dictates the type of principal used for an
-        # organization's Admins policy. Today, only the values of Role.ADMIN and
-        # Role.MEMBER are accepted, which indicates a principal of role type
-        # ADMIN and role type MEMBER respectively.
+        # turn off security for the peer
         AdminPrincipal: Role.ADMIN
-
-        # BCCSP (Blockchain crypto provider): Select which crypto implementation or
-        # library to use
-        BCCSP:
-            Default: SW
-            SW:
-                Hash: SHA2
-                Security: 256
-                # Location of Key Store. If this is unset, a location will
-                # be chosen using 'MSPDir'/keystore
-                FileKeyStore:
-                    KeyStore:
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: peer0.org2.example.com
+            - Host: peer0.org1.example.com
               Port: 7051
 
 ################################################################################
@@ -182,19 +103,13 @@ Orderer: &OrdererDefaults
         MaxMessageCount: 10
 
         # Absolute Max Bytes: The absolute maximum number of bytes allowed for
-        # the serialized messages in a batch. If the "kafka" OrdererType is
-        # selected, set 'message.max.bytes' and 'replica.fetch.max.bytes' on the
-        # Kafka brokers to a value that is equal to or larger than this one.
-        AbsoluteMaxBytes: 99 MB
+        # the serialized messages in a batch.
+        AbsoluteMaxBytes: 98 MB
 
         # Preferred Max Bytes: The preferred maximum number of bytes allowed for
         # the serialized messages in a batch. A message larger than the preferred
         # max bytes will result in a batch larger than preferred max bytes.
         PreferredMaxBytes: 512 KB
-
-    # Max Channels is the maximum number of channels to allow on the ordering
-    # network. When set to 0, this implies no maximum number of channels.
-    MaxChannels: 0
 
     Kafka:
         # Brokers: A list of Kafka brokers to which the orderer connects
