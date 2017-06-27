@@ -29,8 +29,8 @@ The `statement` property contains the defining rules of the query, and can have 
 - `AND` is an optional operator which defines additional conditions.
 - `OR` is an optional operator which defines alternative conditions.
 - `ORDER BY` is an optional operator which defines the sorting or results.
-- `SKIP` is an optional operator which defines the number of results to page through.
-- `LIMIT` is an optional operator which defines the maximum number of results to return from a query.
+- `SKIP` is an optional operator which defines the number of results to skip.
+- `LIMIT` is an optional operator which defines the maximum number of results to return from a query, by default limit is set at 25.
 
 #### Example Query
 
