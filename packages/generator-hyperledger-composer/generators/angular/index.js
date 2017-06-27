@@ -374,6 +374,9 @@ module.exports = yeoman.Base.extend({
                         this.destinationRoot(appName);
                         destinationPath = this.destinationPath();
                         resolve(this._createApp());
+                    })
+                    .catch((err) => {
+                        reject(err);
                     });
             } else {
                 fs.readFile(fileName, (err, buffer) => {
@@ -428,7 +431,7 @@ module.exports = yeoman.Base.extend({
                                         'type': property.getType()
                                     });
                                 } else {
-                                    console.log('Unknown property type');
+                                    console.log('Unknown property type: ' + property);
                                 }
                             } else if (property.constructor.name === 'RelationshipDeclaration') {
                                 tempList.push({
@@ -436,7 +439,7 @@ module.exports = yeoman.Base.extend({
                                     'type': property.getType()
                                 });
                             } else {
-                                console.log('Unknown property constructor name');
+                                console.log('Unknown property constructor name: ' + property );
                             }
                         });
 
