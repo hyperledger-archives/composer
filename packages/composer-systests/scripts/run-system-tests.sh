@@ -43,11 +43,11 @@ elif [[ ${SYSTEST} == hlfv1* ]]; then
     else
         DOCKER_FILE=${DIR}/hlfv1/docker-compose.yml
     fi
-    docker pull hyperledger/fabric-peer:x86_64-1.0.0-beta
-    docker pull hyperledger/fabric-ca:x86_64-1.0.0-beta
-    docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-beta
-    docker pull hyperledger/fabric-orderer:x86_64-1.0.0-beta
-    docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-beta
+    docker pull hyperledger/fabric-peer:x86_64-1.0.0-rc1
+    docker pull hyperledger/fabric-ca:x86_64-1.0.0-rc1
+    docker pull hyperledger/fabric-ccenv:x86_64-1.0.0-rc1
+    docker pull hyperledger/fabric-orderer:x86_64-1.0.0-rc1
+    docker pull hyperledger/fabric-couchdb:x86_64-1.0.0-rc1
     if [ ! -d ./hlfv1/crypto-config ]; then
         cd hlfv1
         tar -xvf crypto-config.tar.gz
@@ -67,15 +67,15 @@ fi
 if [[ ${SYSTEST} == hlfv1* ]]; then
     sleep 10
     if [[ ${SYSTEST} == *tls ]]; then
-        # Create the channel
+        # Create the channel TODO: FIX
         docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx --tls true --cafile /etc/hyperledger/orderer/example.com-cert.pem
         # Join peer0 to the channel.
         docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel join -b mychannel.block --tls true --cafile /etc/hyperledger/orderer/example.com-cert.pem
     else
         # Create the channel
-        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c mychannel -f /etc/hyperledger/configtx/mychannel.tx
+        docker exec peer0.org1.example.com peer channel create -o orderer.example.com:7050 -c composerchannel -f /etc/hyperledger/configtx/composer-channel.tx
         # Join peer0 to the channel.
-        docker exec -e "CORE_PEER_LOCALMSPID=Org1MSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com" peer0.org1.example.com peer channel join -b mychannel.block
+        docker exec -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@org1.example.com/msp" peer0.org1.example.com peer channel join -b composerchannel.block
     fi
 fi
 

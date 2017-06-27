@@ -221,6 +221,7 @@ class TestUtil {
                     if (TestUtil.isHyperledgerFabricV1()) {
                         if (process.env.SYSTEST.match('tls$')) {
                             console.log('setting up TLS Connection Profile for HLF V1');
+                            // TODO: FIX
                             adminOptions = {
                                 type: 'hlfv1',
                                 orderers: [
@@ -232,7 +233,7 @@ class TestUtil {
                                 ],
                                 ca: {
                                     url: 'https://localhost:7054',
-                                    name: 'ca-org1'
+                                    name: 'ca.org1.example.com'
                                 },
                                 peers: [
                                     {
@@ -243,10 +244,9 @@ class TestUtil {
                                     }
                                 ],
                                 keyValStore: keyValStore,
-                                channel: 'mychannel',
+                                channel: 'composerchannel',
                                 mspID: 'Org1MSP',
-                                deployWaitTime: '300',
-                                invokeWaitTime: '100'
+                                timeout: '300'
                             };
                         } else {
                             console.log('setting up Non-TLS Connection Profile for HLF V1');
@@ -257,7 +257,7 @@ class TestUtil {
                                 ],
                                 ca: {
                                     url: 'http://localhost:7054',
-                                    name: 'ca-org1'
+                                    name: 'ca.org1.example.com'
                                 },
                                 peers: [
                                     {
@@ -265,9 +265,9 @@ class TestUtil {
                                         eventURL: 'grpc://localhost:7053'
                                     }
                                 ],
-                                channel: 'mychannel',
+                                channel: 'composerchannel',
                                 mspID: 'Org1MSP',
-                                timeout: '500',
+                                timeout: '300',
                                 keyValStore: keyValStore
                             };
                         }
@@ -304,8 +304,8 @@ class TestUtil {
                 if (TestUtil.isHyperledgerFabricV1()) {
                     let fs = dynamicRequire('fs');
                     let org = 'org1';
-                    let keyPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk');
-                    let certPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/signcerts/Admin@org1.example.com-cert.pem');
+                    let keyPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/keystore/114aab0e76bf0c78308f89efc4b8c9423e31568da0c340ca187a9b17aa9a4457_sk');
+                    let certPath = path.join(__dirname, '../hlfv1/crypto-config/peerOrganizations/' + org + '.example.com/users/Admin@' + org + '.example.com/msp/signcerts/Admin@org1.example.com-cert.pem');
                     let signerCert = fs.readFileSync(certPath).toString();
                     let key = fs.readFileSync(keyPath).toString();
                     console.log('Calling AdminConnection.importIdentity() ...');

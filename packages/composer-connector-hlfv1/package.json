@@ -42,8 +42,8 @@
   "dependencies": {
     "composer-common": "^0.9.1",
     "composer-runtime-hlfv1": "^0.9.1",
-    "fabric-ca-client": "1.0.0-beta",
-    "fabric-client": "1.0.0-beta",
+    "fabric-ca-client": "1.0.0-rc1",
+    "fabric-client": "1.0.0-rc1",
     "fs-extra": "^1.0.0",
     "semver": "^5.3.0",
     "temp": "^0.8.3",
