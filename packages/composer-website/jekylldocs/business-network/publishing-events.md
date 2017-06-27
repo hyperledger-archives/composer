@@ -12,17 +12,16 @@ Events can be emitted by {{site.data.conrefs.composer_full}} and subscribed to b
 
 ## Before you begin
 
-Before you begin adding events to your business network, you should have a good understanding of the modelling language for business networks, and what makes up a full business network definition.
+Before you begin adding events to your business network, you should have a good understanding of the modeling language for business networks, and what makes up a full business network definition.
 
 ## Procedure
 
 1. Events are defined in the model file (`.cto`) of your business network definition, in the same way as assets and participants. Events use the following format:
 
-        
+
         event BasicEvent identified by eventId {
-        o String eventId
         }
-        
+
 
 2. In order for the event to be published the transaction which creates the event must call three functions, the first is the `getFactory` function. The `getFactory` allows events to be created as part of a transaction. Next, an event must be created by using `factory.newEvent('org.namespace', 'BasicEvent')`. This creates a `BasicEvent` defined in a specified namespace. Then the required properties on the event must be set. Lastly, the event must be emitted by using `emit(BasicEvent)`. A simple transaction which calls this event would look like this:
 
