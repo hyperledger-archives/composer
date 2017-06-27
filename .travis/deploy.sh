@@ -79,8 +79,9 @@ if [ -z "${TRAVIS_TAG}" ]; then
     lerna exec --ignore '@(composer-systests|composer-website)' -- npm publish --tag=unstable 2>&1 | tee
 
 	# quick check to see if the latest npm module has been published
-	npm view composer-playground@0.9.0-20170626131511 | grep dist-tags
-	sleep 30
+	while ! npm view composer-playground@${VERSION} | grep dist-tags > /dev/null 2>&1; do
+	  sleep 10
+	done
 
     # Build, tag, and publish Docker images.
     for i in ${DOCKER_IMAGES}; do
