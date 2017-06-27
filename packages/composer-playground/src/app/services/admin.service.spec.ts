@@ -10,7 +10,7 @@ import * as chai from 'chai';
 
 let should = chai.should();
 
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 import { BusinessNetworkDefinition } from 'composer-common';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { IdentityService } from './identity.service';

@@ -1,0 +1,46 @@
+@import '../../../assets/styles/base/_colors.scss';
+@import '../../../assets/styles/base/_variables.scss';
+
+issue-identity-modal {
+  .issue-identity {
+    p {
+      color: $secondary-text;
+    }
+
+    ngb-typeahead-window {
+      border: 1px solid rgba(0,0,0,.15);
+      border-radius: .25rem;
+      width: 60%;
+
+      button.dropdown-item {
+        border: none;
+        border-radius: 0;
+        padding: $space-xsmall $space-smedium;
+        color: $primary-text;
+        overflow-x: auto;
+
+        .participant-type {
+          font-style: italic;
+          color: $secondary-text;
+        }
+
+        &.active {
+          color: $primary-text;
+          background-color: $fourth-highlight;
+        }
+      }
+    }
+
+    svg {
+      vertical-align: text-top;
+    }
+
+    footer {
+      .circle-path {
+        stroke: $white;
+      }
+
+      width: 100%;
+    }
+  }
+}

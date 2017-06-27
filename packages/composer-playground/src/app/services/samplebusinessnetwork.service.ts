@@ -5,7 +5,7 @@ import * as Octokat from 'octokat';
 
 import { AdminService } from './admin.service';
 import { ClientService } from './client.service';
-import { AlertService } from './alert.service';
+import { AlertService } from '../basic-modals/alert.service';
 
 import { BusinessNetworkDefinition, AclFile } from 'composer-common';
 

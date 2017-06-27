@@ -15,7 +15,7 @@ import { InitializationService } from './services/initialization.service';
 import { ConnectionProfileService } from './services/connectionprofile.service';
 import { IdentityService } from './services/identity.service';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { AlertService } from './services/alert.service';
+import { AlertService } from './basic-modals/alert.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { BusinessNetworkConnection } from 'composer-client';
@@ -354,9 +354,9 @@ describe('AppComponent', () => {
             updateComponent();
 
             links.length.should.equal(3);
-            links[0].linkParams.should.deep.equal(['./editor']);
-            links[1].linkParams.should.deep.equal(['./test']);
-            links[2].linkParams.should.deep.equal(['./identity']);
+            links[0].linkParams.should.deep.equal(['editor']);
+            links[1].linkParams.should.deep.equal(['test']);
+            links[2].linkParams.should.deep.equal(['identity']);
         });
 
         it('can get RouterLinks from template when using locally', () => {
@@ -367,10 +367,10 @@ describe('AppComponent', () => {
             updateComponent();
 
             links.length.should.equal(4);
-            links[0].linkParams.should.deep.equal(['./editor']);
-            links[1].linkParams.should.deep.equal(['./test']);
-            links[2].linkParams.should.deep.equal(['./identity']);
-            links[3].linkParams.should.deep.equal(['./profile']);
+            links[0].linkParams.should.deep.equal(['editor']);
+            links[1].linkParams.should.deep.equal(['test']);
+            links[2].linkParams.should.deep.equal(['identity']);
+            links[3].linkParams.should.deep.equal(['profile']);
         });
 
         it('can click test link in template', () => {
@@ -384,7 +384,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./test']);
+            testLink.navigatedTo.should.deep.equal(['test']);
         });
 
         it('can click editor link in template', () => {
@@ -398,7 +398,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./editor']);
+            testLink.navigatedTo.should.deep.equal(['editor']);
         });
 
         it('can click identity link in template', () => {
@@ -412,7 +412,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./identity']);
+            testLink.navigatedTo.should.deep.equal(['identity']);
         });
 
         it('can click profile link in template', () => {
@@ -428,7 +428,7 @@ describe('AppComponent', () => {
             testLinkDe.triggerEventHandler('click', null);
             fixture.detectChanges();
 
-            testLink.navigatedTo.should.deep.equal(['./profile']);
+            testLink.navigatedTo.should.deep.equal(['profile']);
         });
     });
 
@@ -557,10 +557,10 @@ describe('AppComponent', () => {
             component['participantFQI'].should.equal('bob');
 
             links.length.should.equal(4);
-            links[0].linkParams.should.deep.equal(['./editor']);
-            links[1].linkParams.should.deep.equal(['./test']);
-            links[2].linkParams.should.deep.equal(['./identity']);
-            links[3].linkParams.should.deep.equal(['./profile']);
+            links[0].linkParams.should.deep.equal(['editor']);
+            links[1].linkParams.should.deep.equal(['test']);
+            links[2].linkParams.should.deep.equal(['identity']);
+            links[3].linkParams.should.deep.equal(['profile']);
         }));
 
         it('should load the connection profiles but get no info from ping', fakeAsync(() => {
