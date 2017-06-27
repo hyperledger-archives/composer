@@ -8,20 +8,17 @@ asset SampleAsset identified by assetId {
   o String value
 }
 
-transaction SampleTransaction  {
-
+transaction SampleTransaction {
   --> SampleAsset asset
   o String newValue
 }
 
-transaction PostTransactioni {
-
+transaction PostTransaction {
   o Integer a
   o Integer b
   --> SampleAsset asset
 }
 
 transaction CreateAsset {
-
   o String assetId
 }

@@ -7,8 +7,7 @@ enum SimpleEnum {
     o MUCH
 }
 
-event SimpleEvent identified by eventId {
-  o String eventId
+event SimpleEvent {
   o String stringValue
   o String[] stringValues
   o Double doubleValue
@@ -25,8 +24,7 @@ event SimpleEvent identified by eventId {
   o SimpleEnum[] enumValues
 }
 
-event ComplexEvent identified by eventId {
-  o String eventId
+event ComplexEvent {
   --> SimpleAsset simpleAsset
   --> SimpleAsset[] simpleAssets
 }
@@ -35,15 +33,15 @@ asset SimpleAsset identified by assetId {
   o String assetId
 }
 
-transaction EmitSimpleEvent  {
+transaction EmitSimpleEvent {
 
 }
 
-transaction EmitComplexEvent  {
+transaction EmitComplexEvent {
 
 }
 
-transaction EmitMultipleEvents  {
+transaction EmitMultipleEvents {
 
 }
 

@@ -1,4 +1,4 @@
-namespace systest.transactions.queries
+namespace systest.queries
 
 enum SampleEnum {
     o VALUE_0
@@ -45,11 +45,4 @@ participant SampleParticipant identified by participantId {
   o DateTime dateTimeValue
   o Boolean booleanValue
   o SampleEnum enumValue
-}
-
-transaction SampleTransaction {
-  o String namedQuery optional
-  o String dynamicQuery optional
-  o String parameters optional
-  o String expected
 }

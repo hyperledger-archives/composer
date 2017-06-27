@@ -15,6 +15,7 @@
 'use strict';
 
 const ClassDeclaration = require('./classdeclaration');
+const IllegalModelException = require('./illegalmodelexception');
 
 /** Class representing the definition of a Participant.
  * @extends ClassDeclaration
@@ -41,6 +42,31 @@ class ParticipantDeclaration extends ClassDeclaration {
      */
     isRelationshipTarget() {
         return true;
+    }
+
+    /**
+     * Returns the base system type for Participants from the system namespace
+     *
+     * @return {string} the short name of the base system type
+     */
+    getSystemType() {
+        return 'Participant';
+    }
+
+    /**
+     * Semantic validation of the structure of this participant. Subclasses should
+     * override this method to impose additional semantic constraints on the
+     * contents/relations of fields.
+     *
+     * @throws {IllegalModelException}
+     * @private
+     */
+    validate() {
+        super.validate();
+
+        if(!this.isSystemType() && this.getName() === 'Participant') {
+            throw new IllegalModelException('Participant is a reserved type name.', this.modelFile, this.ast.location);
+        }
     }
 }
 

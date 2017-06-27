@@ -70,7 +70,7 @@ concept POContractor {
 */
 asset PurchaseOrder identified by poNumber {
   o String poNumber
-  --> Supplier supplier  //Participant
+  --> Supplier supplier
   o String supplierDescription
   o String poDate
   o String paymentTerms
@@ -215,61 +215,3 @@ participant Supplier extends User {
  */
 participant BuyerSRM extends User {
 }
-
-
-/*****************************************************************************/
-
-/* future usage ??
-enum DayOfTheWeek {
-  o SATURDAY
-  o SUNDAY
-  o MONDAY
-  o TUESDAY
-  o WEDNESDAY
-  o THURSDAY
-  o FRIDAY
-}
-*/
-
-/* future usage ??
-asset TimeSheet identified by tsId {
-    o String tsId
-    o String weekEndingDate
-    o TimeEntry[] timeEntry //Concept
-    --> PurchaseOrder po    //Asset
-    --> Contractor contractor  //Participant
-}
-*/
-
-/****************************
-* CONCEPT
-*****************************/
-/* future usage ??
-concept TimeEntry {
-  o DayOfTheWeek dayOfTheWeek
-  o Double hours
-  o String assignmentType
-}
-*/
-
-/****************************
-* TRANSACTIONS
-*****************************/
-/**
- * Transaction for contractor to log hours
- */
-/*
-transaction LogHours identified by trxId {
-  o String trxId
-  o TimeSheet timeSheet
-}
-*/
-
-/**
- * Transaction for resource manager to approve hours
- */
- /*
-transaction ApproveHours identified by trxId {
-  o String trxId
-}
-*/

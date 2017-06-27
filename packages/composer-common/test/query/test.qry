@@ -8,7 +8,7 @@ query Q1 {
 
 query Q3 {
     description: "Select all transactions"
-    statement: SELECT org.acme.Transaction
+    statement: SELECT org.acme.MyTransaction
 }
 
 // single line comment
