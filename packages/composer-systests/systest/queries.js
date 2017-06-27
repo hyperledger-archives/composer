@@ -25,7 +25,7 @@ const chai = require('chai');
 chai.should();
 chai.use(require('chai-as-promised'));
 
-describe('Transaction (query specific) system tests', () => {
+describe('Query system tests', () => {
 
     let businessNetworkDefinition;
     let admin;
@@ -34,7 +34,6 @@ describe('Transaction (query specific) system tests', () => {
     let participantsAsJSON;
     let assetsAsResources;
     let participantsAsResources;
-    let factory;
     let serializer;
 
     /**
@@ -45,7 +44,7 @@ describe('Transaction (query specific) system tests', () => {
     function generateCommon(i) {
         return {
             conceptValue: {
-                $class: 'systest.transactions.queries.SampleConcept',
+                $class: 'systest.queries.SampleConcept',
                 stringValue: 'string ' + (i % 4),
                 doubleValue: 2.5 * (i % 8),
                 integerValue: 1000 * (i % 16),
@@ -71,9 +70,9 @@ describe('Transaction (query specific) system tests', () => {
      */
     function generateAsset(i) {
         let result = {
-            $class: 'systest.transactions.queries.SampleAsset',
+            $class: 'systest.queries.SampleAsset',
             assetId: 'ASSET_' + i,
-            participant: 'resource:systest.transactions.queries.SampleParticipant#PARTICIPANT_' + (i % 4)
+            participant: 'resource:systest.queries.SampleParticipant#PARTICIPANT_' + (i % 4)
         };
         Object.assign(result, generateCommon(i));
         return result;
@@ -86,9 +85,9 @@ describe('Transaction (query specific) system tests', () => {
      */
     function generateParticipant(i) {
         let result = {
-            $class: 'systest.transactions.queries.SampleParticipant',
+            $class: 'systest.queries.SampleParticipant',
             participantId: 'ASSET_' + i,
-            asset: 'resource:systest.transactions.queries.SampleAsset#ASSET_' + (i % 4)
+            asset: 'resource:systest.queries.SampleAsset#ASSET_' + (i % 4)
         };
         Object.assign(result, generateCommon(i));
         return result;
@@ -99,15 +98,13 @@ describe('Transaction (query specific) system tests', () => {
             return this.skip();
         }
         const modelFiles = [
-            { fileName: 'models/transactions.queries.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.queries.cto'), 'utf8') }
+            { fileName: 'models/queries.cto', contents: fs.readFileSync(path.resolve(__dirname, 'data/queries.cto'), 'utf8') }
         ];
         const queryFiles = [
-            { identifier: 'queries.qry', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.queries.qry'), 'utf8') }
+            { identifier: 'queries.qry', contents: fs.readFileSync(path.resolve(__dirname, 'data/queries.qry'), 'utf8') }
         ];
-        const scriptFiles = [
-            { identifier: 'transactions.queries.js', contents: fs.readFileSync(path.resolve(__dirname, 'data/transactions.queries.js'), 'utf8') }
-        ];
-        businessNetworkDefinition = new BusinessNetworkDefinition('systest-transactions-queries@0.0.1', 'The network for the transaction (query specific) system tests');
+        const scriptFiles = [];
+        businessNetworkDefinition = new BusinessNetworkDefinition('systest-queries@0.0.1', 'The network for the query system tests');
         modelFiles.forEach((modelFile) => {
             businessNetworkDefinition.getModelManager().addModelFile(modelFile.contents, modelFile.fileName);
         });
@@ -122,13 +119,12 @@ describe('Transaction (query specific) system tests', () => {
         admin = TestUtil.getAdmin();
         return admin.deploy(businessNetworkDefinition)
             .then(() => {
-                return TestUtil.getClient('systest-transactions-queries')
+                return TestUtil.getClient('systest-queries')
                     .then((result) => {
                         client = result;
                     });
             })
             .then(() => {
-                factory = client.getBusinessNetwork().getFactory();
                 serializer = client.getBusinessNetwork().getSerializer();
                 assetsAsJSON = []; assetsAsResources = [];
                 participantsAsJSON = []; participantsAsResources = [];
@@ -153,12 +149,12 @@ describe('Transaction (query specific) system tests', () => {
         if (TestUtil.isHyperledgerFabricV06()) {
             return this.skip();
         }
-        return client.getAssetRegistry('systest.transactions.queries.SampleAsset')
+        return client.getAssetRegistry('systest.queries.SampleAsset')
             .then((assetRegistry) => {
                 return assetRegistry.addAll(assetsAsResources);
             })
             .then(() => {
-                return client.getParticipantRegistry('systest.transactions.queries.SampleParticipant');
+                return client.getParticipantRegistry('systest.queries.SampleParticipant');
             })
             .then((participantRegistry) => {
                 return participantRegistry.addAll(participantsAsResources);
@@ -175,55 +171,63 @@ describe('Transaction (query specific) system tests', () => {
             beforeEach(() => {
                 if (type === 'assets') {
                     expected = assetsAsJSON;
-                    resource = 'systest.transactions.queries.SampleAsset';
+                    resource = 'systest.queries.SampleAsset';
                 } else if (type === 'participants') {
                     expected = participantsAsJSON;
-                    resource = 'systest.transactions.queries.SampleParticipant';
+                    resource = 'systest.queries.SampleParticipant';
                 } else {
                     throw new Error('unexpected type ' + type);
                 }
             });
 
             it('should execute a named query on a string property', () => {
-                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
-                tx.namedQuery = `${type}_stringValue`;
-                tx.expected = JSON.stringify(expected.filter((thing) => {
-                    return thing.stringValue === 'string 0';
-                }));
-                return client.submitTransaction(tx);
+                return client.query(`${type}_stringValue`)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringValue === 'string 0';
+                        }));
+                    });
             });
 
             it('should execute a dynamic query on a string property', () => {
-                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
-                tx.dynamicQuery = `SELECT ${resource} WHERE (stringValue == 'string 0')`;
-                tx.expected = JSON.stringify(expected.filter((thing) => {
-                    return thing.stringValue === 'string 0';
-                }));
-                return client.submitTransaction(tx);
+                const query = client.buildQuery(`SELECT ${resource} WHERE (stringValue == 'string 0')`);
+                return client.query(query)
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringValue === 'string 0';
+                        }));
+                    });
             });
 
             it('should execute a named query on a string property using a parameter', () => {
-                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
-                tx.namedQuery = `${type}_stringValueParameter`;
-                tx.parameters = JSON.stringify({
-                    inputStringValue: 'string 1'
-                });
-                tx.expected = JSON.stringify(expected.filter((thing) => {
-                    return thing.stringValue === 'string 1';
-                }));
-                return client.submitTransaction(tx);
+                return client.query(`${type}_stringValueParameter`, { inputStringValue: 'string 1' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringValue === 'string 1';
+                        }));
+                    });
             });
 
             it('should execute a dynamic query on a string property using a parameter', () => {
-                const tx = factory.newTransaction('systest.transactions.queries', 'SampleTransaction');
-                tx.dynamicQuery = `SELECT ${resource} WHERE (stringValue == _$inputStringValue)`;
-                tx.parameters = JSON.stringify({
-                    inputStringValue: 'string 1'
-                });
-                tx.expected = JSON.stringify(expected.filter((thing) => {
-                    return thing.stringValue === 'string 1';
-                }));
-                return client.submitTransaction(tx);
+                const query = client.buildQuery(`SELECT ${resource} WHERE (stringValue == _$inputStringValue)`);
+                return client.query(query, { inputStringValue: 'string 1' })
+                    .then((resources) => {
+                        const actual = resources.map((resource) => {
+                            return serializer.toJSON(resource);
+                        });
+                        actual.should.deep.equal(expected.filter((thing) => {
+                            return thing.stringValue === 'string 1';
+                        }));
+                    });
             });
 
         });
