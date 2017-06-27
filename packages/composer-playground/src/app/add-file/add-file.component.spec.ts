@@ -9,7 +9,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs/Rx';
 
 import { BusinessNetworkDefinition, AdminConnection } from 'composer-admin';
-import { ModelFile, ModelManager, ScriptManager, Script, AclFile } from 'composer-common';
+import { ModelFile, ModelManager, ScriptManager, Script, AclFile, AssetDeclaration } from 'composer-common';
 
 import { AddFileComponent } from './add-file.component';
 import { FileImporterComponent } from './../file-importer';
@@ -70,6 +70,8 @@ describe('AddFileComponent', () => {
     let mockModelManager;
     let mockScriptManager;
     let mockClientService;
+    let mockSystemModelFile;
+    let mockSystemAsset;
 
     beforeEach(() => {
 
@@ -97,11 +99,19 @@ describe('AddFileComponent', () => {
         fixture = TestBed.createComponent(AddFileComponent);
         component = fixture.componentInstance;
 
-        mockModelManager = sinon.createStubInstance(ModelManager);
         mockScriptManager = sinon.createStubInstance(ScriptManager);
         mockBusinessNetwork = sinon.createStubInstance(BusinessNetworkDefinition);
         mockBusinessNetwork.getModelManager.returns(mockModelManager);
         mockBusinessNetwork.getScriptManager.returns(mockScriptManager);
+
+        mockSystemModelFile = sinon.createStubInstance(ModelFile);
+        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
+        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
+        mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
+        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
+        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
     });
 
     afterEach(() => {
