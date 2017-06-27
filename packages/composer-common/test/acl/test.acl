@@ -56,11 +56,11 @@ rule R7 {
 }
 
 rule R8 {
-    description: "Drivers can do something in a org.acme.Transaction transaction"
+    description: "Drivers can do something in a org.acme.MyTransaction transaction"
     participant: "ANY"
     operation: ALL
     resource: "org.acme.Car"
-    transaction: "org.acme.Transaction"
+    transaction: "org.acme.MyTransaction"
     action: ALLOW
 }
 
@@ -83,11 +83,11 @@ rule R10 {
 }
 
 rule R11 {
-    description: "Regulators can do something in a org.acme.Transaction transaction"
+    description: "Regulators can do something in a org.acme.MyTransaction transaction"
     participant: "ANY"
     operation: ALL
     resource: "org.acme.Car"
-    transaction(tx): "org.acme.Transaction"
+    transaction(tx): "org.acme.MyTransaction"
     condition: (tx.asset.colour === 'blue')
     action: ALLOW
 }

@@ -7,8 +7,8 @@
 namespace concerto
 
 /**
- * Participant defines an actor in a blockchain based business network
+ * MyParticipant defines an actor in a blockchain based business network
  */
-participant Participant identified by id {
+participant MyParticipant identified by id {
   o String id
 }
