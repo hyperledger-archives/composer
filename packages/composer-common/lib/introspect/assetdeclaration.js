@@ -15,6 +15,7 @@
 'use strict';
 
 const ClassDeclaration = require('./classdeclaration');
+const IllegalModelException = require('./illegalmodelexception');
 
 /**
  * AssetDeclaration defines the schema (aka model or class) for
@@ -46,6 +47,31 @@ class AssetDeclaration extends ClassDeclaration {
      */
     isRelationshipTarget() {
         return true;
+    }
+
+    /**
+     * Returns the base system type for Assets from the system namespace
+     *
+     * @return {string} the short name of the base system type
+     */
+    getSystemType() {
+        return 'Asset';
+    }
+
+    /**
+     * Semantic validation of the structure of this asset. Subclasses should
+     * override this method to impose additional semantic constraints on the
+     * contents/relations of fields.
+     *
+     * @throws {IllegalModelException}
+     * @private
+     */
+    validate() {
+        super.validate();
+
+        if(!this.isSystemType() && this.getName() === 'Asset') {
+            throw new IllegalModelException('Asset is a reserved type name.', this.modelFile, this.ast.location);
+        }
     }
 }
 

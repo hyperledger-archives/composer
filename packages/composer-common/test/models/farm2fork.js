@@ -65,7 +65,7 @@ describe('Farm2Fork Model', function() {
             previousKeeperField.getName().should.equal('previousKeeper');
             previousKeeperField.isArray().should.be.true;
             (previousKeeperField instanceof RelationshipDeclaration).should.be.true;
-            previousKeeperField.getType().should.equal('Participant');
+            previousKeeperField.getType().should.equal('MyParticipant');
 
             // test the VehicleTransferredToScrapMerchant class
             let txDecl = modelFile.getTransactionDeclaration('MoveAnimalToHolding');
@@ -75,7 +75,7 @@ describe('Farm2Fork Model', function() {
             let holdingField = txDecl.getProperty('holding');
             (holdingField !== null).should.be.true;
             holdingField.getName().should.equal('holding');
-            (holdingField.getType() === 'Participant').should.be.true;
+            (holdingField.getType() === 'MyParticipant').should.be.true;
 
             // test that we can retrieve a field declared in a base class
             let animalField = txDecl.getProperty('animal');

@@ -98,7 +98,7 @@ describe('Globalization', function() {
 
             let modelFile = modelManager.getModelFile('concerto');
             modelFile.getNamespace().should.equal('concerto');
-            let classDeclaration = modelFile.getType('concerto.Participant');
+            let classDeclaration = modelFile.getType('concerto.MyParticipant');
             classDeclaration.should.not.be.undefined;
 
             expect(function(){
