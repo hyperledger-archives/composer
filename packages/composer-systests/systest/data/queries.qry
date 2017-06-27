@@ -1,0 +1,19 @@
+query assets_stringValue {
+    description: ""
+    statement: SELECT systest.queries.SampleAsset WHERE (stringValue == 'string 0')
+}
+
+query participants_stringValue {
+    description: ""
+    statement: SELECT systest.queries.SampleParticipant WHERE (stringValue == 'string 0')
+}
+
+query assets_stringValueParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleAsset WHERE (stringValue == _$inputStringValue)
+}
+
+query participants_stringValueParameter {
+    description: ""
+    statement: SELECT systest.queries.SampleParticipant WHERE (stringValue == _$inputStringValue)
+}
