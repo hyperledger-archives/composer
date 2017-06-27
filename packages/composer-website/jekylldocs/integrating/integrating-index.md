@@ -30,22 +30,4 @@ _Please note: The status of this feature is **experimental**. We welcome your fe
 
 ---
 
----
-
-{% assign sorted = (site.pages | sort: 'index-order') %}
-{% for page in sorted %}
-{% if page.section == 'integrating' and page.title != "Integrating Index" %}
-{% if page.status == 'experimental' %}
-### {{ page.title }}
-_Please note: The status of this feature is **experimental**. We welcome your feedback on the utility of this feature. While we will strive to ensure backwards compatibility this cannot be guaranteed._
-
-{{ page.excerpt }}
-{% endif %}
-### {{ page.title }}
-{{ page.excerpt }}
-{% endif %}
-{% endfor %}
-
----
-
 For instructions on setting up a Loopback API, see [Generating a REST API](../integrating/getting-started-rest-api.html).
