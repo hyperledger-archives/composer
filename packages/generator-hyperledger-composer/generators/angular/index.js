@@ -163,10 +163,10 @@ module.exports = yeoman.Base.extend({
                         ],
                         validate: function (input) {
                             if (input !== null && input !== undefined && input !== '') {
-                                    return true;
-                                } else {
-                                    return 'Connection Profile cannot be null or empty.';
-                                }
+                                return true;
+                            } else {
+                                return 'Connection Profile cannot be null or empty.';
+                            }
                         }
                     }
                     ];
@@ -383,6 +383,9 @@ module.exports = yeoman.Base.extend({
                             this.destinationRoot(appName);
                             destinationPath = this.destinationPath();
                             resolve(this._createApp());
+                        })
+                        .catch((err) => {
+                            reject(err);
                         });
                 });
             }
