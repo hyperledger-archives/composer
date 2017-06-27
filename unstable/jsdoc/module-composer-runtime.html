@@ -186,186 +186,6 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="buildQuery"><span class="type-signature"></span>buildQuery(query)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Build a query ready for later execution. The specified query string must be written<br>in the Composer query language.</p>
-<p>This functionality is Blockchain platform dependent. For example, when a Composer<br>business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be<br>configured with the CouchDB database for the world state.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>query</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The query string, written using the Composer query language.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
-				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-256">line 256</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>The built query, which can be passed in a call to query.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Query</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// Build a query.
-var query = buildQuery(&#x27;SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)&#x27;);
-// Execute the query.
-return query(query, { inputValue: &#x27;blue&#x27; })
-  .then(function (assets) {
-    assets.forEach(function (asset) {
-      // Process each asset.
-    });
-  })
-  .catch(function (error) {
-    // Add optional error handling here.
-  });</pre>
-
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
     <h4 class="name" id="buildQuery"><span class="type-signature"></span>buildQuery(query [, parameters])</h4>
     
     
@@ -574,6 +394,186 @@ return query(query, { inputValue: &#x27;blue&#x27; })
         
     <pre class="sunlight-highlight-javascript">// Execute the query.
 return query(&#x27;Q1&#x27;, { inputValue: &#x27;blue&#x27; })
+  .then(function (assets) {
+    assets.forEach(function (asset) {
+      // Process each asset.
+    });
+  })
+  .catch(function (error) {
+    // Add optional error handling here.
+  });</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="buildQuery"><span class="type-signature"></span>buildQuery(query)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Build a query ready for later execution. The specified query string must be written<br>in the Composer query language.</p>
+<p>This functionality is Blockchain platform dependent. For example, when a Composer<br>business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be<br>configured with the CouchDB database for the world state.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>query</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The query string, written using the Composer query language.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="composer-runtime_lib_api.js.html">composer-runtime/lib/api.js</a>,
+				 <a href="composer-runtime_lib_api.js.html#sunlight-1-line-256">line 256</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The built query, which can be passed in a call to query.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Query</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Build a query.
+var query = buildQuery(&#x27;SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)&#x27;);
+// Execute the query.
+return query(query, { inputValue: &#x27;blue&#x27; })
   .then(function (assets) {
     assets.forEach(function (asset) {
       // Process each asset.

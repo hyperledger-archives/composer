@@ -101,7 +101,7 @@
 'use strict';
 
 const ClassDeclaration = require('./classdeclaration');
-// const Field = require('./field');
+const IllegalModelException = require('./illegalmodelexception');
 
 /** Class representing the definition of an Transaction.
  * @extends ClassDeclaration
@@ -122,23 +122,28 @@ class TransactionDeclaration extends ClassDeclaration {
     }
 
     /**
-     * Process the AST and build the model
+     * Returns the base system type for Transactions from the system namespace
+     *
+     * @return {string} the short name of the base system type
+     */
+    getSystemType() {
+        return 'Transaction';
+    }
+
+    /**
+     * Semantic validation of the structure of this asset. Subclasses should
+     * override this method to impose additional semantic constraints on the
+     * contents/relations of fields.
      *
      * @throws {IllegalModelException}
      * @private
      */
-    process() {
-        super.process();
-    }
+    validate() {
+        super.validate();
 
-    /**
-     * Returns true if this class can be pointed to by a relationship
-     *
-     * @return {boolean} true if the class may be pointed to by a relationship
-     */
-    isSystemRelationshipTarget() {
-      /*    istanbul ignore next*/
-        return true;
+        if(!this.isSystemType() &amp;&amp; this.getName() === 'Transaction') {
+            throw new IllegalModelException('Transaction is a reserved type name.', this.modelFile, this.ast.location);
+        }
     }
 }
 
