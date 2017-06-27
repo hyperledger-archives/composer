@@ -98,6 +98,8 @@ ga('send', 'pageview');
 <li><a href="../reference/MeetTheModules.html">npm Modules</a></li>
 <li><a href="../reference/cto_language.html">Modeling Language</a></li>
 <li><a href="../reference/acl_language.html">Access Control Language</a></li>
+<li><a href="../reference/query-language.html">Query Language</a></li>
+<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
 <li><a href="../reference/connectionprofile.html">Connection Profile</a></li>
 <li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
 <li><a href="../reference/commands.html">CLI Commands</a></li>
@@ -149,13 +151,13 @@ in this namespace.</li>
 <li>A set of resource definitions (see below).</li>
 </ol>
 
-<h3 id="imports">Imports</h3>
+<h2 id="imports">Imports</h2>
 
 <p>Use the <code>import</code> keyword with a fully-qualified type name to import a type from another namespace. Alternatively use the <code>.*</code> notation to import all the types from another namespace.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">import org.example.MyAsset
 import org.example2.*
 </code></pre></div>
-<h3 id="declarations-of-enumerated-types">Declarations of enumerated types</h3>
+<h2 id="declarations-of-enumerated-types">Declarations of enumerated types</h2>
 <div class="highlight"><pre><code class="language-" data-lang="">/**
 * An enumerated type
 */
@@ -166,11 +168,11 @@ o PIG
 o DEER_OTHER
 }
 </code></pre></div>
-<h3 id="declarations-of-assets-events-participants-transactions">Declarations of Assets, Events, Participants, Transactions</h3>
+<h2 id="declarations-of-assets-events-participants-transactions">Declarations of Assets, Events, Participants, Transactions</h2>
 
 <p>Assets, Participants and Transactions are class definitions. The concepts of Asset, Participant and Transaction may be considered to be different stereotypes of the class type.</p>
 
-<p>A class in Hyperledger Composer is referred to as a Resource Definition. Therefore an Asset (instance) has-an Asset Definition.</p>
+<p>A class in Hyperledger Composer is referred to as a Resource Definition. Therefore an Asset (instance) has an Asset Definition.</p>
 
 <p>A resource definition has the following properties:</p>
 
@@ -226,7 +228,30 @@ transaction AnimalMovementDeparture extends AnimalMovement {
 </code></pre></div></li>
 </ol>
 
-<h3 id="concepts">Concepts</h3>
+<h2 id="hyperledger-composer-system-namespace">Hyperledger Composer System Namespace</h2>
+
+<p>As well as defining new classes of asset, participant, event, and transaction, there is a system namespace which contains the base definitions of asset, event, participant, and transaction. These base definitions are abstracts which are implicitly extended by all assets, events, participants, and transactions.</p>
+
+<p>Represented as a <code>.cto</code> model file, the system namespace is as follows:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">    namespace org.hyperledger.composer.system
+    abstract asset Asset {  }
+    abstract participant Participant {   }
+    abstract transaction Transaction identified by transactionId{
+      o String transactionId
+      o DateTime timestamp
+    }
+    abstract event Event identified by eventId{
+      o String eventId
+      o DateTime timestamp
+    }
+</code></pre></div>
+<p>In the system namespace definitions, asset and participant have no required values. Events and transactions are defined by an eventId or transactionId and a timestamp.</p>
+
+<blockquote>
+<p>If you have defined an event or transaction including an eventId, transactionId, or timestamp, you must delete the eventId, transactionId, or timestamp properties.</p>
+</blockquote>
+
+<h2 id="concepts">Concepts</h2>
 
 <p>Concepts are complex types (classes) that are not assets, participants or transactions. They are typically contained by an asset, participant or transaction.</p>
 
@@ -242,7 +267,7 @@ concept UnitedStatesAddress extends Address {
   o String zipcode
 }
 </code></pre></div>
-<h3 id="primitive-types">Primitive types</h3>
+<h2 id="primitive-types">Primitive types</h2>
 
 <p>Composer resources are defined in terms of the following primitive types:</p>
 
@@ -256,7 +281,7 @@ and UTZ offset</li>
 <li>Boolean : a Boolean value, either true or false.</li>
 </ol>
 
-<h3 id="arrays">Arrays</h3>
+<h2 id="arrays">Arrays</h2>
 
 <p>All types in Composer may be declared as arrays using the [] notation. Hence</p>
 <div class="highlight"><pre><code class="language-" data-lang="">Integer[] integerArray
@@ -267,7 +292,7 @@ and UTZ offset</li>
 <p>Is an array of relationships to the Animal type, stored in a field called
 &#39;incoming&#39;.</p>
 
-<h3 id="relationships">Relationships</h3>
+<h2 id="relationships">Relationships</h2>
 
 <p>A relationship in the Composer language is a tuple composed of:</p>
 
@@ -289,7 +314,7 @@ namespace with the identifier 123456.</p>
 referenced. The act of resolution may result in null, if the object no longer
 exists or the information in the relationship is invalid.</p>
 
-<h3 id="field-validators">Field Validators</h3>
+<h2 id="field-validators">Field Validators</h2>
 
 <p>String fields may include an optional regular expression, which is used to validate the contents of the field. Careful use of field validators allows Composer to perform rich data validation, leading to fewer errors and less boilerplate code.</p>
 

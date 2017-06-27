@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Participant Add Command | Hyperledger Composer</title>
+    <title>Model Compatibility | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Participant Add Command</p>
+          <p>Model Compatibility</p>
           </div>
 
           <nav class="context-nav">
@@ -135,56 +135,84 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="composer-participant-add">Composer participant add</h1>
+              <h1 id="model-compatibility">Model Compatibility</h1>
 
-<hr>
+<p>Composer models are expected to change and evolve over time. However some care and discipline must be applied when making model changes to ensure that existing instances are still valid with respect to the new model.</p>
 
-<p>The <code>composer participant add</code> command adds a new instance of a participant to a
-participant registry. See the task <a href="../managing/participant-add.html">Add a Participant</a>
-for a walkthrough of using this command or the API.</p>
+<p>A model M&#39; is <strong>compatible</strong> with model M if instances created with model M are valid with respect to model M&#39;. If the instances are valid, then they may be deserialized using the <code>Serializer</code>.</p>
 
-<h2 id="syntax">Syntax</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">$ composer participant add
-composer participant add [options]
+<p>The following terms are used throughout this document:</p>
 
-Options:
-  --help                       Show help  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
-  --data, -d                   Serialized participant JSON object as a string  [string] [required]
+<ul>
+<li><em>Class</em> : the declaration of the structure of an asset, participant, transaction, concept or event</li>
+<li><em>Instance</em> : an instance of a class, for example if org.example.Vehicle is an asset (class), then org.example.Vehicle#ABC123 is an <strong>instance</strong> of an org.acme.Vehicle</li>
+<li><em>Property</em> : a member (or field) defined by a class, including a relationship. For example the class org.example.Vehicle may have a property called <code>model</code> of type <code>string</code>.</li>
+</ul>
+
+<p>A class (the asset SampleAsset):</p>
+<div class="highlight"><pre><code class="language-" data-lang="">namespace org.acme.sample
+
+asset SampleAsset identified by assetId {
+  o String assetId
+  --&gt; SampleParticipant owner
+  o String value
+}
 </code></pre></div>
-<h2 id="options">Options</h2>
+<p>An instance of the class:</p>
+<div class="highlight"><pre><code class="language-" data-lang=""><span class="p">{</span><span class="w">
+  </span><span class="nt">"$class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"org.acme.sample.SampleAsset"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"assetId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assetId:6463"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource:org.acme.sample.SampleParticipant#participantId:8091"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"secret plant frequently ruler"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<h2 id="evolution-of-namespaces">Evolution of Namespaces</h2>
 
-<p><code>--connectionProfileName, -p</code></p>
+<p>A new class may be added to a namespace without breaking compatibility with pre-existing instances.</p>
 
-<p>The connection profile name.<br>
-Example: <code>defaultProfile</code></p>
+<h2 id="evolution-of-classes">Evolution of Classes</h2>
 
-<p><code>--businessNetworkName, -n</code></p>
+<p>This section describes the effects of changes to the declaration of a class and its properties on pre-existing instances.</p>
 
-<p>The name of the deployed Business Network to connect to.<br>
-Example:
-<code>digitalproperty-network</code></p>
+<h3 id="renaming">Renaming</h3>
 
-<p><code>--enrollId, -i</code></p>
+<p>Renaming a class will break compatibility with any pre-existing instances of the class, or relationships to the class.</p>
 
-<p>The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: <code>maeid1</code></p>
+<h3 id="abstract-classes">abstract Classes</h3>
 
-<p><code>--enrollSecret, -s</code></p>
+<p>If a class that was not declared abstract is changed to be declared abstract, then attempts to create new instances of that class will throw an error at runtime; such a change is therefore not recommended for widely distributed classes.</p>
 
-<p>The enrollment secret of the identity that should be used to connect to deployed
-Business Network.<br>
-Example: <code>Xurw3yU9zI0l</code></p>
+<p>Changing a class that is declared abstract to no longer be declared abstract does not break compatibility with pre-existing instances.</p>
 
-<p><code>--data, -d</code></p>
+<h3 id="superclasses">Superclasses</h3>
 
-<p>The serialized JSON representation of the participant to add to the participant
-registry. The data must be valid according to the model of the participant.<br>
-Example: <code>{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Person&quot;,&quot;personId&quot;:&quot;mae@biznet.org&quot;,&quot;firstName&quot;:&quot;Mae&quot;,&quot;lastName&quot;:&quot;Smith&quot;}</code></p>
+<p>An error is thrown at load time if a class would be a superclass of itself. Changes to the class hierarchy that could result in such a circularity when instances are loaded are not recommended for widely distributed classes.</p>
+
+<p>Changing the direct superclass of a class type will not break compatibility with pre-existing instances, provided that the total set of superclasses of the class type loses no properties.</p>
+
+<p>If a change to the direct superclass results in any class no longer being a superclass respectively, then errors may result if pre-existing instances have relationships to the modified class. Such changes are not recommended for widely distributed classes.</p>
+
+<h3 id="class-properties">Class Properties</h3>
+
+<p>No incompatibility with pre-existing instances is caused by adding a property to a class if the property is either declared as <code>optional</code> or is assigned a <code>default</code> value. Adding new properties that are neither optional nor have a default will break compatibility with any pre-existing instances of the class.</p>
+
+<p>Changing the cardinality of a property (changing an array <code>[]</code> to a non-array or vice-a-versa) will break compatibility with any pre-existing instances of the class.</p>
+
+<p>Deleting a property from a class will break compatibility with any pre-existing instances that reference this field.</p>
+
+<p>Changing the type of a property may cause an error if the property is used by a pre-existing instance.</p>
+
+<p>Changing the validation expression of a property may cause an error if the property is used by a pre-existing instance.</p>
+
+<p>Properties that are relationships follow the same rules as for other types.</p>
+
+<h3 id="evolution-of-enums">Evolution of Enums</h3>
+
+<p>Adding or reordering constants in an enum type will not break compatibility with pre-existing instances.</p>
+
+<p>If a pre-existing instance attempts to access an enum constant that no longer exists, an error will occur. Therefore such a change is not recommended for widely distributed enums.</p>
+
+<p>In all other respects, the model evolutions rules for enums are identical to those for classes.</p>
 
             
           </section>

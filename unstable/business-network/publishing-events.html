@@ -96,7 +96,7 @@ ga('send', 'pageview');
 <li><a href="../business-network/publishing-events.html">Emitting events</a></li>
 <li><a href="../business-network/testing.html">Testing</a></li>
 <li><a href="../business-network/bnd-publish.html">Publishing to npm</a></li>
-<li><a href="../business-network/query.html">Querying Assets</a></li>
+<li><a href="../business-network/query.html">Querying Business Network Data</a></li>
 </ul></li>
 <li><a href="../applications/applications-index.html">Developing Applications</a></li>
 <li><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></li>
@@ -138,14 +138,13 @@ ga('send', 'pageview');
 
 <h2 id="before-you-begin">Before you begin</h2>
 
-<p>Before you begin adding events to your business network, you should have a good understanding of the modelling language for business networks, and what makes up a full business network definition.</p>
+<p>Before you begin adding events to your business network, you should have a good understanding of the modeling language for business networks, and what makes up a full business network definition.</p>
 
 <h2 id="procedure">Procedure</h2>
 
 <ol>
 <li><p>Events are defined in the model file (<code>.cto</code>) of your business network definition, in the same way as assets and participants. Events use the following format:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">event BasicEvent identified by eventId {
-o String eventId
 }
 </code></pre></div></li>
 <li><p>In order for the event to be published the transaction which creates the event must call three functions, the first is the <code>getFactory</code> function. The <code>getFactory</code> allows events to be created as part of a transaction. Next, an event must be created by using <code>factory.newEvent(&#39;org.namespace&#39;, &#39;BasicEvent&#39;)</code>. This creates a <code>BasicEvent</code> defined in a specified namespace. Then the required properties on the event must be set. Lastly, the event must be emitted by using <code>emit(BasicEvent)</code>. A simple transaction which calls this event would look like this:</p>

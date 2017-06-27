@@ -234,6 +234,10 @@ tar xvzf fabric-dev-servers.tar.gz
 
 <p><em>If you want to swap between v0.6 and v1.0, ensure you first issue a <code>teardownFabric.sh</code> command on your original version.</em></p>
 
+<blockquote>
+<p>Please note: The development environment created will include a <code>PeerAdmin</code> identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.</p>
+</blockquote>
+
 <h2 id="script-details">Script details</h2>
 
 <p><img src="../assets/img/developer-tools-commands.png" alt="">.</p>

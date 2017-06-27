@@ -7,7 +7,7 @@
 <head>
   <meta charset="utf-8">
   
-    <title>Hyperledger Composer Participant Add Command | Hyperledger Composer</title>
+    <title>Updating Hyperledger Composer | Hyperledger Composer</title>
   
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="/composer/unstable/favicon.ico">
@@ -77,7 +77,7 @@ ga('send', 'pageview');
           </div>
 
           <div class="docs-current-page-grid">
-          <p>Hyperledger Composer Participant Add Command</p>
+          <p>Updating Hyperledger Composer</p>
           </div>
 
           <nav class="context-nav">
@@ -90,22 +90,18 @@ ga('send', 'pageview');
 <li><a href="../business-network/business-network-index.html">Developing Business Networks</a></li>
 <li><a href="../applications/applications-index.html">Developing Applications</a></li>
 <li><a href="../integrating/integrating-index.html">Integrating Existing Systems</a></li>
-<li><a href="../managing/managingindex.html">Managing and Operating</a></li>
-<li><a href="../problems/diagnostics.html">Diagnosing Problems</a></li>
-<li><a href="../reference/reference-index.html">Reference</a>
+<li><a href="../managing/managingindex.html">Managing and Operating</a>
 
 <ul>
-<li><a href="../reference/MeetTheModules.html">npm Modules</a></li>
-<li><a href="../reference/cto_language.html">Modeling Language</a></li>
-<li><a href="../reference/acl_language.html">Access Control Language</a></li>
-<li><a href="../reference/query-language.html">Query Language</a></li>
-<li><a href="../reference/model-compatibility.html">Model Compatibility</a></li>
-<li><a href="../reference/connectionprofile.html">Connection Profile</a></li>
-<li><a href="../reference/js_scripts.html">Transaction Processor Functions</a></li>
-<li><a href="../reference/commands.html">CLI Commands</a></li>
-<li><a href="../jsdoc/index.html">API Documentation</a></li>
-<li><a href="../reference/glossary.html">Glossary</a></li>
+<li><a href="../managing/participantsandidentities.html">Participants and Identities</a></li>
+<li><a href="../managing/participant-add.html">Adding a participant</a></li>
+<li><a href="../managing/identity-issue.html">Issuing an identity to a participant</a></li>
+<li><a href="../managing/identity-revoke.html">Revoking an identity from a participant</a></li>
+<li><a href="../managing/github-oauth.html">Enabling OAuth using GitHub</a></li>
+<li><a href="../managing/current-participant.html">Enabling access control using the current participant</a></li>
 </ul></li>
+<li><a href="../problems/diagnostics.html">Diagnosing Problems</a></li>
+<li><a href="../reference/reference-index.html">Reference</a></li>
 <li><a href="../support/index.html">Support</a></li>
 </ul>
 
@@ -135,56 +131,9 @@ ga('send', 'pageview');
           <section class="content-chunk">
             <!-- <a class="toggle open" href="#nav">open</a> -->
             
-              <h1 id="composer-participant-add">Composer participant add</h1>
+              <h1 id="updating-hyperledger-composer">Updating Hyperledger Composer</h1>
 
-<hr>
-
-<p>The <code>composer participant add</code> command adds a new instance of a participant to a
-participant registry. See the task <a href="../managing/participant-add.html">Add a Participant</a>
-for a walkthrough of using this command or the API.</p>
-
-<h2 id="syntax">Syntax</h2>
-<div class="highlight"><pre><code class="language-" data-lang="">$ composer participant add
-composer participant add [options]
-
-Options:
-  --help                       Show help  [boolean]
-  --connectionProfileName, -p  The connection profile name  [string]
-  --businessNetworkName, -n    The business network name  [string] [required]
-  --enrollId, -i               The enrollment ID of the user  [string] [required]
-  --enrollSecret, -s           The enrollment secret of the user  [string]
-  --data, -d                   Serialized participant JSON object as a string  [string] [required]
-</code></pre></div>
-<h2 id="options">Options</h2>
-
-<p><code>--connectionProfileName, -p</code></p>
-
-<p>The connection profile name.<br>
-Example: <code>defaultProfile</code></p>
-
-<p><code>--businessNetworkName, -n</code></p>
-
-<p>The name of the deployed Business Network to connect to.<br>
-Example:
-<code>digitalproperty-network</code></p>
-
-<p><code>--enrollId, -i</code></p>
-
-<p>The enrollment ID of the identity that should be used to connect to the deployed
-Business Network.
-Example: <code>maeid1</code></p>
-
-<p><code>--enrollSecret, -s</code></p>
-
-<p>The enrollment secret of the identity that should be used to connect to deployed
-Business Network.<br>
-Example: <code>Xurw3yU9zI0l</code></p>
-
-<p><code>--data, -d</code></p>
-
-<p>The serialized JSON representation of the participant to add to the participant
-registry. The data must be valid according to the model of the participant.<br>
-Example: <code>{&quot;$class&quot;:&quot;net.biz.digitalPropertyNetwork.Person&quot;,&quot;personId&quot;:&quot;mae@biznet.org&quot;,&quot;firstName&quot;:&quot;Mae&quot;,&quot;lastName&quot;:&quot;Smith&quot;}</code></p>
+<p>After deploying Hyperledger Composer you may wish to upgrade to a new version for additional functionality.</p>
 
             
           </section>
