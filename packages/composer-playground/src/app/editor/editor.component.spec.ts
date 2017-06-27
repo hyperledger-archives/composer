@@ -91,7 +91,7 @@ describe('EditorComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [FormsModule],
-            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective ],
+            declarations: [EditorComponent, MockEditorFileDirective, MockPerfectScrollBarDirective, ScrollToElementDirective],
             providers: [
                 {provide: SampleBusinessNetworkService, useValue: mockBusinessNetworkService},
                 {provide: AdminService, useValue: mockAdminService},
@@ -423,12 +423,23 @@ describe('EditorComponent', () => {
     });
 
     describe('updateFiles', () => {
-        it('should update the files', () => {
+        it('should update the files, and not include system model files', () => {
             mockClientService.getModelFiles.returns([
-                {getNamespace: sinon.stub().returns('model 2'),
-                 getFileName: sinon.stub().returns('models/model2.cto')},
-                {getNamespace: sinon.stub().returns('model 1'),
-                 getFileName: sinon.stub().returns('models/model1.cto')},
+                {
+                    getNamespace: sinon.stub().returns('model 2'),
+                    getFileName: sinon.stub().returns('models/model2.cto'),
+                    isSystemModelFile : sinon.stub().returns(false)
+                },
+                {
+                    getNamespace: sinon.stub().returns('model 1'),
+                    getFileName: sinon.stub().returns('models/model1.cto'),
+                    isSystemModelFile : sinon.stub().returns(false)
+                },
+                {
+                    getNamespace: sinon.stub().returns('system 1'),
+                    getFileName: sinon.stub().returns('models/system1.cto'),
+                    isSystemModelFile : sinon.stub().returns(true)
+                },
             ]);
 
             mockClientService.getScripts.returns([
@@ -1760,8 +1771,8 @@ describe('EditorComponent', () => {
             invalidNames.push('na:me');
             invalidNames.push('na`me');
 
-            invalidNames.forEach( (fileName) => {
-                component['inputFileNameArray'] = [ '', fileName, ''];
+            invalidNames.forEach((fileName) => {
+                component['inputFileNameArray'] = ['', fileName, ''];
                 component['editFileName']();
                 component['fileNameError'].should.be.equal('Error: Invalid filename, file must be alpha-numeric with no spaces');
             });
@@ -1770,7 +1781,7 @@ describe('EditorComponent', () => {
         it('should prevent edit of acl file', () => {
             // Attempt edit of ACL
             component['inputFileNameArray'] = ['', 'permissions', '.acl'];
-            component['currentFile'] = { acl: true};
+            component['currentFile'] = {acl: true};
 
             component['editFileName']();
             component['fileNameError'].should.be.equal('Error: Unable to process rename on current file type');
@@ -1779,7 +1790,7 @@ describe('EditorComponent', () => {
         it('should prevent edit of readme file', () => {
             // Attempt edit of README
             component['inputFileNameArray'] = ['', 'README', '.md'];
-            component['currentFile'] = { readme: true };
+            component['currentFile'] = {readme: true};
 
             component['editFileName']();
             component['fileNameError'].should.be.equal('Error: Unable to process rename on current file type');
@@ -1788,11 +1799,11 @@ describe('EditorComponent', () => {
         it('should prevent renaming file to existing file', () => {
             // Attempt edit of model
             component['inputFileNameArray'] = ['', 'myModelFile', '.cto'];
-            component['currentFile'] = { model: true, displayID: 'oldNameID.cto' };
+            component['currentFile'] = {model: true, displayID: 'oldNameID.cto'};
 
             component['files'] = [{displayID: 'muchRandom'},
-                                  {displayID: 'oldNameID.cto'},
-                                  {displayID: 'myModelFile.cto'}];
+                {displayID: 'oldNameID.cto'},
+                {displayID: 'myModelFile.cto'}];
 
             component['editFileName']();
             component['fileNameError'].should.be.equal('Error: Filename already exists');
@@ -1801,11 +1812,11 @@ describe('EditorComponent', () => {
         it('should not rename script file if name unchanged', () => {
             // Attempt edit of script
             component['inputFileNameArray'] = ['', 'myScriptFile', '.js'];
-            component['currentFile'] = { script: true, id: 'myScriptFile.js' };
+            component['currentFile'] = {script: true, id: 'myScriptFile.js'};
 
             component['files'] = [{id: 'muchRandom'},
-                                  {id: 'myScriptFile.js'},
-                                  {id: 'oldNameID'}];
+                {id: 'myScriptFile.js'},
+                {id: 'oldNameID'}];
 
             component['editFileName']();
         });
@@ -1813,11 +1824,11 @@ describe('EditorComponent', () => {
         it('should not rename model file if name unchanged', () => {
             // Attempt edit of model
             component['inputFileNameArray'] = ['', 'myModelFile', '.cto'];
-            component['currentFile'] = { model: true, displayID: 'myModelFile.cto' };
+            component['currentFile'] = {model: true, displayID: 'myModelFile.cto'};
 
             component['files'] = [{displayID: 'muchRandom'},
-                                  {displayID: 'myModelFile.cto'},
-                                  {displayID: 'oldNameID'}];
+                {displayID: 'myModelFile.cto'},
+                {displayID: 'oldNameID'}];
 
             component['editFileName']();
         });
@@ -1840,12 +1851,12 @@ describe('EditorComponent', () => {
             });
 
             component['inputFileNameArray'] = ['', 'myNewScriptFile', '.js'];
-            component['currentFile'] = { script: true, id: 'myCurrentScriptFile.js' };
+            component['currentFile'] = {script: true, id: 'myCurrentScriptFile.js'};
 
             component['files'] = [{id: 'muchRandom'},
-                                  {id: 'myCurrentScriptFile.js'},
-                                  {id: 'otherScriptFile.js'},
-                                  {id: 'oldNameID'}];
+                {id: 'myCurrentScriptFile.js'},
+                {id: 'otherScriptFile.js'},
+                {id: 'oldNameID'}];
 
             // Call Method
             component['editFileName']();
@@ -1873,12 +1884,12 @@ describe('EditorComponent', () => {
                 getDefinitions: sinon.stub().returns('My ModelFile content')
             });
             component['inputFileNameArray'] = ['', 'myNewModelFile', '.cto'];
-            component['currentFile'] = { model: true, id: 'myCurrentModelFile.cto' };
+            component['currentFile'] = {model: true, id: 'myCurrentModelFile.cto'};
 
             component['files'] = [{id: 'muchRandom'},
-                                  {displayID: 'myCurrentModelFile.cto'},
-                                  {displayID: 'otherModelFile.cto'},
-                                  {id: 'oldNameID'}];
+                {displayID: 'myCurrentModelFile.cto'},
+                {displayID: 'otherModelFile.cto'},
+                {id: 'oldNameID'}];
 
             // Call Method
             component['editFileName']();
@@ -1895,61 +1906,61 @@ describe('EditorComponent', () => {
 
         it('should find a file index by id', () => {
             component['files'] = [{id: 'match0'},
-                                  {id: 'match1'},
-                                  {id: 'match2'},
-                                  {id: 'match3'},
-                                  {id: 'match4'}];
+                {id: 'match1'},
+                {id: 'match2'},
+                {id: 'match3'},
+                {id: 'match4'}];
 
             for (let i = 0; i < 4; i++) {
-                 let match = component['findFileIndex'](true, 'match' + i);
-                 match.should.be.equal(i);
+                let match = component['findFileIndex'](true, 'match' + i);
+                match.should.be.equal(i);
             }
         });
 
         it('should find a file index by displayID', () => {
             component['files'] = [{displayID: 'match0'},
-                                  {displayID: 'match1'},
-                                  {displayID: 'match2'},
-                                  {displayID: 'match3'},
-                                  {displayIDid: 'match4'}];
+                {displayID: 'match1'},
+                {displayID: 'match2'},
+                {displayID: 'match3'},
+                {displayIDid: 'match4'}];
 
             for (let i = 0; i < 4; i++) {
-                 let match = component['findFileIndex'](false, 'match' + i);
-                 match.should.be.equal(i);
+                let match = component['findFileIndex'](false, 'match' + i);
+                match.should.be.equal(i);
             }
         });
 
         it('should find a file index by id within mixed items', () => {
             component['files'] = [{id: 'match0'},
-                                  {displayID: 'match0'},
-                                  {id: 'match1'},
-                                  {displayID: 'match1'},
-                                  {id: 'match2'},
-                                  {displayID: 'match2'},
-                                  {id: 'match3'},
-                                  {displayID: 'match3'}];
+                {displayID: 'match0'},
+                {id: 'match1'},
+                {displayID: 'match1'},
+                {id: 'match2'},
+                {displayID: 'match2'},
+                {id: 'match3'},
+                {displayID: 'match3'}];
             let j = 0;
             for (let i = 0; i < 4; i++) {
-                 let match = component['findFileIndex'](true, 'match' + i);
-                 match.should.be.equal(j);
-                 j += 2;
+                let match = component['findFileIndex'](true, 'match' + i);
+                match.should.be.equal(j);
+                j += 2;
             }
         });
 
         it('should find a file index by displayID within mixed items', () => {
             component['files'] = [{id: 'match0'},
-                                  {displayID: 'match0'},
-                                  {id: 'match1'},
-                                  {displayID: 'match1'},
-                                  {id: 'match2'},
-                                  {displayID: 'match2'},
-                                  {id: 'match3'},
-                                  {displayID: 'match3'}];
+                {displayID: 'match0'},
+                {id: 'match1'},
+                {displayID: 'match1'},
+                {id: 'match2'},
+                {displayID: 'match2'},
+                {id: 'match3'},
+                {displayID: 'match3'}];
             let j = 1;
             for (let i = 0; i < 4; i++) {
-                 let match = component['findFileIndex'](false, 'match' + i);
-                 match.should.be.equal(j);
-                 j += 2;
+                let match = component['findFileIndex'](false, 'match' + i);
+                match.should.be.equal(j);
+                j += 2;
             }
         });
 
