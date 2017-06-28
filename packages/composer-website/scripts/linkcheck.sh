@@ -5,15 +5,14 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 cd ${DIR}/jekylldocs
 
 if [ "$1" == "prod" ]; then
-    jekyll serve --config _config.yml --skip-initial-build  > jekyll.log 2>&1 &
+    jekyll serve --config _config.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 &
 elif [ "$1" == "unstable" ]; then
-    jekyll serve --config _config.yml,_unstable.yml --skip-initial-build  > jekyll.log 2>&1 & 
+    jekyll serve --config _config.yml,_unstable.yml --skip-initial-build  > ${DIR}/jekyll.log 2>&1 & 
 else
    echo "Script error"
    exit 1
 fi
 
-npm run jekyllserve > jekyll.log 2>&1 &
 JOBN="$(jobs | awk '/jekyll serve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')"
 echo ${JOBN}
 sleep 10
