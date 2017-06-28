@@ -1,13 +1,28 @@
 #!/bin/bash
-
+set -v
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+cd ${DIR}/jekylldocs
+
+if [ "$1" == "prod" ]; then
+    jekyll serve --config _config.yml --skip-initial-build  > jekyll.log 2>&1 &
+elif [ "$1" == "unstable" ]; then
+    jekyll serve --config _config.yml,_unstable.yml --skip-initial-build  > jekyll.log 2>&1 & 
+else
+   echo "Script error"
+   exit 1
+fi
+
 npm run jekyllserve > jekyll.log 2>&1 &
-JOBN=$(jobs | awk '/jekyllserve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')
+JOBN="$(jobs | awk '/jekyll serve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')"
+echo ${JOBN}
 sleep 10
 
-echo Startin linkchecking...
-linkchecker --ignore-url=jsdoc http://127.0.0.1:4000/composer/ -F text/UTF8/${DIR}/linkresults.txt 
+URL="$( cat jekyll.log | awk '/Server address:/ { print $3 }')"
+
+
+echo Starting linkchecking... ${URL}
+linkchecker --ignore-url=jsdoc ${URL} -F text/UTF8/${DIR}/linkresults.txt 
 if [ "$?" != "0" ]; then
 	asciify '!!Broken Links!!' -f standard 
 	cat ${DIR}/linkresults.txt
@@ -15,5 +30,7 @@ if [ "$?" != "0" ]; then
   # set the links as being broken.
   # need to ignore the jsdoc somehow for the momeny
 fi
-kill %${JOB}
+
+kill %${JOBN}
+sleep 1
 jobs

@@ -15,7 +15,8 @@
     "full:prod": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
     "changelog": "./scripts/changelog.sh",
-    "linkcheck": "./scripts/linkcheck.sh"
+    "linkcheck:prod": "./scripts/linkcheck.sh prod",
+    "linkcheck:unstable": "./scripts/linkcheck.sh unstable"
   },
   "repository": {
     "type": "git",
