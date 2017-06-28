@@ -44,6 +44,7 @@ if [ "${DOCS}" != "" ]; then
        npm run full:unstable
        npm run linkcheck:unstable
     fi
+    npm run linkcheck
 
 # Are we running playground e2e tests?
 elif [ "${SYSTEST}" = "e2e" ]; then
