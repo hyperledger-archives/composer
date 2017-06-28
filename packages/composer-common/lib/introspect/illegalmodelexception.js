@@ -38,8 +38,8 @@ class IllegalModelException extends BaseModelException {
     constructor(message, modelFile, fileLocation) {
 
         let messageSuffix = '';
-        if(modelFile && modelFile.getFileName()) {
-            messageSuffix = 'File \'' + modelFile.getFileName() + '\': ' ;
+        if(modelFile && modelFile.getName()) {
+            messageSuffix = 'File \'' + modelFile.getName() + '\': ' ;
         }
 
         if(fileLocation) {

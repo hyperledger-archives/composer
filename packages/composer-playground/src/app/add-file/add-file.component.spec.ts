@@ -306,7 +306,7 @@ describe('AddFileComponent', () => {
             component.fileType.should.equal('cto');
             mockClientService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), 'models/' + file.name);
             component.currentFile.should.deep.equal(mockModel);
-            component.currentFileName.should.equal(mockModel.getFileName());
+            component.currentFileName.should.equal(mockModel.getName());
         }));
 
         it('should use the addModelFileName variable as the file name if none passed in', async(() => {
@@ -328,7 +328,7 @@ describe('AddFileComponent', () => {
             component.fileType.should.equal('cto');
             mockClientService.createModelFile.should.have.been.calledWith(dataBuffer.toString(), fileName);
             component.currentFile.should.deep.equal(mockModel);
-            component.currentFileName.should.equal(mockModel.getFileName());
+            component.currentFileName.should.equal(mockModel.getName());
             component.currentFileName.should.equal(fileName);
         }));
     });

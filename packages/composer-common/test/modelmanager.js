@@ -97,7 +97,7 @@ describe('ModelManager', () => {
             let res = modelManager.addModelFile(modelBase, 'model-base.cto');
             modelManager.getModelFile('org.acme.base').getNamespace().should.equal('org.acme.base');
             res.should.be.an.instanceOf(ModelFile);
-            res.getFileName().should.equal('model-base.cto');
+            res.getName().should.equal('model-base.cto');
         });
 
         it('should add a model file from an object', () => {

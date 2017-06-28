@@ -12,8 +12,10 @@
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
 
-Version 0.9.0 {fdb6e4aa0f2c964c87b5cdacca6853e1} 2017-06-23
+Version 0.9.0 {d0b9ae5179276e20604874624fe9529d} 2017-06-23
 - Removed useless toJSON methods everywhere
+- Removed deprecated Factory.newInstance method
+- Removed deprecated ModelFile.getFileName method
 
 Version 0.8.1 {5ac120d6a9f42683dfcd729fea3ea1c9} 2017-06-20
 - Added BaseModelException to standardise model errors
