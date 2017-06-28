@@ -20,6 +20,7 @@ const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./api/participantregistry');
 const Query = require('./api/query');
 const Registry = require('./registry');
+const Serializer = require('./api/serializer');
 
 const LOG = Logger.getLog('Api');
 
@@ -94,10 +95,10 @@ class Api {
 
         /**
          * Get the serializer. The serializer can be used to create new instances of
-         * assets, participants, and transactions from a JS object, or to create a JS object
-         * suitable for long-lived persistence.
+         * assets, participants, and transactions from a JavaScript object, or to create
+         * a JavaScript object suitable for long-lived persistence.
          * @example
-         * // Get the factory.
+         * // Get the serializer.
          * var ser = getSerializer();
          * @method module:composer-runtime#getSerializer
          * @public
@@ -106,7 +107,7 @@ class Api {
         this.getSerializer = function getSerializer() {
             const method = 'getSerializer';
             LOG.entry(method);
-            let result = serializer;
+            let result = new Serializer(serializer);
             LOG.exit(method, result);
             return result;
         };
@@ -304,7 +305,7 @@ class Api {
          *   .catch(function (error) {
          *     // Add optional error handling here.
          *   });
-         * @method module:composer-runtime#buildQuery
+         * @method module:composer-runtime#query
          * @param {string|Query} query The name of the query, or a built query.
          * @param {Object} [parameters] The parameters for the query.
          * @return {Promise} A promise that will be resolved with an array of
