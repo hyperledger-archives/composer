@@ -30,7 +30,7 @@ const minimatch = require('minimatch');
 const ScriptManager = require('./scriptmanager');
 const semver = require('semver');
 const Serializer = require('./serializer');
-
+const COMPOSER_SYSTEM_NAMESPACE = require('./modelutil').getSystemNamespace();
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
 
@@ -300,6 +300,10 @@ class BusinessNetworkDefinition {
         zip.file('models/', null, Object.assign({}, options, { dir: true }));
         modelFiles.forEach(function(file) {
             let fileName;
+            // ignore the system namespace when creating an archive
+            if (file.namespace === COMPOSER_SYSTEM_NAMESPACE){
+                return;
+            }
             if (file.fileName === 'UNKNOWN'  || file.fileName === null || !file.fileName) {
                 fileName = file.namespace + '.cto';
             } else {
