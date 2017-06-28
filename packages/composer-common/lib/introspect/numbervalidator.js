@@ -34,8 +34,16 @@ class NumberValidator extends Validator{
     constructor(field, ast) {
         super(field, ast);
 
-        this.lowerBound = ast.lower;
-        this.upperBound = ast.upper;
+        this.lowerBound = null;
+        this.upperBound = null;
+
+        if(ast.lower) {
+            this.lowerBound = parseFloat(ast.lower);
+        }
+
+        if(ast.upper) {
+            this.upperBound = parseFloat(ast.upper);
+        }
 
         if(this.lowerBound === null && this.upperBound === null) {
             // can't specify no upper and lower value
@@ -43,7 +51,7 @@ class NumberValidator extends Validator{
         } else if (this.lowerBound === null || this.upperBound === null) {
             // this is fine and means that we don't need to check whether upper > lower
         } else {
-            if(this.lowerBound.value > this.upperBound.value) {
+            if(this.lowerBound > this.upperBound) {
                 this.reportError(null, 'Lower bound must be less than or equal to upper bound.');
             }
         }
@@ -58,14 +66,23 @@ class NumberValidator extends Validator{
      */
     validate(identifier, value) {
         if(value !== null) {
-            if(this.lowerBound && value < this.lowerBound.value) {
+            if(this.lowerBound !== null && value < this.lowerBound) {
                 this.reportError(identifier, 'Value is outside lower bound ' + value);
             }
 
-            if(this.upperBound && value > this.upperBound.value) {
+            if(this.upperBound !== null && value > this.upperBound) {
                 this.reportError(identifier, 'Value is outside upper bound ' + value);
             }
         }
+    }
+
+    /**
+     * Returns a string representation
+     * @return {string} the string representation
+     * @private
+     */
+    toString() {
+        return 'NumberValidator lower: ' + this.lowerBound + ' upper: ' + this.upperBound;
     }
 }
 

@@ -1514,17 +1514,17 @@ StringRegexValidator
   }
 
 RealDomainValidator
-   = "range" __ "=" __ "[" __ lower:SignedRealLiteral? __ "," __ upper:SignedRealLiteral? __ "]" {
+   = "range" __ "=" __ "[" __ lower:$SignedRealLiteral? __ "," __ upper:$SignedRealLiteral? __ "]" {
    	return {
-    	lower: lower,
+      lower: lower,
       upper: upper
     }
   }
 
 IntegerDomainValidator
-   = "range" __ "=" __ "[" __ lower:SignedInteger? __ "," __ upper:SignedInteger? __ "]" {
+   = "range" __ "=" __ "[" __ lower:$SignedInteger? __ "," __ upper:$SignedInteger? __ "]" {
    	return {
-    	lower: lower,
+      lower: lower,
       upper: upper
     }
   }
@@ -1653,3 +1653,4 @@ SourceElement
 /* ----- A.8 JSON ----- */
 
 /* Irrelevant. */
+
