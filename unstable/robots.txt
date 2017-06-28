@@ -1,1 +1,1 @@
-Sitemap: https://hyperledger.github.io/composer//composer/unstable/sitemap.xml
+Sitemap: http://localhost:4000/composer/sitemap.xml
