@@ -171,6 +171,7 @@ class EmbeddedConnection extends Connection {
      * Deploy all business network artifacts.
      * @param {HFCSecurityContext} securityContext The participant's security context.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */

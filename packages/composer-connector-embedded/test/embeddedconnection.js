@@ -150,7 +150,7 @@ describe('EmbeddedConnection', () => {
             sandbox.stub(EmbeddedConnection, 'createEngine').returns(mockEngine);
             mockEngine.init.resolves();
             sinon.stub(connection, 'ping').resolves();
-            return connection.deploy(mockSecurityContext, true, mockBusinessNetwork)
+            return connection.deploy(mockSecurityContext, mockBusinessNetwork)
                 .then(() => {
                     sinon.assert.calledOnce(mockEngine.init);
                     sinon.assert.calledWith(mockEngine.init, sinon.match((context) => {
