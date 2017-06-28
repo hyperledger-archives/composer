@@ -16,8 +16,8 @@ fi
 JOBN="$(jobs | awk '/jekyll serve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')"
 echo ${JOBN}
 sleep 10
-
-URL="$( cat jekyll.log | awk '/Server address:/ { print $3 }')"
+cat ${DIR}/jekyll.log
+URL="$( cat ${DIR}/jekyll.log | awk '/Server address:/ { print $3 }')"
 
 
 echo Starting linkchecking... ${URL}
