@@ -14,7 +14,7 @@ excerpt: How to create a new Connection Profile
 
 ---
 
-{% assign sorted = (site.pages | sort: 'index-order') %}
+{% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
 {% if page.section == 'integrating' and page.title != "Integrating Index" %}
 {% if page.status == 'experimental' %}
@@ -32,7 +32,7 @@ _Please note: The status of this feature is **experimental**. We welcome your fe
 
 ---
 
-{% assign sorted = (site.pages | sort: 'index-order') %}
+{% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
 {% if page.section == 'integrating' and page.title != "Integrating Index" %}
 {% if page.status == 'experimental' %}
