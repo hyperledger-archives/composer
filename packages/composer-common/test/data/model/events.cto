@@ -13,15 +13,13 @@ abstract event AbstractEvent {
 /**
  * Concrete event
  */
-event ConcreteEvent identified by eventId {
+event ConcreteEvent  {
   o String test
-  o String eventId
 }
 
 /**
  * DerivedEvent
  */
-event DerivedEvent identified by eventId extends AbstractEvent {
+event DerivedEvent extends AbstractEvent {
   o String anotherProperty
-  o String eventId
 }

@@ -91,17 +91,6 @@ class Predicate {
     validate() {
     }
 
-    /**
-     * Returns a new object representing this function declaration that is
-     * suitable for serializing as JSON.
-     * @return {Object} A new object suitable for serializing as JSON.
-     */
-    toJSON() {
-        let result = {
-            expression: this.expression,
-        };
-        return result;
-    }
 }
 
 module.exports = Predicate;

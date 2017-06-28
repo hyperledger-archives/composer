@@ -56,6 +56,7 @@ participant Farmer extends User {
     o String address2
     o String county
     o String postcode
+    o Integer age optional
     --> Business business
 }
 
@@ -103,8 +104,8 @@ asset Business identified by sbi {
 /**
  * An abstract transaction type for animal movements
  */
-abstract transaction AnimalMovement identified by transactionId {
-  o String transactionId
+abstract transaction AnimalMovement  {
+  
   o String[] logs optional
     --> Animal animal
     --> Business from

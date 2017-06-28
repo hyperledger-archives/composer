@@ -8,8 +8,6 @@ excerpt: How to test business networks
 
 # Testing Business Networks
 
----
-
 {{site.data.conrefs.composer_full}} supports three types of testing: interactive testing, automated unit testing and automated system testing. All three serve different purposes and are vital to ensuring the success of your blockchain projects.
 
 After you have deployed a business network definition it is often useful to run an interative "smoke test" to ensure that the deployment was successful. The `composer` CLI exposes several commands for running such smoke tests.

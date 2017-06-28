@@ -1,9 +1,9 @@
 <section class="side-bar">
   <div class="files">
     <span>Files</span>
-    <perfect-scrollbar class="side-bar-nav">
+    <perfect-scrollbar class="side-bar-nav" scroll-to-element [elementId]="listItem">
       <ul>
-        <li *ngFor="let file of files" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
+        <li #editorFileList id="editorFileList{{fileIndex}}" *ngFor="let file of files; let fileIndex = index" [class.active]="file.id === currentFile.id" (click)="setCurrentFile(file)">
             <div class="flex-container">
                 <div class="flex">
                     <h3 [class.error]="file.invalid" *ngIf="file.package">Package Details</h3>

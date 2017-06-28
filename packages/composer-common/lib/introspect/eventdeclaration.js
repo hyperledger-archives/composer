@@ -15,7 +15,7 @@
 'use strict';
 
 const ClassDeclaration = require('./classdeclaration');
-const Field = require('./field');
+const IllegalModelException = require('./illegalmodelexception');
 
 /** Class representing the definition of an Event.
  * @extends ClassDeclaration
@@ -36,22 +36,37 @@ class EventDeclaration extends ClassDeclaration {
     }
 
     /**
-     * Process the AST and build the model
+     * Returns the base system type for Events from the system namespace
      *
-     * @throws {InvalidModelException}
+     * @return {string} the short name of the base system type
+     */
+    getSystemType() {
+        return 'Event';
+    }
+
+     /**
+     * Semantic validation of the structure of this event. Subclasses should
+     * override this method to impose additional semantic constraints on the
+     * contents/relations of fields.
+     *
+     * @throws {IllegalModelException}
      * @private
      */
-    process() {
-        super.process();
+    validate() {
+        super.validate();
 
-        // we add the timestamp property that all events must have
-        if(this.getProperty('timestamp') === null) {
-            const ast = {
-                id : {name: 'timestamp'},
-                propertyType: {name: 'DateTime'}
-            };
-            this.properties.push(new Field(this, ast));
+        if(!this.isSystemType() && this.getName() === 'Event') {
+            throw new IllegalModelException('Event is a reserved type name.', this.modelFile, this.ast.location);
         }
+    }
+
+     /**
+     * Returns true if this class is the definition of an event
+     *
+     * @return {boolean} true if the class is an event
+     */
+    isEvent() {
+        return true;
     }
 }
 

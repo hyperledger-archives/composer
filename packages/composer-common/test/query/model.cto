@@ -1,0 +1,33 @@
+namespace org.acme
+
+enum Enum {
+    o VALUE_1
+    o VALUE_2
+}
+
+asset Car identified by id {
+  o String id
+  -->Driver owner
+}
+
+concept Address {
+  o String city
+}
+
+participant Driver identified by email {
+  o String email
+  o String firstName
+  o String lastName
+  o Address address
+  o Integer age
+}
+
+participant Regulator identified by email {
+  o String email
+  o String firstName
+  o String lastName
+}
+
+transaction MyTransaction {
+
+}

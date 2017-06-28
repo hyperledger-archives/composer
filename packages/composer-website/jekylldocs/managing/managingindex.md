@@ -3,13 +3,12 @@ layout: default
 title: Managing Index
 category: concepts
 section: managing
+index-order: 0
 sidebar: sidebars/managing.md
 excerpt: "Managing your {{site.data.conrefs.composer_full}}"
 ---
 
 # Managing your {{site.data.conrefs.composer_full}} Solution
-
----
 
 {% assign sorted = (site.pages | sort: 'index-order') %}
 {% for page in sorted %}

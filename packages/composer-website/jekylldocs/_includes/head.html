@@ -8,10 +8,7 @@
   <meta name="viewport" content="width=device-width">
   <link rel="icon" type="image/x-icon" href="{{site.baseurl}}/favicon.ico">
   <meta name="google-site-verification" content="fBQRJ6h7MV7_TJ7grbgq4P-d-07NRfDWPe4pqEEoH5w">
-  <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700%7CRoboto:400,700,700italic,400italic" rel="stylesheet" type="text/css">
   <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-  <script src="{{site.baseurl}}/assets/js/clipboard.min.js"></script>
 
   {% if jekyll.environment == "production" and site.google_tracking_id.production %}
     {% include googleanalytics.html tracking_id=site.google_tracking_id.production %}
@@ -23,11 +20,9 @@
     <link href="{{site.baseurl}}/assets/css/404.min.css" rel="stylesheet">
   {% else %}
     <link href="{{site.baseurl}}/assets/css/normalize.css" rel="stylesheet">
-    <link href="{{site.baseurl}}/assets/css/main.css" rel="stylesheet">
-    <link href="{{site.baseurl}}/assets/css/footer.css" rel="stylesheet">
-    <link href="{{site.baseurl}}/assets/css/prettify.css" rel="stylesheet">
-    <link href="{{site.baseurl}}/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="{{site.baseurl}}/assets/css/composer-style.css" rel="stylesheet">
     <link href="{{site.baseurl}}/assets/css/new-style.min.css" rel="stylesheet">
+    <link href="{{site.baseurl}}/assets/css/grid-layout.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+
   {% endif %}
 </head>

@@ -92,25 +92,4 @@ describe('Field', () => {
 
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let f = new Field(mockClassDeclaration, {
-                id: {
-                    name: 'field',
-                },
-                propertyType: {
-                    name: 'String'
-                },
-                array: true,
-                regex: 'suchValidator',
-                default: 'wowSuchDefault',
-                optional: true
-            });
-            let object = f.toJSON();
-            object.should.deep.equal({});
-        });
-
-    });
-
 });

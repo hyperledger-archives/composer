@@ -889,7 +889,6 @@ describe('ClientService', () => {
             let businessNetworkConnectionMock = sinon.stub(service, 'getBusinessNetworkConnection').returns(businessNetworkConMock);
 
             service.issueIdentity('userId', 'uniqueName', {issuer: false, affiliation: undefined}).then((identity) => {
-                console.log('CAZ', identity);
                 let expected = {
                     participant: 'uniqueName',
                     userID: 'userId',

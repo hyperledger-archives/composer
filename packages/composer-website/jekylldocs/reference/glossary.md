@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Glossary and definition of terms
-category: reference
+title: Hyperledger Composer Glossary of Terms
+section: reference
+index-order: 9
 sidebar: sidebars/reference.md
-excerpt: Glossary
+excerpt: The glossary contains [**definitions of all Hyperledger Composer terms**](./glossary.html) for developing a solution with Hyperledger Composer.
 ---
 
 # Glossary and definition of terms
@@ -33,7 +34,7 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Blockchain_(database))
 
 **Events**: Events are defined in the business network definition in the same way as assets or participants. Once events have been defined, they can be included in the transaction processor functions to be emitted as part of a transaction. Applications can subscribe to emitted events through the `composer-client` API.
 
-**Fabric**: Fabric is a blockchain platform that user applications connect to in order to interact with a ledger. Examples of blockchain fabrics include Bitcoin, Ethereum, Open Blockchain and Hyperledger.
+**Fabric**: A fabric is a blockchain platform that user applications connect to in order to interact with a ledger. Examples of blockchain fabrics include Bitcoin, Ethereum, Open Blockchain and Hyperledger.
 
 **Hyperledger**: Hyperledger is a Linux Foundation project to produce an open blockchain platform that is ready for business. It provides an implementation of the shared ledger, smart contracts, privacy and consensus mechanisms.
 

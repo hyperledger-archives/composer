@@ -14,8 +14,10 @@
 
 'use strict';
 
+const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const fs = require('fs');
 const path = require('path');
 
@@ -27,10 +29,23 @@ describe('ModelFile semantic validation', () => {
     const invalidModel = fs.readFileSync(path.resolve(__dirname, '../data/model/invalid.cto'), 'utf8');
 
     let mockModelManager;
+    let mockClassDeclaration;
+    let mockSystemModelFile;
+    let mockSystemAsset;
     let sandbox;
 
     beforeEach(() => {
+        mockSystemModelFile = sinon.createStubInstance(ModelFile);
+        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
+        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
         mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
+        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
+        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
+        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelManager.getType.returns(mockClassDeclaration);
+        mockClassDeclaration.getProperties.returns([]);
         sandbox = sinon.sandbox.create();
     });
 

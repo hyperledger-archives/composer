@@ -54,14 +54,14 @@ export class CheckOverFlowDirective implements AfterViewInit {
 
         let expanded = this._expanded;
 
-        if (expanded) {
-            let contentHeight = preElement.nativeElement.scrollHeight;
-            this.renderer.setElementStyle(preElement.nativeElement, 'maxHeight', contentHeight + 'px');
-        } else {
-            this.renderer.setElementStyle(preElement.nativeElement, 'maxHeight', '100px');
-        }
-
         setTimeout(() => {
+
+            if (expanded) {
+                let contentHeight = preElement.nativeElement.scrollHeight;
+                this.renderer.setElementStyle(preElement.nativeElement, 'maxHeight', contentHeight + 'px');
+            } else {
+                this.renderer.setElementStyle(preElement.nativeElement, 'maxHeight', '100px');
+            }
 
             let scrollHeight = preElement.nativeElement.scrollHeight;
 

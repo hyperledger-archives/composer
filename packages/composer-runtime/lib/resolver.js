@@ -235,14 +235,6 @@ class Resolver {
             });
     }
 
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
 }
 
 module.exports = Resolver;

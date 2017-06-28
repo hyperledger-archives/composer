@@ -12,9 +12,7 @@ index-order: 3
 
 Follow the instructions below to get the required {{site.data.conrefs.composer_full}} development tools and stand up a {{site.data.conrefs.hlf_full}}.
 
-There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0-alpha. The default is for v1.0-alpha and we suggest this is the one you use.
-
----
+There are two version of {{site.data.conrefs.hlf_full}}: v0.6 and v1.0-beta. The default is for v1.0-beta and we suggest this is the one you use.
 
 ## Before you begin
 
@@ -40,8 +38,9 @@ chmod u+x prereqs-ubuntu.sh
 
 Next run the script - as this uses sudo you will be prompted for your password.
 
-`./prereqs-ubuntu.sh`
-
+```
+./prereqs-ubuntu.sh
+```
 ---
 
 ## Step 1: Installing {{site.data.conrefs.composer_full}} development tools
@@ -102,13 +101,13 @@ docker rmi $(docker images dev-* -q)
         mkdir ~/fabric-tools && cd ~/fabric-tools
         curl -O https://raw.githubusercontent.com/hyperledger/composer-tools/master/packages/fabric-dev-servers/fabric-dev-servers.tar.gz
 
-        tar xvz fabric-dev-servers.tar.gz
+        tar xvzf fabric-dev-servers.tar.gz
 
 2. Choose which version of Fabric to use. For v0.6 this needs to be set explicitly as follows.
 
         export FABRIC_VERSION=hlfv0.6
 
-    {{site.data.conrefs.hlf_full}} v1.0-alpha is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
+    {{site.data.conrefs.hlf_full}} v1.0-beta is the default, but to 'unset' the v0.6, or to be explicit in using v1 use this command
 
         export FABRIC_VERSION=hlfv1
 
@@ -128,6 +127,9 @@ docker rmi $(docker images dev-* -q)
         ./teardownFabric.sh
 
 *If you want to swap between v0.6 and v1.0, ensure you first issue a `teardownFabric.sh` command on your original version.*
+
+> Please note: The development environment created will include a `PeerAdmin` identity including the cryptographic material necessary for deploying business networks. This identity has no enrollment secret. Any enrollment secret supplied when deploying a business network will be accepted.
+
 
 ## Script details
 

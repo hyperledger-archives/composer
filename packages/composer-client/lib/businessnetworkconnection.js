@@ -24,6 +24,7 @@ const fs = require('fs');
 const FSConnectionProfileStore = require('composer-common').FSConnectionProfileStore;
 const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./participantregistry');
+const Query = require('./query');
 const Resource = require('composer-common').Resource;
 const TransactionDeclaration = require('composer-common').TransactionDeclaration;
 const TransactionRegistry = require('./transactionregistry');
@@ -71,6 +72,7 @@ class BusinessNetworkConnection extends EventEmitter {
         this.connection = null;
         this.securityContext = null;
         this.businessNetwork = null;
+        this.dynamicQueryFile = null;
     }
 
     /**
@@ -355,6 +357,7 @@ class BusinessNetworkConnection extends EventEmitter {
             })
             .then((businessNetwork) => {
                 this.businessNetwork = businessNetwork;
+                this.dynamicQueryFile = this.businessNetwork.getQueryManager().createQueryFile('$dynamic_queries.qry', '');
                 LOG.exit(method);
                 return this.businessNetwork;
             });
@@ -389,6 +392,7 @@ class BusinessNetworkConnection extends EventEmitter {
                 this.connection = null;
                 this.securityContext = null;
                 this.businessNetwork = null;
+                this.dynamicQueryFile = null;
                 LOG.exit(method);
             });
     }
@@ -413,7 +417,6 @@ class BusinessNetworkConnection extends EventEmitter {
      * been processed.
      */
     submitTransaction(transaction) {
-        const self = this;
         Util.securityCheck(this.securityContext);
         if (!transaction) {
             throw new Error('transaction not specified');
@@ -431,10 +434,100 @@ class BusinessNetworkConnection extends EventEmitter {
         if (timestamp === null || timestamp === undefined) {
             timestamp = transaction.timestamp = new Date();
         }
-        let data = self.getBusinessNetwork().getSerializer().toJSON(transaction);
-        return self.getTransactionRegistry(self.securityContext)
+        let data = this.getBusinessNetwork().getSerializer().toJSON(transaction);
+        return this.getTransactionRegistry(this.securityContext)
             .then((transactionRegistry) => {
-                return Util.invokeChainCode(self.securityContext, 'submitTransaction', [transactionRegistry.id, JSON.stringify(data)]);
+                return Util.invokeChainCode(this.securityContext, 'submitTransaction', [transactionRegistry.id, JSON.stringify(data)]);
+            });
+    }
+
+    /**
+     * Build a query ready for later execution. The specified query string must be written
+     * in the Composer query language.
+     *
+     * This functionality is Blockchain platform dependent. For example, when a Composer
+     * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
+     * configured with the CouchDB database for the world state.
+     * @example
+     * // Build and execute a query.
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *   .then(function () {
+     *     var query = businessNetwork.buildQuery('SELECT org.acme.sample.SampleAsset WHERE (value == _$inputValue)');
+     *     return businessNetwork.query(query, { inputValue: 'blue' })
+     *   })
+     *   .then(function (assets) {
+     *     assets.forEach(function (asset) {
+     *       // Process each asset.
+     *     });
+     *   })
+     *   .catch(function (error) {
+     *     // Add optional error handling here.
+     *   });
+     * @param {string} query The query string, written using the Composer query language.
+     * @return {Query} The built query, which can be passed in a call to query.
+     */
+    buildQuery(query) {
+        const method = 'buildQuery';
+        LOG.entry(method, query);
+        const builtQuery = this.dynamicQueryFile.buildQuery('Dynamic query', 'Dynamic query', query);
+        builtQuery.validate();
+        const result = new Query(query);
+        LOG.exit(method, result);
+        return result;
+    }
+
+    /**
+     * Execute a query defined in a Composer query file, or execute a query built with buildQuery.
+     *
+     * This functionality is Blockchain platform dependent. For example, when a Composer
+     * business network is deployed to Hyperledger Fabric v1.0, Hyperledger Fabric must be
+     * configured with the CouchDB database for the world state.
+     * @example
+     * // Execute the query.
+     * var businessNetwork = new BusinessNetworkConnection();
+     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
+     *   .then(function () {
+     *     return query('Q1', { inputValue: 'blue' })
+     *   })
+     *   .then(function (assets) {
+     *     assets.forEach(function (asset) {
+     *       // Process each asset.
+     *     });
+     *   })
+     *   .catch(function (error) {
+     *     // Add optional error handling here.
+     *   });
+     * @param {string|Query} query The name of the query, or a built query.
+     * @param {Object} [parameters] The parameters for the query.
+     * @return {Promise} A promise that will be resolved with an array of
+     * {@link module:composer-common.Resource Resource} representing the
+     * resources returned by the query.
+     */
+    query(query, parameters) {
+        const method = 'query';
+        LOG.entry(method, query, parameters);
+        let queryType, identifier;
+        if (query instanceof Query) {
+            queryType = 'build';
+            identifier = query.getIdentifier();
+        } else if (typeof query === 'string') {
+            queryType = 'named';
+            identifier = query;
+        } else {
+            throw new Error('Invalid query; expecting a built query or the name of a query');
+        }
+        parameters = parameters || {};
+        return Util.queryChainCode(this.securityContext, 'executeQuery', [queryType, identifier, JSON.stringify(parameters)])
+            .then((buffer) => {
+                return JSON.parse(buffer.toString());
+            })
+            .then((resources) => {
+                const result = resources.map((resource) => {
+                    return this.getBusinessNetwork().getSerializer().fromJSON(resource);
+                });
+                LOG.exit(method, result);
+                return result;
             });
     }
 
