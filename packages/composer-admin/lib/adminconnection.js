@@ -220,12 +220,13 @@ class AdminConnection {
      *     // Add optional error handling here.
      * });
      * @param {BusinessNetworkDefinition} businessNetworkDefinition - The business network to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that will be fufilled when the business network has been
      * deployed.
      */
-    deploy(businessNetworkDefinition) {
+    deploy(businessNetworkDefinition, deployOptions) {
         Util.securityCheck(this.securityContext);
-        return this.connection.deploy(this.securityContext, true, businessNetworkDefinition);
+        return this.connection.deploy(this.securityContext, businessNetworkDefinition, deployOptions);
     }
 
     /**
@@ -295,6 +296,49 @@ class AdminConnection {
     }
 
     /**
+     * set logging level of a business network
+     * @example
+     * // Set the logging level of a business network.
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.setLogLevel('DEBUG')
+     * .then(() => {
+     *     console.log('log level set to DEBUG');
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @param {any} newLogLevel new logging level
+     * @returns {Promise} A promise that resolves if successful.
+     * @memberof AdminConnection
+     */
+    setLogLevel(newLogLevel) {
+        Util.securityCheck(this.securityContext);
+        return this.connection.invokeChainCode(this.securityContext, 'setloglevel' , [newLogLevel]);
+    }
+
+    /**
+     * get the current logging level of a business network
+     * @example
+     * // Get the current logging level of a business network.
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.getLogLevel()
+     * .then((currentLogLevel) => {
+     *     console.log('current log level is ' + currentLogLevel);
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
+     *
+     * @returns {Promise} A promise that resolves with the current logging level if successful.
+     * @memberof AdminConnection
+     */
+    getLogLevel() {
+        Util.securityCheck(this.securityContext);
+        return this.connection.queryChainCode(this.securityContext, 'getloglevel', []);
+    }
+
+    /**
      * List all of the deployed business networks. The connection must
      * be connected for this method to succeed.
      * @example
@@ -320,6 +364,17 @@ class AdminConnection {
 
     /**
      * import an identity into a profiles' wallet
+    * @example
+     * // Import an identity into a profiles' wallet
+     * var adminConnection = new AdminConnection();
+     * return adminConnection.import('hlfv1', 'PeerAdmin', publicKey, privateKey)
+     * .then(() => {
+     *     // Identity imported
+     *     console.log('identity imported successfully');
+     * })
+     * .catch(function(error){
+     *     // Add optional error handling here.
+     * });
      *
      * @param {string} connectionProfile Name of the connection profile
      * @param {string} id The id to associate with this identity

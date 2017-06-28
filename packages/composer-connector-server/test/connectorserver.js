@@ -292,35 +292,18 @@ describe('ConnectorServer', () => {
             connectorServer.securityContexts[securityContextID] = mockSecurityContext;
         });
 
-        it('should deploy with force set to true', () => {
-            mockConnection.deploy.withArgs(mockSecurityContext, true, mockBusinessNetworkDefinition).resolves();
+        it('should deploy', () => {
+            mockConnection.deploy.withArgs(mockSecurityContext, mockBusinessNetworkDefinition).resolves();
             sandbox.stub(uuid, 'v4').returns(securityContextID);
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, true, 'aGVsbG8gd29ybGQ=', cb)
+            return connectorServer.connectionDeploy(connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
                     const buffer = BusinessNetworkDefinition.fromArchive.args[0][0];
                     Buffer.isBuffer(buffer).should.be.true;
                     Buffer.from('hello world').compare(buffer).should.equal(0);
                     sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, true, mockBusinessNetworkDefinition);
-                    sinon.assert.calledOnce(cb);
-                    sinon.assert.calledWith(cb, null);
-                });
-        });
-
-        it('should deploy with force set to false', () => {
-            mockConnection.deploy.withArgs(mockSecurityContext, false, mockBusinessNetworkDefinition).resolves();
-            sandbox.stub(uuid, 'v4').returns(securityContextID);
-            const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, false, 'aGVsbG8gd29ybGQ=', cb)
-                .then(() => {
-                    sinon.assert.calledOnce(BusinessNetworkDefinition.fromArchive);
-                    const buffer = BusinessNetworkDefinition.fromArchive.args[0][0];
-                    Buffer.isBuffer(buffer).should.be.true;
-                    Buffer.from('hello world').compare(buffer).should.equal(0);
-                    sinon.assert.calledOnce(mockConnection.deploy);
-                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, false, mockBusinessNetworkDefinition);
+                    sinon.assert.calledWith(mockConnection.deploy, mockSecurityContext, mockBusinessNetworkDefinition);
                     sinon.assert.calledOnce(cb);
                     sinon.assert.calledWith(cb, null);
                 });
@@ -328,7 +311,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid connection ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(invalidID, securityContextID, true, 'aGVsbG8gd29ybGQ=', cb)
+            return connectorServer.connectionDeploy(invalidID, securityContextID, 'aGVsbG8gd29ybGQ=', {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -340,7 +323,7 @@ describe('ConnectorServer', () => {
 
         it('should handle an invalid security context ID ID', () => {
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, invalidID, true, 'aGVsbG8gd29ybGQ=', cb)
+            return connectorServer.connectionDeploy(connectionID, invalidID, 'aGVsbG8gd29ybGQ=', {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];
@@ -353,7 +336,7 @@ describe('ConnectorServer', () => {
         it('should handle deploy errors', () => {
             mockConnection.deploy.rejects(new Error('such error'));
             const cb = sinon.stub();
-            return connectorServer.connectionDeploy(connectionID, securityContextID, true, 'aGVsbG8gd29ybGQ=', cb)
+            return connectorServer.connectionDeploy(connectionID, securityContextID, 'aGVsbG8gd29ybGQ=', {}, cb)
                 .then(() => {
                     sinon.assert.calledOnce(cb);
                     const serializedError = cb.args[0][0];

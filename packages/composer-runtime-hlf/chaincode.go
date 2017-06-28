@@ -15,6 +15,8 @@
 package main
 
 import "github.com/hyperledger/fabric/core/chaincode/shim"
+import "strings"
+import "errors"
 
 // Chaincode is the chaincode class. It is an implementation of the
 // Chaincode interface.
@@ -49,6 +51,9 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function st
 	logger.Debug("Entering Chaincode.Invoke", &stub, function, arguments)
 	defer func() { logger.Debug("Exiting Chaincode.Invoke", string(result), err) }()
 
+	if strings.ToLower(function) == "setloglevel" {
+		return nil, errors.New("setting log level is not supported")
+	}
 	composer := chaincode.ComposerPool.Get()
 	defer chaincode.ComposerPool.Put(composer)
 	return composer.Invoke(stub, function, arguments)
@@ -59,6 +64,9 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface, function st
 func (chaincode *Chaincode) Query(stub shim.ChaincodeStubInterface, function string, arguments []string) (result []byte, err error) {
 	logger.Debug("Entering Chaincode.Query", &stub, function, arguments)
 	defer func() { logger.Debug("Exiting Chaincode.Query", string(result), err) }()
+	if strings.ToLower(function) == "getloglevel" {
+		return nil, errors.New("getting log level is not supported")
+	}
 
 	composer := chaincode.ComposerPool.Get()
 	defer chaincode.ComposerPool.Put(composer)

@@ -301,12 +301,13 @@ class HLFConnection extends Connection {
      *
      * @param {any} securityContext the security context
      * @param {any} businessNetwork the business network
+     * @param {object} deployOptions any relevant deploy options for install
      * @private
      * @returns {Promise} a promise for install completion
      *
      * @memberOf HLFConnection
      */
-    _install(securityContext, businessNetwork) {
+    _install(securityContext, businessNetwork, deployOptions) {
         const method = '_install';
         LOG.entry(method, securityContext, businessNetwork);
 
@@ -393,12 +394,13 @@ class HLFConnection extends Connection {
      *
      * @param {any} securityContext the security context
      * @param {any} businessNetwork the business network
-     * @private
+     * @param {object} deployOptions an optional connection specific set of deployment options
+     * @param {string} deployOptions.logLevel the level of logging for the composer runtime
      * @returns {Promise} a promise for instantiation completion
      *
      * @memberOf HLFConnection
      */
-    _instantiate(securityContext, businessNetwork) {
+    _instantiate(securityContext, businessNetwork, deployOptions) {
         const method = '_instantiate';
         LOG.entry(method, securityContext, businessNetwork);
 
@@ -416,13 +418,20 @@ class HLFConnection extends Connection {
                 // prepare and send the instantiate proposal
                 finalTxId = this.client.newTransactionID();
 
+                let initArgs;
+                if (deployOptions && deployOptions.logLevel) {
+                    initArgs = ['-d', deployOptions.logLevel, businessNetworkArchive.toString('base64')];
+                } else {
+                    initArgs = [businessNetworkArchive.toString('base64')];
+                }
+
                 const request = {
                     chaincodePath: chaincodePath,
                     chaincodeVersion: runtimePackageJSON.version,
                     chaincodeId: businessNetwork.getName(),
                     txId: finalTxId,
                     fcn: 'init',
-                    args: [businessNetworkArchive.toString('base64')]
+                    args: initArgs
                 };
                 return this.channel.sendInstantiateProposal(request);
             })
@@ -465,14 +474,14 @@ class HLFConnection extends Connection {
     /**
      * Deploy all business network artifacts.
      * @param {HFCSecurityContext} securityContext The participant's security context.
-     * @param {boolean} [force] Force the deployment of the business network artifacts. Not used by this connector.
      * @param {BusinessNetwork} businessNetwork The BusinessNetwork to deploy
+     * @param {Object} deployOptions connector specific deployment options
      * @return {Promise} A promise that is resolved once the business network
      * artifacts have been deployed, or rejected with an error.
      */
-    deploy(securityContext, force, businessNetwork) {
+    deploy(securityContext, businessNetwork, deployOptions) {
         const method = 'deploy';
-        LOG.entry(method, securityContext, force, businessNetwork);
+        LOG.entry(method, securityContext, businessNetwork);
 
         // Check that a valid security context has been specified.
         HLFUtil.securityCheck(securityContext);
@@ -496,7 +505,7 @@ class HLFConnection extends Connection {
                     LOG.debug(method, 'chaincode already instantiated');
                     return Promise.resolve();
                 }
-                return this._instantiate(securityContext, businessNetwork);
+                return this._instantiate(securityContext, businessNetwork, deployOptions);
             })
             .then(() => {
                 LOG.exit(method);

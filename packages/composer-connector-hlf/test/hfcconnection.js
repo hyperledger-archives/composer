@@ -253,7 +253,7 @@ describe('HFCConnection', () => {
                 networks: {
                 }
             });
-            return connection.deploy(mockSecurityContext, true, businessNetworkStub)
+            return connection.deploy(mockSecurityContext, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);
@@ -275,7 +275,7 @@ describe('HFCConnection', () => {
             });
 
             return connection
-                .deploy(mockSecurityContext, true, businessNetworkStub)
+                .deploy(mockSecurityContext, businessNetworkStub)
                 .then(function() {
 
                     // Check that the query was made successfully.
@@ -305,7 +305,7 @@ describe('HFCConnection', () => {
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
-                .deploy(mockSecurityContext, true, businessNetworkStub)
+                .deploy(mockSecurityContext, businessNetworkStub)
                 .then(function(assetRegistries) {
                     throw new Error('should not get here');
                 }).catch(function(error) {
@@ -324,7 +324,7 @@ describe('HFCConnection', () => {
             businessNetworkStub.toArchive.resolves(new Buffer([0x00, 0x01, 0x02]));
 
             return connection
-                .deploy(mockSecurityContext, true, businessNetworkStub)
+                .deploy(mockSecurityContext, businessNetworkStub)
                 .then(function(assetRegistries) {
                     throw new Error('should not get here');
                 }).catch(function(error) {
@@ -371,7 +371,7 @@ describe('HFCConnection', () => {
             connection = new HFCConnection(mockConnectionManager, 'testprofile', null, mockChain, connectOptions);
             sandbox.stub(connection, 'ping').resolves();
 
-            return connection.deploy(mockSecurityContext, true, businessNetworkStub)
+            return connection.deploy(mockSecurityContext, businessNetworkStub)
                 .then(() => {
                     sinon.assert.calledOnce(HFCUtil.securityCheck);
                     sinon.assert.calledOnce(mockConnectionProfileStore.save);

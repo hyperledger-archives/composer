@@ -22,6 +22,12 @@ import "strings"
 // enable logging based on either world state or env variable.
 // default to INFO if neither have a value.
 func EnableLogging(stub shim.ChaincodeStubInterface) {
+	level, _ := shim.LogLevel(getLogging(stub))
+	logger.SetLevel(level)
+}
+
+// get the currently defined logging level
+func getLogging(stub shim.ChaincodeStubInterface) (string) {
 	var levelStr string
 	levelBytes, err := stub.GetState("ComposerLogLevel")
 	if err != nil || levelBytes == nil {
@@ -33,9 +39,7 @@ func EnableLogging(stub shim.ChaincodeStubInterface) {
 	} else {
 		levelStr = string(levelBytes)
 	}
-
-	level, _ := shim.LogLevel(levelStr)
-	logger.SetLevel(level)
+	return levelStr
 }
 
 // explicitly set the logging to a specific level
@@ -117,9 +121,21 @@ func (chaincode *Chaincode) Invoke(stub shim.ChaincodeStubInterface) (response p
 
 	// Execute the invoke function.
 	function, arguments := stub.GetFunctionAndParameters()
-	if strings.ToLower(function) == "logging" {
-		SetLogging(stub, arguments[0])
-		return shim.Success(nil)
+	if strings.ToLower(function) == "setloglevel" {
+		// TODO: Will be upgraded to a proper security model soon
+		creatorName, err := extractNameFromCreator(stub)
+		if err != nil && strings.Contains(strings.ToLower(creatorName), "admin") {		
+			SetLogging(stub, arguments[0])
+			return shim.Success(nil)
+		}
+		return shim.Error("Unauthorized");
+	} else if strings.ToLower(function) == "getloglevel" {
+		// TODO: Will be upgraded to a proper security model soon
+		creatorName, err := extractNameFromCreator(stub)
+		if err != nil && strings.Contains(strings.ToLower(creatorName), "admin") {		
+			return shim.Success([]byte(getLogging(stub)))		
+		}
+		return shim.Error("Unauthorized");
 	} else {
 		payload, err := composer.Invoke(stub, function, arguments)
 		if err != nil {
