@@ -19,9 +19,9 @@ sleep 10
 cat ${DIR}/jekyll.log
 URL="$( cat ${DIR}/jekyll.log | awk '/Server address:/ { print $3 }')"
 
-
 echo Starting linkchecking... ${URL}
 linkchecker --ignore-url=jsdoc ${URL} -F text/UTF8/${DIR}/linkresults.txt 
+
 if [ "$?" != "0" ]; then
 	asciify '!!Broken Links!!' -f standard 
 	cat ${DIR}/linkresults.txt
