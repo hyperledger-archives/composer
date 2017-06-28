@@ -39,10 +39,12 @@ if [ "${DOCS}" != "" ]; then
     if [ -n "${TRAVIS_TAG}" ]; then
        export JEKYLL_ENV=production
        npm run full:prod
+       npm run linkcheck:prod
     else
        npm run full:unstable
+       npm run linkcheck:unstable
     fi
-    npm run linkcheck
+
 
 # Are we running system tests?
 elif [ "${SYSTEST}" != "" ]; then
