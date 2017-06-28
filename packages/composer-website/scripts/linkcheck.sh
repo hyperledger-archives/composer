@@ -2,8 +2,6 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-npm install -g asciify
-
 npm run jekyllserve > jekyll.log 2>&1 &
 JOBN=$(jobs | awk '/jekyllserve/ { match($0,/\[([0-9]+)\]/,arr); print arr[1];  }')
 sleep 10
