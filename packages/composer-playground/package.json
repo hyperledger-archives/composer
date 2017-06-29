@@ -127,7 +127,7 @@
     "babel-loader": "^6.2.10",
     "babel-polyfill": "^6.23.0",
     "babel-preset-latest": "^6.24.1",
-    "basic-sample-network": "latest",
+    "basic-sample-network": "^0.1.0-0",
     "bootstrap": "4.0.0-alpha.5",
     "browserfs": "^1.1.0",
     "buffer-loader": "0.0.1",
