@@ -30,7 +30,6 @@ const minimatch = require('minimatch');
 const ScriptManager = require('./scriptmanager');
 const semver = require('semver');
 const Serializer = require('./serializer');
-const COMPOSER_SYSTEM_NAMESPACE = require('./modelutil').getSystemNamespace();
 const ENCODING = 'utf8';
 const LOG = Logger.getLog('BusinessNetworkDefinition');
 

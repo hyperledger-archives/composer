@@ -37,9 +37,13 @@ describe('ModelManager', () => {
     let invalidModel = fs.readFileSync('./test/data/model/invalid.cto', 'utf8');
     let invalidModel2 = fs.readFileSync('./test/data/model/invalid2.cto', 'utf8');
     let modelManager;
+    let mockSystemModelFile;
 
     beforeEach(() => {
         modelManager = new ModelManager();
+        mockSystemModelFile = sinon.createStubInstance(ModelFile);
+        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
+        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
     });
 
     describe('#accept', () => {
@@ -107,6 +111,10 @@ describe('ModelManager', () => {
             sinon.assert.calledOnce(mf1.validate);
             modelManager.modelFiles['org.doge'].should.equal(mf1);
             res.should.equal(mf1);
+        });
+
+        it('should not be possible to add a system model file', ()=>{
+            //modelManager.addModelFile(mockSystemModelFile);
         });
 
     });
@@ -193,6 +201,9 @@ describe('ModelManager', () => {
             should.equal(modelManager.modelFiles['org.fry'], undefined);
         });
 
+        it('should not be possible to add a system model file', ()=>{
+          // TODO
+        });
     });
 
     describe('#updateModelFile', () => {
@@ -272,6 +283,10 @@ describe('ModelManager', () => {
             modelManager.modelFiles['org.doge'].definitions.should.equal(model);
         });
 
+        it('should not be possible to update a system model file', ()=>{
+          // TODO
+        });
+
     });
 
     describe('#deleteModelFile', () => {
@@ -294,6 +309,10 @@ describe('ModelManager', () => {
             res.should.equal(mf1);
             modelManager.deleteModelFile('org.doge');
             should.equal(modelManager.modelFiles['org.doge'], undefined);
+        });
+
+        it('should not be possible to delete a system model file', ()=>{
+          // TODO
         });
 
     });
