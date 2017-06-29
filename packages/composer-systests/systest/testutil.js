@@ -221,14 +221,13 @@ class TestUtil {
                     if (TestUtil.isHyperledgerFabricV1()) {
                         if (process.env.SYSTEST.match('tls$')) {
                             console.log('setting up TLS Connection Profile for HLF V1');
-                            // TODO: FIX
                             adminOptions = {
                                 type: 'hlfv1',
                                 orderers: [
                                     {
                                         url: 'grpcs://localhost:7050',
                                         hostnameOverride: 'orderer.example.com',
-                                        cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/cacerts/example.com-cert.pem'
+                                        cert: './hlfv1/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt'
                                     }
                                 ],
                                 ca: {
@@ -240,7 +239,7 @@ class TestUtil {
                                         requestURL: 'grpcs://localhost:7051',
                                         eventURL: 'grpcs://localhost:7053',
                                         hostnameOverride: 'peer0.org1.example.com',
-                                        cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/cacerts/org1.example.com-cert.pem'
+                                        cert: './hlfv1/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
                                     }
                                 ],
                                 keyValStore: keyValStore,
