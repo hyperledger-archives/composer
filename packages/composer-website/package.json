@@ -11,11 +11,12 @@
     "doc": "npm run docpub && ./scripts/generate-uml.sh",
     "docpub": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a public,undefined -d ./jekylldocs/jsdoc -R ./jsdoc-template/JSDOC-README.md",
     "docpriv": "jsdoc --pedantic --recurse -c ./jsdoc-template/jsdoc.conf -t ./jsdoc-template -a all -d ./jekylldocs/jsdoc-contrib -R ./jsdoc-template/JSDOC-README.md",
-    "jekyllserve": "cd ./jekylldocs && jekyll serve",
+    "jekyllserve": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll serve --config _config.yml,_unstable.yml",
     "full:prod": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build",
     "full:unstable": "./scripts/setup-jekyll.sh && cd ./jekylldocs && jekyll build --config _config.yml,_unstable.yml",
     "changelog": "./scripts/changelog.sh",
-    "linkcheck": "./scripts/linkcheck.sh"
+    "linkcheck:prod": "./scripts/linkcheck.sh prod",
+    "linkcheck:unstable": "./scripts/linkcheck.sh unstable"
   },
   "repository": {
     "type": "git",

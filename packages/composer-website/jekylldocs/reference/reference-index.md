@@ -13,7 +13,7 @@ The {{site.data.conrefs.composer_full}} reference material contains a number of 
 
 ---
 
-{% assign sorted = (site.pages | sort: 'index-order') %}
+{% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
 {% if page.section == 'reference' and page.title != "Reference Index" %}
 ### {{ page.title }}
