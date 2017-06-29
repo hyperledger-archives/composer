@@ -44,13 +44,22 @@ class MockDragDropDirective {
 })
 class MockFileImporterDirective {
     @Output()
-    public dragFileAccepted: EventEmitter<File> = new EventEmitter<File>();
+    public fileAccepted: EventEmitter<File> = new EventEmitter<File>();
+
+    @Output()
+    public fileRejected: EventEmitter<File> = new EventEmitter<File>();
 
     @Input()
     public expandInput: boolean = false;
 
     @Input()
     public svgName: string = '#icon-BNA_Upload';
+
+    @Input()
+    public maxFileSize: number = 0;
+
+    @Input()
+    public supportedFileTypes: string[] = [];
 }
 
 @Directive({
