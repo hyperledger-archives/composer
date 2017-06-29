@@ -301,7 +301,7 @@ class BusinessNetworkDefinition {
         modelFiles.forEach(function(file) {
             let fileName;
             // ignore the system namespace when creating an archive
-            if (file.namespace === COMPOSER_SYSTEM_NAMESPACE){
+            if (file.isSystemModelFile()){
                 return;
             }
             if (file.fileName === 'UNKNOWN'  || file.fileName === null || !file.fileName) {

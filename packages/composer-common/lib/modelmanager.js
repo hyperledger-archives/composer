@@ -172,7 +172,7 @@ class ModelManager {
         LOG.info(NAME,'updateModelFile',modelFile,fileName);
         if (typeof modelFile === 'string') {
             let m = new ModelFile(this, modelFile, fileName);
-            if (m.getNamespace === ModelUtil.getSystemNamespace()){
+            if (m.isSystemModelFile()){
                 throw new Error('System namespace can not be updated');
             }
             if (!this.modelFiles[m.getNamespace()]) {
