@@ -15,6 +15,7 @@
 'use strict';
 
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ParticipantDeclaration = require('../../lib/introspect/participantdeclaration');
 const TransactionDeclaration = require('../../lib/introspect/transactiondeclaration');
 const EventDeclaration = require('../../lib/introspect/eventdeclaration');
@@ -34,10 +35,23 @@ describe('ModelFile', () => {
     const carLeaseModel = fs.readFileSync(path.resolve(__dirname, '../data/model/carlease.cto'), 'utf8');
 
     let mockModelManager;
+    let mockClassDeclaration;
+    let mockSystemModelFile;
+    let mockSystemAsset;
     let sandbox;
 
     beforeEach(() => {
+        mockSystemModelFile = sinon.createStubInstance(ModelFile);
+        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
+        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
         mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager.getModelFile.withArgs('org.hyperledger.composer.system').returns(mockSystemModelFile);
+        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
+        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
+        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
+        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelManager.getType.returns(mockClassDeclaration);
+        mockClassDeclaration.getProperties.returns([]);
         sandbox = sinon.sandbox.create();
     });
 
@@ -143,29 +157,6 @@ describe('ModelFile', () => {
         });
 
     });
-
-    // describe('#retrofit', () => {
-    //
-    //     it('should complete succefully when having a transaction',  () => {
-    //         const model1 = `
-    //     namespace org.acme.boilerplate
-    //     import org.acme.core.basetx
-    //     transaction tr1 extends basetx {
-    //     }`;
-    //         const model2 = `
-    //     namespace org.acme.core
-    //
-    //     abstract transaction basetx identified by id {
-    //         o String id
-    //     }`;
-    //         let modelFile1 = new ModelFile(mockModelManager, model1);
-    //         let modelFile2 = new ModelFile(mockModelManager, model2);
-    //         modelFile2.retrofit();
-    //         modelFile1.retrofit();
-    //     });
-    //
-    //
-    // } );
 
     describe('#validate', () => {
 
@@ -362,6 +353,13 @@ describe('ModelFile', () => {
 
     describe('#resolveImport', () => {
 
+        it('should find the fully qualified name of a type in the system namespace', () => {
+            const model = `
+            namespace org.acme`;
+            let modelFile = new ModelFile(mockModelManager, model);
+            modelFile.resolveImport('Asset').should.equal('org.hyperledger.composer.system.Asset');
+        });
+
         it('should find the fully qualified name of the import', () => {
             const model = `
             namespace org.acme
@@ -437,6 +435,22 @@ describe('ModelFile', () => {
                 modelFile2.resolveImport('Coin');
             }).should.throw(/Coin/);
         });
+
+        it('relatioship to an asset that does not exist', () => {
+            const model2 = `
+            namespace org.acme
+
+            asset MyAsset identified by assetId {
+                o String assetId
+                --> DontExist relationship
+            }`;
+
+            let modelFile2 = new ModelFile(mockModelManager, model2);
+            (() => {
+                modelFile2.validate();
+            }).should.throw(/DontExist/);
+        });
+
 
     });
 

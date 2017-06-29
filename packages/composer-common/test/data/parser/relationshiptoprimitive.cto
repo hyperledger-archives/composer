@@ -1,6 +1,6 @@
 namespace com.ibm.testing
 
-transaction ContainsBadRelationship identified by transactionId {
-    o String transactionId
+transaction ContainsBadRelationship  {
+    
     --> String bad
 }

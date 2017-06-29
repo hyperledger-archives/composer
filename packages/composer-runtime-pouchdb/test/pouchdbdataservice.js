@@ -224,25 +224,65 @@ describe('PouchDBDataService', () => {
 
     });
 
+    describe('#executeQuery', () => {
+
+        beforeEach(() => {
+            return db.bulkDocs([
+                {
+                    _id: pouchCollate.toIndexableString(['doges1', 'thing1']),
+                    thingId: 1,
+                    colour: 'red'
+                },
+                {
+                    _id: pouchCollate.toIndexableString(['doges1', 'thing2']),
+                    thingId: 2,
+                    colour: 'black'
+                },
+                {
+                    _id: pouchCollate.toIndexableString(['doges1', 'thing3']),
+                    thingId: 3,
+                    colour: 'red'
+                },
+                {
+                    _id: pouchCollate.toIndexableString(['doges1', 'thing4']),
+                    thingId: 4,
+                    colour: 'green'
+                }
+            ]);
+        });
+
+        it('should return the query results', () => {
+            return dataService.executeQuery('{"selector":{"colour":{"$eq":"red"}}}')
+                .should.eventually.be.deep.equal([{
+                    thingId: 1,
+                    colour: 'red'
+                }, {
+                    thingId: 3,
+                    colour: 'red'
+                }]);
+        });
+
+    });
+
     describe('#clearCollection', () => {
 
         beforeEach(() => {
             return db.bulkDocs([
                 {
                     _id: pouchCollate.toIndexableString(['doges0', 'thing1']),
-                    data: { thing: 1 }
+                    thing: 1
                 },
                 {
                     _id: pouchCollate.toIndexableString(['doges1', 'thing1']),
-                    data: { thing: 1 }
+                    thing: 1
                 },
                 {
                     _id: pouchCollate.toIndexableString(['doges1', 'thing2']),
-                    data: { thing: 2 }
+                    thing: 2
                 },
                 {
                     _id: pouchCollate.toIndexableString(['doges2', 'thing1']),
-                    data: { thing: 1 }
+                    thing: 1
                 }
             ]);
         });

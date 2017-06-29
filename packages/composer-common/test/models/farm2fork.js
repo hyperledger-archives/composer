@@ -35,11 +35,8 @@ describe('Farm2Fork Model', function() {
             let file = fs.readFileSync(fileName, 'utf8');
             file.should.not.be.null;
             modelManager.addModelFile(file,fileName);
-            modelManager.getModelFiles().length.should.equal(2);
-            let modelFile = modelManager.getModelFiles()[1];
-            modelFile.getNamespace().should.equal('org.acme');
-
-            modelFile = modelManager.getModelFile('org.acme');
+            modelManager.getModelFiles().length.should.equal(3);
+            let modelFile = modelManager.getModelFile('org.acme');
             modelFile.getNamespace().should.equal('org.acme');
 
             modelFile.getAssetDeclarations().length.should.equal(3);
@@ -68,7 +65,7 @@ describe('Farm2Fork Model', function() {
             previousKeeperField.getName().should.equal('previousKeeper');
             previousKeeperField.isArray().should.be.true;
             (previousKeeperField instanceof RelationshipDeclaration).should.be.true;
-            previousKeeperField.getType().should.equal('Participant');
+            previousKeeperField.getType().should.equal('MyParticipant');
 
             // test the VehicleTransferredToScrapMerchant class
             let txDecl = modelFile.getTransactionDeclaration('MoveAnimalToHolding');
@@ -78,7 +75,7 @@ describe('Farm2Fork Model', function() {
             let holdingField = txDecl.getProperty('holding');
             (holdingField !== null).should.be.true;
             holdingField.getName().should.equal('holding');
-            (holdingField.getType() === 'Participant').should.be.true;
+            (holdingField.getType() === 'MyParticipant').should.be.true;
 
             // test that we can retrieve a field declared in a base class
             let animalField = txDecl.getProperty('animal');

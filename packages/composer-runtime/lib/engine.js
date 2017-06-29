@@ -75,7 +75,7 @@ class Engine {
             }
         };
         Logger.setFunctionalLogger(loggingProxy);
-        Logger._envDebug = 'concerto:*';
+        Logger._envDebug = 'composer:*';
     }
 
     /**
@@ -88,6 +88,7 @@ class Engine {
      */
     init(context, fcn, args) {
         const method = 'init';
+        LOG.entry(method);
         LOG.entry(method, context, fcn, args);
         if (fcn !== 'init') {
             throw new Error(util.format('Unsupported function "%s" with arguments "%j"', fcn, args));
@@ -428,6 +429,7 @@ function mixin(sourceClass) {
 
 mixin(require('./engine.businessnetworks'));
 mixin(require('./engine.identities'));
+mixin(require('./engine.queries'));
 mixin(require('./engine.registries'));
 mixin(require('./engine.resources'));
 mixin(require('./engine.transactions'));

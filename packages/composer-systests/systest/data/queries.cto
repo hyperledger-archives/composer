@@ -1,0 +1,48 @@
+namespace systest.queries
+
+enum SampleEnum {
+    o VALUE_0
+    o VALUE_1
+    o VALUE_2
+    o VALUE_3
+    o VALUE_4
+    o VALUE_5
+    o VALUE_6
+    o VALUE_7
+}
+
+concept SampleConcept {
+    o String stringValue
+    o Double doubleValue
+    o Integer integerValue
+    o Long longValue
+    o DateTime dateTimeValue
+    o Boolean booleanValue
+    o SampleEnum enumValue
+}
+
+asset SampleAsset identified by assetId {
+  o String assetId
+  --> SampleParticipant participant
+  o SampleConcept conceptValue
+  o String stringValue
+  o Double doubleValue
+  o Integer integerValue
+  o Long longValue
+  o DateTime dateTimeValue
+  o Boolean booleanValue
+  o SampleEnum enumValue
+}
+
+participant SampleParticipant identified by participantId {
+  o String participantId
+  --> SampleAsset asset
+  o SampleConcept conceptValue
+  o String stringValue
+  o Double doubleValue
+  o Integer integerValue
+  o Long longValue
+  o DateTime dateTimeValue
+  o Boolean booleanValue
+  o SampleEnum enumValue
+}

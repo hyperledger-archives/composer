@@ -15,6 +15,7 @@
 'use strict';
 
 const Globalize = require('./globalize');
+const COMPOSER_SYSTEM_NAMESPACE = 'org.hyperledger.composer.system';
 
 /**
  * Internal Model Utility Class
@@ -108,6 +109,15 @@ class ModelUtil {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the system namespace
+     * @return {string} - namespace of system types
+     * @private
+     */
+    static getSystemNamespace() {
+        return COMPOSER_SYSTEM_NAMESPACE;
     }
 
     /**

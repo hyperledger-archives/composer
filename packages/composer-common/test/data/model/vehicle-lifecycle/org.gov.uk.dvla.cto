@@ -95,8 +95,8 @@ concept ExhaustEmissions {
 /**
  * Based on the DVLA V62 document
  */
-transaction ApplicationForVehicleRegistrationCertificate identified by transactionId {
-  o String transactionId
+transaction ApplicationForVehicleRegistrationCertificate  {
+  
   o VehicleDetails vehicleDetails
   o Person keeperDetails
   o String dvlaFleetNumber optional
@@ -105,8 +105,8 @@ transaction ApplicationForVehicleRegistrationCertificate identified by transacti
   o String previousPostCode optional
 }
 
-transaction VehicleTransaction identified by transactionId {
-  o String transactionId
+transaction VehicleTransaction  {
+  
   --> Vehicle vehicle
 }
 

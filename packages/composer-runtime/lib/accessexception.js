@@ -19,6 +19,7 @@ const BaseException = require('composer-common').BaseException;
 /**
 * Class representing an access exception
 * <p><a href="./diagrams/accessexception.svg"><img src="./diagrams/accessexception.svg" style="width:100%;"/></a></p>
+* @protected
 * @extends BaseException
 * @see See [BaseException]{@link module:composer-common.BaseException}
 * @class

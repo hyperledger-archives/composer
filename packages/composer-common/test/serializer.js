@@ -50,14 +50,12 @@ describe('Serializer', () => {
         o String lastName
         }
 
-        transaction SampleTransaction identified by transactionId {
-        o String transactionId
+        transaction SampleTransaction {
         --> SampleAsset asset
         o String newValue
         }
 
-        transaction SampleEvent identified by eventId {
-        o String eventId
+        event SampleEvent{
         --> SampleAsset asset
         o String newValue
         }
@@ -104,7 +102,7 @@ describe('Serializer', () => {
         });
 
         it('should validate if the validate flag is set to false', () => {
-            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
             resource.value = 'the value';
             let json = serializer.toJSON(resource, {
@@ -119,7 +117,7 @@ describe('Serializer', () => {
         });
 
         it('should throw validation errors if the validate flag is set to true', () => {
-            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             (() => {
                 serializer.toJSON(resource, {
                     validate: true
@@ -128,7 +126,7 @@ describe('Serializer', () => {
         });
 
         it('should not validate if the validate flag is set to false', () => {
-            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             let json = serializer.toJSON(resource, {
                 validate: false
             });
@@ -139,7 +137,7 @@ describe('Serializer', () => {
         });
 
         it('should handle an error parsing the generated JSON', () => {
-            let resource = factory.newInstance('org.acme.sample', 'SampleAsset', '1');
+            let resource = factory.newResource('org.acme.sample', 'SampleAsset', '1');
             resource.owner = factory.newRelationship('org.acme.sample', 'SampleParticipant', 'alice@email.com');
             resource.value = 'the value';
             sandbox.stub(JSON, 'parse').throws();

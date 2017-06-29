@@ -34,6 +34,7 @@ const LOG = Logger.getLog('QueryCompiler');
 /**
  * A query compiler compiles all queries in a query manager into a compiled
  * query bundle that can easily be called by the runtime.
+ * @protected
  */
 class QueryCompiler {
 
@@ -263,17 +264,17 @@ class QueryCompiler {
         const query = {
             selector: {}
         };
-        query.selector['\\$class'] = resource;
+        query.selector.$class = resource;
 
         // Look up the type for this resource.
         const modelManager = select.getQuery().getQueryFile().getModelManager();
         const classDeclaration = modelManager.getType(resource);
         if (classDeclaration instanceof AssetDeclaration) {
-            query.selector['\\$registryType'] = 'Asset';
+            query.selector.$registryType = 'Asset';
         } else if (classDeclaration instanceof ParticipantDeclaration) {
-            query.selector['\\$registryType'] = 'Participant';
+            query.selector.$registryType = 'Participant';
         } else if (classDeclaration instanceof TransactionDeclaration) {
-            query.selector['\\$registryType'] = 'Transaction';
+            query.selector.$registryType = 'Transaction';
         } else {
             throw new Error('The query compiler does not support resources of this type');
         }
@@ -281,9 +282,9 @@ class QueryCompiler {
         // Handle the from clause, if it exists.
         const registry = select.getRegistry();
         if (registry) {
-            query.selector['\\$registryID'] = registry;
+            query.selector.$registryID = registry;
         } else {
-            query.selector['\\$registryID'] = resource;
+            query.selector.$registryID = resource;
         }
 
         // Handle the where clause, if it exists.

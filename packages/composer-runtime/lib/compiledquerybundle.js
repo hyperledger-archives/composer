@@ -22,6 +22,7 @@ const LOG = Logger.getLog('CompiledQueryBundle');
 /**
  * A script compiler compiles all scripts in a script manager into a compiled
  * script bundle that can easily be called by the runtime.
+ * @protected
  */
 class CompiledQueryBundle {
 
@@ -32,6 +33,8 @@ class CompiledQueryBundle {
      * @param {Object[]} compiledQueries The compiled queries to use.
      */
     constructor(queryCompiler, queryManager, compiledQueries) {
+        const method = 'constructor';
+        LOG.entry(method, queryCompiler, queryManager, compiledQueries);
         this.queryCompiler = queryCompiler;
         this.queryManager = queryManager;
         this.compiledQueries = compiledQueries;
@@ -41,6 +44,7 @@ class CompiledQueryBundle {
             this.compiledQueriesByName[compiledQuery.hash] = compiledQuery;
         });
         this.dynamicQueryFile = queryManager.createQueryFile('$dynamic_queries.qry', '');
+        LOG.exit(method);
     }
 
     /**
@@ -80,15 +84,15 @@ class CompiledQueryBundle {
 
     /**
      * Execute the specified query.
-     * @param {QueryService} queryService The query service to use.
+     * @param {DataService} dataService The data service to use.
      * @param {string} query The name of the query, or the query itself.
      * @param {Object} [parameters] The parameters provided for the query.
      * @return {Promise} A promise that is resolved with the results of the
      * query, or rejected with an error.
      */
-    execute(queryService, query, parameters) {
+    execute(dataService, query, parameters) {
         const method = 'execute';
-        LOG.entry(method, queryService, query, parameters);
+        LOG.entry(method, dataService, query, parameters);
 
         // Check to see if the query exists by name.
         let compiledQuery = this.compiledQueriesByName[query];
@@ -98,20 +102,24 @@ class CompiledQueryBundle {
 
         // Return the results of executing the query.
         LOG.debug(method, 'Found query by name lookup');
-        const result = this.executeInternal(queryService, compiledQuery, parameters);
-        LOG.exit(method, result);
-        return result;
+        return this.executeInternal(dataService, compiledQuery, parameters)
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
     }
 
     /**
      * Execute the specified query.
-     * @param {QueryService} queryService The query service to use.
+     * @param {DataService} dataService The data service to use.
      * @param {Object} compiledQuery The compiled query.
      * @param {Object} [parameters] The parameters provided for the query.
      * @return {Promise} A promise that is resolved with the results of the
      * query, or rejected with an error.
      */
-    executeInternal(queryService, compiledQuery, parameters) {
+    executeInternal(dataService, compiledQuery, parameters) {
+        const method = 'executeInternal';
+        LOG.entry(method, dataService, compiledQuery, parameters);
 
         // Set the parameters if not provided.
         parameters = parameters || {};
@@ -120,8 +128,11 @@ class CompiledQueryBundle {
         const compiledQueryString = compiledQuery.generator(parameters);
 
         // Execute the compiled query string.
-        return queryService.queryNative(compiledQueryString);
-
+        return dataService.executeQuery(compiledQueryString)
+            .then((result) => {
+                LOG.exit(method, result);
+                return result;
+            });
     }
 
 }

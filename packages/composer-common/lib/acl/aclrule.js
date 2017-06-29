@@ -16,7 +16,9 @@
 
 const IllegalModelException = require('../introspect/illegalmodelexception');
 const ModelBinding = require('./modelbinding');
+const ParticipantDeclaration = require('../introspect/participantdeclaration');
 const Predicate = require('./predicate');
+const TransactionDeclaration = require('../introspect/transactiondeclaration');
 
 /**
  * AclRule captures the details of an Access Control Rule. It is defined in terms of
@@ -121,7 +123,7 @@ class AclRule {
             this.participant.validate();
 
             let participantClassDeclaration = this.participant.getClassDeclaration();
-            if (participantClassDeclaration && participantClassDeclaration.constructor.name !== 'ParticipantDeclaration') {
+            if (participantClassDeclaration && !(participantClassDeclaration instanceof ParticipantDeclaration)) {
                 throw new IllegalModelException(`The participant '${participantClassDeclaration.getName()}' must be a participant`);
             }
         }
@@ -130,7 +132,7 @@ class AclRule {
             this.transaction.validate();
 
             let transactionClassDeclaration = this.transaction.getClassDeclaration();
-            if (transactionClassDeclaration && transactionClassDeclaration.constructor.name !== 'TransactionDeclaration') {
+            if (transactionClassDeclaration && !(transactionClassDeclaration instanceof TransactionDeclaration)) {
                 throw new IllegalModelException(`The transaction '${transactionClassDeclaration.getName()}' must be a transaction`);
             }
         }

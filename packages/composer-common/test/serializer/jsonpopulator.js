@@ -55,12 +55,10 @@ describe('JSONPopulator', () => {
                 o String assetId
                 o MyAsset1[] myAssets
             }
-            transaction MyTx1 identified by transactionId {
-                o String transactionId
+            transaction MyTx1 {
                 --> MyAsset1 myAsset
             }
-            transaction MyTx2 identified by transactionId {
-                o String transactionId
+            transaction MyTx2 {
                 --> MyAsset1[] myAssets
             }
         `);

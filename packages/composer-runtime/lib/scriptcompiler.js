@@ -15,6 +15,7 @@
 'use strict';
 
 const Api = require('./api');
+const assert = require('assert');
 const CompiledScriptBundle = require('./compiledscriptbundle');
 const Logger = require('composer-common').Logger;
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
@@ -26,6 +27,7 @@ const LOG = Logger.getLog('ScriptCompiler');
 /**
  * A script compiler compiles all scripts in a script manager into a compiled
  * script bundle that can easily be called by the runtime.
+ * @protected
  */
 class ScriptCompiler {
 
@@ -47,13 +49,22 @@ class ScriptCompiler {
             functionDeclarations: functionDeclarations
         };
 
+        // Define the globals.
+        const globals = {
+            assert: assert
+        };
+
         // Add the start section.
-        rootNode.add('function __generator(__api) {\n');
+        rootNode.add('function __generator(__globals, __api) {\n');
+        Object.keys(globals).forEach((globalName) => {
+            LOG.debug(method, 'Adding global', globalName);
+            rootNode.add(`    var ${globalName} = __globals.${globalName};\n`);
+        });
         Api.getMethodNames().forEach((methodName) => {
             LOG.debug(method, 'Adding API method', methodName);
             rootNode.add(`    var ${methodName} = __api.${methodName}.bind(__api);\n`);
         });
-        rootNode.add('    __api = null;\n');
+        rootNode.add('    __globals = __api = null;\n');
 
         // Process the script manager.
         this.processScriptManager(context, scriptManager);
@@ -83,7 +94,8 @@ class ScriptCompiler {
         // The "new Function('return eval')" hack stops the generator function getting access
         // to all our local variables. We could just use "new Function", but that screws up
         // the source maps so they all need to be offset by 2.
-        const generatorFunction = new Function('__generatorSource', 'return eval(__generatorSource)')(finalSourceCode);
+        let generatorFunction = new Function('__generatorSource', 'return eval(__generatorSource)')(finalSourceCode);
+        generatorFunction = generatorFunction.bind(null, globals);
         let result = new CompiledScriptBundle(functionDeclarations, generatorFunction);
         LOG.exit(method, result);
         return result;

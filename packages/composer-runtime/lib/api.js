@@ -20,6 +20,7 @@ const Logger = require('composer-common').Logger;
 const ParticipantRegistry = require('./api/participantregistry');
 const Query = require('./api/query');
 const Registry = require('./registry');
+const Serializer = require('./api/serializer');
 
 const LOG = Logger.getLog('Api');
 
@@ -48,7 +49,6 @@ class Api {
             'getCurrentParticipant',
             'post',
             'emit',
-            'queryNative',
             'buildQuery',
             'query'
         ];
@@ -70,7 +70,7 @@ class Api {
         const registryManager = context.getRegistryManager();
         const httpService = context.getHTTPService();
         const eventService = context.getEventService();
-        const queryService = context.getQueryService();
+        const dataService = context.getDataService();
         const accessController = context.getAccessController();
 
         /**
@@ -95,10 +95,10 @@ class Api {
 
         /**
          * Get the serializer. The serializer can be used to create new instances of
-         * assets, participants, and transactions from a JS object, or to create a JS object
-         * suitable for long-lived persistence.
+         * assets, participants, and transactions from a JavaScript object, or to create
+         * a JavaScript object suitable for long-lived persistence.
          * @example
-         * // Get the factory.
+         * // Get the serializer.
          * var ser = getSerializer();
          * @method module:composer-runtime#getSerializer
          * @public
@@ -107,7 +107,7 @@ class Api {
         this.getSerializer = function getSerializer() {
             const method = 'getSerializer';
             LOG.entry(method);
-            let result = serializer;
+            let result = new Serializer(serializer);
             LOG.exit(method, result);
             return result;
         };
@@ -255,44 +255,6 @@ class Api {
         };
 
         /**
-         * <p>
-         * Status: EXPERIMENTAL. API subject to change based on feedback.
-         * </p>
-         * <p>
-         * Execute a query against the world-state using a persistence provider
-         * specific query string. For example, when running against Hyperledger Fabric v1
-         * using CouchDB for world-state persistence, the query string can be a CouchDB
-         * selector.
-         * </p>
-         * <p>
-         * CouchDB queries are JS objects. The query below will select all documents in the
-         * database with a property `size` whose value is `SMALL`.
-         * <pre>
-         * var q = {
-         *   selector : {
-         *     size : 'SMALL'
-         * };
-         * </pre>
-         * <p>
-         *  Note that the query must be passed as a string.
-         * </p>
-         * @method module:composer-runtime#queryNative
-         * @param {string} queryString - The couchdb query string
-         * @return {Promise} A promise. The promise is resolved with the result of the query.
-         * @public
-         */
-        this.queryNative = function queryNative(queryString) {
-            const method = 'queryNative';
-            LOG.entry(method, queryString);
-            return queryService.queryNative(queryString)
-                .then((resultArray) => {
-                    LOG.debug(method, JSON.stringify(resultArray));
-                    LOG.exit(method);
-                    return resultArray;
-                });
-        };
-
-        /**
          * Build a query ready for later execution. The specified query string must be written
          * in the Composer query language.
          *
@@ -343,7 +305,7 @@ class Api {
          *   .catch(function (error) {
          *     // Add optional error handling here.
          *   });
-         * @method module:composer-runtime#buildQuery
+         * @method module:composer-runtime#query
          * @param {string|Query} query The name of the query, or a built query.
          * @param {Object} [parameters] The parameters for the query.
          * @return {Promise} A promise that will be resolved with an array of
@@ -362,7 +324,7 @@ class Api {
             } else {
                 throw new Error('Invalid query; expecting a built query or the name of a query');
             }
-            return context.getCompiledQueryBundle().execute(queryService, identifier, parameters)
+            return context.getCompiledQueryBundle().execute(dataService, identifier, parameters)
                 .then((objects) => {
                     const resources = objects.map((object) => {
                         object = Registry.removeInternalProperties(object);
@@ -375,8 +337,7 @@ class Api {
                             return false;
                         }
                     });
-                    LOG.debug(method, resources.length);
-                    LOG.exit(method);
+                    LOG.exit(method, resources);
                     return resources;
                 });
         };

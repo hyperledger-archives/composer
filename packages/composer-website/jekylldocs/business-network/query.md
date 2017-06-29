@@ -4,15 +4,52 @@ title: Querying Business Network Data
 category: tasks
 section: business-network
 sidebar: sidebars/businessnetworks.md
-excerpt: Using {{site.data.conrefs.hlf_full}} and CouchDB, you can query assets in the stored world-state and return listed assets by using a transaction processor function.
+excerpt: Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a defined age parameter, or all drivers with a specific name.
 ---
 
 # Querying business network data
 
->Warning
-The status of this feature is experimental. You **must** use Hyperledger Composer v0.8+ with the the HLFv1 runtime to use queries. We welcome feedback and comments while we continue to iterate upon query functionality. The API may change based on the feedback received. In future releases we plan to extend this feature with a Composer specific query language, and data-binding to assets, participants and transactions.
+>**Warning**: The status of this feature is experimental. You **must** use Hyperledger Composer v0.8+ with the the HLFv1 runtime to use queries. We welcome feedback and comments while we continue to iterate upon query functionality. The API may change based on the feedback received. In future releases we plan to extend this feature with a Composer specific query language, and data-binding to assets, participants and transactions.
 
-{{site.data.conrefs.hlf_full}} v1.0 can be configured to store the world-state in a CouchDB database. CouchDB is a JSON document store, so all data in the world-state is persisted as JSON documents, including Composer assets, participants and transactions.
+Queries are used to return data about the blockchain world-state; for example, you could write a query to return all drivers over a defined age parameter, or all drivers with a specific name.
+
+Queries are an optional component of a business network definition, written in a query file (`.qry`) file.
+
+Note: Queries are supported by the {{site.data.conrefs.hlf_full}} v1.0, embedded and web runtimes. The query support for the embedded and web runtimes currently has limitations and is unstable. When using the {{site.data.conrefs.hlf_full}} v1.0-beta runtime {{site.data.conrefs.hlf_full}} must be configured to use CouchDB persistence. Queries are **not** supported with the {{site.data.conrefs.hlf_full}} v0.6 runtime.
+
+## Writing Queries
+
+Queries must contain a description and a statement. Query descriptions are a string that describe the function of the query. Query statements contain the operators and functions that control the query behavior.
+
+Query descriptions can be any descriptive string. A query statement must include the `SELECT` operator and can optionally include `FROM`, `WHERE`, `AND`, `ORDER BY`, `SKIP`, and `LIMIT`.
+
+Queries should take the following format:
+
+```
+query Q1{
+  description: "Select all drivers older than 65."
+  statement:
+      SELECT org.acme.Driver
+          WHERE (age>65)
+}
+```
+
+For more information on the specifics of the {{site.data.conrefs.composer_full}} query language, see the [query language reference documentation](../reference/query-language.html).
+
+
+## Using Queries
+
+Queries can be invoked by calling the _buildQuery_ or _query_ APIs. The _buildQuery_ API requires the entire query string to be specified as part of the API input. The _query_ API requires you to specify the name of the query you wish to run.
+
+For more information on the query APIs, see the [API documentation](../jsdoc/index.html).
+
+## Access Control for Queries
+
+When returning the results of a query, your access control rules are applied to the results. Any content which the current user does not have authority to view is stripped from the results.
+
+For example, if the current user sends a query that would return all assets, if they only have authority to view a limited selection of assets, the query would return only that limited set of assets.
+
+<!--- {{site.data.conrefs.hlf_full}} v1.0 can be configured to store the world-state in a CouchDB database. CouchDB is a JSON document store, so all data in the world-state is persisted as JSON documents, including Composer assets, participants and transactions.
 
 When {{site.data.conrefs.hlf_full}} is used in CouchDB mode chaincode can execute complex (content-based) queries against the world-state data. The queries are written in the Mango query language, the native CouchDB query language.
 
@@ -68,4 +105,5 @@ function onQueryMarbleByOwner(transaction) {
 
 Using a selector it is possible to query all assets of a given type, with a given set of properties, and then to convert them back into Composer resources using `getSerializer().fromJSON(jsObject)`. Once the JS object returned by a query have been converted back into a Composer object it can be updated and persisted back into an asset registry.
 
->Note that in the future Composer will define a query language expressed in terms of assets, participants and transactions and automatically marshall the JS objects returned by CouchDB to the corresponding Composer modelled types.
+>Note that in the future Composer will define a query language expressed in terms of assets, participants and transactions and automatically marshal the JS objects returned by CouchDB to the corresponding Composer modeled types.
+-->

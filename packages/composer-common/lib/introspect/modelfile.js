@@ -79,6 +79,14 @@ class ModelFile {
             this.imports = this.ast.imports;
         }
 
+        // if we are not in the system namespace we add imports to all the system types
+        if(!this.isSystemModelFile()) {
+            const systemTypes = this.modelManager.getSystemTypes();
+            for(let n=0; n < systemTypes.length; n++) {
+                this.imports.unshift(systemTypes[n].getFullyQualifiedName());
+            }
+        }
+
         for(let n=0; n < this.ast.body.length; n++ ) {
             let thing = this.ast.body[n];
 
@@ -108,6 +116,9 @@ class ModelFile {
                 }),this.modelFile);
             }
         }
+
+
+
     }
 
     /**
@@ -137,16 +148,6 @@ class ModelFile {
      */
     getImports() {
         return this.imports;
-    }
-
-    /** retrofit the model
-     */
-    retrofit() {
-       // Validate all of the types in this model file.
-        for(let n=0; n < this.declarations.length; n++) {
-            let classDeclaration = this.declarations[n];
-            classDeclaration.retrofit();
-        }
     }
 
     /**
@@ -262,8 +263,6 @@ class ModelFile {
      * @private
      */
     resolveImport(type) {
-        //console.log('resolveImport ' + this.getNamespace() + ' ' + type );
-
         for(let n=0; n < this.imports.length; n++) {
             let importName = this.imports[n];
             if( ModelUtil.getShortName(importName) === type ) {
@@ -451,15 +450,6 @@ class ModelFile {
     /**
      * Get the filename for this model file. Note that this may be null.
      * @return {string} The filename for this model file
-     * @deprecated
-     */
-    getFileName() {
-        return this.fileName;
-    }
-
-    /**
-     * Get the filename for this model file. Note that this may be null.
-     * @return {string} The filename for this model file
      */
     getName() {
         return this.fileName;
@@ -545,6 +535,13 @@ class ModelFile {
         return this.definitions;
     }
 
+    /**
+     * Returns true if this ModelFile is a system model
+     * @return {boolean} true of this ModelFile is a system model
+     */
+    isSystemModelFile() {
+        return ModelUtil.getSystemNamespace() === this.getNamespace();
+    }
 }
 
 module.exports = ModelFile;

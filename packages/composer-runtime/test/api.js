@@ -18,18 +18,19 @@ const AccessController = require('../lib/accesscontroller');
 const Api = require('../lib/api');
 const AssetRegistry = require('../lib/api/assetregistry');
 const CompiledQueryBundle = require('../lib/compiledquerybundle');
+const Context = require('../lib/context');
+const DataService = require('../lib/dataservice');
+const EventService = require('../lib/eventservice');
+const HTTPService = require('../lib/httpservice');
 const Factory = require('../lib/api/factory');
-const Serializer = require('composer-common').Serializer;
 const ParticipantRegistry = require('../lib/api/participantregistry');
+const Query = require('../lib/api/query');
 const realFactory = require('composer-common').Factory;
+const realSerializer = require('composer-common').Serializer;
 const Registry = require('../lib/registry');
 const RegistryManager = require('../lib/registrymanager');
 const Resource = require('composer-common').Resource;
-const EventService = require('../lib/eventservice');
-const HTTPService = require('../lib/httpservice');
-const Query = require('../lib/api/query');
-const QueryService = require('../lib/queryservice');
-const Context = require('../lib/context');
+const Serializer = require('../lib/api/serializer');
 
 const chai = require('chai');
 chai.should();
@@ -47,7 +48,7 @@ describe('Api', () => {
     let mockRegistryManager;
     let mockEventService;
     let mockHTTPService;
-    let mockQueryService;
+    let mockDataService;
     let mockAccessController;
     let mockCompiledQueryBundle;
     let api;
@@ -56,7 +57,7 @@ describe('Api', () => {
         mockContext = sinon.createStubInstance(Context);
         mockFactory = sinon.createStubInstance(realFactory);
         mockContext.getFactory.returns(mockFactory);
-        mockSerializer = sinon.createStubInstance(Serializer);
+        mockSerializer = sinon.createStubInstance(realSerializer);
         mockContext.getSerializer.returns(mockSerializer);
         mockParticipant = sinon.createStubInstance(Resource);
         mockContext.getParticipant.returns(mockParticipant);
@@ -66,8 +67,8 @@ describe('Api', () => {
         mockContext.getEventService.returns(mockEventService);
         mockHTTPService = sinon.createStubInstance(HTTPService);
         mockContext.getHTTPService.returns(mockHTTPService);
-        mockQueryService = sinon.createStubInstance(QueryService);
-        mockContext.getQueryService.returns(mockQueryService);
+        mockDataService = sinon.createStubInstance(DataService);
+        mockContext.getDataService.returns(mockDataService);
         mockAccessController = sinon.createStubInstance(AccessController);
         mockContext.getAccessController.returns(mockAccessController);
         mockCompiledQueryBundle = sinon.createStubInstance(CompiledQueryBundle);
@@ -210,28 +211,6 @@ describe('Api', () => {
         });
     });
 
-    describe('#queryNative', () => {
-
-        const queryString = 'query the foobar';
-
-        it('should execute the query using the query service', () => {
-            mockQueryService.queryNative.resolves({ query: 'results' });
-            return api.queryNative(queryString)
-                .should.eventually.be.deep.equal({ query: 'results' })
-                .then(() => {
-                    sinon.assert.calledOnce(mockQueryService.queryNative);
-                    sinon.assert.calledWith(mockQueryService.queryNative, queryString);
-                });
-        });
-
-        it('should reject the queryNative using the query service', () => {
-            mockQueryService.queryNative.rejects(new Error('such error'));
-            return api.queryNative(queryString)
-                .should.be.rejectedWith(/such error/);
-        });
-
-    });
-
     describe('#buildQuery', () => {
 
         it('should build the query and return the built query', () => {
@@ -277,8 +256,8 @@ describe('Api', () => {
                     mockResources.push(resource);
                 }
             }
-            mockCompiledQueryBundle.execute.withArgs(mockQueryService, queryID).resolves(mockObjects);
-            mockCompiledQueryBundle.execute.withArgs(mockQueryService, queryHash).resolves(mockObjects);
+            mockCompiledQueryBundle.execute.withArgs(mockDataService, queryID).resolves(mockObjects);
+            mockCompiledQueryBundle.execute.withArgs(mockDataService, queryHash).resolves(mockObjects);
         });
 
         it('should throw for invalid queries', () => {
@@ -294,7 +273,7 @@ describe('Api', () => {
                 .should.eventually.be.deep.equal(mockResources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockQueryService, queryID);
+                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID);
                     sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
@@ -305,7 +284,7 @@ describe('Api', () => {
                 .should.eventually.be.deep.equal(mockResources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockQueryService, queryID, queryParams);
+                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryID, queryParams);
                     sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
@@ -317,7 +296,7 @@ describe('Api', () => {
                 .should.eventually.be.deep.equal(mockResources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockQueryService, queryHash);
+                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash);
                     sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
@@ -329,7 +308,7 @@ describe('Api', () => {
                 .should.eventually.be.deep.equal(mockResources)
                 .then(() => {
                     sinon.assert.calledOnce(mockCompiledQueryBundle.execute);
-                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockQueryService, queryHash, queryParams);
+                    sinon.assert.calledWith(mockCompiledQueryBundle.execute, mockDataService, queryHash, queryParams);
                     sinon.assert.callCount(mockSerializer.fromJSON, 5);
                     sinon.assert.callCount(mockAccessController.check, 5);
                 });
