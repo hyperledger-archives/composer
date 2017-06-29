@@ -37,9 +37,14 @@ describe('ModelManager', () => {
     let invalidModel = fs.readFileSync('./test/data/model/invalid.cto', 'utf8');
     let invalidModel2 = fs.readFileSync('./test/data/model/invalid2.cto', 'utf8');
     let modelManager;
+    let mockSystemModelFile;
 
     beforeEach(() => {
         modelManager = new ModelManager();
+        mockSystemModelFile = sinon.createStubInstance(ModelFile);
+        mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
+        mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
+        mockSystemModelFile.isSystemModelFile.returns(true);
     });
 
     describe('#accept', () => {
@@ -107,6 +112,18 @@ describe('ModelManager', () => {
             sinon.assert.calledOnce(mf1.validate);
             modelManager.modelFiles['org.doge'].should.equal(mf1);
             res.should.equal(mf1);
+        });
+
+        it('should not be possible to add a system model file', ()=>{
+            (() => {
+                modelManager.addModelFile(mockSystemModelFile);
+            }).should.throw();
+        });
+
+        it('should not be possible to add a system model file (via string)', ()=>{
+            (() => {
+                modelManager.addModelFile('namespace org.hyperledger.composer.system','fakesysnamespace.cto');
+            }).should.throw();
         });
 
     });
@@ -193,6 +210,11 @@ describe('ModelManager', () => {
             should.equal(modelManager.modelFiles['org.fry'], undefined);
         });
 
+        it('should not be possible to add a system model file', ()=>{
+            (() => {
+                modelManager.addModelFiles([mockSystemModelFile]);
+            }).should.throw();
+        });
     });
 
     describe('#updateModelFile', () => {
@@ -272,6 +294,19 @@ describe('ModelManager', () => {
             modelManager.modelFiles['org.doge'].definitions.should.equal(model);
         });
 
+        it('should not be possible to update a system model file', ()=>{
+            (() => {
+                modelManager.updateModelFile(mockSystemModelFile);
+            }).should.throw();
+        });
+
+        it('should not be possible to update a system model file (via string)', ()=>{
+            (() => {
+                modelManager.updateModelFile('namespace org.hyperledger.composer.system','fakesysnamespace.cto');
+            }).should.throw();
+        });
+
+
     });
 
     describe('#deleteModelFile', () => {
@@ -294,6 +329,12 @@ describe('ModelManager', () => {
             res.should.equal(mf1);
             modelManager.deleteModelFile('org.doge');
             should.equal(modelManager.modelFiles['org.doge'], undefined);
+        });
+
+        it('should not be possible to delete a system model file', ()=>{
+            (() => {
+                modelManager.deleteModelFile(mockSystemModelFile);
+            }).should.throw();
         });
 
     });
