@@ -188,7 +188,7 @@ export class EditorComponent implements OnInit, OnDestroy {
                 newModelFiles.push({
                     model: true,
                     id: modelFile.getNamespace(),
-                    displayID: modelFile.getFileName(),
+                    displayID: modelFile.getName(),
                 });
             }
         });

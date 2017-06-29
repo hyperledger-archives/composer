@@ -142,29 +142,6 @@ class BusinessNetworkConnection extends EventEmitter {
      * var businessNetwork = new BusinessNetworkConnection();
      * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
      * .then(function(businessNetworkDefinition){
-     *     return businessNetworkDefinition.existsAssetRegistry('businessNetworkIdentifier.registryId');
-     * })
-     * .then(function(exists){
-     *     // if (exists === true) {
-     *     // logic here...
-     *     //}
-     * });
-     * @deprecated Use assetRegistryExists instead
-     * @param {string} id - The unique identifier of the asset registry
-     * @return {Promise} - A promise that will be resolved with a boolean indicating whether the asset
-     * registry exists.
-     */
-    existsAssetRegistry(id) {
-        return this.assetRegistryExists(id);
-    }
-
-    /**
-     * Determine whether a asset registry exists.
-     * @example
-     * // Determine whether an asset registry exists
-     * var businessNetwork = new BusinessNetworkConnection();
-     * return businessNetwork.connect('testprofile', 'businessNetworkIdentifier', 'WebAppAdmin', 'DJY27pEnl16d')
-     * .then(function(businessNetworkDefinition){
      *     return businessNetworkDefinition.assetRegistryExists('businessNetworkIdentifier.registryId');
      * })
      * .then(function(exists){

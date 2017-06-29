@@ -122,24 +122,24 @@ describe('Factory', () => {
 
     });
 
-    describe('#newInstance', () => {
+    describe('#newResource', () => {
 
         it('should create a new instance with a specified ID', () => {
-            let resource = factory.newInstance(namespace, assetName, 'MY_ID_1');
+            let resource = factory.newResource(namespace, assetName, 'MY_ID_1');
             resource.assetId.should.equal('MY_ID_1');
             should.equal(resource.newValue, undefined);
             should.not.equal(resource.validate, undefined);
         });
 
         it('should create a new non-validating instance with a specified ID', () => {
-            let resource = factory.newInstance(namespace, assetName, 'MY_ID_1', { disableValidation: true });
+            let resource = factory.newResource(namespace, assetName, 'MY_ID_1', { disableValidation: true });
             resource.assetId.should.equal('MY_ID_1');
             should.equal(resource.newValue, undefined);
             should.equal(resource.validate, undefined);
         });
 
         it('should create a new instance with a specified ID and generated data', () => {
-            let resource = factory.newInstance(namespace, assetName, 'MY_ID_1', { generate: true });
+            let resource = factory.newResource(namespace, assetName, 'MY_ID_1', { generate: true });
             resource.assetId.should.equal('MY_ID_1');
             resource.newValue.should.be.a('string');
             should.not.equal(resource.validate, undefined);

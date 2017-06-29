@@ -427,17 +427,17 @@ describe('EditorComponent', () => {
             mockClientService.getModelFiles.returns([
                 {
                     getNamespace: sinon.stub().returns('model 2'),
-                    getFileName: sinon.stub().returns('models/model2.cto'),
+                    getName: sinon.stub().returns('models/model2.cto'),
                     isSystemModelFile : sinon.stub().returns(false)
                 },
                 {
                     getNamespace: sinon.stub().returns('model 1'),
-                    getFileName: sinon.stub().returns('models/model1.cto'),
+                    getName: sinon.stub().returns('models/model1.cto'),
                     isSystemModelFile : sinon.stub().returns(false)
                 },
                 {
                     getNamespace: sinon.stub().returns('system 1'),
-                    getFileName: sinon.stub().returns('models/system1.cto'),
+                    getName: sinon.stub().returns('models/system1.cto'),
                     isSystemModelFile : sinon.stub().returns(true)
                 },
             ]);
