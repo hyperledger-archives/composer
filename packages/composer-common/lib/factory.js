@@ -35,7 +35,6 @@ const EventDeclaration = require('./introspect/eventdeclaration');
 
 const uuid = require('uuid');
 
-
 /**
  * Use the Factory to create instances of Resource: transactions, participants
  * and assets.
@@ -55,6 +54,35 @@ class Factory {
      */
     constructor(modelManager) {
         this.modelManager = modelManager;
+
+        this.initializeNewObject = (newObject, classDeclaration, clientOptions) => {
+            const generateParams = this.parseGenerateOptions(clientOptions);
+            if (generateParams) {
+                generateParams.stack = new TypedStack(newObject);
+                const visitor = new InstanceGenerator();
+                classDeclaration.accept(visitor, generateParams);
+            }
+        };
+
+        this.parseGenerateOptions = (clientOptions) => {
+            if (!clientOptions.generate) {
+                return null;
+            }
+
+            const generateParams = { };
+            generateParams.modelManager = this.modelManager;
+            generateParams.factory = this;
+
+            if ((/^empty$/i).test(clientOptions.generate)) {
+                generateParams.valueGenerator = ValueGeneratorFactory.empty();
+            } else {
+                generateParams.valueGenerator = ValueGeneratorFactory.sample();
+            }
+
+            generateParams.includeOptionalFields = false;
+
+            return generateParams;
+        };
     }
 
     /**
@@ -112,29 +140,7 @@ class Factory {
             newObj = new ValidatedResource(this.modelManager, ns, type, id, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
-
-        if(options.generate) {
-            let generator;
-            let includeOptionalFields;
-            if ((/^empty$/i).test(options.generate)) {
-                generator = ValueGeneratorFactory.empty();
-                includeOptionalFields = false;
-            } else {
-                generator = ValueGeneratorFactory.sample();
-                includeOptionalFields = true;
-            }
-
-            const visitor = new InstanceGenerator();
-            const parameters = {
-                stack: new TypedStack(newObj),
-                modelManager: this.modelManager,
-                factory: this,
-                valueGenerator: generator,
-                includeOptionalFields: includeOptionalFields
-            };
-
-            classDecl.accept(visitor, parameters);
-        }
+        this.initializeNewObject(newObj, classDecl, options);
 
         // if we have an identifier, we set it now
         let idField = classDecl.getIdentifierFieldName();
@@ -181,18 +187,7 @@ class Factory {
             newObj = new ValidatedConcept(this.modelManager,ns,type, new ResourceValidator());
         }
         newObj.assignFieldDefaults();
-
-        if(options.generate) {
-            const visitor = new InstanceGenerator();
-            const generator = (/^empty$/i).test(options.generate) ? ValueGeneratorFactory.empty() : ValueGeneratorFactory.sample();
-            const parameters = {
-                stack: new TypedStack(newObj),
-                modelManager: this.modelManager,
-                factory: this,
-                valueGenerator: generator
-            };
-            classDecl.accept(visitor, parameters);
-        }
+        this.initializeNewObject(newObj, classDecl, options);
 
         debug('Factory.newResource created concept %s', classDecl.getFullyQualifiedName() );
         return newObj;
