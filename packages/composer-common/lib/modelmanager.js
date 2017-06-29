@@ -182,6 +182,9 @@ class ModelManager {
             this.modelFiles[m.getNamespace()] = m;
             return m;
         } else {
+            if (modelFile.isSystemModelFile()){
+                throw new Error('System namespace can not be updated');
+            }
             if (!this.modelFiles[modelFile.getNamespace()]) {
                 throw new Error('model file does not exist');
             }
@@ -233,9 +236,15 @@ class ModelManager {
 
                 if (typeof modelFile === 'string') {
                     let m = new ModelFile(this, modelFile, fileName);
+                    if (m.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[m.getNamespace()] = m;
                     newModelFiles.push(m);
                 } else {
+                    if (modelFile.isSystemModelFile()){
+                        throw new Error('System namespace can not be updated');
+                    }
                     this.modelFiles[modelFile.getNamespace()] = modelFile;
                     newModelFiles.push(modelFile);
                 }

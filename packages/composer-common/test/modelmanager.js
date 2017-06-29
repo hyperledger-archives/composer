@@ -44,6 +44,7 @@ describe('ModelManager', () => {
         mockSystemModelFile = sinon.createStubInstance(ModelFile);
         mockSystemModelFile.isLocalType.withArgs('Asset').returns(true);
         mockSystemModelFile.getNamespace.returns('org.hyperledger.composer.system');
+        mockSystemModelFile.isSystemModelFile.returns(true);
     });
 
     describe('#accept', () => {
@@ -114,7 +115,15 @@ describe('ModelManager', () => {
         });
 
         it('should not be possible to add a system model file', ()=>{
-            //modelManager.addModelFile(mockSystemModelFile);
+            (() => {
+                modelManager.addModelFile(mockSystemModelFile);
+            }).should.throw();
+        });
+
+        it('should not be possible to add a system model file (via string)', ()=>{
+            (() => {
+                modelManager.addModelFile('namespace org.hyperledger.composer.system','fakesysnamespace.cto');
+            }).should.throw();
         });
 
     });
@@ -202,7 +211,9 @@ describe('ModelManager', () => {
         });
 
         it('should not be possible to add a system model file', ()=>{
-          // TODO
+            (() => {
+                modelManager.addModelFiles([mockSystemModelFile]);
+            }).should.throw();
         });
     });
 
@@ -284,8 +295,17 @@ describe('ModelManager', () => {
         });
 
         it('should not be possible to update a system model file', ()=>{
-          // TODO
+            (() => {
+                modelManager.updateModelFile(mockSystemModelFile);
+            }).should.throw();
         });
+
+        it('should not be possible to update a system model file (via string)', ()=>{
+            (() => {
+                modelManager.updateModelFile('namespace org.hyperledger.composer.system','fakesysnamespace.cto');
+            }).should.throw();
+        });
+
 
     });
 
@@ -312,7 +332,9 @@ describe('ModelManager', () => {
         });
 
         it('should not be possible to delete a system model file', ()=>{
-          // TODO
+            (() => {
+                modelManager.deleteModelFile(mockSystemModelFile);
+            }).should.throw();
         });
 
     });
