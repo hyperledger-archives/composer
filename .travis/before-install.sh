@@ -88,12 +88,19 @@ fi
 RESULT=$(cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }') 
 if [ "${RESULT}" == "" ];
 then
-  echo "Only docs changes"
+
+    # Check of the task current executing
+    if [ "${FC_TASK}" != "docs" ]; then
+        echo "ABORT_BUILD=true" > ${DIR}/build.cfg
+        echo "ABORT_CODE=0" >> ${DIR}/build.cfg
+        echo 'Docs only build - no pointing bothering with anything more'
+        exit 0
+    fi 
+
 else
   echo "More than docs changes"
 fi
 rm changedfiles.log
-
 cd - > /dev/null
 ######
 
