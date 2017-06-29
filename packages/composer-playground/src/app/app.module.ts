@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpModule } from '@angular/http';
 import { removeNgStyles, createNewHosts, createInputTransfer } from '@angularclass/hmr';
-// import { ModalModule, TooltipModule } from 'ng2-bootstrap';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LocalStorageModule } from 'angular-2-local-storage';
 
@@ -20,18 +19,10 @@ import { APP_RESOLVER_PROVIDERS } from './app.resolver';
 import { AppState, InternalStateType } from './app.service';
 import { AboutComponent } from './about';
 import { BasicModalsModule } from './basic-modals/basic-models.module';
-import { BusyComponent } from './basic-modals/busy';
-import { ErrorComponent } from './basic-modals/error';
-import { SuccessComponent } from './basic-modals/success';
 import { WelcomeComponent } from './welcome';
-import { ConfirmComponent } from './basic-modals/confirm';
-import { DeleteComponent } from './basic-modals/delete-confirm';
-import { ReplaceComponent } from './basic-modals/replace-confirm';
-import { GithubComponent } from './github';
 import { NoContentComponent } from './no-content';
 import { VersionCheckComponent } from './version-check';
 import { ServicesModule } from './services/services.module';
-import { DirectivesModule } from './directives/directives.module';
 
 let actionBasedIcons = require.context('../assets/svg/action-based', false, /.*\.svg$/);
 actionBasedIcons.keys().forEach(actionBasedIcons);
@@ -66,7 +57,6 @@ type StoreType = {
     declarations: [
         AboutComponent,
         AppComponent,
-        GithubComponent,
         NoContentComponent,
         VersionCheckComponent,
         WelcomeComponent

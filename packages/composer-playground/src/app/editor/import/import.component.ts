@@ -24,11 +24,6 @@ export class ImportComponent implements OnInit {
     private gitHubInProgress: boolean = false;
     private sampleNetworks = [];
     private primaryNetworkNames = ['basic-sample-network', 'carauction-network'];
-    private owner: string = '';
-    private repository: string = '';
-    private gitHubAuthenticated: boolean = false;
-    private oAuthEnabled: boolean = false;
-    private clientId: string = null;
     private chosenNetwork = null;
     private expandInput: boolean = false;
 
@@ -55,51 +50,22 @@ export class ImportComponent implements OnInit {
 
         return this.clientService.ensureConnected(false)
             .then(() => {
-                return this.sampleBusinessNetworkService.isOAuthEnabled();
-            })
-            .then((result) => {
-                this.oAuthEnabled = result;
-                if (result) {
-                    return this.sampleBusinessNetworkService.getGithubClientId()
-                        .then((clientId) => {
-                            if (!clientId) {
-                                // shouldn't get here as oauthEnabled should return false
-                                // if client id not set but just incase
-                                return this.activeModal.dismiss(
-                                    new Error(this.sampleBusinessNetworkService.NO_CLIENT_ID)
-                                );
-                            }
-
-                            this.clientId = clientId;
-                            this.onShow();
-                        });
-                } else {
-                    this.onShow();
-                }
+                this.onShow();
             });
     }
 
     onShow() {
         this.gitHubInProgress = true;
-        this.gitHubAuthenticated = this.sampleBusinessNetworkService.isAuthenticatedWithGitHub();
-        if (this.gitHubAuthenticated) {
-            return this.sampleBusinessNetworkService.getModelsInfo(fabricComposerOwner,
-                fabricComposerRepository)
-                .then((modelsInfo) => {
-                    this.sampleNetworks = this.orderGitHubProjects(modelsInfo);
-                    this.gitHubInProgress = false;
-                })
-                .catch((error) => {
+        this.sampleBusinessNetworkService.getSampleList()
+            .then((sampleNetworkList) => {
+                this.sampleNetworks = this.orderGitHubProjects(sampleNetworkList);
+                this.gitHubInProgress = false;
 
-                    if (error.message.includes('API rate limit exceeded')) {
-                        error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
-                    }
-
-                    this.gitHubInProgress = false;
-
-                    this.alertService.errorStatus$.next(error);
-                });
-        }
+            })
+            .catch((error) => {
+                this.gitHubInProgress = false;
+                this.alertService.errorStatus$.next(error);
+            });
     }
 
     orderGitHubProjects(networks: any[]): any[] {
@@ -141,35 +107,31 @@ export class ImportComponent implements OnInit {
                 if (this.currentBusinessNetwork) {
                     deployPromise = this.sampleBusinessNetworkService.deployBusinessNetwork(this.currentBusinessNetwork);
                 } else {
-                    deployPromise = this.deployFromGitHub();
+                    deployPromise = this.deployFromNpm();
                 }
 
                 deployPromise.then(() => {
                     this.deployInProgress = false;
                     this.activeModal.close();
                 })
-                .catch((error) => {
-                    if (error.message.includes('API rate limit exceeded')) {
-                        error = new Error(this.sampleBusinessNetworkService.RATE_LIMIT_MESSAGE);
-                    }
-
-                    this.deployInProgress = false;
-                    this.alertService.busyStatus$.next(null);
-                    this.alertService.errorStatus$.next(error);
-                });
+                    .catch((error) => {
+                        this.deployInProgress = false;
+                        this.alertService.busyStatus$.next(null);
+                        this.alertService.errorStatus$.next(error);
+                    });
 
                 return deployPromise;
             }
         })
-        .catch((error) => {
-            this.deployInProgress = false;
-            if (error && error !== 1) {
-                this.alertService.errorStatus$.next(error);
-            }
-        });
+            .catch((error) => {
+                this.deployInProgress = false;
+                if (error && error !== 1) {
+                    this.alertService.errorStatus$.next(error);
+                }
+            });
     }
 
-    deployFromGitHub(): Promise<any> {
+    deployFromNpm(): Promise<any> {
 
         if (this.chosenNetwork === this.NAME
         ) {
@@ -220,9 +182,7 @@ export class ImportComponent implements OnInit {
                 return sampleNetwork.name === this.chosenNetwork;
             });
 
-            let chosenOwner = this.owner !== '' ? this.owner : fabricComposerOwner;
-            let chosenRepository = this.repository !== '' ? this.repository : fabricComposerRepository;
-            return this.sampleBusinessNetworkService.deploySample(chosenOwner, chosenRepository, chosenSampleNetwork);
+            return this.sampleBusinessNetworkService.deployChosenSample(chosenSampleNetwork);
 
         }
     }
