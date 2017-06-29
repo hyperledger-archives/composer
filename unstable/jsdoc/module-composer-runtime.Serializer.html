@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Class: CompiledQueryBundle</title>
+	<title>Hyperledger Composer Class: Serializer</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="CompiledQueryBundle.html">CompiledQueryBundle</a></li><li><a href="CompiledScriptBundle.html">CompiledScriptBundle</a></li><li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AccessException.html">composer-runtime.AccessException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="QueryCompiler.html">QueryCompiler</a></li><li><a href="ScriptCompiler.html">ScriptCompiler</a></li>
+					<li><a href="ConsoleLogger.html">ConsoleLogger</a></li><li><a href="module-composer-admin.AdminConnection.html">composer-admin.AdminConnection</a></li><li><a href="module-composer-client.AssetRegistry.html">composer-client.AssetRegistry</a></li><li><a href="module-composer-client.BusinessNetworkConnection.html">composer-client.BusinessNetworkConnection</a></li><li><a href="module-composer-client.ParticipantRegistry.html">composer-client.ParticipantRegistry</a></li><li><a href="module-composer-client.Query.html">composer-client.Query</a></li><li><a href="module-composer-client.Registry.html">composer-client.Registry</a></li><li><a href="module-composer-client.TransactionRegistry.html">composer-client.TransactionRegistry</a></li><li><a href="module-composer-common.BaseException.html">composer-common.BaseException</a></li><li><a href="module-composer-common.BaseModelException.html">composer-common.BaseModelException</a></li><li><a href="module-composer-common.BusinessNetworkDefinition.html">composer-common.BusinessNetworkDefinition</a></li><li><a href="module-composer-common.BusinessNetworkMetadata.html">composer-common.BusinessNetworkMetadata</a></li><li><a href="module-composer-common.Concept.html">composer-common.Concept</a></li><li><a href="module-composer-common.Factory.html">composer-common.Factory</a></li><li><a href="module-composer-common.Identifiable.html">composer-common.Identifiable</a></li><li><a href="module-composer-common.IllegalModelException.html">composer-common.IllegalModelException</a></li><li><a href="module-composer-common.Introspector.html">composer-common.Introspector</a></li><li><a href="module-composer-common.ParseException.html">composer-common.ParseException</a></li><li><a href="module-composer-common.Relationship.html">composer-common.Relationship</a></li><li><a href="module-composer-common.Resource.html">composer-common.Resource</a></li><li><a href="module-composer-common.SecurityContext.html">composer-common.SecurityContext</a></li><li><a href="module-composer-common.SecurityException.html">composer-common.SecurityException</a></li><li><a href="module-composer-common.Serializer.html">composer-common.Serializer</a></li><li><a href="module-composer-common.Typed.html">composer-common.Typed</a></li><li><a href="module-composer-common.TypeNotFoundException.html">composer-common.TypeNotFoundException</a></li><li><a href="module-composer-common.ValidatedConcept.html">composer-common.ValidatedConcept</a></li><li><a href="module-composer-common.ValidatedResource.html">composer-common.ValidatedResource</a></li><li><a href="module-composer-common.ValidationException.html">composer-common.ValidationException</a></li><li><a href="module-composer-runtime.AssetRegistry.html">composer-runtime.AssetRegistry</a></li><li><a href="module-composer-runtime.Factory.html">composer-runtime.Factory</a></li><li><a href="module-composer-runtime.ParticipantRegistry.html">composer-runtime.ParticipantRegistry</a></li><li><a href="module-composer-runtime.Query.html">composer-runtime.Query</a></li><li><a href="module-composer-runtime.Serializer.html">composer-runtime.Serializer</a></li>
 				</ul>
 			</li>
 			
@@ -79,16 +79,18 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: CompiledQueryBundle</h1>
+	<h1 class="page-title">Class: Serializer</h1>
 <section>
 
 <header>
     
         <h2>
-        CompiledQueryBundle
+            <span class="ancestors"><a href="module-composer-runtime.html">composer-runtime</a>.</span>
+        
+        Serializer
         </h2>
         
-            <div class="class-description"><p>A script compiler compiles all scripts in a script manager into a compiled<br>script bundle that can easily be called by the runtime.</p></div>
+            <div class="class-description"><p>A serializer serializes instances of assets, participants, transactions,<br>and relationships to and from a JSON serialization format.</p></div>
         
     
 </header>
@@ -100,7 +102,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="CompiledQueryBundle"><span class="type-signature"></span>new CompiledQueryBundle(queryCompiler, queryManager, compiledQueries)</h4>
+    <h4 class="name" id="Serializer"><span class="type-signature"></span>new Serializer()</h4>
     
     
 </dt>
@@ -108,7 +110,7 @@
 
     
     <div class="description">
-        <p>Constructor.</p>
+        <p>Do not attempt to create an instance of this class.<br><br>You must use the <a href="module-composer-runtime.html#getSerializer">getSerializer</a><br>method instead.</p>
     </div>
     
 
@@ -117,104 +119,6 @@
     
 
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>queryCompiler</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="QueryCompiler.html">QueryCompiler</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The query compiler to use.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>queryManager</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">QueryManager</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The query manager to use.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>compiledQueries</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Object></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The compiled queries to use.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
     
 
     
@@ -252,8 +156,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-runtime_lib_compiledquerybundle.js.html">composer-runtime/lib/compiledquerybundle.js</a>,
-				 <a href="composer-runtime_lib_compiledquerybundle.js.html#sunlight-1-line-26">line 26</a>
+				<a href="composer-runtime_lib_api_serializer.js.html">composer-runtime/lib/api/serializer.js</a>,
+				 <a href="composer-runtime_lib_api_serializer.js.html#sunlight-1-line-21">line 21</a>
 			</li>
 		</ul>
 	</dd>
@@ -304,7 +208,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="buildQuery"><span class="type-signature"></span>buildQuery(query)</h4>
+    <h4 class="name" id="fromJSON"><span class="type-signature"></span>fromJSON(json [, options])</h4>
     
     
 </dt>
@@ -312,169 +216,7 @@
 
     
     <div class="description">
-        <p>Build and compile a query for use at a later time.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>query</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The query string.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="composer-runtime_lib_compiledquerybundle.js.html">composer-runtime/lib/compiledquerybundle.js</a>,
-				 <a href="composer-runtime_lib_compiledquerybundle.js.html#sunlight-1-line-54">line 54</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>An identifier for the query.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">string</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="execute"><span class="type-signature"></span>execute(dataService, query [, parameters])</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Execute the specified query.</p>
+        <p>Create a Resource from a JavaScript object representation.<br>The JavaScript object should have been created by calling the<br>toJSON API.<br>The Resource is populated based on the JavaScript object.</p>
     </div>
     
 
@@ -511,13 +253,13 @@
 
         <tr>
             
-                <td class="name"><code>dataService</code></td>
+                <td class="name"><code>json</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">DataService</span>
+<span class="param-type">Object</span>
 
 
 
@@ -536,46 +278,14 @@
 
             
 
-            <td class="description last"><p>The data service to use.</p></td>
+            <td class="description last"><p>The JavaScript object for the resource.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>query</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The name of the query, or the query itself.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>parameters</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
@@ -602,7 +312,69 @@
 
             
 
-            <td class="description last"><p>The parameters provided for the query.</p></td>
+            <td class="description last"><p>The optional serialization options.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>acceptResourcesForRelationships</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Handle JSON objects<br>in the place of strings for relationships, false by default.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -646,8 +418,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-runtime_lib_compiledquerybundle.js.html">composer-runtime/lib/compiledquerybundle.js</a>,
-				 <a href="composer-runtime_lib_compiledquerybundle.js.html#sunlight-1-line-92">line 92</a>
+				<a href="composer-runtime_lib_api_serializer.js.html">composer-runtime/lib/api/serializer.js</a>,
+				 <a href="composer-runtime_lib_api_serializer.js.html#sunlight-1-line-76">line 76</a>
 			</li>
 		</ul>
 	</dd>
@@ -670,13 +442,41 @@
     
 
     
+    <h5>Throws:</h5>
+    
+            
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If the specified resource is not an instance of<br>Resource or if it fails validation during serialization.</p>
+        </div>
+    </dt>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+
+            </dd>
+        </dl>
+    </dt>
+</dl>
+
+
+        
 
     
     <h5>Returns:</h5>
     
             
 <div class="param-desc">
-    <p>A promise that is resolved with the results of the<br>query, or rejected with an error.</p>
+    <p>The resource.</p>
 </div>
 
 
@@ -687,7 +487,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise</span>
+<span class="param-type">Resource</span>
 
 
 
@@ -698,13 +498,22 @@
         
 
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Get the serializer.
+var serializer = getSerializer();
+// Serialize a vehicle.
+var vehicle = serializer.fromJSON(json);</pre>
+
+
+    
 </dd>
 
         
             
 <hr>
 <dt>
-    <h4 class="name" id="executeInternal"><span class="type-signature"></span>executeInternal(dataService, compiledQuery [, parameters])</h4>
+    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON(resource [, options])</h4>
     
     
 </dt>
@@ -712,7 +521,7 @@
 
     
     <div class="description">
-        <p>Execute the specified query.</p>
+        <p>Convert a Resource to a JavaScript object suitable for long-term<br>peristent storage.</p>
     </div>
     
 
@@ -749,13 +558,13 @@
 
         <tr>
             
-                <td class="name"><code>dataService</code></td>
+                <td class="name"><code>resource</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">DataService</span>
+<span class="param-type">Resource</span>
 
 
 
@@ -774,46 +583,14 @@
 
             
 
-            <td class="description last"><p>The data service to use.</p></td>
+            <td class="description last"><p>The resource instance to convert to JSON.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>compiledQuery</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The compiled query.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>parameters</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
@@ -840,7 +617,137 @@
 
             
 
-            <td class="description last"><p>The parameters provided for the query.</p></td>
+            <td class="description last"><p>The optional serialization options.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>validate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Validate the structure of the resource<br>with its model prior to serialization, true by default.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>convertResourcesToRelationships</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Convert resources that<br>are specified for relationship fields into relationships, false by default.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>permitResourcesForRelationships</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Permit resources in the<br>place of relationships (serializing them as resources), false by default.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -884,8 +791,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="composer-runtime_lib_compiledquerybundle.js.html">composer-runtime/lib/compiledquerybundle.js</a>,
-				 <a href="composer-runtime_lib_compiledquerybundle.js.html#sunlight-1-line-119">line 119</a>
+				<a href="composer-runtime_lib_api_serializer.js.html">composer-runtime/lib/api/serializer.js</a>,
+				 <a href="composer-runtime_lib_api_serializer.js.html#sunlight-1-line-50">line 50</a>
 			</li>
 		</ul>
 	</dd>
@@ -908,13 +815,41 @@
     
 
     
+    <h5>Throws:</h5>
+    
+            
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        <p>If the specified resource is not an instance of<br>Resource or if it fails validation during serialization.</p>
+        </div>
+    </dt>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+
+            </dd>
+        </dl>
+    </dt>
+</dl>
+
+
+        
 
     
     <h5>Returns:</h5>
     
             
 <div class="param-desc">
-    <p>A promise that is resolved with the results of the<br>query, or rejected with an error.</p>
+    <p>The JavaScript object that represents the resource</p>
 </div>
 
 
@@ -925,7 +860,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise</span>
+<span class="param-type">Object</span>
 
 
 
@@ -934,6 +869,15 @@
 
 
         
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">// Get the serializer.
+var serializer = getSerializer();
+// Serialize a vehicle.
+var json = serializer.toJSON(vehicle);</pre>
+
 
     
 </dd>

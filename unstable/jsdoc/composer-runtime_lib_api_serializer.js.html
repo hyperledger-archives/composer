@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Hyperledger Composer Source: composer-common/lib/util.js</title>
+	<title>Hyperledger Composer Source: composer-runtime/lib/api/serializer.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-		<h1 class="page-title">Source: composer-common/lib/util.js</h1>
+		<h1 class="page-title">Source: composer-runtime/lib/api/serializer.js</h1>
     
 <section>
     <article>
@@ -100,91 +100,96 @@
 
 'use strict';
 
-const Globalize = require('./globalize');
-const SecurityContext = require('./securitycontext');
-const SecurityException = require('./securityexception');
+const Logger = require('composer-common').Logger;
+
+const LOG = Logger.getLog('Serializer');
 
 /**
- * Internal Utility Class
- * &lt;p>&lt;a href="./diagrams-private/util.svg">&lt;img src="./diagrams-private/util.svg" style="height:100%;"/>&lt;/a>&lt;/p>
- * @private
- * @class
- * @memberof module:composer-common
+ * Do not attempt to create an instance of this class.&lt;br>
+ * You must use the {@link module:composer-runtime#getSerializer getSerializer}
+ * method instead.
+ *
+ * @class Serializer
+ * @classdesc A serializer serializes instances of assets, participants, transactions,
+ * and relationships to and from a JSON serialization format.
+ * @memberof module:composer-runtime
+ * @public
  */
-class Util {
+
+/**
+ * A class that represents a serializer in the transaction processor API. The
+ * transaction processor API should expose no internal properties or internal
+ * methods which could be accessed or misused.
+ * @private
+ */
+class Serializer {
 
     /**
-     * Internal method to check the security context
-     * @param {SecurityContext} securityContext - The user's security context
-     * @throws {SecurityException} if the user context is invalid
+     * Constructor.
+     * @param {Serializer} serializer The serializer to use.
+     * @private
      */
-    static securityCheck(securityContext) {
-        if (Util.isNull(securityContext)) {
-            throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
-        } else if (!(securityContext instanceof SecurityContext)) {
-            throw new SecurityException(Globalize.formatMessage('util-securitycheck-novalidcontext'));
-        }
-    }
+    constructor(serializer) {
+        const method = 'constructor';
+        LOG.entry(method, serializer);
 
-    /**
-     * Submit a query request to the chain-code
-     * @param {SecurityContext} securityContext - The user's security context
-     * @param {string} functionName - The name of the function to call.
-     * @param {string[]} args - The arguments to pass to the function being called.
-     * @return {Promise} - A promise that will be resolved with the value returned
-     * by the chain-code function.
-     */
-    static queryChainCode(securityContext, functionName, args) {
-        Util.securityCheck(securityContext);
-        if (!functionName) {
-            throw new Error('functionName not specified');
-        } else if (!args) {
-            throw new Error('args not specified');
-        }
-        args.forEach((arg) => {
-            if (typeof arg !== 'string') {
-                throw new Error('invalid arg specified: ' + arg);
-            }
-        });
-        return securityContext.getConnection().queryChainCode(securityContext, functionName, args);
-    }
+        /**
+         * Convert a {@link Resource} to a JavaScript object suitable for long-term
+         * peristent storage.
+         * @example
+         * // Get the serializer.
+         * var serializer = getSerializer();
+         * // Serialize a vehicle.
+         * var json = serializer.toJSON(vehicle);
+         * @public
+         * @method module:composer-runtime.Serializer#toJSON
+         * @param {Resource} resource The resource instance to convert to JSON.
+         * @param {Object} [options] The optional serialization options.
+         * @param {boolean} [options.validate] Validate the structure of the resource
+         * with its model prior to serialization, true by default.
+         * @param {boolean} [options.convertResourcesToRelationships] Convert resources that
+         * are specified for relationship fields into relationships, false by default.
+         * @param {boolean} [options.permitResourcesForRelationships] Permit resources in the
+         * place of relationships (serializing them as resources), false by default.
+         * @return {Object} The JavaScript object that represents the resource
+         * @throws {Error} If the specified resource is not an instance of
+         * {@link Resource} or if it fails validation during serialization.
+         */
+        this.toJSON = function toJSON(resource, options) {
+            return serializer.toJSON(resource, options);
+        };
 
-    /**
-     * Submit an invoke request to the chain-code
-     * @param {SecurityContext} securityContext - The user's security context
-     * @param {string} functionName - The name of the function to call.
-     * @param {string[]} args - The arguments to pass to the function being called.
-     * @return {Promise} - A promise that will be resolved with the value returned
-     * by the chain-code function.
-     */
-    static invokeChainCode(securityContext, functionName, args) {
-        Util.securityCheck(securityContext);
-        if (!functionName) {
-            throw new Error('functionName not specified');
-        } else if (!args) {
-            throw new Error('args not specified');
-        }
-        args.forEach((arg) => {
-            if (typeof arg !== 'string') {
-                throw new Error('invalid arg specified: ' + arg);
-            }
-        });
-        return securityContext.getConnection().invokeChainCode(securityContext, functionName, args);
-    }
+        /**
+         * Create a {@link Resource} from a JavaScript object representation.
+         * The JavaScript object should have been created by calling the
+         * {@link Serializer#toJSON toJSON} API.
+         * The {@link Resource} is populated based on the JavaScript object.
+         * @example
+         * // Get the serializer.
+         * var serializer = getSerializer();
+         * // Serialize a vehicle.
+         * var vehicle = serializer.fromJSON(json);
+         * @public
+         * @method module:composer-runtime.Serializer#fromJSON
+         * @param {Object} json The JavaScript object for the resource.
+         * @param {Object} [options] The optional serialization options.
+         * @param {boolean} [options.acceptResourcesForRelationships] Handle JSON objects
+         * in the place of strings for relationships, false by default.
+         * @return {Resource} The resource.
+         * @throws {Error} If the specified resource is not an instance of
+         * {@link Resource} or if it fails validation during serialization.
+         */
+        this.fromJSON = function fromJSON(json, options) {
+            return serializer.fromJSON(json, options);
+        };
 
-    /**
-     * Returns true if the typeof the object === 'undefined' or
-     * the object === null.
-     * @param {Object} obj - the object to be tested
-     * @returns {boolean} true if the object is null or undefined
-     */
-    static isNull(obj) {
-        return(typeof(obj) === 'undefined' || obj === null);
+        Object.freeze(this);
+        LOG.exit(method);
     }
 
 }
 
-module.exports = Util;
+module.exports = Serializer;
 </pre>
     </article>
 </section>
