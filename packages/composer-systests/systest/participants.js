@@ -52,7 +52,7 @@ describe('Participant system tests', function () {
 
     let createParticipant = (participantId) => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.participants', 'SimpleParticipant', participantId);
+        let participant = factory.newResource('systest.participants', 'SimpleParticipant', participantId);
         participant.stringValue = 'hello world';
         participant.stringValues = [ 'hello', 'world' ];
         participant.doubleValue = 3.142;
@@ -72,13 +72,13 @@ describe('Participant system tests', function () {
 
     let createParticipantContainer = () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.participants', 'SimpleParticipantContainer', 'dogeParticipantContainer');
+        let participant = factory.newResource('systest.participants', 'SimpleParticipantContainer', 'dogeParticipantContainer');
         return participant;
     };
 
     let createParticipantRelationshipContainer = () => {
         let factory = client.getBusinessNetwork().getFactory();
-        let participant = factory.newInstance('systest.participants', 'SimpleParticipantRelationshipContainer', 'dogeParticipantRelationshipContainer');
+        let participant = factory.newResource('systest.participants', 'SimpleParticipantRelationshipContainer', 'dogeParticipantRelationshipContainer');
         return participant;
     };
 
@@ -528,17 +528,17 @@ describe('Participant system tests', function () {
             .getParticipantRegistry('systest.participants.SimpleParticipantCircle')
             .then(function (result) {
                 participantRegistry = result;
-                let participant = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle1');
+                let participant = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle1');
                 participant.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle2');
                 return participantRegistry.add(participant);
             })
             .then(function () {
-                let participant = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle2');
+                let participant = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle2');
                 participant.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle3');
                 return participantRegistry.add(participant);
             })
             .then(function () {
-                let participant = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle3');
+                let participant = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle3');
                 participant.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle1');
                 return participantRegistry.add(participant);
             })
@@ -598,11 +598,11 @@ describe('Participant system tests', function () {
             .getParticipantRegistry('systest.participants.SimpleParticipantCircle')
             .then(function (result) {
                 participantRegistry = result;
-                let circle1 = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle1');
+                let circle1 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle1');
                 circle1.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle2');
-                let circle2 = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle2');
+                let circle2 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle2');
                 circle2.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle3');
-                let circle3 = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle3');
+                let circle3 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle3');
                 circle3.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle1');
                 return participantRegistry.addAll([circle1, circle2, circle3]);
             })
@@ -679,11 +679,11 @@ describe('Participant system tests', function () {
             .getParticipantRegistry('systest.participants.SimpleParticipantCircle')
             .then(function (result) {
                 participantRegistry = result;
-                let circle1 = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle1');
+                let circle1 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle1');
                 circle1.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle2');
-                let circle2 = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle2');
+                let circle2 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle2');
                 circle2.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle3');
-                let circle3 = factory.newInstance('systest.participants', 'SimpleParticipantCircle', 'circle3');
+                let circle3 = factory.newResource('systest.participants', 'SimpleParticipantCircle', 'circle3');
                 circle3.next = factory.newRelationship('systest.participants', 'SimpleParticipantCircle', 'circle1');
                 return participantRegistry.addAll([circle1, circle2, circle3]);
             })

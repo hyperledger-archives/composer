@@ -15,6 +15,7 @@
 'use strict';
 
 const AssetDeclaration = require('../../lib/introspect/assetdeclaration');
+const ClassDeclaration = require('../../lib/introspect/classdeclaration');
 const ModelFile = require('../../lib/introspect/modelfile');
 const ModelManager = require('../../lib/modelmanager');
 const fs = require('fs');
@@ -25,11 +26,19 @@ const sinon = require('sinon');
 describe('AssetDeclaration', () => {
 
     let mockModelManager;
+    let mockClassDeclaration;
+    let mockSystemAsset;
     let sandbox;
 
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        mockModelManager = sinon.createStubInstance(ModelManager);
+        mockModelManager =  sinon.createStubInstance(ModelManager);
+        mockSystemAsset = sinon.createStubInstance(AssetDeclaration);
+        mockSystemAsset.getFullyQualifiedName.returns('org.hyperledger.composer.system.Asset');
+        mockModelManager.getSystemTypes.returns([mockSystemAsset]);
+        mockClassDeclaration = sinon.createStubInstance(ClassDeclaration);
+        mockModelManager.getType.returns(mockClassDeclaration);
+        mockClassDeclaration.getProperties.returns([]);
     });
 
     afterEach(() => {
@@ -41,6 +50,7 @@ describe('AssetDeclaration', () => {
         let modelFile = new ModelFile(mockModelManager, modelDefinitions);
         let assets = modelFile.getAssetDeclarations();
         assets.should.have.lengthOf(1);
+
         return assets[0];
     };
 
@@ -107,6 +117,7 @@ describe('AssetDeclaration', () => {
 
         it('should throw when field has been duplicated in the same class', () => {
             let asset = loadAssetDeclaration('test/data/parser/assetdeclaration.dupesimp.cto');
+
             (() => {
                 asset.validate();
             }).should.throw(/more than one field named/);
@@ -158,17 +169,6 @@ describe('AssetDeclaration', () => {
             (() => {
                 asset.getProperties();
             }).should.throw(/Could not find super type/);
-        });
-
-    });
-
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            let asset = loadLastAssetDeclaration('test/data/parser/assetdeclaration.json.cto');
-            asset.validate();
-            let jsonObject = asset.toJSON();
-            jsonObject.should.deep.equal({});
         });
 
     });

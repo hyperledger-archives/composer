@@ -79,13 +79,7 @@ class ConnectionManager {
     importIdentity(profileDefinition, id, publicKey, privateKey) {
         return Promise.reject(new Error('Import identity not supported by this connection profile'));
     }
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
+
 }
 
 module.exports = ConnectionManager;

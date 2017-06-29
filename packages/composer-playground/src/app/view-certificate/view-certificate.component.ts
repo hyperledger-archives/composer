@@ -9,11 +9,9 @@ import { ConnectionProfileService } from '../services/connectionprofile.service'
 })
 export class ViewCertificateComponent {
     public certificate: string;
-    public hostname: string;
 
     constructor(public activeModal: NgbActiveModal,
                 public connectionProfileService: ConnectionProfileService) {
         this.certificate = this.connectionProfileService.getCertificate();
-        this.hostname = this.connectionProfileService.getHostname();
     }
 }

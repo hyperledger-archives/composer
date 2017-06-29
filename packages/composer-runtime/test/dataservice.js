@@ -14,10 +14,14 @@
 
 'use strict';
 
+const DataCollection = require('../lib/datacollection');
 const DataService = require('../lib/dataservice');
 
-require('chai').should();
+const chai = require('chai');
+chai.should();
+chai.use(require('chai-as-promised'));
 const sinon = require('sinon');
+require('sinon-as-promised');
 
 describe('DataService', () => {
 
@@ -176,11 +180,56 @@ describe('DataService', () => {
 
     });
 
+    describe('#executeQuery', () => {
 
-    describe('#toJSON', () => {
+        it('should call _executeQuery and handle no error', () => {
+            sinon.stub(dataService, '_executeQuery').yields(null, {});
+            return dataService.executeQuery('id')
+                .then((result) => {
+                    sinon.assert.calledWith(dataService._executeQuery, 'id');
+                    result.should.deep.equal({});
+                });
+        });
 
-        it('should return an empty object', () => {
-            dataService.toJSON().should.deep.equal({});
+        it('should call _executeQuery and handle an error', () => {
+            sinon.stub(dataService, '_executeQuery').yields(new Error('error'), null);
+            return dataService.executeQuery('id')
+                .then((result) => {
+                    throw new Error('should not getCollection here');
+                })
+                .catch((error) => {
+                    sinon.assert.calledWith(dataService._executeQuery, 'id');
+                    error.should.match(/error/);
+                });
+        });
+
+    });
+
+    describe('#_executeQuery', () => {
+
+        it('should throw as abstract method', () => {
+            (() => {
+                dataService._executeQuery('id');
+            }).should.throw(/abstract function called/);
+        });
+
+    });
+
+    describe('#ensureCollection', () => {
+
+        it('should return an existing collection', () => {
+            const mockDataCollection = sinon.createStubInstance(DataCollection);
+            sinon.stub(dataService, 'getCollection').withArgs('suchcollection').resolves(mockDataCollection);
+            return dataService.ensureCollection('suchcollection')
+                .should.eventually.be.equal(mockDataCollection);
+        });
+
+        it('should create a collection that does not exist', () => {
+            const mockDataCollection = sinon.createStubInstance(DataCollection);
+            sinon.stub(dataService, 'getCollection').withArgs('suchcollection').rejects(new Error('no such collection!'));
+            sinon.stub(dataService, 'createCollection').withArgs('suchcollection').resolves(mockDataCollection);
+            return dataService.ensureCollection('suchcollection')
+                .should.eventually.be.equal(mockDataCollection);
         });
 
     });

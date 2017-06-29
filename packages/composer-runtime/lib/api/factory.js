@@ -75,34 +75,6 @@ class Factory {
         };
 
         /**
-         * Create a new instance of an asset, participant, or transaction. The
-         * properties of the new instance should be set as standard JavaScript
-         * object properties. The new instance can then be stored in a registry
-         * using the appropriate registry APIs, for example {@link
-         * module:composer-runtime.AssetRegistry AssetRegistry}.
-         * @example
-         * // Get the factory.
-         * var factory = getFactory();
-         * // Create a new vehicle.
-         * var vehicle = factory.newInstance('org.acme', 'Vehicle', 'VEHICLE_1');
-         * // Set the properties of the new vehicle.
-         * vehicle.colour = 'BLUE';
-         * vehicle.manufacturer = 'Toyota';
-         * @public
-         * @method module:composer-runtime.Factory#newInstance
-         * @param {string} ns The namespace of the resource to create.
-         * @param {string} type The type of the resource to create.
-         * @param {string} id The identifier of the new resource.
-         * @return {Resource} The new instance of the resource.
-         * @throws {Error} If the specified type (specified by the namespace and
-         * @deprecated
-         * type) is not defined in the current version of the business network.
-         */
-        this.newInstance = function newInstance(ns, type, id) {
-            return factory.newInstance(ns, type, id);
-        };
-
-        /**
          * Create a new relationship with a given namespace, type, and identifier.
          * A relationship is a typed pointer to an instance. For example, a new
          * relationship with namespace 'org.acme', type 'Vehicle' and identifier

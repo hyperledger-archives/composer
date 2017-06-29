@@ -20,6 +20,7 @@ const RelationshipDeclaration = require('./relationshipdeclaration');
 const IllegalModelException = require('./illegalmodelexception');
 const Globalize = require('../globalize');
 const Introspector = require('./introspector');
+const ModelUtil = require('../modelutil');
 
 /**
  * ClassDeclaration defines the structure (model/schema) of composite data.
@@ -92,6 +93,13 @@ class ClassDeclaration {
 
         if(this.ast.classExtension) {
             this.superType = this.ast.classExtension.class.name;
+        }
+        else {
+            // if we are not a system type, then we should set the
+            // super type to the system type for this class declaration
+            if(!this.isSystemType()) {
+                this.superType = this.getSystemType();
+            }
         }
 
         if(this.ast.idField) {
@@ -235,6 +243,16 @@ class ClassDeclaration {
     }
 
     /**
+     * Returns the base system type for this type of class declaration. Override
+     * this method in derived classes to specify a base system type.
+     *
+     * @return {string} the short name of the base system type or null
+     */
+    getSystemType() {
+        return null;
+    }
+
+    /**
      * Returns true if this class is declared as abstract in the model file
      *
      * @return {boolean} true if the class is abstract
@@ -261,6 +279,15 @@ class ClassDeclaration {
         return false;
     }
 
+     /**
+     * Returns true if this class is the definition of an event.
+     *
+     * @return {boolean} true if the class is an event
+     */
+    isEvent() {
+        return false;
+    }
+
     /**
      * Returns true if this class can be pointed to by a relationship
      *
@@ -268,6 +295,16 @@ class ClassDeclaration {
      */
     isRelationshipTarget() {
         return false;
+    }
+
+    /**
+     * Returns true if this class can be pointed to by a relationship in a
+     * system model
+     *
+     * @return {boolean} true if the class may be pointed to by a relationship
+     */
+    isSystemType() {
+        return ModelUtil.getSystemNamespace() === this.modelFile.getNamespace();
     }
 
     /**
@@ -487,14 +524,6 @@ class ClassDeclaration {
     }
 
     /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
-    }
-
-    /**
      * Returns the string representation of this class
      * @return {String} the string representation of the class
      */
@@ -506,8 +535,7 @@ class ClassDeclaration {
         return 'ClassDeclaration {id=' + this.getFullyQualifiedName() + superType + ' enum=' + this.isEnum() + ' abstract=' + this.isAbstract() + '}';
     }
 
-    /** fixes up the model, post-process*/
-    retrofit(){}
+
 }
 
 module.exports = ClassDeclaration;

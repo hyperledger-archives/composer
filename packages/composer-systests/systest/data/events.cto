@@ -7,8 +7,7 @@ enum SimpleEnum {
     o MUCH
 }
 
-event SimpleEvent identified by eventId {
-  o String eventId
+event SimpleEvent {
   o String stringValue
   o String[] stringValues
   o Double doubleValue
@@ -22,11 +21,10 @@ event SimpleEvent identified by eventId {
   o Boolean booleanValue
   o Boolean[] booleanValues
   o SimpleEnum enumValue
-  o SimpleEnum[] enumValues 
+  o SimpleEnum[] enumValues
 }
 
-event ComplexEvent identified by eventId {
-  o String eventId
+event ComplexEvent {
   --> SimpleAsset simpleAsset
   --> SimpleAsset[] simpleAssets
 }
@@ -35,18 +33,18 @@ asset SimpleAsset identified by assetId {
   o String assetId
 }
 
-transaction EmitSimpleEvent identified by transactionId {
-  o String transactionId
+transaction EmitSimpleEvent {
+
 }
 
-transaction EmitComplexEvent identified by transactionId {
-  o String transactionId
+transaction EmitComplexEvent {
+
 }
 
-transaction EmitMultipleEvents identified by transactionId {
-  o String transactionId
+transaction EmitMultipleEvents {
+
 }
 
-transaction EmitMultipleDifferentEvents identified by transactionId {
-  o String transactionId
+transaction EmitMultipleDifferentEvents {
+
 }

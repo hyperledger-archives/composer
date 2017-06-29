@@ -107,7 +107,7 @@ export class AddFileComponent {
         this.fileType = 'cto';
         let filename = (file && file.name) ? 'models/' + file.name : this.addModelFileName;
         this.currentFile = this.clientService.createModelFile(dataBuffer.toString(), filename);
-        this.currentFileName = this.currentFile.getFileName();
+        this.currentFileName = this.currentFile.getName();
     }
 
     createReadme(dataBuffer) {

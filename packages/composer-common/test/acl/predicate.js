@@ -44,16 +44,6 @@ describe('Predicate', () => {
         sandbox.restore();
     });
 
-    describe('#toJSON', () => {
-
-        it('should generate a JSON representation', () => {
-            predicate = new Predicate( aclRule, ast );
-            const json = predicate.toJSON();
-            json.should.not.be.null;
-        });
-
-    });
-
     describe('#constructor', () => {
 
         it('should throw when null AclRule provided', () => {

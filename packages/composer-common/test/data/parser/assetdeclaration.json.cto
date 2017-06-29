@@ -1,7 +1,6 @@
 namespace com.ibm.testing
 
-participant Participant {
-
+participant MyParticipant {
 }
 
 enum TestEnum {
@@ -17,6 +16,5 @@ asset TestAsset identified by assetId extends BaseAsset {
     o String assetId
     o String otherField
     o TestEnum enumField
-    --> Participant p
-
+    --> MyParticipant p
 }

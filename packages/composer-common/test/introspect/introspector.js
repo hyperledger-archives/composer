@@ -51,7 +51,7 @@ describe('Introspector', () => {
 
             modelManager.addModelFile(modelBase, 'model-base.cto');
             const introspector = new Introspector(modelManager);
-            introspector.getClassDeclarations().length.should.equal(13);
+            introspector.getClassDeclarations().length.should.equal(17);
         });
     });
 

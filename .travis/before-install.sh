@@ -25,11 +25,16 @@ sudo apt-get install docker-ce
 echo "Docker version: " 
 docker --version
 
+sudo apt-get install linkchecker
+
 # Grab the parent (root) directory.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 npm install -g npm@4
 npm install -g @alrra/travis-scripts
+
+npm install -g asciify
+
 
 echo "ABORT_BUILD=false" > ${DIR}/build.cfg
 echo "ABORT_CODE=0" >> ${DIR}/build.cfg
@@ -50,6 +55,50 @@ fi
 echo "->- Build cfg being used"
 cat ${DIR}/build.cfg
 echo "-<-"
+
+
+######
+# checking the changes that are in this file
+echo "Travis commit range $TRAVIS_COMMIT_RANGE"
+echo "Travis commit $TRAVIS_COMMIT"
+echo "Travis event type $TRAVIS_EVENT_TYPE"
+
+
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+  echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" == "" ]; then
+  echo -e 'Build Branch with Snapshot => Branch ['$TRAVIS_BRANCH']'
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_TAG" != "" ]; then
+  echo -e 'Build Branch for Release => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']'
+else
+  echo -e 'WARN: Should not be here => Branch ['$TRAVIS_BRANCH']  Tag ['$TRAVIS_TAG']  Pull Request ['$TRAVIS_PULL_REQUEST']'
+fi
+
+
+cd $TRAVIS_BUILD_DIR
+touch changefiles.log
+git diff --name-only $(echo $TRAVIS_COMMIT_RANGE | sed 's/\.//')
+
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    git show --pretty=format: --name-only "$TRAVIS_COMMIT_RANGE"|sort|uniq  >> changedfiles.log  || echo Fail
+elif [ -n "$TRAVIS_PULL_REQUEST" ]; then
+    git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  >> changedfiles.log   || echo Fail
+fi
+
+RESULT=$(cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }') 
+if [ "${RESULT}" == "" ];
+then
+  echo "Only docs changes"
+else
+  echo "More than docs changes"
+fi
+rm changedfiles.log
+
+cd - > /dev/null
+######
+
+
+
 
 # Check of the task current executing
 if [ "${FC_TASK}" = "docs" ]; then

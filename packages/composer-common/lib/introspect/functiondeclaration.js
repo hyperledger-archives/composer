@@ -16,6 +16,7 @@
 
 const TransactionDeclaration = require('./transactiondeclaration');
 const IllegalModelException = require('./illegalmodelexception');
+const ModelUtil = require('../modelutil');
 //const Globalize = require('../globalize');
 
 /**
@@ -145,9 +146,9 @@ class FunctionDeclaration {
                 throw new IllegalModelException('Transaction processing function ' + this.name + ' must have 1 function argument of type transaction.' );
             }
             const transactionClassName = this.parameterTypes[0];
-            const classDecl = this.modelManager.getType(transactionClassName);
 
-            if(!(classDecl instanceof TransactionDeclaration)) {
+            if (ModelUtil.isPrimitiveType(transactionClassName) ||
+                !(this.modelManager.getType(transactionClassName) instanceof TransactionDeclaration)) {
                 throw new IllegalModelException('Function ' + this.getName() + ' processes ' + transactionClassName + ' which is not a transaction.');
             }
         }
@@ -195,14 +196,6 @@ class FunctionDeclaration {
      */
     getParameterTypes() {
         return this.parameterTypes;
-    }
-
-    /**
-     * Stop serialization of this object.
-     * @return {Object} An empty object.
-     */
-    toJSON() {
-        return {};
     }
 
 }

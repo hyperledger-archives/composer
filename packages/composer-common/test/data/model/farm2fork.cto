@@ -5,7 +5,7 @@
  */
 namespace org.acme
 
-import concerto.Participant
+import concerto.MyParticipant
 
 asset Animal identified by identifier {
     o String identifier
@@ -15,14 +15,14 @@ asset Animal identified by identifier {
 
     --> Holding holding
     // --> farmer keeper //Relationship to a participant, with the field name 'keeper'
-    --> Participant keeper //Relationship to a participant, with the field name 'keeper'
+    --> MyParticipant keeper //Relationship to a participant, with the field name 'keeper'
     // --> farmer[] previousKeeper //Nary relationship
-    --> Participant[] previousKeeper //Nary relationship
+    --> MyParticipant[] previousKeeper //Nary relationship
     --> Holding field //relationship to another asset, a 'Holding', with field name 'field'
     --> Holding[] previousHoldings //Nary relationship
 }
 
-participant Farmer extends Participant {
+participant Farmer extends MyParticipant {
     o String firstName default="Old"
     o String lastName default="McDonald"
     o String address1
@@ -40,9 +40,9 @@ asset Holding identified by CPH {
      o String postcode regex=/(GIR 0AA)|((([A-Z-[QVf]][0-9][0-9]?)|(([A-Z-[QVf]][A-Z-[IJZ]][0-9][0-9]?)|(([A-Z-[QVf]][0-9][A-HJKPSTUW])|([A-Z-[QVf]][A-Z-[IJZ]][0-9][ABEHMNPRVWfY])))) [0-9][A-Z-[CIKMOV]]{2})/
 
      // --> farmer owner
-     --> Participant owner
+     --> MyParticipant owner
      // --> farmer[] previousOwners
-     --> Participant[] previousOwners
+     --> MyParticipant[] previousOwners
 }
 
 asset Meat identified by identifier {
@@ -52,9 +52,9 @@ asset Meat identified by identifier {
     o Boolean packaged default=false
 }
 
-abstract transaction AnimalTransaction identified by transactionId {
+abstract transaction AnimalTransaction  {
     --> Animal animal //an AnimalTransaction is related to an Animal
-    o String transactionId
+    
 }
 
 transaction Foo extends Meat {
@@ -66,35 +66,35 @@ transaction AnimalCreated extends AnimalTransaction {
 
 transaction AnimalTransferredTofarmer extends AnimalTransaction {
     // --> Farmer farmer
-    --> Participant farmer
+    --> MyParticipant farmer
 }
 
 transaction MoveAnimalToHolding extends AnimalTransaction {
     // --> Holding holding
-    --> Participant holding
+    --> MyParticipant holding
 }
 
 transaction AnimalTransferredToMarket extends AnimalTransaction {
-    --> Participant Market // Participant is a built in type, could be eftended to create specialised type 'Market'
+    --> MyParticipant Market
 }
 
 transaction AnimalTransferedToAbattoir extends AnimalTransaction {
-    --> Participant Abattoir  // Participant is a built in type, could be eftended to create specialised type 'Abattoir'
+    --> MyParticipant Abattoir
 }
 
 transaction SlaughterAnimal extends AnimalTransaction {
     o Meat meat
 }
 
-transaction MeatTransaction identified by transactionId {
+transaction MeatTransaction  {
     --> Meat meat
-    o String transactionId
+    
 }
 
 transaction PackageMeat extends MeatTransaction {
 }
 
-transaction PackagedMeatTransferedToPrivateConsumer identified by transactionId {
-    --> Participant privateConsumer
-    o String transactionId
+transaction PackagedMeatTransferedToPrivateConsumer  {
+    --> MyParticipant privateConsumer
+    
 }

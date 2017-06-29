@@ -1424,8 +1424,12 @@ InstanceId
  return id;
 }
 
+Glob
+  = '.**'
+  / '.*'
+
 Binding
-  = qualifiedName:QualifiedName instanceId:InstanceId?
+  = qualifiedName:QualifiedName instanceId:InstanceId
 {
   return {
     type: "Binding",
@@ -1436,17 +1440,18 @@ Binding
 }
 
 BindingNoInstance
-  = qualifiedName:QualifiedName
+  = qualifiedName:(QualifiedName Glob?)
 {
   return {
     type: "BindingNoInstance",
-    qualifiedName: qualifiedName,
+    qualifiedName: qualifiedName.join(''),
     location: location()
   };
 }
 
 Noun
  = Binding
+ / BindingNoInstance
 
 NounNoInstance
  = BindingNoInstance
@@ -1486,8 +1491,9 @@ AllVerb = 'ALL'
 Verbs = AllVerb / BasicVerbList
 
 Participant
- = 'ANY' /
- 	Binding
+ = 'ANY'
+ / Binding
+ / BindingNoInstance
 
 Predicate
  = "(" __ test:$Expression __ ")" __

@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Tutorial - Developer Guide
+title: Developer Guide
 category: tutorials
+section: tutorials
+index-order: 2
 sidebar: sidebars/tutorials.md
-excerpt: Developer Guide
+excerpt: "The developer guide will walk you through the steps required to build a Hyperledger Composer blockchain solution from scratch. In the space of a day or so you should be able to go from an idea for a disruptive blockchain innovation to a complete business network, running on Hyperledger Fabric."
 ---
 
 # Developer Tutorial for creating a {{site.data.conrefs.composer_full}} solution
-
----
 
 *Note:* this tutorial was written against {{site.data.conrefs.composer_full}} v0.8 on Ubuntu Linux running with {{site.data.conrefs.hlf_full}} v1.0 where referenced below and also tested for a Mac environment. (The relevant steps for a {{site.data.conrefs.hlf_full}} v0.6 setup are shown in *italics*).
 
@@ -58,7 +58,7 @@ Note: Depending on timeouts encountered (see 'Unit Test' later on) we have added
 
 The start of the `package.json` file should now look like this:
 
-```JavaScript
+```json
 {
   "name": "my-network",
   "version": "0.0.1",
@@ -134,7 +134,7 @@ Open the file `lib/sample.js` in the left-hand pane and inspect the contents (no
 Now replace the entire contents of `sample.js` with the function below (including the license header info)
 
 
-```
+```javascript
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -171,7 +171,7 @@ Save your changes to `lib/sample.js`
 
 The file `permissions.acl` defines the access control rules for the business network definition. Replace the entire contents of `permissions.acl` with the rule below.
 
-```
+```bash
 /**
  * Access control rules for mynetwork
  */
@@ -179,7 +179,7 @@ rule Default {
     description: "Allow all participants access to all resources"
     participant: "ANY"
     operation: ALL
-    resource: "org.acme.mynetwork"
+    resource: "org.acme.mynetwork.*"
     action: ALLOW
 }
 ```
@@ -192,14 +192,14 @@ To check that the structure of the files is valid, you can now generate a Busine
 
 Switch back to the terminal and type:
 
-```
+```bash
 cd my-network
 npm install
 ```
 
 You should see the following output:
 
-```
+```bash
 > my-network@0.0.1 prepublish /home/user/my-network
 > mkdirp ./dist && composer archive create --sourceType dir --sourceName . -a ./dist/my-network.bna
 
@@ -218,7 +218,6 @@ Command completed successfully.
 
 Command succeeded
 ```
-
 The `composer archive create` command has created a file called `my-network.bna` in the `dist` folder.
 
 ## Write Unit Tests
@@ -231,7 +230,7 @@ From your project working directory (my-network), open the file `test/sample.js`
 
 The test code below will replace the namespace, types and logic of the unit test pertaining to 'my-network' as shown below. For convenience, you can copy the entire script contents below and replace the current Sample.js file contents entirely:
 
-```
+```javascript
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -416,7 +415,7 @@ You can browse the structure of the Trade Commodity business network by pressing
 
 Next, navigate to the "Test" tab at the top and create two 'Trader' participants (TRADER1 and TRADER2) by clicking the Trader registry on the left and then the "Create New Participant" button.
 
-```
+```javascript
 {
   "$class": "org.acme.mynetwork.Trader",
   "tradeId": "TRADER1",

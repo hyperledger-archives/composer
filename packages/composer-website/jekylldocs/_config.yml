@@ -9,10 +9,6 @@ url: "https://hyperledger.github.io/composer/"
 #be the sitebaseurl - but the build scripts handle this for you.
 #
 baseurl: "/composer"
-
-
-
-
 highlighter: rouge
 markdown: redcarpet
 redcarpet:
@@ -25,7 +21,7 @@ show_drafts: true
 
 permalink: /blog/:title.html
 
-gems:
+plugins:
 - jekyll-sitemap
 
 exclude: [
@@ -41,7 +37,6 @@ exclude: [
             scripts.tmp.min.js,
             style.css,
             style.tmp.min.css,
-            lgoo.psd,
             Makefile,
             exclude.rsync,
             README.markdown

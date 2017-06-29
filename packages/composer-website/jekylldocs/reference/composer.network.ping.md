@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Hyperledger Composer Network Ping CLI
-category: reference
+section: reference-command
 sidebar: sidebars/reference.md
 excerpt: Composer Network Ping CLI
 ---

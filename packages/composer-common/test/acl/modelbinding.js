@@ -30,18 +30,16 @@ describe('ModelBinding', () => {
     let modelManager;
     let sandbox;
 
-    const namespaceAst = {'type':'Binding','qualifiedName':'org.acme'};
+    const namespaceAst = {'type':'Binding','qualifiedName':'org.acme.*'};
+    const recursiveNamespaceAst = {'type':'Binding','qualifiedName':'org.**'};
     const classAst = {'type':'Binding','qualifiedName':'org.acme.Car'};
     const classWithIdentifierAst = {'type':'Binding','qualifiedName':'org.acme.Car','instanceId':'ABC123'};
-    const propertyAst = {'type':'Binding','qualifiedName':'org.acme.Car.assetId'};
-    const propertyWithIdentifierAst = {'type':'Binding','qualifiedName':'org.acme.Car.assetId','instanceId':'ABC123'};
     const variableAst = {'type':'Identifier','name':'dan'};
 
     const missingClass = {'type':'Binding','qualifiedName':'org.acme.Missing','instanceId':'ABC123'};
-    const missingNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing'};
-    const missingClassWithProperty = {'type':'Binding','qualifiedName':'org.acme.Missing.missing','instanceId':'ABC123'};
-    const missingProperty = {'type':'Binding','qualifiedName':'org.acme.Car.missing','instanceId':'ABC123'};
-    const missing = {'type':'Binding','qualifiedName':'org.missing.Missing','instanceId':'ABC123'};
+    const missingNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing.*'};
+    const missingRecursiveNamespace = {'type':'Binding','qualifiedName':'org.missing.Missing.**'};
+    const missing = {'type':'Binding','qualifiedName':'org.missing.Missing.*','instanceId':'ABC123'};
 
     beforeEach(() => {
         aclFile = sinon.createStubInstance(AclFile);
@@ -59,16 +57,6 @@ describe('ModelBinding', () => {
 
     afterEach(() => {
         sandbox.restore();
-    });
-
-    describe('#toJSON', () => {
-
-        it('should generate a JSON representation', () => {
-            modelBinding = new ModelBinding( aclFile, classAst );
-            const json = modelBinding.toJSON();
-            json.should.not.be.null;
-        });
-
     });
 
     describe('#constructor', () => {
@@ -91,7 +79,13 @@ describe('ModelBinding', () => {
         it('should validate correct contents for a namespace reference', () => {
             modelBinding = new ModelBinding( aclRule, namespaceAst );
             modelBinding.validate();
-            modelBinding.toString().should.equal('ModelBinding org.acme');
+            modelBinding.toString().should.equal('ModelBinding org.acme.*');
+        });
+
+        it('should validate correct contents for a recursive namespace reference', () => {
+            modelBinding = new ModelBinding( aclRule, recursiveNamespaceAst );
+            modelBinding.validate();
+            modelBinding.toString().should.equal('ModelBinding org.**');
         });
 
         it('should validate correct contents for a class reference', () => {
@@ -106,18 +100,6 @@ describe('ModelBinding', () => {
             modelBinding.toString().should.equal('ModelBinding org.acme.Car#ABC123');
         });
 
-        it('should validate correct contents for a property reference', () => {
-            modelBinding = new ModelBinding( aclRule, propertyAst );
-            modelBinding.validate();
-            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId');
-        });
-
-        it('should validate correct contents for a property reference with an identifier', () => {
-            modelBinding = new ModelBinding( aclRule, propertyWithIdentifierAst );
-            modelBinding.validate();
-            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId#ABC123');
-        });
-
         it('should validate correct contents for a class reference with a variable binding', () => {
             modelBinding = new ModelBinding( aclRule, classAst, variableAst );
             modelBinding.validate();
@@ -128,18 +110,6 @@ describe('ModelBinding', () => {
             modelBinding = new ModelBinding( aclRule, classWithIdentifierAst, variableAst );
             modelBinding.validate();
             modelBinding.toString().should.equal('ModelBinding org.acme.Car#ABC123:dan');
-        });
-
-        it('should validate correct contents for a property reference with a variable binding', () => {
-            modelBinding = new ModelBinding( aclRule, propertyAst, variableAst );
-            modelBinding.validate();
-            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId:dan');
-        });
-
-        it('should validate correct contents for a property reference with an identifier and with a variable binding', () => {
-            modelBinding = new ModelBinding( aclRule, propertyWithIdentifierAst, variableAst );
-            modelBinding.validate();
-            modelBinding.toString().should.equal('ModelBinding org.acme.Car.assetId#ABC123:dan');
         });
 
         it('should detect reference to missing class', () => {
@@ -156,25 +126,18 @@ describe('ModelBinding', () => {
             }).should.throw(/Failed to find namespace org.missing.Missing/);
         });
 
+        it('should detect reference to missing recursive namespace', () => {
+            (() => {
+                modelBinding = new ModelBinding( aclRule, missingRecursiveNamespace );
+                modelBinding.validate();
+            }).should.throw(/Failed to find namespace org.missing.Missing/);
+        });
+
         it('should detect reference to missing namespace with variable name', () => {
             (() => {
                 modelBinding = new ModelBinding( aclRule, missing );
                 modelBinding.validate();
-            }).should.throw(/Failed to resolve org.missing.Missing/);
-        });
-
-        it('should detect reference to missing property', () => {
-            (() => {
-                modelBinding = new ModelBinding( aclRule, missingProperty );
-                modelBinding.validate();
-            }).should.throw(/Failed to find property org.acme.Car.missing/);
-        });
-
-        it('should detect reference to missing class with property', () => {
-            (() => {
-                modelBinding = new ModelBinding( aclRule, missingClassWithProperty );
-                modelBinding.validate();
-            }).should.throw(/Failed to find class org.acme.Missing/);
+            }).should.throw(/Failed to find namespace org.missing.Missing/);
         });
     });
 
@@ -200,14 +163,14 @@ describe('ModelBinding', () => {
             should.equal(modelBinding.getClassDeclaration(), null);
         });
 
-        it('should return the class declaration for a class binding', () => {
-            modelBinding = new ModelBinding( aclRule, classAst );
+        it('should return null for a recursive namespace binding', () => {
+            modelBinding = new ModelBinding( aclRule, recursiveNamespaceAst );
             modelBinding.validate();
-            modelBinding.getClassDeclaration().getFullyQualifiedName().should.equal('org.acme.Car');
+            should.equal(modelBinding.getClassDeclaration(), null);
         });
 
-        it('should return the class declaration for a property binding', () => {
-            modelBinding = new ModelBinding( aclRule, propertyAst );
+        it('should return the class declaration for a class binding', () => {
+            modelBinding = new ModelBinding( aclRule, classAst );
             modelBinding.validate();
             modelBinding.getClassDeclaration().getFullyQualifiedName().should.equal('org.acme.Car');
         });

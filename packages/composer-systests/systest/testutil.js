@@ -73,15 +73,23 @@ class TestUtil {
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabric() {
-        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy();
+        return process.env.SYSTEST && process.env.SYSTEST.match('^hlf.*');
     }
 
-     /**
+    /**
+     * Check to see if running in Hyperledger Fabric mode.
+     * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
+     */
+    static isHyperledgerFabricV06() {
+        return process.env.SYSTEST && process.env.SYSTEST.match('^hlf$');
+    }
+
+    /**
      * Check to see if running in Hyperledger Fabric mode.
      * @return {boolean} True if running in Hyperledger Fabric mode, false if not.
      */
     static isHyperledgerFabricV1() {
-        return !TestUtil.isWeb() && !TestUtil.isEmbedded() && !TestUtil.isProxy() && process.env.SYSTEST.match('^hlfv1');
+        return process.env.SYSTEST && process.env.SYSTEST.match('^hlfv1.*');
     }
 
     /**

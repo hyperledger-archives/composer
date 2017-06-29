@@ -16,15 +16,6 @@ rule R2 {
 }
 
 rule R3 {
-    description: "Driver can change the ownership of a car that they own"
-    participant(d): "org.acme.Driver"
-    operation: UPDATE
-    resource(o): "org.acme.Car.owner"
-    condition: (o == d)
-    action: ALLOW
-}
-
-rule R4 {
     description: "regulators can perform all operations on Cars"
     participant: "org.acme.Regulator"
     operation: ALL
@@ -32,34 +23,76 @@ rule R4 {
     action: ALLOW
 }
 
+rule R4 {
+    description: "anyone in the org.acme namespace can perform all operations on Cars"
+    participant: "org.acme.*"
+    operation: ALL
+    resource: "org.acme.Car"
+    action: ALLOW
+}
+
 rule R5 {
-    description: "Everyone can read all resources in the org.acme namespace"
-    participant: "ANY"
-    operation: READ
-    resource: "org.acme"
+    description: "anyone under the org.acme namespace can perform all operations on Cars"
+    participant: "org.acme.**"
+    operation: ALL
+    resource: "org.acme.Car"
     action: ALLOW
 }
 
 rule R6 {
-    description: "Drivers can do something in a org.acme.Transaction transaction"
+    description: "Everyone can read all resources in the org.acme namespace"
     participant: "ANY"
-    operation: ALL
-    resource: "org.acme.Car"
-    transaction: "org.acme.Transaction"
+    operation: READ
+    resource: "org.acme.*"
     action: ALLOW
 }
 
 rule R7 {
-    description: "Regulators can do something in a org.acme.Transaction transaction"
+    description: "Everyone can read all resources under the org.acme namespace"
     participant: "ANY"
-    operation: ALL
-    resource: "org.acme.Car"
-    transaction(tx): "org.acme.Transaction"
-    condition: (tx.asset.colour === 'blue')
+    operation: READ
+    resource: "org.acme.**"
     action: ALLOW
 }
 
 rule R8 {
+    description: "Drivers can do something in a org.acme.MyTransaction transaction"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.Car"
+    transaction: "org.acme.MyTransaction"
+    action: ALLOW
+}
+
+rule R9 {
+    description: "Drivers can do something with transactions in the org.acme namespace"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.Car"
+    transaction: "org.acme.*"
+    action: ALLOW
+}
+
+rule R10 {
+    description: "Drivers can do something with transactions under the org.acme namespace"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.Car"
+    transaction: "org.acme.**"
+    action: ALLOW
+}
+
+rule R11 {
+    description: "Regulators can do something in a org.acme.MyTransaction transaction"
+    participant: "ANY"
+    operation: ALL
+    resource: "org.acme.Car"
+    transaction(tx): "org.acme.MyTransaction"
+    condition: (tx.asset.colour === 'blue')
+    action: ALLOW
+}
+
+rule R12 {
     description: "Fred can CREATE, READ, and UPDATE the car ABC123"
     participant: "org.acme.Driver#Fred"
     operation: CREATE, READ, UPDATE
@@ -67,7 +100,7 @@ rule R8 {
     action: ALLOW
 }
 
-rule R9 {
+rule R13 {
     description: "regulator with ID Bill can not update or delete a Car if they own it"
     participant(r): "org.acme.Regulator#Bill"
     operation: UPDATE, DELETE

@@ -21,6 +21,7 @@ const ModelManager = require('../../lib/modelmanager');
 const Relationship = require('../../lib/model/relationship');
 const Resource = require('../../lib/model/resource');
 const TypedStack = require('../../lib/serializer/typedstack');
+const TypeNotFoundException = require('../../lib/typenotfoundexception');
 
 require('chai').should();
 const sinon = require('sinon');
@@ -54,12 +55,10 @@ describe('JSONPopulator', () => {
                 o String assetId
                 o MyAsset1[] myAssets
             }
-            transaction MyTx1 identified by transactionId {
-                o String transactionId
+            transaction MyTx1 {
                 --> MyAsset1 myAsset
             }
-            transaction MyTx2 identified by transactionId {
-                o String transactionId
+            transaction MyTx2 {
                 --> MyAsset1[] myAssets
             }
         `);
@@ -191,7 +190,7 @@ describe('JSONPopulator', () => {
                     $class: 'org.acme.NOTAREALTYPE',
                     assetId: 'asset1'
                 }, options);
-            }).should.throw(/No type/);
+            }).should.throw(TypeNotFoundException, /NOTAREALTYPE/);
         });
 
         it('should create a new resource from an object using a $class value that matches the model', () => {
@@ -347,7 +346,7 @@ describe('JSONPopulator', () => {
             };
             (() => {
                 jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration1, options);
-            }).should.throw(/No type/);
+            }).should.throw(TypeNotFoundException, /NoSuchClass/);
         });
 
         it('should throw if the JSON data is an object with a class that does not exist', () => {
@@ -360,10 +359,10 @@ describe('JSONPopulator', () => {
                 factory: mockFactory,
                 modelManager: modelManager
             };
-            sandbox.stub(modelManager, 'getType').withArgs('org.acme.NoSuchClass').returns(null);
+            sandbox.stub(modelManager, 'getType').withArgs('org.acme.NoSuchClass').throws(new TypeNotFoundException('org.acme.NoSuchClass'));
             (() => {
                 jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration1, options);
-            }).should.throw(/Failed to find type/);
+            }).should.throw(TypeNotFoundException, /NoSuchClass/);
         });
 
         it('should create a new relationship from an array of strings', () => {
@@ -466,7 +465,7 @@ describe('JSONPopulator', () => {
             };
             (() => {
                 jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration2, options);
-            }).should.throw(/No type/);
+            }).should.throw(TypeNotFoundException, /NoSuchClass/);
         });
 
         it('should throw if the JSON data in the array is an object with a class that does not exist', () => {
@@ -479,10 +478,10 @@ describe('JSONPopulator', () => {
                 factory: mockFactory,
                 modelManager: modelManager
             };
-            sandbox.stub(modelManager, 'getType').withArgs('org.acme.NoSuchClass').returns(null);
+            sandbox.stub(modelManager, 'getType').withArgs('org.acme.NoSuchClass').throws(new TypeNotFoundException('org.acme.NoSuchClass'));
             (() => {
                 jsonPopulator.visitRelationshipDeclaration(relationshipDeclaration2, options);
-            }).should.throw(/Failed to find type/);
+            }).should.throw(TypeNotFoundException, /NoSuchClass/);
         });
 
     });

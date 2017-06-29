@@ -62,12 +62,4 @@ describe('EventService', () => {
         });
     });
 
-    describe('#toJSON', () => {
-
-        it('should return an empty object', () => {
-            eventService.toJSON().should.deep.equal({});
-        });
-
-    });
-
 });
