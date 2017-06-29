@@ -88,7 +88,7 @@
     "octokat": "^0.6.2",
     "opener": "^1.4.2",
     "socket.io": "^1.7.3",
-    "typescript": "^2.2.1",
+    "typescript": "2.4.0",
     "webpack": "^2.2.1"
   },
   "devDependencies": {
@@ -206,7 +206,7 @@
     "tslint": "^4.2.0",
     "tslint-loader": "^3.3.0",
     "typedoc": "^0.5.3",
-    "typescript": "^2.2.1",
+    "typescript": "2.4.0",
     "url-loader": "^0.5.7",
     "v8-lazy-parse-webpack-plugin": "^0.3.0",
     "webpack": "~2.4.1",
