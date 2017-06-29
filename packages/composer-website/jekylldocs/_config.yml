@@ -21,7 +21,7 @@ show_drafts: true
 
 permalink: /blog/:title.html
 
-gems:
+plugins:
 - jekyll-sitemap
 
 exclude: [

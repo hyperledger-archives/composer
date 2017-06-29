@@ -14,7 +14,7 @@ excerpt: How to create a new Connection Profile
 
 ---
 
-{% assign sorted = (site.pages | sort: 'index-order') %}
+{% assign sorted = site.pages | sort: 'index-order' %}
 {% for page in sorted %}
 {% if page.section == 'integrating' and page.title != "Integrating Index" %}
 ### {{ page.title }}
@@ -22,7 +22,6 @@ excerpt: How to create a new Connection Profile
 {% endif %}
 {% endfor %}
 
----
 ---
 
 For instructions on setting up a Loopback API, see [Generating a REST API](../integrating/getting-started-rest-api.html).
