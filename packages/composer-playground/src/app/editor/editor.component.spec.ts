@@ -428,17 +428,17 @@ describe('EditorComponent', () => {
                 {
                     getNamespace: sinon.stub().returns('model 2'),
                     getName: sinon.stub().returns('models/model2.cto'),
-                    isSystemModelFile : sinon.stub().returns(false)
+                    isSystemModelFile: sinon.stub().returns(false)
                 },
                 {
                     getNamespace: sinon.stub().returns('model 1'),
                     getName: sinon.stub().returns('models/model1.cto'),
-                    isSystemModelFile : sinon.stub().returns(false)
+                    isSystemModelFile: sinon.stub().returns(false)
                 },
                 {
                     getNamespace: sinon.stub().returns('system 1'),
                     getName: sinon.stub().returns('models/system1.cto'),
-                    isSystemModelFile : sinon.stub().returns(true)
+                    isSystemModelFile: sinon.stub().returns(true)
                 },
             ]);
 
@@ -1193,6 +1193,24 @@ describe('EditorComponent', () => {
             mockAddModel.should.not.have.been.called;
             mockClientService.businessNetworkChanged$.next.should.not.have.been.called;
             mockAlertService.errorStatus$.next.should.not.have.been.called;
+        }));
+
+        it('should open AddFileComponent modal and show error if business network not valid', fakeAsync(() => {
+
+            mockAddModel.throws('some error');
+            mockModal.open = sinon.stub().returns({
+                componentInstance: {
+                    businessNetwork: {}
+                },
+                result: Promise.resolve(mockModelFile)
+            });
+
+            component.openAddFileModal();
+
+            tick();
+
+            mockAddModel.should.have.been.called;
+            mockAlertService.errorStatus$.next.should.have.been.called;
         }));
     });
 
