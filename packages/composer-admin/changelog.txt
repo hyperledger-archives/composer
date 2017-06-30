@@ -11,7 +11,7 @@
 #
 # Note that the latest public API is documented using JSDocs and is available in api.txt.
 #
-Version 0.9.0 {8b6c392e59b8ad38ea271315231ca0e5} 2017-06-29
+Version 0.9.1 {8b6c392e59b8ad38ea271315231ca0e5} 2017-06-30
 - added getLogLevel & setLogLevel methods. added deployOptions to deploy method.
 
 Version 0.7.5 {3981adc1fb192a8e53d2250ea8feec9a} 2017-05-22
