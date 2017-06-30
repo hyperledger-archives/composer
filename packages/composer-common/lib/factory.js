@@ -76,10 +76,11 @@ class Factory {
             if ((/^empty$/i).test(clientOptions.generate)) {
                 generateParams.valueGenerator = ValueGeneratorFactory.empty();
             } else {
+                // Allow any other value for backwards compatibility with previous (truthy) behavior
                 generateParams.valueGenerator = ValueGeneratorFactory.sample();
             }
 
-            generateParams.includeOptionalFields = false;
+            generateParams.includeOptionalFields = clientOptions.includeOptionalFields ? true : false;
 
             return generateParams;
         };
@@ -96,6 +97,8 @@ class Factory {
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} the new instance
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
@@ -159,6 +162,8 @@ class Factory {
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} the new instance
      * @throws {TypeNotFoundException} if the type is not registered with the ModelManager
      */
@@ -225,6 +230,8 @@ class Factory {
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} A resource for the new transaction.
      */
     newTransaction(ns, type, id, options) {
@@ -258,6 +265,8 @@ class Factory {
      * @param {string} [options.generate] - Pass one of: <dl>
      * <dt>sample</dt><dd>return a resource instance with generated sample data.</dd>
      * <dt>empty</dt><dd>return a resource instance with empty property values.</dd></dl>
+     * @param {boolean} [options.includeOptionalFields] - if <code>options.generate</code>
+     * is specified, whether optional fields should be generated.
      * @return {Resource} A resource for the new event.
      */
     newEvent(ns, type, id, options) {
