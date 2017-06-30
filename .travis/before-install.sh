@@ -10,7 +10,7 @@ sudo rm /usr/local/bin/docker-compose
 curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
 chmod +x docker-compose
 sudo mv docker-compose /usr/local/bin
-echo "Docker-compose version: " 
+echo "Docker-compose version: "
 docker-compose --version
 
 # Update docker
@@ -22,7 +22,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt-get update
 sudo apt-get install docker-ce
-echo "Docker version: " 
+echo "Docker version: "
 docker --version
 
 sudo apt-get install linkchecker
@@ -85,8 +85,8 @@ elif [ -n "$TRAVIS_PULL_REQUEST" ]; then
     git diff --name-only "$TRAVIS_COMMIT" "$TRAVIS_BRANCH"  >> changedfiles.log   || echo Fail
 fi
 
-RESULT=$(cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }') 
-if [ "${RESULT}" == "" ];
+RESULT=$(cat changedfiles.log | sed '/^\s*$/d' | awk '!/composer-website/ { print "MORE" }')
+if [ "${RESULT}" == "" ] && [ "$TRAVIS_TAG" == "" ];
 then
 
     # Check of the task current executing
@@ -95,7 +95,7 @@ then
 #        echo "ABORT_CODE=0" >> ${DIR}/build.cfg
         echo 'Docs only build - no pointing bothering with anything more'
         exit 0
-    fi 
+    fi
 
 else
   echo "More than docs changes"
